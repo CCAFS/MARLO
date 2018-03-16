@@ -62,6 +62,14 @@ function attachEvents() {
     });
   });
 
+  var outputSelect = $(".outputSelect");
+  $(".outputList").find(".outputs").each(function(i,e) {
+    var idOutput = $(e).find("input.outputId");
+    var outputOption = outputSelect.find("option[value='"+idOutput.val()+"']");
+    console.log("idOut= "+idOutput.val()+" outputOpt= "+outputOption);
+    outputOption.prop('disabled', true);
+  });
+
 }
 
 function addPartner() {
