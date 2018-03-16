@@ -663,6 +663,13 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         $item.show('slow');
         // add marker
         addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
+
+      //Show and hide Successfully added message
+        $('#alert-succesfully-added').slideDown();
+        setTimeout(function(){
+          $('#alert-succesfully-added').slideUp();
+        }, 2000);
+
         // update indexes
         updateIndex();
         checkItems($list.parents("#selectsContent"));
@@ -748,6 +755,12 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       }
       locationContent.append($item);
       $item.show("slow");
+
+      //Show and hide Successfully added message
+      $('#alert-succesfully-added').slideDown();
+      setTimeout(function(){
+        $('#alert-succesfully-added').slideUp();
+      }, 2000);
     }
   });
   updateIndex();

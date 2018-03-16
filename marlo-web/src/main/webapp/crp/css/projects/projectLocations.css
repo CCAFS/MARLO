@@ -94,19 +94,16 @@
 
 .latitudeWrapper {
     width: 24%;
-    float: left;
     margin-left: 1%;
 }
 
 .longitudeWrapper {
     width: 24%;
-    float: left;
     margin-left: 1%;
 }
 
 .nameWrapper {
     width: 50%;
-    float: left;
 }
 
 .nameMap {
@@ -431,6 +428,7 @@ tr:nth-child(even) {
 
 .inputFormCoordinates-container{
     margin-top: 5px;
+    display: flex;
 }
 
 .controls {
@@ -478,4 +476,14 @@ tr:nth-child(even) {
   }
   #target {
     width: 345px;
+  }
+
+  #alert-succesfully-added{
+    position: absolute;
+    width: 94%;
+    text-align: center;
+  }
+
+  .addLocationButton-container{
+      margin-bottom: 46px;
   }
