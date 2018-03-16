@@ -37,24 +37,29 @@
       [#include "/WEB-INF/center/views/monitoring/outcomes/submenu-outcomes.ftl" /]
       [#-- Outcomes List --]
       <h3 class="headTitle text-center">${selectedProgram.name} - Outcomes</h3>
-      <div class="simpleBox col-md-12">
-        <label for="">Research Topic:<span class="red">*</span></label>
-        <select name="researchTopics" id="researchTopics">
-          <option value="-1" >View All</option>
-            [#list researchTopics as researchTopic]
-              <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
-            [/#list]
-        </select>
-      </div>
-      <div class="loadingBlock"></div>
-      <div style="display:none">[@outcomesListMonitoring.outcomesListMonitoring outcomes=outcomes canValidate=true canEdit=editable namespace="/monitoring" defaultAction="${(centerSession)!}/monitoringOutcome" /]</div>
-      <div class="clearfix"></div>
+      [#if (action.isSubmitIP(selectedProgram.id))!]
+        <div class="simpleBox col-md-12">
+          <label for="">Research Topic:<span class="red">*</span></label>
+          <select name="researchTopics" id="researchTopics">
+            <option value="-1" >View All</option>
+              [#list researchTopics as researchTopic]
+                <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
+              [/#list]
+          </select>
+        </div>
+        <div class="loadingBlock"></div>
+        <div style="display:none">[@outcomesListMonitoring.outcomesListMonitoring outcomes=outcomes canValidate=true canEdit=editable namespace="/monitoring" defaultAction="${(centerSession)!}/monitoringOutcome" /]</div>
+        <div class="clearfix"></div>
+      [#else]
+        <p class="text-center borderBox inf">To begin reporting on progress towards outcomes, please submit the program impact pathway <a href="[@s.url namespace="/centerImpactPathway" action='${centerSession}/programimpacts'][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p>  
+      [/#if]      
+      
     </div>
     
   </article>
 </section>
 
-[#-- Outcome Projects Popup --]
+[#-- Outcome Projects Popup 
 [#include "/WEB-INF/center/macros/outcomeProjectsPopup-center.ftl" /]
-
+--]
 [#include "/WEB-INF/center/pages/footer.ftl"]
