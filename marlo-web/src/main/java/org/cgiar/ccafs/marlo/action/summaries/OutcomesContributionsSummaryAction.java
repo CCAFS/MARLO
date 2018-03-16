@@ -279,10 +279,22 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               }
               projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
               milestone = crpMilestone.getComposedName();
-              expectedValue = projectMilestone.getExpectedValue();
-              if (projectMilestone.getExpectedUnit() != null) {
-                expectedUnit = projectMilestone.getExpectedUnit().getName();
+
+              if (projectMilestone.getCrpMilestone() != null
+                && projectMilestone.getCrpMilestone().getSrfTargetUnit() != null) {
+                expectedUnit = projectMilestone.getCrpMilestone().getSrfTargetUnit().getName();
+                if (projectMilestone.getCrpMilestone().getSrfTargetUnit().getId() == -1) {
+                  expectedValue = -1.0;
+                } else {
+                  if (projectMilestone.getExpectedValue() != null) {
+                    expectedValue = projectMilestone.getExpectedValue();
+                  }
+                }
+              } else {
+                expectedUnit = "Not Applicable";
+                expectedValue = -1.0;
               }
+
               narrativeTarget = projectMilestone.getNarrativeTarget();
 
               model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
@@ -344,10 +356,21 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               outcomeIndicator = projectOutcome.getCrpProgramOutcome().getIndicator();
             }
           }
-          expectedValue = projectOutcome.getExpectedValue();
-          if (projectOutcome.getExpectedUnit() != null) {
-            expectedUnit = projectOutcome.getExpectedUnit().getName();
+          if (projectOutcome.getCrpProgramOutcome() != null
+            && projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
+            expectedUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
+            if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1) {
+              expectedValue = -1.0;
+            } else {
+              if (projectOutcome.getExpectedValue() != null) {
+                expectedValue = projectOutcome.getExpectedValue();
+              }
+            }
+          } else {
+            expectedUnit = "Not Applicable";
+            expectedValue = -1.0;
           }
+
           expectedNarrative = projectOutcome.getNarrativeTarget();
         }
         Long phaseID = this.getSelectedPhase().getId();
