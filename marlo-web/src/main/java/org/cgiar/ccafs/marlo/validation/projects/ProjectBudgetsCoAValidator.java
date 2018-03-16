@@ -103,7 +103,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     for (ProjectBudget projectBudget : budgets) {
       totalAmount += projectBudget.getAmount();
     }
-    return budgets.size() > 0 && totalAmount > 0.0;
+    return budgets.size() > 0 && totalAmount >= 0.0;
   }
 
   public void replaceAll(StringBuilder builder, String from, String to) {
