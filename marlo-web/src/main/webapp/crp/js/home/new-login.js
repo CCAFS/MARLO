@@ -137,6 +137,9 @@ function firstForm(){
       " .loginForm .welcome-message-container, " +
       ".loginForm #login-password").addClass("hidden");
 
+  //Hide terms and conditions checkbox
+  $('.terms-container').addClass("hidden");
+
   //Hide the "login with different user" button
   $('.login-back-container').addClass('hidden');
 
