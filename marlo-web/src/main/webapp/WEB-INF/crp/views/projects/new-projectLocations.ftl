@@ -176,8 +176,8 @@
                 [#-- OTHER LOCATIONS --]   
                 [#if action.hasSpecificities('crp_other_locations')]
                   <div class="col-md-12">
-                    <span class="text-left-position" data-toggle="modal" data-target=".allLocationsModal">All locations map</span>
-                    <div class="icon-left-position" data-toggle="modal" data-target=".allLocationsModal"><span class="glyphicon glyphicon-map-marker"></span></div>
+                    <span class="text-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal">All locations map</span>
+                    <div class="icon-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal"><span class="glyphicon glyphicon-map-marker"></span></div>
                     <h5 id="locations-list-title" class="sectionSubTitle">Locations list:</h5>
                   </div>
                   
@@ -259,8 +259,8 @@
                           
                           <div class="map-container col-md-5">
                             <div  class="col-md-12 map">
-                              <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-                              <div id="map" class="col-md-12"></div>
+                              [#-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> --]
+                              <div id="all-locations-map" class="col-md-12"></div>
                             </div>
                           </div>
                           
