@@ -170,6 +170,10 @@ function attachEvents() {
     console.log('Change');
   });
 
+  $('.allLocationsButton').on('click',function(){
+    changeMapDiv(map);
+  });
+
 }
 
 function modalButtonsListeners(){
@@ -412,7 +416,7 @@ function initMap() {
       }
   ];
   var mapDiv = document.getElementById('map');
-  map = new google.maps.Map(mapDiv[0], {
+  map = new google.maps.Map(mapDiv, {
       center: new google.maps.LatLng(14.41, -12.52),
       zoom: 3,
       mapTypeId: 'roadmap',
@@ -942,4 +946,12 @@ function clearMarkers() {
 // Shows any markers currently in the array.
 function showMarkers() {
   setAllMap(map);
+}
+
+// This function is for change the map's div
+// for the "add locations modal" and the "all locations modal"
+function changeMapDiv(currentMap){
+  var mapCurrentNode = map.getDiv();
+  console.log(mapCurrentNode);
+  $('#all-locations-map').append(mapNode);
 }
