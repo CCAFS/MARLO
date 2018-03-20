@@ -176,10 +176,9 @@
                 [#-- OTHER LOCATIONS --]   
                 [#if action.hasSpecificities('crp_other_locations')]
                   <div class="col-md-12">
-                    [#if editable && action.hasSpecificities('crp_other_locations')]
-                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
-                    [/#if]
-                    <h5 id="locations-list-title" class="sectionSubTitle">Locations list</h5>
+                    <span class="text-left-position" data-toggle="modal" data-target=".allLocationsModal">All locations map</span>
+                    <div class="icon-left-position" data-toggle="modal" data-target=".allLocationsModal"><span class="glyphicon glyphicon-map-marker"></span></div>
+                    <h5 id="locations-list-title" class="sectionSubTitle">Locations list:</h5>
                   </div>
                   
                   [#-- LOCATION LIST --]
@@ -242,6 +241,33 @@
                         </div>
                       </div>
                     </div>
+                    [#-- END Add new location (Modal) --]
+                    [#-- All locations map(Modal) --]
+                    <div id="allLocationsModal" class="modal fade allLocationsModal" tabindex="-1" role="dialog" aria-labelledby="allLocations" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                          <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          
+                          <div class="allLocations-container">
+                            <h3 class="title">All locations</h3>
+                            <hr />
+                            
+                            <div class="form-group col-md-7">
+                            </div>
+                            
+                          </div>
+                          
+                          <div class="map-container col-md-5">
+                            <div  class="col-md-12 map">
+                              <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                              <div id="map" class="col-md-12"></div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    [#-- END All locations map(Modal) --]
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
                           [#if project.locationsData?has_content]
@@ -255,6 +281,9 @@
                           [/#if]
                       </div>
                     </div>
+                  [#if editable && action.hasSpecificities('crp_other_locations')]
+                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
+                  [/#if]
                   </div>
                 [/#if]
               </div>

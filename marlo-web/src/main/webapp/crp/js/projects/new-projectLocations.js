@@ -24,6 +24,12 @@ function init() {
 
 function attachEvents() {
 
+  /** Array countries * */
+  // From other countries
+  $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
+    countries.push($(e).find(".locElementCountry").val());
+  });
+
   // REMOVE REGION
   $(".removeRegion").on("click", removeRegion);
 
@@ -300,6 +306,26 @@ function checkRegionList(block) {
 function loadScript() {
   var script = document.createElement("script");
   script.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY + "&libraries=places&sensor=false&callback=initMap";
+  // function after load script
+  script.onload = script.onreadystatechange = function() {
+
+    $(".locationsDataTable").find(".locationLevel").each(function(index,item) {
+      $(item).find(".locElement").each(function(i,locItem) {
+        var latitude = $(locItem).find(".geoLatitude").val();
+        var longitude = $(locItem).find(".geoLongitude").val();
+        var isList = $(locItem).parent().parent().parent().find(".isList").val();
+        var site = $(locItem).find(".locElementName").val();
+        var idMarker = $(locItem).attr("id").split("-")[1];
+        if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
+          if($(item).find("input.locationLevelId").val() == "10") {
+            addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 2);
+          } else {
+            addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 1);
+          }
+        }
+      });
+    });
+  }
   document.body.appendChild(script);
 }
 
@@ -386,7 +412,7 @@ function initMap() {
       }
   ];
   var mapDiv = document.getElementById('map');
-  map = new google.maps.Map(mapDiv, {
+  map = new google.maps.Map(mapDiv[0], {
       center: new google.maps.LatLng(14.41, -12.52),
       zoom: 3,
       mapTypeId: 'roadmap',
