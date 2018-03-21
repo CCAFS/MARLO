@@ -4208,9 +4208,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               totalSections++;
             }
             if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-              return totalSections == 7;
+              return totalSections == 8;
             } else {
-              return totalSections == 6;
+              return totalSections == 7;
             }
 
           }

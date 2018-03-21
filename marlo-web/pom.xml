@@ -412,6 +412,10 @@
           <keystoreFile>${project.basedir}/.keystore</keystoreFile>
           <keystorePass>d5jtY68oBqWj</keystorePass>
           <contextFile>tomcat/context.xml</contextFile>
+          <!-- tomcat 7 plugin should only be run on local desktop -->
+          <systemProperties>
+            <spring.profiles.active>dev</spring.profiles.active>
+          </systemProperties>
         </configuration>
       </plugin>
       <plugin>

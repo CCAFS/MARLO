@@ -153,3 +153,8 @@ td {
   vertical-align: sub;
 }
 .partnerRequestItem h4 {margin: 2px 0px;}
+
+
+table#marloEmailsTable {
+  font-size: 0.9em;
+}
