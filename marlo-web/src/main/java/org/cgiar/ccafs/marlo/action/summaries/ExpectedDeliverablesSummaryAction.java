@@ -136,6 +136,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nDeliverableID", this.getText("searchTerms.deliverableId"));
     masterReport.getParameterValues().put("i8nDeliverableTitle",
       this.getText("summaries.deliverable.deliverableTitle"));
+    masterReport.getParameterValues().put("i8nDeliverableDescription",
+      this.getText("summaries.deliverable.deliverableDescription"));
     masterReport.getParameterValues().put("i8nKeyOutput",
       this.getText("project.deliverable.generalInformation.keyOutput"));
     masterReport.getParameterValues().put("i8nExpectedYear", this.getText("summaries.deliverable.expectedYear"));
@@ -164,7 +166,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
     masterReport.getParameterValues().put("i8nManagingResponsible", this.getText("deliverable.project.managing"));
     masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
-
     return masterReport;
   }
 
@@ -269,11 +270,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
         "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS",
         "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "genderScoring",
-        "youthScoring", "capScoring"},
+        "youthScoring", "capScoring", "deliverableDescription"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Long.class, String.class, String.class, String.class, String.class},
+        Long.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
@@ -308,6 +309,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       Long deliverableId = deliverable.getId();
       String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
         ? deliverableInfo.getTitle() : null;
+      String deliverableDescription =
+        (deliverableInfo.getDescription() != null && !deliverableInfo.getDescription().isEmpty())
+          ? deliverableInfo.getDescription() : null;
       Integer completionYear = deliverableInfo.getYear();
       String deliverableSubType =
         (deliverableInfo.getDeliverableType() != null && deliverableInfo.getDeliverableType().getName() != null
@@ -751,7 +755,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
         projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, openFS, fsWindows, outcomes,
-        projectLeadPartner, managingResponsible, phaseID, finishedFS, genderScoring, youthScoring, capScoring});
+        projectLeadPartner, managingResponsible, phaseID, finishedFS, genderScoring, youthScoring, capScoring,
+        deliverableDescription});
 
       if (deliverablePerYearList.containsKey(completionYear)) {
         Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);

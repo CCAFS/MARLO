@@ -88,8 +88,8 @@ public class UnhandledExceptionAction extends BaseAction {
 
     subject = "Exception occurred in MARLO";
 
-    message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " <"
-      + this.getCurrentUser().getEmail() + "> ");
+    message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ("
+      + this.getCurrentUser().getEmail() + ") ");
     message.append("has experienced an exception on the platform. </br>");
     message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
     String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
