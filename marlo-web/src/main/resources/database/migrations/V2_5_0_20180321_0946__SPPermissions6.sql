@@ -72,7 +72,8 @@ FROM
         `cp`.`id` = `crp`.`global_unit_id`
       )
     )
-    JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+    JOIN phases ph ON cp.id = ph.global_unit_id
+    AND ph.editable = 1
   )
 WHERE
   (
@@ -84,7 +85,7 @@ WHERE
     AND (
       `cp`.`global_unit_type_id` = 1
       OR `cp`.`global_unit_type_id` = 3
-    OR `cp`.`global_unit_type_id` = 4
+      OR `cp`.`global_unit_type_id` = 4
     )
   )
 AND u.id = v_user_id
@@ -129,7 +130,7 @@ UNION
       AND (
         `cp`.`global_unit_type_id` = 1
         OR `cp`.`global_unit_type_id` = 3
-    OR `cp`.`global_unit_type_id` = 4
+        OR `cp`.`global_unit_type_id` = 4
       )
     )
   AND u.id = v_user_id
@@ -214,7 +215,8 @@ UNION
             )
           )
         )
-        JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+        JOIN phases ph ON cp.id = ph.global_unit_id
+        AND ph.editable = 1
       )
     WHERE
       (
@@ -231,7 +233,7 @@ UNION
         AND (
           `cp`.`global_unit_type_id` = 1
           OR `cp`.`global_unit_type_id` = 3
-      OR `cp`.`global_unit_type_id` = 4
+          OR `cp`.`global_unit_type_id` = 4
         )
       )
     AND u.id = v_user_id
@@ -310,7 +312,8 @@ UNION
                 )
               )
             )
-            JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+            JOIN phases ph ON cp.id = ph.global_unit_id
+            AND ph.editable = 1
             JOIN project_phases pph ON pph.project_id = pro.id
             AND pph.id_phase = ph.id
             INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -349,7 +352,7 @@ UNION
           AND (
             `cp`.`global_unit_type_id` = 1
             OR `cp`.`global_unit_type_id` = 3
-      OR `cp`.`global_unit_type_id` = 4
+            OR `cp`.`global_unit_type_id` = 4
           )
         )
       AND u.id = v_user_id
@@ -428,7 +431,8 @@ UNION
                   )
                 )
               )
-              JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+              JOIN phases ph ON cp.id = ph.global_unit_id
+              AND ph.editable = 1
               JOIN project_phases pph ON pph.project_id = pro.id
               AND pph.id_phase = ph.id
               INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -467,7 +471,7 @@ UNION
             AND (
               `cp`.`global_unit_type_id` = 1
               OR `cp`.`global_unit_type_id` = 3
-        OR `cp`.`global_unit_type_id` = 4
+              OR `cp`.`global_unit_type_id` = 4
             )
           )
         AND u.id = v_user_id
@@ -546,7 +550,8 @@ UNION
                     )
                   )
                 )
-                JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                JOIN phases ph ON cp.id = ph.global_unit_id
+                AND ph.editable = 1
                 JOIN project_phases pph ON pph.project_id = pro.id
                 AND pph.id_phase = ph.id
                 INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -575,7 +580,7 @@ UNION
               AND (
                 `cp`.`global_unit_type_id` = 1
                 OR `cp`.`global_unit_type_id` = 3
-        OR `cp`.`global_unit_type_id` = 4
+                OR `cp`.`global_unit_type_id` = 4
               )
             )
           AND u.id = v_user_id
@@ -653,7 +658,8 @@ UNION
                     )
                   )
                 )
-                JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                JOIN phases ph ON cp.id = ph.global_unit_id
+                AND ph.editable = 1
                 JOIN project_phases pph ON pph.project_id = pro.id
                 AND pph.id_phase = ph.id
                 INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -686,7 +692,7 @@ UNION
                 AND (
                   `cp`.`global_unit_type_id` = 1
                   OR `cp`.`global_unit_type_id` = 3
-          OR `cp`.`global_unit_type_id` = 4
+                  OR `cp`.`global_unit_type_id` = 4
                 )
               )
             AND u.id = v_user_id
@@ -763,7 +769,8 @@ UNION
                         AND (`pro`.`is_active` = 1)
                       )
                     )
-                    JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                    JOIN phases ph ON cp.id = ph.global_unit_id
+                    AND ph.editable = 1
                     JOIN project_phases pph ON pph.project_id = pro.id
                     AND pph.id_phase = ph.id
                     INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -777,7 +784,7 @@ UNION
                   AND (
                     `cp`.`global_unit_type_id` = 1
                     OR `cp`.`global_unit_type_id` = 3
-          OR `cp`.`global_unit_type_id` = 4
+                    OR `cp`.`global_unit_type_id` = 4
                   )
                 )
               AND u.id = v_user_id
@@ -855,7 +862,8 @@ UNION
                             AND (`pro`.`is_active` = 1)
                           )
                         )
-                        JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                        JOIN phases ph ON cp.id = ph.global_unit_id
+                        AND ph.editable = 1
                         JOIN project_phases pph ON pph.project_id = pro.id
                         AND pph.id_phase = ph.id
                         INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -888,7 +896,7 @@ UNION
                     AND (
                       `cp`.`global_unit_type_id` = 1
                       OR `cp`.`global_unit_type_id` = 3
-            OR `cp`.`global_unit_type_id` = 4
+                      OR `cp`.`global_unit_type_id` = 4
                     )
                   )
                 AND u.id = v_user_id
@@ -966,7 +974,8 @@ UNION
                               AND (`pro`.`is_active` = 1)
                             )
                           )
-                          JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                          JOIN phases ph ON cp.id = ph.global_unit_id
+                          AND ph.editable = 1
                           JOIN project_phases pph ON pph.project_id = pro.id
                           AND pph.id_phase = ph.id
                           INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -999,7 +1008,7 @@ UNION
                       AND (
                         `cp`.`global_unit_type_id` = 1
                         OR `cp`.`global_unit_type_id` = 3
-            OR `cp`.`global_unit_type_id` = 4
+                        OR `cp`.`global_unit_type_id` = 4
                       )
                     )
                   AND u.id = v_user_id
@@ -1061,7 +1070,8 @@ UNION
                               `cp`.`id` = `crp`.`global_unit_id`
                             )
                           )
-                          JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                          JOIN phases ph ON cp.id = ph.global_unit_id
+                          AND ph.editable = 1
                         )
                         JOIN `funding_sources` `pro` ON (
                           (
@@ -1088,7 +1098,7 @@ UNION
                     AND (
                       `cp`.`global_unit_type_id` = 1
                       OR `cp`.`global_unit_type_id` = 3
-            OR `cp`.`global_unit_type_id` = 4
+                      OR `cp`.`global_unit_type_id` = 4
                     )
                     AND r.`acronym` IN (
                       'PMU',
@@ -1166,7 +1176,8 @@ UNION
                         INNER JOIN global_units cp ON cp.id = cpu.global_unit_id
                         INNER JOIN global_unit_projects gup ON gup.global_unit_id = cp.id
                         INNER JOIN projects pro ON pro.id = gup.project_id
-                        JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                        JOIN phases ph ON cp.id = ph.global_unit_id
+                        AND ph.editable = 1
                         JOIN project_phases pph ON pph.project_id = pro.id
                         AND pph.id_phase = ph.id
                         INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -1291,7 +1302,8 @@ UNION
                                         AND (`pro`.`is_active` = 1)
                                       )
                                     )
-                                    JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                    JOIN phases ph ON cp.id = ph.global_unit_id
+                                    AND ph.editable = 1
                                     JOIN project_phases pph ON pph.project_id = pro.id
                                     AND pph.id_phase = ph.id
                                     INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
@@ -1321,7 +1333,7 @@ UNION
                                 AND (
                                   `cp`.`global_unit_type_id` = 1
                                   OR `cp`.`global_unit_type_id` = 3
-                  OR `cp`.`global_unit_type_id` = 4
+                                  OR `cp`.`global_unit_type_id` = 4
                                 )
                               )
                             AND p.id IN (447, 206, 429, 488)
@@ -1384,7 +1396,8 @@ UNION
                                         `cp`.`id` = `crp`.`global_unit_id`
                                       )
                                     )
-                                    JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                    JOIN phases ph ON cp.id = ph.global_unit_id
+                                    AND ph.editable = 1
                                   )
                                   JOIN `funding_sources` `pro` ON (
                                     (
@@ -1411,7 +1424,7 @@ UNION
                               AND (
                                 `cp`.`global_unit_type_id` = 1
                                 OR `cp`.`global_unit_type_id` = 3
-                OR `cp`.`global_unit_type_id` = 4
+                                OR `cp`.`global_unit_type_id` = 4
                               )
                               AND r.`acronym` IN ('CP')
                               AND u.id = v_user_id
@@ -1489,7 +1502,7 @@ UNION
                                 AND (
                                   `cp`.`global_unit_type_id` = 1
                                   OR `cp`.`global_unit_type_id` = 3
-                  OR `cp`.`global_unit_type_id` = 4
+                                  OR `cp`.`global_unit_type_id` = 4
                                 )
                                 UNION
                                   SELECT
@@ -1554,7 +1567,7 @@ UNION
                                   AND (
                                     `cp`.`global_unit_type_id` = 1
                                     OR `cp`.`global_unit_type_id` = 3
-                  OR `cp`.`global_unit_type_id` = 4
+                                    OR `cp`.`global_unit_type_id` = 4
                                   )
                                   UNION
                                     SELECT
@@ -1625,7 +1638,7 @@ UNION
                                     AND (
                                       `cp`.`global_unit_type_id` = 1
                                       OR `cp`.`global_unit_type_id` = 3
-                    OR `cp`.`global_unit_type_id` = 4
+                                      OR `cp`.`global_unit_type_id` = 4
                                     )
                                     AND u.id = v_user_id
                                     UNION
@@ -1705,7 +1718,7 @@ UNION
                                       AND (
                                         `cp`.`global_unit_type_id` = 1
                                         OR `cp`.`global_unit_type_id` = 3
-                    OR `cp`.`global_unit_type_id` = 4
+                                        OR `cp`.`global_unit_type_id` = 4
                                       )
                                       AND u.id = v_user_id
                                       UNION
@@ -2172,7 +2185,8 @@ UNION
                                                           )
                                                         )
                                                         JOIN `global_units` `cp` ON r.global_unit_id = cp.id
-                                                        JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                        JOIN phases ph ON cp.id = ph.global_unit_id
+                                                        AND ph.editable = 1
                                                       )
                                                     WHERE
                                                       (
@@ -2216,7 +2230,8 @@ UNION
                                                             )
                                                           )
                                                           JOIN `global_units` `cp` ON r.global_unit_id = cp.id
-                                                          JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                          JOIN phases ph ON cp.id = ph.global_unit_id
+                                                          AND ph.editable = 1
                                                         )
                                                       WHERE
                                                         (
@@ -2308,7 +2323,8 @@ UNION
                                                                 )
                                                               )
                                                             )
-                                                            JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                            JOIN phases ph ON cp.id = ph.global_unit_id
+                                                            AND ph.editable = 1
                                                             JOIN `liaison_institutions` `li` ON (
                                                               (
                                                                 `li`.`global_unit_id` = cp.id
@@ -2339,7 +2355,7 @@ UNION
                                                             AND (
                                                               `cp`.`global_unit_type_id` = 1
                                                               OR `cp`.`global_unit_type_id` = 3
-                                OR `cp`.`global_unit_type_id` = 4
+                                                              OR `cp`.`global_unit_type_id` = 4
                                                             )
                                                           )
                                                         AND u.id = v_user_id
@@ -2406,7 +2422,8 @@ UNION
                                                                   )
                                                                 )
                                                               )
-                                                              JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                              JOIN phases ph ON cp.id = ph.global_unit_id
+                                                              AND ph.editable = 1
                                                               JOIN `liaison_institutions` `li` ON (
                                                                 (
                                                                   `li`.`global_unit_id` = cp.id
@@ -2428,7 +2445,7 @@ UNION
                                                               AND (
                                                                 `cp`.`global_unit_type_id` = 1
                                                                 OR `cp`.`global_unit_type_id` = 3
-                                OR `cp`.`global_unit_type_id` = 4
+                                                                OR `cp`.`global_unit_type_id` = 4
                                                               )
                                                             )
                                                           AND u.id = v_user_id
@@ -2491,7 +2508,8 @@ UNION
                                                                     )
                                                                   )
                                                                 )
-                                                                JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                                JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                AND ph.editable = 1
                                                               )
                                                             WHERE
                                                               (
@@ -2501,7 +2519,7 @@ UNION
                                                                 AND (
                                                                   `cp`.`global_unit_type_id` = 1
                                                                   OR `cp`.`global_unit_type_id` = 3
-                                  OR `cp`.`global_unit_type_id` = 4
+                                                                  OR `cp`.`global_unit_type_id` = 4
                                                                 )
                                                               )
                                                             AND u.id = v_user_id
@@ -2568,7 +2586,8 @@ UNION
                                                                       )
                                                                     )
                                                                   )
-                                                                  JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                                  JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                  AND ph.editable = 1
                                                                   JOIN `liaison_institutions` `li` ON (
                                                                     (
                                                                       `li`.`global_unit_id` = cp.id
@@ -2592,7 +2611,7 @@ UNION
                                                                   AND (
                                                                     `cp`.`global_unit_type_id` = 1
                                                                     OR `cp`.`global_unit_type_id` = 3
-                                  OR `cp`.`global_unit_type_id` = 4
+                                                                    OR `cp`.`global_unit_type_id` = 4
                                                                   )
                                                                 )
                                                               AND p.permission IN (
@@ -2667,7 +2686,8 @@ UNION
                                                                         )
                                                                       )
                                                                     )
-                                                                    JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
+                                                                    JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                    AND ph.editable = 1
                                                                     JOIN `liaison_institutions` `li` ON (
                                                                       (
                                                                         `li`.`global_unit_id` = cp.id
@@ -2700,42 +2720,39 @@ UNION
                                                                     AND (
                                                                       `cp`.`global_unit_type_id` = 1
                                                                       OR `cp`.`global_unit_type_id` = 3
-                                    OR `cp`.`global_unit_type_id` = 4
+                                                                      OR `cp`.`global_unit_type_id` = 4
                                                                     )
                                                                   )
                                                                 AND p.permission = 'crp:{0}:powbSynthesis:{1}:collaboration{2}:effort'
-                                                                AND u.id = v_user_id 
-                                                                
+                                                                AND u.id = v_user_id
                                                                 UNION
-                                                                
-                                                                SELECT
-                                                                  `u`.`id` AS `id`,
-                                                                  `r`.`acronym` AS `acronym`,
-                                                                  `r`.`id` AS `rolid`,
-                                                                  REPLACE (
+                                                                  SELECT
+                                                                    `u`.`id` AS `id`,
+                                                                    `r`.`acronym` AS `acronym`,
+                                                                    `r`.`id` AS `rolid`,
                                                                     REPLACE (
                                                                       REPLACE (
-                                                                        `p`.`permission`,
-                                                                        '{0}',
-                                                                        CONCAT(
-                                                                          `cp`.`acronym`,
-                                                                          ':',
-                                                                          ph.description,
-                                                                          ':',
-                                                                          ph.`year`
-                                                                        )
+                                                                        REPLACE (
+                                                                          `p`.`permission`,
+                                                                          '{0}',
+                                                                          CONCAT(
+                                                                            `cp`.`acronym`,
+                                                                            ':',
+                                                                            ph.description,
+                                                                            ':',
+                                                                            ph.`year`
+                                                                          )
+                                                                        ),
+                                                                        '{1}',
+                                                                        `powb`.`id`
                                                                       ),
-                                                                      '{1}',
-                                                                      `powb`.`id`
-                                                                    ),
-                                                                    '{2}',
-                                                                    li.id
-                                                                  ) AS 'permission',
-                                                                  NULL AS `project_id`,
-                                                                  `cp`.`acronym` AS `crp_acronym`,
-                                                                  `p`.`id` AS `permission_id`
-                                                                FROM
-                                                                  (
+                                                                      '{2}',
+                                                                      li.id
+                                                                    ) AS 'permission',
+                                                                    NULL AS `project_id`,
+                                                                    `cp`.`acronym` AS `crp_acronym`,
+                                                                    `p`.`id` AS `permission_id`
+                                                                  FROM
                                                                     (
                                                                       (
                                                                         (
@@ -2743,8 +2760,219 @@ UNION
                                                                             (
                                                                               (
                                                                                 (
+                                                                                  (
+                                                                                    `users` `u`
+                                                                                    JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                                                  )
+                                                                                  JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                                                )
+                                                                                JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                                              )
+                                                                              JOIN `permissions` `p` ON (
+                                                                                (
+                                                                                  `p`.`id` = `rp`.`permission_id`
+                                                                                )
+                                                                              )
+                                                                            )
+                                                                            JOIN `crp_users` `crp` ON (
+                                                                              (
+                                                                                (`u`.`id` = `crp`.`user_id`)
+                                                                                AND (
+                                                                                  `crp`.`global_unit_id` = `r`.`global_unit_id`
+                                                                                )
+                                                                              )
+                                                                            )
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                      JOIN `global_units` `cp` ON (
+                                                                        (
+                                                                          (
+                                                                            `cp`.`id` = `crp`.`global_unit_id`
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                      JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                      AND ph.editable = 1
+                                                                      JOIN `liaison_institutions` `li` ON (
+                                                                        (
+                                                                          `li`.`global_unit_id` = cp.id
+                                                                        )
+                                                                        AND (
+                                                                          `li`.`crp_program` IS NOT NULL
+                                                                        )
+                                                                      )
+                                                                      JOIN powb_synthesis powb ON (
+                                                                        powb.id_phase = ph.id
+                                                                        AND powb.liaison_institution_id = li.id
+                                                                      )
+                                                                    )
+                                                                  WHERE
+                                                                    (
+                                                                      (`p`.`type` = 3)
+                                                                      AND (`r`.`acronym` IN('PMU'))
+                                                                      AND (
+                                                                        `cp`.`global_unit_type_id` = 1
+                                                                        OR `cp`.`global_unit_type_id` = 3
+                                                                        OR `cp`.`global_unit_type_id` = 4
+                                                                      )
+                                                                    )
+                                                                  AND u.id = v_user_id
+                                                                  UNION
+                                                                    SELECT
+                                                                      `u`.`id` AS `id`,
+                                                                      `r`.`acronym` AS `acronym`,
+                                                                      `r`.`id` AS `rolid`,
+                                                                      REPLACE (
+                                                                        REPLACE (
+                                                                          REPLACE (
+                                                                            `p`.`permission`,
+                                                                            '{0}',
+                                                                            CONCAT(
+                                                                              `cp`.`acronym`,
+                                                                              ':',
+                                                                              ph.description,
+                                                                              ':',
+                                                                              ph.`year`
+                                                                            )
+                                                                          ),
+                                                                          '{1}',
+                                                                          `pro`.`id`
+                                                                        ),
+                                                                        '{2}',
+                                                                        lin.institution_id
+                                                                      ) AS `name_exp_32`,
+                                                                      `pro`.`id` AS `project_id`,
+                                                                      `cp`.`acronym` AS `crp_acronym`,
+                                                                      `p`.`id` AS `permission_id`
+                                                                    FROM
+                                                                      (
+                                                                        (
+                                                                          (
+                                                                            (
+                                                                              (
+                                                                                (
+                                                                                  (
+                                                                                    (
+                                                                                      (
+                                                                                        `users` `u`
+                                                                                        JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                                                      )
+                                                                                      JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                                                    )
+                                                                                    JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                                                  )
+                                                                                  JOIN `permissions` `p` ON (
+                                                                                    (
+                                                                                      `p`.`id` = `rp`.`permission_id`
+                                                                                    )
+                                                                                  )
+                                                                                )
+                                                                                JOIN `crp_users` `crp` ON (
+                                                                                  (
+                                                                                    (`u`.`id` = `crp`.`user_id`)
+                                                                                    AND (
+                                                                                      `crp`.`global_unit_id` = `r`.`global_unit_id`
+                                                                                    )
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                              JOIN `global_units` `cp` ON (
+                                                                                (
+                                                                                  `cp`.`id` = `crp`.`global_unit_id`
+                                                                                )
+                                                                              )
+                                                                              JOIN `global_unit_projects` `gup` ON (
+                                                                                (
+                                                                                  `gup`.`global_unit_id` = `cp`.`id`
+                                                                                )
+                                                                              )
+                                                                            )
+                                                                            JOIN `projects` `pro` ON (
+                                                                              (
+                                                                                (
+                                                                                  `pro`.`id` = `gup`.`project_id`
+                                                                                )
+                                                                                AND (`pro`.`is_active` = 1)
+                                                                              )
+                                                                            )
+                                                                            JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                            AND ph.editable = 1
+                                                                            JOIN project_phases pph ON pph.project_id = pro.id
+                                                                            AND pph.id_phase = ph.id
+                                                                            INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                                                                            AND pinf.project_id = pph.project_id
+                                                                          )
+                                                                          JOIN `liaison_users` `lus` ON (
+                                                                            (
+                                                                              (`u`.`id` = `lus`.`user_id`)
+                                                                              AND (`lus`.`is_active` = 1)
+                                                                              AND lus.global_unit_id = cp.id
+                                                                            )
+                                                                          )
+                                                                        )
+                                                                        JOIN `liaison_institutions` `lin` ON (
+                                                                          (
+                                                                            `lus`.`institution_id` = `lin`.`id`
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    INNER JOIN project_partners pbi ON pbi.institution_id = lin.institution_id
+                                                                    AND ph.id = pbi.id_phase
+                                                                    INNER JOIN custom_parameters par ON par.parameter_id = (
+                                                                      SELECT
+                                                                        id
+                                                                      FROM
+                                                                        parameters
+                                                                      WHERE
+                                                                        `key` = 'crp_contact_point_edit_project'
+                                                                    )
+                                                                    AND par.global_unit_id = cp.id
+                                                                    AND par.`value` = 'true'
+                                                                    AND pro.id = pbi.project_id
+                                                                    AND pbi.is_active = 1
+                                                                    WHERE
+                                                                      (
+                                                                        (`p`.`type` = 1)
+                                                                        AND (`r`.`acronym` IN('CP'))
+                                                                        AND (
+                                                                          `cp`.`global_unit_type_id` = 1
+                                                                          OR `cp`.`global_unit_type_id` = 3
+                                                                          OR `cp`.`global_unit_type_id` = 4
+                                                                        )
+                                                                      )
+                                                                    AND p.id IN (
+                                                                      SELECT
+                                                                        rolePermi.permission_id
+                                                                      FROM
+                                                                        roles rolep
+                                                                      INNER JOIN role_permissions rolePermi ON rolePermi.role_id = rolep.id
+                                                                      WHERE
+                                                                        rolep.acronym = 'PL'
+                                                                      AND rolep.global_unit_id = cp.id
+                                                                    )
+                                                                    AND u.id = v_user_id
+                                                                    UNION
+                                                                      SELECT
+                                                                        `u`.`id` AS `id`,
+                                                                        `r`.`acronym` AS `ro_acronym`,
+                                                                        `r`.`id` AS `role_id`,
+                                                                        REPLACE (
+                                                                          `p`.`permission`,
+                                                                          '{0}',
+                                                                          `cp`.`acronym`
+                                                                        ) AS `permission`,
+                                                                        NULL AS `project_id`,
+                                                                        `cp`.`acronym` AS `center_acronym`,
+                                                                        `p`.`id` AS `permission_id`
+                                                                      FROM
+                                                                        (
+                                                                          (
+                                                                            (
+                                                                              (
+                                                                                (
                                                                                   `users` `u`
-                                                                                  JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                                                  LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
                                                                                 )
                                                                                 JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
                                                                               )
@@ -2756,141 +2984,63 @@ UNION
                                                                               )
                                                                             )
                                                                           )
-                                                                          JOIN `crp_users` `crp` ON (
-                                                                            (
-                                                                              (`u`.`id` = `crp`.`user_id`)
-                                                                              AND (
-                                                                                `crp`.`global_unit_id` = `r`.`global_unit_id`
-                                                                              )
-                                                                            )
+                                                                          JOIN `global_units` `cp` ON r.global_unit_id = cp.id
+                                                                          JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                          AND ph.editable = 1
+                                                                        )
+                                                                      WHERE
+                                                                        (
+                                                                          (`p`.`type` = 0)
+                                                                          AND (`r`.`id` = 173)
+                                                                          AND (
+                                                                            `cp`.`global_unit_type_id` = 4
                                                                           )
                                                                         )
-                                                                      )
-                                                                    )
-                                                                    JOIN `global_units` `cp` ON (
-                                                                      (
-                                                                        (
-                                                                          `cp`.`id` = `crp`.`global_unit_id`
-                                                                        )
-                                                                      )
-                                                                    )
-                                                                    JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
-                                                                    JOIN `liaison_institutions` `li` ON (
-                                                                      (
-                                                                        `li`.`global_unit_id` = cp.id
-                                                                      )
-                                                                      AND (
-                                                                        `li`.`crp_program` IS NOT NULL
-                                                                     
-                                                                      )
-                                                                    )
-                                                                    
-                                                                    JOIN powb_synthesis powb ON (
-                                                                      powb.id_phase = ph.id
-                                                                      AND powb.liaison_institution_id = li.id
-                                                                    )
-                                                                  )
-                                                                WHERE
-                                                                  (
-                                                                    (`p`.`type` = 3)
-                                                                    AND (
-                                                                      `r`.`acronym` IN ('PMU')
-                                                                    )
-                                                                    AND (
-                                                                      `cp`.`global_unit_type_id` = 1
-                                                                      OR `cp`.`global_unit_type_id` = 3
-                                    OR `cp`.`global_unit_type_id` = 4
-                                                                    )
-                                                                  )
-                                                               
-                                                               AND u.id = v_user_id 
-                                 UNION
-                                 SELECT
-                                                      `u`.`id` AS `id`,
-                                                      `r`.`acronym` AS `ro_acronym`,
-                                                      `r`.`id` AS `role_id`,
-                                                      REPLACE (
-                                                        `p`.`permission`,
-                                                        '{0}',
-                                                        `cp`.`acronym`
-                                                      ) AS `permission`,
-                                                      NULL AS `project_id`,
-                                                      `cp`.`acronym` AS `center_acronym`,
-                                                      `p`.`id` AS `permission_id`
-                                                    FROM
-                                                      (
-                                                        (
-                                                          (
-                                                            (
-                                                              (
-                                                                `users` `u`
-                                                                LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
-                                                              )
-                                                              JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
-                                                            )
-                                                            JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
-                                                          )
-                                                          JOIN `permissions` `p` ON (
-                                                            (
-                                                              `p`.`id` = `rp`.`permission_id`
-                                                            )
-                                                          )
-                                                        )
-                                                        JOIN `global_units` `cp` ON r.global_unit_id = cp.id
-                                                        JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
-                                                      )
-                                                    WHERE
-                                                      (
-                                                        (`p`.`type` = 0)
-                                                        AND (`r`.`id` = 173)
-                                                        AND (
-                                                          `cp`.`global_unit_type_id` = 4
-                                                        )
-                                                      )
-                                                    AND u.id = v_user_id
-                          UNION
-                          SELECT
-                                                        `u`.`id` AS `id`,
-                                                        `r`.`acronym` AS `ro_acronym`,
-                                                        `r`.`id` AS `role_id`,
-                                                        REPLACE (
-                                                          `p`.`permission`,
-                                                          '{0}',
-                                                          `cp`.`acronym`
-                                                        ) AS `permission`,
-                                                        NULL AS `project_id`,
-                                                        `cp`.`acronym` AS `center_acronym`,
-                                                        `p`.`id` AS `permission_id`
-                                                      FROM
-                                                        (
-                                                          (
-                                                            (
-                                                              (
-                                                                (
-                                                                  `users` `u`
-                                                                  LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
-                                                                )
-                                                                JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
-                                                              )
-                                                              JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
-                                                            )
-                                                            JOIN `permissions` `p` ON (
-                                                              (
-                                                                `p`.`id` = `rp`.`permission_id`
-                                                              )
-                                                            )
-                                                          )
-                                                          JOIN `global_units` `cp` ON r.global_unit_id = cp.id
-                                                          JOIN phases ph ON cp.id = ph.global_unit_id and ph.editable=1
-                                                        )
-                                                      WHERE
-                                                        (
-                                                          (`p`.`type` = 0)
-                                                          AND (`r`.`id` = 160)
-                                                          AND (
-                                                            `cp`.`global_unit_type_id` = 4
-                                                          )
-                                                        )
-                                                      AND u.id = v_user_id;
-                                                                END;;
+                                                                      AND u.id = v_user_id
+                                                                      UNION
+                                                                        SELECT
+                                                                          `u`.`id` AS `id`,
+                                                                          `r`.`acronym` AS `ro_acronym`,
+                                                                          `r`.`id` AS `role_id`,
+                                                                          REPLACE (
+                                                                            `p`.`permission`,
+                                                                            '{0}',
+                                                                            `cp`.`acronym`
+                                                                          ) AS `permission`,
+                                                                          NULL AS `project_id`,
+                                                                          `cp`.`acronym` AS `center_acronym`,
+                                                                          `p`.`id` AS `permission_id`
+                                                                        FROM
+                                                                          (
+                                                                            (
+                                                                              (
+                                                                                (
+                                                                                  (
+                                                                                    `users` `u`
+                                                                                    LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                                                  )
+                                                                                  JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                                                )
+                                                                                JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                                              )
+                                                                              JOIN `permissions` `p` ON (
+                                                                                (
+                                                                                  `p`.`id` = `rp`.`permission_id`
+                                                                                )
+                                                                              )
+                                                                            )
+                                                                            JOIN `global_units` `cp` ON r.global_unit_id = cp.id
+                                                                            JOIN phases ph ON cp.id = ph.global_unit_id
+                                                                            AND ph.editable = 1
+                                                                          )
+                                                                        WHERE
+                                                                          (
+                                                                            (`p`.`type` = 0)
+                                                                            AND (`r`.`id` = 160)
+                                                                            AND (
+                                                                              `cp`.`global_unit_type_id` = 4
+                                                                            )
+                                                                          )
+                                                                        AND u.id = v_user_id ;
+                                                                        END;;
 DELIMITER ;
