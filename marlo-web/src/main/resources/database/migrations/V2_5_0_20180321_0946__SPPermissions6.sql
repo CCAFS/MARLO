@@ -2926,6 +2926,7 @@ UNION
                                                                         parameters
                                                                       WHERE
                                                                         `key` = 'crp_contact_point_edit_project'
+                                                                      AND global_unit_type_id = 1
                                                                     )
                                                                     AND par.global_unit_id = cp.id
                                                                     AND par.`value` = 'true'
