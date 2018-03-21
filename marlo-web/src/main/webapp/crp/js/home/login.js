@@ -7,11 +7,18 @@ function init() {
   cookieTime = 100;
   var crpInput = $('input#crp-input').val();
   var typeInput = $('input#type-input').val();
+  var globalUnitInput = $('input#globalUnit-input').val();
 
   // Verify "crp"
   if(verifyCookie("CRP") && (getCookie("CRP") != "undefined") && (!crpInput)) {
     var crpSelected = getCookie("CRP");
     setCRP(crpSelected);
+  }
+
+  // Verify "GlobalUnit"
+  if(verifyCookie("GlobalUnit") && (getCookie("GlobalUnit") != "undefined") && (!globalUnitInput)) {
+    var globalUnitSelected = getCookie("GlobalUnit");
+    setGlobalUnit(globalUnitSelected);
   }
 
   // Verify "type" (CRP, Center, Platform)
@@ -32,7 +39,9 @@ function init() {
   // On select a CRP. Center, Platform
   $('.crpGroup ul li.enabled').on('click', function() {
     var crpSelected = $(this).attr('id').split('-')[1];
+    var globalUnitSelected = $(this).classParam("globalUnitID");
     setCRP(crpSelected);
+    setGlobalUnit(globalUnitSelected);
   });
 
   // On select a Type
@@ -58,10 +67,16 @@ function init() {
 
 }
 
+function setGlobalUnit(globalUnitSelected) {
+  // Setting up the Global Unit value into a hidden input
+  $('#globalUnit-input').val(globalUnitSelected);
+
+  // Create Global Unit cookie
+  setCookie("GlobalUnit", globalUnitSelected, cookieTime);
+}
+
 function setCRP(crpSelected) {
   var $li = $("li#crp-" + crpSelected);
-
-  console.log()
 
   // Removing class selected
   $(".loginOption").removeClass('selected');

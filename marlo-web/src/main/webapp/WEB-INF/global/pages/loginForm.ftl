@@ -39,7 +39,7 @@
         <div id="centers" class="tab-pane type-center [#if (typeSession == "center")!false]class="active"[/#if] col-sm-12">
           <ul>
           [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("2") /]
+            [#assign centerList = action.getCrpCategoryList("4") /]
           [#recover]
             [#assign centerList = [] /]
           [/#attempt]
@@ -83,6 +83,8 @@
           </div>
           [#-- CRP Session --]
           <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
+          [#-- Global Unit Session --]
+          <input type="hidden" id="globalUnit-input" name="globalUnit" value="${(currentCrp.id)!}" />
           [#-- Type Session --]
           <input type="hidden" id="type-input" name="type" value="${(typeSession)!}" />
           [#-- Email --]
@@ -114,7 +116,7 @@
 </div><!-- End loginFormContainer -->
 
 [#macro crpItem element]
-  <li id="crp-${element.acronym}" class="loginOption ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
+  <li id="crp-${element.acronym}" class="loginOption globalUnitID-${element.id} ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
     <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
   </li>
 [/#macro]
