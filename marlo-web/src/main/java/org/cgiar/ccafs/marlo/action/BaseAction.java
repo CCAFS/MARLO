@@ -4160,7 +4160,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return totalSections == 8;
           }
         } else if (budgetCoASection == 0 && budgetFlagshipSection == 1) {
-          return totalSections == 9;
+          if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+            return totalSections == 9;
+
+          } else {
+            return totalSections == 8;
+
+          }
         } else if (budgetCoASection == 1 && budgetFlagshipSection == 1) {
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 10;
