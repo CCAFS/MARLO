@@ -3,6 +3,10 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ "${baseUrl}/global/js/superadmin/emails.js" ] /]
+[#assign customCSS = [ 
+  "${baseUrl}/global/css/superadmin/superadmin.css"
+  ] 
+/]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "emails" /]
 
@@ -50,6 +54,7 @@
                 <th>ID</th>
                 <th>Subject</th>
                 <th>Error</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -63,6 +68,7 @@
                   <td>
                     <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${email.error}</a>
                   </td>
+                  <td>${email.date}</td>
                 </tr>
               [/#list]
               [/#if]
