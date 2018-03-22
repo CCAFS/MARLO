@@ -35,7 +35,7 @@
     ]
   },
   [#-- SUMMARIES - ALL --]
-  { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged , 'active': true }
+  { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged && !centerGlobalUnit, 'active': true }
 
 ]/]
 

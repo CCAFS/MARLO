@@ -21,9 +21,9 @@
 
 
 [#if centerGlobalUnit]
-  [#assign submission = (action.isSubmitIP(programID))! /]
-  [#assign canSubmit = (action. hasPersmissionSubmitIP(programID))!false /]
-  [#assign completed = (action.isCompleteIP(programID))!false /]
+  [#assign submission = (action.isSubmitIP(crpProgramID))! /]
+  [#assign canSubmit = (action. hasPersmissionSubmitIP(crpProgramID))!false /]
+  [#assign completed = (action.isCompleteIP(crpProgramID))!false /]
   [#assign canUnSubmit = false /]
 [#else]
   [#assign submission = (action.submission)! /]
@@ -54,7 +54,7 @@
         <ul>[#if menu.title?has_content]<p class="menuTitle">${menu.title}</p>[/#if]
           [#list menu.items as item]
             [#if centerGlobalUnit]
-              [#assign submitStatus = (action.getCenterSectionStatusIP(item.action, programID))!false /]
+              [#assign submitStatus = (action.getCenterSectionStatusIP(item.action, crpProgramID))!false /]
             [#else]
               [#assign submitStatus = (action.getImpactSectionStatus(item.action, crpProgramID))!false /]
             [/#if]
