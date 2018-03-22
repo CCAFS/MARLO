@@ -191,6 +191,8 @@ public class LoginAction extends BaseAction {
 
           case 3:
             return SUCCESS;
+          case 4:
+            return SUCCESS;
           default:
             return INPUT;
         }
