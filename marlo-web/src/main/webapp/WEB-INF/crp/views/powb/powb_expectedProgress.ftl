@@ -138,9 +138,9 @@
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- W1W2 --]
-                [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp type="W1W2" popupEnabled=allowPopups/] </td>[/#if]
+                [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp totalValue=fp.w1 type="W1W2" popupEnabled=allowPopups/] </td>[/#if]
                 [#-- W3/Bilateral --]
-                [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp type="W3BILATERAL" popupEnabled=allowPopups/]  </td>[/#if]
+                [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp totalValue=fp.w3 type="W3BILATERAL" popupEnabled=allowPopups/]  </td>[/#if]
                 [#-- Means Verification --]
                 <td class="col-md-4">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Assessment --]
