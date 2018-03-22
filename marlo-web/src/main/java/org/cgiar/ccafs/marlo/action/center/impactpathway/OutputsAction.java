@@ -22,12 +22,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterNextuserTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputsNextUserManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
@@ -35,8 +35,8 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ResearchTopicsOutcomesDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -77,7 +77,7 @@ public class OutputsAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
   private AuditLogManager auditLogService;
-  private ICenterProgramManager programService;
+  private CrpProgramManager programService;
   private ICenterOutputManager outputService;
   private ICenterNextuserTypeManager nextUserService;
   private ICenterOutputsNextUserManager outputNextUserService;
@@ -89,8 +89,8 @@ public class OutputsAction extends BaseAction {
   private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
   private CenterArea selectedResearchArea;
-  private List<CenterProgram> researchPrograms;
-  private CenterProgram selectedProgram;
+  private List<CrpProgram> researchPrograms;
+  private CrpProgram selectedProgram;
   private CenterOutcome selectedResearchOutcome;
 
   private CenterOutput output;
@@ -114,7 +114,7 @@ public class OutputsAction extends BaseAction {
    */
   @Inject
   public OutputsAction(APConfig config, GlobalUnitManager centerService, AuditLogManager auditLogService,
-    ICenterProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
+    CrpProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
     ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService,
     CenterOutputsOutcomeManager centerOutputsOutcomeManager, ICenterOutcomeManager outcomeManager) {
     super(config);
@@ -238,11 +238,11 @@ public class OutputsAction extends BaseAction {
   }
 
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
@@ -301,7 +301,7 @@ public class OutputsAction extends BaseAction {
     if (researchAreas != null && output != null) {
 
       programID = output.getCenterProgram().getId();
-      selectedProgram = programService.getProgramById(programID);
+      selectedProgram = programService.getCrpProgramById(programID);
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
 
@@ -385,8 +385,8 @@ public class OutputsAction extends BaseAction {
           output.getCenterOutputsOutcomes().stream().filter(op -> op.isActive()).collect(Collectors.toList())));
       }
 
-      contacPersons = new ArrayList<>(
-        selectedProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+      // contacPersons = new ArrayList<>(
+      // selectedProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
 
       if (nextUserService.findAll() != null) {
         nextuserTypes = new ArrayList<>(nextUserService.findAll().stream()
@@ -627,12 +627,12 @@ public class OutputsAction extends BaseAction {
   }
 
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 
