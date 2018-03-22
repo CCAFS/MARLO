@@ -27,8 +27,8 @@ a {
   color:white;
 }
 .footer:before {
-  background: url(./../../global/images/tract-center.png),url(./../../global/images/tract-center.png),url(./../../global/images/tract-center.png.png);
-
+  background: none;
+     
 }
 
 .addButton {
