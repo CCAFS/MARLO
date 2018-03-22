@@ -101,7 +101,7 @@ public class OutcomesAction extends BaseAction {
   private List<CenterImpact> researchImpacts;
   private HashMap<Long, String> targetUnitList;
   // Parameter Variables
-  private long programID;
+  private long crpProgramID;
   private long areaID;
   private long topicID;
   private long outcomeID;
@@ -161,6 +161,10 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public long getcrpProgramID() {
+    return crpProgramID;
+  }
+
   public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
@@ -171,10 +175,6 @@ public class OutcomesAction extends BaseAction {
 
   public long getOutcomeID() {
     return outcomeID;
-  }
-
-  public long getProgramID() {
-    return programID;
   }
 
   public List<CenterArea> getResearchAreas() {
@@ -227,7 +227,7 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     areaID = -1;
-    programID = -1;
+    crpProgramID = -1;
     topicID = -1;
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -263,8 +263,8 @@ public class OutcomesAction extends BaseAction {
 
     if (researchAreas != null && outcome != null) {
 
-      programID = outcome.getResearchTopic().getResearchProgram().getId();
-      selectedProgram = programService.getCrpProgramById(programID);
+      crpProgramID = outcome.getResearchTopic().getResearchProgram().getId();
+      selectedProgram = programService.getCrpProgramById(crpProgramID);
       selectedResearchTopic = outcome.getResearchTopic();
       topicID = selectedResearchTopic.getId();
       selectedResearchArea = selectedProgram.getResearchArea();
@@ -508,6 +508,10 @@ public class OutcomesAction extends BaseAction {
     this.areaID = areaID;
   }
 
+  public void setcrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
   public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
@@ -516,13 +520,9 @@ public class OutcomesAction extends BaseAction {
     this.outcome = outcome;
   }
 
+
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
-  }
-
-
-  public void setProgramID(long programID) {
-    this.programID = programID;
   }
 
   public void setResearchAreas(List<CenterArea> researchAreas) {

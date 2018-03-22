@@ -70,7 +70,7 @@ public class IPSubmissionAction extends BaseAction {
   private CenterCycle cycle;
 
   private GlobalUnit loggedCenter;
-  private long programID;
+  private long crpProgramID;
   private boolean isSubmited = false;
 
   private ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
@@ -91,9 +91,9 @@ public class IPSubmissionAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     if (this.hasPermissionCenter("*")) {
-      if (this.isCompleteIP(programID)) {
+      if (this.isCompleteIP(crpProgramID)) {
         if (submissionService.findAll() != null) {
-          CrpProgram program = programService.getCrpProgramById(programID);
+          CrpProgram program = programService.getCrpProgramById(crpProgramID);
 
           List<CenterSubmission> submissions = new ArrayList<>(program.getCenterSubmissions().stream()
             .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
@@ -130,24 +130,17 @@ public class IPSubmissionAction extends BaseAction {
 
   }
 
-  public String getFileName() {
-    StringBuffer fileName = new StringBuffer();
-    fileName.append("ImpactPathway-");
-    fileName.append(loggedCenter.getName() + "-");
-    fileName.append("IP" + programID + "-");
-    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".pdf");
-    return fileName.toString();
-
+  public long getcrpProgramID() {
+    return crpProgramID;
   }
 
-  // public boolean isCompleteIP(long programId) {
+  // public boolean isCompleteIP(long crpProgramID) {
   //
   // if (sectionStatusService.findAll() == null) {
   // return false;
   // }
   //
-  // CrpProgram researchProgram = programService.getProgramById(programId);
+  // CrpProgram researchProgram = programService.getProgramById(crpProgramID);
   //
   // List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getSectionStatuses().stream()
   // .filter(ss -> ss.getYear() == (short) this.getYear()).collect(Collectors.toList()));
@@ -164,8 +157,15 @@ public class IPSubmissionAction extends BaseAction {
   // return true;
   // }
 
-  public long getProgramID() {
-    return programID;
+  public String getFileName() {
+    StringBuffer fileName = new StringBuffer();
+    fileName.append("ImpactPathway-");
+    fileName.append(loggedCenter.getName() + "-");
+    fileName.append("IP" + crpProgramID + "-");
+    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append(".pdf");
+    return fileName.toString();
+
   }
 
   @Override
@@ -175,13 +175,13 @@ public class IPSubmissionAction extends BaseAction {
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
-      programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+      crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
     } catch (NumberFormatException e) {
-      programID = -1;
+      crpProgramID = -1;
       return; // Stop here and go to execute method.
     }
 
-    program = programService.getCrpProgramById(programID);
+    program = programService.getCrpProgramById(crpProgramID);
 
     String params[] = {loggedCenter.getAcronym(), program.getResearchArea().getId() + "", program.getId() + ""};
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
@@ -257,7 +257,7 @@ public class IPSubmissionAction extends BaseAction {
     String fileName = null;
     String contentType = null;
     try {
-      CrpProgram program = programService.getCrpProgramById(programID);
+      CrpProgram program = programService.getCrpProgramById(crpProgramID);
       impactSubmissionSummaryAction.setResearchProgram(program);
       impactSubmissionSummaryAction.execute();
 
@@ -279,8 +279,8 @@ public class IPSubmissionAction extends BaseAction {
 
   }
 
-  public void setProgramID(long programID) {
-    this.programID = programID;
+  public void setcrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
   }
 
 }

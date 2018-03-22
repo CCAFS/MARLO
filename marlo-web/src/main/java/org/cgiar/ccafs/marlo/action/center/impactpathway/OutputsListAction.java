@@ -85,7 +85,7 @@ public class OutputsListAction extends BaseAction {
 
   private CenterArea selectedResearchArea;
   private GlobalUnit loggedCenter;
-  private long programID;
+  private long crpProgramID;
   private long areaID;
   private long outputID;
   private String justification;
@@ -133,7 +133,7 @@ public class OutputsListAction extends BaseAction {
 
     CenterOutput output = outputService.getResearchOutputById(outputID);
 
-    programID = output.getCenterProgram().getId();
+    crpProgramID = output.getCenterProgram().getId();
 
     if (output != null) {
       output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
@@ -146,8 +146,8 @@ public class OutputsListAction extends BaseAction {
         centerOutputsOutcomeManager.deleteCenterOutputsOutcome(centerOutputsOutcome.getId());
       }
 
-      CenterSectionStatus status =
-        sectionStatusService.getSectionStatusByOutput(programID, output.getId(), "outputsList", this.getCenterYear());
+      CenterSectionStatus status = sectionStatusService.getSectionStatusByOutput(crpProgramID, output.getId(),
+        "outputsList", this.getCenterYear());
 
       if (status != null) {
         sectionStatusService.deleteSectionStatus(status.getId());
@@ -168,13 +168,13 @@ public class OutputsListAction extends BaseAction {
     return areaID;
   }
 
+  public long getcrpProgramID() {
+    return crpProgramID;
+  }
+
   @Override
   public String getJustification() {
     return justification;
-  }
-
-  public GlobalUnit getLoggedCenter() {
-    return loggedCenter;
   }
 
   // public List<CenterOutput> allProgramOutput() {
@@ -204,6 +204,10 @@ public class OutputsListAction extends BaseAction {
   //
   // }
 
+  public GlobalUnit getLoggedCenter() {
+    return loggedCenter;
+  }
+
   public List<CenterOutcome> getOutcomes() {
     return outcomes;
   }
@@ -214,10 +218,6 @@ public class OutputsListAction extends BaseAction {
 
   public List<CenterOutput> getOutputs() {
     return outputs;
-  }
-
-  public long getProgramID() {
-    return programID;
   }
 
 
@@ -246,7 +246,7 @@ public class OutputsListAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     areaID = -1;
-    programID = -1;
+    crpProgramID = -1;
 
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -263,7 +263,7 @@ public class OutputsListAction extends BaseAction {
         areaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_AREA_ID)));
       } catch (Exception e) {
         try {
-          programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+          crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
           // Check if the User is an Area Leader
@@ -281,7 +281,7 @@ public class OutputsListAction extends BaseAction {
                 && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
               .collect(Collectors.toList()));
             if (!userProgramLeads.isEmpty()) {
-              programID = userProgramLeads.get(0).getResearchProgram().getId();
+              crpProgramID = userProgramLeads.get(0).getResearchProgram().getId();
             } else {
               // Check if the User is a Scientist Leader
               List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
@@ -289,13 +289,13 @@ public class OutputsListAction extends BaseAction {
                   && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
                 .collect(Collectors.toList()));
               if (!userScientistLeader.isEmpty()) {
-                programID = userScientistLeader.get(0).getResearchProgram().getId();
+                crpProgramID = userScientistLeader.get(0).getResearchProgram().getId();
               } else {
                 List<CrpProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
                   .collect(Collectors.toList());
                 Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
                 CrpProgram rp = rps.get(0);
-                programID = rp.getId();
+                crpProgramID = rp.getId();
                 areaID = rp.getResearchArea().getId();
               }
             }
@@ -303,14 +303,14 @@ public class OutputsListAction extends BaseAction {
         }
       }
 
-      if (areaID != -1 && programID == -1) {
+      if (areaID != -1 && crpProgramID == -1) {
         selectedResearchArea = researchAreaService.find(areaID);
         researchPrograms = new ArrayList<>(
           selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
         Collections.sort(researchPrograms, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
         if (researchPrograms != null) {
           try {
-            programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+            crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
           } catch (Exception e) {
             User user = userService.getUser(this.getCurrentUser().getId());
 
@@ -320,21 +320,21 @@ public class OutputsListAction extends BaseAction {
               .collect(Collectors.toList()));
 
             if (!userLeads.isEmpty()) {
-              programID = userLeads.get(0).getResearchProgram().getId();
+              crpProgramID = userLeads.get(0).getResearchProgram().getId();
             } else {
               if (!researchPrograms.isEmpty()) {
-                programID = researchPrograms.get(0).getId();
+                crpProgramID = researchPrograms.get(0).getId();
               }
             }
           }
         }
 
-        if (programID != -1) {
-          selectedProgram = programService.getCrpProgramById(programID);
+        if (crpProgramID != -1) {
+          selectedProgram = programService.getCrpProgramById(crpProgramID);
         }
       } else {
-        if (programID != -1) {
-          selectedProgram = programService.getCrpProgramById(programID);
+        if (crpProgramID != -1) {
+          selectedProgram = programService.getCrpProgramById(crpProgramID);
           areaID = selectedProgram.getResearchArea().getId();
           selectedResearchArea = researchAreaService.find(areaID);
         }
@@ -420,6 +420,10 @@ public class OutputsListAction extends BaseAction {
   }
 
 
+  public void setcrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
   @Override
   public void setJustification(String justification) {
     this.justification = justification;
@@ -433,17 +437,13 @@ public class OutputsListAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
+
   public void setOutputID(long outputID) {
     this.outputID = outputID;
   }
 
-
   public void setOutputs(List<CenterOutput> outputs) {
     this.outputs = outputs;
-  }
-
-  public void setProgramID(long programID) {
-    this.programID = programID;
   }
 
   public void setResearchAreas(List<CenterArea> researchAreas) {

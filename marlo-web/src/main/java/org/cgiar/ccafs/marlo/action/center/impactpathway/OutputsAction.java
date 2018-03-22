@@ -98,7 +98,7 @@ public class OutputsAction extends BaseAction {
   private List<CenterLeader> contacPersons;
   private List<CenterNextuserType> nextuserTypes;
   // Parameter Variables
-  private long programID;
+  private long crpProgramID;
   private long areaID;
   private long outcomeID;
   private long outputID;
@@ -176,6 +176,10 @@ public class OutputsAction extends BaseAction {
   }
 
 
+  public long getcrpProgramID() {
+    return crpProgramID;
+  }
+
   public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
@@ -188,10 +192,10 @@ public class OutputsAction extends BaseAction {
     return nextuserTypes;
   }
 
+
   public long getOutcomeID() {
     return outcomeID;
   }
-
 
   public List<ResearchTopicsOutcomesDTO> getOutcomes() {
     return outcomes;
@@ -203,10 +207,6 @@ public class OutputsAction extends BaseAction {
 
   public long getOutputID() {
     return outputID;
-  }
-
-  public long getProgramID() {
-    return programID;
   }
 
   public void getProgramOutcomes() {
@@ -268,7 +268,7 @@ public class OutputsAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     areaID = -1;
-    programID = -1;
+    crpProgramID = -1;
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
@@ -300,8 +300,8 @@ public class OutputsAction extends BaseAction {
 
     if (researchAreas != null && output != null) {
 
-      programID = output.getCenterProgram().getId();
-      selectedProgram = programService.getCrpProgramById(programID);
+      crpProgramID = output.getCenterProgram().getId();
+      selectedProgram = programService.getCrpProgramById(crpProgramID);
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
 
@@ -586,19 +586,23 @@ public class OutputsAction extends BaseAction {
     this.contacPersons = contacPersons;
   }
 
+  public void setcrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
+
   public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
-
 
   public void setNextUserID(long nextUserID) {
     this.nextUserTypeID = nextUserID;
   }
 
+
   public void setNextuserTypes(List<CenterNextuserType> nextuserTypes) {
     this.nextuserTypes = nextuserTypes;
   }
-
 
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
@@ -612,13 +616,9 @@ public class OutputsAction extends BaseAction {
     this.output = output;
   }
 
+
   public void setOutputID(long outputID) {
     this.outputID = outputID;
-  }
-
-
-  public void setProgramID(long programID) {
-    this.programID = programID;
   }
 
 

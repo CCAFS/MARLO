@@ -62,7 +62,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   private boolean existProgram;
   private boolean validSection;
   private String sectionName;
-  private long programID;
+  private long crpProgramID;
   private Map<String, Object> section;
   // Model
   private CenterSectionStatus sectionStatus;
@@ -107,7 +107,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
     }
 
-    CrpProgram program = programServcie.getCrpProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
 
     switch (ImpactPathwaySectionsEnum.getValue(sectionName)) {
       case OUTCOMES:
@@ -180,7 +180,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
         break;
       default:
-        sectionStatus = sectionStatusService.getSectionStatusByProgram(programID, sectionName, this.getCenterYear());
+        sectionStatus = sectionStatusService.getSectionStatusByProgram(crpProgramID, sectionName, this.getCenterYear());
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionStatus.getSectionName());
         section.put("missingFields", sectionStatus.getMissingFields());
@@ -206,18 +206,19 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
     sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
-    programID = -1;
+    crpProgramID = -1;
 
     try {
-      // programID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
-      programID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
+      // crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
+      crpProgramID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the crp program id = {} ",
         // StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
         StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     }
 
-    existProgram = programServcie.existCrpProgram(programID);
+    existProgram = programServcie.existCrpProgram(crpProgramID);
 
     // Validate if the section exists.
     List<String> sections = new ArrayList<>();
@@ -235,7 +236,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
   public void validateImpact() {
-    CrpProgram program = programServcie.getCrpProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
 
     if (program != null) {
       List<CenterImpact> impacts =
@@ -265,7 +266,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
   public void validateOutcome() {
-    CrpProgram program = programServcie.getCrpProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
 
     if (program != null) {
       List<CenterTopic> topics =
@@ -288,7 +289,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
   public void validateOutput() {
 
-    CrpProgram program = programServcie.getCrpProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
 
     if (program != null) {
       List<CenterOutput> outputs =
@@ -309,7 +310,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
   public void validateTopic() {
-    CrpProgram program = programServcie.getCrpProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
 
     if (program != null) {
       List<CenterTopic> topics =
