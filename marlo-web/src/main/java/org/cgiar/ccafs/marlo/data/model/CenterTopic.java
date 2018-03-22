@@ -46,19 +46,19 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private String researchTopic;
 
+
   /**
    * The research program related to this research topic or flagship project.
    */
   @Expose
-  private CenterProgram researchProgram;
-
+  private CrpProgram researchProgram;
 
   @Expose
   private boolean active;
 
-
   @Expose
   private Date activeSince;
+
 
   @Expose
   private User createdBy;
@@ -70,13 +70,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+
   @Expose
   private String color;
 
-
   @Expose
   private String shortName;
-
 
   @Expose
   private Integer order;
@@ -93,14 +92,13 @@ public class CenterTopic implements Serializable, IAuditLog {
     // TODO Auto-generated constructor stub
   }
 
+
   /**
    * @param researchTopic
-   * @param researchProgram
    */
-  public CenterTopic(String researchTopic, CenterProgram researchProgram) {
+  public CenterTopic(String researchTopic) {
     super();
     this.researchTopic = researchTopic;
-    this.researchProgram = researchProgram;
   }
 
 
@@ -130,10 +128,10 @@ public class CenterTopic implements Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getColor() {
     return color;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -155,11 +153,11 @@ public class CenterTopic implements Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -171,18 +169,15 @@ public class CenterTopic implements Serializable, IAuditLog {
     return order;
   }
 
-
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
   }
 
 
-  /**
-   * @return the researchProgram
-   */
-  public CenterProgram getResearchProgram() {
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
+
 
   /**
    * @return the researchTopic
@@ -190,6 +185,7 @@ public class CenterTopic implements Serializable, IAuditLog {
   public String getResearchTopic() {
     return researchTopic;
   }
+
 
   public String getShortName() {
     return shortName;
@@ -207,7 +203,6 @@ public class CenterTopic implements Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -228,6 +223,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   /**
    * @param id the id to set
    */
@@ -239,7 +235,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
@@ -249,15 +244,12 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.order = order;
   }
 
+
   public void setResearchOutcomes(Set<CenterOutcome> researchOutcomes) {
     this.researchOutcomes = researchOutcomes;
   }
 
-
-  /**
-   * @param researchProgram the researchProgram to set
-   */
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 

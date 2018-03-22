@@ -42,6 +42,7 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private String name;
 
@@ -59,6 +60,7 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private Date activeSince;
 
+
   @Expose
   private User createdBy;
 
@@ -72,13 +74,12 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private String color;
 
-
-  private Set<CenterProgram> researchPrograms = new HashSet<CenterProgram>(0);
+  private Set<CrpProgram> researchPrograms = new HashSet<CrpProgram>(0);
 
   private Set<CenterLeader> researchLeaders = new HashSet<CenterLeader>(0);
 
 
-  private List<CenterProgram> programs;
+  private List<CrpProgram> programs;
 
   private List<CenterLeader> leaders;
 
@@ -90,7 +91,6 @@ public class CenterArea implements Serializable, IAuditLog {
     super();
     // TODO Auto-generated constructor stub
   }
-
 
   /**
    * @param name
@@ -113,7 +113,6 @@ public class CenterArea implements Serializable, IAuditLog {
     this.name = name;
     this.acronym = acronym;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -150,9 +149,11 @@ public class CenterArea implements Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getColor() {
     return color;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -163,6 +164,7 @@ public class CenterArea implements Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   public List<CenterLeader> getLeaders() {
     return leaders;
@@ -193,7 +195,7 @@ public class CenterArea implements Serializable, IAuditLog {
     return name;
   }
 
-  public List<CenterProgram> getPrograms() {
+  public List<CrpProgram> getPrograms() {
     return programs;
   }
 
@@ -201,17 +203,15 @@ public class CenterArea implements Serializable, IAuditLog {
     return researchCenter;
   }
 
+
   public Set<CenterLeader> getResearchLeaders() {
     return researchLeaders;
   }
 
-
-  /**
-   * @return the researchPrograms
-   */
-  public Set<CenterProgram> getResearchPrograms() {
+  public Set<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
+
 
   @Override
   public int hashCode() {
@@ -220,6 +220,7 @@ public class CenterArea implements Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -241,11 +242,9 @@ public class CenterArea implements Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setColor(String color) {
     this.color = color;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -283,7 +282,7 @@ public class CenterArea implements Serializable, IAuditLog {
   }
 
 
-  public void setPrograms(List<CenterProgram> programs) {
+  public void setPrograms(List<CrpProgram> programs) {
     this.programs = programs;
   }
 
@@ -298,12 +297,10 @@ public class CenterArea implements Serializable, IAuditLog {
   }
 
 
-  /**
-   * @param researchPrograms the researchPrograms to set
-   */
-  public void setResearchPrograms(Set<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(Set<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
+
 
   @Override
   public String toString() {

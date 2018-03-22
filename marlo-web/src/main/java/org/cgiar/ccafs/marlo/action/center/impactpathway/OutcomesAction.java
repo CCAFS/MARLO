@@ -18,19 +18,19 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -77,21 +77,27 @@ public class OutcomesAction extends BaseAction {
 
 
   private AuditLogManager auditLogService;
+
   private ICenterTargetUnitManager targetUnitService;
-  private ICenterProgramManager programService;
+
+
+  private CrpProgramManager programService;
+
   private ICenterImpactManager impactService;
+
+
   private ICenterMilestoneManager milestoneService;
   // Front Variables
   private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
-
   private CenterArea selectedResearchArea;
-  private List<CenterProgram> researchPrograms;
-
-  private CenterProgram selectedProgram;
+  private List<CrpProgram> researchPrograms;
+  private CrpProgram selectedProgram;
   private CenterOutcome outcome;
+
   private List<CenterTopic> researchTopics;
   private CenterTopic selectedResearchTopic;
+
   private List<CenterImpact> researchImpacts;
   private HashMap<Long, String> targetUnitList;
   // Parameter Variables
@@ -106,9 +112,8 @@ public class OutcomesAction extends BaseAction {
 
   @Inject
   public OutcomesAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
-    ICenterTargetUnitManager targetUnitService, ICenterProgramManager programService,
-    ICenterImpactManager impactService, ICenterMilestoneManager milestoneService, OutcomesValidator validator,
-    AuditLogManager auditLogService) {
+    ICenterTargetUnitManager targetUnitService, CrpProgramManager programService, ICenterImpactManager impactService,
+    ICenterMilestoneManager milestoneService, OutcomesValidator validator, AuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;
@@ -164,11 +169,9 @@ public class OutcomesAction extends BaseAction {
     return outcome;
   }
 
-
   public long getOutcomeID() {
     return outcomeID;
   }
-
 
   public long getProgramID() {
     return programID;
@@ -182,23 +185,24 @@ public class OutcomesAction extends BaseAction {
     return researchImpacts;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
+
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
+
 
   public List<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
 
-  public CenterProgram getSelectedProgram() {
+
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
-
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
   }
-
 
   public CenterTopic getSelectedResearchTopic() {
     return selectedResearchTopic;
@@ -260,7 +264,7 @@ public class OutcomesAction extends BaseAction {
     if (researchAreas != null && outcome != null) {
 
       programID = outcome.getResearchTopic().getResearchProgram().getId();
-      selectedProgram = programService.getProgramById(programID);
+      selectedProgram = programService.getCrpProgramById(programID);
       selectedResearchTopic = outcome.getResearchTopic();
       topicID = selectedResearchTopic.getId();
       selectedResearchArea = selectedProgram.getResearchArea();
@@ -413,6 +417,7 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
+
   public void saveMilestones(CenterOutcome outcomeSave) {
     if (outcomeSave.getResearchMilestones() != null && outcomeSave.getResearchMilestones().size() > 0) {
       List<CenterMilestone> milestonesPrew = new ArrayList<>(
@@ -498,6 +503,7 @@ public class OutcomesAction extends BaseAction {
 
   }
 
+
   public void setAreaID(long areaID) {
     this.areaID = areaID;
   }
@@ -506,7 +512,6 @@ public class OutcomesAction extends BaseAction {
     this.loggedCenter = loggedCenter;
   }
 
-
   public void setOutcome(CenterOutcome outcome) {
     this.outcome = outcome;
   }
@@ -514,6 +519,7 @@ public class OutcomesAction extends BaseAction {
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
   }
+
 
   public void setProgramID(long programID) {
     this.programID = programID;
@@ -527,17 +533,19 @@ public class OutcomesAction extends BaseAction {
     this.researchImpacts = researchImpacts;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
+
 
   public void setResearchTopics(List<CenterTopic> researchTopics) {
     this.researchTopics = researchTopics;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
+
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
@@ -591,7 +599,7 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, outcome, selectedProgram, true);
+      // validator.validate(this, outcome, selectedProgram, true);
     }
   }
 

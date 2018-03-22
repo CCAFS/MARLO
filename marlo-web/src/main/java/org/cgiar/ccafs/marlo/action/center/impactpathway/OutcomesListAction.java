@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -28,9 +28,9 @@ import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -52,35 +52,43 @@ import org.apache.struts2.dispatcher.Parameter;
  */
 public class OutcomesListAction extends BaseAction {
 
+
   private static final long serialVersionUID = 2639447995874299013L;
+
 
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
+
+
   private GlobalUnit loggedCenter;
+
+
   private List<CenterOutcome> outcomes;
 
-  private ICenterProgramManager programService;
+  private CrpProgramManager programService;
+
   private List<CenterArea> researchAreas;
   private ICenterAreaManager researchAreaService;
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
 
   private List<CenterTopic> researchTopics;
   private ICenterTopicManager researchTopicService;
   private ICenterOutcomeManager outcomeService;
-  private CenterProgram selectedProgram;
+  private CrpProgram selectedProgram;
+
   private CenterArea selectedResearchArea;
   private CenterTopic selectedResearchTopic;
   private UserManager userService;
   private ICenterSectionStatusManager sectionStatusService;
-
   private long topicID;
   private long programID;
   private long outcomeID;
   private long areaID;
+
   private String justification;
 
   @Inject
-  public OutcomesListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
+  public OutcomesListAction(APConfig config, GlobalUnitManager centerService, CrpProgramManager programService,
     ICenterAreaManager researchAreaService, UserManager userService, ICenterTopicManager researchTopicService,
     ICenterOutcomeManager outcomeService, ICenterSectionStatusManager sectionStatusService) {
     super(config);
@@ -179,7 +187,6 @@ public class OutcomesListAction extends BaseAction {
     return justification;
   }
 
-
   public long getOutcomeID() {
     return outcomeID;
   }
@@ -188,37 +195,38 @@ public class OutcomesListAction extends BaseAction {
     return outcomes;
   }
 
-
   public long getProgramID() {
     return programID;
   }
-
 
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
 
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
-
 
   public List<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
 
-  public CenterProgram getSelectedProgram() {
+
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
+
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
   }
 
+
   public CenterTopic getSelectedResearchTopic() {
     return selectedResearchTopic;
   }
+
 
   public long getTopicID() {
     return topicID;
@@ -272,10 +280,10 @@ public class OutcomesListAction extends BaseAction {
               if (!userScientistLeader.isEmpty()) {
                 programID = userScientistLeader.get(0).getResearchProgram().getId();
               } else {
-                List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                List<CrpProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
                   .collect(Collectors.toList());
                 Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-                CenterProgram rp = rps.get(0);
+                CrpProgram rp = rps.get(0);
                 programID = rp.getId();
                 areaID = rp.getResearchArea().getId();
               }
@@ -311,11 +319,11 @@ public class OutcomesListAction extends BaseAction {
         }
 
         if (programID != -1) {
-          selectedProgram = programService.getProgramById(programID);
+          selectedProgram = programService.getCrpProgramById(programID);
         }
       } else {
         if (programID != -1) {
-          selectedProgram = programService.getProgramById(programID);
+          selectedProgram = programService.getCrpProgramById(programID);
           areaID = selectedProgram.getResearchArea().getId();
           selectedResearchArea = researchAreaService.find(areaID);
         }
@@ -358,7 +366,6 @@ public class OutcomesListAction extends BaseAction {
     this.justification = justification;
   }
 
-
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
   }
@@ -366,6 +373,7 @@ public class OutcomesListAction extends BaseAction {
   public void setOutcomes(List<CenterOutcome> outcomes) {
     this.outcomes = outcomes;
   }
+
 
   public void setProgramID(long programID) {
     this.programID = programID;
@@ -375,7 +383,7 @@ public class OutcomesListAction extends BaseAction {
     this.researchAreas = researchAreas;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
@@ -383,9 +391,11 @@ public class OutcomesListAction extends BaseAction {
     this.researchTopics = researchTopics;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
+
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;

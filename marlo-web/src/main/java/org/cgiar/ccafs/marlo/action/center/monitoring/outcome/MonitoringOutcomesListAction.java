@@ -17,18 +17,18 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.outcome;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -52,15 +53,22 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
+
+
   private GlobalUnit loggedCenter;
+
+
   private List<CenterOutcome> outcomes;
-  private ICenterProgramManager programService;
+
+  private CrpProgramManager programService;
+
+
   private List<CenterArea> researchAreas;
   private ICenterAreaManager researchAreaService;
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
   private List<CenterTopic> researchTopics;
   private ICenterTopicManager researchTopicService;
-  private CenterProgram selectedProgram;
+  private CrpProgram selectedProgram;
   private CenterArea selectedResearchArea;
   private CenterTopic selectedResearchTopic;
   private UserManager userService;
@@ -69,10 +77,9 @@ public class MonitoringOutcomesListAction extends BaseAction {
   private long outcomeID;
   private long areaID;
 
-
   @Inject
   public MonitoringOutcomesListAction(APConfig config, GlobalUnitManager centerService,
-    ICenterProgramManager programService, ICenterAreaManager researchAreaService, UserManager userService,
+    CrpProgramManager programService, ICenterAreaManager researchAreaService, UserManager userService,
     ICenterTopicManager researchTopicService, ICenterOutcomeManager outcomeService) {
     super(config);
     this.centerService = centerService;
@@ -102,11 +109,9 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
   }
 
-
   public long getAreaID() {
     return areaID;
   }
-
 
   public long getOutcomeID() {
     return outcomeID;
@@ -121,19 +126,22 @@ public class MonitoringOutcomesListAction extends BaseAction {
     return programID;
   }
 
+
+  public CrpProgramManager getProgramService() {
+    return programService;
+  }
+
+
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
-    return researchPrograms;
-  }
 
   public List<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
 
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
@@ -198,10 +206,10 @@ public class MonitoringOutcomesListAction extends BaseAction {
               if (!userScientistLeader.isEmpty()) {
                 programID = userScientistLeader.get(0).getResearchProgram().getId();
               } else {
-                List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                List<CrpProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
                   .collect(Collectors.toList());
                 Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-                CenterProgram rp = rps.get(0);
+                CrpProgram rp = rps.get(0);
                 programID = rp.getId();
                 areaID = rp.getResearchArea().getId();
               }
@@ -237,11 +245,11 @@ public class MonitoringOutcomesListAction extends BaseAction {
         }
 
         if (programID != -1) {
-          selectedProgram = programService.getProgramById(programID);
+          selectedProgram = programService.getCrpProgramById(programID);
         }
       } else {
         if (programID != -1) {
-          selectedProgram = programService.getProgramById(programID);
+          selectedProgram = programService.getCrpProgramById(programID);
           areaID = selectedProgram.getResearchArea().getId();
           selectedResearchArea = researchAreaService.find(areaID);
         }
@@ -276,7 +284,6 @@ public class MonitoringOutcomesListAction extends BaseAction {
     this.areaID = areaID;
   }
 
-
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
   }
@@ -285,25 +292,28 @@ public class MonitoringOutcomesListAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
+
   public void setProgramID(long programID) {
     this.programID = programID;
+  }
+
+  public void setProgramService(CrpProgramManager programService) {
+    this.programService = programService;
   }
 
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
-    this.researchPrograms = researchPrograms;
-  }
-
   public void setResearchTopics(List<CenterTopic> researchTopics) {
     this.researchTopics = researchTopics;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
+
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
