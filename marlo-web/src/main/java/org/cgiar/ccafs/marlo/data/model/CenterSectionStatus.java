@@ -24,7 +24,7 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
 
   private Long id;
 
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
 
 
   private CenterOutcome researchOutcome;
@@ -40,7 +40,7 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
   public CenterSectionStatus() {
   }
 
-  public CenterSectionStatus(CenterProgram researchProgram, CenterOutcome researchOutcome, CenterOutput researchOutput,
+  public CenterSectionStatus(CrpProgram researchProgram, CenterOutcome researchOutcome, CenterOutput researchOutput,
     String sectionName, String missingFields, String cycle, Integer year) {
     this.researchProgram = researchProgram;
     this.researchOutcome = researchOutcome;
@@ -106,7 +106,7 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
     return researchOutput;
   }
 
-  public CenterProgram getResearchProgram() {
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
 
@@ -155,7 +155,7 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
     this.researchOutput = researchOutput;
   }
 
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 
