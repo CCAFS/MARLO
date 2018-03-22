@@ -86,10 +86,13 @@ public class CrpByUserEmailAction extends BaseAction {
       User usrDB = userManager.getUserByEmail(userEmail);
       if (usrDB != null) {
         user.put("name", usrDB.getComposedCompleteName());
+        user.put("agree", usrDB.getAgreeTerms());
       } else {
         usrDB = userManager.getUserByUsername(userEmail);
         if (usrDB != null) {
           user.put("name", usrDB.getComposedCompleteName());
+          user.put("agree", usrDB.getAgreeTerms());
+
         }
       }
 
