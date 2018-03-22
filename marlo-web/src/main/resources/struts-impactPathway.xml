@@ -93,7 +93,7 @@
 
 		<action name="{crp}/researchTopics"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.ResearchTopicsAction">
-			<interceptor-ref name="centerImpactPathwayStack" />
+			<interceptor-ref name="impactPathwayStack" />
 			<result name="input">/WEB-INF/center/views/impactPathway/researchTopics.ftl
 			</result>
 			<result name="success" type="redirectAction">
@@ -119,14 +119,14 @@
 
 		<action name="{crp}/centerOutcomesList"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
-			<interceptor-ref name="centerImpactPathwayStack" />
+			<interceptor-ref name="impactPathwayStack" />
 			<result name="input">/WEB-INF/center/views/impactPathway/outcomesList.ftl
 			</result>
 		</action>
 
 		<action name="{crp}/addNewCenterOutcome" method="add"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
-			<interceptor-ref name="centerImpactPathwayStack" />
+			<interceptor-ref name="impactPathwayStack" />
 			<result name="input">/WEB-INF/center/views/impactPathway/outcomesList.ftl
 			</result>
 			<result name="success" type="redirectAction">
@@ -179,7 +179,7 @@
 
 		<action name="{crp}/outputsList"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutputsListAction">
-			<interceptor-ref name="centerImpactPathwayStack" />
+			<interceptor-ref name="impactPathwayStack" />
 			<result name="input">/WEB-INF/center/views/impactPathway/outputsList.ftl
 			</result>
 		</action>
@@ -229,7 +229,7 @@
 
 		<action name="{crp}/addNewOutput" method="add"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutputsListAction">
-			<interceptor-ref name="centerImpactPathwayStack" />
+			<interceptor-ref name="impactPathwayStack" />
 			<result name="input">/WEB-INF/center/views/impactPathway/outcomesList.ftl
 			</result>
 			<result name="success" type="redirectAction">
@@ -252,7 +252,7 @@
 		</action>
 		<action name="{crp}/nextUsers"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutputsAction">
-			<interceptor-ref name="centerImpactPathwayStack" />
+			<interceptor-ref name="impactPathwayStack" />
 			<result name="success">/WEB-INF/center/views/impactPathway/output-nextUsers.ftl
 			</result>
 		</action>

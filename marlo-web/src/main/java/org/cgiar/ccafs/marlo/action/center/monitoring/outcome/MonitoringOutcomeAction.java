@@ -99,7 +99,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   private List<CenterImpact> researchImpacts;
   private HashMap<Long, String> targetUnitList;
   // Parameter Variables
-  private long programID;
+  private long crpProgramID;
   private long areaID;
   private long topicID;
   private long outcomeID;
@@ -150,8 +150,8 @@ public class MonitoringOutcomeAction extends BaseAction {
   }
 
   public void fillFrontValues() {
-    programID = outcome.getResearchTopic().getResearchProgram().getId();
-    selectedProgram = programService.getProgramById(programID);
+    crpProgramID = outcome.getResearchTopic().getResearchProgram().getId();
+    selectedProgram = programService.getProgramById(crpProgramID);
     selectedResearchTopic = outcome.getResearchTopic();
     topicID = selectedResearchTopic.getId();
     selectedResearchArea = selectedProgram.getResearchArea();
@@ -244,6 +244,11 @@ public class MonitoringOutcomeAction extends BaseAction {
   }
 
 
+  public long getcrpProgramID() {
+    return crpProgramID;
+  }
+
+
   public CenterOutcome getOutcome() {
     return outcome;
   }
@@ -251,11 +256,6 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   public long getOutcomeID() {
     return outcomeID;
-  }
-
-
-  public long getProgramID() {
-    return programID;
   }
 
   public List<CenterArea> getResearchAreas() {
@@ -307,7 +307,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     areaID = -1;
-    programID = -1;
+    crpProgramID = -1;
     topicID = -1;
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -580,17 +580,17 @@ public class MonitoringOutcomeAction extends BaseAction {
   }
 
 
+  public void setcrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
+
   public void setOutcome(CenterOutcome outcome) {
     this.outcome = outcome;
   }
 
-
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
-  }
-
-  public void setProgramID(long programID) {
-    this.programID = programID;
   }
 
   public void setResearchAreas(List<CenterArea> researchAreas) {

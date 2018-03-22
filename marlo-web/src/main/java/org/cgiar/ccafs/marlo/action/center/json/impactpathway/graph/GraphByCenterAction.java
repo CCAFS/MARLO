@@ -61,7 +61,7 @@ public class GraphByCenterAction extends BaseAction {
   private ICenterObjectiveManager objectiveService;
 
   // Parameters
-  private long programID;
+  private long crpProgramID;
   // Return values
   private HashMap<String, Object> elements;
 
@@ -81,7 +81,7 @@ public class GraphByCenterAction extends BaseAction {
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
 
 
-    CenterProgram researchProgram = programService.getProgramById(programID);
+    CenterProgram researchProgram = programService.getProgramById(crpProgramID);
     CenterArea researchArea = researchProgram.getResearchArea();
     GlobalUnit center = researchArea.getResearchCenter();
 
@@ -286,8 +286,9 @@ public class GraphByCenterAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
 
     try {
-      // programID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
-      programID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
+      // crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
+      crpProgramID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the crp program id = {} ",
         // StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
