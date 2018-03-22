@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -129,11 +130,11 @@ public class GraphByCenterAction extends BaseAction {
       dataArea.put("data", dataAreaDetail);
       dataNodes.add(dataArea);
 
-      List<CenterProgram> programs =
+      List<CrpProgram> programs =
         new ArrayList<>(area.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
 
 
-      for (CenterProgram program : programs) {
+      for (CrpProgram program : programs) {
 
         // Research Program Data
         HashMap<String, Object> dataProgram = new HashMap<>();
