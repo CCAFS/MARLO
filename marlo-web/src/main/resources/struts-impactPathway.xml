@@ -63,7 +63,7 @@
 			</result>
 		</action>
 
-		<!-- ***************************** GCIAR CENTER Actions ******************** -->
+		<!-- ***************************** CGIAR CENTER Actions ******************** -->
 		<action name="{crp}/programimpacts"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.ProgramImpactsAction">
 			<interceptor-ref name="impactPathwayStack" />
@@ -173,7 +173,7 @@
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 				<param name="outcomeID">${outcomeID}</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 			</result>
 		</action>
 
@@ -192,14 +192,14 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/outputs</param>
 				<param name="outputID">${outputID}</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/outputs</param>
 				<param name="outputID">${outputID}</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
@@ -209,7 +209,7 @@
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 				<param name="outputID">${outputID}</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 			</result>
 		</action>
 
@@ -221,7 +221,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/outputsPartners</param>
 				<param name="outputID">${outputID}</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
@@ -235,7 +235,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/outputs</param>
 				<param name="outputID">${outputID}</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
@@ -246,7 +246,7 @@
 			<interceptor-ref name="centerOutputStack" />
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/outputsList</param>
-				<param name="programID">${programID}</param>
+				<param name="crpProgramID">${crpProgramID}</param>
 			</result>
 
 		</action>
