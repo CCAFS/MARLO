@@ -4,9 +4,8 @@ var currentCycle;
 var selectedUrl, selectedAction;
 
 $(document).ready(function() {
-  sections = [
-      "outcomes", "clusterActivities"
-  ];
+
+  sections = $('#sectionsForChecking').text().split(',');
 
   // Progress bar
   tasksLength = sections.length;
@@ -215,7 +214,9 @@ function processTasks(tasks,id,button) {
                     });
                   }
                 }
-                nextTask();
+                setTimeout(function() {
+                  nextTask();
+                }, 200);
               },
               error: function(error) {
                 console.log(error)

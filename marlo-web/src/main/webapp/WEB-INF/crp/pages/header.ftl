@@ -38,6 +38,9 @@
     [#-- Second, import global javascripts and templates. --]
     <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css" />
     <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/jquery-ui.custom.css" />
+    [#if centerGlobalUnit]
+      <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global-center.css" />
+    [/#if]
     
     [#-- Import the custom CSS --]
     [#if customCSS??][#list customCSS as css]<link rel="stylesheet" type="text/css" href="${css}" />[/#list][/#if] 
