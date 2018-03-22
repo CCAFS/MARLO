@@ -20,9 +20,10 @@
   {"label":"impactPathway", "nameSpace":"", "action":"topics"}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+
 [#--  Research Topics Help Text--] 
 [@utils.helpInfos hlpInfo="researchTopics.help" /]
 [#--  marlo cluster of activities--]
@@ -31,13 +32,13 @@
     [#if researchAreas?has_content]
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/impactPathway/menu-impactPathway.ftl" /]
+        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Impact pathway sub menu --]
-        [#include "/WEB-INF/center//views/impactPathway/submenu-impactPathway.ftl" /]
+        [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
         [#-- Section Messages --]
-        [#include "/WEB-INF/center//views/impactPathway/messages-impactPathway.ftl" /]
+        [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway.ftl" /]
         
         [#-- Title --]
         <div class="col-md-12">
@@ -63,7 +64,7 @@
         
           
           [#-- Section Buttons--]
-          [#include "/WEB-INF/center//views/impactPathway/buttons-impactPathway.ftl" /]
+          [#include "/WEB-INF/center/views/impactPathway/buttons-impactPathway.ftl" /]
           
           
         [/@s.form]
@@ -77,7 +78,7 @@
 [#-- Outcome Template --]
 [@topicMacro element={} name="topics" index=-1 template=true /]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#-- MACROS --]
 [#macro topicMacro element name index template=false]

@@ -21,8 +21,8 @@
   {"label":"outcome", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Research Otcomes Help Text--] 
@@ -33,7 +33,7 @@
   
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center/views/impactPathway/menu-impactPathway.ftl" /]
+        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Impact pathway sub menu --]
@@ -140,7 +140,7 @@
 [#-- Milestone Template --]
 [@milestoneMacro milestone={} name="${outcomeCustomName}.milestones" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 
 [#macro milestoneMacro milestone name index isTemplate=false]

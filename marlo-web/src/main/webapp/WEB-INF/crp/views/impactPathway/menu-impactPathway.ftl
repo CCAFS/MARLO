@@ -3,7 +3,7 @@
   [#assign items= [
     { 'slug': 'programImpacts',   'name': 'impactPathway.menu.hrefProgramImpacts',  'action': 'programimpacts',   'active': true  },
     { 'slug': 'researchTopics',   'name': 'impactPathway.menu.hrefResearchTopics',  'action': 'researchTopics',   'active': true },
-    { 'slug': 'outcomes',         'name': 'impactPathway.menu.hrefOutcomes',        'action': 'outcomesList',     'active': true  },
+    { 'slug': 'outcomes',         'name': 'impactPathway.menu.hrefOutcomes',        'action': 'centerOutcomesList',     'active': true  },
     { 'slug': 'outputs',          'name': 'impactPathway.menu.hrefOutputs',         'action': 'outputsList',      'active': true }
   ]/]
 [#else]
@@ -20,11 +20,17 @@
 ]/]
 
 
-
-[#assign submission = (action.submission)! /]
-[#assign canSubmit = (action.hasPersmissionSubmitImpact())!false /]
-[#assign completed = action.isCompleteImpact(crpProgramID) /]
-[#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
+[#if centerGlobalUnit]
+  [#assign submission = (action.isSubmitIP(programID))! /]
+  [#assign canSubmit = (action. hasPersmissionSubmitIP(programID))!false /]
+  [#assign completed = (action.isCompleteIP(programID))!false /]
+  [#assign canUnSubmit = false /]
+[#else]
+  [#assign submission = (action.submission)! /]
+  [#assign canSubmit = (action.hasPersmissionSubmitImpact())!false /]
+  [#assign completed = action.isCompleteImpact(crpProgramID) /]
+  [#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
+[/#if]
 
 [#assign sectionsForChecking = [] /]
 [#assign currentMenuItem = {} /]
@@ -34,10 +40,12 @@
 <nav id="secondaryMenu" class="">
   <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
   <div class="menuList">
+  [#if programs??]
     [#list programs as program]
       [#assign isActive = (program.id == crpProgramID)/]
       <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a></p>
     [/#list]
+  [/#if]
   </div>
   <ul>
     [#list menus as menu]
@@ -45,7 +53,11 @@
       <li>
         <ul>[#if menu.title?has_content]<p class="menuTitle">${menu.title}</p>[/#if]
           [#list menu.items as item]
-            [#assign submitStatus = (action.getImpactSectionStatus(item.action, crpProgramID))!false /]
+            [#if centerGlobalUnit]
+              [#assign submitStatus = (action.getCenterSectionStatusIP(item.action, programID))!false /]
+            [#else]
+              [#assign submitStatus = (action.getImpactSectionStatus(item.action, crpProgramID))!false /]
+            [/#if]
             [#assign hasDraft = (action.getAutoSaveFilePath(selectedProgram.class.simpleName, item.action, selectedProgram.id))!false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">

@@ -34,7 +34,7 @@
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false }
     ]
   },
-  [#-- ALL --]
+  [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged , 'active': true }
 
 ]/]
