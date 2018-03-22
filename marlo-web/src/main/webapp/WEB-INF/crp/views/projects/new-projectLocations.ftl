@@ -49,7 +49,7 @@
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          <input class="projectInfo" type="hidden" name="project.projectInfo.id" value="${project.projectInfo.id}" />
+          <input class="projectInfo" type="hidden" name="project.id" value="${project.id}" />
           
           <div class="row">
             <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
@@ -232,7 +232,7 @@
                           </div>
                           
                           <div class="map-container col-md-5">
-                            <div  class="col-md-12 map">
+                            <div id="add-location-map" class="col-md-12 map">
                               <input id="pac-input" class="controls" type="text" placeholder="Search Box">
                               <div id="map" class="col-md-12"></div>
                             </div>
@@ -252,15 +252,33 @@
                             <h3 class="title">All locations</h3>
                             <hr />
                             
-                            <div class="form-group col-md-7">
+                            <div class="form-group col-md-3 list-container">
+                              <h5>Country</h5>
+                              <ul>
+                                <li>
+                                  Country 1
+                                </li>
+                                <li>
+                                  Country 2
+                                </li>
+                              </ul>
+                              <h5>Household</h5>
+                              <ul>
+                                <li>
+                                  Household 1
+                                </li>
+                                <li>
+                                  Household 2
+                                </li>
+                              </ul>
                             </div>
                             
                           </div>
                           
-                          <div class="map-container col-md-5">
-                            <div  class="col-md-12 map">
+                          <div class="map-container col-md-9">
+                            <div id="all-locations-map" class="col-md-12 map">
                               [#-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> --]
-                              <div id="all-locations-map" class="col-md-12"></div>
+                              [#-- <div id="all-locations-map" class="col-md-12"></div> --]
                             </div>
                           </div>
                           
@@ -282,7 +300,7 @@
                       </div>
                     </div>
                   [#if editable && action.hasSpecificities('crp_other_locations')]
-                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
+                    <span id="addNewLocation-button" class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
                   [/#if]
                   </div>
                 [/#if]
