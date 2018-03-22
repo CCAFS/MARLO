@@ -1817,6 +1817,10 @@ a.currentReportingSection li, a.currentSection li {
   /* padding: 0px 0px 0px 13px; */
 }
 
+#menu-contributionsCrpList{
+  font-size: 0.88em !important;
+}
+
 #menu-contributionsCrpList.currentSection a{
   font-size: 0.95em !important;
 }
@@ -3054,6 +3058,8 @@ button.ipGraph-btn{
 }
 
 .note {
+  background-color: #FFF7CF;
+  padding: 6px;
   text-align: center;
   border-bottom: 2px solid #fff;
   font-style: italic;
@@ -4288,12 +4294,10 @@ li.fileUploaded span {
   height: 110px;
   padding: 5px;
   background: #FFFFFF;
-
-    color: #5E5E5E;
-    -webkit-border-radius: 6px;
+  color: #5E5E5E;
+  -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
-
   border: #B5B5B5 solid 1px;
   text-align:justify;
 }
@@ -5279,7 +5283,8 @@ table.evaluationRank thead th{
     background: #FFFFFF;
     position: absolute; top: 0; bottom: 0;
     right: 38px;
-    border: 2px solid #FFFFFF; border-radius: 3px;
+    border: 2px solid #FFFFFF; 
+    border-radius: 3px;
     transition: all 0.3s ease-in 0s; 
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
