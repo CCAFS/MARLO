@@ -70,7 +70,7 @@ ul.horizontalSubMenu li.active {
 }
 
 .title-file {
-  color: #8ea786 !important;
+  color: #7b9074 !important;
 }
 
 #mainMenu .menuContent ul li ul.subMenu li {
@@ -82,8 +82,8 @@ ul.horizontalSubMenu li.active {
 }
 
 #dashboardContent li.active a {
-  background-color: #7b9074 !important;
-  color:#fff;
+  /* background-color: #7b9074 !important; */
+  color: #7b9074 !important;
 }
 
 .viewMore {
@@ -93,4 +93,13 @@ ul.horizontalSubMenu li.active {
 
 #draggable-button {
   background-color: #12894d;
+}
+
+.ui-dialog-titlebar {
+  border-color: #8ea786;
+  background-color: #8ea786;
+}
+
+.ui-dialog {
+  border: 2px solid #8ea786 !important;
 }
