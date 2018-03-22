@@ -2508,13 +2508,46 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public List<GlobalUnitType> getListGlobalUnitTypes() {
+
     List<GlobalUnitType> globalUnitTypes = globalUnitTypeManager.findAll();
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
       globalUnitType.setGlobalUnitsList(
         globalUnitType.getGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
+
     return globalUnitTypes;
 
+  }
+
+  public List<GlobalUnitType> getListGlobalUnitTypesUser() {
+    if (this.getSession().containsKey(APConstants.AVAILABLES_GLOBAL_TYPES)) {
+
+      return (List<GlobalUnitType>) this.getSession().get(APConstants.AVAILABLES_GLOBAL_TYPES);
+    } else {
+
+
+      List<GlobalUnitType> globalUnitTypes = new ArrayList();
+
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> users =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CrpUser crpUser : users) {
+        if (globalUnitTypes.contains(crpUser.getCrp().getGlobalUnitType())) {
+          crpUser.getCrp().getGlobalUnitType().setGlobalUnitsList(new ArrayList<>());
+          crpUser.getCrp().getGlobalUnitType().getGlobalUnitsList().add(crpUser.getCrp());
+          globalUnitTypes.add(crpUser.getCrp().getGlobalUnitType());
+        } else {
+          int index = globalUnitTypes.indexOf(crpUser.getCrp().getGlobalUnitType());
+          GlobalUnitType globalUnitType = globalUnitTypes.get(index);
+          globalUnitType.getGlobalUnitsList().add(crpUser.getCrp());
+
+        }
+      }
+      this.getSession().put(APConstants.AVAILABLES_GLOBAL_TYPES, globalUnitTypes);
+      return globalUnitTypes;
+    }
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
