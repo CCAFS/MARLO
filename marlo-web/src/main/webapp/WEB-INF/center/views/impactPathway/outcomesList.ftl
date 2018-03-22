@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Outcomes List" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -22,10 +22,11 @@
 ]/]
 [#assign leadersName = "leaders"/]
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
+
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutcomesList.help" /]
 [#--  marlo cluster of activities--]
@@ -34,7 +35,7 @@
     [#if researchAreas?has_content]
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center/views/impactPathway/menu-impactPathway.ftl" /]
+        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Section Messages --]
@@ -42,14 +43,14 @@
         [#-- Impact pathway sub menu --]
         [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
         
-          [#-- Program Title --]
-          <div class="col-md-12">
-            <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outcomes</h3>
-            <hr />
-          </div><div class="clearfix"></div>
-        
-          [#-- Hidden Parameters --]
-          <input type="hidden" name="programID" value="${programID}" />
+        [#-- Program Title --]
+        <div class="col-md-12">
+          <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outcomes</h3>
+          <hr />
+        </div><div class="clearfix"></div>
+      
+        [#-- Hidden Parameters --]
+        <input type="hidden" name="programID" value="${programID}" />
         
         [#if researchTopics?has_content]
         
@@ -57,16 +58,14 @@
         
         
         <div class="simpleBox col-md-12">
-            <label for="">Research Topic:<span class="red">*</span></label>
-            <select name="researchTopics" id="researchTopics">
-              <option value="-1" >View All</option>
-              
-                [#list researchTopics as researchTopic]
-                  <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
-                [/#list]
-               
-            </select>            
-          </div>
+          <label for="">Research Topic:<span class="red">*</span></label>
+          <select name="researchTopics" id="researchTopics">
+            <option value="-1" >View All</option>
+            [#list researchTopics as researchTopic]
+              <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
+            [/#list]
+          </select>
+        </div>
           
         [@s.form action=actionName enctype="multipart/form-data" ]
         
@@ -130,6 +129,6 @@
 
 [@customForm.confirmJustificationOutcome action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 
