@@ -51,15 +51,8 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Program (Flagships) --]
-        <ul id="liaisonInstitutions" class="horizontalSubMenu">
-          [#list programs as program]
-            [#assign isActive = (program.id == crpProgramID)/]
-            <li class="${isActive?string('active','')}">
-              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="global.flagship" /] ${program.acronym}</a>
-            </li>
-          [/#list]
-        </ul>
+        [#-- Sub Menu --]
+        [#include "/WEB-INF/crp/views/impactPathway/submenu-impactPathway.ftl" /]
         
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
