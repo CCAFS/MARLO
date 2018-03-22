@@ -69,18 +69,21 @@ jQuery.fn.percentageInput = function() {
 
 jQuery.fn.currencyInput = function() {
   var $inputs = $(this);
-  $inputs.addClass('currencyInput');
-  $inputs.on("keydown", isNumber);
-  $inputs.on("focusout", setCurrency);
-  $inputs.on("focus", removeCurrency);
-  $inputs.on("keyup", function(e) {
-    isNumber(e);
+
+  $inputs.each(function(i,input) {
+    $(input).addClass('currencyInput');
+    $(input).on("keydown", isNumber);
+    $(input).on("focus", removeCurrency);
+    $(input).on("keyup", function(e) {
+      isNumber(e);
+    });
+    $(input).on("click", function() {
+      $(this).select();
+    });
+    $(input).on("focusout", setCurrency);
+    // Active initial currency format to all inputs
+    $(input).attr("autocomplete", "off").trigger("focusout");
   });
-  $inputs.on("click", function() {
-    $(this).select();
-  });
-  // Active initial currency format to all inputs
-  $inputs.attr("autocomplete", "off").trigger("focusout");
 
   $("form").submit(function(event) {
     $inputs.each(function() {
@@ -346,20 +349,14 @@ function getSerializeForm() {
   return result;
 }
 
-function setCurrency(event) {
-  var $input = $(event.target);
-  if($input.val().length == 0) {
-    $input.val("0");
-  }
-  $input.val(setCurrencyFormat($input.val()));
+function setCurrency() {
+  this.value = setCurrencyFormat(this.value || "0");
 }
 
 function removeCurrency(event) {
-  var $input = $(event.target);
-  if($input.val().length == 0) {
-    $input.val("0");
-  }
-  $input.val(removeCurrencyFormat($input.val()));
+  var $input = $(this);
+  var inputValue = $input.val() || "0";
+  $input.val(removeCurrencyFormat(inputValue));
   if($input.val() == "0") {
     $input.val("");
   }
@@ -379,7 +376,7 @@ function removePercentage(event) {
 }
 
 function setCurrencyFormat(stringNumber) {
-  return parseFloat(stringNumber, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+  return (parseFloat(stringNumber)).toCurrencyFormat(2, 3, ',', '.');
 }
 
 function removeCurrencyFormat(stringNumber) {
@@ -666,3 +663,16 @@ function getDateString() {
   var today = new Date();
   return today.toISOString().split('T')[0] + "_" + today.getHours() + today.getMinutes();
 }
+
+/**
+ * Number.prototype.toCurrencyFormat(n, x, s, c)
+ * 
+ * @param integer n: length of decimal
+ * @param integer x: length of whole part
+ * @param mixed s: sections delimiter
+ * @param mixed c: decimal delimiter
+ */
+Number.prototype.toCurrencyFormat = function(n,x,s,c) {
+  var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')', num = this.toFixed(Math.max(0, ~~n));
+  return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+};

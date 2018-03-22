@@ -250,6 +250,7 @@
           <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -266,6 +267,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="outcomeID" type="hidden" value="${outcomeID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -283,6 +285,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="outputID" type="hidden" value="${outputID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -299,6 +302,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -315,6 +319,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="deliverableID" type="hidden" value="${deliverableID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
