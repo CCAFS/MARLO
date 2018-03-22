@@ -74,6 +74,11 @@
     border: 2px solid #aaa;
 }
 
+#map.all-locations {
+    width: 615px;
+    height: 460px;
+}
+
 .map {
     /* margin-bottom: 30px;
     margin-top: 15px; */
@@ -415,11 +420,16 @@ tr:nth-child(even) {
     min-height: 350px;
 }
 
+.allLocationsModal .modal-content {
+    padding: 20px;
+    min-height: 560px;
+}
+
 .modal-content .locationForm-container h3.title{
     display: inline-block;
 }
 
-.modal-content .locationForm-container h3.title{
+.modal-content .locationForm-container h3.title, .allLocations-container h3.title{
     margin: 0;
 }
 
@@ -451,6 +461,10 @@ tr:nth-child(even) {
     text-overflow: ellipsis;
     width: 145px;
     left: 113px !important;
+  }
+
+  #pac-input.all-locations {
+    width: 225px;
   }
 
   #pac-input:focus {
@@ -517,3 +531,5 @@ tr:nth-child(even) {
     float: right;
     margin-top: 13px;
   }
+
+  

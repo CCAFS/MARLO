@@ -89,7 +89,7 @@ function attachEvents() {
     }
   });
 
-//Events
+  //Events
   $("#locLevelSelect").on("change",function() {
     var option = $(this).find("option:selected");
     if(option.val() == "-1" || option.val().split("-")[0] == "10"){
@@ -171,7 +171,11 @@ function attachEvents() {
   });
 
   $('.allLocationsButton').on('click',function(){
-    changeMapDiv(map);
+    changeMapDiv(this);
+  });
+
+  $('#addNewLocation-button').on('click',function(){
+    changeMapDiv(this);
   });
 
 }
@@ -950,8 +954,15 @@ function showMarkers() {
 
 // This function is for change the map's div
 // for the "add locations modal" and the "all locations modal"
-function changeMapDiv(currentMap){
+function changeMapDiv(selectedButton){
   var mapCurrentNode = map.getDiv();
-  console.log(mapCurrentNode);
-  $('#all-locations-map').append(mapNode);
+  var selectedModal = $(selectedButton).data('target');
+
+  if(selectedModal == '.addLocationModal'){
+    $('#add-location-map').append(mapCurrentNode);
+    $('#map').removeClass('all-locations');
+  }else if(selectedModal == '.allLocationsModal'){
+    $('#all-locations-map').append(mapCurrentNode);
+    $('#map').addClass('all-locations');
+  }
 }
