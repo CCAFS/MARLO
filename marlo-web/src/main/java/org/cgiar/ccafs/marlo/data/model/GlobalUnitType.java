@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -33,7 +34,11 @@ public class GlobalUnitType implements java.io.Serializable {
 
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
 
+  private List<GlobalUnit> globalUnitsList;
+
+
   private Set<Parameter> parameters = new HashSet<Parameter>(0);
+
 
   public GlobalUnitType() {
   }
@@ -61,6 +66,10 @@ public class GlobalUnitType implements java.io.Serializable {
 
   public Set<GlobalUnit> getGlobalUnits() {
     return globalUnits;
+  }
+
+  public List<GlobalUnit> getGlobalUnitsList() {
+    return globalUnitsList;
   }
 
   public Long getId() {
@@ -101,6 +110,10 @@ public class GlobalUnitType implements java.io.Serializable {
 
   public void setGlobalUnits(Set<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
+  }
+
+  public void setGlobalUnitsList(List<GlobalUnit> globalUnitsList) {
+    this.globalUnitsList = globalUnitsList;
   }
 
   public void setId(Long id) {
