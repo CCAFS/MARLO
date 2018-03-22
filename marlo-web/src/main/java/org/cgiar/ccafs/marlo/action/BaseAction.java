@@ -2531,7 +2531,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (!globalUnitTypes.contains(crpUser.getCrp().getGlobalUnitType())) {
           crpUser.getCrp().getGlobalUnitType().setGlobalUnitsList(new ArrayList<>());
           crpUser.getCrp().getGlobalUnitType().getGlobalUnitsList().add(crpUser.getCrp());
-          globalUnitTypes.add(crpUser.getCrp().getGlobalUnitType());
+          if (crpUser.getCrp().getGlobalUnitType().isActive()) {
+            globalUnitTypes.add(crpUser.getCrp().getGlobalUnitType());
+          }
+
         } else {
           int index = globalUnitTypes.indexOf(crpUser.getCrp().getGlobalUnitType());
           GlobalUnitType globalUnitType = globalUnitTypes.get(index);
