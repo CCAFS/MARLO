@@ -443,6 +443,7 @@ public final class APConstants {
   public static final String CENTER_PROGRAM_TYPE = "center_program_type";
   public static final String CENTER_IMPACT_PATHWAY_ACTIVE = "center_impact_pathway_active";
   public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
+  public static final String CENTER_MONITORING_OUTCOME_ACTIVE = "center_outcomes_active";
   public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
   public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
   public static final String CENTER_YEAR = "center_year";

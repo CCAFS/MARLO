@@ -101,8 +101,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     masterReport.getParameterValues().put("i8nTitle", this.getText("project.title.readText"));
     masterReport.getParameterValues().put("i8nFlagship", this.getText("projectOtherContributions.flagship"));
     masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("outcome.statement.readText"));
-    masterReport.getParameterValues().put("i8nExpectedValue", this.getText("projectOutcome.expectedValue"));
+    masterReport.getParameterValues().put("i8nExpectedValue",
+      "Project " + this.getText("projectOutcome.expectedValue"));
     masterReport.getParameterValues().put("i8nTargetUnit", this.getText("outcome.targetUnit"));
+    masterReport.getParameterValues().put("i8nOutcomeTargetValue", "Outcome " + this.getText("outcome.targetValue"));
     masterReport.getParameterValues().put("i8nNarrativeTarget",
       this.getText("projectOutcome.narrativeTarget.readText"));
     masterReport.getParameterValues().put("i8nMilestoneStatement",
@@ -229,24 +231,25 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "hasTargetUnit", "hasOutcomeIndicator"},
-      new Class[] {String.class, String.class, Boolean.class, Boolean.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "hasTargetUnit", "hasOutcomeIndicator", "cycle", "year"},
+        new Class[] {String.class, String.class, Boolean.class, Boolean.class, String.class, Integer.class});
     Boolean hasTargetUnit = false;
     if (targetUnitList.size() > 0) {
       hasTargetUnit = true;
     }
 
-    model
-      .addRow(new Object[] {center, date, hasTargetUnit, this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)});
+    model.addRow(new Object[] {center, date, hasTargetUnit, this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR),
+      this.getSelectedCycle(), this.getSelectedYear()});
     return model;
   }
 
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
-        "narrative_target", "title", "outcomeIndicator", "phaseID"},
+        "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, Long.class},
+        String.class, String.class, String.class, Long.class, BigDecimal.class},
       0);
     for (CrpProgram crpProgram : this.getLoggedCrp().getCrpPrograms().stream()
       .filter(cp -> cp.isActive() && cp.getCrp().equals(this.getLoggedCrp())).collect(Collectors.toList())) {
@@ -264,6 +267,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               Double expectedValue = new Double(0);
               Long phaseID = null;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
+              BigDecimal outcomeExpectedValue = new BigDecimal(0);
               if (projectMilestone.getProjectOutcome().getProject()
                 .getProjecInfoPhase(this.getSelectedPhase()) != null) {
                 title = projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
@@ -279,14 +283,29 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               }
               projectUrl = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
               milestone = crpMilestone.getComposedName();
-              expectedValue = projectMilestone.getExpectedValue();
-              if (projectMilestone.getExpectedUnit() != null) {
-                expectedUnit = projectMilestone.getExpectedUnit().getName();
+
+              if (projectMilestone.getCrpMilestone() != null
+                && projectMilestone.getCrpMilestone().getSrfTargetUnit() != null) {
+                expectedUnit = projectMilestone.getCrpMilestone().getSrfTargetUnit().getName();
+                if (projectMilestone.getCrpMilestone().getSrfTargetUnit().getId() == -1) {
+                  expectedValue = -1.0;
+                  outcomeExpectedValue = new BigDecimal(-1);
+                } else {
+                  if (projectMilestone.getExpectedValue() != null) {
+                    outcomeExpectedValue = projectMilestone.getCrpMilestone().getValue();
+                    expectedValue = projectMilestone.getExpectedValue();
+                  }
+                }
+              } else {
+                expectedUnit = "Not Applicable";
+                expectedValue = -1.0;
+                outcomeExpectedValue = new BigDecimal(-1);
               }
+
               narrativeTarget = projectMilestone.getNarrativeTarget();
 
               model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
-                expectedUnit, narrativeTarget, title, outcomeIndicator, phaseID});
+                expectedUnit, narrativeTarget, title, outcomeIndicator, phaseID, outcomeExpectedValue});
             }
           }
 
@@ -308,9 +327,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
-        "expected_narrative", "project_url", "outcomeIndicator", "phaseID"},
+        "expected_narrative", "project_url", "outcomeIndicator", "phaseID", "outcome_expected_value"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
-        String.class, String.class, Long.class},
+        String.class, String.class, Long.class, BigDecimal.class},
       0);
 
     for (Project project : guProjects.stream().sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
@@ -328,6 +347,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         String outcome = "";
         String outcomeIndicator = null;
         Double expectedValue = new Double(0);
+        BigDecimal outcomeExpectedValue = new BigDecimal(0);
         String expectedUnit = "";
         String expectedNarrative = "";
         String projectUrl = "";
@@ -344,15 +364,29 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               outcomeIndicator = projectOutcome.getCrpProgramOutcome().getIndicator();
             }
           }
-          expectedValue = projectOutcome.getExpectedValue();
-          if (projectOutcome.getExpectedUnit() != null) {
-            expectedUnit = projectOutcome.getExpectedUnit().getName();
+          if (projectOutcome.getCrpProgramOutcome() != null
+            && projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
+            expectedUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
+            if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1) {
+              expectedValue = -1.0;
+              outcomeExpectedValue = new BigDecimal(-1);
+            } else {
+              if (projectOutcome.getExpectedValue() != null) {
+                outcomeExpectedValue = projectOutcome.getCrpProgramOutcome().getValue();
+                expectedValue = projectOutcome.getExpectedValue();
+              }
+            }
+          } else {
+            expectedUnit = "Not Applicable";
+            outcomeExpectedValue = new BigDecimal(-1);
+            expectedValue = -1.0;
           }
+
           expectedNarrative = projectOutcome.getNarrativeTarget();
         }
         Long phaseID = this.getSelectedPhase().getId();
         model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit, expectedNarrative,
-          projectUrl, outcomeIndicator, phaseID});
+          projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue});
       }
     }
     return model;

@@ -5,7 +5,7 @@
   { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/centerImpactPathway',  'action': '${(centerSession)!}/programimpacts', 'visible': (logged && action.centerImpactPathwayActive()), 'active': true, 'param':(programID)! },
 
   { 'slug': 'projects', 'name': 'menu.monitoring.projects',      'namespace': '/monitoring',       'action': '${(centerSession)!}/projectList',    'visible': (logged && action.centerMonitoringActive()), 'active': true, 'param':(programID)! },
-  { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged && action.centerMonitoringActive()), 'active': true, 'param':(programID)! },
+  { 'slug': 'outcomes', 'name': 'menu.monitoring.outcomes',      'namespace': '/monitoring',       'action': '${(centerSession)!}/monitoringOutcomesList',    'visible': (logged && action.centerMonitoringOutcomeActive()), 'active': true, 'param':(programID)! },
   { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': (logged && action.centerCapDevActive()), 'active':true },
   { 'slug': 'summaries', 'name': 'menu.monitoring.summaries',      'namespace': '/centerSummaries',       'action': '${(centerSession)!}/summaries',    'visible': (logged && action.centerSummariesActive()), 'active': true }]
 

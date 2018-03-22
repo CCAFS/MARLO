@@ -84,7 +84,7 @@ $(document).ready(function() {
         },
         success: function(data) {
           if(data.success) {
-            location.reload();
+            window.location.href = window.location.href;
             $request.find('.editForm').slideUp();
             $request.find('.btn-group').slideDown();
           }
@@ -158,7 +158,7 @@ $(document).ready(function() {
         },
         success: function(data) {
           if(data.success) {
-            location.reload();
+            window.location.href = window.location.href;
           }
         },
         complete: function() {
@@ -202,7 +202,7 @@ $(document).ready(function() {
         },
         success: function(data) {
           if(data.success) {
-            location.reload();
+            window.location.href = window.location.href;
           }
         },
         complete: function() {
