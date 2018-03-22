@@ -1,8 +1,18 @@
 [#ftl]
-[#assign items= [
-  { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',  'action': 'outcomes',           'active': true  },
-  { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',       'action': 'clusterActivities',  'active': true }
-]/]
+[#if centerGlobalUnit]
+  [#assign items= [
+    { 'slug': 'programImpacts',   'name': 'impactPathway.menu.hrefProgramImpacts',  'action': 'programimpacts',   'active': true  },
+    { 'slug': 'researchTopics',   'name': 'impactPathway.menu.hrefResearchTopics',  'action': 'researchTopics',   'active': true },
+    { 'slug': 'outcomes',         'name': 'impactPathway.menu.hrefOutcomes',        'action': 'outcomesList',     'active': true  },
+    { 'slug': 'outputs',          'name': 'impactPathway.menu.hrefOutputs',         'action': 'outputsList',      'active': true }
+  ]/]
+[#else]
+  [#assign items= [
+    { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',          'action': 'outcomes',           'active': true  },
+    { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',               'action': 'clusterActivities',  'active': true  }
+  ]/]
+[/#if]
+
 
 
 [#assign submission = (action.submission)! /]
@@ -30,6 +40,11 @@
               [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
               --]
               [#-- Name --]
+              [#if item.action == "outcomesList"]
+                  <span class="glyphicon glyphicon-chevron-right"></span>
+              [#elseif item.action == "outputsList"]
+                  &nbsp; <span class="glyphicon glyphicon-chevron-right"></span>
+              [/#if]
               [@s.text name=item.name/]
             </a>
           </li>
