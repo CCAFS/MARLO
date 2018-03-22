@@ -27,21 +27,20 @@ public class GlobalUnitType implements java.io.Serializable {
   private String name;
   @Expose
   private boolean active;
+
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
-
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
-
   private List<GlobalUnit> globalUnitsList;
-
 
   private Set<Parameter> parameters = new HashSet<Parameter>(0);
 
-
   public GlobalUnitType() {
   }
+
 
   public GlobalUnitType(Long id, User modifiedBy, User createdBy, String name, boolean active, Date activeSince,
     String modificationJustification, Set<GlobalUnit> globalUnits) {
@@ -54,6 +53,27 @@ public class GlobalUnitType implements java.io.Serializable {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.globalUnits = globalUnits;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    GlobalUnitType other = (GlobalUnitType) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -90,6 +110,14 @@ public class GlobalUnitType implements java.io.Serializable {
 
   public Set<Parameter> getParameters() {
     return parameters;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   public boolean isActive() {
