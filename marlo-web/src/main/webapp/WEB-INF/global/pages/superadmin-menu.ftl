@@ -31,7 +31,7 @@
         [#-- Global units --]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-chevron-down"></span> [#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if]
+            <span class="glyphicon glyphicon-chevron-down"></span> ${(currentGlobalUnit.acronym)!'null'}
           </a>
           <ul class="subMenu">
            
