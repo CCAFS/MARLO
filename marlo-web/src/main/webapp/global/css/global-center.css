@@ -62,7 +62,7 @@ ul.horizontalSubMenu li.active {
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
   border-top: 4px solid #7b9074 !important;
-  color: #fff !important;
+  color: #8ea786;
 }
 
 .summariesSection.current {
