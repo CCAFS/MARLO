@@ -479,10 +479,10 @@ public final class APConstants {
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchImpacts)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.researchImpacts)";
 
   public static final String RESEARCH_PROGRAM_TOPIC_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchTopics)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.researchTopics)";
 
   public static final String RESEARCH_OUTCOME_MILESTONE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterOutcome.researchMilestones)";

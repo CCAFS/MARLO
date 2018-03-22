@@ -37,7 +37,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
@@ -75,7 +74,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
@@ -393,10 +391,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ICenterSectionStatusManager secctionStatusService;
   @Inject
   private ICenterCycleManager cycleService;
-
-  @Inject
-  private ICenterProgramManager programService;
-
 
   @Inject
   private ICenterProjectManager projectService;
@@ -1743,7 +1737,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the IP is complete
    */
   public boolean getCenterSectionStatusIP(String section, long programID) {
-    CenterProgram program = programService.getProgramById(programID);
+    CrpProgram program = crpProgramManager.getCrpProgramById(programID);
 
     if (ImpactPathwaySectionsEnum.getValue(section) == null) {
       return false;
@@ -3584,7 +3578,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the user have the permission
    */
   public boolean hasPersmissionSubmitIP(long programID) {
-    CenterProgram program = programService.getProgramById(programID);
+    CrpProgram program = crpProgramManager.getCrpProgramById(programID);
     String permission = this.generatePermission(Permission.RESEARCH_PROGRAM_SUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(program.getResearchArea().getId()), String.valueOf(programID));
     boolean permissions = this.securityContext.hasPermission(permission);
@@ -3607,7 +3601,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean hasPersmissionSubmitProject(long projectID) {
     CenterProject project = projectService.getCenterProjectById(projectID);
-    CenterProgram program = project.getResearchProgram();;
+    CrpProgram program = null;
     String permission =
       this.generatePermissionCenter(Permission.PROJECT_SUBMISSION_PERMISSION, this.getCurrentCrp().getAcronym(),
         String.valueOf(program.getResearchArea().getId()), String.valueOf(program.getId()), String.valueOf(projectID));
@@ -3858,7 +3852,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    CenterProgram researchProgram = programService.getProgramById(programID);
+    CrpProgram researchProgram = crpProgramManager.getCrpProgramById(programID);
 
     List<String> statuses = secctionStatusService.distinctSectionStatus(programID);
 
@@ -3875,7 +3869,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getSectionStatuses().stream()
+    List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getCenterSectionStatuses().stream()
       .filter(ss -> ss.getYear() == (short) this.getCenterYear()).collect(Collectors.toList()));
 
     if (sectionStatuses != null && sectionStatuses.size() > 0) {
@@ -4928,12 +4922,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean isSubmitIP(long programID) {
 
-    CenterProgram program = programService.getProgramById(programID);
+    CrpProgram program = crpProgramManager.getCrpProgramById(programID);
     if (program != null) {
 
       CenterCycle cycle = cycleService.getResearchCycleById(ImpactPathwayCyclesEnum.IMPACT_PATHWAY.getId());
 
-      List<CenterSubmission> submissions = new ArrayList<>(program.getSubmissions().stream()
+      List<CenterSubmission> submissions = new ArrayList<>(program.getCenterSubmissions().stream()
         .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
         .collect(Collectors.toList()));
 
@@ -5665,7 +5659,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * 
    * @return false if has missing fields.
    */
-  public boolean validateCenterImpact(CenterProgram program, String sectionName) {
+  public boolean validateCenterImpact(CrpProgram program, String sectionName) {
 
     CenterSectionStatus sectionStatus =
       secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());
@@ -5687,7 +5681,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * 
    * @return false if has missing fields.
    */
-  public boolean validateCenterOutcome(CenterProgram program) {
+  public boolean validateCenterOutcome(CrpProgram program) {
     if (program != null) {
       List<CenterTopic> topics =
         new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
@@ -5727,7 +5721,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * 
    * @return false if has missing fields.
    */
-  public boolean validateCenterOutput(CenterProgram program) {
+  public boolean validateCenterOutput(CrpProgram program) {
     if (program != null) {
       List<CenterOutput> outputs =
         new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
@@ -5780,7 +5774,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * 
    * @return false if has missing fields.
    */
-  public boolean validateCenterTopic(CenterProgram program, String sectionName) {
+  public boolean validateCenterTopic(CrpProgram program, String sectionName) {
 
     CenterSectionStatus sectionStatus =
       secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());

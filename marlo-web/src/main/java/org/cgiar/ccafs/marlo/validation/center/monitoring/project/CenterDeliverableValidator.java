@@ -20,8 +20,8 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -58,7 +58,7 @@ public class CenterDeliverableValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CenterDeliverable deliverable, CenterProject project,
-    CenterProgram selectedProgram, boolean saving) {
+    CrpProgram selectedProgram, boolean saving) {
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {

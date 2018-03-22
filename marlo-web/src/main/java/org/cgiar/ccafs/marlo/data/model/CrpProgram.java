@@ -81,6 +81,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   private Set<Submission> submissions = new HashSet<Submission>(0);
 
+
   private List<String> selectedCountries;
 
 
@@ -89,11 +90,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   private List<CrpClusterOfActivity> clusterofActivities;
 
+
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
+
   private Set<CenterTopic> researchTopics = new HashSet<CenterTopic>(0);
+
 
   private Set<CenterImpact> researchImpacts = new HashSet<CenterImpact>(0);
 
@@ -102,6 +106,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private List<CenterTopic> topics;
 
   private Set<CenterOutput> centerOutputs = new HashSet<CenterOutput>(0);
+
+  private Set<CenterSectionStatus> centerSectionStatuses = new HashSet<CenterSectionStatus>(0);
+
+  private Set<CenterSubmission> centerSubmissions = new HashSet<CenterSubmission>(0);
 
   @Expose
   private boolean active;
@@ -128,22 +136,22 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String color;
+
   @Expose
   private Boolean baseLine;
 
   private double w1;
-  private double w3;
 
+  private double w3;
 
   private double centerFunds;
   private PowbCollaboration collaboration;
 
-
   private PowbSynthesis synthesis;
-
 
   public CrpProgram() {
   }
+
 
   public CrpProgram(GlobalUnit crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -163,6 +171,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -184,15 +193,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
 
-
   public String getAction() {
     return action;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -206,15 +214,23 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return centerFunds;
   }
 
+
   public Set<CenterOutput> getCenterOutputs() {
     return centerOutputs;
   }
 
 
+  public Set<CenterSectionStatus> getCenterSectionStatuses() {
+    return centerSectionStatuses;
+  }
+
+  public Set<CenterSubmission> getCenterSubmissions() {
+    return centerSubmissions;
+  }
+
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
   }
-
 
   public PowbCollaboration getCollaboration() {
     return collaboration;
@@ -225,6 +241,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return color;
   }
 
+
   public String getComposedName() {
     return this.acronym + ": " + this.name;
   }
@@ -233,7 +250,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public GlobalUnit getCrp() {
     return crp;
@@ -280,6 +296,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return liaisonInstitutions;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -290,20 +307,20 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public List<CrpProgramLeader> getManagers() {
     return managers;
   }
-
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -315,14 +332,15 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
 
+
   public List<PowbExpectedCrpProgress> getPowbs() {
     return powbs;
   }
+
 
   public int getProgramType() {
     return this.programType;
@@ -332,7 +350,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return projectFocuses;
   }
 
-
   public CenterArea getResearchArea() {
     return researchArea;
   }
@@ -341,19 +358,19 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return researchImpacts;
   }
 
+
   public Set<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
 
-
   public List<String> getSelectedCountries() {
     return selectedCountries;
   }
+
 
   public Set<Submission> getSubmissions() {
     return submissions;
@@ -368,6 +385,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return topics;
   }
 
+
   public double getW1() {
     return w1;
   }
@@ -380,7 +398,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
-
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -395,22 +412,31 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setBaseLine(Boolean baseLine) {
     this.baseLine = baseLine;
   }
 
+
   public void setCenterFunds(double centerFunds) {
     this.centerFunds = centerFunds;
   }
 
-
   public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
     this.centerOutputs = centerOutputs;
+  }
+
+  public void setCenterSectionStatuses(Set<CenterSectionStatus> centerSectionStatuses) {
+    this.centerSectionStatuses = centerSectionStatuses;
+  }
+
+
+  public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
+    this.centerSubmissions = centerSubmissions;
   }
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {

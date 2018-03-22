@@ -21,11 +21,11 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.center.monitoring.project.CenterDeliverableValidator;
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -109,7 +110,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     }
 
     CenterProject project = projectService.getCenterProjectById(projectID);
-    CenterProgram program = project.getResearchProgram();
+    CrpProgram program = null;
 
     switch (ProjectSectionsEnum.getValue(sectionName)) {
       case DELIVERABLES:
@@ -213,7 +214,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     if (project != null) {
 
-      CenterProgram program = project.getResearchProgram();
+      CrpProgram program = null;
 
       List<CenterDeliverable> deliverables =
         new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
@@ -237,7 +238,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     if (project != null) {
 
-      CenterProgram program = project.getResearchProgram();
+      CrpProgram program = null;
 
       CenterProjectCrosscutingTheme crosscutingTheme;
       if (this.isEditable()) {
@@ -265,7 +266,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     if (project != null) {
 
-      CenterProgram program = project.getResearchProgram();
+      CrpProgram program = null;
 
       project.setPartners(new ArrayList<>(
         project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList())));

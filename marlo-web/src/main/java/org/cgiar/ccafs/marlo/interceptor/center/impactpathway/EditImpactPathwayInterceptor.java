@@ -73,7 +73,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   void getprogramId() {
     try {
       // programID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]);
-      programID = Long.parseLong(parameters.get(APConstants.CENTER_PROGRAM_ID).getMultipleValues()[0]);
+      programID = Long.parseLong(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       GlobalUnit loggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
       loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());

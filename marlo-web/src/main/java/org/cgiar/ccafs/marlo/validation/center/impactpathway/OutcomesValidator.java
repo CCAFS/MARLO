@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -57,7 +57,7 @@ public class OutcomesValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction baseAction, CenterOutcome outcome, CenterProgram selectedProgram, boolean saving) {
+  public void validate(BaseAction baseAction, CenterOutcome outcome, CrpProgram selectedProgram, boolean saving) {
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
