@@ -87,11 +87,11 @@ public class ProgramImpactsAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
 
-
   private CrpProgramManager programService;
 
 
   private ICenterRegionManager regionService;
+
 
   private ICenterImpactStatementManager statementService;
 
@@ -114,7 +114,10 @@ public class ProgramImpactsAction extends BaseAction {
   private ICenterImpactObjectiveManager impactObjectiveService;
 
   private AuditLogManager auditLogService;
+
+
   private ICenterBeneficiaryManager beneficiaryService;
+
   private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
   private List<CenterImpactStatement> idos;
@@ -205,16 +208,14 @@ public class ProgramImpactsAction extends BaseAction {
     return beneficiaryTypes;
   }
 
-  /**
-   * @return the crpProgramID
-   */
-  public Long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
 
   public List<CenterImpactStatement> getIdos() {
     return idos;
   }
+
 
   public List<CenterImpact> getImpacts() {
     return impacts;
@@ -240,10 +241,10 @@ public class ProgramImpactsAction extends BaseAction {
     return researchPrograms;
   }
 
-
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
+
 
   /**
    * @return the selectedResearchArea
@@ -885,7 +886,6 @@ public class ProgramImpactsAction extends BaseAction {
 
   }
 
-
   /**
    * @param areaID the areaID to set
    */
@@ -893,13 +893,13 @@ public class ProgramImpactsAction extends BaseAction {
     this.areaID = areaID;
   }
 
+
   /**
    * @param areaID the areaID to set
    */
   public void setAreaID(Long areaID) {
     this.areaID = areaID;
   }
-
 
   public void setBeneficiaryTypes(List<CenterBeneficiaryType> beneficiaryTypes) {
     this.beneficiaryTypes = beneficiaryTypes;
@@ -909,15 +909,12 @@ public class ProgramImpactsAction extends BaseAction {
   /**
    * @param crpProgramID the crpProgramID to set
    */
-  public void setcrpProgramID(long crpProgramID) {
+  public void setcrpProgramID(Long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
 
 
-  /**
-   * @param crpProgramID the crpProgramID to set
-   */
-  public void setcrpProgramID(Long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
 
