@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.validation.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -46,7 +46,7 @@ public class ResearchTopicsValidator extends BaseValidator {
     this.centerService = centerService;
   }
 
-  private Path getAutoSaveFilePath(CenterProgram program, long centerID) {
+  private Path getAutoSaveFilePath(CrpProgram program, long centerID) {
     GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.TOPIC.getStatus().replace("/", "_");
@@ -56,7 +56,7 @@ public class ResearchTopicsValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction baseAction, List<CenterTopic> researchTopics, CenterProgram selectedProgram,
+  public void validate(BaseAction baseAction, List<CenterTopic> researchTopics, CrpProgram selectedProgram,
     boolean saving) {
     baseAction.setInvalidFields(new HashMap<>());
 

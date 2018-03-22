@@ -17,15 +17,15 @@ package org.cgiar.ccafs.marlo.action.center.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.center.impactpathway.OutcomesValidator;
@@ -56,7 +56,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateImpactPathwaySectionAction.class);
   // Managers
-  private ICenterProgramManager programServcie;
+  private CrpProgramManager programServcie;
   private ICenterSectionStatusManager sectionStatusService;
   // Parameters
   private boolean existProgram;
@@ -74,7 +74,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   private ResearchTopicsValidator topicValidator;
 
   @Inject
-  public ValidateImpactPathwaySectionAction(APConfig config, ICenterProgramManager programServcie,
+  public ValidateImpactPathwaySectionAction(APConfig config, CrpProgramManager programServcie,
     ICenterSectionStatusManager sectionStatusService, OutcomesValidator outcomeValidator,
     OutputsValidator outputValidator, ProgramImpactsValidator impactValidator, ResearchTopicsValidator topicValidator) {
     super(config);
@@ -107,7 +107,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
     }
 
-    CenterProgram program = programServcie.getProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(programID);
 
     switch (ImpactPathwaySectionsEnum.getValue(sectionName)) {
       case OUTCOMES:
@@ -217,7 +217,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
         StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     }
 
-    existProgram = programServcie.existProgram(programID);
+    existProgram = programServcie.existCrpProgram(programID);
 
     // Validate if the section exists.
     List<String> sections = new ArrayList<>();
@@ -235,7 +235,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
   public void validateImpact() {
-    CenterProgram program = programServcie.getProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(programID);
 
     if (program != null) {
       List<CenterImpact> impacts =
@@ -265,7 +265,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
   public void validateOutcome() {
-    CenterProgram program = programServcie.getProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(programID);
 
     if (program != null) {
       List<CenterTopic> topics =
@@ -288,7 +288,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
   public void validateOutput() {
 
-    CenterProgram program = programServcie.getProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(programID);
 
     if (program != null) {
       List<CenterOutput> outputs =
@@ -309,7 +309,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
   public void validateTopic() {
-    CenterProgram program = programServcie.getProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(programID);
 
     if (program != null) {
       List<CenterTopic> topics =
