@@ -11,7 +11,7 @@
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
   border-top: 4px solid #1882aa;
   border-bottom-color: transparent;
-  color: #0377a3;
+  /* color: #0377a3; */
   background-color: #f5f5f5;
 }
 

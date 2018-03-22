@@ -196,10 +196,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     }
     GlobalUnit other = (GlobalUnit) obj;
     if (this.getId() == null) {
-      if (other.id != null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!this.getId().equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;

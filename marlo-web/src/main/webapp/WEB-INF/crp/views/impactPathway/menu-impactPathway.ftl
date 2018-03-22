@@ -1,8 +1,24 @@
 [#ftl]
-[#assign items= [
-  { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',  'action': 'outcomes',           'active': true  },
-  { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',       'action': 'clusterActivities',  'active': true }
+[#if centerGlobalUnit]
+  [#assign items= [
+    { 'slug': 'programImpacts',   'name': 'impactPathway.menu.hrefProgramImpacts',  'action': 'programimpacts',   'active': true  },
+    { 'slug': 'researchTopics',   'name': 'impactPathway.menu.hrefResearchTopics',  'action': 'researchTopics',   'active': true },
+    { 'slug': 'outcomes',         'name': 'impactPathway.menu.hrefOutcomes',        'action': 'outcomesList',     'active': true  },
+    { 'slug': 'outputs',          'name': 'impactPathway.menu.hrefOutputs',         'action': 'outputsList',      'active': true }
+  ]/]
+[#else]
+  [#assign items= [
+    { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',          'action': 'outcomes',           'active': true  },
+    { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',               'action': 'clusterActivities',  'active': true  }
+  ]/]
+[/#if]
+
+[#assign menus= [
+  { 'title': '', 'show': true,
+    'items': items
+  }
 ]/]
+
 
 
 [#assign submission = (action.submission)! /]
@@ -10,7 +26,11 @@
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
 [#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
 
+[#assign sectionsForChecking = [] /]
+[#assign currentMenuItem = {} /]
 
+
+[#-- Impact Pathway Menu--]
 <nav id="secondaryMenu" class="">
   <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
   <div class="menuList">
@@ -20,26 +40,44 @@
     [/#list]
   </div>
   <ul>
-    <li>
-      <ul>
-        [#list items as item]
-          [#assign hasDraft = (action.getAutoSaveFilePath(selectedProgram.class.simpleName, item.action, selectedProgram.id))!false /]
-          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
-            <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
-              [#-- Draft Tag 
-              [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
-              --]
-              [#-- Name --]
-              [@s.text name=item.name/]
-            </a>
-          </li>
-        [/#list] 
-      </ul>
-    </li>
+    [#list menus as menu]
+      [#if menu.show]
+      <li>
+        <ul>[#if menu.title?has_content]<p class="menuTitle">${menu.title}</p>[/#if]
+          [#list menu.items as item]
+            [#assign submitStatus = (action.getImpactSectionStatus(item.action, crpProgramID))!false /]
+            [#assign hasDraft = (action.getAutoSaveFilePath(selectedProgram.class.simpleName, item.action, selectedProgram.id))!false /]
+            [#if (item.show)!true ]
+              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+                <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+                  [#-- Name --]
+                  [#if item.action == "outcomesList"]
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                  [#elseif item.action == "outputsList"]
+                      &nbsp; <span class="glyphicon glyphicon-chevron-right"></span>
+                  [/#if]
+                  [@s.text name=item.name/]
+                  [#-- Draft Tag --]
+                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
+                </a>
+              </li>
+              [#-- Set current Item --]
+              [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
+              [#-- Set sections for checking --]
+              [#if item.active][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
+            [/#if]
+          [/#list] 
+        </ul>
+      </li>
+      [/#if]
+    [/#list]
   </ul> 
 </nav>
 
 <div class="clearfix"></div>
+
+[#-- Sections for checking (Using by JS) --]
+<span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Submition message --]
 [#if !submission?has_content && completed && !canSubmit]
