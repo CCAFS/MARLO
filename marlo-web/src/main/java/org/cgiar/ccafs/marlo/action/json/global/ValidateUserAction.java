@@ -41,6 +41,9 @@ public class ValidateUserAction extends BaseAction {
   // Parameters
   private String userEmail;
   private String userPassword;
+  private Boolean agree;
+
+
   private String messageEror;
 
 
@@ -52,6 +55,7 @@ public class ValidateUserAction extends BaseAction {
     super(config);
     this.userManager = userManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -69,9 +73,16 @@ public class ValidateUserAction extends BaseAction {
       userFound.put("loginSuccess", false);
     }
 
+    user.setAgreeTerms(agree);
+    userManager.saveLastLogin(user);
+
     return SUCCESS;
   }
 
+
+  public Boolean getAgree() {
+    return agree;
+  }
 
   private void getLoginMessages() {
     Session session = SecurityUtils.getSubject().getSession();
@@ -113,6 +124,7 @@ public class ValidateUserAction extends BaseAction {
     }
   }
 
+
   public String getMessageEror() {
     return messageEror;
   }
@@ -120,7 +132,6 @@ public class ValidateUserAction extends BaseAction {
   public String getUserEmail() {
     return userEmail;
   }
-
 
   public Map<String, Object> getUserFound() {
     return userFound;
@@ -132,6 +143,11 @@ public class ValidateUserAction extends BaseAction {
     // Map<String, Parameter> parameters = this.getParameters();
     // userEmail = StringUtils.trim(parameters.get(APConstants.USER_EMAIL).getMultipleValues()[0]);
     // userPassword = StringUtils.trim(parameters.get(APConstants.USER_PASSWORD).getMultipleValues()[0]);
+  }
+
+
+  public void setAgree(Boolean agree) {
+    this.agree = agree;
   }
 
 

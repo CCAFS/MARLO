@@ -155,6 +155,9 @@ public class User implements java.io.Serializable, IAuditLog {
   }
 
   public Boolean getAgreeTerms() {
+    if (agreeTerms == null) {
+      return false;
+    }
     return agreeTerms;
   }
 
