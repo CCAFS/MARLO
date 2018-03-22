@@ -7,7 +7,7 @@
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged , 'active': true },
   { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive, 'active': action.canAcessPublications() , 'help': true },
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActive?string("synthesis","powb")}',       'action': '${(crpSession)!}/${reportingActive?string("crpIndicators","adjustmentsChanges")}',    'visible': logged && action.canAcessPOWB(), 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActive?string("synthesis","powb")}',       'action': '${(crpSession)!}/${reportingActive?string("crpIndicators","adjustmentsChanges")}',    'visible': logged && action.canAcessPOWB() && !centerGlobalUnit, 'active': true,    
     'subItems' : [
       [#-- PLANNING --]
       { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive, 'active':  action.canAcessPOWB() },
