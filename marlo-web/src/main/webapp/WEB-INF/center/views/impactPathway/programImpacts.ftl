@@ -15,9 +15,10 @@
   {"label":"programImpacts", "nameSpace":"", "action":"programimpacts"}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+
 [#--  Program Impacts Help Text--]
 [@utils.helpInfos hlpInfo="programImpact.help" /]
 [#--  marlo cluster of activities--]
@@ -26,13 +27,13 @@
     
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/impactPathway/menu-impactPathway.ftl" /]
+        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Impact pathway sub menu --]
-        [#include "/WEB-INF/center//views/impactPathway/submenu-impactPathway.ftl" /]
+        [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
         [#-- Section Messages --]
-        [#include "/WEB-INF/center//views/impactPathway/messages-impactPathway.ftl" /]
+        [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway.ftl" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]
         
@@ -58,7 +59,7 @@
           [/#if]
           
           [#-- Section Buttons--]
-          [#include "/WEB-INF/center//views/impactPathway/buttons-impactPathway.ftl" /]
+          [#include "/WEB-INF/center/views/impactPathway/buttons-impactPathway.ftl" /]
           
         [/@s.form]
       </div>
@@ -71,7 +72,7 @@
 
 [@beneficiaryMacro beneficiary={} name="impacts[-1].beneficiaries" index=-1 template=true/]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/crp/pages/footer.ftl" /]
 
 [#macro programImpactMacro element name index template=false]
   <div id="programImpact-${template?string('template','')}" class="borderBox programImpact" style="display:${template?string('none','block')}">
