@@ -42,9 +42,9 @@
 		<set lazy="true" name="researchPrograms" table="crp_programs" order-by="id"
       cascade="save-update" fetch="select">
       <key>
-        <column name="research_area_id" not-null="true" />
+        <column name="area_id" not-null="true" />
       </key>
-      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProgram" />
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgram" />
     </set>
     <set lazy="true" name="researchLeaders" table="center_leaders" order-by="id"
       cascade="save-update" fetch="select">
