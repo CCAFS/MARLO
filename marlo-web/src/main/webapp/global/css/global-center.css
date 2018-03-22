@@ -16,13 +16,16 @@ a {
 }
 
 .infoText {
-  background: #97debc;
+  background: #c6e2d5;
 }
 
 .footer {
   background: #179457 url(./../../global/images/footerBackground-center.png) repeat-x 0 0;
 }
 
+.footer a{
+  color:white;
+}
 .footer:before {
   background: url(./../../global/images/tract-center.png),url(./../../global/images/tract-center.png),url(./../../global/images/tract-center.png.png);
 
@@ -62,7 +65,7 @@ ul.horizontalSubMenu li.active {
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
   border-top: 4px solid #7b9074 !important;
-  color: #8ea786;
+  color: #8ea786 !important;
 }
 
 .summariesSection.current {
@@ -71,6 +74,11 @@ ul.horizontalSubMenu li.active {
 
 .title-file {
   color: #7b9074 !important;
+}
+
+.sectionSubTitle {
+  border-bottom: 1px solid #7b9074;
+  color: #7b9074;
 }
 
 #mainMenu .menuContent ul li ul.subMenu li {
@@ -82,13 +90,15 @@ ul.horizontalSubMenu li.active {
 }
 
 #dashboardContent li.active a {
-  /* background-color: #7b9074 !important; */
   color: #7b9074 !important;
+}
+#dashboardContent li a:hover {
+  background-color: #f5f5f5 !important;
 }
 
 .viewMore {
-  color: #1d8854;
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#97debc 70%);
+  color: #444444;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#bbd4c8 70%);
 }
 
 #draggable-button {
@@ -102,4 +112,25 @@ ul.horizontalSubMenu li.active {
 
 .ui-dialog {
   border: 2px solid #8ea786 !important;
+}
+
+#secondaryMenu ul p.menuTitle {
+  background: #25a76a;
+}
+
+.fileUpload .upload::before {
+  background: #8ea786;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #8ea786;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+  background-color: #8ea786;
+  border-color: #8ea786;
+}
+
+.example .frame ul li.planning.phaseSelected {
+  background-color: #35ad75 !important;
 }
