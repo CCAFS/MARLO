@@ -34,7 +34,7 @@
 
 [#assign sectionsForChecking = [] /]
 [#assign currentMenuItem = {} /]
-
+[#assign programID = crpProgramID /]
 
 [#-- Impact Pathway Menu--]
 <nav id="secondaryMenu" class="">
