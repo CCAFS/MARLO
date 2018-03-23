@@ -87,28 +87,32 @@ public class OutcomesAction extends BaseAction {
 
 
   private ICenterMilestoneManager milestoneService;
+
   // Front Variables
   private GlobalUnit loggedCenter;
+
+
   private List<CenterArea> researchAreas;
   private CenterArea selectedResearchArea;
   private List<CrpProgram> researchPrograms;
   private CrpProgram selectedProgram;
   private CenterOutcome outcome;
-
   private List<CenterTopic> researchTopics;
   private CenterTopic selectedResearchTopic;
 
   private List<CenterImpact> researchImpacts;
   private HashMap<Long, String> targetUnitList;
   // Parameter Variables
-  private long crpProgramID;
+
   private long areaID;
   private long topicID;
+
   private long outcomeID;
   private String transaction;
   private CenterOutcome outcomeDb;
   // Validator
   private OutcomesValidator validator;
+  private long crpProgramID;
 
   @Inject
   public OutcomesAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
@@ -162,6 +166,10 @@ public class OutcomesAction extends BaseAction {
   }
 
   public long getcrpProgramID() {
+    return crpProgramID;
+  }
+
+  public long getCrpProgramID() {
     return crpProgramID;
   }
 
@@ -508,7 +516,7 @@ public class OutcomesAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
 

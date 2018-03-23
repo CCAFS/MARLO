@@ -77,30 +77,32 @@ public class OutputsAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
   private AuditLogManager auditLogService;
+
+
   private CrpProgramManager programService;
   private ICenterOutputManager outputService;
   private ICenterNextuserTypeManager nextUserService;
   private ICenterOutputsNextUserManager outputNextUserService;
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
   private ICenterOutcomeManager outcomeManager;
-
-
   // Front Variables
   private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
+
+
   private CenterArea selectedResearchArea;
   private List<CrpProgram> researchPrograms;
   private CrpProgram selectedProgram;
   private CenterOutcome selectedResearchOutcome;
-
   private CenterOutput output;
   private CenterTopic selectedResearchTopic;
+
   private List<CenterLeader> contacPersons;
   private List<CenterNextuserType> nextuserTypes;
   // Parameter Variables
-  private long crpProgramID;
   private long areaID;
   private long outcomeID;
+
   private long outputID;
   private String transaction;
   private long nextUserTypeID;
@@ -108,6 +110,7 @@ public class OutputsAction extends BaseAction {
   private List<ResearchTopicsOutcomesDTO> outcomes;
   // Validator
   private OutputsValidator validator;
+  private long crpProgramID;
 
   /**
    * @param config
@@ -170,15 +173,15 @@ public class OutputsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<CenterLeader> getContacPersons() {
     return contacPersons;
   }
 
 
-  public long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
+
 
   public GlobalUnit getLoggedCenter() {
     return loggedCenter;
@@ -586,10 +589,9 @@ public class OutputsAction extends BaseAction {
     this.contacPersons = contacPersons;
   }
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
-
 
   public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;

@@ -58,22 +58,25 @@ public class IPSubmissionAction extends BaseAction {
 
   /// LOG
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
+
   private ICenterSubmissionManager submissionService;
+
+
   private CrpProgramManager programService;
   private ICenterCycleManager cycleService;
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
-
-
   private SendMail sendMail;
   private CrpProgram program;
-  private CenterCycle cycle;
 
+
+  private CenterCycle cycle;
   private GlobalUnit loggedCenter;
-  private long crpProgramID;
   private boolean isSubmited = false;
 
   private ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
+
+  private long crpProgramID;
 
   @Inject
   public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
@@ -130,9 +133,10 @@ public class IPSubmissionAction extends BaseAction {
 
   }
 
-  public long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
+
 
   // public boolean isCompleteIP(long crpProgramID) {
   //
@@ -279,7 +283,7 @@ public class IPSubmissionAction extends BaseAction {
 
   }
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
 

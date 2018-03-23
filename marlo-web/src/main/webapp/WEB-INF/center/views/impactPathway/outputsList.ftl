@@ -50,7 +50,7 @@
           </div><div class="clearfix"></div>
           
           [#-- Hidden Parameters --]
-          <input type="hidden" name="programID" value="${programID}" />
+          <input type="hidden" name="programID" value="${crpProgramID}" />
         
 
         
@@ -78,7 +78,7 @@
           [#if canEdit]
 
               <div class="text-right">
-                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="programID"]${selectedProgram.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
