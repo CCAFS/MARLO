@@ -1,8 +1,8 @@
 [#ftl]
 [#-- MESSAGES PARAMETERS --]
 [#assign object = selectedProgram /]
-[#assign nameParameter = "programID" /]
-[#assign parameterID = programID /]
+[#assign nameParameter = "crpProgramID" /]
+[#assign parameterID = crpProgramID /]
 
 [#-- History Message --]
 [#if transaction??]
