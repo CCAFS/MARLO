@@ -61,7 +61,6 @@ public class OutputsListAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
 
-
   private CrpProgramManager programService;
 
 
@@ -73,22 +72,30 @@ public class OutputsListAction extends BaseAction {
 
   private UserManager userService;
 
+
   private ICenterOutputManager outputService;
+
+
   private ICenterSectionStatusManager sectionStatusService;
+
+
   private List<CenterArea> researchAreas;
+
+
   private List<CrpProgram> researchPrograms;
+
   private List<CenterOutcome> outcomes;
   private List<CenterTopic> researchTopics;
   private List<CenterOutput> outputs;
   private CrpProgram selectedProgram;
-
-
   private CenterArea selectedResearchArea;
   private GlobalUnit loggedCenter;
-  private long crpProgramID;
   private long areaID;
   private long outputID;
+
+
   private String justification;
+  private long crpProgramID;
 
   @Inject
   public OutputsListAction(APConfig config, GlobalUnitManager centerService, CrpProgramManager programService,
@@ -103,6 +110,7 @@ public class OutputsListAction extends BaseAction {
     this.sectionStatusService = sectionStatusService;
     this.centerOutputsOutcomeManager = centerOutputsOutcomeManager;
   }
+
 
   @Override
   public String add() {
@@ -168,13 +176,18 @@ public class OutputsListAction extends BaseAction {
     return areaID;
   }
 
-  public long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
 
   @Override
   public String getJustification() {
     return justification;
+  }
+
+
+  public GlobalUnit getLoggedCenter() {
+    return loggedCenter;
   }
 
   // public List<CenterOutput> allProgramOutput() {
@@ -204,10 +217,6 @@ public class OutputsListAction extends BaseAction {
   //
   // }
 
-  public GlobalUnit getLoggedCenter() {
-    return loggedCenter;
-  }
-
   public List<CenterOutcome> getOutcomes() {
     return outcomes;
   }
@@ -220,10 +229,10 @@ public class OutputsListAction extends BaseAction {
     return outputs;
   }
 
-
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
+
 
   public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
@@ -236,7 +245,6 @@ public class OutputsListAction extends BaseAction {
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
-
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
@@ -420,9 +428,10 @@ public class OutputsListAction extends BaseAction {
   }
 
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
+
 
   @Override
   public void setJustification(String justification) {

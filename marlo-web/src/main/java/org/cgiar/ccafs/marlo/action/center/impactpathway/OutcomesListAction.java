@@ -58,34 +58,36 @@ public class OutcomesListAction extends BaseAction {
 
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
-
-
   private GlobalUnit loggedCenter;
 
 
   private List<CenterOutcome> outcomes;
 
+
   private CrpProgramManager programService;
 
-  private List<CenterArea> researchAreas;
-  private ICenterAreaManager researchAreaService;
-  private List<CrpProgram> researchPrograms;
 
+  private List<CenterArea> researchAreas;
+
+  private ICenterAreaManager researchAreaService;
+
+  private List<CrpProgram> researchPrograms;
   private List<CenterTopic> researchTopics;
   private ICenterTopicManager researchTopicService;
+
   private ICenterOutcomeManager outcomeService;
   private CrpProgram selectedProgram;
-
   private CenterArea selectedResearchArea;
   private CenterTopic selectedResearchTopic;
+
   private UserManager userService;
   private ICenterSectionStatusManager sectionStatusService;
   private long topicID;
-  private long crpProgramID;
   private long outcomeID;
   private long areaID;
 
   private String justification;
+  private long crpProgramID;
 
   @Inject
   public OutcomesListAction(APConfig config, GlobalUnitManager centerService, CrpProgramManager programService,
@@ -182,9 +184,10 @@ public class OutcomesListAction extends BaseAction {
     return areaID;
   }
 
-  public long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
+
 
   @Override
   public String getJustification() {
@@ -361,7 +364,7 @@ public class OutcomesListAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
 

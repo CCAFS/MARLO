@@ -71,11 +71,11 @@ public class ResearchTopicsAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
 
-
   private CrpProgramManager programService;
 
 
   private ICenterAreaManager researchAreaService;
+
 
   private ICenterTopicManager researchTopicService;
 
@@ -84,18 +84,22 @@ public class ResearchTopicsAction extends BaseAction {
 
   private UserManager userService;
 
+
   private ResearchTopicsValidator validator;
+
   // Local Variables
   private GlobalUnit loggedCenter;
+
   private List<CenterArea> researchAreas;
   private List<CenterTopic> topics;
   private List<CrpProgram> researchPrograms;
   private CenterArea selectedResearchArea;
-
   private CrpProgram selectedProgram;
-  private long crpProgramID;
   private long areaID;
+
   private String transaction;
+
+  private long crpProgramID;
 
   @Inject
   public ResearchTopicsAction(APConfig config, GlobalUnitManager centerService, CrpProgramManager programService,
@@ -147,8 +151,7 @@ public class ResearchTopicsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
-  public long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
 
@@ -164,7 +167,6 @@ public class ResearchTopicsAction extends BaseAction {
     return selectedProgram;
   }
 
-
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
   }
@@ -174,10 +176,10 @@ public class ResearchTopicsAction extends BaseAction {
     return topics;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -365,6 +367,7 @@ public class ResearchTopicsAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermissionCenter("*")) {
@@ -474,9 +477,10 @@ public class ResearchTopicsAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
+
 
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;
