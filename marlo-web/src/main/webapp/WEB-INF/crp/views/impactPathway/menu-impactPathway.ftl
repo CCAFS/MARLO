@@ -127,13 +127,14 @@
 [#-- Discard Changes Popup --]
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
+
+[#if centerGlobalUnit]
+[#else]
 [#-- Mini-graph --]
 <div id="graphicWrapper" style="">
-<p class="text-center"><b>Impact Pathway Graph</b></p>
+  <p class="text-center"><b>Impact Pathway Graph</b></p>
   <div id="mini-graphic">
-    <div id="overlay" >
-      <button class="btn btn-primary btn-xs"><strong>Show graph</strong></button>
-    </div>
+    <div id="overlay" ><button class="btn btn-primary btn-xs"><strong>Show graph</strong></button></div>
   </div>
   <div class="clearfix"></div>
 </div>
@@ -172,3 +173,5 @@
   
   <div id="impactGraphic"></div>
 </div>
+[/#if]  
+

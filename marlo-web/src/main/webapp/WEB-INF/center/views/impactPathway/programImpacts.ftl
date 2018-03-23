@@ -38,10 +38,8 @@
         [@s.form action=actionName enctype="multipart/form-data" ]
         
           [#-- Title --]
-          <div class="col-md-12">
-            <h3 class="subTitle headTitle outcomeListTitle">Program Impacts</h3>
-            <hr />
-          </div><div class="clearfix"></div>
+          <h3 class="subTitle headTitle outcomeListTitle">Program Impacts</h3>
+          <hr />
           
           <div class="elements-list" listname="researchImpacts">
           [#if impacts?has_content]
