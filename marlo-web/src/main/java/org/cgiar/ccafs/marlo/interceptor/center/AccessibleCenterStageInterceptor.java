@@ -63,11 +63,9 @@ public class AccessibleCenterStageInterceptor extends AbstractInterceptor {
         return BaseAction.NOT_AUTHORIZED;
       }
     } else if (stageName.startsWith("/monitoring")) {
-      if (Boolean.parseBoolean(this.sectionActive(APConstants.CENTER_MONITORING_ACTIVE))) {
-        return invocation.invoke();
-      } else {
-        return BaseAction.NOT_AUTHORIZED;
-      }
+
+      return invocation.invoke();
+
     } else if (stageName.startsWith("/centerSummaries")) {
       if (Boolean.parseBoolean(this.sectionActive(APConstants.CENTER_SUMMARIES_ACTIVE))) {
         return invocation.invoke();
