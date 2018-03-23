@@ -260,9 +260,13 @@
 }
 
 .login-back-container{
-  margin-top: 50px;
+  margin-top: 60px;
   width: 100%;
 }
+
+.loginForm.terms-check .login-back-container{
+  margin-top: 70px;
+} 
 
 .login-back-container .loginBack{
   color: #337ab7;
@@ -410,9 +414,14 @@ p.login-description{
 }
 
 .loginForm p.invalidField{
-  position: relative;
+  position: absolute;
+  padding-right: 15px;
   font-size: 12px;
   color: red;
+}
+
+.loginForm.terms-check p.invalidField{
+  position: relative !important;
 }
 
 #loginFormContainer .loginForm {
@@ -430,6 +439,10 @@ p.login-description{
 }
 
 #loginFormContainer .loginForm.max-size{
+  height: 400px;
+}
+
+#loginFormContainer .loginForm.max-size.terms-check{
   height: 410px;
 }
 
