@@ -6402,6 +6402,10 @@ p.checkDisable:before {
   cursor:pointer;
 }
 
+.newsButton a{
+  color:#467eaf !important;
+}
+
 
 #loginFormContainer .tab-pane {
   padding: 12px 0px;

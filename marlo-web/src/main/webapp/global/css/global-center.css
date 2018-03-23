@@ -134,3 +134,97 @@ ul.horizontalSubMenu li.active {
 .example .frame ul li.planning.phaseSelected {
   background-color: #35ad75 !important;
 }
+
+/** CSS sectionSubMenu  **/
+.sectionSubMenu{
+  margin: 15px 0;
+}
+
+.sectionSubMenu .nav>li>a {
+  padding: 4px 42px;
+}
+
+.sectionSubMenu .nav-tabs>li.active>a, 
+.sectionSubMenu .nav-tabs>li.active>a:focus, 
+.sectionSubMenu .nav-tabs>li.active>a:hover {
+  color: #fff !important;
+  background-color: #389767;
+}
+
+.sectionSubMenu .nav-tabs>li>a {
+  border-radius: 2px 2px 0 0;
+  border: 1px solid #ddd;
+  color: #b1afaf;
+}
+
+.relVal{
+  position: relative;
+  margin-bottom:25px;
+}
+
+.relVal label{
+	margin-bottom:15px;
+}
+
+.missingSelect{
+  border: 1px solid #F44;
+  border-bottom: 1px solid #F44;
+}
+
+span.errorTag {
+    position: absolute;
+    text-align: center;
+    color: rgb(148, 125, 3);
+    background: url(./../../global/images/errorTag.png);
+    background-size: 100% 100%;
+    width: 50px;
+    cursor: help;
+    height: 22px;
+    padding: 3px;
+    z-index: 99;
+}
+
+.sectionSubMenu .nav-tabs>li.active:after, 
+.sectionSubMenu .nav-tabs>li.active:before {
+	top: 92%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.sectionSubMenu .nav-tabs>li.active:after {
+	border-top-color:  #389767;
+	border-width: 8px 20px 0 20px;;
+	margin-left: -20px;
+}
+
+
+
+.sectionSubMenu .tab-pane ul  {
+  padding: 8px;
+  margin: 0;
+}
+
+.sectionSubMenu .tab-pane ul li {
+  display: inline-block;
+  padding: 3px 16px;
+  border-right: 2px solid #eaeaea;
+}
+
+.sectionSubMenu .tab-pane ul li.active {
+  font-weight:bold;
+}
+
+.sectionSubMenu .tab-pane ul li.active a{
+  color: #6d6d6d;
+}
+
+.sectionSubMenu .tab-content>.tab-pane {
+   background-color: #f1f1f1;
+   border-left: 1px solid #ddd;
+   border-right: 1px solid #ddd;
+   border-bottom: 1px solid #ddd;
+}
