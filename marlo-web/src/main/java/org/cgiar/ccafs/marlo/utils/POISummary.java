@@ -439,7 +439,11 @@ public class POISummary {
         paragraph.setAlignment(poiParameter.getAlignment());
         XWPFRun paragraphRun = paragraph.createRun();
         this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
-        paragraphRun.setColor(TEXT_FONT_COLOR);
+        if (poiParameter.getFontColor() != null) {
+          paragraphRun.setColor(poiParameter.getFontColor());
+        } else {
+          paragraphRun.setColor(TEXT_FONT_COLOR);
+        }
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
         if (highlightFirstColumn && record == 0) {
