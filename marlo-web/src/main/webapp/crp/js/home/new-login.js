@@ -155,6 +155,9 @@ function firstForm(){
   //Change button value to Next
   $("input#login_next").val("Next");
 
+  //Hide terms and conditions checkbox
+  $('.loginForm').removeClass("terms-check");
+
 }
 
 function initJreject() {
@@ -257,10 +260,10 @@ function loadAvailableItems(email){
           if(crpCookie==data.crps[i].acronym){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym).click();
           }
-          if(!data.agree){
-            showTermsCheckbox();
-          }
         });
+        if(!data.user.agree){
+          showTermsCheckbox();
+        }
         //If user has access to the crpSession or crpSession is void, change form style
         if(hasAccess || crpSession==""){
           secondForm(data);
@@ -394,6 +397,8 @@ function setCookie(cname,cvalue,mins) {
 function showTermsCheckbox(){
   //Show terms and conditions checkbox
   $('.terms-container').removeClass("hidden");
+
+  $('.loginForm').addClass("terms-check");
 }
 
 function loadSelectedImage(selectedImageAcronym){
