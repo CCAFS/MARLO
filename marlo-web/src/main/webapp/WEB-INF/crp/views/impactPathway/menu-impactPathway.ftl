@@ -40,12 +40,28 @@
 <nav id="secondaryMenu" class="">
   <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
   <div class="menuList">
-  [#if programs??]
-    [#list programs as program]
-      [#assign isActive = (program.id == crpProgramID)/]
-      <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a></p>
+  [#if centerGlobalUnit]
+    [#list researchAreas as area ]
+      [#if area.researchPrograms?has_content]
+        [#list area.researchPrograms as program]
+          [#assign isActive = (program.id == crpProgramID)/]
+          <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            ${(program.composedName)!}</a>
+          </p>
+        [/#list]
+      [/#if]
     [/#list]
+  [#else]
+    [#if programs??]
+      [#list programs as program]
+        [#assign isActive = (program.id == crpProgramID)/]
+        <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          [@s.text name="flagShip.menu"/] ${program.acronym}</a>
+        </p>
+      [/#list]
+    [/#if]
   [/#if]
+  
   </div>
   <ul>
     [#list menus as menu]
@@ -124,9 +140,6 @@
   </div>  
 </div>
 
-[#-- Discard Changes Popup --]
-[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
-
 
 [#if centerGlobalUnit]
 [#else]
@@ -175,3 +188,9 @@
 </div>
 [/#if]  
 
+
+[#-- Discard Changes Popup --]
+[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
+
+[#-- program Submit JS --]
+[#assign customJS = [ "${baseUrlMedia}/js/impactPathway/impactGraphic.js", "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]
