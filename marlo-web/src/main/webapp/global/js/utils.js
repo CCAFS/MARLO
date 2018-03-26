@@ -275,7 +275,7 @@ function isImpactPathwaySection() {
 
 function isCenterImpactPathwaySection() {
   var url = window.location.href;
-  return url.includes("/centerImpactPathway/");
+  return (url.includes("/impactPathway/")) && centerGlobalUnit;
 }
 
 function isMonitoringSection() {
