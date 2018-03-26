@@ -149,7 +149,8 @@ function validateThisSection() {
   // Validate impact pathway
   if(isCenterImpactPathwaySection()) {
     sectionData.programID = $('input[name="programID"]').val();
-    validateService = "/validateCenterImpactPathway.do";
+    sectionData.crpProgramID = $('input[name="crpProgramID"]').val();
+    validateService = "/impactPathway/validateCenterImpactPathway.do";
   }
 
   // Validate monitoring
