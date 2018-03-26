@@ -260,13 +260,10 @@
 }
 
 .login-back-container{
-  margin-top: 60px;
-  width: 100%;
+  position: absolute;
+  top: 92%;
+  width: 90%;
 }
-
-.loginForm.terms-check .login-back-container{
-  margin-top: 70px;
-} 
 
 .login-back-container .loginBack{
   color: #337ab7;
