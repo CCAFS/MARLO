@@ -18,7 +18,9 @@ import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -81,6 +83,17 @@ public class SendMailS {
     if (ccEmail != null) {
       ccEmail = ccEmail.replaceAll(", " + toEmail, "");
 
+    }
+    String[] ccEmails = ccEmail.split(", ");
+
+    ccEmail = new String();
+    Set<String> noRepeatEmails = new HashSet<>();
+
+    for (String string : ccEmails) {
+      noRepeatEmails.add(string.trim());
+    }
+    for (String string : noRepeatEmails) {
+      ccEmail = ccEmail + ", " + string;
     }
     // properties.put("mail.smtp.auth", "true");
     // properties.put("mail.smtp.starttls.enable", "true");
@@ -218,6 +231,19 @@ public class SendMailS {
       ccEmail = ccEmail.replaceAll(", " + toEmail, "");
 
     }
+    String[] ccEmails = ccEmail.split(", ");
+
+    ccEmail = new String();
+    Set<String> noRepeatEmails = new HashSet<>();
+
+    for (String string : ccEmails) {
+      noRepeatEmails.add(string.trim());
+    }
+    for (String string : noRepeatEmails) {
+      ccEmail = ccEmail + ", " + string;
+    }
+
+
     // properties.put("mail.smtp.auth", "true");
     // properties.put("mail.smtp.starttls.enable", "true");
     // properties.put("mail.smtp.ssl.trust", config.getEmailHost());
