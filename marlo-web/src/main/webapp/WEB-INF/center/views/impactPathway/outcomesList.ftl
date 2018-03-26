@@ -44,11 +44,9 @@
         [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
         
         [#-- Program Title --]
-        <div class="col-md-12">
-          <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outcomes</h3>
-          <hr />
-        </div><div class="clearfix"></div>
-      
+        <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outcomes</h3>
+        <hr />
+    
         [#-- Hidden Parameters --]
         <input type="hidden" name="programID" value="${crpProgramID}" />
         
@@ -57,7 +55,7 @@
         <span id="programSelected" class="hidden">${selectedProgram.id}</span>
         
         
-        <div class="simpleBox col-md-12">
+        <div class="simpleBox form-group">
           <label for="">Research Topic:<span class="red">*</span></label>
           <select name="researchTopics" id="researchTopics">
             <option value="-1" >View All</option>
@@ -66,6 +64,7 @@
             [/#list]
           </select>
         </div>
+        <br />
           
         [@s.form action=actionName enctype="multipart/form-data" ]
         
@@ -92,7 +91,7 @@
             [#if outcomes?has_content]
               [#if selectedResearchTopic?has_content] 
               <div class="text-right">
-              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewCenterOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome" /]
               </a></div>
               </div>
@@ -104,7 +103,7 @@
             [#else]
               [#if selectedResearchTopic?has_content] 
               <div class="text-center">
-              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewCenterOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome" /]
               </a></div>
               </div>
@@ -117,7 +116,7 @@
          [/#if]          
         [/@s.form]
         [#else]
-         <p class="text-center borderBox inf">Before completing this section, please add at least one Research Topic by <a href="[@s.url action='${centerSession}/programimpacts'][@s.param name="crpProgramID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p> 
+         <p class="text-center borderBox inf">Before completing this section, please add at least one Research Topic by <a href="[@s.url action='${centerSession}/researchTopics'][@s.param name="crpProgramID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p> 
         [/#if]
       </div>
     </div>
