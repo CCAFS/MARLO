@@ -73,8 +73,11 @@ public class ValidateUserAction extends BaseAction {
       userFound.put("loginSuccess", false);
     }
 
-    user.setAgreeTerms(agree);
-    userManager.saveLastLogin(user);
+    if (user != null) {
+      user.setAgreeTerms(agree);
+      userManager.saveLastLogin(user);
+
+    }
 
     return SUCCESS;
   }
