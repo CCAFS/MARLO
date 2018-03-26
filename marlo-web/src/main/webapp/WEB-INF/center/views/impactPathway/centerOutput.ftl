@@ -46,11 +46,7 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway-output.ftl" /]
         
-         
-
         <span id="programSelected" class="hidden">${(selectedProgram.id)!}</span>
-        
-        
         
         [#-- Back --]
         <h5 class="pull-right">
@@ -61,72 +57,74 @@
         
         [@s.form action=actionName enctype="multipart/form-data" ]
         
-        
-        
         <h3 class="headTitle"> Output General Information </h3>
         <div class="borderBox">
-          <!--h5 class="sectionSubTitle"> Output description</h5-->
-          
-          [#-- Output Name --]
-          <div class="form-group">
-            [@customForm.textArea name="${outputCustomName}.title"  i18nkey="output.name" required=true className="output-name limitWords-50" editable=editable /]
+          [#-- Output description --]
+          <div class="">
+            <!--h5 class="sectionSubTitle"> Output description</h5-->
             
-            <div class="row">
-              <div class="col-sm-7">[@customForm.input name="${outputCustomName}.shortName" i18nkey="output.shortName" className="limitChar-30" required=false editable=editable /]</div>       
+            [#-- Output Name --]
+            <div class="form-group">
+              [@customForm.textArea name="${outputCustomName}.title"  i18nkey="output.name" required=true className="output-name limitWords-50" editable=editable /]
+              <div class="row">
+                <div class="col-sm-7">[@customForm.input name="${outputCustomName}.shortName" i18nkey="output.shortName" className="limitChar-30" required=false editable=editable /]</div>       
+              </div> 
             </div> 
-            
-          </div> 
-          
+          </div>  
           [#-- Outcome Contributions--]
-        <h3 class="headTitle"> Outcome Contributions </h3>
-        <div class="borderBox nextUsers-list" listname="${outputCustomName}.nextUsers">
-        
-          <div class="form-group">      
-            <div class="output panel tertiary">
-              <div class="panel-body" listname="output.outcomeList"> 
-                <ul id="outputsBlock" class="list outputList">
-                [#if  output.outcomes?has_content]  
-                  [#list output.outcomes as outcome]
-                     [@outcomesMacro element=outcome name="output.outcomes" index=outcome_index isTemplate=false/]
-                  [/#list] 
-                [#else]
-                  <p class="text-center outputInf"> [@s.text name="projectDescription.notOutputs" /] </p>  
-                [/#if]  
-                </ul>
-                [#if editable]
-                  <select name="" class="outputSelect">
-                    <option value="-1">Select an option...</option>
-                    [#list outcomes as outcome]
-                      <optgroup  label="${(outcome.researchTopic.researchTopic)!}">
-                        [#list outcome.outcomes as op]<option value="${(op.id)!}">${(op.composedName)!}</option>[/#list]
-                      </optgroup>
-                    [/#list]
-                  </select>
-                [/#if] 
-              </div>              
+          <h4 class="sectionTitle"> Outcome Contributions </h4>
+          <div class="nextUsers-list" listname="${outputCustomName}.nextUsers">
+            <div class="form-group">      
+              <div class="output panel tertiary">
+                <div class="panel-body" listname="output.outcomeList"> 
+                  <ul id="outputsBlock" class="list outputList">
+                  [#if  output.outcomes?has_content]  
+                    [#list output.outcomes as outcome]
+                       [@outcomesMacro element=outcome name="output.outcomes" index=outcome_index isTemplate=false/]
+                    [/#list] 
+                  [#else]
+                    <p class="text-center outputInf"> [@s.text name="projectDescription.notOutputs" /] </p>  
+                  [/#if]  
+                  </ul>
+                  [#if editable]
+                    <select name="" class="outputSelect">
+                      <option value="-1">Select an option...</option>
+                      [#list outcomes as outcome]
+                        <optgroup  label="${(outcome.researchTopic.researchTopic)!}">
+                          [#list outcome.outcomes as op]<option value="${(op.id)!}">${(op.composedName)!}</option>[/#list]
+                        </optgroup>
+                      [/#list]
+                    </select>
+                  [/#if] 
+                </div>
+              </div>
             </div>
+          </div>  
+            
+          <h4 class="sectionTitle"> Next Users </h4>
+          <div class="">
+            <div class="nextUsers-list" listname="${outputCustomName!''}.nextUsers">
+              [#if output.nextUsers?has_content]
+                [#list output.nextUsers as nextUser]
+                  [@nextUserMacro nextUser=nextUser name="output.nextUsers" index=nextUser_index /]
+                [/#list]
+              [#else]
+                  [@nextUserMacro nextUser={} name="output.nextUsers" index=0 /]
+              [/#if] 
+            </div>
+            [#if editable] 
+            <div class="text-right">
+              <div class="addNextUser button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="Add a new Next User"/]</div>
+            </div>
+            [/#if]
           </div>
           
-        </div>  
           
-        <h3 class="headTitle"> Next Users </h3>
-        <div class="borderBox nextUsers-list" listname="${outputCustomName!''}.nextUsers">
-          [#if output.nextUsers?has_content]
-            [#list output.nextUsers as nextUser]
-              [@nextUserMacro nextUser=nextUser name="output.nextUsers" index=nextUser_index /]
-            [/#list]
-          [#else]
-              [@nextUserMacro nextUser={} name="output.nextUsers" index=0 /]
-          [/#if] 
         </div>
-        [#if editable] 
-        <div class="text-right">
-          <div class="addNextUser button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="Add a new Next User"/]</div>
-          <hr />
-        </div>
-        [/#if]
         [#-- Section Buttons--]
-        [#include "/WEB-INF/center/views/impactPathway/buttons-impactPathway-output.ftl" /]   
+        [#include "/WEB-INF/center/views/impactPathway/buttons-impactPathway-output.ftl" /]  
+        
+          
         [/@s.form]
         
       </div>
@@ -143,7 +141,7 @@
 
 [#macro nextUserMacro nextUser name index template=false]
   [#assign nextUserCustomName = "${name}[${index}]" /]
-  <div id="nextUser-${template?string('template', index)}" class="nextUser borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+  <div id="nextUser-${template?string('template', index)}" class="nextUser simpleBox form-group" style="position:relative; display:${template?string('none','block')}">
     [#-- Remove Button --]
     [#if editable]
     <div class="removeNextUser removeIcon" title="Remove assumption"></div>
