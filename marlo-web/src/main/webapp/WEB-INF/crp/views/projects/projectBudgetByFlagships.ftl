@@ -19,8 +19,8 @@
   {"label":"projectBudgetByFlagships", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -135,7 +135,7 @@
 ]
 </span>
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro BudgetByFlagshipsMacro element name index=-1 selectedYear=0 isTemplate=false]
   <div id="projectFlagship-${isTemplate?string('template',(element.id)!)}" class="projectFlagship expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">

@@ -22,8 +22,8 @@
   {"label":"deliverableInformation", "nameSpace":"/projects", "action":""}
 ]/]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/deliverableListTemplate.ftl" as deliverableList /]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
 
@@ -196,4 +196,4 @@
 [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
 [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]

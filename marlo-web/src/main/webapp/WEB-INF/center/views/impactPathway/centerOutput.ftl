@@ -23,8 +23,8 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outcomesList /]
 [#--  Research Otcomes Help Text--] 
@@ -137,7 +137,7 @@
 [@nextUserMacro nextUser={} name="output.nextUsers" index=-1 template=true/]
 [@outcomesMacro element={} name="output.outcomes"  index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro nextUserMacro nextUser name index template=false]
   [#assign nextUserCustomName = "${name}[${index}]" /]
