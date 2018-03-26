@@ -585,31 +585,31 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
     if (tableC != null) {
       POIField[] sData = {new POIField("Gender", ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageGenderPrincipal() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageGenderPrincipal() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageGenderSignificant() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageGenderSignificant() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 4)),
           ParagraphAlignment.CENTER),
         new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData);
       datas.add(data);
       POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageYouthPrincipal() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageYouthPrincipal() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageYouthSignificant() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageYouthSignificant() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageYouthNotScored() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageYouthNotScored() / 100, 4)),
           ParagraphAlignment.CENTER),
         new POIField("", ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData2);
       datas.add(data);
       POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevPrincipal() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevPrincipal() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevSignificant() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevSignificant() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevNotScored() / 100, 2)),
+        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevNotScored() / 100, 4)),
           ParagraphAlignment.CENTER),
         new POIField("", ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData3);
