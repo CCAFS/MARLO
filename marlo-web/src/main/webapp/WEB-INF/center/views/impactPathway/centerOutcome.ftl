@@ -44,14 +44,12 @@
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway-outcome.ftl" /]
 
         <span id="programSelected" class="hidden">${(selectedProgram.id)!}</span>
-        [#-- Impact pathway sub menu --]
-        <div class="simpleBox col-md-12">
-            <label for="">Research Topic:  </label>
-            <p>${selectedResearchTopic.researchTopic}</p>
-         </div>
         
-        <br />
-        <br />
+        [#-- Impact pathway sub menu --]
+        <div class="form-group borderBox">
+            <h4>${(selectedProgram.researchArea.acronym)!} <span class="glyphicon glyphicon-chevron-right"></span> ${(selectedProgram.composedName)!}</h4>
+            <p> <strong>Research Topic:  </strong>${selectedResearchTopic.researchTopic}</p>
+        </div>
         
         [#-- Back --]
         <h5 class="pull-right">
@@ -59,14 +57,14 @@
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outcomes list
           </a>
         </h5>
-        
         <div class="clearfix"></div>
+        
         [#assign outcomeCustomName= "outcome" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]
         
+        <h3 class="headTitle"> Outcome Information</h3>
         <div class="borderBox">
-          <h5 class="sectionSubTitle"> Outcome Information</h5>
           
           [#-- Research impact --]
           <div class="form-group">
