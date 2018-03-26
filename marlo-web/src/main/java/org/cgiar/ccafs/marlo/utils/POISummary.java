@@ -361,7 +361,7 @@ public class POISummary {
     paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily(FONT_TYPE);
-    paragraphRun.setFontSize(10);
+    paragraphRun.setFontSize(11);
   }
 
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
