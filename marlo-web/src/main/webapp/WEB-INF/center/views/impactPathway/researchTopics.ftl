@@ -41,10 +41,8 @@
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway.ftl" /]
         
         [#-- Title --]
-        <div class="col-md-12">
-          <h3 class="subTitle headTitle outcomeListTitle">Research Topics</h3>
-          <hr />
-        </div><div class="clearfix"></div>
+        <h3 class="subTitle headTitle outcomeListTitle">Research Topics</h3>
+        <hr />
         
         [@s.form action=actionName enctype="multipart/form-data" ]     
           <div id="researchTopics" class="outcomes-list" listname="researchTopics">

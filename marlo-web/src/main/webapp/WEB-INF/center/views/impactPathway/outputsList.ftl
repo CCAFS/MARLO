@@ -44,10 +44,9 @@
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway.ftl" /]
         
         [#-- Program Title --]
-        <div class="col-md-12">
-          <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outputs</h3>
-          <hr />
-        </div><div class="clearfix"></div>
+        <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outputs</h3>
+        <hr />
+
           
         [#-- Hidden Parameters --]
         <input type="hidden" name="programID" value="${crpProgramID}" />
