@@ -20,8 +20,8 @@
   {"label":"impactPathway", "nameSpace":"", "action":"topics"}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#--  Research Topics Help Text--] 
@@ -76,7 +76,7 @@
 [#-- Outcome Template --]
 [@topicMacro element={} name="topics" index=-1 template=true /]
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#-- MACROS --]
 [#macro topicMacro element name index template=false]

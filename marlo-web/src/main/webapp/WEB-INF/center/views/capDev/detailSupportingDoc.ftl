@@ -21,8 +21,8 @@
   {"label":"capdevSupportingDocs", "nameSpace":"/capdev", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 
 
@@ -227,4 +227,4 @@
 
 
 
-[#include "/WEB-INF/center/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]

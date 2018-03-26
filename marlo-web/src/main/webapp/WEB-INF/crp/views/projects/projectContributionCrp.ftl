@@ -22,8 +22,8 @@
 ] /]
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
@@ -308,7 +308,7 @@
 
 
   
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#macro milestoneMacro element name index isTemplate=false]

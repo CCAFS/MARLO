@@ -1,0 +1,409 @@
+@CHARSET "UTF-8";
+
+.conventionContainer{
+		border-style: solid;
+		border-width: 1px;
+		background-color: #f2f2f2;
+		border-radius: 5px;
+		padding: 1%;
+		width: 100%;
+		height: 63px;
+    	font-size: 13px;
+}
+
+.title-container{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.title-container .download-template-button{
+	display: inline-block;
+	position: absolute;
+	right: 0;
+}
+
+.subTitle-container{
+	margin-top: 25px;
+}
+
+a button.downloadButtonHome:hover{
+	background-color: #277443;
+}
+
+.col-center{
+    float: none;
+    margin: 0 auto;
+}
+
+.searchArea{
+		margin: 1%;
+}
+
+.searchIcon{
+		width: 9px;
+		height: 20px;
+}
+
+.capDevIconConvention{
+	width: 13%;
+    margin-left: auto;
+}
+
+.newCapdevForm{
+		border-style: solid;
+		border-width: 1px;
+		border-color: #E7E6E6;
+}
+
+.newCapdevField{
+		margin: 1%;
+}
+
+.approachesListTitle{
+		margin-left:3%;
+		border-bottom: 1px solid #E7E6E6;
+		width: 94%;
+		font-family: Sans-serif;
+		font-weight: 600;
+		
+}
+
+.approachesListContainer{
+	margin:1%;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
+}
+
+.objectivesTitle{
+	width: 94%;
+	margin-left:3%;
+	border-bottom: 1px solid #E7E6E6;
+	font-family: Sans-serif;
+	font-weight: 600;
+}
+
+.addObjectiveButton{
+	width: 98%;
+}
+
+.outComesContainer{
+    margin:1%;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
+
+}
+
+.participantsTitle{
+	font-family: Sans-serif;
+	font-weight: 600;
+	border-bottom: 1px solid #2e874f;
+}
+
+.participantsBox{
+	width: 94%;
+	margin-left: 3%;
+	margin-top: -5px;
+	padding: 2%;
+	border-style: solid;
+    border-width: 1px;
+    border-color: #E7E6E6;
+}
+
+.paintedDot{
+	border-radius: 50%;
+	background-color: #70ad47;
+	width: 1px;
+
+}
+
+.notPaintedDot{
+	border-radius: 50%;
+	background-color: #E7E6E6;
+	width: 1px;
+}
+
+.attachTitle{
+	width: 94%;
+	margin-left:3%;
+	border-bottom: 1px solid #E7E6E6;
+	font-family: Sans-serif;
+	font-weight: 600;
+}
+
+.attachmentContainer{
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #E7E6E6;
+	width: 94%;
+	min-height: 100px;
+	margin-left:3%;
+}
+
+
+.deliverablesTitle{
+	width: 94%;
+	margin-left:3%;
+	border-bottom: 1px solid #E7E6E6;
+	font-family: Sans-serif;
+	font-weight: 600;
+}
+
+.deliverablesContainer{
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #E7E6E6;
+	width: 94%;
+	min-height: 100px;
+	margin:3%;
+}
+
+
+.newDeliverableForm{
+	border-style: solid;
+	border-width: 1px;
+	border-color: #E7E6E6;
+}
+
+.supporDocumentsContainer{
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #E7E6E6;
+	
+}
+
+.supportdocumentsList{
+	margin: 1%;
+}
+
+.newDeliverableField{
+		margin: 1%;
+}
+
+
+.borderContainer{
+	margin:1%;
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
+}
+
+.contactList ul {
+  max-height: 355px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.searchFields{
+	display: inline-block;
+}
+
+.searchcontact-input{
+	width: 80%;
+	margin-bottom: 7px;
+}
+
+.search-loader{
+	float: right;
+	margin-right: 96px;
+	margin-bottom: 8px;
+}
+
+.listContainer{
+	border-left: 3px solid #E7E6E6;
+	border-bottom: 1px solid #E7E6E6;
+}
+
+.listContainerTitle{
+	margin-left:3%;
+	border-bottom: 1px solid #E7E6E6;
+	width: 45%;
+	font-family: Sans-serif;
+	font-weight: 600;
+}
+
+.capdevinfo{
+	border-radius: 5px;
+	background-color: #d9ead3;
+	height: 60px;
+}
+
+.list > li{
+	list-style-type: none;
+	margin: 1%;
+	padding: 1px 4px 0px 6px;
+    background-color: #F7F7F7;
+    border: 1px solid #E0E0E0 !important;
+    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.highlight  {
+    width: 126%;
+    border-radius: 10px;
+    padding: 3%;
+    margin-left: -100px;
+    
+}
+
+.participantMessage{
+	text-align: center;
+	margin: 0 3%  2%;
+}
+
+.warning{
+	background-color: #ffb3b3;
+    padding: 6px;
+    text-align: center;
+    border-bottom: 2px solid #fff;
+    font-style: italic;
+}
+
+.btnPreview{
+	width: 100px;
+	margin:0 auto;
+}
+
+.downloadButton{
+  padding: 4px 25px 4px 28px;
+  margin: 5px 0;
+  text-decoration: none;
+  cursor: pointer;
+  color:#fff;
+}
+
+.downloadButtonHome{
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  color:#fff;
+}
+
+.capdevButtons{
+	background-color: #2e874f;
+	border-bottom: 3px solid #2e874f;
+}
+
+.loader{
+	width: 100px;
+	height: 60px;
+	margin: 5px auto;
+}
+
+.capdevParticipantsTable{
+	overflow-x: scroll;
+	margin: 2% 1% 2%;
+}
+
+.capdev-participantslist-title{
+	border-bottom: 3px solid #2e874f;
+	margin: 0 0 2% 0;
+}
+
+
+.fileError{
+	 list-style: none;
+	 color:red;
+}
+
+.borderedBox{
+	border: 2px solid #fff;
+}
+
+.capdevDimension{
+	position: relative;
+	border-bottom: 1px solid #E7E6E6;
+	margin: 2% 0 2% 0;
+}
+
+.capdevmenu-links > a{
+    font-size: 0.95em;
+    color: #5E5E5E;
+}
+
+.capDevList thead tr.header th {
+  height:45px;
+  background-color: #7B9074;
+  color: #fff;
+  text-align: center;
+}
+
+.capDevList a:HOVER {
+  text-decoration: underline;
+}
+
+.supportDocsList thead tr.header th {
+  height:45px;
+  background-color: #7B9074;
+  color: #fff;
+  text-align: center;
+}
+
+.supportDocsList a:HOVER {
+  text-decoration: underline;
+}
+
+div.fixed{
+	position: fixed;
+    bottom: 276px;
+    right: 400px;
+    width: 300px;
+    border: 3px solid #73AD21;
+}
+
+.addButtons > div {
+	/*display: inline-block;*/
+	float: right;
+	margin: 0 2% 2% 2%;
+}
+
+.removeCol > a{
+	margin: 34%;
+}
+
+.removeCol > img{
+	margin: 0 34% 0 34%;
+}
+
+.removeCol .modal-body p{
+	font-size: 15px;
+}
+
+.removeCol a.btn.btn-danger.btn-ok{
+	color: #fff;
+}
+
+div.icon {
+    margin-left: 18px;
+}
+
+div.contentIcon {
+	border-style: solid;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: #E7E6E6;
+    background-color: #f2f2f2;
+}
+
+img.capDevIconEnable {
+	width: 34%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    border-color: #777;
+    background-color: #d9ead3;
+    margin: 2px 5px 2px 0;
+		
+}
+
+img.capDevIconDisable{
+	width: 34%;
+    opacity: 0.4;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    border-color: #777;
+    background-color: #f2f2f2;
+    margin: 2px 5px 2px 0;
+}

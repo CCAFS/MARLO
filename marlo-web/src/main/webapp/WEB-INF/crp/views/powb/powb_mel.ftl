@@ -14,8 +14,8 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="monitoringLearning.help" /]
@@ -92,7 +92,7 @@
 [#-- Planned Study Template --]
 [@flagshipsPlannedMELMacro element={} name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=-1 template=true/]
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro flagshipsPlannedMELMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]

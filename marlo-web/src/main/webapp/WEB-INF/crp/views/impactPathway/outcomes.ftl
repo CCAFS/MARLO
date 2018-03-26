@@ -26,8 +26,8 @@
 
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
@@ -139,7 +139,7 @@
 [#-- Baseline Indicator Template --]
 [@baselineIndicatorMacro indicator={} name="outcomes[-1].indicators" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#-----------------------------------  Outcomes Macros  -------------------------------------------]
 
