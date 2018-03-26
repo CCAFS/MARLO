@@ -184,20 +184,20 @@
 			</result>
 		</action>
 
-		<action name="{crp}/outputs"
+		<action name="{crp}/centerOutput"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutputsAction">
 			<interceptor-ref name="centerOutputStack" />
-			<result name="input">/WEB-INF/center/views/impactPathway/output.ftl
+			<result name="input">/WEB-INF/center/views/impactPathway/centerOutput.ftl
 			</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/outputs</param>
+				<param name="actionName">${crpSession}/centerOutput</param>
 				<param name="outputID">${outputID}</param>
 				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
-				<param name="actionName">${crpSession}/outputs</param>
+				<param name="actionName">${crpSession}/centerOutput</param>
 				<param name="outputID">${outputID}</param>
 				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>

@@ -3,7 +3,7 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${outputID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrlMedia}/js/impactPathway/centerOutput.js", 
   "${baseUrl}/global/js/fieldsValidation.js", 
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -23,8 +23,8 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outcomesList /]
 [#--  Research Otcomes Help Text--] 
@@ -37,11 +37,12 @@
     
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center/views/impactPathway/menu-impactPathway.ftl" /]
+        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Impact pathway sub menu --]
-        [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway-output.ftl" /]
+        [#-- Impact pathway sub menu 
+        [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
+        --]
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway-output.ftl" /]
         
