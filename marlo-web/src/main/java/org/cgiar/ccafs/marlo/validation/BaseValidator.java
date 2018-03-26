@@ -24,8 +24,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.Calendar;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
@@ -106,7 +104,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(CapacityDevelopment capacityDevelopment, String sectionName, BaseAction action) {
 
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByCapdev(capacityDevelopment.getId(), sectionName, year);
@@ -138,7 +136,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(CenterDeliverable deliverable, CapacityDevelopment capacityDevelopment,
     String sectionName, BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status = centerSectionStatusManager.getSectionStatusBySupDocs(deliverable.getId(),
       capacityDevelopment.getId(), sectionName, year);
@@ -172,7 +170,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(CenterDeliverable deliverable, CenterProject project, String sectionName,
     BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), project.getId(), sectionName, year);
@@ -204,7 +202,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
   protected void saveMissingFields(CrpProgram program, CenterOutcome outcome, String sectionName, BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByOutcome(program.getId(), outcome.getId(), sectionName, year);
@@ -236,7 +234,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
   protected void saveMissingFields(CrpProgram program, CenterOutput output, String sectionName, BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByOutput(program.getId(), output.getId(), sectionName, year);
@@ -268,7 +266,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
   protected void saveMissingFields(CrpProgram program, CenterProject project, String sectionName, BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByProject(program.getId(), project.getId(), sectionName, year);
@@ -299,7 +297,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(CrpProgram program, String sectionName, BaseAction action) {
 
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByProgram(program.getId(), sectionName, year);

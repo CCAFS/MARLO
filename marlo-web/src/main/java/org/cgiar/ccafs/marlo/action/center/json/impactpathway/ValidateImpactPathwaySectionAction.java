@@ -53,8 +53,11 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
 
   private static final long serialVersionUID = 9053048564427813253L;
+
+
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateImpactPathwaySectionAction.class);
+
   // Managers
   private CrpProgramManager programServcie;
   private ICenterSectionStatusManager sectionStatusService;
@@ -66,10 +69,10 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   private Map<String, Object> section;
   // Model
   private CenterSectionStatus sectionStatus;
-
   // Validator
   private OutcomesValidator outcomeValidator;
   private OutputsValidator outputValidator;
+
   private ProgramImpactsValidator impactValidator;
   private ResearchTopicsValidator topicValidator;
 
@@ -125,7 +128,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
               if (outcomes != null && !outcomes.isEmpty()) {
                 for (CenterOutcome researchOutcome : outcomes) {
                   sectionStatus = sectionStatusService.getSectionStatusByOutcome(program.getId(),
-                    researchOutcome.getId(), sectionName, this.getCenterYear());
+                    researchOutcome.getId(), sectionName, this.getActualPhase().getYear());
 
                   if (sectionStatus == null) {
                     sectionStatus = new CenterSectionStatus();
@@ -161,7 +164,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
           if (outputs != null && !outputs.isEmpty()) {
             for (CenterOutput researchOutput : outputs) {
               sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(), researchOutput.getId(),
-                sectionName, this.getCenterYear());
+                sectionName, this.getActualPhase().getYear());
 
               if (sectionStatus == null) {
                 sectionStatus = new CenterSectionStatus();
@@ -180,7 +183,8 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
         break;
       default:
-        sectionStatus = sectionStatusService.getSectionStatusByProgram(crpProgramID, sectionName, this.getCenterYear());
+        sectionStatus =
+          sectionStatusService.getSectionStatusByProgram(crpProgramID, sectionName, this.getActualPhase().getYear());
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionStatus.getSectionName());
         section.put("missingFields", sectionStatus.getMissingFields());
@@ -195,10 +199,14 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Map<String, Object> getSection() {
     return section;
   }
+
+  public CenterSectionStatus getSectionStatus() {
+    return sectionStatus;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -230,9 +238,13 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     validSection = sections.contains(sectionName);
   }
 
-
   public void setSection(Map<String, Object> section) {
     this.section = section;
+  }
+
+
+  public void setSectionStatus(CenterSectionStatus sectionStatus) {
+    this.sectionStatus = sectionStatus;
   }
 
   public void validateImpact() {
