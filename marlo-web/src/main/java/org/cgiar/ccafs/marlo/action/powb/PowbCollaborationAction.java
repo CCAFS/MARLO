@@ -173,7 +173,7 @@ public class PowbCollaborationAction extends BaseAction {
   public boolean canEditRegion(long regionId) {
     String permission = this.generatePermission(Permission.POWB_SYNTHESIS_RPL_EFFORT, this.getCrpSession(),
       powbSynthesis.getId().toString(), regionId + "");
-    String permissionTotal = this.generatePermission(Permission.POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION,
+    String permissionTotal = this.generatePermission(Permission.POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION + ":*",
       this.getCrpSession(), powbSynthesis.getId().toString());
 
 
