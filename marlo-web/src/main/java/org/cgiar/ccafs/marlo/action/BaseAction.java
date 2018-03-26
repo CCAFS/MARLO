@@ -4057,6 +4057,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
 
+
           if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
             Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
@@ -4069,8 +4070,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
           } else {
+
+
             if (sectionStatus.getMissingFields().length() > 0) {
-              return false;
+              if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.ACTIVITIES.getStatus())) {
+                if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+                  if (sectionStatus.getMissingFields().length() > 0) {
+                    return false;
+                  }
+
+                }
+              } else {
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
+              }
+
             }
           }
 
