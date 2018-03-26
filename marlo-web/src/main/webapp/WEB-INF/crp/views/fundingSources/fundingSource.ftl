@@ -529,8 +529,8 @@
           <table class="table">
             <thead>
              <tr>
-              <th>Project ID</th>
-              <th>Project title</th>
+              <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
+              <th>[@s.text name="fundingSource.projectsAssigned.projectTitle" /]</th>
               <th>Lead partner</th>
               <th>Budget type</th>
               <th>Budget amount</th>
