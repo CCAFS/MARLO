@@ -327,7 +327,8 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     // Filling submission
     List<CenterSubmission> submissions = new ArrayList<>();
     for (CenterSubmission submission : researchProgram.getCenterSubmissions().stream()
-      .filter(s -> s.getResearchCycle().getId() == researchCycle.getId() && s.getYear() == this.getCenterYear())
+      .filter(
+        s -> s.getResearchCycle().getId() == researchCycle.getId() && s.getYear() == this.getActualPhase().getYear())
       .collect(Collectors.toList())) {
       submissions.add(submission);
     }
@@ -343,8 +344,8 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
       impactSubmission = "Submitted on " + submissionDate + " (" + fisrtSubmission.getResearchCycle().getName()
         + " cycle " + fisrtSubmission.getYear() + ")";
     } else {
-      impactSubmission =
-        "Center Submission for " + researchCycle.getName() + " cycle " + this.getCenterYear() + ": &lt;pending&gt;";
+      impactSubmission = "Center Submission for " + researchCycle.getName() + " cycle "
+        + this.getActualPhase().getYear() + ": &lt;pending&gt;";
     }
 
     // Get CIAT imgage URL from repo

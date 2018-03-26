@@ -511,7 +511,7 @@ public class ResearchTopicsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, topics, selectedProgram, true);
+      validator.validate(this, topics, selectedProgram, true);
     }
   }
 }

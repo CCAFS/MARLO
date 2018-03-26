@@ -974,7 +974,7 @@ public class ProgramImpactsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, impacts, selectedProgram, true);
+      validator.validate(this, impacts, selectedProgram, true);
     }
   }
 

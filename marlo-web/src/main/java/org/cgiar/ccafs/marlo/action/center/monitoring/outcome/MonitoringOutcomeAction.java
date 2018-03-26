@@ -179,7 +179,7 @@ public class MonitoringOutcomeAction extends BaseAction {
 
 
     Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, this.getCenterYear());
+    calendarStart.set(Calendar.YEAR, this.getActualPhase().getYear());
     Calendar calendarEnd = Calendar.getInstance();
     calendarEnd.set(Calendar.YEAR, outcome.getTargetYear());
 

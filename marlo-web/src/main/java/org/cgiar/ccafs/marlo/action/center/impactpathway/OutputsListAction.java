@@ -155,7 +155,7 @@ public class OutputsListAction extends BaseAction {
       }
 
       CenterSectionStatus status = sectionStatusService.getSectionStatusByOutput(crpProgramID, output.getId(),
-        "outputsList", this.getCenterYear());
+        "outputsList", this.getActualPhase().getYear());
 
       if (status != null) {
         sectionStatusService.deleteSectionStatus(status.getId());

@@ -82,7 +82,7 @@ public class CapDevSubmissionAction extends BaseAction {
           CapacityDevelopment capDev = capdevService.getCapacityDevelopmentById(capdevID);
 
           List<CenterSubmission> submissions = new ArrayList<>(capDev.getSubmissions().stream()
-            .filter(s -> s.getYear().intValue() == this.getCenterYear()).collect(Collectors.toList()));
+            .filter(s -> s.getYear().intValue() == this.getActualPhase().getYear()).collect(Collectors.toList()));
 
           if (submissions != null && submissions.size() > 0) {
             this.setCenterSubmission(submissions.get(0));
@@ -96,7 +96,7 @@ public class CapDevSubmissionAction extends BaseAction {
           submission.setCapacityDevelopment(capacityDevelopment);
           submission.setDateTime(new Date());
           submission.setUser(this.getCurrentUser());
-          submission.setYear((short) this.getCenterYear());
+          submission.setYear((short) this.getActualPhase().getYear());
           // submission.setResearchCycle(cycle);
 
           submission = submissionService.saveSubmission(submission);

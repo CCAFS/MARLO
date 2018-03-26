@@ -164,7 +164,7 @@ public class OutcomesListAction extends BaseAction {
       outcome.setModifiedBy(this.getCurrentUser());
 
       CenterSectionStatus status = sectionStatusService.getSectionStatusByOutcome(crpProgramID, outcome.getId(),
-        "outcomesList", this.getCenterYear());
+        "outcomesList", this.getActualPhase().getYear());
 
       if (status != null) {
         sectionStatusService.deleteSectionStatus(status.getId());
