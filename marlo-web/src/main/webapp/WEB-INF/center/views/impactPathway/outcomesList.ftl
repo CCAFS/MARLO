@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/impactPathway/outcomeList.js?20180305"
+  "${baseUrlMedia}/js/impactPathway/centerOutcomeList.js?20180305"
   ] 
 /]
 [#assign customCSS = [
@@ -13,7 +13,7 @@
   "${baseUrlMedia}/css/impactPathway/outcomeList.css"
   ]
 /]
-[#assign currentSection = "centerImpactPathway" /]
+[#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 
 [#assign breadCrumb = [
@@ -72,17 +72,17 @@
           
           [#-- Outcomes Table --]
           [#if outcomes?has_content]
-          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/centerImpactPathway" defaultAction="${(centerSession)!}/outcomes"/]</div>
+          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/impactPathway" defaultAction="${(centerSession)!}/centerOutcome"/]</div>
           [#else]
             [#if selectedResearchTopic?has_content] 
             <div class="clearfix"></div>
             <div class="notOutcome">
-            There are NO OUTCOMES added to "<b>${selectedResearchTopic.researchTopic}</b>" as of yet. [#if editable] If you want to add a new outcome, please click on the button below: [/#if]
+              There are NO OUTCOMES added to "<b>${selectedResearchTopic.researchTopic}</b>" as of yet. [#if editable] If you want to add a new outcome, please click on the button below: [/#if]
             </div>
             [#else]
             <div class="clearfix"></div>
             <div class="notOutcome">
-            There are NO OUTCOMES added to "<b>${selectedProgram.name}</b>" as of yet.
+              There are NO OUTCOMES added to "<b>${selectedProgram.name}</b>" as of yet.
             </div>
             [/#if]
           [/#if]

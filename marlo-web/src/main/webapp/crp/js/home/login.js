@@ -24,9 +24,14 @@ function init() {
   // Verify "type" (CRP, Center, Platform)
   if(verifyCookie("TYPE") && (getCookie("TYPE") != "undefined") && (!typeInput)) {
     var typeSelected = getCookie("TYPE");
+    if(typeSelected == 'crp') {
+      typeSelected = '1';
+    } else if(typeSelected == 'center') {
+      typeSelected = '2';
+    }
     setType(typeSelected);
   } else if(!typeInput) {
-    setType('crp');
+    setType('1'); // Default CRP
   }
 
   // Verify user email session

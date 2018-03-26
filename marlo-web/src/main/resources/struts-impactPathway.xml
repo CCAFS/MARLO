@@ -142,26 +142,26 @@
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
 			<interceptor-ref name="centerOutcomeStack" />
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/centerOutcomes</param>
+				<param name="actionName">${crpSession}/centerOutcome</param>
 				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="topicID">${"topicID"}</param>
 			</result>
 		</action>
 
-		<action name="{crp}/centerOutcomes"
+		<action name="{crp}/centerOutcome"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesAction">
 			<interceptor-ref name="centerOutcomeStack" />
-			<result name="input">/WEB-INF/center/views/impactPathway/outcome.ftl
+			<result name="input">/WEB-INF/center/views/impactPathway/centerOutcome.ftl
 			</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/centerOutcomes</param>
+				<param name="actionName">${crpSession}/centerOutcome</param>
 				<param name="outcomeID">${outcomeID}</param>
 				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
-				<param name="actionName">${crpSession}/centerOutcomes</param>
+				<param name="actionName">${crpSession}/centerOutcome</param>
 				<param name="outcomeID">${outcomeID}</param>
 				<param name="crpProgramID">${crpProgramID}</param>
 				<param name="edit">true</param>

@@ -45,6 +45,10 @@ input[type="submit"], button, .addButton, a.form-button {
   border-bottom: 2px solid #7b9074;
 }
 
+.button-blue a {
+  color: #fff;
+}
+
 .button-blue:hover {
   background: #7c9274;
 }
