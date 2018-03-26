@@ -118,6 +118,11 @@ ul.horizontalSubMenu li.active {
   border: 2px solid #8ea786 !important;
 }
 
+.ui-dialog .ui-dialog-buttonpane button {
+  border-color: #8ea786;
+  background: #8ea786;
+}
+
 #secondaryMenu ul p.menuTitle {
   background: #25a76a;
 }
@@ -231,4 +236,8 @@ span.errorTag {
    border-left: 1px solid #ddd;
    border-right: 1px solid #ddd;
    border-bottom: 1px solid #ddd;
+}
+
+#secondaryMenu > p small {
+  color: #6ccc9f;
 }
