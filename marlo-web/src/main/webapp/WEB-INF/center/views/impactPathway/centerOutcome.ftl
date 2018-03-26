@@ -6,7 +6,7 @@
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrl}/global/js/fieldsValidation.js", 
   "${baseUrl}/global/js/autoSave.js", 
-  "${baseUrlMedia}/js/impactPathway/outcome.js" ]
+  "${baseUrlMedia}/js/impactPathway/centerOutcome.js" ]
 /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
@@ -36,8 +36,10 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Impact pathway sub menu --]
-        [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway-outcome.ftl" /]
+        [#-- Impact pathway sub menu 
+        [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
+        --]
+        
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway-outcome.ftl" /]
 
@@ -53,18 +55,18 @@
         
         [#-- Back --]
         <h5 class="pull-right">
-          <a href="[@s.url action='${centerSession}/outcomesList'][@s.param name="crpProgramID" value=programID /][@s.param name="topicID" value=topicID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/centerOutcomesList'][@s.param name="crpProgramID" value=programID /][@s.param name="topicID" value=topicID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outcomes list
           </a>
         </h5>
         
         <div class="clearfix"></div>
+        [#assign outcomeCustomName= "outcome" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]
         
         <div class="borderBox">
           <h5 class="sectionSubTitle"> Outcome Information</h5>
-          [#assign outcomeCustomName= "outcome" /]
           
           [#-- Research impact --]
           <div class="form-group">

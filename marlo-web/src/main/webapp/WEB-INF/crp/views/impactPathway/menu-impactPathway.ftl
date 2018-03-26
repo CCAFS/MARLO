@@ -20,6 +20,10 @@
 ]/]
 
 
+[#assign sectionsForChecking = [] /]
+[#assign currentMenuItem = {} /]
+[#assign programID = crpProgramID /]
+
 [#if centerGlobalUnit]
   [#assign submission = (action.isSubmitIP(crpProgramID))! /]
   [#assign canSubmit = (action. hasPersmissionSubmitIP(crpProgramID))!false /]
@@ -32,25 +36,23 @@
   [#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
 [/#if]
 
-[#assign sectionsForChecking = [] /]
-[#assign currentMenuItem = {} /]
-[#assign programID = crpProgramID /]
-
 [#-- Impact Pathway Menu--]
 <nav id="secondaryMenu" class="">
   <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
   <div class="menuList">
   [#if centerGlobalUnit]
-    [#list researchAreas as area ]
-      [#if area.researchPrograms?has_content]
-        [#list area.researchPrograms as program]
-          [#assign isActive = (program.id == crpProgramID)/]
-          <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-            ${(program.composedName)!}</a>
-          </p>
-        [/#list]
-      [/#if]
-    [/#list]
+    [#if researchAreas??]
+      [#list researchAreas as area ]
+        [#if area.researchPrograms?has_content]
+          [#list area.researchPrograms as program]
+            [#assign isActive = (program.id == crpProgramID)/]
+            <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              ${(program.composedName)!}</a>
+            </p>
+          [/#list]
+        [/#if]
+      [/#list]
+    [/#if]
   [#else]
     [#if programs??]
       [#list programs as program]
@@ -193,4 +195,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- program Submit JS --]
-[#assign customJS = [ "${baseUrlMedia}/js/impactPathway/impactGraphic.js", "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]
+[#if !centerGlobalUnit]
+  [#assign customJS = [ "${baseUrlMedia}/js/impactPathway/impactGraphic.js" ] + customJS  /]
+[/#if]
+[#assign customJS = [ "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]
