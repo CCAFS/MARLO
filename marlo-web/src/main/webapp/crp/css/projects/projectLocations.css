@@ -463,7 +463,7 @@ tr:nth-child(even) {
     left: 113px !important;
 }
 
-#pac-input.all-locations {
+.allLocationsModal #pac-input {
     width: 225px;
 }
 
@@ -555,6 +555,7 @@ tr:nth-child(even) {
     margin-bottom: 10px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 75%;
 }
 
 .list-container ul li:hover{
@@ -563,4 +564,8 @@ tr:nth-child(even) {
 
 .list-container ul li span{
     color: #0b7ba6;
+}
+
+.list-container ul li span.coordinates{
+    padding-left: 14px;
 }
