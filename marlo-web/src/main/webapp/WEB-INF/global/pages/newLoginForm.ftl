@@ -113,7 +113,7 @@
         <div class="row">
           <div class="col-xs-12">
             <div class="terms-container hidden">
-              <input type="checkbox" name="terms" id="terms" class="terms" checked required> I agree to the <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a>
+              <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" checked required> I agree to the <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a>
             </div>
           </div>
         </div>
