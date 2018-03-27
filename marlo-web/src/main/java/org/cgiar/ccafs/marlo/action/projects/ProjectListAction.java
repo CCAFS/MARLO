@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -60,14 +61,17 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectListAction extends BaseAction {
 
+
   private static final long serialVersionUID = -793652591843623397L;
 
-  private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
 
+  private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
 
   private GlobalUnit loggedCrp;
 
   private SectionStatusManager sectionStatusManager;
+
+
   private long projectID;
 
   // Managers
@@ -76,21 +80,20 @@ public class ProjectListAction extends BaseAction {
 
   private ProjectInfoManager projectInfoManager;
   private GlobalUnitManager crpManager;
-  private GlobalUnitProjectManager globalUnitProjectManager;
 
+  private GlobalUnitProjectManager globalUnitProjectManager;
   private PhaseManager phaseManager;
   private ProjectPhaseManager projectPhaseManager;
 
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
-
+  private List<Project> centerProjects;
   private List<Project> closedProjects;
-
   private String filterBy;
-
 
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -110,7 +113,6 @@ public class ProjectListAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
   }
-
 
   public String addAdminProject() {
 
@@ -198,6 +200,7 @@ public class ProjectListAction extends BaseAction {
       }
     }
   }
+
 
   public void addProjectOnPhase(Phase phase, Project project, LiaisonInstitution liaisonInstitution,
     LiaisonUser liaisonUser, String type, boolean admin) {
@@ -419,26 +422,67 @@ public class ProjectListAction extends BaseAction {
     return permission;
   }
 
+
   public List<Project> getAllProjects() {
     return allProjects;
+  }
+
+  public List<Project> getCenterProjects() {
+    return centerProjects;
   }
 
   public List<Project> getClosedProjects() {
     return closedProjects;
   }
 
-
   public String getFilterBy() {
     return filterBy;
   }
+
 
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
-
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public void leadCenterProjects() {
+
+    centerProjects = new ArrayList<>();
+
+    List<GlobalUnit> globalUnits = new ArrayList<>(crpManager.findAll().stream()
+      .filter(crp -> crp.isActive() && crp.isMarlo() && crp.isLogin() && crp.getGlobalUnitType().getId() == 1)
+      .collect(Collectors.toList()));
+
+    for (GlobalUnit globalUnit : globalUnits) {
+
+      Phase phase = globalUnit.getPhases().stream().filter(p -> p.isActive() && p.getEditable() && p.getVisible())
+        .collect(Collectors.toList()).get(0);
+
+      List<ProjectInfo> projectInfos =
+        new ArrayList<>(phase.getProjectInfos().stream()
+          .filter(pi -> pi.isActive() && (pi.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || pi.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId())))
+          .collect(Collectors.toList()));
+
+      for (ProjectInfo projectInfo : projectInfos) {
+
+        Project project = projectInfo.getProject();
+
+        ProjectPartner projectPartner = project.getLeader(phase);
+
+        if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
+          project.setCurrentPhase(phase);
+          centerProjects.add(project);
+        }
+
+      }
+
+    }
+
   }
 
   /**
@@ -479,7 +523,6 @@ public class ProjectListAction extends BaseAction {
 
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -554,6 +597,9 @@ public class ProjectListAction extends BaseAction {
       this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
     }
 
+    if (this.isCenterGlobalUnit()) {
+      this.leadCenterProjects();
+    }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
@@ -566,8 +612,13 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
+  }
+
+  public void setCenterProjects(List<Project> centerProjects) {
+    this.centerProjects = centerProjects;
   }
 
 
