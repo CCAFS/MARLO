@@ -13,6 +13,7 @@
   ] 
 /]
 
+[#assign currentSection = "capdev" /]
 [#assign currentStage = "capdevDescription" /]
 
 [#assign breadCrumb = [
@@ -25,12 +26,10 @@
 
 <div class="container"> 
 
-  <div class="row">
-    <div class="helpMessage infoText col-md-12 capdevinfo">
-      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
-        <p class="col-md-10"> [@s.text name="capdev.help.description"][/@s.text] </p>
-    </div>
-  </div> 
+  <div class="helpMessage infoText capdevinfo">
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <p class="col-md-10"> [@s.text name="capdev.help.description"][/@s.text] </p>
+  </div>
 
   <div class="col-md-3 capDevMenu">
     [#include "/WEB-INF/center/views/capDev/menu-capdev.ftl" /]
@@ -52,19 +51,19 @@
       </div>
     </div>
   
-    <div class="col-md-12">
-         Capacity Development Description 
-    </div>
+
+    <h3 class="headTitle"> Capacity Development Description</h3>    
+
     
-    <div class="col-md-12 form-group "> 
+    <div class="form-group "> 
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       <!-- Radio Buttons-->
       <div style="display: none;">
         <div class="radio">
-          <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${capdev.category}"  /></label>
+          <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${(capdev.category)!}"  /></label>
         </div>
         <div class="radio">
-          <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${capdev.category}" /> </label>
+          <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${(capdev.category)!}" /> </label>
         </div>
       </div>
 
@@ -79,7 +78,7 @@
             </div>
             <div id="disciplinesList" class="col-md-12  approachesList" >
               <ul class="list">
-                [#if capdev.capdevDisciplineList?has_content]
+                [#if (capdev.capdevDisciplineList?has_content)!false]
                 [#list capdev.capdevDisciplineList as discipline]
                 <li id="" class="discipline clearfix col-md-3">
                   [#if editable]
@@ -127,7 +126,7 @@
 
             <div id="targetGroupsList" class="col-md-12 newCapdevField" >
               <ul class="list">
-                [#if capdev.capdevTargetGroupList?has_content]
+                [#if (capdev.capdevTargetGroupList?has_content)!false]
                 [#list capdev.capdevTargetGroupList as targetGroup]
                   <li id="" class="targetGroup clearfix col-md-3">
                     [#if editable]
@@ -175,7 +174,7 @@
           
           <!-- CRP -->
           <div class="row">
-            <div class="col-md-12 newCapdevField">
+            <div class="newCapdevField">
               <div class="col-md-6 ">
                 [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
               </div>
@@ -195,15 +194,15 @@
         <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group row borderContainer grupsParticipantsForm" >
-            <div class="col-md-12 newCapdevField ">
+            <div class="newCapdevField ">
               [@customForm.select name="" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner"  disabled=!editable /]
             </div>
             
             <div id="capdevPartnersList" class=" partnersList" >
               <ul class="list">
-                [#if capdev.capdevPartnersList?has_content]
+                [#if (capdev.capdevPartnersList?has_content)!false]
                 [#list capdev.capdevPartnersList as partner]
-                  <li id="" class="capdevPartner clearfix col-md-12">
+                  <li id="" class="capdevPartner clearfix ">
                     [#if editable]
                       <a class="removepartner removeIcon" title="Remove partner" href="[@s.url action='${centerSession}/deletePartner'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevPartner" value=partner.id /][/@s.url]"></a>
                     [/#if]
@@ -244,7 +243,7 @@
 
             <div id="capdevOutputsList" class="outputsList" >
               <ul class="list">
-                [#if capdev.capdevOutputsList?has_content]
+                [#if (capdev.capdevOutputsList?has_content)!false ]
                 [#list capdev.capdevOutputsList as output]
                   <li id="" class="capdevOutput clearfix col-md-12">
                     [#if editable]
@@ -266,8 +265,8 @@
         </div>
 
         <div style="display: none;">
-            [@customForm.input name="capdevID" i18nkey="capdev.id" value="${capdev.id}"  type="text"  /]
-            [@customForm.input name="category" i18nkey="capdev.category" value="${capdev.category}"  type="text"  /]
+            [@customForm.input name="capdevID" i18nkey="capdev.id" value="${(capdev.id)!}"  type="text"  /]
+            [@customForm.input name="category" i18nkey="capdev.category" value="${(capdev.category)!}"  type="text"  /]
             [@customForm.input name="projectID" i18nkey="capdev.id" value="${projectID}"  type="text"  /]
         </div>
 

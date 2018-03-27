@@ -14,6 +14,7 @@
 	] 
 /]
 
+[#assign currentSection = "capdev" /]
 [#assign currentStage = "supportingDocuments" /] 
 
 [#assign breadCrumb = [

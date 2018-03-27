@@ -1,16 +1,16 @@
 [#ftl]
-
-
-
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css",
-					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
+  ] 
+/]
 
 
 
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
 
-
+[#assign currentSection = "capdev" /]
 [#assign currentStage = "supportingDocuments" /]
 
 [#assign breadCrumb = [
