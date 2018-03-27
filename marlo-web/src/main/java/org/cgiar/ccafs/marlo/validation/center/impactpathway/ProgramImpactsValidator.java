@@ -47,12 +47,12 @@ public class ProgramImpactsValidator extends BaseValidator {
     this.centerService = centerService;
   }
 
-  private Path getAutoSaveFilePath(CrpProgram program, long centerID) {
+  private Path getAutoSaveFilePath(CrpProgram program, long centerID, BaseAction baseAction) {
     GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.PROGRAM_IMPACT.getStatus().replace("/", "_");
-    String autoSaveFile =
-      program.getId() + "_" + composedClassName + "_" + center.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription()
+      + "_" + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -62,7 +62,7 @@ public class ProgramImpactsValidator extends BaseValidator {
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
+      Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID(), baseAction);
 
       if (path.toFile().exists()) {
         baseAction.addMissingField(baseAction.getText("programImpact.action.draft"));
