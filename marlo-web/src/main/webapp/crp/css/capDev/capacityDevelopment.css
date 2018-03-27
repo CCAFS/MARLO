@@ -1,14 +1,15 @@
 @CHARSET "UTF-8";
 
 .conventionContainer{
-		border-style: solid;
+		border-style: dashed;
 		border-width: 1px;
+		border-color: #b1b0b0;
 		background-color: #f2f2f2;
 		border-radius: 5px;
 		padding: 1%;
 		width: 100%;
 		height: 63px;
-    	font-size: 13px;
+		font-size: 13px;
 }
 
 .title-container{
@@ -354,8 +355,8 @@ div.fixed{
 
 .addButtons > div {
 	/*display: inline-block;*/
-	float: right;
-	margin: 0 2% 2% 2%;
+	/* float: right; */
+	margin: 0 0 1% 0;
 }
 
 .removeCol > a{

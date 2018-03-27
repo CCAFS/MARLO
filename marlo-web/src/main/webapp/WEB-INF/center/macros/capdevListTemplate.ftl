@@ -113,38 +113,4 @@
 		  	[/#if]
 	  	</tbody>
 	</table>
-
-	<div class="row ">
-			<div class="addButtons botones">
-	        	<div class="buttons-content addgroupItem" >        
-		          	<a class="addButton" href="[@s.url namespace='/capdev' action='${centerSession}/addCapdev'][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']2[/@s.param] [@s.param name='edit' value="true" /][/@s.url]" title="Add a capacity development intervention destinated  at a group of people ">[@s.text name="capdev.addgroupItem" /]</a>
-	        	</div>
-	        	<div class="buttons-content addindividualItem" >        
-		          	<a class="addButton" href="[@s.url namespace='/capdev' action='${centerSession}/addCapdev' ][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevCategory']1[/@s.param][@s.param name='edit' value="true" /][/@s.url]" title="Add a capacity development intervention destinated  at one person">[@s.text name="capdev.addindividualItem" /]</a>
-	        	</div>
-			</div>
-		</div>
-
-		<div class="row conventionContainer">
-			<div class="col-md-12 itemName">
-				<div class="col-md-1"> Annexes:</div>
-
-				<div class="col-md-2">
-					<img src="${baseUrl}/center/images/capdev/participants.png" class="capDevIconConvention" />
-					<div>Lista of participants</div>
-				</div>
-
-				<div class="col-md-2">
-					<img src="${baseUrl}/center/images/capdev/deliverable.png" class="capDevIconConvention" />
-					<div>Supporting documents</div>
-				</div>
-
-				<div class="col-md-7">
-					If an icon is highlighted, it means that the capacity development intervention has any of those: list of participants or supporting documents, or has both.
-				</div>
-				
-			</div>
-		</div>
-
-
 [/#macro]

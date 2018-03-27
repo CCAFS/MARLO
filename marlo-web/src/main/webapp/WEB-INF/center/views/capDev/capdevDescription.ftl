@@ -270,10 +270,11 @@
             [@customForm.input name="projectID" i18nkey="capdev.id" value="${projectID}"  type="text"  /]
         </div>
 
-        <!-- buttons -->
-        [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
 
       </div>
+      
+      <!-- buttons -->
+      [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
 
     </div>
     
