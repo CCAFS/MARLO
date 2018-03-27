@@ -81,12 +81,12 @@
           <div class="row form-group target-block">            
             [#-- Target Unit --]
             <div class="col-md-4">
-              [@customForm.select name="${outcomeCustomName}.targetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+              [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
               [#-- If you dont find the target unit in the list, please add a new one clicking here --]
               [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if --]
             </div>
             [#-- Target Value --]
-            [#assign showTargetValue =  (outcome??) && (outcome.targetUnit??) && (outcome.targetUnit.id??) && (outcome.targetUnit.id != -1) /]
+            [#assign showTargetValue =  (outcome??) && (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
             <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
               [@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
             </div> 
@@ -163,11 +163,11 @@
     <div class="row form-group target-block">      
       [#-- Target Unit --]
       <div class="col-md-4">
-        [@customForm.select name="${milestoneCustomName}.targetUnit.id"  i18nkey="outcome.milestone.index.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+        [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.index.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
         [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if--]
       </div>
       [#-- Target Value --]
-      [#local showTargetValue = (milestone??) && (milestone.targetUnit??) && (milestone.targetUnit.id??) && (milestone.targetUnit.id != -1) /]
+      [#local showTargetValue = (milestone??) && (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.index.inputTargetValue" placeholder="outcome.milestone.index.placeholder" className="targetValue" required=true editable=editable /]
       </div>

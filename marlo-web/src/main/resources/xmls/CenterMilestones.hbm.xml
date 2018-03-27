@@ -21,6 +21,10 @@
 			fetch="select">
 			<column name="modified_by" not-null="false" />
 		</many-to-one>
+		<many-to-one name="srfTargetUnit"
+      class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+      <column name="srf_target_unit" not-null="false" />
+    </many-to-one>
 		<many-to-one name="targetUnit"
 			class="org.cgiar.ccafs.marlo.data.model.CenterTargetUnit" fetch="select">
 			<column name="target_unit_id" not-null="false" />
