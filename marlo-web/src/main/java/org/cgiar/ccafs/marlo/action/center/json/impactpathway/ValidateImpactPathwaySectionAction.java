@@ -19,8 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.CenterImpact;
-import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
@@ -28,10 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.OutcomesValidator;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.OutputsValidator;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.ProgramImpactsValidator;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.ResearchTopicsValidator;
+import org.cgiar.ccafs.marlo.validation.center.impactpathway.CenterImpactPathwaySectionValidation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -49,6 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ValidateImpactPathwaySectionAction extends BaseAction {
 
 
@@ -58,9 +55,13 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateImpactPathwaySectionAction.class);
 
+
   // Managers
   private CrpProgramManager programServcie;
+
+
   private ICenterSectionStatusManager sectionStatusService;
+
   // Parameters
   private boolean existProgram;
   private boolean validSection;
@@ -69,42 +70,34 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   private Map<String, Object> section;
   // Model
   private CenterSectionStatus sectionStatus;
-  // Validator
-  private OutcomesValidator outcomeValidator;
-  private OutputsValidator outputValidator;
-
-  private ProgramImpactsValidator impactValidator;
-  private ResearchTopicsValidator topicValidator;
+  private final CenterImpactPathwaySectionValidation<ValidateImpactPathwaySectionAction> centerImpactPathwaySectionValidation;
 
   @Inject
   public ValidateImpactPathwaySectionAction(APConfig config, CrpProgramManager programServcie,
-    ICenterSectionStatusManager sectionStatusService, OutcomesValidator outcomeValidator,
-    OutputsValidator outputValidator, ProgramImpactsValidator impactValidator, ResearchTopicsValidator topicValidator) {
+    ICenterSectionStatusManager sectionStatusService,
+    CenterImpactPathwaySectionValidation<ValidateImpactPathwaySectionAction> centerImpactPathwaySectionValidation) {
     super(config);
     this.programServcie = programServcie;
     this.sectionStatusService = sectionStatusService;
-    this.outcomeValidator = outcomeValidator;
-    this.outputValidator = outputValidator;
-    this.impactValidator = impactValidator;
-    this.topicValidator = topicValidator;
+    this.centerImpactPathwaySectionValidation = centerImpactPathwaySectionValidation;
   }
 
-  @SuppressWarnings("incomplete-switch")
+
   @Override
   public String execute() throws Exception {
     if (existProgram && validSection) {
       switch (ImpactPathwaySectionsEnum.getValue(sectionName)) {
         case PROGRAM_IMPACT:
-          this.validateImpact();
+          this.centerImpactPathwaySectionValidation.validateImpact(this, crpProgramID);
           break;
         case TOPIC:
-          this.validateTopic();
+          this.centerImpactPathwaySectionValidation.validateTopic(this, crpProgramID);
           break;
         case OUTCOMES:
-          this.validateOutcome();
+          this.centerImpactPathwaySectionValidation.validateOutcome(this, crpProgramID);
           break;
         case OUTPUTS:
-          this.validateOutput();
+          this.centerImpactPathwaySectionValidation.validateOutput(this, crpProgramID);
           break;
       }
 
@@ -191,20 +184,16 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
         break;
 
     }
-
-
-    Thread.sleep(500);
-
-
     return SUCCESS;
   }
 
-  public Map<String, Object> getSection() {
-    return section;
+  public long getCrpProgramID() {
+    return crpProgramID;
   }
 
-  public CenterSectionStatus getSectionStatus() {
-    return sectionStatus;
+
+  public Map<String, Object> getSection() {
+    return section;
   }
 
 
@@ -238,99 +227,13 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     validSection = sections.contains(sectionName);
   }
 
+
+  public void setCrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
   public void setSection(Map<String, Object> section) {
     this.section = section;
   }
-
-
-  public void setSectionStatus(CenterSectionStatus sectionStatus) {
-    this.sectionStatus = sectionStatus;
-  }
-
-  public void validateImpact() {
-    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
-
-    if (program != null) {
-      List<CenterImpact> impacts =
-        new ArrayList<>(program.getResearchImpacts().stream().filter(ri -> ri.isActive()).collect(Collectors.toList()));
-
-      for (CenterImpact researchImpact : impacts) {
-        researchImpact.setObjectives(new ArrayList<>());
-        if (researchImpact.getResearchImpactObjectives() != null) {
-          for (CenterImpactObjective impactObjective : researchImpact.getResearchImpactObjectives().stream()
-            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-            researchImpact.getObjectives().add(impactObjective.getResearchObjective());
-            if (researchImpact.getObjectiveValue() == null) {
-              researchImpact.setObjectiveValue(impactObjective.getResearchObjective().getId().toString());
-            } else {
-              researchImpact.setObjectiveValue(
-                researchImpact.getObjectiveValue() + "," + impactObjective.getResearchObjective().getId().toString());
-            }
-          }
-        }
-
-        researchImpact.setBeneficiaries(new ArrayList<>(researchImpact.getResearchImpactBeneficiaries().stream()
-          .filter(rib -> rib.isActive()).collect(Collectors.toList())));
-      }
-
-      impactValidator.validate(this, impacts, program, false);
-    }
-  }
-
-  public void validateOutcome() {
-    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
-
-    if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if (topics != null) {
-        for (CenterTopic researchTopic : topics) {
-          List<CenterOutcome> outcomes = new ArrayList<>(
-            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-
-          for (CenterOutcome researchOutcome : outcomes) {
-            researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-              .filter(rm -> rm.isActive()).collect(Collectors.toList())));
-
-            outcomeValidator.validate(this, researchOutcome, program, false);
-          }
-        }
-      }
-    }
-  }
-
-  public void validateOutput() {
-
-    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
-
-    if (program != null) {
-      List<CenterOutput> outputs =
-        new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
-
-      for (CenterOutput researchOutput : outputs) {
-
-        researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
-          .filter(nu -> nu.isActive()).collect(Collectors.toList())));
-
-        researchOutput.setOutcomes(new ArrayList<>(
-          researchOutput.getCenterOutputsOutcomes().stream().filter(op -> op.isActive()).collect(Collectors.toList())));
-
-        outputValidator.validate(this, researchOutput, program, false);
-      }
-    }
-
-  }
-
-  public void validateTopic() {
-    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
-
-    if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-
-      topicValidator.validate(this, topics, program, false);
-    }
-  }
-
 
 }

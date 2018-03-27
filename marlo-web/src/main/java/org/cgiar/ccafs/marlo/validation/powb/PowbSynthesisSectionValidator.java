@@ -101,7 +101,6 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     return isFP;
   }
 
-
   public void validateColaborationIntegration(BaseAction action, PowbSynthesis powbSynthesis) {
     // Check if ToC relation is null -create it
     if (powbSynthesis.getCollaboration() == null) {
@@ -284,7 +283,6 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
   }
 
-
   public void validateFlagshipPlans(BaseAction action, PowbSynthesis powbSynthesis) {
 
 
@@ -324,6 +322,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
 
   }
+
 
   public void validateManagementGovernance(BaseAction action, PowbSynthesis powbSynthesis) {
 
@@ -421,6 +420,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
 
   }
+
 
   public void validateTocAdjustments(BaseAction action, PowbSynthesis powbSynthesis) {
 
