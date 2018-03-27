@@ -178,6 +178,16 @@ function attachEvents() {
     changeMapDiv(this);
   });
 
+  //Map markers list in all locations modal
+  $('.marker-map').on('click',function(){
+/*
+    latitude = m.geopositions[0].latitude;
+    longitude = m.geopositions[0].longitude;
+
+    var latLng = new google.maps.LatLng(latitude, longitude);
+    map.setCenter(latLng);*/
+  });
+
 }
 
 function modalButtonsListeners(){
@@ -730,7 +740,6 @@ function setMapCenterPosition($item,locId,locName,countID){
       "locElementID": locId,
       phaseID: phaseID
   };
-  console.log(locId);
   $.ajax({
       url: url,
       type: 'GET',

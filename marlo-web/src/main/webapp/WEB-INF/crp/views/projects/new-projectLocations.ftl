@@ -253,7 +253,11 @@
                             <hr />
                             
                             <div class="form-group col-md-3 list-container">
-                              [@allLocationsListMacro /]
+                            [#if project.locationsData?has_content]
+                              [#list project.locationsData as locationLevels]
+                                [@allLocationsListMacro element=locationLevels list=locationLevels.list?? && locationLevels.list/]
+                              [/#list]
+                            [/#if]
                             </div>
                             
                           </div>
@@ -309,17 +313,19 @@
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
 
-[#macro allLocationsListMacro]
-  <h4>Countries</h4>
+[#macro allLocationsListMacro element list]
+  <h4>${element.name}</h4>
   <ul>
-    <li>
-      <span class="glyphicon glyphicon-map-marker"></span>
-      Colombia
-    </li>
-    <li>
-      <span class="glyphicon glyphicon-map-marker"></span>
-      Australia
-    </li>
+    [#if element.locElements?has_content]
+      [#list element.locElements as location]
+        <li id="${location.name}" class="marker-map">
+          <span class="glyphicon glyphicon-map-marker"></span>
+          ${location.name}
+          <br />
+          <span class="coordinates">[#if list!=true](${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})[/#if]</span> 
+        </li>
+      [/#list]
+    [/#if]
   </ul>
 [/#macro]
 
