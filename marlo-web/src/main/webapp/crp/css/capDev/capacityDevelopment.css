@@ -58,7 +58,8 @@ a button.downloadButtonHome:hover{
 }
 
 .newCapdevField{
-		margin: 1%;
+		/* margin: 1%; */
+		/* padding-left: 8px; */
 }
 
 .approachesListTitle{
@@ -71,7 +72,8 @@ a button.downloadButtonHome:hover{
 }
 
 .approachesListContainer{
-	margin:1%;
+	/* margin:1%; */
+	/* padding-left: 8px; */
 	border-left: 3px solid #E7E6E6;
 	border-bottom: 1px solid #E7E6E6;
 }
@@ -232,12 +234,13 @@ a button.downloadButtonHome:hover{
 	list-style-type: none;
 	margin: 1%;
 	padding: 1px 4px 0px 6px;
-    background-color: #F7F7F7;
-    border: 1px solid #E0E0E0 !important;
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    margin-bottom: 5px;
-    position: relative;
+	background-color: #F7F7F7;
+	border: 1px solid #E0E0E0 !important;
+	box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	margin-bottom: 5px;
+	/* position: relative; */
+	/* display: inline-block; */
 }
 
 .highlight  {
@@ -407,4 +410,8 @@ img.capDevIconDisable{
     border-color: #777;
     background-color: #f2f2f2;
     margin: 2px 5px 2px 0;
+}
+
+.listSelectBlock {
+  padding-left: 8px;
 }
