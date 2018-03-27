@@ -24,14 +24,16 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -88,6 +90,8 @@ public class OutcomesAction extends BaseAction {
 
   private ICenterMilestoneManager milestoneService;
 
+  private SrfTargetUnitManager srfTargetUnitManager;
+
   // Front Variables
   private GlobalUnit loggedCenter;
 
@@ -102,6 +106,7 @@ public class OutcomesAction extends BaseAction {
 
   private List<CenterImpact> researchImpacts;
   private HashMap<Long, String> targetUnitList;
+
   // Parameter Variables
 
   private long areaID;
@@ -117,7 +122,8 @@ public class OutcomesAction extends BaseAction {
   @Inject
   public OutcomesAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
     ICenterTargetUnitManager targetUnitService, CrpProgramManager programService, ICenterImpactManager impactService,
-    ICenterMilestoneManager milestoneService, OutcomesValidator validator, AuditLogManager auditLogService) {
+    ICenterMilestoneManager milestoneService, OutcomesValidator validator, AuditLogManager auditLogService,
+    SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;
@@ -127,6 +133,7 @@ public class OutcomesAction extends BaseAction {
     this.milestoneService = milestoneService;
     this.validator = validator;
     this.auditLogService = auditLogService;
+    this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
   @Override
@@ -314,18 +321,25 @@ public class OutcomesAction extends BaseAction {
         .filter(ri -> ri.isActive() && ri.getDescription().trim().length() > 0).collect(Collectors.toList()));
 
       targetUnitList = new HashMap<>();
-      if (targetUnitService.findAll() != null) {
+      if (srfTargetUnitManager.findAll() != null) {
 
-        List<CenterTargetUnit> targetUnits =
-          targetUnitService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<SrfTargetUnit> targetUnits = new ArrayList<>();
+
+        List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+          loggedCenter.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+        for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+          targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+        }
 
         Collections.sort(targetUnits,
           (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
 
-        for (CenterTargetUnit srfTargetUnit : targetUnits) {
+        for (SrfTargetUnit srfTargetUnit : targetUnits) {
           targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
         }
 
+        // TODO
         targetUnitList = this.sortByComparator(targetUnitList);
       }
 
@@ -368,13 +382,13 @@ public class OutcomesAction extends BaseAction {
       }
 
 
-      CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(outcome.getTargetUnit().getId());
+      SrfTargetUnit targetUnit = srfTargetUnitManager.getSrfTargetUnitById(outcome.getSrfTargetUnit().getId());
 
       outcomeDb.setDescription(outcome.getDescription());
       outcomeDb.setShortName(outcome.getShortName());
       outcomeDb.setTargetYear(outcome.getTargetYear());
 
-      outcomeDb.setTargetUnit(targetUnit);
+      outcomeDb.setSrfTargetUnit(targetUnit);
       if (targetUnit.getId() != -1) {
         outcomeDb.setValue(outcome.getValue());
       } else {
@@ -449,8 +463,9 @@ public class OutcomesAction extends BaseAction {
           milestone.setModifiedBy(this.getCurrentUser());
           milestone.setImpactPathway(true);
 
-          CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(researchMilestone.getTargetUnit().getId());
-          milestone.setTargetUnit(targetUnit);
+          SrfTargetUnit targetUnit =
+            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getTargetUnit().getId());
+          milestone.setSrfTargetUnit(targetUnit);
           if (targetUnit.getId() != -1) {
             milestone.setValue(researchMilestone.getValue());
           } else {
@@ -469,10 +484,11 @@ public class OutcomesAction extends BaseAction {
             milestonePrew.setTitle(researchMilestone.getTitle());
           }
 
-          CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(researchMilestone.getTargetUnit().getId());
-          if (!milestonePrew.getTargetUnit().equals(targetUnit)) {
+          SrfTargetUnit targetUnit =
+            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getTargetUnit().getId());
+          if (!milestonePrew.getSrfTargetUnit().equals(targetUnit)) {
             hasChanges = true;
-            milestonePrew.setTargetUnit(targetUnit);
+            milestonePrew.setSrfTargetUnit(targetUnit);
             if (targetUnit.getId() == -1) {
               milestonePrew.setValue(null);
             }
