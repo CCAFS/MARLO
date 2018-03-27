@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -470,15 +471,29 @@ public class ProjectListAction extends BaseAction {
 
       for (ProjectInfo projectInfo : projectInfos) {
 
-        Project project = projectInfo.getProject();
+        Project project = projectManager.getProjectById(projectInfo.getProject().getId());
 
-        ProjectPartner projectPartner = project.getLeader(phase);
+        List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
+          .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-        if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
-          project.setCurrentPhase(phase);
-          centerProjects.add(project);
+        for (ProjectPartner projectPartner : projectPartners) {
+
+
+          if (projectPartner.getProjectPartnerPersons() != null) {
+            for (ProjectPartnerPerson person : projectPartner.getProjectPartnerPersons().stream()
+              .filter(pp -> pp.isActive()).collect(Collectors.toList())) {
+              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+                if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
+                  project.setCurrentPhase(phase);
+                  centerProjects.add(project);
+                  break;
+                }
+              }
+            }
+          }
+
+
         }
-
       }
 
     }
