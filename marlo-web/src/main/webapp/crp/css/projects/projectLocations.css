@@ -449,9 +449,9 @@ tr:nth-child(even) {
     height: 32px;
     outline: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  }
+}
 
-  #pac-input {
+#pac-input {
     background-color: #fff;
     font-family: Roboto;
     font-size: 15px;
@@ -461,49 +461,49 @@ tr:nth-child(even) {
     text-overflow: ellipsis;
     width: 145px;
     left: 113px !important;
-  }
+}
 
-  #pac-input.all-locations {
+#pac-input.all-locations {
     width: 225px;
-  }
+}
 
-  #pac-input:focus {
+#pac-input:focus {
     border-color: #4d90fe;
-  }
+}
 
-  .pac-container {
+.pac-container {
     font-family: Roboto;
     z-index: 1100;
-  }
+}
 
-  #type-selector {
+#type-selector {
     color: #fff;
     background-color: #4d90fe;
     padding: 5px 11px 0px 11px;
-  }
+}
 
-  #type-selector label {
+#type-selector label {
     font-family: Roboto;
     font-size: 13px;
     font-weight: 300;
-  }
-  #target {
-    width: 345px;
-  }
+}
+#target {
+    width: 345px;   
+}
 
-  /* End Search Box*/
+/* End Search Box*/
 
-  #alert-succesfully-added{
+#alert-succesfully-added{
     position: absolute;
     width: 94%;
     text-align: center;
-  }
+}
 
-  .addLocationButton-container{
-      margin-bottom: 46px;
-  }
+.addLocationButton-container{
+    margin-bottom: 46px;
+}
 
-  .icon-left-position {
+.icon-left-position {
     display: inline-block;
     width: 25px;
     height: 25px;
@@ -514,22 +514,53 @@ tr:nth-child(even) {
     cursor: pointer;
     float: right;
     margin-top: 10px;
-  }
-  
-  .icon-left-position span {
+}
+
+.icon-left-position span {
     font-size: 15px;
     color: #fff;
     line-height: 15px;
     vertical-align: middle;
     margin-right: 1px;
-  }
-  
-  .text-left-position {
+}
+
+.text-left-position {
     color: #0b7ba6;
     cursor: pointer;
     font-size: 12px;
     float: right;
     margin-top: 13px;
-  }
+}
 
-  
+/* All locations modal */
+
+.list-container{
+    padding-left: 0;
+}
+
+.list-container ul{
+    list-style-type: none;
+    padding-left: 20px;
+    font-size: 1.2em;
+}
+
+.list-container ul{
+    list-style-type: none;
+    padding-left: 20px;
+    font-size: 1.25em;
+}
+
+.list-container ul li{
+    color: #333;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.list-container ul li:hover{
+    background-color: #f5f5f5;
+}
+
+.list-container ul li span{
+    color: #0b7ba6;
+}
