@@ -277,7 +277,11 @@ function loadAvailableItems(email){
       $("input#login_next").removeClass("login-loadingBlock");
       $("input#login_next").attr("disabled",false);
     },
-    error: function(data) {}
+    error: function(data) {
+      wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
+      $("input#login_next").removeClass("login-loadingBlock");
+      $("input#login_next").attr("disabled",false);
+    }
   });
 }
 
@@ -368,7 +372,9 @@ function checkPassword(email,password){
       }
     },
     complete: function(data) {},
-    error: function(data) {}
+    error: function(data) {
+      wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
+    }
   });
 }
 
