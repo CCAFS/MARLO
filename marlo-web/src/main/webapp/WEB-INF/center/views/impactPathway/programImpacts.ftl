@@ -35,7 +35,7 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway.ftl" /]
         
-        [@s.form action=actionName enctype="multipart/form-data" ]
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
           [#-- Title --]
           <h3 class="subTitle headTitle outcomeListTitle">Program Impacts</h3>
