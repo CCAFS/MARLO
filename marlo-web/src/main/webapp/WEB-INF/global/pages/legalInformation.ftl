@@ -7,8 +7,8 @@
 [#assign currentCycleSection = "legalInformation" /]
 [#assign currentStage = "legalInformation" /]
 
-[#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
-[#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="container contentForm">
   <div class="fullContent">
@@ -186,4 +186,4 @@
   </div>
 </section>
 
-[#include "/WEB-INF/${(headerPath)!'crp'}/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
