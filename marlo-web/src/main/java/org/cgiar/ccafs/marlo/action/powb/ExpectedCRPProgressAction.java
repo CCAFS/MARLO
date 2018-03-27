@@ -615,12 +615,20 @@ public class ExpectedCRPProgressAction extends BaseAction {
         reader.close();
       } else {
         this.setDraft(false);
-        powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
-          .filter(c -> c.isActive() && c.getCrpMilestone() != null).collect(Collectors.toList()));
+        if (this.isFlagship()) {
+          powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
+            .filter(c -> c.isActive() && c.getCrpMilestone() != null).collect(Collectors.toList()));
 
 
-        powbSynthesis.getExpectedCrpProgresses()
-          .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+          powbSynthesis.getExpectedCrpProgresses()
+            .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+        } else {
+          powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+        }
+
       }
     }
     outcomes = new ArrayList<>();
