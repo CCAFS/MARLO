@@ -253,28 +253,10 @@
                             <hr />
                             
                             <div class="form-group col-md-3 list-container">
-                              <h5>Country</h5>
-                              <ul>
-                                <li>
-                                  Country 1
-                                </li>
-                                <li>
-                                  Country 2
-                                </li>
-                              </ul>
-                              <h5>Household</h5>
-                              <ul>
-                                <li>
-                                  Household 1
-                                </li>
-                                <li>
-                                  Household 2
-                                </li>
-                              </ul>
+                              [@allLocationsListMacro /]
                             </div>
                             
                           </div>
-                          
                           <div class="map-container col-md-9">
                             <div id="all-locations-map" class="col-md-12 map">
                               [#-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> --]
@@ -326,6 +308,20 @@
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
+
+[#macro allLocationsListMacro]
+  <h4>Countries</h4>
+  <ul>
+    <li>
+      <span class="glyphicon glyphicon-map-marker"></span>
+      Colombia
+    </li>
+    <li>
+      <span class="glyphicon glyphicon-map-marker"></span>
+      Australia
+    </li>
+  </ul>
+[/#macro]
 
 [#macro locationsTableMacro element name index template=false list=false]
   [#if template]<table>[/#if]
