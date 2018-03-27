@@ -124,7 +124,12 @@
 [#-- Submit button --]
 [#if canEdit]
   [#assign showSubmit=(canSubmit && (!submission?has_content) && completed)]
-  <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='crpProgramID']${crpProgramID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+  [#if centerGlobalUnit]
+    [#assign submitAction= "${crpSession}/centerSubmit" ]
+  [#else]
+    [#assign submitAction= "${crpSession}/submit" ]
+  [/#if]
+  <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action=submitAction][@s.param name='crpProgramID']${crpProgramID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]
