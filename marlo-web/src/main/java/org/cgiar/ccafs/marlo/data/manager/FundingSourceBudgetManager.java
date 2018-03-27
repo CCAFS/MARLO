@@ -59,7 +59,7 @@ public interface FundingSourceBudgetManager {
    * @param year
    * @return a FundingSourceBudget Object
    */
-  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year);
+  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year, long idPhase);
 
   /**
    * This method gets a fundingSourceBudget object by a given fundingSourceBudget identifier.

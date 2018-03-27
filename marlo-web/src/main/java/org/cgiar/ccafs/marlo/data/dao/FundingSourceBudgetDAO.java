@@ -62,7 +62,7 @@ public interface FundingSourceBudgetDAO {
    * @param year
    * @return a FundingSourceBudget Object
    */
-  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year);
+  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year, long idPhase);
 
   /**
    * This method saves the information of the given fundingSourceBudget
