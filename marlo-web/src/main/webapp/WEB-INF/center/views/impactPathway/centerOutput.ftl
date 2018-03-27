@@ -44,7 +44,7 @@
         [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
         --]
         [#-- Section Messages --]
-        [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway-output.ftl" /]
+        [#include "/WEB-INF/center/views/impactPathway/messages-impactPathway.ftl" /]
         
         <span id="programSelected" class="hidden">${(selectedProgram.id)!}</span>
         

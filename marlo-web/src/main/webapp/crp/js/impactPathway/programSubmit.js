@@ -118,6 +118,10 @@ function unSubmitButtonEvent(e) {
                   data: data
               }).done(
                   function(m) {
+                    var actionUrl = 'outcomes.do';
+                    if(centerGlobalUnit) {
+                      var actionUrl = 'centerOutcomes.do';
+                    }
                     window.location.href =
                         baseURL + "/impactPathway/" + currentCrpSession + "/outcomes.do?edit=true?phaseID=" + phaseID;
                   });
@@ -139,9 +143,9 @@ function validateButtonEvent(e) {
 
 function processTasks(tasks,id,button) {
   $(button).unbind('click');
-  var ajaxURL = baseURL + '/impactPathway/validateImpactPathway.do';
+  var actionUrl = 'validateImpactPathway.do';
   if(centerGlobalUnit) {
-    var ajaxURL = baseURL + '/impactPathway/validateCenterImpactPathway.do';
+    var actionUrl = 'validateCenterImpactPathway.do';
   }
   var completed = 0;
   var index = 0;
@@ -153,7 +157,7 @@ function processTasks(tasks,id,button) {
       var sectionName = tasks[index];
       var $sectionMenu = $('#menu-' + sectionName + '');
       $.ajax({
-          url: ajaxURL,
+          url: baseURL + '/impactPathway/' + actionUrl,
           data: {
               crpProgramID: id,
               sectionName: sectionName,

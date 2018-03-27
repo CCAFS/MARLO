@@ -18,6 +18,7 @@ function init() {
   // Verify "GlobalUnit"
   if(verifyCookie("GlobalUnit") && (getCookie("GlobalUnit") != "undefined") && (!globalUnitInput)) {
     var globalUnitSelected = getCookie("GlobalUnit");
+    console.log("globalUnitSelected: ", globalUnitSelected);
     setGlobalUnit(globalUnitSelected);
   }
 
