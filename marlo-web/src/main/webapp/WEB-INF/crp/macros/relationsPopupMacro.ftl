@@ -32,7 +32,7 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">
               
-                Projects that are contributing to this [@s.text name="global.${className}" /] 
+                [@s.text name="global.projects" /] that are contributing to this [@s.text name="global.${className}" /] 
                 <br />
                 <small>${elementTitle}</small>
               </h4>
