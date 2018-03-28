@@ -80,7 +80,7 @@
             <div role="tabpanel" class="tab-pane" id="crpActives-tab">
             [#-- CRPs Active projects  --]
             <h3 class="headTitle text-center">[@s.text name="projectsList.crpActiveProjects"/]</h3>
-            [@projectList.projectsListArchived projects=(centerProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [@projectList.projectsCRPListInCenter projects=(centerProjects)! canValidate=false canEdit=false namespace="/projects" /]
           </div>
           [/#if]
         </div>
