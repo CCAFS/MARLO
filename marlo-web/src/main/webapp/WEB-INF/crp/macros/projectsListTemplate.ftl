@@ -82,7 +82,13 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           [#else] 
-             <span class="programTag" style="border-color:#444">${(project.projectInfo.liaisonInstitution.crpProgram.acronym)!}</span>
+             <span class="programTag" style="border-color:#444">
+              [#if (project.liaisonInstitution.crpProgram.acronym??)!false]
+                ${project.liaisonInstitution.crpProgram.acronym}
+              [#else]
+                [@s.text name="global.pmu" /]
+              [/#if]
+            </span>
           [/#if]
           </td>
           [#if !reportingActive]
@@ -272,7 +278,7 @@
 
 
 
-[#macro projectsCRPListInCenter projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" ]
+[#macro projectsCRPListInCenter projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description" ]
   <table class="projectsList" id="projects">
     <thead>
       <tr class="subHeader">
@@ -280,25 +286,20 @@
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-          <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
+        <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
         <th id="projectFlagships">
-          [#if action.hasProgramnsRegions()]
-            [@s.text name="projectsList.projectFlagshipsRegions" /] 
-          [#else]
-             [@s.text name="projectsList.projectFlagships" /]
-          [/#if]
+          [@s.text name="projectsList.projectFlagshipsRegionsFromCRPs" /] 
         </th>
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
-        <th id="projectDownload">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
         [#assign isProjectNew = action.isProjectNew(project.id) /]
-        [#local projectUrl][@s.url namespace=namespace action="${(project.projectInfo.phase.crp.acronym)!}/description"][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='phaseID' value=(project.projectInfo.phase.id)! /][/@s.url][/#local]
+        [#local projectUrl][@s.url namespace=namespace action=defaultAction ][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='phaseID' value=(project.projectInfo.phase.id)! /][/@s.url][/#local]
         <tr>
           [#-- CRP --]
           <td>
@@ -337,7 +338,13 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           [#else] 
-             <span class="programTag" style="border-color:#444">${(project.liaisonInstitution.crpProgram.acronym)!}</span>
+            <span class="programTag" style="border-color:#444">
+              [#if (project.liaisonInstitution.crpProgram.acronym??)!false]
+                ${project.liaisonInstitution.crpProgram.acronym}
+              [#else]
+                [@s.text name="global.pmu" /]
+              [/#if]
+            </span>
           [/#if]
           </td>
           [#-- Project Action Status --]
@@ -349,16 +356,6 @@
             <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
               <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>
-          </td>
-          [#-- Delete Project--] 
-          <td>
-            [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
-              <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
-              </a>
-            [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
-            [/#if]
           </td>
         </tr>  
       [/#list]

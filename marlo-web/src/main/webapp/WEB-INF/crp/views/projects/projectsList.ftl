@@ -54,7 +54,7 @@
           [#if centerGlobalUnit]
             <li role="presentation">
               <a href="#crpActives-tab" aria-controls="profile" role="tab" data-toggle="tab">
-                <strong><span class="glyphicon glyphicon-inbox"></span> [@s.text name="projectsList.crpActiveProjects"/] </strong> <br /><small>([@s.text name="projectsList.crpActiveProjects.help"/])</small>
+                <strong>  [@s.text name="projectsList.crpActiveProjects"/] </strong> <br /><small>([@s.text name="projectsList.crpActiveProjects.help"/])</small>
               </a>
             </li>
           [/#if]
@@ -80,7 +80,7 @@
             <div role="tabpanel" class="tab-pane" id="crpActives-tab">
             [#-- CRPs Active projects  --]
             <h3 class="headTitle text-center">[@s.text name="projectsList.crpActiveProjects"/]</h3>
-            [@projectList.projectsCRPListInCenter projects=(centerProjects)! canValidate=false canEdit=false namespace="/projects" /]
+            [@projectList.projectsCRPListInCenter projects=(centerProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
           [/#if]
         </div>
