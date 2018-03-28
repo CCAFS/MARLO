@@ -409,24 +409,20 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
         subIDO = "";
         for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-          if (subIDO.isEmpty()) {
-
-            if (subIdo.getSrfSubIdo() != null) {
+          if (subIdo.getSrfSubIdo() != null) {
+            if (subIDO.isEmpty()) {
               if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                subIDO = "• CC: " + subIdo.getSrfSubIdo().getDescription();
+                subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
               } else {
                 subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
               }
             } else {
-
               if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                subIDO += "\n • CC:" + subIdo.getSrfSubIdo().getDescription();
+                subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
               } else {
-                subIDO += "\n •" + subIdo.getSrfSubIdo().getDescription();
+                subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
               }
             }
-
-
           }
         }
         outcomes = outcome.getComposedName();
