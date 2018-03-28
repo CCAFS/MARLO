@@ -325,25 +325,28 @@ public class EvidencesAction extends BaseAction {
             .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-
+        System.out.println(projectExpectedStudy.getId());
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
         projectExpectedStudy.getProject()
           .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
         dto.setProjectExpectedStudy(projectExpectedStudy);
-        List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-          .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
-        List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-        for (ProjectFocus projectFocus : projectFocuses) {
-          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-            .filter(li -> li.isActive() && li.getCrpProgram() != null
-              && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList()));
-
-          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-            .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
-            .collect(Collectors.toList()));
+        if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+          && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
+          dto.setLiaisonInstitutions(new ArrayList<>());
+          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        } else {
+          List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+          for (ProjectFocus projectFocus : projectFocuses) {
+            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+              .filter(li -> li.isActive() && li.getCrpProgram() != null
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              .collect(Collectors.toList()));
+          }
+          dto.setLiaisonInstitutions(liaisonInstitutions);
         }
-        dto.setLiaisonInstitutions(liaisonInstitutions);
+
         flagshipPlannedList.add(dto);
       }
 
@@ -548,9 +551,9 @@ public class EvidencesAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-            .collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(
+            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {

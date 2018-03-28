@@ -4,7 +4,7 @@
 <!-- Generated Jun 15, 2016 9:17:09 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.InstitutionType"
-		table="institution_types" optimistic-lock="version">
+		table="institution_types" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

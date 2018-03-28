@@ -866,6 +866,7 @@ ul.horizontalSubMenu{
   list-style: none;
   margin: 23px 0px 11px 0;
   padding: 0;
+  font-size: 0.9em;
 }
 
 ul.horizontalSubMenu li{
@@ -1801,6 +1802,10 @@ a.currentReportingSection li, a.currentSection li {
   background-position-y: -2px;
   /* margin-left: -13px; */
   /* padding: 0px 0px 0px 13px; */
+}
+
+#menu-contributionsCrpList{
+  font-size: 0.88em !important;
 }
 
 #menu-contributionsCrpList.currentSection a{

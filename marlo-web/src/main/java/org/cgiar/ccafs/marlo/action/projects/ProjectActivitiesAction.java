@@ -463,6 +463,9 @@ public class ProjectActivitiesAction extends BaseAction {
               .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
                 .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase()))
                 .collect(Collectors.toList())));
+            for (DeliverableActivity deliverableActivity : openActivity.getDeliverables()) {
+              deliverableActivity.getDeliverable().getDeliverableInfo(this.getActualPhase());
+            }
           }
         }
 

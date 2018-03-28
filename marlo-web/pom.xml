@@ -226,6 +226,10 @@
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
     </dependency>
+    <dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>ooxml-schemas</artifactId>
+		</dependency>
     <!-- Database version control -->
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -375,37 +379,17 @@
       <groupId>net.gpedro.integrations.slack</groupId>
       <artifactId>slack-webhook</artifactId>
     </dependency>
+    <dependency>
+   <groupId>javax.el</groupId>
+   <artifactId>javax.el-api</artifactId>
+   <version>2.2.4</version>
+</dependency>
+<dependency>
+   <groupId>org.glassfish.web</groupId>
+   <artifactId>javax.el</artifactId>
+   <version>2.2.4</version>
+</dependency>
   </dependencies>
-
-  <!-- Profile configuration -->
-  <profiles>
-    <!-- The configuration of the development profile -->
-    <profile>
-      <id>dev</id>
-      <!-- The development profile is active by default -->
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <build.profile.id>dev</build.profile.id>
-      </properties>
-    </profile>
-    <!-- The configuration of the production profile -->
-    <profile>
-      <id>pro</id>
-      <properties>
-        <build.profile.id>pro</build.profile.id>
-      </properties>
-    </profile>
-    <!-- The configuration of the testing profile -->
-    <profile>
-      <id>test</id>
-      <properties>
-        <build.profile.id>test</build.profile.id>
-      </properties>
-    </profile>
-  </profiles>
-
 
   <build>
     <finalName>${project.artifactId}</finalName>
@@ -428,6 +412,10 @@
           <keystoreFile>${project.basedir}/.keystore</keystoreFile>
           <keystorePass>d5jtY68oBqWj</keystorePass>
           <contextFile>tomcat/context.xml</contextFile>
+          <!-- tomcat 7 plugin should only be run on local desktop -->
+          <systemProperties>
+            <spring.profiles.active>dev</spring.profiles.active>
+          </systemProperties>
         </configuration>
       </plugin>
       <plugin>
@@ -447,29 +435,6 @@
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
           <packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
         </configuration>
-      </plugin>
-      <!-- Plugin to copy the resources -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <!-- Copy properties to impactPathways module -->
-          <execution>
-            <id>copy-properties-to-module</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>target/classes</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/../configuration/${build.profile.id}</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- MINIFYING CSS AND JS - TEST -->

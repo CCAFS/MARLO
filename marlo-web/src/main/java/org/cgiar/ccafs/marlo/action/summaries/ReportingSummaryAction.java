@@ -119,6 +119,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
@@ -146,6 +147,7 @@ import org.slf4j.LoggerFactory;
  * @date Nov 8, 2017
  * @time 10:30:10 AM: get deliverable dissemination from RepositoryChannel table
  */
+@Named
 public class ReportingSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;
@@ -1818,13 +1820,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
-          && d.getProject()
-            .getGlobalUnitProjects().stream()
+          && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
-          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus()
-            .intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear()
               || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
                 && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this
@@ -2752,7 +2753,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     StringBuffer fileName = new StringBuffer();
     fileName.append("FullProjectReportSummary-");
-    fileName.append(globalUnitProject.getGlobalUnit().getName() + "-");
+    fileName.append(globalUnitProject.getGlobalUnit().getAcronym() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));

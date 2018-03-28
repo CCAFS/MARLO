@@ -37,13 +37,13 @@
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#--  Help Text --]
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [#if powbInclude]
+          <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
+        [/#if]
       </label>
-      [#if powbInclude]
-        <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
-      [/#if]
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -250,6 +250,7 @@
           <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -266,6 +267,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="outcomeID" type="hidden" value="${outcomeID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -283,6 +285,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="outputID" type="hidden" value="${outputID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -299,6 +302,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]
@@ -315,6 +319,7 @@
           <input name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="deliverableID" type="hidden" value="${deliverableID}" />
+        <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
       [/@s.form]

@@ -4,7 +4,7 @@
 <!-- Generated Jul 29, 2016 11:36:56 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.ProjectScope"
-		table="project_scopes" optimistic-lock="version">
+		table="project_scopes" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

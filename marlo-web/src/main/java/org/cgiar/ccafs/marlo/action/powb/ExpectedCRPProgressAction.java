@@ -275,7 +275,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
     if (powbSynthesis.getExpectedCrpProgresses() != null) {
       int i = 0;
       for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
-        if (powbExpectedCrpProgress != null) {
+        if (powbExpectedCrpProgress != null && powbExpectedCrpProgress.getCrpMilestone() != null
+          && powbExpectedCrpProgress.getCrpMilestone().getId() != null) {
           if (powbExpectedCrpProgress.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue()) {
             return i;
           }
@@ -344,7 +345,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
     List<PowbExpectedCrpProgress> powbExpectedCrpProgresses =
       powbExpectedCrpProgressManager.findByProgram(crpProgramID);
     List<PowbExpectedCrpProgress> powbExpectedCrpProgressMilestone = powbExpectedCrpProgresses.stream()
-      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue()).collect(Collectors.toList());
+      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue() && c.isActive())
+      .collect(Collectors.toList());
     if (!powbExpectedCrpProgressMilestone.isEmpty()) {
       return powbExpectedCrpProgressMilestone.get(0);
     }
@@ -519,9 +521,9 @@ public class ExpectedCRPProgressAction extends BaseAction {
     } catch (NumberFormatException e) {
       User user = userManager.getUser(this.getCurrentUser().getId());
       if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-          .collect(Collectors.toList()));
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(
+          user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+            && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
           boolean isLeader = false;
           for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -613,8 +615,19 @@ public class ExpectedCRPProgressAction extends BaseAction {
         reader.close();
       } else {
         this.setDraft(false);
-        powbSynthesis.setExpectedCrpProgresses(
-          powbSynthesis.getPowbExpectedCrpProgresses().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        if (this.isFlagship()) {
+          powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
+            .filter(c -> c.isActive() && c.getCrpMilestone() != null).collect(Collectors.toList()));
+
+
+          powbSynthesis.getExpectedCrpProgresses()
+            .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+        } else {
+          powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+        }
 
       }
     }
@@ -641,8 +654,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
     }
     outcomes.addAll(outcomesSet);
     outcomes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-    powbSynthesis.getExpectedCrpProgresses()
-      .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()

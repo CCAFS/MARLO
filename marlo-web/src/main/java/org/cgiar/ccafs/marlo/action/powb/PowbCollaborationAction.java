@@ -173,7 +173,13 @@ public class PowbCollaborationAction extends BaseAction {
   public boolean canEditRegion(long regionId) {
     String permission = this.generatePermission(Permission.POWB_SYNTHESIS_RPL_EFFORT, this.getCrpSession(),
       powbSynthesis.getId().toString(), regionId + "");
-    return this.hasPermissionNoBase(permission);
+    String permissionTotal = this.generatePermission(Permission.POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION + ":*",
+      this.getCrpSession(), powbSynthesis.getId().toString());
+
+
+    boolean permissionBoolean = this.hasPermissionNoBase(permission) || this.hasPermissionNoBase(permissionTotal);
+    return permissionBoolean;
+
   }
 
 
@@ -657,9 +663,9 @@ public class PowbCollaborationAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-            .collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(
+            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {

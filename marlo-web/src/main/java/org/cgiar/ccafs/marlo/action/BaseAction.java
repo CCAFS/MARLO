@@ -1150,6 +1150,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * ***********************CENTER METHOD********************
+   * Check if the Monitoring Outcomes section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerMonitoringOutcomeActive() {
+    try {
+      boolean sectionActive =
+        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_MONITORING_OUTCOME_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
 
   /**
    * ***********************CENTER METHOD********************
@@ -4033,6 +4051,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
 
+
           if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
             Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
@@ -4045,8 +4064,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
           } else {
+
+
             if (sectionStatus.getMissingFields().length() > 0) {
-              return false;
+              if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.ACTIVITIES.getStatus())) {
+                if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+                  if (sectionStatus.getMissingFields().length() > 0) {
+                    return false;
+                  }
+
+                }
+              } else {
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
+              }
+
             }
           }
 
@@ -4136,7 +4169,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return totalSections == 8;
           }
         } else if (budgetCoASection == 0 && budgetFlagshipSection == 1) {
-          return totalSections == 9;
+          if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+            return totalSections == 9;
+
+          } else {
+            return totalSections == 8;
+
+          }
         } else if (budgetCoASection == 1 && budgetFlagshipSection == 1) {
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 10;
@@ -4169,10 +4208,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
           } else {
+            if (openA.isEmpty()) {
+              totalSections++;
+            }
             if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-              return totalSections == 7;
+              return totalSections == 8;
             } else {
-              return totalSections == 6;
+              return totalSections == 7;
             }
 
           }
@@ -4258,7 +4300,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
         } else {
+          if (add) {
 
+          }
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 12;
           } else {
@@ -4907,8 +4951,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Project> loadFlagShipBudgetInfoProgram(long crpProgramID) {
     List<Project> projectsToRet = new ArrayList<>();
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
-      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    List<ProjectFocus> projects =
+      crpProgram.getProjectFocuses().stream().filter(c -> c.getProject().isActive() && c.isActive()
+        && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
     Set<Project> myProjects = new HashSet();
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
@@ -4932,6 +4977,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
       double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double centerFunds = project.getCenterBudget(this.getActualPhase().getYear(), this.getActualPhase());
+
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
           && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
@@ -4939,6 +4986,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       double percentageW1 = 0;
       double percentageW3 = 0;
       double percentageB = 0;
+      double percentageCenterFunds = 0;
 
       if (!this.getCountProjectFlagships(project.getId())) {
         if (w1 > 0) {
@@ -4950,7 +4998,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (bilateral > 0) {
           percentageB = 100;
         }
-
+        if (centerFunds > 0) {
+          percentageCenterFunds = 100;
+        }
       }
       for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
         switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
@@ -4963,6 +5013,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           case 3:
             percentageB = percentageB + projectBudgetsFlagship.getAmount();
             break;
+          case 4:
+            percentageCenterFunds = percentageCenterFunds + projectBudgetsFlagship.getAmount();
+            break;
           default:
             break;
         }
@@ -4970,18 +5023,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project.setW3Budget(w3);
       project.setCoreBudget(w1);
       project.setBilateralBudget(bilateral);
+      project.setCentenFundsBudget(centerFunds);
 
       project.setPercentageW3(percentageW3);
       project.setPercentageW1(percentageW1);
       project.setPercentageBilateral(percentageB);
+      project.setPercentageFundsBudget(percentageCenterFunds);
+
 
       w1 = w1 * (percentageW1) / 100;
       w3 = w3 * (percentageW3) / 100;
       bilateral = bilateral * (percentageB) / 100;
+      centerFunds = centerFunds * (percentageCenterFunds) / 100;
 
       project.setTotalW3(w3);
       project.setTotalW1(w1);
       project.setTotalBilateral(bilateral);
+      project.setTotalCenterFunds(centerFunds);
+
       projectsToRet.add(project);
     }
     return projectsToRet;
@@ -5692,6 +5751,5 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
 }

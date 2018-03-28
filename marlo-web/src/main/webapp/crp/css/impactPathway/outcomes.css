@@ -29,7 +29,8 @@ p.contributioRem {
 .buttonSubIdo-block {
     float: left;
     display: inline-block;
-    margin-right: 5%;
+    margin-right: 4%;
+    margin-left: 2%;
 }
 
 .contribution {}
