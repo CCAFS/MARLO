@@ -1360,6 +1360,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (this.getPhaseID() != null) {
         long phaseID = this.getPhaseID();
         Phase phase = allPhases.get(new Long(phaseID));
+        if (phase == null) {
+          phase = phaseManager.getPhaseById(phaseID);
+          return phase;
+        }
         return phase;
       }
       Map<String, Parameter> parameters = this.getParameters();
