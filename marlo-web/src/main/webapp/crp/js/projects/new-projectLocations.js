@@ -918,44 +918,16 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
 
   // MARKER EVENTS
   marker.addListener('click', function() {
+
     $(".locations").removeClass("selected");
-    //openInfoWindow(marker);
     $item.find(".locations").addClass("selected");
-  });
 
-  marker.addListener('drag', function() {
-
-    var markerLatLng = marker.getPosition();
-    var latitude = markerLatLng.lat();
-    var longitude = markerLatLng.lng();
-    $item.find("input.geoLongitude").val(longitude);
-    $item.find("input.geoLatitude").val(latitude);
-    $item.find("span.lPos").html(" (" + latitude.toFixed(4) + ", " + longitude.toFixed(4) + ")");
-    $item.find(".locations").addClass("selected");
-    // update Infowindow
-    $(".editableLoc").find(".latMap").attr("value", latitude);
-    $(".editableLoc").find(".lngMap").attr("value", longitude);
-  });
-
-  marker.addListener('dragend', function() {
-    // GET Isoalpha
-    $.ajax({
-        'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-        'data': {
-            key: GOOGLE_API_KEY,
-            latlng: ($item.find("input.geoLatitude").val() + "," + $item.find("input.geoLongitude").val())
-        },
-        success: function(data) {
-          if(data.status == 'OK') {
-            $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
-          } else {
-            console.log(data.status);
-          }
-        }
+    var infoWindow = new google.maps.InfoWindow();
+    infoWindow.setOptions({
+      content: sites,
+      position: marker.getPosition()
     });
-    $item.find(".locations").removeClass("selected");
-    // Update component event
-    $(document).trigger('updateComponent');
+    infoWindow.open(map);
   });
 
 }
@@ -997,6 +969,8 @@ function showMarkers() {
 function changeMapDiv(selectedButton){
   var mapCurrentNode = map.getDiv();
   var selectedModal = $(selectedButton).data('target');
+
+  infoWindow.close();
 
   if(selectedModal == '.addLocationModal'){
     map.setZoom(3);
