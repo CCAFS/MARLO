@@ -472,7 +472,7 @@ public class ProjectListAction extends BaseAction {
       for (ProjectInfo projectInfo : projectInfos) {
 
         Project project = projectManager.getProjectById(projectInfo.getProject().getId());
-
+        project.setProjectInfo(projectInfo);
         List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
           .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
@@ -485,6 +485,7 @@ public class ProjectListAction extends BaseAction {
               if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
                 if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
                   project.setCurrentPhase(phase);
+
                   centerProjects.add(project);
                   break;
                 }
