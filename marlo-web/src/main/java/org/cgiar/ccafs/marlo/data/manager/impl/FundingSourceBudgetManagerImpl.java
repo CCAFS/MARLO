@@ -111,8 +111,8 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
   }
 
   @Override
-  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year) {
-    return fundingSourceBudgetDAO.getByFundingSourceAndYear(fundingSourceID, year);
+  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year, long idPhase) {
+    return fundingSourceBudgetDAO.getByFundingSourceAndYear(fundingSourceID, year, idPhase);
   }
 
   @Override
