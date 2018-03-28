@@ -615,6 +615,7 @@ public class ProjectListAction extends BaseAction {
 
     if (this.isCenterGlobalUnit()) {
       this.leadCenterProjects();
+      this.loadFlagshipgsAndRegions(centerProjects);
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
