@@ -18,5 +18,8 @@
         <property generated="never" lazy="false" name="percentage" optimistic-lock="true" type="java.lang.Double" unique="false">
             <column name="percentage" precision="2"/>
         </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>
