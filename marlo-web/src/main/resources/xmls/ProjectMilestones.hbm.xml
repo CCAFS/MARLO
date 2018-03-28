@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Aug 22, 2016 10:31:14 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectMilestone" table="project_milestones" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectMilestone" table="project_milestones" optimistic-lock="none">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
@@ -30,8 +30,8 @@
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
         
-         <property name="expectedValue" type="long">
-            <column name="expected_value" precision="10" scale="0"/>
+         <property name="expectedValue" type="java.lang.Double">
+            <column name="expected_value" precision="10" scale="2"/>
         </property>
 
         

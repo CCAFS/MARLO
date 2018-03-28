@@ -72,7 +72,7 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu <br /><small> [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]</small> </p> 
+  <p>[@s.text name="projects.menu.project" /]<br /><small> [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]</small> </p> 
   <ul>
     [#list menus as menu]
       [#if menu.show]
@@ -146,14 +146,14 @@
   [#-- Submit button --]
   [#if canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]
-    <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
+    <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
       [@s.text name="form.buttons.submit" /]
     </a>
   [/#if]
   
   [#-- Unsubmit button --]
   [#if (canUnSubmit && submission) && canEditPhase && !crpClosed && !reportingActive]
-    <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
+    <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
       [@s.text name="form.buttons.unsubmit" /]
     </a>
   [/#if]
@@ -169,4 +169,4 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js" ] + customJS  /]
+[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20180316" ] + customJS  /]

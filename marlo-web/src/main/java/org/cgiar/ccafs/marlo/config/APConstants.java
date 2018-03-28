@@ -441,6 +441,7 @@ public final class APConstants {
   public static final String CENTER_PROGRAM_TYPE = "center_program_type";
   public static final String CENTER_IMPACT_PATHWAY_ACTIVE = "center_impact_pathway_active";
   public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
+  public static final String CENTER_MONITORING_OUTCOME_ACTIVE = "center_outcomes_active";
   public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
   public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
   public static final String CENTER_YEAR = "center_year";
@@ -522,6 +523,7 @@ public final class APConstants {
   public static final String SUMMARY_FORMAT = "format";
   public static final String SUMMARY_FORMAT_EXCEL = "Excel";
   public static final String SUMMARY_FORMAT_PDF = "PDF";
+  public static final String SUMMARY_PARTNER_TYPE = "partnerType";
 
   public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";

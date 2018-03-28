@@ -14,7 +14,7 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.data.model.dto;
+package org.cgiar.ccafs.marlo.data.model;
 
 import java.io.Serializable;
 

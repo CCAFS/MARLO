@@ -496,7 +496,8 @@ public class ProjectPartnerAction extends BaseAction {
           if (crpAdmins.isEmpty()) {
             crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
           } else {
-            crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+            crpAdmins +=
+              ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
           }
         }
 
@@ -513,12 +514,12 @@ public class ProjectPartnerAction extends BaseAction {
         this.getUsersToActive().add(mapUser);
         // Send UserManual.pdf
         String contentType = "application/pdf";
-        String fileName = "Introduction_To_MARLO_v2.1.pdf";
+        String fileName = "Introduction_To_MARLO_v2.2.pdf";
         byte[] buffer = null;
         InputStream inputStream = null;
 
         try {
-          inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
+          inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
           // TODO Auto-generated catch block
@@ -1170,7 +1171,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     if (this.isHttpPost()) {
 
-
+      // project.setProjectInfo(null);
       project.getPartners().clear();
 
     }
@@ -1334,8 +1335,9 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-        projectDB.setProjectInfo(project.getProjectInfo());
+
         projectInfoManager.saveProjectInfo(projectDB.getProjectInfo());
+        projectDB.setProjectInfo(project.getProjectInfo());
       }
       projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
 

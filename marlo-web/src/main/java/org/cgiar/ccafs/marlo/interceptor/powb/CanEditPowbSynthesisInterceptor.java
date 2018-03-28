@@ -113,9 +113,9 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
         Long.parseLong(parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == crp.getId())
-          .collect(Collectors.toList()));
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(
+          user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+            && lu.getLiaisonInstitution().getCrp().getId() == crp.getId()).collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
           LiaisonUser liaisonUser = new LiaisonUser();
           liaisonUser = liaisonUsers.get(0);

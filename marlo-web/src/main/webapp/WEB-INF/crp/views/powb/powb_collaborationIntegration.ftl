@@ -7,6 +7,9 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "collaborationIntegration" /]
 
+
+[#assign concurrenceEnabled = false /]
+
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb", "action":"${crpSession}/adjustmentsChanges"},
@@ -154,9 +157,10 @@
                   
                   [#if regionElement.effostornCountry?has_content]
                     [#assign pmuValue]${pmuValue} 
-                    ${liaisonInstitution.crpProgram.composedName} 
-                    ${(regionElement.effostornCountry)!}
-                    [/#assign]
+
+${liaisonInstitution.crpProgram.composedName} 
+${(regionElement.effostornCountry)!}
+[/#assign]
                   [/#if]
                 </div>
               [/#list]

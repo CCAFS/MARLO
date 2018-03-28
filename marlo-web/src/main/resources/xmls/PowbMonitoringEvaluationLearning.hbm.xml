@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Feb 9, 2018 11:37:50 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearning" table="powb_monitoring_evaluation_learning" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearning" table="powb_monitoring_evaluation_learning" optimistic-lock="none">
         <id name="id" type="long">
             <column name="id" />
             <generator class="foreign">

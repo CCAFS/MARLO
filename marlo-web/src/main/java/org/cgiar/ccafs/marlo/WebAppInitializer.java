@@ -100,7 +100,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
     /** Now add the Spring MVC dispatacher servlet config for our REST api **/
     AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-    dispatcherContext.register(MarloRestApiConfig.class);
+    dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
     dispatcherContext.setParent(appContext);
 
     ServletRegistration.Dynamic dispatcher =

@@ -15,6 +15,7 @@
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
   {"label":"projectLocations", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -49,7 +50,7 @@
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-                        <input class="projectInfo" type="hidden" name="project.projectInfo.id" value="${project.projectInfo.id}" />
+                        <input class="projectInfo" type="hidden" name="project.id" value="${project.id}" />
            
           <p class="bg-primary" style="padding: 18px; display:none;">
             <span class="glyphicon glyphicon-flash"></span>

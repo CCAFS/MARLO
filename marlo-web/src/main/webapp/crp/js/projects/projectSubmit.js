@@ -52,7 +52,7 @@ $(document).ready(function() {
                       phaseID: phaseID
                   },
                   success: function(data) {
-                    location.reload();
+                    window.location.href = window.location.href;
                     if(data.ok) {
                       $thisLabel.siblings().removeClass('radio-checked');
                       $thisLabel.addClass('radio-checked');
@@ -272,7 +272,7 @@ function unSubmitButtonEvent(e) {
                   function(m) {
                     window.location.href =
                         baseURL + "/projects/" + currentCrpSession + "/description.do?projectID=" + projectId
-                            + "&edit=true";
+                            + "&edit=true&phaseID=" + phaseID;
                   });
             } else {
               $justification.addClass('fieldError');

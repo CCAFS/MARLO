@@ -97,13 +97,13 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     Project projectBD = projectManager.getProjectById(projectID);
     List<ProjectBudget> budgets = projectBD.getProjectBudgets()
       .stream().filter(c -> c.isActive() && c.getYear() == year
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
+        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
       .collect(Collectors.toList());
     Double totalAmount = 0.0;
     for (ProjectBudget projectBudget : budgets) {
       totalAmount += projectBudget.getAmount();
     }
-    return budgets.size() > 0 && totalAmount > 0.0;
+    return budgets.size() > 0 && totalAmount >= 0.0;
   }
 
   public void replaceAll(StringBuilder builder, String from, String to) {

@@ -67,10 +67,11 @@
         </div>
         [/#if]
       </div> 
-      [#-- View Porjects contributions --]
+      [#-- View Porjects contributions 
       <button type="button" class="btn btn-default btn-xs pull-right outcomeProjects-${outcome.id}" data-toggle="modal" data-target="#outcomeProjectsModal">
         <span class="glyphicon glyphicon-pushpin"></span> View Project Contributions
       </button>
+      --]
     <div class="">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs" role="tablist">

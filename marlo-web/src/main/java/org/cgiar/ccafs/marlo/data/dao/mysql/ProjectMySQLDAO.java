@@ -94,16 +94,20 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
         query.append("AND COLUMN_NAME = 'is_active'");
         List<Map<String, Object>> rsColumnExist = super.findCustomQuery(query.toString());
         if (!rsColumnExist.isEmpty()) {
-          query.setLength(0);
-          query.append("UPDATE ");
-          query.append(table);
-          query.append(
-            " SET is_active = 0, modified_by = " + userID + ", modification_justification = '" + justification + "' ");
-          query.append("WHERE ");
-          query.append(column);
-          query.append(" = '" + columnValue + "'");
+          try {
+            query.setLength(0);
+            query.append("UPDATE ");
+            query.append(table);
+            query.append(" SET is_active = 0, modified_by = " + userID + ", modification_justification = '"
+              + justification + "' ");
+            query.append("WHERE ");
+            query.append(column);
+            query.append(" = '" + columnValue + "'");
 
-          super.executeUpdateQuery(query.toString());
+            super.executeUpdateQuery(query.toString());
+          } catch (Exception e) {
+
+          }
 
 
         }

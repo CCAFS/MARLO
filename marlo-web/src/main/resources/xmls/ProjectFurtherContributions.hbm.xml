@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Jan 4, 2017 9:27:17 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" table="project_further_contributions" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" table="project_further_contributions" optimistic-lock="none">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
