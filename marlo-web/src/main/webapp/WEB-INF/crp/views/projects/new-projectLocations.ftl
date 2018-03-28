@@ -318,11 +318,11 @@
   <ul>
     [#if element.locElements?has_content]
       [#list element.locElements as location]
-        <li id="${location.name}" class="marker-map">
+        <li id="${location.id}" name="${location.name}" class="marker-map">
           <span class="glyphicon glyphicon-map-marker"></span>
           ${location.name}
           <br />
-          <span class="coordinates">[#if list!=true](${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})[/#if]</span> 
+          [#if list!=true]<span class="coordinates">(${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})</span>[/#if]
         </li>
       [/#list]
     [/#if]
@@ -357,7 +357,7 @@
   [#local customName = "${name}[${index}]" /]
   [#assign countID = countID+1/]
   [#-- Content collapsible--]
-  <div id="location-${template?string('template',countID)}" class="col-md-4 locElement" style="display:${template?string('none','block')}">
+  <div id="location-${template?string('template',countID)}" class="col-md-4 locElement" style="display:${template?string('none','block')}" data-locId="${element.id!}">
     <div class="locations col-md-12">
       <div class="locationName">
         <span class="lName">${(element.name)!}</span> 

@@ -93,7 +93,7 @@ function attachEvents() {
   $("#locLevelSelect").on("change",function() {
     var option = $(this).find("option:selected");
     if(option.val() == "-1" || option.val().split("-")[0] == "10"){
-      //If the selected option is "Climate Smart Village" hide the red marker in the map
+      //If the selected option is "Climate Smart Village" hide the center indicator in the map
       $('#map .centerMarker').hide();
     }else{
       $('#map .centerMarker').show();
@@ -180,12 +180,43 @@ function attachEvents() {
 
   //Map markers list in all locations modal
   $('.marker-map').on('click',function(){
-/*
-    latitude = m.geopositions[0].latitude;
-    longitude = m.geopositions[0].longitude;
+    var markerId = (this).id;
+    var markerName = $(this).attr("name");
 
-    var latLng = new google.maps.LatLng(latitude, longitude);
-    map.setCenter(latLng);*/
+    console.log(markerId);
+    console.log(markerName);
+    /* GET COORDINATES */
+    var url = baseURL + "/geopositionByElement.do";
+    var data = {
+        "locElementID": markerId,
+        phaseID: phaseID
+    };
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: "json",
+        data: data
+    }).done(function(m) {
+
+      if(m.geopositions.length != 0) {
+        latitude = m.geopositions[0].latitude;
+        longitude = m.geopositions[0].longitude;
+        var latLng = new google.maps.LatLng(latitude, longitude);
+        map.setCenter(latLng);
+        map.setZoom(15);
+      }else{
+        var geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode( {'address' : markerName}, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+              map.setCenter(results[0].geometry.location);
+              map.fitBounds(results[0].geometry.viewport);
+          }
+        });
+      }
+    });
+
+
   });
 
 }
@@ -552,9 +583,9 @@ function mappingCountries() {
     };
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
-    google.maps.event.addListener(layer, 'click', function(e) {
+/*    google.maps.event.addListener(layer, 'click', function(e) {
       openInfoWindowCountries(e);
-    });
+    });*/
   }
 
 }
@@ -856,7 +887,7 @@ function checkItems(block) {
 
 function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
   // Close info window
-  infoWindow.close();
+  //infoWindow.close();
   var drag;
   if(editable && isList == "false") {
     drag = true;
@@ -888,7 +919,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
   // MARKER EVENTS
   marker.addListener('click', function() {
     $(".locations").removeClass("selected");
-    openInfoWindow(marker);
+    //openInfoWindow(marker);
     $item.find(".locations").addClass("selected");
   });
 
@@ -968,10 +999,20 @@ function changeMapDiv(selectedButton){
   var selectedModal = $(selectedButton).data('target');
 
   if(selectedModal == '.addLocationModal'){
+    map.setZoom(3);
     $('#add-location-map').append(mapCurrentNode);
     $('#map').removeClass('all-locations');
+
+    var option = $("#locLevelSelect").find("option:selected");
+    if(option.val() == "-1" || option.val().split("-")[0] == "10"){
+      //If the selected option is "Climate Smart Village" hide the center indicator in the map
+      $('#map .centerMarker').hide();
+    }else{
+      $('#map .centerMarker').show();
+    }
   }else if(selectedModal == '.allLocationsModal'){
     $('#all-locations-map').append(mapCurrentNode);
     $('#map').addClass('all-locations');
+    $('#map .centerMarker').hide();
   }
 }
