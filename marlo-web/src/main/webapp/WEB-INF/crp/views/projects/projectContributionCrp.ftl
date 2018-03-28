@@ -317,7 +317,7 @@
     [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId"> Project Milestone Target </span>
+      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
     </div>
 
     [#-- Milestone content --]
@@ -402,7 +402,7 @@
     [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId"> Project Next User </span>
+      <span class="elementId">[@s.text name="projectOutcomeNextUser.projectNextUser" /]</span>
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
