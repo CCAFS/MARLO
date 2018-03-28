@@ -409,6 +409,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+  public boolean isCenterType() {
+    return this.globalUnitType.getId().intValue() == 4;
+  }
+
   public boolean isHasRegions() {
     return hasRegions;
   }

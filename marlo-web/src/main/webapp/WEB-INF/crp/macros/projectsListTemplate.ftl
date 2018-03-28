@@ -47,6 +47,9 @@
         </td>
           [#-- Project Title --]
           <td class="left">
+            [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
+              <span class="label label-warning">${(project.projectInfo.phase.crp.acronym)!}</span>
+            [/#if]
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.projectInfo.title?has_content]
@@ -59,6 +62,7 @@
             [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.startDate??)!false) ]
               <p><small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small></p>
             [/#if]
+            
           </td>
           [#-- Project Leader --]
           <td class=""> 
@@ -68,11 +72,6 @@
           <td class=""> 
             [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          [#-- Project Type 
-          <td>
-            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
-          </td>
-          --]
           [#-- Flagship / Regions --]
           <td>
           [#if !project.projectInfo.administrative]
@@ -124,15 +123,6 @@
             [#assign completed = (action.isCompleteProject(project.id))!false /]
             [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
             
-            [#-- Check button 
-            [#if !submission ]
-              [#if canEdit && canSubmit && !completed]
-                <a id="validateProject-${project.id}" title="Check for missing fields" class="validateButton ${(project.type)!''}" href="#" >[@s.text name="form.buttons.check" /]</a>
-                <div id="progressbar-${project.id}" class="progressbar" style="display:none"></div>
-              [/#if]
-            [/#if]
-            --] 
-            
             [#-- Submit button --]
             [#if submission]
               <p title="Submitted">Submitted</p>
@@ -150,13 +140,7 @@
                 <p title="Ready for project leader completion">Ready for PL</p>
               [/#if]
             [/#if]
-            
-            
           </td>
-          [#-- Track completition of entry --]
-          [#if isPlanning]
-          <td> <a href="#">Complete / Incomplete</a></td>
-          [/#if]
           [#-- Summary PDF download --]
           <td>
             [#if true]
@@ -275,95 +259,6 @@
     </tbody>
   </table>
 [/#macro]
-
-
-
-[#macro projectsCRPListInCenter projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description" ]
-  <table class="projectsList" id="projects">
-    <thead>
-      <tr class="subHeader">
-        <th id="crpColumn">[@s.text name="projectsList.crpColumn" /]</th>
-        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
-        [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
-        <th id="projectFlagships">
-          [@s.text name="projectsList.projectFlagshipsRegionsFromCRPs" /] 
-        </th>
-        <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
-        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
-      </tr>
-    </thead>
-    <tbody>
-    [#if projects?has_content]
-      [#list projects as project]
-        [#assign isProjectNew = action.isProjectNew(project.id) /]
-        [#local projectUrl][@s.url namespace=namespace action=defaultAction ][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='phaseID' value=(project.projectInfo.phase.id)! /][/@s.url][/#local]
-        <tr>
-          [#-- CRP --]
-          <td>
-            ${project.projectInfo.phase.crp.acronym}
-          </td>
-          [#-- ID --]
-          <td class="projectId">
-            <a href="${projectUrl}"> P${project.id}</a>
-          </td>
-          [#-- Project Title --]
-          <td class="left">
-            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
-            [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
-            [#if project.projectInfo.title?has_content]
-              <a href="${projectUrl}" title="${project.projectInfo.title}">
-              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
-            [#else]
-              <a href="${projectUrl}">
-                [@s.text name="projectsList.title.none" /]
-              </a>
-            [/#if]
-          </td>
-          [#-- Project Leader --]
-          <td class=""> 
-            [#if project.getLeader(project.projectInfo.phase)?has_content]${(project.getLeader(project.projectInfo.phase).institution.acronym)!project.getLeader(project.projectInfo.phase).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
-          </td>
-              <td class=""> 
-            [#if project.getLeaderPersonDB(project.projectInfo.phase)?has_content] ${(project.getLeaderPersonDB(project.projectInfo.phase).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
-          </td>
-          [#-- Flagship / Regions --]
-          <td>
-          [#if !project.projectInfo.administrative]
-            [#if project.flagships?has_content || project.regions?has_content]
-              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
-            [#else]
-              [@s.text name="projectsList.none" /]
-            [/#if]
-          [#else] 
-            <span class="programTag" style="border-color:#444">
-              [#if (project.liaisonInstitution.crpProgram.acronym??)!false]
-                ${project.liaisonInstitution.crpProgram.acronym}
-              [#else]
-                [@s.text name="global.pmu" /]
-              [/#if]
-            </span>
-          [/#if]
-          </td>
-          [#-- Project Action Status --]
-          <td>
-            <strong>${(project.projectInfo.statusName)!}</strong> 
-          </td>
-          [#-- Summary PDF download --]
-          <td>
-            <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
-            </a>
-          </td>
-        </tr>  
-      [/#list]
-    [/#if]
-    </tbody>
-  </table>
-[/#macro]
-
 
 [#macro evaluationProjects projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="evaluation"]
   <table class="evaluationProjects" id="projects">
