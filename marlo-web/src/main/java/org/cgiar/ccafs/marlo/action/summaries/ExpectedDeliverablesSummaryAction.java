@@ -325,7 +325,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       // Get cross_cutting dimension
       String crossCutting = "";
-      String genderScoring = null, youthScoring = null, capScoring = null;
+      String genderScoring = "0-Not Targeted", youthScoring = "0-Not Targeted", capScoring = "0-Not Targeted";
       if (deliverableInfo.getCrossCuttingNa() != null) {
         if (deliverableInfo.getCrossCuttingNa() == true) {
           crossCutting += "N/A";
