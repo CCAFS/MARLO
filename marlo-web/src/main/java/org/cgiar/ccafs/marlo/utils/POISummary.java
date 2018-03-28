@@ -361,7 +361,7 @@ public class POISummary {
     paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily(FONT_TYPE);
-    paragraphRun.setFontSize(10);
+    paragraphRun.setFontSize(11);
   }
 
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
@@ -439,7 +439,11 @@ public class POISummary {
         paragraph.setAlignment(poiParameter.getAlignment());
         XWPFRun paragraphRun = paragraph.createRun();
         this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
-        paragraphRun.setColor(TEXT_FONT_COLOR);
+        if (poiParameter.getFontColor() != null) {
+          paragraphRun.setColor(poiParameter.getFontColor());
+        } else {
+          paragraphRun.setColor(TEXT_FONT_COLOR);
+        }
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
         if (highlightFirstColumn && record == 0) {

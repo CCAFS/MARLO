@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -72,9 +73,9 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
   }
 
   @Override
-  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year) {
+  public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year, long idPhase) {
     String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= " + fundingSourceID
-      + " and year= " + year + " and is_active=1";
+      + " and year= " + year + " and is_active=1 and id_phase=" + idPhase;
     List<FundingSourceBudget> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
