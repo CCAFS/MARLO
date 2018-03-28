@@ -526,6 +526,7 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
+
   public void loadFlagshipgsAndRegionsCurrentPhase(List<Project> list) {
     for (Project project : list) {
 
@@ -615,7 +616,7 @@ public class ProjectListAction extends BaseAction {
 
     if (this.isCenterGlobalUnit()) {
       this.leadCenterProjects();
-      this.loadFlagshipgsAndRegions(centerProjects);
+      this.loadFlagshipgsAndRegionsCurrentPhase(centerProjects);
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
