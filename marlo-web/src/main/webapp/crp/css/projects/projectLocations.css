@@ -122,11 +122,6 @@ span.lPos {
     line-height: 2px;
 }
 
-.locations.selected {
-    background-color: #ccc;
-    border: 1px dashed #777;
-}
-
 .locations .locationName {
     cursor: pointer;
     line-height: 20px;   
@@ -536,6 +531,7 @@ tr:nth-child(even) {
 
 .list-container{
     padding-left: 0;
+    overflow-y: hidden;
 }
 
 .list-container ul{
@@ -568,4 +564,5 @@ tr:nth-child(even) {
 
 .list-container ul li span.coordinates{
     padding-left: 14px;
+    font-size: 75%;
 }
