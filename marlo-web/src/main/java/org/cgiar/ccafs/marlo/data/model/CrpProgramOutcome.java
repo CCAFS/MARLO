@@ -158,7 +158,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
 
   public String getComposedName() {
-    return this.getCrpProgram().getAcronym() + " Outcome :  " + description;
+    return this.getCrpProgram().getAcronym() + " Outcome: " + description;
   }
 
 

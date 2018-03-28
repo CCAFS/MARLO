@@ -153,8 +153,8 @@ public class FundingSourceListAction extends BaseAction {
         }
 
 
-        FundingSourceBudget fundingSourceBudget =
-          fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);
+        FundingSourceBudget fundingSourceBudget = fundingSourceBudgetManager
+          .getByFundingSourceAndYear(fundingSource.getId(), year, this.getActualPhase().getId());
         double remainingAmount = 0;
         if (fundingSourceBudget != null && fundingSourceBudget.getBudget() != null) {
           remainingAmount = projectBudgetManager.getReaminingAmount(fundingSource.getId(), year,
