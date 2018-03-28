@@ -350,9 +350,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             ? powbSynthesisPMU.getPowbManagementGovernance().getDescription() : "";
       }
     }
-    poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.management.risk"));
+    poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.management.risk"));
     poiSummary.textParagraph(document.createParagraph(), managementRisksTitleDescription);
-    poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.management.governance"));
+    poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.management.governance"));
     poiSummary.textParagraph(document.createParagraph(), CRPManagementGovernanceDescription);
 
 
@@ -1021,6 +1021,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       this.addFinancialPlan();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.collaboration"));
       this.addCollaboration();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.mel"));
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.management"));
       this.addManagement();
 
