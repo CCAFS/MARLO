@@ -1269,7 +1269,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     List<PowbExpectedCrpProgress> powbExpectedCrpProgresses =
       powbExpectedCrpProgressManager.findByProgram(crpProgramID);
     List<PowbExpectedCrpProgress> powbExpectedCrpProgressMilestone = powbExpectedCrpProgresses.stream()
-      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue()).collect(Collectors.toList());
+      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue() && c.isActive())
+      .collect(Collectors.toList());
     if (!powbExpectedCrpProgressMilestone.isEmpty()) {
       return powbExpectedCrpProgressMilestone.get(0);
     }
@@ -1509,9 +1510,10 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        if (!crpProgram.getMilestones().isEmpty()) {
-          validOutcomes.add(crpProgramOutcome);
-        }
+        /* Change requested by htobon: Show outcomes without milestones for table A1 */
+        // if (!crpProgram.getMilestones().isEmpty()) {
+        validOutcomes.add(crpProgramOutcome);
+        // }
       }
       crpProgram.setOutcomes(validOutcomes);
       this.loadFlagShipBudgetInfo(crpProgram);
