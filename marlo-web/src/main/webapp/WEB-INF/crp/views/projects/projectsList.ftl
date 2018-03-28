@@ -51,6 +51,13 @@
               <strong><span class="glyphicon glyphicon-inbox"></span> [@s.text name="projectsList.archived"/] </strong> <br /><small>([@s.text name="projectsList.archived.help"/])</small>
             </a>
           </li>
+          [#if centerGlobalUnit]
+            <li role="presentation">
+              <a href="#crpActives-tab" aria-controls="profile" role="tab" data-toggle="tab">
+                <strong><span class="glyphicon glyphicon-inbox"></span> [@s.text name="projectsList.crpActiveProjects"/] </strong> <br /><small>([@s.text name="projectsList.crpActiveProjects.help"/])</small>
+              </a>
+            </li>
+          [/#if]
         </ul>
       
         <!-- Tab panes -->
@@ -69,6 +76,13 @@
             <h3 class="headTitle text-center">[@s.text name="projectsList.archivedProjects"/]</h3>
             [@projectList.projectsListArchived projects=(closedProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
+          [#if centerGlobalUnit]
+            <div role="tabpanel" class="tab-pane" id="crpActives-tab">
+            [#-- CRPs Active projects  --]
+            <h3 class="headTitle text-center">[@s.text name="projectsList.crpActiveProjects"/]</h3>
+            [@projectList.projectsListArchived projects=(centerProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+          </div>
+          [/#if]
         </div>
       </div>
       [#-- Section Buttons --]
