@@ -7,6 +7,7 @@ var countID;
 var countries = [];
 var layer;
 var arSelectedLocations = [];
+var arInfoWindows = [];
 
 function init() {
 // Init select2
@@ -183,8 +184,9 @@ function attachEvents() {
     var markerId = (this).id;
     var markerName = $(this).attr("name");
 
-    console.log(markerId);
-    console.log(markerName);
+    $('.marker-map').removeClass('selected');
+    $(this).addClass('selected');
+
     /* GET COORDINATES */
     var url = baseURL + "/geopositionByElement.do";
     var data = {
@@ -215,7 +217,10 @@ function attachEvents() {
         });
       }
     });
+  });
 
+  // THIS IS THE THING!!!
+  $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").bind('input propertychange', function() {
 
   });
 
@@ -232,8 +237,6 @@ function modalButtonsListeners(){
     var locationId = $locationLevelSelect.val().split("-")[0];
     var locationIsList = $locationLevelSelect.val().split("-")[1];
     var locationName = $locationLevelSelect.val().split("-")[2];
-
-    console.log("locId= "+locationId+" locList= "+locationIsList+" locName= "+locationName);
 
     var $locationSelect = $("#countriesCmvs");
     // checking if is list
@@ -252,6 +255,9 @@ function modalButtonsListeners(){
     } else {
       if($("#inputFormWrapper").find(".name").val().trim() == "") {
         $("#inputFormWrapper").find(".name").addClass("fieldError");
+        $("#inputFormWrapper").find(".name").on('change',function(){
+          $(this).removeClass('fieldError');
+        });
       } else {
         $("#inputFormWrapper").find(".name").removeClass("fieldError");
         if($("#inputFormWrapper").find(".fieldError").exists()) {
@@ -277,6 +283,7 @@ function modalButtonsListeners(){
     e.preventDefault();
     $("#close-modal-button").click();
   });*/
+
 }
 
 //Add Regions
@@ -927,6 +934,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
       content: sites,
       position: marker.getPosition()
     });
+    arInfoWindows.push(infoWindow);
     infoWindow.open(map);
   });
 
@@ -970,12 +978,14 @@ function changeMapDiv(selectedButton){
   var mapCurrentNode = map.getDiv();
   var selectedModal = $(selectedButton).data('target');
 
-  infoWindow.close();
+  //infoWindow.close();
 
   if(selectedModal == '.addLocationModal'){
     map.setZoom(3);
     $('#add-location-map').append(mapCurrentNode);
     $('#map').removeClass('all-locations');
+
+    closeAllInfoWindows();
 
     var option = $("#locLevelSelect").find("option:selected");
     if(option.val() == "-1" || option.val().split("-")[0] == "10"){
@@ -988,5 +998,11 @@ function changeMapDiv(selectedButton){
     $('#all-locations-map').append(mapCurrentNode);
     $('#map').addClass('all-locations');
     $('#map .centerMarker').hide();
+  }
+}
+
+function closeAllInfoWindows(){
+  for(var i=0; i<arInfoWindows.length;i++){
+    arInfoWindows[i].close();
   }
 }
