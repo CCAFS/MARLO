@@ -531,7 +531,8 @@ tr:nth-child(even) {
 
 .list-container{
     padding-left: 0;
-    overflow-y: hidden;
+    overflow-y: scroll;
+    height: 460px;
 }
 
 .list-container ul{
@@ -558,8 +559,16 @@ tr:nth-child(even) {
     background-color: #f5f5f5;
 }
 
+.list-container ul li:hover span{
+    color: #d82d00;
+}
+
 .list-container ul li span{
-    color: #0b7ba6;
+    color: #56707a;
+}
+
+.list-container ul li.selected span{
+    color: #d82d00;
 }
 
 .list-container ul li span.coordinates{
