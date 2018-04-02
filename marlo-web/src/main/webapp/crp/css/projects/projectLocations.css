@@ -559,7 +559,7 @@ tr:nth-child(even) {
     background-color: #f5f5f5;
 }
 
-.list-container ul li:hover span{
+.list-container ul li:hover span:not(.coordinates){
     color: #d82d00;
 }
 
@@ -567,7 +567,7 @@ tr:nth-child(even) {
     color: #56707a;
 }
 
-.list-container ul li.selected span{
+.list-container ul li.selected span:not(.coordinates){
     color: #d82d00;
 }
 
