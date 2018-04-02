@@ -21,7 +21,7 @@
     [#if projects?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-projects-${composedID}">
-        <span class="icon-20 project"></span> <strong>${projects?size}</strong> Project(s)
+        <span class="icon-20 project"></span> <strong>${projects?size}</strong> [@s.text name="global.project" /](s)
       </button>
       
       [#-- Modal --]
@@ -32,7 +32,7 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">
               
-                Projects that are contributing to this [@s.text name="global.${className}" /] 
+                [@s.text name="global.projects" /] that are contributing to this [@s.text name="global.${className}" /] 
                 <br />
                 <small>${elementTitle}</small>
               </h4>
@@ -84,7 +84,7 @@
               <h4 class="modal-title" id="myModalLabel">
                
                  [#if className=="ProjectBudget"]
-                Deliverables funded by this funding source in this project
+                Deliverables funded by this funding source in this [@s.text name="global.project" /]
                 [#else]
                   Deliverables that are contributing to this [@s.text name="global.${className}" /] 
                 [/#if]

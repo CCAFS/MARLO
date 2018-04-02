@@ -350,9 +350,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             ? powbSynthesisPMU.getPowbManagementGovernance().getDescription() : "";
       }
     }
-    poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.management.risk"));
+    poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.management.risk"));
     poiSummary.textParagraph(document.createParagraph(), managementRisksTitleDescription);
-    poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.management.governance"));
+    poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.management.governance"));
     poiSummary.textParagraph(document.createParagraph(), CRPManagementGovernanceDescription);
 
 
@@ -409,24 +409,20 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
         subIDO = "";
         for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-          if (subIDO.isEmpty()) {
-
-            if (subIdo.getSrfSubIdo() != null) {
+          if (subIdo.getSrfSubIdo() != null) {
+            if (subIDO.isEmpty()) {
               if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                subIDO = "• CC: " + subIdo.getSrfSubIdo().getDescription();
+                subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
               } else {
                 subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
               }
             } else {
-
               if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                subIDO += "\n • CC:" + subIdo.getSrfSubIdo().getDescription();
+                subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
               } else {
-                subIDO += "\n •" + subIdo.getSrfSubIdo().getDescription();
+                subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
               }
             }
-
-
           }
         }
         outcomes = outcome.getComposedName();
@@ -1025,6 +1021,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       this.addFinancialPlan();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.collaboration"));
       this.addCollaboration();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.mel"));
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.management"));
       this.addManagement();
 
@@ -1269,7 +1267,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     List<PowbExpectedCrpProgress> powbExpectedCrpProgresses =
       powbExpectedCrpProgressManager.findByProgram(crpProgramID);
     List<PowbExpectedCrpProgress> powbExpectedCrpProgressMilestone = powbExpectedCrpProgresses.stream()
-      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue()).collect(Collectors.toList());
+      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue() && c.isActive())
+      .collect(Collectors.toList());
     if (!powbExpectedCrpProgressMilestone.isEmpty()) {
       return powbExpectedCrpProgressMilestone.get(0);
     }
@@ -1369,8 +1368,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
 
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
-    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
-      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    List<ProjectFocus> projects =
+      crpProgram.getProjectFocuses().stream().filter(c -> c.getProject().isActive() && c.isActive()
+        && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
     Set<Project> myProjects = new HashSet();
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
@@ -1389,7 +1389,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       }
     }
     for (Project project : myProjects) {
-
 
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
@@ -1509,9 +1508,10 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        if (!crpProgram.getMilestones().isEmpty()) {
-          validOutcomes.add(crpProgramOutcome);
-        }
+        /* Change requested by htobon: Show outcomes without milestones for table A1 */
+        // if (!crpProgram.getMilestones().isEmpty()) {
+        validOutcomes.add(crpProgramOutcome);
+        // }
       }
       crpProgram.setOutcomes(validOutcomes);
       this.loadFlagShipBudgetInfo(crpProgram);

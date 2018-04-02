@@ -82,9 +82,10 @@
       "title": "summaries.board.report.leadProjectInstitutionsSummary", 
       "description": "summaries.board.report.leadProjectInstitutionsSummary.description",
       "namespace": "/projects",
-      "action": "${crpSession}/leadProjectInstitutionsSummary",
+      "action": "${crpSession}/projectPartnersSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Planning", "Reporting" ]
+      "cycles": [ "Planning", "Reporting" ],
+      "partnerType": "Leader"
     },
     { "active": true,
       "available": true,
@@ -93,7 +94,8 @@
       "namespace": "/projects",
       "action": "${crpSession}/projectPartnersSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Planning", "Reporting" ]
+      "cycles": [ "Planning", "Reporting" ],
+      "partnerType": "All"
     }
   ]},
   [#-- DELIVERABLES REPORTS --]
@@ -278,6 +280,11 @@
         [/#if]
         <div class="btn btn-danger btn-xs removeAllTags" role="button">Remove all keywords</div>
       </div>
+      [/#if]
+      
+      [#--  Partner Type --]
+      [#if report.partnerType??]
+      <input type="hidden" name="partnerType" value="${report.partnerType}" />
       [/#if]
       
       [#-- Generate Button--]
