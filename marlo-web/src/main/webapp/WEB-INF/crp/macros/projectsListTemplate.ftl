@@ -65,12 +65,18 @@
             
           </td>
           [#-- Project Leader --]
+          [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
+            [#assign pLeader =  (project.getLeader(project.projectInfo.phase))! ]
+            [#assign pLeaderPerson =  (project.getLeaderPersonDB(project.projectInfo.phase))! ]
+          [#else]
+            [#assign pLeader =  (project.getLeader(action.getActualPhase()))! ]
+            [#assign pLeaderPerson =  (project.getLeaderPersonDB(action.getActualPhase()))! ]
+          [/#if]
           <td class=""> 
-            [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          
           <td class=""> 
-            [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions --]
           <td>
