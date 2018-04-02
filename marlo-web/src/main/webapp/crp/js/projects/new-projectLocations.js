@@ -219,9 +219,11 @@ function attachEvents() {
     });
   });
 
-  // THIS IS THE THING!!!
   $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").bind('input propertychange', function() {
-
+    var latitude = $("#inputFormWrapper input.latitude").val();
+    var longitude = $("#inputFormWrapper input.longitude").val();
+    var latLng = new google.maps.LatLng(latitude, longitude);
+    map.setCenter(latLng)
   });
 
 }
@@ -483,6 +485,7 @@ function initMap() {
   // Bias the SearchBox results towards current map's viewport.
   map.addListener('bounds_changed', function() {
     searchBox.setBounds(map.getBounds());
+    //checkBounds();
   });
 
   //Listen for the event fired when the user selects a prediction and retrieve
@@ -546,6 +549,10 @@ function initMap() {
     // marker.
     $("#inputFormWrapper").find(".latitude").val(map.getCenter().lat());
     $("#inputFormWrapper").find(".longitude").val(map.getCenter().lng());
+
+    if(map.getBounds()){
+      checkBounds();
+    }
   });
 
 // google.maps.event.addListener(map, 'rightclick', function(e) {
@@ -558,6 +565,29 @@ function initMap() {
 
   mappingCountries();
 
+}
+
+//If the map position is out of range, move it back
+function checkBounds() {
+
+var latNorth = map.getBounds().getNorthEast().lat();
+var latSouth = map.getBounds().getSouthWest().lat();
+var newLat;
+
+if(latNorth<85 && latSouth>-85) {
+  return;
+} else {
+    if(latNorth>85 && latSouth<-85) {
+      return;
+    } else {
+        if(latNorth>85){newLat =  map.getCenter().lat() - (latNorth-85);}   /* too north, centering */
+        if(latSouth<-85){newLat =  map.getCenter().lat() - (latSouth+85);}   /* too south, centering */
+    }
+}
+if(newLat) {
+    var newCenter= new google.maps.LatLng( newLat ,map.getCenter().lng() );
+    map.setCenter(newCenter);
+    }
 }
 
 function mappingCountries() {
@@ -977,6 +1007,9 @@ function showMarkers() {
 function changeMapDiv(selectedButton){
   var mapCurrentNode = map.getDiv();
   var selectedModal = $(selectedButton).data('target');
+
+
+
 
   //infoWindow.close();
 
