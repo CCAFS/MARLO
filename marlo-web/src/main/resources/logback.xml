@@ -1,6 +1,6 @@
 <configuration debug="true">
   <contextName>Marlo Activities</contextName>
-  <property resource="config/marlo-dev.properties" />
+  <property resource="config/marlo-${spring.profiles.active}.properties" />
 
   <!-- ======= Filters by levels to print logs in file ======= -->
 
