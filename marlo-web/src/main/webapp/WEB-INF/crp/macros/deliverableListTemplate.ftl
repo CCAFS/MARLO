@@ -42,6 +42,8 @@
           </td>
           [#-- Deliverable Title --]
           <td class="left">
+            [#-- Hidden title to sort correctly by title --]
+            <span class="hidden">${deliverable.deliverableInfo.title!''}</span>
             [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
             
