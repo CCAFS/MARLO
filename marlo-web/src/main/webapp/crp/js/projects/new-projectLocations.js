@@ -219,11 +219,16 @@ function attachEvents() {
     });
   });
 
-  $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").bind('input propertychange', function() {
+  $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").blur(function() {
     var latitude = $("#inputFormWrapper input.latitude").val();
     var longitude = $("#inputFormWrapper input.longitude").val();
     var latLng = new google.maps.LatLng(latitude, longitude);
     map.setCenter(latLng)
+  });
+
+  $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").on('click',function(){
+    //var prevCoordinate = $(this).val();
+    $(this).select();
   });
 
 }
@@ -485,7 +490,6 @@ function initMap() {
   // Bias the SearchBox results towards current map's viewport.
   map.addListener('bounds_changed', function() {
     searchBox.setBounds(map.getBounds());
-    //checkBounds();
   });
 
   //Listen for the event fired when the user selects a prediction and retrieve
@@ -524,7 +528,10 @@ function initMap() {
 
   //Center marker into map on click
   $('<div/>').addClass('centerMarker').css('display','none').appendTo(map.getDiv()).click(function(){
-    addLocationFromMap();
+    var option = $("#locLevelSelect").find("option:selected");
+    if(option.val().split("-")[0] == "2"){
+      addLocationFromMap();
+    }
  });
   var centerControlDiv = document.createElement('div');
   if(editable && $("span.has_otherLoc").text() == "true") {
@@ -544,17 +551,6 @@ function initMap() {
     $(".locations").removeClass("selected");
   });
 
-  map.addListener('center_changed', function() {
-    // 3 seconds after the center of the map has changed, pan back to the
-    // marker.
-    $("#inputFormWrapper").find(".latitude").val(map.getCenter().lat());
-    $("#inputFormWrapper").find(".longitude").val(map.getCenter().lng());
-
-    if(map.getBounds()){
-      checkBounds();
-    }
-  });
-
 // google.maps.event.addListener(map, 'rightclick', function(e) {
 // openInfoWindowForm(e);
 // });
@@ -565,29 +561,30 @@ function initMap() {
 
   mappingCountries();
 
-}
+  // bounds of the desired area
+  var allowedBounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(-80.711903, -175.058594),
+      new google.maps.LatLng(80.829945, 175.839844)
+ );
+ var lastValidCenter = map.getCenter();
 
-//If the map position is out of range, move it back
-function checkBounds() {
+  map.addListener('center_changed', function() {
+    // after the center of the map has changed, pan back to the
+    // marker.
+    $("#inputFormWrapper").find(".latitude").val(map.getCenter().lat());
+    $("#inputFormWrapper").find(".longitude").val(map.getCenter().lng());
 
-var latNorth = map.getBounds().getNorthEast().lat();
-var latSouth = map.getBounds().getSouthWest().lat();
-var newLat;
-
-if(latNorth<85 && latSouth>-85) {
-  return;
-} else {
-    if(latNorth>85 && latSouth<-85) {
+    if (allowedBounds.contains(map.getCenter())) {
+      // still within valid bounds, so save the last valid position
+      lastValidCenter = map.getCenter();
       return;
-    } else {
-        if(latNorth>85){newLat =  map.getCenter().lat() - (latNorth-85);}   /* too north, centering */
-        if(latSouth<-85){newLat =  map.getCenter().lat() - (latSouth+85);}   /* too south, centering */
     }
-}
-if(newLat) {
-    var newCenter= new google.maps.LatLng( newLat ,map.getCenter().lng() );
-    map.setCenter(newCenter);
-    }
+
+    // not valid anymore => return to last valid position
+    map.panTo(lastValidCenter);
+
+  });
+
 }
 
 function mappingCountries() {

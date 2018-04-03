@@ -68,14 +68,14 @@
 }
 
 #map {
-    width: 330px;
-    height: 250px;
+    width: 370px;
+    height: 330px;
     padding: 0;
     border: 2px solid #aaa;
 }
 
 #map.all-locations {
-    width: 615px;
+    width: 688px;
     height: 460px;
 }
 
@@ -412,7 +412,8 @@ tr:nth-child(even) {
 
 .addLocationModal .modal-content, .allLocationsModal .modal-content {
     padding: 20px;
-    min-height: 350px;
+    min-height: 415px;
+    width: 1000px;
 }
 
 .allLocationsModal .modal-content {
@@ -531,7 +532,7 @@ tr:nth-child(even) {
 
 .list-container{
     padding-left: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 460px;
 }
 
@@ -574,4 +575,9 @@ tr:nth-child(even) {
 .list-container ul li span.coordinates{
     padding-left: 14px;
     font-size: 75%;
+}
+
+span.select2-selection.select2-selection--multiple{
+    max-height: 150px;
+    overflow-y: auto;
 }
