@@ -34,7 +34,7 @@
       'items': [
       { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne },
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
-      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': false ,'show': reportingActive }
+      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
     },
     { 'title': 'Activities', 'show': action.hasSpecificities(action.crpActivitesModule()),

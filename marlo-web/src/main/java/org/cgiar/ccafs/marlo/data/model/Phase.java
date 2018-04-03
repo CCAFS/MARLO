@@ -80,6 +80,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectBudgetsFlagship> projectBudgetsFlagships = new HashSet<ProjectBudgetsFlagship>(0);
   private Set<PowbSynthesis> powbSynthesis = new HashSet<PowbSynthesis>(0);
   private Set<ProjectLeverage> projectLeverages = new HashSet<ProjectLeverage>(0);
+  private Set<ProjectHighlightInfo> projectHighlightInfos = new HashSet<ProjectHighlightInfo>(0);
 
 
   public Phase() {

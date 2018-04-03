@@ -326,9 +326,11 @@ public class ValidateProjectSectionAction extends BaseAction {
         break;
 
       case HIGHLIGHT:
-        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.isActive() && d.getYear().intValue() == this.getActualPhase().getYear())
-          .collect(Collectors.toList());
+        List<ProjectHighlight> highlights =
+          project
+            .getProjectHighligths().stream().filter(d -> d.isActive() && d
+              .getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
+            .collect(Collectors.toList());
 
         section = new HashMap<String, Object>();
         section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHT);

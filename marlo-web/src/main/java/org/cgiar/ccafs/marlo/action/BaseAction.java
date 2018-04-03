@@ -3019,7 +3019,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case HIGHLIGHT:
         project = projectManager.getProjectById(projectID);
         List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
+          .filter(d -> d.getProjectHighlightInfo(this.getActualPhase()) != null && d.isActive()
+            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
         if (highlights.isEmpty()) {
           return true;
@@ -4277,7 +4278,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
+          .filter(d -> d.getProjectHighlightInfo(this.getActualPhase()) != null && d.isActive()
+            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
         if (highlights.isEmpty()) {
           totalSections++;

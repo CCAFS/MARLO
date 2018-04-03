@@ -40,6 +40,7 @@ import javax.inject.Named;
 public class ProjectHighLightValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
+  private BaseAction baseAction;
 
   @Inject
   public ProjectHighLightValidator(GlobalUnitManager crpManager) {
@@ -54,11 +55,11 @@ public class ProjectHighLightValidator extends BaseValidator {
    * @param projectHighlight
    */
   private void checkFileIsValid(ProjectHighlight projectHighlight) {
-    FileDB file = projectHighlight.getFile();
+    FileDB file = projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getFile();
     if (file != null) {
       if (file.getFileName() == null && file.getTokenId() == null) {
         // The UI component has instantiated an empty file object instead of null.
-        projectHighlight.setFile(null);
+        projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).setFile(null);
       }
     }
 
@@ -68,8 +69,8 @@ public class ProjectHighLightValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.DESCRIPTION.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -77,8 +78,9 @@ public class ProjectHighLightValidator extends BaseValidator {
 
   public void validate(BaseAction action, Project project, ProjectHighlight highLigths, boolean saving) {
     action.setInvalidFields(new HashMap<>());
+    baseAction = action;
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(project, action.getCrpID(),action);
+      Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
@@ -106,10 +108,10 @@ public class ProjectHighLightValidator extends BaseValidator {
 
   private void ValidateHightAuthor(BaseAction action, ProjectHighlight higligth) {
 
-    if (!this.isValidString(higligth.getAuthor())) {
+    if (!this.isValidString(higligth.getProjectHighlightInfo(baseAction.getActualPhase()).getAuthor())) {
       action.addMessage("Author");
       action.addMissingField("reporting.projectHighligth.author");
-      action.getInvalidFields().put("input-highlight.author", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-highlight.projectHighlightInfo.author", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
@@ -126,20 +128,20 @@ public class ProjectHighLightValidator extends BaseValidator {
 
   private void ValidateHightTitle(BaseAction action, ProjectHighlight higligth) {
 
-    if (!this.isValidString(higligth.getTitle())) {
+    if (!this.isValidString(higligth.getProjectHighlightInfo(baseAction.getActualPhase()).getTitle())) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("reporting.projectHighligth.title");
-      action.getInvalidFields().put("input-highlight.title", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-highlight.projectHighlightInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
 
   private void ValidateYear(BaseAction action, ProjectHighlight higligth) {
 
-    if (!(higligth.getYear() > 0)) {
+    if (!(higligth.getProjectHighlightInfo(baseAction.getActualPhase()).getYear() > 0)) {
       action.addMessage("Year");
       action.addMissingField("reporting.projectHighligth.year");
-      action.getInvalidFields().put("input-highlight.year", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-highlight.projectHighlightInfo.year", InvalidFieldsMessages.EMPTYFIELD);
 
     }
   }
