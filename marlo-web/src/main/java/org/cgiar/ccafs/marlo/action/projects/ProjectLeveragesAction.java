@@ -130,7 +130,8 @@ public class ProjectLeveragesAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -177,9 +178,8 @@ public class ProjectLeveragesAction extends BaseAction {
           projectLeverage.setModificationJustification(this.getJustification());
           projectLeverage.setActiveSince(new Date());
           projectLeverage.setYear(this.getCurrentCycleYear());
-
-
           projectLeverage.setProject(project);
+          projectLeverage.setPhase(this.getActualPhase());
 
         } else {
           ProjectLeverage projectLeverageDB = projectLeverageManager.getProjectLeverageById(projectLeverage.getId());
@@ -190,14 +190,15 @@ public class ProjectLeveragesAction extends BaseAction {
           projectLeverage.setYear(projectLeverageDB.getYear());
           projectLeverage.setProject(project);
           projectLeverage.setActiveSince(projectLeverageDB.getActiveSince());
+          projectLeverage.setPhase(this.getActualPhase());
 
         }
       }
       if (projectLeverage.getInstitution().getId().intValue() == -1) {
         projectLeverage.setInstitution(null);
       }
-      if (projectLeverage.getCrpProgram().getId().intValue() == -1) {
-        projectLeverage.setCrpProgram(null);
+      if (projectLeverage.getIpProgram().getId().intValue() == -1) {
+        projectLeverage.setIpProgram(null);
       }
       projectLeverageManager.saveProjectLeverage(projectLeverage);
     }
@@ -210,8 +211,9 @@ public class ProjectLeveragesAction extends BaseAction {
     Project projectBD = projectManager.getProjectById(projectID);
 
 
-    projectLeveragesPrew = projectBD.getProjectLeverages().stream()
-      .filter(a -> a.isActive() && a.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
+    projectLeveragesPrew =
+      projectBD.getProjectLeverages().stream().filter(a -> a.isActive() && a.getYear() == this.getCurrentCycleYear()
+        && a.getPhase() != null && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
     for (ProjectLeverage projectLeverage : projectLeveragesPrew) {
@@ -254,8 +256,9 @@ public class ProjectLeveragesAction extends BaseAction {
         List<HistoryDifference> differences = new ArrayList<>();
         Map<String, String> specialList = new HashMap<>();
         int i = 0;
-        project
-          .setLeverages(project.getProjectLeverages().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setLeverages(project.getProjectLeverages().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
         for (ProjectLeverage leverage : project.getLeverages()) {
           int[] index = new int[1];
           index[0] = i;
@@ -314,12 +317,15 @@ public class ProjectLeveragesAction extends BaseAction {
         }
         this.setDraft(true);
       } else {
-        project.setLeverages(project.getProjectLeverages().stream()
-          .filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
-        project.setLeveragesClosed(project.getProjectLeverages().stream()
-          .filter(c -> c.isActive() && c.getYear() != this.getCurrentCycleYear()).collect(Collectors.toList()));
+        project.setLeverages(
+          project.getProjectLeverages().stream().filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()
+            && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        project.setLeveragesClosed(
+          project.getProjectLeverages().stream().filter(c -> c.isActive() && c.getYear() != this.getCurrentCycleYear()
+            && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
         project.getLeverages().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         project.getLeveragesClosed().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         this.setDraft(false);
       }
     }
@@ -372,9 +378,11 @@ public class ProjectLeveragesAction extends BaseAction {
        */
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_LEVERAGES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      project.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
