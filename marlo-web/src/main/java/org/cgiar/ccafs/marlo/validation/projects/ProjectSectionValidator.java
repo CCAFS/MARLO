@@ -425,9 +425,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-      .filter(d -> d.isActive() && d.getYear().intValue() == action.getActualPhase().getYear())
-      .collect(Collectors.toList());
+    List<ProjectHighlight> highlights =
+      project.getProjectHighligths().stream()
+        .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive() && d
+          .getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
+        .collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
       projectHighlight.setTypes(

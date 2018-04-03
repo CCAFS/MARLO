@@ -205,6 +205,11 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" />
 		</set>
-
+<set name="projectHighlightInfos" table="project_highlights_info" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo" />
+        </set>
 	</class>
 </hibernate-mapping>
