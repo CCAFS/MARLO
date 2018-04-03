@@ -338,11 +338,33 @@
           <div class=" locationLevel-optionContent " listname="${customName}.locElements">
             [#-- Content of locations--]
             <div class="optionSelect-content row">
+              <div style="display:block">
+              [#if element.name?has_content]
+                [#if element.name == 'Country']
+                  [#if project.countryFS?has_content]
+                    [#list project.countryFS as suggestedCountry]
+                      [#if suggestedCountry.selected]
+                      <div class="col-md-4">
+                        <div class="locations col-md-12">
+                          <div class="locationName">
+                            <span class="lName">${(suggestedCountry.locElement.name)!}</span>
+                          </div>
+                        </div>
+                      </div>
+                      [/#if]
+                    [/#list]
+                  <hr />
+                  [/#if]
+                [/#if]
+              [/#if]
+              </div>
+              <div style="display:block">
               [#if element.locElements?has_content]
                 [#list element.locElements as location]
                   [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
                 [/#list]
               [/#if]
+              </div>
             </div>
           </div>
         </td>
