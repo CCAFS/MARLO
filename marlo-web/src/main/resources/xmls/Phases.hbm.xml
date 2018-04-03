@@ -205,13 +205,18 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" />
 		</set>
-		<set name="projectLeverages" table="project_leverage" inverse="true"
+<set name="projectHighlightInfos" table="project_highlights_info" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo" />
+        </set>
+        <set name="projectLeverages" table="project_leverage" inverse="true"
       lazy="true" fetch="select">
       <key>
         <column name="id_phase" not-null="true" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" />
     </set>
-
 	</class>
 </hibernate-mapping>
