@@ -60,7 +60,6 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
   public ProjectHighlightInfo() {
   }
 
-
   public ProjectHighlightInfo(FileDB fileDB, Phase phase, ProjectHighlight projectHighlight, String title,
     String author, Date startDate, Date endDate, String description, String results, boolean isGlobal, String publisher,
     String objectives, String partners, String links, String keywords, String subject, Long year, Long status) {
@@ -89,7 +88,6 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     this.author = author;
     this.global = isGlobal;
   }
-
 
   public String getAuthor() {
     return this.author;
@@ -144,6 +142,7 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -155,10 +154,10 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     return this.objectives;
   }
 
-
   public String getPartners() {
     return this.partners;
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -188,10 +187,10 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     return this.subject;
   }
 
-
   public String getTitle() {
     return this.title;
   }
+
 
   public Long getYear() {
     return this.year;
@@ -223,10 +222,10 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     this.file = fileDB;
   }
 
-
   public void setGlobal(boolean global) {
     this.global = global;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -236,7 +235,6 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     this.keywords = keywords;
   }
 
-
   public void setLinks(String links) {
     this.links = links;
   }
@@ -245,6 +243,7 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
   public void setObjectives(String objectives) {
     this.objectives = objectives;
   }
+
 
   public void setPartners(String partners) {
     this.partners = partners;
@@ -258,10 +257,10 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     this.projectHighlight = projectHighlight;
   }
 
-
   public void setPublisher(String publisher) {
     this.publisher = publisher;
   }
+
 
   public void setResults(String results) {
     this.results = results;
@@ -285,6 +284,26 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
 
   public void setYear(Long year) {
     this.year = year;
+  }
+
+  public void updateProjectHighlightInfo(ProjectHighlightInfo projectHighlightInfoUpdate, Phase phase) {
+    this.setAuthor(projectHighlightInfoUpdate.getAuthor());
+    this.setDescription(projectHighlightInfoUpdate.getDescription());
+    this.setEndDate(projectHighlightInfoUpdate.getEndDate());
+    this.setFile(projectHighlightInfoUpdate.getFile());
+    this.setGlobal(projectHighlightInfoUpdate.isGlobal());
+    this.setKeywords(projectHighlightInfoUpdate.getKeywords());
+    this.setLinks(projectHighlightInfoUpdate.getLinks());
+    this.setObjectives(projectHighlightInfoUpdate.getObjectives());
+    this.setPhase(phase);
+    this.setProjectHighlight(projectHighlightInfoUpdate.getProjectHighlight());
+    this.setPublisher(projectHighlightInfoUpdate.getPublisher());
+    this.setResults(projectHighlightInfoUpdate.getResults());
+    this.setStartDate(projectHighlightInfoUpdate.getStartDate());
+    this.setStatus(projectHighlightInfoUpdate.getStatus());
+    this.setSubject(projectHighlightInfoUpdate.getSubject());
+    this.setTitle(projectHighlightInfoUpdate.getTitle());
+    this.setYear(projectHighlightInfoUpdate.getYear());
   }
 
 
