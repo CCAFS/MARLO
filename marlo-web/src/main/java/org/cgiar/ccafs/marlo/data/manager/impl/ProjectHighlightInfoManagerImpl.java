@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,18 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighlightInfoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighlightInfoManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -33,11 +37,13 @@ public class ProjectHighlightInfoManagerImpl implements ProjectHighlightInfoMana
 
   private ProjectHighlightInfoDAO projectHighlightInfoDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectHighlightInfoManagerImpl(ProjectHighlightInfoDAO projectHighlightInfoDAO) {
+  public ProjectHighlightInfoManagerImpl(ProjectHighlightInfoDAO projectHighlightInfoDAO, PhaseDAO phaseDAO) {
     this.projectHighlightInfoDAO = projectHighlightInfoDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -67,10 +73,51 @@ public class ProjectHighlightInfoManagerImpl implements ProjectHighlightInfoMana
     return projectHighlightInfoDAO.find(projectHighlightInfoID);
   }
 
+  public void saveInfoPhase(Phase next, long projectHighlightid, ProjectHighlightInfo projectHighlightInfo) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectHighlightInfo> projectHighlightInfos = phase.getProjectHighlightInfos().stream()
+      .filter(c -> c.getProjectHighlight().getId().longValue() == projectHighlightid).collect(Collectors.toList());
+    if (!projectHighlightInfos.isEmpty()) {
+      for (ProjectHighlightInfo projectHighlightInfoPhase : projectHighlightInfos) {
+        projectHighlightInfoPhase.updateProjectHighlightInfo(projectHighlightInfo, phase);
+        projectHighlightInfoDAO.save(projectHighlightInfoPhase);
+
+
+      }
+    } else {
+
+
+      // if (cal.get(Calendar.YEAR) >= phase.getYear()) {
+      ProjectHighlightInfo projectHighlightInfoAdd = new ProjectHighlightInfo();
+      projectHighlightInfoAdd.setProjectHighlight(projectHighlightInfo.getProjectHighlight());
+      projectHighlightInfoAdd.updateProjectHighlightInfo(projectHighlightInfo, phase);
+      projectHighlightInfoAdd.setPhase(phase);
+      projectHighlightInfoDAO.save(projectHighlightInfoAdd);
+
+      // }
+
+
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveInfoPhase(phase.getNext(), projectHighlightid, projectHighlightInfo);
+    }
+  }
+
   @Override
   public ProjectHighlightInfo saveProjectHighlightInfo(ProjectHighlightInfo projectHighlightInfo) {
 
-    return projectHighlightInfoDAO.save(projectHighlightInfo);
+    ProjectHighlightInfo sourceInfo = projectHighlightInfoDAO.save(projectHighlightInfo);
+    Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (projectHighlightInfo.getPhase().getNext() != null) {
+        this.saveInfoPhase(projectHighlightInfo.getPhase().getNext(),
+          projectHighlightInfo.getProjectHighlight().getId(), projectHighlightInfo);
+      }
+    }
+    return sourceInfo;
   }
 
 

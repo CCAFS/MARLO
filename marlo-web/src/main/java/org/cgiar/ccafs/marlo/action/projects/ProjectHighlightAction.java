@@ -555,6 +555,9 @@ public class ProjectHighlightAction extends BaseAction {
       // highlight.setProjectHighligthsTypes(new HashSet<>(actualTypes));
       // highlight.setProjectHighligthCountries(new HashSet<>(actualcountries));
 
+      highlight.getProjectHighlightInfo().setPhase(this.getActualPhase());
+      highlight.getProjectHighlightInfo().setProjectHighlight(highlight);
+
       projectHighlightInfoManager.saveProjectHighlightInfo(highlight.getProjectHighlightInfo());
 
       projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName);
