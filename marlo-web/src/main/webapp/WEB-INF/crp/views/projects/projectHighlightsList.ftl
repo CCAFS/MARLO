@@ -94,11 +94,11 @@
           [#assign dlurl][@s.url namespace=namespace action='${crpSession}/highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
           <tr>
             <td class="id" ><a href="${dlurl}">${hl.id}</a></td> 
-            <td class="name"><a href="${dlurl}">[#if hl.title?trim?has_content]${hl.title}[#else]Untitled[/#if]</a></td>
-            <td class="type">[#if hl.title?trim?has_content]${hl.author}[#else]Not defined[/#if]</td>
-            <td class="year">[#if hl.title?trim?has_content]${hl.year}[#else]Not defined[/#if]</td>
+            <td class="name"><a href="${dlurl}">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.title}[#else]Untitled[/#if]</a></td>
+            <td class="type">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.author}[#else]Not defined[/#if]</td>
+            <td class="year">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.year}[#else]Not defined[/#if]</td>
             <td class="removeHighlight-row text-center">
-              [#if canEdit  && (hl.year gte  currentCycleYear) ]
+              [#if canEdit  && (hl.projectHighlightInfo.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${hl.id}" class="removeHighlight" href="#" title="" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
                 </a>
