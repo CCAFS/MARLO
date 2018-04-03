@@ -146,13 +146,15 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
       }
 
 
-      if (projectHighlight.getStatus() != null) {
-        if (projectHighlight.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getStatus() != null) {
+        if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
         }
       }
 
-      if (projectHighlight.getYear() != baseAction.getCurrentCycleYear()) {
+      if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getYear() != baseAction
+        .getCurrentCycleYear()) {
         canEdit = false;
       }
       // Set the variable that indicates if the user can edit the section
