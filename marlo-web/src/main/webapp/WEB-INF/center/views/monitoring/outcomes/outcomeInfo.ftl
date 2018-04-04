@@ -76,7 +76,7 @@
       [#-- Year Tabs --]
       <ul class="nav nav-tabs" role="tablist">
         [#list outcome.monitorings as year]
-          <li class="[#if year.year == action.getCenterYear()]active[/#if]"><a href="#outcomeYear-${year.year}" role="tab" data-toggle="tab">${year.year}[#if year.year == action.getCenterYear()] <span class="red">*</span> [/#if] </a></li>
+          <li class="[#if year.year == currentYear]active[/#if]"><a href="#outcomeYear-${year.year}" role="tab" data-toggle="tab">${year.year}[#if year.year == currentYear] <span class="red">*</span> [/#if] </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
@@ -84,7 +84,7 @@
       <br />
         [#list outcome.monitorings as outcome]
         
-          <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == action.getCenterYear()]active[/#if]" id="outcomeYear-${outcome.year}">
+          <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == currentYear]active[/#if]" id="outcomeYear-${outcome.year}">
           [#-- element id --]
           <input type="hidden" name="outcome.monitorings[${outcome_index}].id" value="${(outcome.id)!}" />
           

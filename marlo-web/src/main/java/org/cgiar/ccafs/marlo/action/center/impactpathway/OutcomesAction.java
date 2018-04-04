@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
@@ -80,9 +79,6 @@ public class OutcomesAction extends BaseAction {
 
   private AuditLogManager auditLogService;
 
-  private ICenterTargetUnitManager targetUnitService;
-
-
   private CrpProgramManager programService;
 
   private ICenterImpactManager impactService;
@@ -121,13 +117,12 @@ public class OutcomesAction extends BaseAction {
 
   @Inject
   public OutcomesAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
-    ICenterTargetUnitManager targetUnitService, CrpProgramManager programService, ICenterImpactManager impactService,
-    ICenterMilestoneManager milestoneService, OutcomesValidator validator, AuditLogManager auditLogService,
-    SrfTargetUnitManager srfTargetUnitManager) {
+    CrpProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
+    OutcomesValidator validator, AuditLogManager auditLogService, SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;
-    this.targetUnitService = targetUnitService;
+
     this.programService = programService;
     this.impactService = impactService;
     this.milestoneService = milestoneService;
@@ -339,7 +334,7 @@ public class OutcomesAction extends BaseAction {
           targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
         }
 
-        // TODO
+
         targetUnitList = this.sortByComparator(targetUnitList);
       }
 
