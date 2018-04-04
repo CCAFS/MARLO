@@ -37,7 +37,8 @@ function autoSave() {
         method: 'POST',
         url: baseURL + '/autosaveWriter.do',
         data: {
-          autoSave: JSON.stringify($('form:first').serializeObject())
+            autoSave: JSON.stringify($('form:first').serializeObject()),
+            phaseID: phaseID
         },
         beforeSend: function(xhr,opts) {
           if(autoSaveActive) {
