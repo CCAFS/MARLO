@@ -221,7 +221,8 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
-        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null
+        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase())
         && pl.getProject().getGlobalUnitProjects().stream()
           .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
           .collect(Collectors.toList()).size() > 0
@@ -243,9 +244,16 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear();
       }
-      if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getIpProgram().getComposedName();
+      if (projectLeverage.isPhaseOneLeverage()) {
+        if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getIpProgram().getComposedName();
+        }
+      } else {
+        if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getCrpProgram().getComposedName();
+        }
       }
+
       if (projectLeverage.getBudget() != null) {
         budget = projectLeverage.getBudget();
       }
