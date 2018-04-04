@@ -62,6 +62,7 @@ public class ProjectLeverageManagerImpl implements ProjectLeverageManager {
     projectLeverageAdd.setTitle(projectLeverage.getTitle());
     projectLeverageAdd.setBudget(projectLeverage.getBudget());
     projectLeverageAdd.setIpProgram(projectLeverage.getIpProgram());
+    projectLeverageAdd.setCrpProgram(projectLeverage.getCrpProgram());
     projectLeverageAdd.setInstitution(projectLeverage.getInstitution());
     projectLeverageAdd.setYear(projectLeverage.getYear());
   }
