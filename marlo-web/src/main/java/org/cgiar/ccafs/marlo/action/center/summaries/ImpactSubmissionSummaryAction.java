@@ -419,7 +419,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
           programImpact = "&lt;Not Defined&gt;";
         }
         if (researchOutcome.getTargetUnit() != null) {
-          targetUnit = researchOutcome.getTargetUnit().getName();
+          targetUnit = researchOutcome.getSrfTargetUnit().getName();
         }
         if (targetUnit.isEmpty()) {
           targetUnit = "&lt;Not Defined&gt;";
