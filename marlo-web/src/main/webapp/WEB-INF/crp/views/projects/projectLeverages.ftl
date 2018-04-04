@@ -133,7 +133,11 @@
     <div class="row">  
       [#-- Type select --]
       <div class="col-md-8">
-      [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [#if (leverage.phaseOneLeverage)!false ]
+          [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [#else]
+          [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [/#if]
       </div> 
       [#-- Budget select --]
       <div class="col-md-4">
