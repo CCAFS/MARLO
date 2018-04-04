@@ -318,13 +318,28 @@
   <ul>
     [#if element.locElements?has_content]
       [#list element.locElements as location]
-        <li id="${location.id}" name="${location.name}" class="marker-map">
+        <li id="${location.id!}" name="${location.name!}" class="marker-map">
           <span class="glyphicon glyphicon-map-marker"></span>
-          ${location.name}
+          ${location.name!}
           <br />
           [#if list!=true]<span class="coordinates">(${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})</span>[/#if]
         </li>
       [/#list]
+    [/#if]
+    [#if element.name?has_content]
+      [#if element.name == 'Country']
+        [#if project.countryFS?has_content]
+          [#list project.countryFS as suggestedCountry]
+            [#if suggestedCountry.selected]
+              <li id="${suggestedCountry.locElement.id!}" name="${suggestedCountry.locElement.name!}" class="marker-map">
+                <span class="glyphicon glyphicon-map-marker"></span>
+                ${(suggestedCountry.locElement.name)!}
+                <br />
+              </li>
+            [/#if]
+          [/#list]
+        [/#if]
+      [/#if]
     [/#if]
   </ul>
 [/#macro]
@@ -338,32 +353,51 @@
           <div class=" locationLevel-optionContent " listname="${customName}.locElements">
             [#-- Content of locations--]
             <div class="optionSelect-content row">
-              <div style="display:block">
-              [#if element.name?has_content]
-                [#if element.name == 'Country']
-                  [#if project.countryFS?has_content]
-                    [#list project.countryFS as suggestedCountry]
-                      [#if suggestedCountry.selected]
-                      <div class="col-md-4">
-                        <div class="locations col-md-12">
-                          <div class="locationName">
-                            <span class="lName">${(suggestedCountry.locElement.name)!}</span>
-                          </div>
-                        </div>
-                      </div>
+              [#-- Countries from suggested locations list --]
+              <div class="row">
+                <div class="col-sm-12">
+                [#if element.locElements?has_content]
+                  [#list element.locElements as location]
+                    [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
+                  [/#list]
+                [/#if]
+                </div>
+              </div>
+              [#-- Other countries --]
+              <div class="row">
+                <div class="col-sm-12">
+                [#if element.name?has_content]
+                  [#if element.name == 'Country']
+                    [#if project.countryFS?has_content]
+                      [#if element.locElements?has_content]
+                      <hr class="suggestedLocations" />
                       [/#if]
-                    [/#list]
-                  <hr />
+                      <div class="row suggestedLocations-container">
+                      <div class="col-sm-4 col-md-4">
+                      <div class="suggestedLocations-label">
+                        Suggested countries:
+                      </div>
+                      </div>
+                      </div>
+                      [#list project.countryFS as suggestedCountry]
+                        [#if suggestedCountry.selected]
+                          <div class="col-md-4">
+                            <div class="locations col-md-12">
+                              <div class="locationName">
+                                <span class="lName">${(suggestedCountry.locElement.name)!}</span>
+                              </div>
+                              [#if editable]
+                              <div class="removeIcon removeDisabled" title="This country should be removed by uncheck it from the suggested list"></div>
+                              [/#if]
+                            </div>
+                          </div>
+                        [/#if]
+                      [/#list]
+                    <hr />
+                    [/#if]
                   [/#if]
                 [/#if]
-              [/#if]
-              </div>
-              <div style="display:block">
-              [#if element.locElements?has_content]
-                [#list element.locElements as location]
-                  [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
-                [/#list]
-              [/#if]
+                </div>
               </div>
             </div>
           </div>

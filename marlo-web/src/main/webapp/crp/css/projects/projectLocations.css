@@ -581,3 +581,24 @@ span.select2-selection.select2-selection--multiple{
     max-height: 150px;
     overflow-y: auto;
 }
+
+hr.suggestedLocations{
+    margin-bottom: 5px;
+}
+
+.removeIcon.removeDisabled{
+    opacity: 0.4;
+}
+
+.suggestedLocations-container{
+    margin: -5px 50px 10px -26px;
+}
+
+.suggestedLocations-label{
+    margin-left: 16px;
+    background-color: #afafaf;
+    color: #ffffff;
+    text-align: center;
+    padding: 0 13px;
+    border-bottom-right-radius: 4px;
+}

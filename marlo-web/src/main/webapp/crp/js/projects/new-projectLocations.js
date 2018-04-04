@@ -102,6 +102,7 @@ function attachEvents() {
     if(option.val() == "-1") {
       $("#addLocationButton").hide("slow");
       $(".locationForm-container .selectLocations").hide("slow");
+      $(".locationForm-container .inputFormCoordinates-container").hide("slow");
     } else {
       $("#addLocationButton").show("slow");
       if(option.val().split("-")[1] == "true") {
@@ -165,6 +166,14 @@ function attachEvents() {
 
   $('input.recommendedSelected').on('change', function() {
     $(this).next().val($(this).is(":checked"));
+
+    var locIso = $(this).next().next().text();
+
+    // THIS IS THE THING
+    if($(this).is(":checked")){
+      countries.push(locIso);
+      mappingCountries();
+    }
   });
 
   $('#countriesCmvs').on('change', function() {
