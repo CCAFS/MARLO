@@ -119,6 +119,8 @@ public class ProjectCaseStudyAction extends BaseAction {
   private PhaseManager phaseManager;
   private String transaction;
 
+  private CaseStudy caseStudyDB;
+
   @Inject
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
     GlobalUnitManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
@@ -363,6 +365,9 @@ public class ProjectCaseStudyAction extends BaseAction {
 
     project = projectManager.getProjectById(projectID);
 
+
+    caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CASE_STUDY_BASE_PERMISSION, params));
     Phase phase = this.getActualPhase();
@@ -400,7 +405,7 @@ public class ProjectCaseStudyAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_PROJECTS_RELATION);
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_INDICATORS_RELATION);
-      CaseStudy caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
+
       caseStudy.setActiveSince(new Date());
       caseStudy.setModifiedBy(this.getCurrentUser());
       caseStudy.setModificationJustification(this.getJustification());
