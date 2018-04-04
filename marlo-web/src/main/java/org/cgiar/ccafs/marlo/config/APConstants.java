@@ -190,6 +190,7 @@ public final class APConstants {
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String PHASE_ID = "phaseID";
   public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
+  public static final int PHASE_ONE_YEAR = 2016;
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";

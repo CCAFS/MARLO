@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Dec 12, 2016 8:46:52 AM by Hibernate Tools 4.3.1.Final
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
@@ -208,6 +209,19 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Boolean isPhaseOneLeverage() {
+    try {
+      if (this.year <= APConstants.PHASE_ONE_YEAR) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -276,7 +290,6 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setYear(Integer year) {
     this.year = year;
