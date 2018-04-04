@@ -126,17 +126,17 @@
     <div class="form-group">
       <label>[@s.text name="reporting.projectLeverages.year" /]:</label>
       <div class="selectList"><p>${(leverage.year)!"${currentCycleYear}"}</p></div>
-      <input type="hidden" name="${leverageCustomName}.year" class="year" value="${(leverage.year)!"-1"}" />
+      <input type="hidden" name="${leverageCustomName}.year" class="year" value="${(leverage.year)!"${currentCycleYear}"}" />
     </div>
     
     <div class="form-group">
     <div class="row">  
       [#-- Type select --]
       <div class="col-md-8">
-        [#if (leverage.phaseOneLeverage)!false ]
-          [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [#if (leverage.isPhaseOneLeverage())!false ]
+          [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="Flagship" listName="flagshipsPhaseOne" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
         [#else]
-          [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+          [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagshipsPhaseTwo" keyFieldName="id"  displayFieldName="composedName"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
         [/#if]
       </div> 
       [#-- Budget select --]
