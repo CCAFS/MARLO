@@ -54,17 +54,20 @@ public class MonitoringOutcomesListAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
 
-
   private GlobalUnit loggedCenter;
 
 
   private List<CenterOutcome> outcomes;
 
+
   private CrpProgramManager programService;
 
 
   private List<CenterArea> researchAreas;
+
   private ICenterAreaManager researchAreaService;
+
+
   private List<CrpProgram> researchPrograms;
   private List<CenterTopic> researchTopics;
   private ICenterTopicManager researchTopicService;
@@ -113,19 +116,18 @@ public class MonitoringOutcomesListAction extends BaseAction {
     return areaID;
   }
 
-  public long getcrpProgramID() {
+  public long getCrpProgramID() {
     return crpProgramID;
   }
-
 
   public long getOutcomeID() {
     return outcomeID;
   }
 
+
   public List<CenterOutcome> getOutcomes() {
     return outcomes;
   }
-
 
   public CrpProgramManager getProgramService() {
     return programService;
@@ -140,6 +142,7 @@ public class MonitoringOutcomesListAction extends BaseAction {
   public List<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
+
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -284,9 +287,10 @@ public class MonitoringOutcomesListAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setcrpProgramID(long crpProgramID) {
+  public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
+
 
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
