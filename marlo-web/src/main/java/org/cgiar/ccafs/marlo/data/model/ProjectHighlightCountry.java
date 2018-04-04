@@ -24,8 +24,13 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   @Expose
   private LocElement locElement;
 
+  @Expose
+  private Phase phase;
+
+
   public ProjectHighlightCountry() {
   }
+
 
   public ProjectHighlightCountry(ProjectHighlight projectHighlight, LocElement locElement) {
     this.projectHighlight = projectHighlight;
@@ -86,10 +91,13 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public ProjectHighlight getProjectHighligth() {
     return projectHighlight;
   }
-
 
   @Override
   public int hashCode() {
@@ -111,8 +119,13 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
     this.id = id;
   }
 
+
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectHighligth(ProjectHighlight projectHighlight) {
