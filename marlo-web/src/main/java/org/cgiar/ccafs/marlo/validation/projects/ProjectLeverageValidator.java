@@ -83,8 +83,8 @@ public class ProjectLeverageValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
-          if (project.getLeverages().get(c).getCrpProgram() != null) {
-            this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
+          if (project.getLeverages().get(c).getIpProgram() != null) {
+            this.validateFlagship(action, project.getLeverages().get(c).getIpProgram().getId(), c);
           } else {
             action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
             action.addMissingField("project.leverages[" + c + ".flagship");

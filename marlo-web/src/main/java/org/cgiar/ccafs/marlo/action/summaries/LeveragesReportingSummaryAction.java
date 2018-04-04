@@ -243,8 +243,8 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear();
       }
-      if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getCrpProgram().getComposedName();
+      if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+        flagship = projectLeverage.getIpProgram().getComposedName();
       }
       if (projectLeverage.getBudget() != null) {
         budget = projectLeverage.getBudget();

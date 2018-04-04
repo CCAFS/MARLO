@@ -111,6 +111,7 @@
     <div class="removeLeverage removeIcon" title="Remove leverage"></div>
     [/#if]
     <input type="hidden" class="leverageId" name="${leverageCustomName}.id" value="${(leverage.id)!}"/>
+    <input type="hidden" class="leverageId" name="${leverageCustomName}.composeID" value="${(leverage.composeID)!}" />
     <div class="form-group title">
       [#-- title --] 
       [@customForm.input name="${leverageCustomName}.title" value="${(leverage.title)!}" type="text" i18nkey="Title"  placeholder="" className="limitWords-50" required=true editable=isEditable /]
@@ -132,7 +133,11 @@
     <div class="row">  
       [#-- Type select --]
       <div class="col-md-8">
-      [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [#if (leverage.phaseOneLeverage)!false ]
+          [@customForm.select name="${leverageCustomName}.ipProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [#else]
+          [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=isEditable/]
+        [/#if]
       </div> 
       [#-- Budget select --]
       <div class="col-md-4">
