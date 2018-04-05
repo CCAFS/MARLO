@@ -8,63 +8,22 @@
   [#-- Form --]
   [@s.form method="POST" namespace="/" action="login"]
      <div class="crps-select hidden">
-      <div class="name-type-container type-CRP hidden">
-        <span class="selection-bar-title">[@s.text name="login.crps"/]:</span>
-      </div>
-      <div class="selection-bar-options">
-        <ul>
-          [#attempt] 
-            [#assign crpList = action.getCrpCategoryList("1") /]
-          [#recover]
-            [#assign crpList = [] /]
-          [/#attempt]
-          [#if crpList?has_content]
-            [#list crpList as crp]
-              [@availableItems element=crp /]
+      [#if listGlobalUnitTypes??]
+        [#list listGlobalUnitTypes as globalUnitType]
+          [#if globalUnitType.globalUnitsList?has_content]
+          <div class="name-type-container type-${globalUnitType.id} hidden">
+            <span class="selection-bar-title">[#if globalUnitType.name=='CGIAR Center']Center[#else]${globalUnitType.name}[/#if]:</span>
+          </div>
+          <div class="selection-bar-options">
+            <ul>
+            [#list globalUnitType.globalUnitsList as globalUnit]
+              [#if globalUnit.login][@availableItems element=globalUnit /][/#if]
             [/#list]
-          [#else]
-            <p>[@s.text name="login.error.crps"/]</p>
+            </ul>
+          </div>
           [/#if]
-        </ul>
-      </div>
-      <div class="name-type-container type-Center hidden">
-        <span class="selection-bar-title">[@s.text name="login.centers"/]:</span>
-      </div>
-      <div class="selection-bar-options">
-        <ul>
-          [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("4") /]
-          [#recover]
-            [#assign centerList = [] /]
-          [/#attempt]
-          [#if centerList?has_content]
-            [#list centerList as center]
-              [@availableItems element=center /]
-            [/#list]
-          [#else]
-            <p>[@s.text name="login.error.centers"/]</p>
-          [/#if]
-        </ul>
-      </div>
-      <div class="name-type-container type-Platform hidden">
-        <span class="selection-bar-title">[@s.text name="login.platforms"/]:</span>
-      </div>
-      <div class="selection-bar-options">
-        <ul>
-          [#attempt] 
-            [#assign platformsList = action.getCrpCategoryList("3") /]
-          [#recover]
-            [#assign platformsList = [] /]
-          [/#attempt]
-          [#if platformsList?has_content]
-            [#list platformsList as platform]
-              [@availableItems element=platform /]
-            [/#list]
-          [#else]
-            <p>[@s.text name="login.error.platforms"/]</p>
-          [/#if]
-        </ul>
-      </div>
+        [/#list]
+      [/#if]
      </div>
      [#-- End crps select --]
      [#-- Check if the inputs can be replaced with the macro from forms.ftl --]

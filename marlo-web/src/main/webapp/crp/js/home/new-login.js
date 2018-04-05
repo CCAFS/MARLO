@@ -209,7 +209,7 @@ function verifyCrpCookie(){
 }
 
 function setCrpSession(){
-  var availableList=['A4NH','CCAFS','FTA','Livestock','Maize','PIM','WLE','Wheat','CIAT','BigData'];
+  var availableList=['A4NH','CCAFS','FTA','Livestock','Maize','PIM','WLE','Wheat','CIAT','BigData','CIAT50'];
   var path = window.location.pathname.split("/");
   $.each(path, function(i){
     $.each(availableList,function(j){
@@ -251,7 +251,7 @@ function loadAvailableItems(email){
           if(crpSession == data.crps[i].acronym){
             hasAccess=true;
           }
-          $(".crps-select .name-type-container.type-"+data.crps[i].type).removeClass("hidden");
+          $(".crps-select .name-type-container.type-"+data.crps[i].id).removeClass("hidden");
           if(data.crps.length<7){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
           }else{
@@ -262,10 +262,8 @@ function loadAvailableItems(email){
           }
         });
         if(data.user.agree){
-          console.log('data= '+data.user.agree);
           $('input#terms').attr('checked',true);
         }else{
-          console.log('data= '+data.user.agree);
           $('input#terms').attr('checked',false);
         }
 
