@@ -55,7 +55,6 @@ public class CenterImpact implements Serializable, IAuditLog {
   @Expose
   private Date activeSince;
 
-
   @Expose
   private User createdBy;
 
@@ -69,7 +68,8 @@ public class CenterImpact implements Serializable, IAuditLog {
 
 
   @Expose
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
+
 
   @Expose
   private String color;
@@ -87,8 +87,8 @@ public class CenterImpact implements Serializable, IAuditLog {
 
   private Set<CenterOutcome> researchOutcomes = new HashSet<CenterOutcome>(0);
 
-  private Set<CenterImpactObjective> researchImpactObjectives = new HashSet<>(0);
 
+  private Set<CenterImpactObjective> researchImpactObjectives = new HashSet<>(0);
 
   private Set<CenterImpactBeneficiary> researchImpactBeneficiaries = new HashSet<CenterImpactBeneficiary>(0);
 
@@ -110,16 +110,15 @@ public class CenterImpact implements Serializable, IAuditLog {
     // TODO Auto-generated constructor stub
   }
 
+
   /**
    * @param impact
    * @param targetYear
-   * @param researchProgram
    */
-  public CenterImpact(String description, Integer targetYear, CenterProgram researchProgram) {
+  public CenterImpact(String description, Integer targetYear) {
     super();
     this.description = description;
     this.targetYear = targetYear;
-    this.researchProgram = researchProgram;
   }
 
   @Override
@@ -143,7 +142,6 @@ public class CenterImpact implements Serializable, IAuditLog {
     }
     return true;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -183,18 +181,17 @@ public class CenterImpact implements Serializable, IAuditLog {
     return sb.toString();
   }
 
-
-
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public List<CenterObjective> getObjectives() {
     return objectives;
@@ -228,7 +225,6 @@ public class CenterImpact implements Serializable, IAuditLog {
     return researchImpactObjectives;
   }
 
-
   public CenterImpactStatement getResearchImpactStatement() {
     return researchImpactStatement;
   }
@@ -240,10 +236,8 @@ public class CenterImpact implements Serializable, IAuditLog {
     return researchOutcomes;
   }
 
-  /**
-   * @return the researchProgram
-   */
-  public CenterProgram getResearchProgram() {
+
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
 
@@ -256,13 +250,13 @@ public class CenterImpact implements Serializable, IAuditLog {
     return srfSubIdo;
   }
 
+
   /**
    * @return the targetYear
    */
   public Integer getTargetYear() {
     return targetYear;
   }
-
 
   @Override
   public int hashCode() {
@@ -282,6 +276,7 @@ public class CenterImpact implements Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -303,7 +298,6 @@ public class CenterImpact implements Serializable, IAuditLog {
     this.description = description;
   }
 
-
   /**
    * @param id the id to set
    */
@@ -315,6 +309,7 @@ public class CenterImpact implements Serializable, IAuditLog {
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -347,12 +342,10 @@ public class CenterImpact implements Serializable, IAuditLog {
     this.researchOutcomes = researchOutcomes;
   }
 
-  /**
-   * @param researchProgram the researchProgram to set
-   */
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
+
 
   public void setShortName(String shortName) {
     this.shortName = shortName;

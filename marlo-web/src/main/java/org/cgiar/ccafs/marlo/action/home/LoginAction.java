@@ -62,13 +62,16 @@ public class LoginAction extends BaseAction {
   private String crp;
 
 
+  private Long globalUnit;
+
   // Managers
   private UserManager userManager;
+
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
-  private CrpUserManager crpUserManager;
 
+  private CrpUserManager crpUserManager;
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
@@ -80,14 +83,19 @@ public class LoginAction extends BaseAction {
 
   }
 
-
   @Override
   public String execute() throws Exception {
     return SUCCESS;
   }
 
+
   public String getCrp() {
     return crp;
+  }
+
+
+  public Long getGlobalUnit() {
+    return globalUnit;
   }
 
   private void getLoginMessages() {
@@ -130,7 +138,6 @@ public class LoginAction extends BaseAction {
     }
   }
 
-
   @Override
   public String getUrl() {
     return url;
@@ -140,6 +147,7 @@ public class LoginAction extends BaseAction {
   public User getUser() {
     return user;
   }
+
 
   public UserManager getUserManager() {
     return userManager;
@@ -151,7 +159,8 @@ public class LoginAction extends BaseAction {
     if (user != null) {
 
       // Obtain the global unit selected
-      GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(this.crp);
+      // GlobalUnit loggedCrp = crpManager.getGlobalUnitById(globalUnit);
+      GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(crp);
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
       User loggedUser = userManager.login(userEmail, user.getPassword());
@@ -183,6 +192,8 @@ public class LoginAction extends BaseAction {
 
           case 3:
             return SUCCESS;
+          case 4:
+            return SUCCESS;
           default:
             return INPUT;
         }
@@ -194,7 +205,6 @@ public class LoginAction extends BaseAction {
     }
 
   }
-
 
   public String login(User loggedUser, GlobalUnit loggedCrp) {
 
@@ -269,6 +279,9 @@ public class LoginAction extends BaseAction {
         case 3:
           return SUCCESS;
 
+        case 4:
+          return SUCCESS;
+
         default:
           return INPUT;
 
@@ -277,6 +290,7 @@ public class LoginAction extends BaseAction {
 
     }
   }
+
 
   public String logout() {
     User user = (User) this.getSession().get(APConstants.SESSION_USER);
@@ -308,9 +322,13 @@ public class LoginAction extends BaseAction {
     return hex;
   }
 
-
   public void setCrp(String crp) {
     this.crp = crp;
+  }
+
+
+  public void setGlobalUnit(Long globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   @Override

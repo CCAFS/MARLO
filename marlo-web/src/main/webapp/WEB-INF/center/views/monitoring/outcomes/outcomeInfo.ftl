@@ -17,8 +17,8 @@
 
 
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#-- Help text --]
 <div class="container helpText viewMore-block">
@@ -76,7 +76,7 @@
       [#-- Year Tabs --]
       <ul class="nav nav-tabs" role="tablist">
         [#list outcome.monitorings as year]
-          <li class="[#if year.year == action.getCenterYear()]active[/#if]"><a href="#outcomeYear-${year.year}" role="tab" data-toggle="tab">${year.year}[#if year.year == action.getCenterYear()] <span class="red">*</span> [/#if] </a></li>
+          <li class="[#if year.year == currentYear]active[/#if]"><a href="#outcomeYear-${year.year}" role="tab" data-toggle="tab">${year.year}[#if year.year == currentYear] <span class="red">*</span> [/#if] </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
@@ -84,7 +84,7 @@
       <br />
         [#list outcome.monitorings as outcome]
         
-          <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == action.getCenterYear()]active[/#if]" id="outcomeYear-${outcome.year}">
+          <div role="tabpanel" class="outcomeTab tab-pane [#if outcome.year == currentYear]active[/#if]" id="outcomeYear-${outcome.year}">
           [#-- element id --]
           <input type="hidden" name="outcome.monitorings[${outcome_index}].id" value="${(outcome.id)!}" />
           
@@ -176,7 +176,7 @@
 [#-- Evidence macro --]
 [@evidenceMacro evidence={} name="outcome.monitorings[-1].evidences" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/center/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro milestoneMacro milestone name index isTemplate=false]
   [#local editable = ((editable) && (milestone.researchMilestone.active))!true /]

@@ -35,9 +35,9 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -73,6 +73,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
   private ICenterDeliverableManager deliverableService;
 
+
   private ICenterDeliverableTypeManager deliverableTypeService;
 
 
@@ -90,31 +91,38 @@ public class ProjectDeliverableAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
 
+
   private ICenterProjectManager projectService;
+
 
   private ICapacityDevelopmentService capdevService;
 
   private AuditLogManager auditLogService;
 
+
   private CenterDeliverableValidator validator;
 
   private long deliverableID;
+
   private long projectID;
+
   private long programID;
+
   private long areaID;
+
   private CenterProject project;
   private CenterArea selectedResearchArea;
-  private CenterProgram selectedProgram;
+  private CrpProgram selectedProgram;
   private GlobalUnit loggedCenter;
   private String is_capdev;
-
   private CenterDeliverable deliverable;
   private List<CenterArea> researchAreas;
-
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
   private List<CenterDeliverableType> deliverableSubTypes;
+
   private List<CenterDeliverableType> deliverableTypeParent;
   private List<CenterOutput> outputs;
+
   private List<CapacityDevelopment> capdevs;
   private String transaction;
 
@@ -207,7 +215,6 @@ public class ProjectDeliverableAction extends BaseAction {
     return outputs;
   }
 
-
   public long getProgramID() {
     return programID;
   }
@@ -228,23 +235,23 @@ public class ProjectDeliverableAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
-
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
+
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
@@ -253,6 +260,7 @@ public class ProjectDeliverableAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -365,7 +373,7 @@ public class ProjectDeliverableAction extends BaseAction {
       project = projectService.getCenterProjectById(projectID);
       deliverable.setProject(project);
 
-      selectedProgram = project.getResearchProgram();
+      // selectedProgram = project.getResearchProgram();
       programID = selectedProgram.getId();
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
@@ -428,7 +436,6 @@ public class ProjectDeliverableAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -542,6 +549,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
   }
 
+
   public void saveDocuments(CenterDeliverable deliverableDB) {
 
     if ((deliverableDB.getDeliverableDocuments() != null) && (deliverableDB.getDeliverableDocuments().size() > 0)) {
@@ -645,7 +653,6 @@ public class ProjectDeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
@@ -653,6 +660,7 @@ public class ProjectDeliverableAction extends BaseAction {
   public void setDeliverableSubTypes(List<CenterDeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
+
 
   public void setDeliverableTypeParent(List<CenterDeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
@@ -666,7 +674,6 @@ public class ProjectDeliverableAction extends BaseAction {
     this.loggedCenter = loggedCenter;
   }
 
-
   public void setOutputs(List<CenterOutput> outputs) {
     this.outputs = outputs;
   }
@@ -674,6 +681,7 @@ public class ProjectDeliverableAction extends BaseAction {
   public void setProgramID(long programID) {
     this.programID = programID;
   }
+
 
   public void setProject(CenterProject project) {
     this.project = project;
@@ -687,12 +695,11 @@ public class ProjectDeliverableAction extends BaseAction {
     this.researchAreas = researchAreas;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
-
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 
@@ -710,7 +717,7 @@ public class ProjectDeliverableAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, deliverable, project, selectedProgram, true);
+      // validator.validate(this, deliverable, project, selectedProgram, true);
     }
   }
 

@@ -5728,7 +5728,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     CenterSectionStatus sectionStatus =
       secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());
-
     if (sectionStatus == null) {
       return false;
     }

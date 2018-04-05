@@ -11,67 +11,32 @@
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
     <div class="firstForm  form-group row" style="display:${(crpSession?has_content)?string('none', 'block')}">
       <ul class="nav nav-tabs" role="tablist">
-        <li id="crp" role="presentation" class="type-crp [#if (typeSession == "crp")!false]active[/#if]"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
-        <li id="center" role="presentation" class="type-center [#if (typeSession == "center")!false]active[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
-        <li id="platform" role="presentation" class="type-platform [#if (typeSession == "platform")!false]active[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
+        [#if listGlobalUnitTypes??]
+          [#assign typesSize = 100 / listGlobalUnitTypes?size ]
+          [#list listGlobalUnitTypes as globalUnitType]
+            <li id="${globalUnitType.id}" role="presentation" style="width:${typesSize}%;" class="type-${globalUnitType.id} [#if (typeSession == globalUnitType.id)!false]active[/#if]">
+              <a href="#globalUnit-${globalUnitType.id}" role="tab" data-toggle="tab"> ${globalUnitType.name}</a>
+            </li>
+          [/#list]
+        [/#if]
       </ul>
       
       <div class="crpGroup tab-content">
-      
-        [#-- CRPs --]
-        <div role="tabpanel" id="crps" class="tab-pane type-crp [#if (typeSession == "crp")!false]class="active"[/#if] col-sm-12">
-          <ul>
-          [#attempt] 
-            [#assign crpList = action.getCrpCategoryList("1") /]
-          [#recover]
-            [#assign crpList = [] /]
-          [/#attempt]
-          [#if crpList?has_content]
-            [#list crpList as crp]
-              [@crpItem element=crp /]
-            [/#list]
-          [#else]
-            <p>Not CRPs loaded</p>
-          [/#if]
-          </ul>
-        </div>
-        [#-- Centers --]
-        <div id="centers" class="tab-pane type-center [#if (typeSession == "center")!false]class="active"[/#if] col-sm-12">
-          <ul>
-          [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("2") /]
-          [#recover]
-            [#assign centerList = [] /]
-          [/#attempt]
-          [#if centerList?has_content]
-            [#list centerList as center]
-              [@crpItem element=center /]
-            [/#list]
-          [#else]
-            <p>Not Centers loaded</p>
-          [/#if]
-          </ul>
-        </div>
-        
-        [#-- Platforms --]
-        <div id="platforms" class="tab-pane type-platform [#if (typeSession == "platform")!false]class="active"[/#if] col-sm-12">
-          <ul>
-          [#attempt] 
-            [#assign platformsList = action.getCrpCategoryList("3") /]
-          [#recover]
-            [#assign platformsList = [] /]
-          [/#attempt]
-          [#if platformsList?has_content]
-            [#list platformsList as platform]
-              [@crpItem element=platform /]
-            [/#list]
-          [#else]
-            <p>Not Platforms loaded</p>
-          [/#if]
-          </ul> 
-        </div>
-        
+        [#list listGlobalUnitTypes as globalUnitType]
+          <div role="tabpanel" id="globalUnit-${globalUnitType.id}" class="tab-pane type-${globalUnitType.id} [#if (typeSession == globalUnitType.id)!false]class="active"[/#if] col-sm-12">
+            <ul>
+            [#if globalUnitType.globalUnitsList?has_content]
+              [#list globalUnitType.globalUnitsList as globalUnit]
+                [#if globalUnit.login][@crpItem element=globalUnit /][/#if]
+              [/#list]
+            [#else]
+              <p>Not ${globalUnitType.name} loaded</p>
+            [/#if]
+            </ul>
+          </div>
+        [/#list]
       </div>
+      
     </div>
     <div class="secondForm" style="display:${(crpSession?has_content)?string('block', 'none')}">
       <div class="row">
@@ -83,6 +48,8 @@
           </div>
           [#-- CRP Session --]
           <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
+          [#-- Global Unit Session --]
+          <input type="hidden" id="globalUnit-input" name="globalUnit" value="${(currentCrp.id)!}" />
           [#-- Type Session --]
           <input type="hidden" id="type-input" name="type" value="${(typeSession)!}" />
           [#-- Email --]
@@ -114,7 +81,7 @@
 </div><!-- End loginFormContainer -->
 
 [#macro crpItem element]
-  <li id="crp-${element.acronym}" class="loginOption ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
+  <li id="crp-${element.acronym}" class="loginOption globalUnitID-${element.id} ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
     <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
   </li>
 [/#macro]

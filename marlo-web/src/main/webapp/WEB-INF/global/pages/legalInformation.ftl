@@ -7,8 +7,8 @@
 [#assign currentCycleSection = "legalInformation" /]
 [#assign currentStage = "legalInformation" /]
 
-[#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
-[#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="container contentForm">
   <div class="fullContent">
@@ -26,7 +26,7 @@
     
       <h2 id="privacyNotice">Privacy Notice</h2>
       <p>This privacy policy has been compiled to better serve those who are concerned with how their 'Personally Identifiable Information' (PII) is being used online. PII, as described in Colombian privacy protection law (Law 1581 of 2012), is any information linked or that can be linked to a specific or specifiable natural person or to a particular group of people. Please read our privacy policy carefully to get a clear understanding of how we collect, use, protect or otherwise handle your Personally Identifiable Information in accordance with our website.</p>
-      <p>The International Center for Tropical Agriculture (CIAT) - the legal entity administering MARLO- is an international organization with headquarters in Colombia. As such, it accepts and complies with the personal data protection norms contained in Law 1581 of 2012 and Decree 1377 of 2013 by guaranteeing the protection of personal information provided by you and making every reasonable effort to handle collected information appropriately. Further, all information collected will be handled with care in accordance with CIAT’s standards for integrity, transparency and equity. </p>
+      <p>The International Center for Tropical Agriculture (CIAT) - the legal entity administering MARLO- is an international organization with headquarters in Colombia. As such, it accepts and complies with the personal data protection norms contained in Law 1581 of 2012 and Decree 1377 of 2013 by guaranteeing the protection of personal information provided by you and making every reasonable effort to handle collected information appropriately. Further, all information collected will be handled with care in accordance with CIAT’s standards for integrity, transparency and equity.</p>
   
       <div class="simpleBox">
         <div>
@@ -58,22 +58,23 @@
         </div>
         <div>
           <strong>Do we use 'cookies'?</strong>
-          <p>Yes. Cookies are small files that a site or its service provider transfers to your computer's hard drive through your Web browser (if you allow) that enables the site's or service provider's systems to recognize your browser and capture and remember certain information. For instance, we use cookies to help us remember the place where you want to login. They are also used to help us understand your preferences based on previous or current site activity, which enables us to provide you with improved services. We also use cookies to help us compile aggregate data about site traffic and site interaction so that we can offer better site experiences and tools in the future.</p>
+          <p>Yes. Cookies are small files that a site or its service provider transfers to your computer's hard drive through your Web browser (if you allow) that enables the site's or service provider's systems to recognize your browser and capture and remember certain information. For instance, we use cookies to help us remember the place where you want to login. They are also used to help us understand your preferences based on previous or current site activity, which enables us to provide you with improved services. </p>
         </div>
         <div>
           <strong>We use cookies to:</strong>
           <ul>
             <li>Understand and save user's preferences for future visits.</li>
+            <li>Compile aggregate data about site traffic and site interaction so that we can offer better site experiences and tools in the future.</li>
           </ul>
           <p>You can choose to have your computer warn you each time a cookie is being sent, or you can choose to turn off all cookies. You do this through your browser settings. Since browser is a little different, look at your browser's Help Menu to learn the correct way to modify your cookies.</p>
         </div>
         <div>
           <strong>If users disable cookies in their browser:</strong>
-          <p>If you turn cookies off, some of the features that make your site experience more efficient may not function properly. </p>
+          <p>If you turn cookies off, some of the features that make your site experience more efficient may not function properly.</p>
         </div>
         <div>
           <strong>Third-party disclosure</strong>
-          <p>We do not sell, trade, or otherwise transfer to outside parties your Personally Identifiable Information unless we provide users with advance notice and you give your consent to it. This does not include website hosting partners and other parties who assist us in operating our website, conducting our business, or serving our users, so long as those parties agree to keep this information confidential. </p>
+          <p>We do not sell, trade, or otherwise transfer to outside parties your Personally Identifiable Information unless we provide users with advance notice and you give your consent to it. This does not include website hosting partners and other parties who assist us in operating our website, conducting our business, or serving our users, so long as those parties agree to keep this information confidential.</p>
           <p>We may also release information when its release is appropriate to comply with the law, enforce our site policies, or protect ours or others' rights, property or safety. In this line, CIAT reserves the right to disclose personal information in the case of a government authorities’ request, national or international, where it is necessary or appropriate to investigate illegal or fraudulent facts. To establish or defend the rights of CIAT against fraud, legal action or in compliance with law; or if CIAT deems it necessary to investigate or act against fraud or illegal reports on this website.</p>
           <p>However, non-personally identifiable visitor information may be provided to other parties for marketing, advertising, or other uses.</p>
         </div>
@@ -83,7 +84,7 @@
         </div>
         <div>
           <strong>Google</strong>
-          <p>Google, as a third-party vendor, uses cookies to track statistics on our site. More information can be found in: https://www.google.com/intl/en/policies/privacy/</p>
+          <p>Google, as a third-party vendor, uses cookies to track statistics on our site. More information can be found in: <a href='www.google.com/intl/en/policies/privacy'>https://www.google.com/intl/en/policies/privacy</a></p>
         </div>
         <div>
           <strong>We have implemented the following:</strong>
@@ -99,78 +100,92 @@
           <p>The Colombian Cybercrime Law (Law 1273 of 2009) sets out the rules for commercial email, establishes requirements for commercial messages, gives recipients the right to have emails stopped from being sent to them, and spells out tough penalties for violations. Acting in accordance with the mentioned Law, we agree to the following:</p>
           <ul>
             <li>As holder of the personal data you can, at any time: access your personal data to know the details of treatment of them, update them, rectify them in the event of being inaccurate, incorrect or outdated, and cancel or delete when it is considered not required for any of the purposes indicated in this privacy policy, or are being used for purposes not consented.</li>
-            <li>If you need access to the personal data you provided or exercise any of the rights provided by law, send an application to MARLOSupport@cgiar.org , or to the physical address stated below. The MARLO team will attend your claim within fifteen (15) days from the day after the day of receipt. If during this period, we request from you more information to execute your wish and no response is received after one (1) month, the claim will be deemed withdrawn. The request for deletion of the information and the revocation of the authorization will not proceed when the holder has a legal or contractual duty to remain in the database.</li>
-            <li>Except in countries or jurisdictions where it is not permitted by law, we may from time to time send you email communications regarding our products or services in response to your use of the site. By providing your email address, you consent to receive such communications. If at any time you would like to unsubscribe from receiving future emails, you can email us at MARLOSupport@cgiar.org and we will promptly remove you from ALL correspondence.</li>
+            <li>If you need access to the personal data you provided or exercise any of the rights provided by law, send an application to <a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a> , or to the physical address stated below. The MARLO team will attend your claim within fifteen (15) days from the day after the day of receipt. If during this period, we request from you more information to execute your wish and no response is received after one (1) month, the claim will be deemed withdrawn. The request for deletion of the information and the revocation of the authorization will not proceed when the holder has a legal or contractual duty to remain in the database.</li>
+            <li>Except in countries or jurisdictions where it is not permitted by law, we may from time to time send you email communications regarding our products or services in response to your use of the site. By providing your email address, you consent to receive such communications. If at any time you would like to unsubscribe from receiving future emails, you can email us at <a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a> and we will promptly remove you from ALL correspondence.</li>
           </ul>
         </div>
         <div>
           <strong>Conacting Us</strong>
-          <p>If there are any questions regarding this privacy policy, you may contact us using the information below. </p>
+          <p>If there are any questions regarding this privacy policy, you may contact us using the information below.</p>
           <span>International Center for Tropical Agriculture (CIAT)</span><br />
           <span>Km 17 Recta Cali-Palmira</span><br />
           <span>Palmira, Valle del Cauca 763537</span><br />
           <span>Colombia</span><br />
-          <span>MARLOSupport@cgiar.org</span><br />
+          <span><a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a></span><br />
         </div>
         
-        <p><br /><i>Last Edited on 2017-10-12</i></p>
+        <p><br /><i>Last Edited on 2018-02-14</i></p>
         
       </div>
       
       <h2 id="termsConditions">Terms and Conditions</h2>
       <div class="simpleBox">
-        [#--  
         <div>
           <strong>1. Terms</strong>
-          <p>By accessing the website at https://marlo.cgiar.org, you are agreeing to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
+          <p>By accessing the website at <a target="_blank" href="marlo.cgiar.org">https://marlo.cgiar.org</a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
         </div>
         <div>
-          <strong>2. Use License</strong>
+          <strong>2. Copyright </strong>
+          <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the <a targe="_blank" href="ciat.cgiar.org/">International Center for Tropical Agriculture (CIAT)</a>.</p>
+        </div>
+        <div>
+          <strong>3. Use License</strong>
+          <h5>Software</h5>
+          <p>MARLO is a free software licensed under the <a target="_blank" href="www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License V 3.0 (GPL-3) </a></p>
           <ul>
             <li>
-              <p>a. Permission is granted to temporarily download one copy of the materials (information or software) on MARLO’s website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+              <p>According to the GPL-3 you may:</p>
               <ul>
-                <li>Modify or copy the materials</li>
-                <li>Use the materials for any commercial purpose, or for any public display (commercial or non-commercial)</li>
-                <li>Attempt to decompile or reverse engineer any software contained on MARLO's website</li>
-                <li>Remove any copyright or other proprietary notations from the materials</li>
-                <li>Transfer the materials to another person or "mirror" the materials on any other server</li>
+                <li>Use it for personal, educational, institutional or commercial purposes;</li>
+                <li>Copy, use, redistribute, modify, and/or sell as long as you use the GNU General Public License as published by the Free Software Foundation; and</li>
+                <li>Install it in as many computers as you wish.</li>
               </ul>
             </li>
             <li>
-              <p>b. This license shall automatically terminate if you violate any of these restrictions and may be terminated by International Center for Tropical Agriculture (CIAT) at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</p>
+              <p>In addition, according to this license, you must:</p>
+              <ul>
+                <li>Maintain the copyright or other proprietary notations coming with the materials;</li>
+                <li>Include a verbatim copy of the GPL for the original software and for modified versions of it;</li>
+                <li>State the changes as such if you make them; and</li>
+                <li>Disclose the source code and a modified version of the code if you distribute a modified version of it.</li>
+              </ul>
             </li>
           </ul>
+          <p>This license shall automatically terminate if you violate any of these restrictions and may be terminated by the International Center for Tropical Agriculture (CIAT) at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</p>
+          <h5>Content</h5>
+          <p>Staff or personnel associated with CGIAR Research Programs and CGIAR Centers must acknowledge and agree that data and information or any other informational content uploaded in MARLO (hereinafter referred to as “Contributions”) could be used on public CGIAR Research Programs and/or CGIAR Centers’ websites and other knowledge sharing platforms.</p>
+          <p>Such Contributions, and for that matter, all informational products at CGIAR level are regulated by the <a target="_blank" href="www.cgiar.org/resources/cgiar-intellectual-asset-management">CGIAR Principles on the Management of Intellectual Assets</a> and the <a target="_blank" href="www.cgiar.org/resources/open-access/">CGIAR Open Access Policy</a>.</p>
+          <p>In order to make a Contribution to the MARLO website, you must have a registered account. The owner of any Contribution retains copyright rights to such content, as applicable.  If you make a contribution you must have the right to contribute such Contribution.  Please make certain that any Contribution is consistent with these Terms and Conditions.</p>
+          <p>The International Center for Tropical Agriculture (CIAT) or the MARLO Team may, but is not obligated to, review your Contributions. CIAT or the MARLO Team may, in its sole discretion, terminate or suspend your registered account if your Contribution violates these Terms and Conditions. Acceptance of a Contribution does not constitute an endorsement or sponsorship of the Contribution by CIAT.</p>
+          <p> If you delete your Contribution, CIAT does not warrant that it will be able to or will take responsibility for removing deleted Contributions from the MARLO website, including but not limited to those outside of its reasonable control or those to whom you or others may have forwarded your Contribution.</p>
         </div>
         <div>
-          <strong>3. Disclaimer</strong>
+          <strong>4. Disclaimer</strong>
           <ul>
-            <li>The materials on MARLO's website are provided on an 'as is' basis. The International Center for Tropical Agriculture (CIAT) makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</li>
-            <li>b.  Further, the International Center for Tropical Agriculture (CIAT) does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its website or otherwise relating to such materials or on any sites linked to this site.</li>
+            <li>MARLO as a software and the materials on MARLO's website are provided on an 'as is' basis. The International Center for Tropical Agriculture (CIAT) makes no warranties, expressed or implied, including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, non-infringement of intellectual property rights or any other violation of rights.</li>
+            <li>Further, the International Center for Tropical Agriculture (CIAT) does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the source code or object code of the software, the data, information, content or any other materials on its website, or otherwise relating to such materials, or on any other sites or websites linked to this site.</li>
           </ul>
         </div>
         <div>
-          <strong>4. Limitations</strong>
-          <p>In no event shall the International Center for Tropical Agriculture (CIAT) or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on MARLO's website, even if the International Center for Tropical Agriculture (CIAT) authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.</p>
+          <strong>5. Limitations</strong>
+          <p>Except as prohibited by law, in no event shall the International Center for Tropical Agriculture (CIAT) or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the MARLO website and the content or any other materials on MARLO's website, even if the International Center for Tropical Agriculture (CIAT) authorized representative has been notified orally or in writing of the possibility of such damage. </p>
         </div>
         <div>
-          <strong>5. Accuracy of materials</strong>
-          <p>The materials appearing on MARLO’s website could include technical, typographical, or photographic errors. The International Center for Tropical Agriculture (CIAT) does not warrant that any of the materials on its website are accurate, complete or current. The MARLO team may make changes to the materials contained on its website at any time without notice. However the International Center for Tropical Agriculture (CIAT) does not make any commitment to update the materials.</p>
+          <strong>6. Accuracy of materials</strong>
+          <p>The data, information, content and any other materials appearing on MARLO’s website could include technical, typographical, or photographic errors. The International Center for Tropical Agriculture (CIAT) does not warrant that any of such data, information, content and any other materials on its website are accurate, complete or current. The MARLO team may make changes to the data, information, content and any materials contained on its website at any time without notice. However the International Center for Tropical Agriculture (CIAT) does not make any commitment to update the materials. Authorized users of the MARLO website are completely responsible for the accuracy of the content uploaded by them.</p>
         </div>
         <div>
-          <strong>6. Links</strong>
-          <p>The International Center for Tropical Agriculture (CAIT) has not reviewed all of the sites linked to MARLO’s website and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by the International Center for Tropical Agriculture (CIAT) of the site. Use of any such linked website is at the user's own risk.</p>
+          <strong>7. Links</strong>
+          <p>The International Center for Tropical Agriculture (CIAT) may link MARLO website to material hosted by third parties on independent sites and services on the internet. CIAT is not responsible or liable for the contents or quality of such material. CIAT has not reviewed the material on such third party sites, and makes no warranties or representations about the material, information, products, or services offered by third parties. Further, the inclusion of any links does not imply endorsement or sponsorship by the International Center for Tropical Agriculture (CIAT) of the site. Use of any such linked website is at the user's own risk. </p>
         </div>
         <div>
-          <strong>7. Modifications</strong>
-          <p>The International Center for Tropical Agriculture (CIAT) may revise these terms of service for its website at any time without notice. By using this website you are agreeing to be bound by the then current version of these terms of service.</p>
+          <strong>8. Modifications</strong>
+          <p>The International Center for Tropical Agriculture (CIAT) may revise the Terms and Conditions for the MARLO website at any time without notice. The most current version of the Terms and Conditions can be reviewed by clicking on the link or links located on the MARLO site. Please check these Terms and Conditions periodically to see whether they have changed. By using this website you are agreeing to be bound by the then current version of these Terms and Conditions.</p>
         </div>
         <div>
-          <strong>8. Governing Law</strong>
-          <p>These terms and conditions are governed by and construed in accordance with the laws of Palmira / Colombia and you irrevocably submit to the exclusive jurisdiction of the courts in that location.</p>
+          <strong>9. Governing Law</strong>
+          <p>These terms and conditions are governed by and construed in accordance with the General Principles of Law, to the exclusion of any single national system of law.  General Principles of Law shall be deemed to include the UNIDROIT Principles of International Commercial Contracts of 2010. </p>
         </div>
-        --]
-        <p>Comming...</p>
       </div>
       
       <h2 id="copyRight">Copyright</h2>
@@ -180,10 +195,8 @@
         <div class="clearfix"></div>
       </div>
       
-      
-      
     </div>
   </div>
 </section>
 
-[#include "/WEB-INF/${(headerPath)!'crp'}/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
