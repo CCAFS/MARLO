@@ -159,7 +159,8 @@ public class LoginAction extends BaseAction {
     if (user != null) {
 
       // Obtain the global unit selected
-      GlobalUnit loggedCrp = crpManager.getGlobalUnitById(globalUnit);
+      // GlobalUnit loggedCrp = crpManager.getGlobalUnitById(globalUnit);
+      GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(crp);
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
       User loggedUser = userManager.login(userEmail, user.getPassword());
