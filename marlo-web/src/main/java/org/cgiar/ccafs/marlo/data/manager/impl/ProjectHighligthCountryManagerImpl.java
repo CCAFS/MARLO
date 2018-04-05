@@ -102,7 +102,9 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectHighlightCountry> projectHighlightCountries = phase.getProjectHighlightCountries().stream()
-      .filter(c -> c.getProjectHighligth().getId().longValue() == projectHighlightid).collect(Collectors.toList());
+      .filter(c -> c.getProjectHighligth().getId().longValue() == projectHighlightid
+        && projectHighlightCountry.getLocElement().getId().equals(projectHighlightCountry.getLocElement().getId()))
+      .collect(Collectors.toList());
     if (projectHighlightCountries.isEmpty()) {
 
 
