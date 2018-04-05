@@ -1209,7 +1209,7 @@ public class DeliverableAction extends BaseAction {
           if (deliverable.getDeliverableDisseminations() != null) {
             deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
               .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-            if (deliverable.getDeliverableDisseminations().size() > 0) {
+            if (deliverable.getDisseminations().size() > 0) {
               deliverable.setDissemination(deliverable.getDisseminations().get(0));
             } else {
               deliverable.setDissemination(new DeliverableDissemination());
@@ -1568,6 +1568,8 @@ public class DeliverableAction extends BaseAction {
       }
 
 
+      System.out.println(deliverable.getDissemination().getId());
+
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
           deliverableTypeParent.clear();
@@ -1621,6 +1623,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.getQualityCheck().setFileTools(null);
         }
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
+        if (deliverable.getDisseminations() != null) {
+          deliverable.getDisseminations().clear();
+        }
+        deliverable.setDissemination(null);
       }
 
       try {
