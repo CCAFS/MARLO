@@ -251,7 +251,8 @@ function loadAvailableItems(email){
           if(crpSession == data.crps[i].acronym){
             hasAccess=true;
           }
-          $(".crps-select .name-type-container.type-"+data.crps[i].id).removeClass("hidden");
+          console.log(data);
+          $(".crps-select .name-type-container.type-"+data.crps[i].idType).removeClass("hidden");
           if(data.crps.length<7){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
           }else{

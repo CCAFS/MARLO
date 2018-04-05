@@ -73,6 +73,7 @@ public class CrpByUserEmailAction extends BaseAction {
         crpMap.put("name", crp.getName());
         crpMap.put("acronym", crp.getAcronym());
         crpMap.put("type", crp.getGlobalUnitType().getName());
+        crpMap.put("idType", crp.getGlobalUnitType().getId());
 
         this.crps.add(crpMap);
       } catch (Exception e) {
