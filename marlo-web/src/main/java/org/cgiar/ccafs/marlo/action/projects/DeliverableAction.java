@@ -1568,8 +1568,6 @@ public class DeliverableAction extends BaseAction {
       }
 
 
-      System.out.println(deliverable.getDissemination().getId());
-
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
           deliverableTypeParent.clear();
