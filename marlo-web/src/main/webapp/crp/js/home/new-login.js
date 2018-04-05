@@ -261,11 +261,11 @@ function loadAvailableItems(email){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym).click();
           }
         });
-
-        showTermsCheckbox();
         if(data.user.agree){
+          console.log('data= '+data.user.agree);
           $('input#terms').attr('checked',true);
         }else{
+          console.log('data= '+data.user.agree);
           $('input#terms').attr('checked',false);
         }
 
@@ -293,6 +293,9 @@ function loadAvailableItems(email){
 function secondForm(data){
   //Button control, just send the form when is in the second part of the form
   isSecondForm=true;
+
+  //Show terms and conditions checkbox
+  showTermsCheckbox();
 
   //Hide the invalidEmail field
   $('.loginForm p.invalidField').addClass("hidden");
