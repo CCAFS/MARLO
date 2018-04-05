@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighlightInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
@@ -104,6 +106,7 @@ public class ProjectHighlightAction extends BaseAction {
   private ProjectHighligthCountryManager projectHighligthCountryManager;
   private FileDBManager fileDBManager;
   private LocElementManager locElementManager;
+  private PhaseManager phaseManager;
 
   private String highlightsImagesUrl;
   private File file;
@@ -136,7 +139,8 @@ public class ProjectHighlightAction extends BaseAction {
     AuditLogManager auditLogManager, FileDBManager fileDBManager,
     ProjectHighligthCountryManager projectHighligthCountryManager,
     ProjectHighligthTypeManager projectHighligthTypeManager, ProjectHighLightValidator highLightValidator,
-    HistoryComparator historyComparator, ProjectHighlightInfoManager projectHighlightInfoManager) {
+    HistoryComparator historyComparator, ProjectHighlightInfoManager projectHighlightInfoManager,
+    PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectHighLightManager = highLightManager;
@@ -149,6 +153,7 @@ public class ProjectHighlightAction extends BaseAction {
     this.projectHighligthTypeManager = projectHighligthTypeManager;
     this.historyComparator = historyComparator;
     this.projectHighlightInfoManager = projectHighlightInfoManager;
+    this.phaseManager = phaseManager;
   }
 
 
@@ -387,19 +392,22 @@ public class ProjectHighlightAction extends BaseAction {
             fileDBManager.getFileDBById(highlight.getProjectHighlightInfo(this.getActualPhase()).getFile().getId()));
         }
 
-
+        Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
         if (highlight.getProjectHighlightCountries() == null) {
           highlight.setCountries(new ArrayList<>());
         } else {
-          highlight.setCountries(highlight.getProjectHighlightCountries().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+          highlight.setCountries(phase.getProjectHighlightCountries().stream()
+            .filter(c -> c.getProjectHighligth().getId().longValue() == highlight.getId().longValue())
+            .collect(Collectors.toList()));
 
         }
         if (highlight.getProjectHighligthsTypes() == null) {
           highlight.setTypes(new ArrayList<>());
         } else {
-          highlight.setTypes(highlight.getProjectHighligthsTypes().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+
+          highlight.setTypes(phase.getProjectHighligthsTypes().stream()
+            .filter(c -> c.getProjectHighligth().getId().longValue() == highlight.getId().longValue())
+            .collect(Collectors.toList()));
 
         }
         this.setDraft(false);
