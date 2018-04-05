@@ -1,16 +1,22 @@
 [#ftl]
-
 [#assign title = "Capacity Development" /]
 
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css",
-					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
+  ] 
+/]
 
 [#assign pageLibs = ["select2","flat-flags"] /]
 
-[#assign customJS = ["${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
-					 "${baseUrl}/global/js/fieldsValidation.js",
-					 "${baseUrl}/global/js/autoSave.js"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
 
+[#assign currentSection = "capdev" /]
 [#assign currentStage = "capdevIntervention" /]
 
 [#assign breadCrumb = [
@@ -18,13 +24,10 @@
   {"label":"capdevDetail", "nameSpace":"/capdev", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
-
-
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <div class="container"> 
-
 	<div class="row">
 		<div class="helpMessage infoText col-md-12 capdevinfo">
 			<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
@@ -36,27 +39,18 @@
 		[#include "/WEB-INF/center/views/capDev/menu-capdev.ftl" /]
 	</div>
 	
-	
 	<div class="col-md-9 ">
+    [#-- Section Messages --]
+    [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
+    <br />
 
-		
-	
-		
-			[#-- Section Messages --]
-	        [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
-	        <br />
-
-
-
-			<div class="pull-right">
-
-				[#if projectID > 0]
-					<a class="" href="[@s.url namespace='/monitoring' action='${centerSession}/projectCapdev'] [@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBackProjects" /]</a>
-		        [#else]
-		        	<a class="" href="[@s.url action='${centerSession}/capdev' ][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a>
-		        [/#if]
-				 
-			</div>
+    <div class="pull-right">
+      [#if projectID > 0]
+      	<a class="" href="[@s.url namespace='/monitoring' action='${centerSession}/projectCapdev'] [@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBackProjects" /]</a>
+      [#else]
+      	<a class="" href="[@s.url action='${centerSession}/capdev' ][@s.param name='edit' value="true" /] [/@s.url] "><span class="glyphicon glyphicon-circle-arrow-left"></span>[@s.text name="capdev.gotoBack" /]</a>
+      [/#if]
+    </div>
 		
 		
 		<div class=" form-group "> 
@@ -507,7 +501,7 @@
 
 
 
-[#include "/WEB-INF/center/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 
@@ -614,12 +608,3 @@
 		</div>
 	</div>
 [/#macro]
-
-
-
-
-
-
-
-
-

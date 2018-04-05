@@ -33,7 +33,9 @@ import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -116,8 +118,18 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     if (globalUnitProject != null) {
 
-      if (project != null && project.isActive() && globalUnitProject.isOrigin()) {
-
+      if (project != null && project.isActive()) {
+        if (!globalUnitProject.isOrigin()) {
+          GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+          List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
+            .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
+              && c.getYear() == baseAction.getActualPhase().getYear())
+            .collect(Collectors.toList());
+          if (phases.size() > 0) {
+            baseAction.setPhaseID(phases.get(0).getId());
+            project.getProjecInfoPhase(phases.get(0));
+          }
+        }
         String params[] =
           {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
@@ -250,9 +262,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           baseAction.setEditStatus(false);
         }
         // Set the variable that indicates if the user can edit the section
-        baseAction.setEditableParameter(editParameter && canEdit);
-        baseAction.setCanEdit(canEdit);
-        baseAction.setCanSwitchProject(canSwitchProject);
+        baseAction.setEditableParameter(editParameter && canEdit && globalUnitProject.isOrigin());
+        baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
+        baseAction.setCanEdit(canEdit && globalUnitProject.isOrigin());
+        baseAction.setEditStatus(baseAction.isEditStatus() && globalUnitProject.isOrigin());
 
       } else {
         throw new NullPointerException();

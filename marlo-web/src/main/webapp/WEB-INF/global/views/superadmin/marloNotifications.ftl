@@ -11,7 +11,7 @@
   {"label":"notifications", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
 
 <div class="container">
@@ -68,4 +68,4 @@
 </section>
 
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]

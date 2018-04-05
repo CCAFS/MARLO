@@ -36,10 +36,8 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
-import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
@@ -48,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectType;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -131,7 +130,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private CenterArea selectedResearchArea;
 
-  private CenterProgram selectedProgram;
+  private CrpProgram selectedProgram;
 
 
   private GlobalUnit loggedCenter;
@@ -139,7 +138,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CenterArea> researchAreas;
 
 
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
 
   private List<CenterFundingSourceType> fundingSourceTypes;
 
@@ -261,9 +260,10 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
   private String getPI() {
-    List<CenterLeader> leaders = new ArrayList<>(
-      selectedProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
-    return leaders.get(0).getUser().getComposedCompleteName();
+    // List<CenterLeader> leaders = new ArrayList<>(
+    // selectedProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+    // return leaders.get(0).getUser().getComposedCompleteName();
+    return null;
   }
 
   public String getPrincipalInvestigator() {
@@ -321,11 +321,11 @@ public class ProjectDescriptionAction extends BaseAction {
     return researchAreas;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
@@ -401,7 +401,7 @@ public class ProjectDescriptionAction extends BaseAction {
     if (project != null) {
 
       CenterProject ProjectDB = projectService.getCenterProjectById(projectID);
-      selectedProgram = ProjectDB.getResearchProgram();
+      // selectedProgram = ProjectDB.getResearchProgram();
       programID = selectedProgram.getId();
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
@@ -1036,11 +1036,11 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 
@@ -1068,7 +1068,7 @@ public class ProjectDescriptionAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project, selectedProgram, true);
+      // validator.validate(this, project, selectedProgram, true);
     }
   }
 

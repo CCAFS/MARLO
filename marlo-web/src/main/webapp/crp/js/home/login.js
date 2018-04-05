@@ -2,11 +2,12 @@ $(document).ready(init);
 var cookieTime;
 var username = $("input[name='user.email']");
 function init() {
-  initJreject();
+  initJreject(); 
 
   cookieTime = 100;
   var crpInput = $('input#crp-input').val();
   var typeInput = $('input#type-input').val();
+  var globalUnitInput = $('input#globalUnit-input').val();
 
   // Verify "crp"
   if(verifyCookie("CRP") && (getCookie("CRP") != "undefined") && (!crpInput)) {
@@ -14,12 +15,24 @@ function init() {
     setCRP(crpSelected);
   }
 
+  // Verify "GlobalUnit"
+  if(verifyCookie("GlobalUnit") && (getCookie("GlobalUnit") != "undefined") && (!globalUnitInput)) {
+    var globalUnitSelected = getCookie("GlobalUnit");
+    console.log("globalUnitSelected: ", globalUnitSelected);
+    setGlobalUnit(globalUnitSelected);
+  }
+
   // Verify "type" (CRP, Center, Platform)
   if(verifyCookie("TYPE") && (getCookie("TYPE") != "undefined") && (!typeInput)) {
     var typeSelected = getCookie("TYPE");
+    if(typeSelected == 'crp') {
+      typeSelected = '1';
+    } else if(typeSelected == 'center') {
+      typeSelected = '2';
+    }
     setType(typeSelected);
   } else if(!typeInput) {
-    setType('crp');
+    setType('1'); // Default CRP
   }
 
   // Verify user email session
@@ -32,7 +45,9 @@ function init() {
   // On select a CRP. Center, Platform
   $('.crpGroup ul li.enabled').on('click', function() {
     var crpSelected = $(this).attr('id').split('-')[1];
+    var globalUnitSelected = $(this).classParam("globalUnitID");
     setCRP(crpSelected);
+    setGlobalUnit(globalUnitSelected);
   });
 
   // On select a Type
@@ -58,10 +73,16 @@ function init() {
 
 }
 
+function setGlobalUnit(globalUnitSelected) {
+  // Setting up the Global Unit value into a hidden input
+  $('#globalUnit-input').val(globalUnitSelected);
+
+  // Create Global Unit cookie
+  setCookie("GlobalUnit", globalUnitSelected, cookieTime);
+}
+
 function setCRP(crpSelected) {
   var $li = $("li#crp-" + crpSelected);
-
-  console.log()
 
   // Removing class selected
   $(".loginOption").removeClass('selected');

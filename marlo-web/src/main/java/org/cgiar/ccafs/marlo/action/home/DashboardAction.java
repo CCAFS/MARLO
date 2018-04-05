@@ -79,8 +79,7 @@ public class DashboardAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    Phase phase =
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
+    Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
 
     if (this.isSwitchSession()) {
       this.clearPermissionsCache();

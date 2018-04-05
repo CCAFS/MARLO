@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactBeneficiary;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -47,22 +47,22 @@ public class ProgramImpactsValidator extends BaseValidator {
     this.centerService = centerService;
   }
 
-  private Path getAutoSaveFilePath(CenterProgram program, long centerID) {
+  private Path getAutoSaveFilePath(CrpProgram program, long centerID, BaseAction baseAction) {
     GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.PROGRAM_IMPACT.getStatus().replace("/", "_");
-    String autoSaveFile =
-      program.getId() + "_" + composedClassName + "_" + center.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription()
+      + "_" + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction baseAction, List<CenterImpact> researchImpacts, CenterProgram selectedProgram,
+  public void validate(BaseAction baseAction, List<CenterImpact> researchImpacts, CrpProgram selectedProgram,
     boolean saving) {
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
+      Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID(), baseAction);
 
       if (path.toFile().exists()) {
         baseAction.addMissingField(baseAction.getText("programImpact.action.draft"));

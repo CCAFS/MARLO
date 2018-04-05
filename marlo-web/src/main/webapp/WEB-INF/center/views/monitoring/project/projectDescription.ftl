@@ -18,8 +18,8 @@
 ] /]
 
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#-- Search users Interface --]
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
@@ -368,7 +368,7 @@
     </li>
 </ul>
   
-[#include "/WEB-INF/center/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  

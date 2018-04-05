@@ -20,8 +20,8 @@
 ] /]
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -120,7 +120,7 @@
 [#-- Other contribution template --]
 [@otherContribution element={} name="project.otherContributionsList" index=-1 template=true /]
         
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 
