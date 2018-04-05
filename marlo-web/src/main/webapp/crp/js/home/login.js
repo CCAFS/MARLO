@@ -2,7 +2,7 @@ $(document).ready(init);
 var cookieTime;
 var username = $("input[name='user.email']");
 function init() {
-  initJreject();
+  initJreject(); 
 
   cookieTime = 100;
   var crpInput = $('input#crp-input').val();
