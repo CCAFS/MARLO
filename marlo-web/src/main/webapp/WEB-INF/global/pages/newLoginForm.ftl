@@ -33,7 +33,7 @@
       <div class="selection-bar-options">
         <ul>
           [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("2") /]
+            [#assign centerList = action.getCrpCategoryList("4") /]
           [#recover]
             [#assign centerList = [] /]
           [/#attempt]
