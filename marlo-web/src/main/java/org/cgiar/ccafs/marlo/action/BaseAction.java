@@ -4940,7 +4940,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void loadDissemination(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableDisseminations() != null) {
-      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
+      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations().stream()
+        .filter(dd -> dd.isActive() && dd.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       if (deliverableBD.getDeliverableDisseminations().size() > 0) {
         deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
       } else {

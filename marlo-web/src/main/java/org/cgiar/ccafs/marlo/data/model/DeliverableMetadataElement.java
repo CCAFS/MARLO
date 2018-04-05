@@ -30,7 +30,7 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
   private static final long serialVersionUID = -44359971548335546L;
 
   @Expose
-  private Integer id;
+  private Long id;
   @Expose
   private MetadataElement metadataElement;
   @Expose
@@ -71,8 +71,9 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     return hide;
   }
 
+
   @Override
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
@@ -82,6 +83,7 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public MetadataElement getMetadataElement() {
     return metadataElement;
@@ -93,7 +95,6 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -120,14 +121,15 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     this.elementValue = elementValue;
   }
 
+
   public void setHide(Boolean hide) {
     this.hide = hide;
   }
 
-  public void setId(Integer id) {
+
+  public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setMetadataElement(MetadataElement metadataElement) {
     this.metadataElement = metadataElement;
