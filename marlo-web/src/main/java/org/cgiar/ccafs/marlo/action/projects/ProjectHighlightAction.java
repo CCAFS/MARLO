@@ -391,15 +391,15 @@ public class ProjectHighlightAction extends BaseAction {
         if (highlight.getProjectHighlightCountries() == null) {
           highlight.setCountries(new ArrayList<>());
         } else {
-          highlight.setCountries(
-            highlight.getProjectHighlightCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          highlight.setCountries(highlight.getProjectHighlightCountries().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         }
         if (highlight.getProjectHighligthsTypes() == null) {
           highlight.setTypes(new ArrayList<>());
         } else {
-          highlight.setTypes(
-            highlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          highlight.setTypes(highlight.getProjectHighligthsTypes().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         }
         this.setDraft(false);
@@ -515,7 +515,7 @@ public class ProjectHighlightAction extends BaseAction {
 
       highlight.setActive(true);
       for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
-        .collect(Collectors.toList())) {
+        .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
         if (!highlight.getTypesids().contains(String.valueOf(projectHighlightType.getIdType()))) {
           projectHighligthTypeManager.deleteProjectHighligthType(projectHighlightType.getId().intValue());
         }
@@ -525,6 +525,7 @@ public class ProjectHighlightAction extends BaseAction {
         ProjectHighlightType typeHigh = new ProjectHighlightType();
         typeHigh.setIdType(Integer.parseInt(type));
         typeHigh.setProjectHighligth(highlight);
+        typeHigh.setPhase(this.getActualPhase());
         if (!highlightDB.getProjectHighligthsTypes().contains(typeHigh)) {
           projectHighligthTypeManager.saveProjectHighligthType(typeHigh);
         }
@@ -534,7 +535,7 @@ public class ProjectHighlightAction extends BaseAction {
 
 
       for (ProjectHighlightCountry projectHighlightCountry : highlightDB.getProjectHighlightCountries().stream()
-        .collect(Collectors.toList())) {
+        .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
         if (!highlight.getCountriesIds()
           .contains(new Integer(projectHighlightCountry.getLocElement().getId().intValue()))) {
           projectHighligthCountryManager.deleteProjectHighligthCountry(projectHighlightCountry.getId().intValue());
@@ -546,6 +547,7 @@ public class ProjectHighlightAction extends BaseAction {
         ProjectHighlightCountry countryHigh = new ProjectHighlightCountry();
         countryHigh.setLocElement(locElementManager.getLocElementById(countries));
         countryHigh.setProjectHighligth(highlight);
+        countryHigh.setPhase(this.getActualPhase());
         if (!highlightDB.getProjectHighlightCountries().contains(countryHigh)) {
           projectHighligthCountryManager.saveProjectHighligthCountry(countryHigh);
         }

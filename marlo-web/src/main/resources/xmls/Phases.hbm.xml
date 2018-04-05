@@ -218,5 +218,17 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" />
     </set>
+    <set name="projectHighligthsTypes" table="project_highlights_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightType" />
+        </set>
+        <set name="projectHighlightCountries" table="project_highlights_country" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry" />
+        </set>
 	</class>
 </hibernate-mapping>
