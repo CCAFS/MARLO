@@ -261,9 +261,14 @@ function loadAvailableItems(email){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym).click();
           }
         });
-        if(!data.user.agree){
-          showTermsCheckbox();
+
+        showTermsCheckbox();
+        if(data.user.agree){
+          $('input#terms').attr('checked',true);
+        }else{
+          $('input#terms').attr('checked',false);
         }
+
         //If user has access to the crpSession or crpSession is void, change form style
         if(hasAccess || crpSession==""){
           secondForm(data);
