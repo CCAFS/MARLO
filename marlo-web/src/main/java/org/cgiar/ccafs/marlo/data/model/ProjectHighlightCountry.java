@@ -17,7 +17,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   private static final long serialVersionUID = 3040210263258419226L;
 
   @Expose
-  private Integer id;
+  private Long id;
 
   private ProjectHighlight projectHighlight;
 
@@ -60,7 +60,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   }
 
   @Override
-  public Integer getId() {
+  public Long getId() {
     return this.id;
   }
 
@@ -115,7 +115,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   }
 
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
