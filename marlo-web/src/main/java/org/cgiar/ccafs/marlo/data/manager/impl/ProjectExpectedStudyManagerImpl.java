@@ -89,6 +89,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     projectExpectedStudyAdd.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
     projectExpectedStudyAdd.setTopicStudy(projectExpectedStudy.getTopicStudy());
     projectExpectedStudyAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
+    projectExpectedStudyAdd.setType(projectExpectedStudy.getType());
     projectExpectedStudyAdd.setModifiedBy(projectExpectedStudy.getCreatedBy());
     projectExpectedStudyAdd.setPhase(phase);
     projectExpectedStudyAdd.setProject(projectDAO.find(projectExpectedStudy.getProject().getId()));
