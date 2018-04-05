@@ -29,7 +29,6 @@ import org.hibernate.SessionFactory;
 @Named
 public class GlobalUnitTypeMySQLDAO extends AbstractMarloDAO<GlobalUnitType, Long> implements GlobalUnitTypeDAO {
 
-
   @Inject
   public GlobalUnitTypeMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);

@@ -406,6 +406,8 @@ public final class APConstants {
 
   public static final String USER_EMAIL = "userEmail";
 
+  public static final String USER_PASSWORD = "userPassword";
+
   public static final String USER_ID = "userID";
 
   public static final String USER_TOKEN = "user_token";

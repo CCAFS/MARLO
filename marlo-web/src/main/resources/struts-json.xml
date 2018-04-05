@@ -103,6 +103,7 @@
 			</result>
 		</action>
 
+  
 
 		<action name="institutionsByTypeAndCountry"
 			class="org.cgiar.ccafs.marlo.action.json.global.InstitutionsByFilterAction">
