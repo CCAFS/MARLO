@@ -1,4 +1,3 @@
-
 [#ftl]
 <div class="simpleBox">
   [#-- Title input --] 
