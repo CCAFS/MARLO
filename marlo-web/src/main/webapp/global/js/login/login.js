@@ -209,7 +209,11 @@ function verifyCrpCookie(){
 }
 
 function setCrpSession(){
-  var availableList=['A4NH','CCAFS','FTA','Livestock','Maize','PIM','WLE','Wheat','CIAT','BigData','CIAT50'];
+  var availableList = [];
+  var listItems = $('.crps-select .selection-bar-options ul li');
+  $.each(listItems, function(i){
+    availableList.push(listItems[i].id.split('-')[1]);
+  });
   var path = window.location.pathname.split("/");
   $.each(path, function(i){
     $.each(availableList,function(j){
@@ -251,7 +255,6 @@ function loadAvailableItems(email){
           if(crpSession == data.crps[i].acronym){
             hasAccess=true;
           }
-          console.log(data);
           $(".crps-select .name-type-container.type-"+data.crps[i].idType).removeClass("hidden");
           if(data.crps.length<7){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
