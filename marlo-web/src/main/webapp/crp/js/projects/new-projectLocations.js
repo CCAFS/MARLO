@@ -170,10 +170,20 @@ function attachEvents() {
     //HERE
     var locIso = $(this).next().next().text();
 
+    var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
+
     // Add the selected country in map, table and list
     if($(this).is(":checked")){
 
 
+
+      addLocLevel(locationName,locationId,locationIsList,$locationSelect);
+
+      if(countryRowExists.exists()){
+        countryRow.find()
+      }else{
+
+      }
 
       countries.push(locIso);
       layer.setMap(null);
@@ -266,6 +276,8 @@ function modalButtonsListeners(){
     var locationId = $locationLevelSelect.val().split("-")[0];
     var locationIsList = $locationLevelSelect.val().split("-")[1];
     var locationName = $locationLevelSelect.val().split("-")[2];
+
+    console.log($locationLevelSelect.val());
 
     var $locationSelect = $("#countriesCmvs");
     // checking if is list
@@ -587,8 +599,8 @@ function initMap() {
   var allowedBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(-80.711903, -175.058594),
       new google.maps.LatLng(80.829945, 175.839844)
- );
- var lastValidCenter = map.getCenter();
+  );
+  var lastValidCenter = map.getCenter();
 
   map.addListener('center_changed', function() {
     // after the center of the map has changed, pan back to the
