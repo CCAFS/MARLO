@@ -532,7 +532,8 @@ function subTypes() {
           });
     }
     // show or hide publication metadata
-    if(option.val() == "49") {
+    console.log(option.val());
+    if(option.val() == "43") {
       $(".publicationMetadataBlock").show("slow");
     } else {
       $(".publicationMetadataBlock").hide("slow");

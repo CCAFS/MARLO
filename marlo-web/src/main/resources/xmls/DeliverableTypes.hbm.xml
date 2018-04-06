@@ -42,5 +42,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
         </set>
+        <set name="deliverableTypeRules" table="deliverable_type_rules" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_type" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule" />
+        </set>
     </class>
 </hibernate-mapping>

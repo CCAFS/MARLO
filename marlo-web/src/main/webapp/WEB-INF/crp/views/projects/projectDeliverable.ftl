@@ -115,7 +115,8 @@
               </div>
               [#-- Deliverable qualityCheck --]
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
-                <div id="complianceCheck" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
+                [#--  Database/Dataset/Data documentation -- Maps/Geospatial data --]
+                <div id="complianceCheck" style="display:[#if deliverable.deliverableInfo.deliverableType?? && (deliverable.deliverableInfo.deliverableType.id==51 || deliverable.deliverableInfo.deliverableType.id==74)]block [#else]none[/#if];">
                   [#-- Compliance check (Data products only) --]
                   [@deliverableMacros.complianceCheck /]
                 </div>

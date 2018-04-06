@@ -311,7 +311,7 @@
     [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
   </div>
   <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:[@customForm.req required=isJournalArticle() /]
+    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
     <div class="checkbox">
       [#if editable]
         <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
@@ -640,7 +640,8 @@
 
 
 [#function checkDeliverableTypes]
-  [#if (deliverable.deliverableType.deliverableType.id==49)!false]
+  [#-- Reports and other publications  --]
+  [#if (deliverable.deliverableInfo.deliverableType.deliverableCategory.hasDeliverableTypeRule(deliverablePublicationMetadata))!false]
     [#return "block"]
   [#else]
     [#return "none"]
@@ -648,11 +649,3 @@
   [#return "none"]
 [/#function]
 
-[#function isJournalArticle]
-  [#if (deliverable.deliverableType.id==63 || deliverable.deliverableType.id==79)!false]
-    [#return true]
-  [#else]
-    [#return false]
-  [/#if]
-  [#return false]
-[/#function]
