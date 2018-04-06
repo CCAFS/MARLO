@@ -219,6 +219,9 @@ function init() {
   $(".subTypeSelect").on("change", function() {
     var subTypeOption = $(this).find("option:selected");
     // Data
+    if($('#rule-dataLicense')).val().indexOf(subTypeOption.val()){
+      
+    }
     if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
       $(".dataLicense").show("slow");
       $("#complianceCheck").show("slow");
@@ -532,7 +535,6 @@ function subTypes() {
           });
     }
     // show or hide publication metadata
-    console.log(option.val());
     if(option.val() == "43") {
       $(".publicationMetadataBlock").show("slow");
     } else {

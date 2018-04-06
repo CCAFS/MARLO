@@ -141,6 +141,34 @@
 </section>
 [/#if]
 
+[#-- ----------------------------------- Deliverable Type Rules ------------------------------------------------]
+[#--  Publication Metadata 
+      49 -> Articles and Books --]
+[@setDeliverableRule element=deliverable ruleName=(deliverablePublicationMetadata)!'' /]
+
+[#--  Computer License
+      52 -> Data portal/Tool/Model code/Computer software --]
+[@setDeliverableRule element=deliverable ruleName=(deliverableComputerLicense)!'' /]
+
+[#--  DataLicense
+      52 -> Data portal/Tool/Model code/Computer software 
+      74 -> Maps/Geospatial data --]
+[@setDeliverableRule element=deliverable ruleName=(deliverableDataLicense)!'' /]
+
+[#--  Compliance Check
+      51 -> Database/Dataset/Data documentation
+      74 -> Maps/Geospatial data --]
+[@setDeliverableRule element=deliverable ruleName=(deliverableComplianceCheck)!'' /]
+
+[#--  Peer-review Journal Articles
+      63 -> Journal Article (peer reviewed) --]
+[@setDeliverableRule element=deliverable ruleName=(deliverableJournalArticles)!'' /]
+
+
+[#macro setDeliverableRule element ruleName]
+  <input type="hidden" id="hasDeliverableRule-${ruleName}" value="${((action.hasDeliverableRule(element.deliverableInfo, ruleName))!false)?string}" />
+  <input type="hidden" id="getDeliverableTypesByRule-${ruleName}" value="${(action.getDeliverableTypesByRule(ruleName))!}" />
+[/#macro]
 [#-- Funding Source list template --]
 <ul style="display:none">
   <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
