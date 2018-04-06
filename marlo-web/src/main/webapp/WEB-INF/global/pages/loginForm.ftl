@@ -12,7 +12,8 @@
         [#list listGlobalUnitTypes as globalUnitType]
           [#if globalUnitType.globalUnitsList?has_content]
           <div class="name-type-container type-${globalUnitType.id} hidden">
-            <span class="selection-bar-title">[#if globalUnitType.name=='CGIAR Center']Center[#else]${globalUnitType.name}[/#if]:</span>
+            [#-- When CGIAR Center(id=4) name is replaced for Center in the database, the if condition below should be removed --]
+            <span class="selection-bar-title">[#if globalUnitType.name=='CGIAR Center']Center[#else]${globalUnitType.name}[/#if]s:</span>
           </div>
           <div class="selection-bar-options">
             <ul>
