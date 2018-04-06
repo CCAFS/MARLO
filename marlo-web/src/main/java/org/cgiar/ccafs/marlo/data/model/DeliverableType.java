@@ -18,9 +18,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -149,18 +147,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public Integer getTimeline() {
     return this.timeline;
-  }
-
-  public Boolean hasDeliverableTypeRule(String rule) {
-    List<DeliverableTypeRule> deliverableTypeRules = this.getDeliverableTypeRules().stream()
-      .filter(dtr -> dtr.getDeliverableRule().getName().equals(rule)).collect(Collectors.toList());
-    // .stream().filter(dtr -> dtr.getDeliverableRule().getDescription().equals(rule)).collect(Collectors.toList());
-
-    if (deliverableTypeRules != null && !deliverableTypeRules.isEmpty()) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   @Override
