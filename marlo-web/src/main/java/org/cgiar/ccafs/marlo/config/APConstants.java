@@ -557,7 +557,11 @@ public final class APConstants {
   public static final String SUPPORTINGDOCS_DOCUMENTS_RALATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs.capdevSuppDocsDocuments)";
 
-  public static final String PUBLICATION_METADATA = "publicationMetadata";
+  public static final String DELIVERABLE_RULE_PUBLICATION_METADATA = "publicationMetadata";
+  public static final String DELIVERABLE_RULE_COMPUTER_LICENSE = "computerLicense";
+  public static final String DELIVERABLE_RULE_DATA_LICENSE = "dataLicense";
+  public static final String DELIVERABLE_RULE_COMPILANCE_CHECK = "complianceCheck";
+  public static final String DELIVERABLE_RULE_JORNAL_ARTICLES = "journalArticles";
 
   public static String getFilterBy() {
     return FILTER_BY;
