@@ -1243,7 +1243,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   @Override
   public String execute() throws Exception {
     if (save) {
@@ -1314,6 +1313,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * ************************ CENTER METHOD ******************************
    * Generate permissions String to Centers
@@ -1326,10 +1326,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
+
 
   /**
    * get the actual
@@ -1408,7 +1408,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public Phase getActualPhase(Map<String, Object> session, long crpID) {
 
 
@@ -1449,6 +1448,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
+
 
   /**
    * get all phases per CRP
@@ -1510,10 +1510,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return basePermission;
   }
 
-
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   /**
    * Get the front end libraries acording to Center o CRP access
@@ -1545,7 +1545,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Arrays.asList(CrpCategoryEnum.values());
   }
 
-
   /**
    * ************************ CENTER METHOD ******************************
    * Get The phase that extract the crp information.
@@ -1575,32 +1574,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  /*
-   * public Phase getActualPhase(Map<String, Object> session, long crpID) {
-   * try {
-   * if (session.containsKey(APConstants.CURRENT_PHASE)) {
-   * return (Phase) session.get(APConstants.CURRENT_PHASE);
-   * } else {
-   * String cyle = "";
-   * int year = 0;
-   * if (Boolean.parseBoolean(session.get(APConstants.CRP_REPORTING_ACTIVE).toString())) {
-   * cyle = APConstants.REPORTING;
-   * year = Integer.parseInt(session.get(APConstants.CRP_REPORTING_YEAR).toString());
-   * } else {
-   * cyle = APConstants.PLANNING;
-   * year = Integer.parseInt(session.get(APConstants.CRP_PLANNING_YEAR).toString());
-   * }
-   * Phase phase = phaseManager.findCycle(cyle, year, crpID);
-   * session.put(APConstants.CURRENT_PHASE, phase);
-   * return phase;
-   * }
-   * } catch (Exception e) {
-   * return new Phase(null, "", -1);
-   * }
-   * }
-   */
-
-
   /**
    * ***********************CENTER METHOD***************************************************************
    * This method gets the specific section status from the sectionStatuses array for a CenterDeliverable.
@@ -1627,6 +1600,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
+
+  /*
+   * public Phase getActualPhase(Map<String, Object> session, long crpID) {
+   * try {
+   * if (session.containsKey(APConstants.CURRENT_PHASE)) {
+   * return (Phase) session.get(APConstants.CURRENT_PHASE);
+   * } else {
+   * String cyle = "";
+   * int year = 0;
+   * if (Boolean.parseBoolean(session.get(APConstants.CRP_REPORTING_ACTIVE).toString())) {
+   * cyle = APConstants.REPORTING;
+   * year = Integer.parseInt(session.get(APConstants.CRP_REPORTING_YEAR).toString());
+   * } else {
+   * cyle = APConstants.PLANNING;
+   * year = Integer.parseInt(session.get(APConstants.CRP_PLANNING_YEAR).toString());
+   * }
+   * Phase phase = phaseManager.findCycle(cyle, year, crpID);
+   * session.put(APConstants.CURRENT_PHASE, phase);
+   * return phase;
+   * }
+   * } catch (Exception e) {
+   * return new Phase(null, "", -1);
+   * }
+   * }
+   */
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1678,7 +1678,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ***********************CENTER METHOD********************
    * This method gets the specific section status from the sectionStatuses array for a Output.
@@ -1705,6 +1704,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1788,7 +1788,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1815,6 +1814,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.centerSession;
   }
+
 
   public List<GlobalUnit> getCentersList() {
     List<GlobalUnit> centers = new ArrayList<>();
@@ -1857,7 +1857,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // return Calendar.getInstance().get(Calendar.YEAR);
   }
 
-
   public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
@@ -1879,10 +1878,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return clusterOfActivities;
   }
 
+
   public APConfig getConfig() {
     return config;
   }
-
 
   public List<CrpProgramOutcome> getContributionsOutcome(long projectID, long crpProgramID) {
     Project project = projectManager.getProjectById(projectID);
@@ -1924,6 +1923,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   /*
    * List a Global Unit depends of the category
@@ -1968,7 +1968,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpID;
   }
 
-
   /**
    * Get the Crp List
    * 
@@ -1995,6 +1994,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList());
     }
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -2103,10 +2103,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public int getCurrentCycleYear() {
     return this.getActualPhase().getYear();
   }
+
 
   public int getCurrentCycleYearParam() {
     try {
@@ -2154,7 +2154,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return u;
   }
 
-
   /**
    * This method return the Date Format from APConstants class
    * 
@@ -2162,6 +2161,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String getDateFormat() {
     return APConstants.DATE_FORMAT;
+  }
+
+
+  public String getDeliverablePublicationMetadata() {
+    return APConstants.PUBLICATION_METADATA;
   }
 
   public List<Deliverable> getDeliverableRelationsImpact(Long id, String className) {

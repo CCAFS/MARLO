@@ -241,5 +241,7 @@
     <mapping resource="xmls/PowbCollaborationGlobalUnits.hbm.xml"/>
     <mapping resource="xmls/PowbCollaborationRegions.hbm.xml"/>
     <mapping resource="xmls/ProjectHighlightsInfo.hbm.xml"/>
+    <mapping resource="xmls/DeliverableRules.hbm.xml"/>
+    <mapping resource="xmls/DeliverableTypeRules.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
