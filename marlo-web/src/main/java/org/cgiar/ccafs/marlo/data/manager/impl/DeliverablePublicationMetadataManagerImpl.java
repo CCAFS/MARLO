@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,18 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePublicationMetadataDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -32,13 +36,30 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
 
 
   private DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public DeliverablePublicationMetadataManagerImpl(DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO) {
+  public DeliverablePublicationMetadataManagerImpl(DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO,
+    PhaseDAO phaseDAO) {
     this.deliverablePublicationMetadataDAO = deliverablePublicationMetadataDAO;
+    this.phaseDAO = phaseDAO;
+  }
 
+  private void cloneDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,
+    DeliverablePublicationMetadata newDeliverablePublicationMetadataPhase, Phase phase) {
+    newDeliverablePublicationMetadataPhase.setPhase(phase);
+    newDeliverablePublicationMetadataPhase.setDeliverable(deliverablePublicationMetadata.getDeliverable());
+    newDeliverablePublicationMetadataPhase.setVolume(deliverablePublicationMetadata.getVolume());
+    newDeliverablePublicationMetadataPhase.setIssue(deliverablePublicationMetadata.getIssue());
+    newDeliverablePublicationMetadataPhase.setPages(deliverablePublicationMetadata.getPages());
+    newDeliverablePublicationMetadataPhase.setJournal(deliverablePublicationMetadata.getJournal());
+    newDeliverablePublicationMetadataPhase.setIsiPublication(deliverablePublicationMetadata.getIsiPublication());
+    newDeliverablePublicationMetadataPhase.setNasr(deliverablePublicationMetadata.getNasr());
+    newDeliverablePublicationMetadataPhase.setCoAuthor(deliverablePublicationMetadata.getCoAuthor());
+    newDeliverablePublicationMetadataPhase
+      .setPublicationAcknowledge(deliverablePublicationMetadata.getPublicationAcknowledge());
 
   }
 
@@ -68,9 +89,39 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
   }
 
   @Override
-  public DeliverablePublicationMetadata saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata) {
+  public DeliverablePublicationMetadata
+    saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata) {
+    DeliverablePublicationMetadata deliverablePublicationMetadataResult =
+      deliverablePublicationMetadataDAO.save(deliverablePublicationMetadata);
+    Phase currentPhase = phaseDAO.find(deliverablePublicationMetadataResult.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadataResult,
+          deliverablePublicationMetadata.getDeliverable(), currentPhase.getNext().getId());
+      }
+    }
+    return deliverablePublicationMetadataResult;
+  }
 
-    return deliverablePublicationMetadataDAO.save(deliverablePublicationMetadata);
+  private void saveDeliverablePublicationMetadataPhase(DeliverablePublicationMetadata deliverablePublicationMetadata,
+    Deliverable deliverable, Long phaseID) {
+    Phase phase = phaseDAO.find(phaseID);
+    DeliverablePublicationMetadata deliverablePublicationMetadataPhase = deliverablePublicationMetadataDAO
+      .findPublicationMetadataByPhaseAndDeliverable(phase, deliverablePublicationMetadata.getDeliverable());
+    if (deliverablePublicationMetadataPhase != null) {
+      this.cloneDeliverablePublicationMetadata(deliverablePublicationMetadata, deliverablePublicationMetadataPhase,
+        phase);
+      deliverablePublicationMetadataDAO.save(deliverablePublicationMetadataPhase);
+    } else {
+      DeliverablePublicationMetadata newDeliverablePublicationMetadata = new DeliverablePublicationMetadata();
+      this.cloneDeliverablePublicationMetadata(deliverablePublicationMetadata, newDeliverablePublicationMetadata,
+        phase);
+      deliverablePublicationMetadataDAO.save(newDeliverablePublicationMetadata);
+    }
+    if (phase.getNext() != null) {
+      this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadata, deliverable,
+        phase.getNext().getId());
+    }
   }
 
 
