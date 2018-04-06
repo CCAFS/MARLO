@@ -15,6 +15,7 @@
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
   {"label":"projectLocations", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -373,11 +374,11 @@
                       <hr class="suggestedLocations" />
                       [/#if]
                       <div class="row suggestedLocations-container">
-                      <div class="col-sm-4 col-md-4">
-                      <div class="suggestedLocations-label">
-                        Suggested countries:
-                      </div>
-                      </div>
+                        <div class="col-sm-4 col-md-4">
+                          <div class="suggestedLocations-label">
+                            Suggested countries:
+                          </div>
+                        </div>
                       </div>
                       [#list project.countryFS as suggestedCountry]
                         [#if suggestedCountry.selected]
@@ -393,7 +394,6 @@
                           </div>
                         [/#if]
                       [/#list]
-                    <hr />
                     [/#if]
                   [/#if]
                 [/#if]

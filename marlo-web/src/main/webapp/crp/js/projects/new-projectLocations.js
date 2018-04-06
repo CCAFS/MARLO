@@ -165,13 +165,26 @@ function attachEvents() {
   });
 
   $('input.recommendedSelected').on('change', function() {
+    // On checkbox change, put value (true or false) in next input
     $(this).next().val($(this).is(":checked"));
-
+    //HERE
     var locIso = $(this).next().next().text();
 
-    // THIS IS THE THING
+    // Add the selected country in map, table and list
     if($(this).is(":checked")){
+
+
+
       countries.push(locIso);
+      layer.setMap(null);
+      mappingCountries();
+    }else{
+      // Search the unmarked location and remove it from countries array
+      var index = $.inArray(locIso,countries);
+      if(index !== -1){
+        countries.splice(index,1);
+      }
+      layer.setMap(null);
       mappingCountries();
     }
   });
@@ -260,7 +273,7 @@ function modalButtonsListeners(){
       // Checking if locations select is empty
       if($locationSelect.val() != null) {
 
-        // Checking if the location level exist in the bottom wrapper
+        // Checking if the location level exist in the bottom table
         if($(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").exists()) {
           console.log('locationLvlId Exists');
           addCountryIntoLocLevel(locationId, $locationSelect, locationName);
