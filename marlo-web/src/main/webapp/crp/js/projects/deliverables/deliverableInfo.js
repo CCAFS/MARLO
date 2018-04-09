@@ -256,9 +256,6 @@ function init() {
     } else {
       $("#complianceCheck").hide("slow");
     }
-    console.log(hasDeliverableRule('complianceCheck', [
-        subTypeOption, typeOption
-    ]));
     // Data License
     if(hasDeliverableRule('dataLicense', [
         subTypeOption, typeOption
@@ -602,18 +599,16 @@ function formatStateGenderType(state) {
 }
 
 function hasDeliverableRule(rule,arrValues) {
-  var result = false;
+  var result = 0;
   $.each(arrValues, function(index,value) {
-    result = ($.inArray(value.toString(), getDeliverableTypesByRule(rule))) != -1;
-    if(result == true) {
-      return;
+    if(($.inArray(value, getDeliverableTypesByRule(rule))) != -1) {
+      result++;
     }
-    console.log(rule + " - " + index);
   });
-  return result;
+  return(result > 0);
 }
 
 function getDeliverableTypesByRule(rule) {
-  var result = $('#getDeliverableTypesByRule-' + rule).val().split(",");
+  var result = $('#getDeliverableTypesByRule-' + rule).val().split(", ");
   return result;
 }
