@@ -31,6 +31,11 @@ function attachEvents() {
     countries.push($(e).find(".locElementCountry").val());
   });
 
+  // Add suggested countries list into the blue mapped countries in map
+  $('.suggestedCountriesList').find('.locations').each(function(i,e){
+    countries.push($(e).find('.locationName').attr('id'));
+  });
+
   // REMOVE REGION
   $(".removeRegion").on("click", removeRegion);
 
@@ -167,29 +172,48 @@ function attachEvents() {
   $('input.recommendedSelected').on('change', function() {
     // On checkbox change, put value (true or false) in next input
     $(this).next().val($(this).is(":checked"));
-    //HERE
+
     var locIso = $(this).next().next().text();
+    var locName = $(this).parent().find(".lName").children().text();
+    var locId = $(this).parent().find(".elementID").val();
 
     var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
+    var countryList = $(".list-container").find(".Country");
 
     // Add the selected country in map, table and list
     if($(this).is(":checked")){
 
+      //addLocLevel(locationName,locationId,locationIsList,$locationSelect);
+      if(countryRow.exists() && countryList.exists()){
+        // Add suggested country in locations table
+        var $tableItem = $('#suggestedLocation-template').clone(true).removeAttr("id");
 
+        $tableItem.find(".locationName").attr('id',locIso);
+        $tableItem.find(".lName").text(locName);
+        countryRow.parent().find('.suggestedCountriesList').children().append($tableItem);
+        $tableItem.show('slow');
 
-      addLocLevel(locationName,locationId,locationIsList,$locationSelect);
+        // Add suggested country in locations list (all locations modal)
+        var $listItem = $('#itemList-template').clone(true).removeAttr("id");
+        $listItem.attr('id',locId);
+        $listItem.attr('name',locName);
+        $listItem.find(".item-name").text(locName);
+        countryList.append($listItem);
 
-      if(countryRowExists.exists()){
-        countryRow.find()
       }else{
-
       }
 
       countries.push(locIso);
       layer.setMap(null);
       mappingCountries();
     }else{
-      // Search the unmarked location and remove it from countries array
+      // Remove unmarked locations from locations table
+      countryRow.parent().find('.suggestedCountriesList').children().find('#'+locIso).
+        parent().parent().remove();
+      // Remove unmarked locations from locations list (all locations modal)
+      countryList.find(".item-name").parent().remove();
+
+      // Search the unmarked location in countries array and remove it
       var index = $.inArray(locIso,countries);
       if(index !== -1){
         countries.splice(index,1);
@@ -277,8 +301,6 @@ function modalButtonsListeners(){
     var locationIsList = $locationLevelSelect.val().split("-")[1];
     var locationName = $locationLevelSelect.val().split("-")[2];
 
-    console.log($locationLevelSelect.val());
-
     var $locationSelect = $("#countriesCmvs");
     // checking if is list
     if(locationIsList == "true") {
@@ -287,7 +309,6 @@ function modalButtonsListeners(){
 
         // Checking if the location level exist in the bottom table
         if($(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").exists()) {
-          console.log('locationLvlId Exists');
           addCountryIntoLocLevel(locationId, $locationSelect, locationName);
         } else {
           addLocLevel(locationName, locationId, locationIsList, $locationSelect);
@@ -745,21 +766,20 @@ function notify(text) {
 
 //Adding location level with locElements
 function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
-  console.log('addLocLevel= '+locationIsList);
   var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
   $locationItem.find(".locLevelName").html(locationName);
   $locationItem.find("input.locationLevelId").val(locationId);
   $locationItem.find("input.locationLevelName").val(locationName);
   $locationItem.find("input.isList").val(locationIsList);
-  console.log($locationItem.find("input.isList"));
   $(".locationsDataTable > tbody:last-child").append($locationItem);
+  //$(".locationsDataTable").find("countriesList").children().append($locationItem);
   $locationItem.show("slow");
   updateIndex();
   if(locationIsList == "true") {
     if(locationName == "Country") {
     } else {
- $locationItem.find(".allCountriesQuestion").show();
- $locationItem.find("span.question").html($("span.qCmvSites").text());
+     $locationItem.find(".allCountriesQuestion").show();
+     $locationItem.find("span.question").html($("span.qCmvSites").text());
     }
     addCountryIntoLocLevel(locationId, $locationSelect, locationName);
   } else {
@@ -871,6 +891,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
       $(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").parent().find(
           ".optionSelect-content");
+  var countryList = $(".list-container").find(".Country");
   $.each($locationSelect.val(), function(i,e) {
     var $item = $("#location-template").clone(true).removeAttr("id");
     var locId = e.split("-")[0];
@@ -881,7 +902,6 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       notify(locName + " already exists into the " + locationContent.parent().parent().parent().find(".locationLevelName").val()
           + " list")
     } else {
-      console.log('doesnt exist');
       countID++;
       setMapCenterPosition($item,locId,locName,countID);
 
@@ -895,7 +915,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
         countries.push(locIso);
         $item.find(".locElementCountry").val(locIso);
       }
-      locationContent.append($item);
+      locationContent.find(".countriesList").children().append($item);
       $item.show("slow");
 
       //Show and hide Successfully added message
@@ -903,6 +923,14 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       setTimeout(function(){
         $('#alert-succesfully-added').slideUp();
       }, 2000);
+
+
+      // Add Country into all locations modal list
+      var $listItem = $('#itemList-template').clone(true).removeAttr("id");
+      $listItem.attr('id',locId);
+      $listItem.attr('name',locName);
+      $listItem.find(".item-name").text(locName);
+      countryList.append($listItem);
     }
   });
   updateIndex();
