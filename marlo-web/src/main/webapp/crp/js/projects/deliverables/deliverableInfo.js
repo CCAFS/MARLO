@@ -29,10 +29,6 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  /* Events select */
-  subTypes();
-  keyOutputs();
-
   // justificationByStatus($(".status").find("option:selected").val());
   // validateCurrentDate();
 
@@ -216,21 +212,65 @@ function init() {
     $('.ccDimension').slideUp();
   });
 
-  $(".subTypeSelect").on("change", function() {
-    var subTypeOption = $(this).find("option:selected");
-    // Data
-    if($('#rule-dataLicense')).val().indexOf(subTypeOption.val()){
-      
+  $('.typeSelect').on('change', function() {
+    var $subTypeSelect = $(".subTypeSelect");
+    $subTypeSelect.empty();
+    $subTypeSelect.append("<option value='-1' >Select an option... </option>");
+    $subTypeSelect.trigger("change.select2");
+    var option = $(this).find("option:selected");
+
+    if(option.val() != "-1") {
+      $.ajax({
+          url: baseURL + "/deliverableSubType.do",
+          type: 'GET',
+          dataType: "json",
+          data: {
+              deliverableTypeId: option.val(),
+              phaseID: phaseID
+          }
+      }).success(function(m) {
+        for(var i = 0; i < m.deliverableSubTypes.length; i++) {
+          $subTypeSelect.addOption(m.deliverableSubTypes[i].id, m.deliverableSubTypes[i].name)
+        }
+      });
     }
-    if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
-      $(".dataLicense").show("slow");
+    $subTypeSelect.trigger('change');
+  });
+
+  $(".subTypeSelect").on("change", function() {
+    var subTypeOption = $(this).find("option:selected").val();
+    var typeOption = $('.typeSelect').find("option:selected").val();
+    // Show or hide publication metadata
+    if(hasDeliverableRule('publicationMetadata', [
+        subTypeOption, typeOption
+    ])) {
+      $(".publicationMetadataBlock").show("slow");
+    } else {
+      $(".publicationMetadataBlock").hide("slow");
+    }
+    // Compliance Check Rule
+    if(hasDeliverableRule('complianceCheck', [
+        subTypeOption, typeOption
+    ])) {
       $("#complianceCheck").show("slow");
     } else {
-      $(".dataLicense").hide("slow");
       $("#complianceCheck").hide("slow");
     }
+    console.log(hasDeliverableRule('complianceCheck', [
+        subTypeOption, typeOption
+    ]));
+    // Data License
+    if(hasDeliverableRule('dataLicense', [
+        subTypeOption, typeOption
+    ])) {
+      $(".dataLicense").show("slow");
+    } else {
+      $(".dataLicense").hide("slow");
+    }
     // Computer software
-    if(subTypeOption.val() == "52") {
+    if(hasDeliverableRule('computerLicense', [
+        subTypeOption, typeOption
+    ])) {
       $(".computerLicense").show("slow");
     } else {
       $(".computerLicense").hide("slow");
@@ -505,55 +545,6 @@ function updateProjectPartnersSelects() {
   });
 }
 
-function subTypes() {
-  var url = baseURL + "/deliverableSubType.do";
-  var typeSelect = $(".typeSelect");
-  var subTypeSelect = $(".subTypeSelect");
-  typeSelect.on("change", function() {
-
-    subTypeSelect.empty();
-    subTypeSelect.append("<option value='-1' >Select an option... </option>");
-    subTypeSelect.trigger("change.select2");
-    var option = $(this).find("option:selected");
-
-    if(option.val() != "-1") {
-      var data = {
-          deliverableTypeId: option.val(),
-          phaseID: phaseID
-      }
-      $.ajax({
-          url: url,
-          type: 'GET',
-          dataType: "json",
-          data: data
-      }).success(
-          function(m) {
-            for(var i = 0; i < m.deliverableSubTypes.length; i++) {
-              subTypeSelect.append("<option value='" + m.deliverableSubTypes[i].id + "' >"
-                  + m.deliverableSubTypes[i].name + "</option>");
-            }
-          });
-    }
-    // show or hide publication metadata
-    if(option.val() == "43") {
-      $(".publicationMetadataBlock").show("slow");
-    } else {
-      $(".publicationMetadataBlock").hide("slow");
-    }
-  });
-}
-
-function keyOutputs() {
-  /*
-   * var url = baseURL + "/keyOutputList.do"; var keyOutputSelect = $(".keyOutput"); keyOutputSelect.empty();
-   * keyOutputSelect.append("<option value='-1' >Select an option... </option>");
-   * keyOutputSelect.trigger("change.select2"); var option = $(this).find("option:selected"); var data = {
-   * clusterActivityID: option.val() } $.ajax({ url: url, type: 'GET', dataType: "json", data: data }).success(
-   * function(m) { console.log(m); for(var i = 0; i < m.keyOutputs.length; i++) { keyOutputSelect.append("<option
-   * value='" + m.keyOutputs[i].id + "' >" + m.keyOutputs[i].description + "</option>"); } });
-   */
-}
-
 function checkItems(block) {
   console.log(block);
   var items = $(block).find('.deliverablePartner').length;
@@ -608,4 +599,21 @@ function formatStateGenderType(state) {
   }
   var $state = $("#genderLevel-" + state.id).clone(true);
   return $state;
+}
+
+function hasDeliverableRule(rule,arrValues) {
+  var result = false;
+  $.each(arrValues, function(index,value) {
+    result = ($.inArray(value.toString(), getDeliverableTypesByRule(rule))) != -1;
+    if(result == true) {
+      return;
+    }
+    console.log(rule + " - " + index);
+  });
+  return result;
+}
+
+function getDeliverableTypesByRule(rule) {
+  var result = $('#getDeliverableTypesByRule-' + rule).val().split(",");
+  return result;
 }
