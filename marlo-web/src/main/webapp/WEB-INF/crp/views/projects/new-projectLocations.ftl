@@ -315,8 +315,8 @@
 <input type="hidden" id="locationName" value="${locationName}" />
 
 [#macro allLocationsListMacro element list]
-  <h4>${element.name}</h4>
-  <ul>
+  <h4>${element.name!}</h4>
+  <ul class="${element.name!}">
     [#if element.locElements?has_content]
       [#list element.locElements as location]
         <li id="${location.id!}" name="${location.name!}" class="marker-map">
@@ -354,8 +354,8 @@
           <div class=" locationLevel-optionContent " listname="${customName}.locElements">
             [#-- Content of locations--]
             <div class="optionSelect-content row">
-              [#-- Countries from suggested locations list --]
-              <div class="row">
+              [#-- Other countries --]
+              <div class="row countriesList">
                 <div class="col-sm-12">
                 [#if element.locElements?has_content]
                   [#list element.locElements as location]
@@ -364,8 +364,8 @@
                 [/#if]
                 </div>
               </div>
-              [#-- Other countries --]
-              <div class="row">
+              [#-- Countries from suggested locations list --]
+              <div class="row suggestedCountriesList">
                 <div class="col-sm-12">
                 [#if element.name?has_content]
                   [#if element.name == 'Country']
@@ -384,7 +384,7 @@
                         [#if suggestedCountry.selected]
                           <div class="col-md-4">
                             <div class="locations col-md-12">
-                              <div class="locationName">
+                              <div id="${suggestedCountry.locElement.isoAlpha2!}" class="locationName">
                                 <span class="lName">${(suggestedCountry.locElement.name)!}</span>
                               </div>
                               [#if editable]
@@ -447,6 +447,27 @@
       <span class="name"></span>
       <div class="clearfix"></div>
     </li>
+</ul>
+
+[#-- location element template --]
+<div id="suggestedLocation-template" class="col-md-4" style="display:none">
+  <div class="locations col-md-12">
+    <div id="" class="locationName">
+      <span class="lName"></span>
+    </div>
+    [#if editable]
+    <div class="removeIcon removeDisabled" title="This country should be removed by uncheck it from the suggested list"></div>
+    [/#if]
+  </div>
+</div>
+
+[#-- list element template (all locations modal) --]
+<ul style="display:none">
+  <li id="itemList-template" name="" class="marker-map">
+    <span class="glyphicon glyphicon-map-marker"></span>
+    <span class="item-name"></span>
+    <br />
+  </li>
 </ul>
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
