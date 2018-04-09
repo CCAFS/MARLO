@@ -11,12 +11,12 @@
   <div class="radio-block licenseOptions-block" style="display:${((deliverable.adoptedLicense)!false)?string('block','none')}">
     <hr />
     [#if editable]
-      <div class="licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
+      <div class="licenseOptions computerLicense" style="display:${displayDeliverableRule(deliverable, deliverableComputerLicense)!};">
         <div class="radio"><input type="radio" name="deliverable.license" id="" value="MIT" [#if ((deliverable.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License</div>
         <div class="radio"><input type="radio" name="deliverable.license" id="" value="GNU" [#if ((deliverable.licenseType) == "GNU")!false]checked="checked"[/#if]/> GNU General Public License</div>
       </div>
       [#-- Deliverable type data --]
-      <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
+      <div class=" licenseOptions dataLicense" style="display:${displayDeliverableRule(deliverable, deliverableDataLicense)!};">
         <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_LICENSES" [#if ((deliverable.licenseType) == "CC_LICENSES")!false]checked="checked"[/#if]/> CC licenses version 4.0</div>
         <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_PUBLIC" [#if ((deliverable.licenseType) == "CC_PUBLIC")!false]checked="checked"[/#if]/> CC Public Domain Dedication (CC0 1.0)</div>
         <div class="radio"><input type="radio" name="deliverable.license" id="" value="OPEN_DATA" [#if ((deliverable.licenseType) == "OPEN_DATA")!false]checked="checked"[/#if]/> Open Data Commons (ODC)</div>
@@ -47,12 +47,12 @@
       </div>
     [#else]
       [#-- Deliverable type computer software --]
-      <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
+      <div class=" licenseOptions computerLicense" style="display:${displayDeliverableRule(deliverable, deliverableComputerLicense)!};">
         [#if deliverable.licenseType?? && deliverable.licenseType == "MIT"]<p class="checked">MIT License</p>[/#if]
         [#if deliverable.licenseType?? && deliverable.licenseType == "GNU"]<p class="checked">GNU General Public License</p>[/#if]
       </div>
       [#-- Deliverable type data --]
-      <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
+      <div class=" licenseOptions dataLicense" style="display:${displayDeliverableRule(deliverable, deliverableDataLicense)!};">
         [#if deliverable.licenseType?? && deliverable.licenseType == "CC_LICENSES"]<p class="checked">CC licenses version 4.0</p>[/#if]
         [#if deliverable.licenseType?? && deliverable.licenseType == "CC_PUBLIC"]<p class="checked">CC Public Domain Dedication (CC0 1.0)</p>[/#if]
         [#if deliverable.licenseType?? && deliverable.licenseType == "OPEN_DATA"]<p class="checked">Open Data Commons (ODC)</p>[/#if]
@@ -298,7 +298,7 @@
   [/#if] 
 </div>
 
-<div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
+<div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
   <br />
   <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
   <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
@@ -638,10 +638,8 @@
   </div>
 [/#macro]
 
-
-[#function checkDeliverableTypes]
-  [#-- Reports and other publications  --]
-  [#if (deliverable.deliverableInfo.deliverableType.deliverableCategory.hasDeliverableTypeRule(deliverablePublicationMetadata))!false]
+[#function displayDeliverableRule element ruleName]
+  [#if (action.hasDeliverableRule(element.deliverableInfo, ruleName))!false ]
     [#return "block"]
   [#else]
     [#return "none"]
