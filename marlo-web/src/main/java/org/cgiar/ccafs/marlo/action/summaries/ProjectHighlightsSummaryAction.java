@@ -303,13 +303,14 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
-      .filter(ph -> ph.isActive() && ph.getProject() != null
-        && ph.getProjectHighlightInfo(this.getActualPhase()).getYear() == this.getSelectedYear()
-        && ph.getProject().getGlobalUnitProjects().stream()
-          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
-        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && ph.getProject().getProjectInfo().getReporting())
+      .filter(
+        ph -> ph.isActive() && ph.getProject() != null && ph.getProjectHighlightInfo(this.getSelectedPhase()) != null
+          && ph.getProjectHighlightInfo().getYear() == this.getSelectedYear()
+          && ph.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0
+          && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && ph.getProject().getProjectInfo().getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
@@ -318,24 +319,24 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       Long yearReported = null;
       int width = 244;
       int heigth = 163;
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getTitle() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getTitle().isEmpty()) {
-        title = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getTitle();
+      if (projectHighlight.getProjectHighlightInfo().getTitle() != null
+        && !projectHighlight.getProjectHighlightInfo().getTitle().isEmpty()) {
+        title = projectHighlight.getProjectHighlightInfo().getTitle();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getAuthor() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getAuthor().isEmpty()) {
-        author = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getAuthor();
+      if (projectHighlight.getProjectHighlightInfo().getAuthor() != null
+        && !projectHighlight.getProjectHighlightInfo().getAuthor().isEmpty()) {
+        author = projectHighlight.getProjectHighlightInfo().getAuthor();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getSubject() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getSubject().isEmpty()) {
-        subject = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getSubject();
+      if (projectHighlight.getProjectHighlightInfo().getSubject() != null
+        && !projectHighlight.getProjectHighlightInfo().getSubject().isEmpty()) {
+        subject = projectHighlight.getProjectHighlightInfo().getSubject();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPublisher() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPublisher().isEmpty()) {
-        publisher = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPublisher();
+      if (projectHighlight.getProjectHighlightInfo().getPublisher() != null
+        && !projectHighlight.getProjectHighlightInfo().getPublisher().isEmpty()) {
+        publisher = projectHighlight.getProjectHighlightInfo().getPublisher();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getYear() != null) {
-        yearReported = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getYear();
+      if (projectHighlight.getProjectHighlightInfo().getYear() != null) {
+        yearReported = projectHighlight.getProjectHighlightInfo().getYear();
       }
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
@@ -353,20 +354,20 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       if (highlightsTypes.isEmpty()) {
         highlightsTypes = null;
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).isGlobal() == true) {
+      if (projectHighlight.getProjectHighlightInfo().isGlobal() == true) {
         highlightsIsGlobal = "Yes";
       } else {
         highlightsIsGlobal = "No";
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getStartDate() != null) {
-        startDate = formatter.format(projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getStartDate());
+      if (projectHighlight.getProjectHighlightInfo().getStartDate() != null) {
+        startDate = formatter.format(projectHighlight.getProjectHighlightInfo().getStartDate());
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getEndDate() != null) {
-        endDate = formatter.format(projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getEndDate());
+      if (projectHighlight.getProjectHighlightInfo().getEndDate() != null) {
+        endDate = formatter.format(projectHighlight.getProjectHighlightInfo().getEndDate());
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getKeywords() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getKeywords().isEmpty()) {
-        keywords = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getKeywords();
+      if (projectHighlight.getProjectHighlightInfo().getKeywords() != null
+        && !projectHighlight.getProjectHighlightInfo().getKeywords().isEmpty()) {
+        keywords = projectHighlight.getProjectHighlightInfo().getKeywords();
       }
       int countriesFlag = 0;
       for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighlightCountries().stream()
@@ -385,39 +386,39 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       if (countries.isEmpty()) {
         countries = null;
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getDescription() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getDescription().isEmpty()) {
-        highlightDesc = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getDescription();
+      if (projectHighlight.getProjectHighlightInfo().getDescription() != null
+        && !projectHighlight.getProjectHighlightInfo().getDescription().isEmpty()) {
+        highlightDesc = projectHighlight.getProjectHighlightInfo().getDescription();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getObjectives() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getObjectives().isEmpty()) {
-        introduction = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getObjectives();
+      if (projectHighlight.getProjectHighlightInfo().getObjectives() != null
+        && !projectHighlight.getProjectHighlightInfo().getObjectives().isEmpty()) {
+        introduction = projectHighlight.getProjectHighlightInfo().getObjectives();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getResults() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getResults().isEmpty()) {
-        results = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getResults();
+      if (projectHighlight.getProjectHighlightInfo().getResults() != null
+        && !projectHighlight.getProjectHighlightInfo().getResults().isEmpty()) {
+        results = projectHighlight.getProjectHighlightInfo().getResults();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPartners() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPartners().isEmpty()) {
-        partners = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPartners();
+      if (projectHighlight.getProjectHighlightInfo().getPartners() != null
+        && !projectHighlight.getProjectHighlightInfo().getPartners().isEmpty()) {
+        partners = projectHighlight.getProjectHighlightInfo().getPartners();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getLinks() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getLinks().isEmpty()) {
-        links = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getLinks();
+      if (projectHighlight.getProjectHighlightInfo().getLinks() != null
+        && !projectHighlight.getProjectHighlightInfo().getLinks().isEmpty()) {
+        links = projectHighlight.getProjectHighlightInfo().getLinks();
       }
       if (projectHighlight.getProject() != null) {
         projectId = projectHighlight.getProject().getId().toString();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getFile() != null) {
+      if (projectHighlight.getProjectHighlightInfo().getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
         double imageWidth = 244;
         double imageHeigth = 163;
         image = this.getHightlightImagePath(projectHighlight.getProject().getId())
-          + projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getFile().getFileName();
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
-          + projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getFile().getFileName();
-        imageName = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getFile().getFileName();
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
+        imageName = projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         Image imageFile = null;
         LOG.info("image.getURL.replace " + image);
         File url;

@@ -1820,8 +1820,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
-          && d.getProject()
-            .getGlobalUnitProjects().stream()
+          && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
@@ -1860,7 +1859,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String delivType = null;
         String delivSubType = null;
         String delivStatus =
-          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getActualPhase());
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -2427,7 +2426,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String delivType = null;
         String delivSubType = null;
         String delivStatus =
-          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getActualPhase());
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -2813,7 +2812,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       new TypedTableModel(new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget"},
         new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class}, 0);
     for (ProjectLeverage projectLeverage : project.getProjectLeverages().stream()
-      .filter(pl -> pl.isActive() && pl.getYear() == this.getSelectedYear()).collect(Collectors.toList())) {
+      .filter(pl -> pl.isActive() && pl.getYear() == this.getSelectedYear() && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList())) {
       String title = null, partnerName = null, leverageYear = null, flagship = null, budget = null;
       if (projectLeverage.getTitle() != null && !projectLeverage.getTitle().isEmpty()) {
         title = projectLeverage.getTitle();
@@ -2824,9 +2825,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear() + "";
       }
-      if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getIpProgram().getComposedName();
+      if (projectLeverage.isPhaseOneLeverage()) {
+        if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getIpProgram().getComposedName();
+        }
+      } else {
+        if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getCrpProgram().getComposedName();
+        }
       }
+
       if (projectLeverage.getBudget() != null) {
         budget = myFormatter.format(projectLeverage.getBudget());
       }
@@ -3066,11 +3074,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"region", "indicator", "contribution_description", "target_contribution",
-          "otherContributionyear"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -3409,9 +3415,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream()
-      .filter(ph -> ph.getProjectHighlightInfo(this.getActualPhase()) != null && ph.isActive()
-        && ph.getProjectHighlightInfo(this.getActualPhase()).getYear() != null
-        && ph.getProjectHighlightInfo(this.getActualPhase()).getYear() >= this.getSelectedYear())
+      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
+      .filter(ph -> ph.getProjectHighlightInfo(this.getSelectedPhase()) != null && ph.isActive()
+        && ph.getProjectHighlightInfo().getYear() != null
+        && ph.getProjectHighlightInfo().getYear() >= this.getSelectedYear())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
@@ -3419,24 +3426,24 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       Long yearReported = null;
       int width = 0;
       int heigth = 0;
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getTitle() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getTitle().isEmpty()) {
-        title = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getTitle();
+      if (projectHighlight.getProjectHighlightInfo().getTitle() != null
+        && !projectHighlight.getProjectHighlightInfo().getTitle().isEmpty()) {
+        title = projectHighlight.getProjectHighlightInfo().getTitle();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getAuthor() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getAuthor().isEmpty()) {
-        author = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getAuthor();
+      if (projectHighlight.getProjectHighlightInfo().getAuthor() != null
+        && !projectHighlight.getProjectHighlightInfo().getAuthor().isEmpty()) {
+        author = projectHighlight.getProjectHighlightInfo().getAuthor();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getSubject() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getSubject().isEmpty()) {
-        subject = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getSubject();
+      if (projectHighlight.getProjectHighlightInfo().getSubject() != null
+        && !projectHighlight.getProjectHighlightInfo().getSubject().isEmpty()) {
+        subject = projectHighlight.getProjectHighlightInfo().getSubject();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPublisher() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPublisher().isEmpty()) {
-        publisher = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPublisher();
+      if (projectHighlight.getProjectHighlightInfo().getPublisher() != null
+        && !projectHighlight.getProjectHighlightInfo().getPublisher().isEmpty()) {
+        publisher = projectHighlight.getProjectHighlightInfo().getPublisher();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getYear() != null) {
-        yearReported = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getYear();
+      if (projectHighlight.getProjectHighlightInfo().getYear() != null) {
+        yearReported = projectHighlight.getProjectHighlightInfo().getYear();
       }
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
@@ -3448,20 +3455,20 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (highlightsTypes.isEmpty()) {
         highlightsTypes = null;
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).isGlobal() == true) {
+      if (projectHighlight.getProjectHighlightInfo().isGlobal() == true) {
         highlightsIsGlobal = "Yes";
       } else {
         highlightsIsGlobal = "No";
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getStartDate() != null) {
-        startDate = formatter.format(projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getStartDate());
+      if (projectHighlight.getProjectHighlightInfo().getStartDate() != null) {
+        startDate = formatter.format(projectHighlight.getProjectHighlightInfo().getStartDate());
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getEndDate() != null) {
-        endDate = formatter.format(projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getEndDate());
+      if (projectHighlight.getProjectHighlightInfo().getEndDate() != null) {
+        endDate = formatter.format(projectHighlight.getProjectHighlightInfo().getEndDate());
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getKeywords() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getKeywords().isEmpty()) {
-        keywords = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getKeywords();
+      if (projectHighlight.getProjectHighlightInfo().getKeywords() != null
+        && !projectHighlight.getProjectHighlightInfo().getKeywords().isEmpty()) {
+        keywords = projectHighlight.getProjectHighlightInfo().getKeywords();
       }
       int countriesFlag = 0;
       for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighlightCountries().stream()
@@ -3479,13 +3486,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (countries.isEmpty()) {
         countries = null;
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getFile() != null) {
+      if (projectHighlight.getProjectHighlightInfo().getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
         double imageWidth = 0;
         double imageHeigth = 0;
         image = this.getHightlightImagePath(projectHighlight.getProject().getId())
-          + projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getFile().getFileName();
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         Image imageFile = null;
         LOG.info("Image name: " + image);
         File url;
@@ -3524,25 +3531,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getDescription() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getDescription().isEmpty()) {
-        highlightDesc = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getDescription();
+      if (projectHighlight.getProjectHighlightInfo().getDescription() != null
+        && !projectHighlight.getProjectHighlightInfo().getDescription().isEmpty()) {
+        highlightDesc = projectHighlight.getProjectHighlightInfo().getDescription();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getObjectives() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getObjectives().isEmpty()) {
-        introduction = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getObjectives();
+      if (projectHighlight.getProjectHighlightInfo().getObjectives() != null
+        && !projectHighlight.getProjectHighlightInfo().getObjectives().isEmpty()) {
+        introduction = projectHighlight.getProjectHighlightInfo().getObjectives();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getResults() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getResults().isEmpty()) {
-        results = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getResults();
+      if (projectHighlight.getProjectHighlightInfo().getResults() != null
+        && !projectHighlight.getProjectHighlightInfo().getResults().isEmpty()) {
+        results = projectHighlight.getProjectHighlightInfo().getResults();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPartners() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPartners().isEmpty()) {
-        partners = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getPartners();
+      if (projectHighlight.getProjectHighlightInfo().getPartners() != null
+        && !projectHighlight.getProjectHighlightInfo().getPartners().isEmpty()) {
+        partners = projectHighlight.getProjectHighlightInfo().getPartners();
       }
-      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getLinks() != null
-        && !projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getLinks().isEmpty()) {
-        links = projectHighlight.getProjectHighlightInfo(this.getActualPhase()).getLinks();
+      if (projectHighlight.getProjectHighlightInfo().getLinks() != null
+        && !projectHighlight.getProjectHighlightInfo().getLinks().isEmpty()) {
+        links = projectHighlight.getProjectHighlightInfo().getLinks();
       }
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
@@ -3845,7 +3852,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }
