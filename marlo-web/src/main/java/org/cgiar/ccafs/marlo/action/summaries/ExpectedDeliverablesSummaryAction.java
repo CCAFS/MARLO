@@ -437,9 +437,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         keyOutput = null;
       }
 
-      String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
-        && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
-          ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
+      String delivStatus = (deliverableInfo.getStatusName(this.getSelectedPhase()) != null
+        && !deliverableInfo.getStatusName(this.getSelectedPhase()).isEmpty())
+          ? deliverableInfo.getStatusName(this.getSelectedPhase()) : null;
       String delivNewYear = null;
       if (deliverableInfo.getStatus() != null
         && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
@@ -636,7 +636,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       for (Institution partnerResponsible : institutionsResponsibleList) {
         // Check if is ppa
-        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getActualPhase())) {
+        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getSelectedPhase())) {
           managingResponsibleList.add(partnerResponsible);
         } else {
           // If is not a ppa, get the crp linked to the partner

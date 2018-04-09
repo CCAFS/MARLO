@@ -1146,7 +1146,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
       if (project.isActive()) {
-        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        project.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
         if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
           if (project.getProjectInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
@@ -1158,12 +1158,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       }
     }
     for (Project project : myProjects) {
-      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
-      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
-      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w1 = project.getCoreBudget(this.getSelectedPhase().getYear(), this.getSelectedPhase());
+      double w3 = project.getW3Budget(this.getSelectedPhase().getYear(), this.getSelectedPhase());
+      double bilateral = project.getBilateralBudget(this.getSelectedPhase().getYear(), this.getSelectedPhase());
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
-          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
+          && c.getPhase().equals(this.getSelectedPhase()) && c.getYear() == this.getSelectedPhase().getYear())
         .collect(Collectors.toList());
       double percentageW1 = 0;
       double percentageW3 = 0;
@@ -1208,12 +1208,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       crpProgram.setW3(new Double(0));
 
       crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList()));
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getSelectedPhase().getYear())
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -1286,13 +1286,13 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
           boolean addDeliverable = false;
 
           if (deliverable.isActive() && deliverableInfo.getNewExpectedYear() != null
-            && deliverableInfo.getNewExpectedYear() >= this.getActualPhase().getYear()
+            && deliverableInfo.getNewExpectedYear() >= this.getSelectedPhase().getYear()
             && deliverableInfo.getStatus() != null
             && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
             addDeliverable = true;
           }
 
-          if (deliverable.isActive() && deliverableInfo.getYear() >= this.getActualPhase().getYear()
+          if (deliverable.isActive() && deliverableInfo.getYear() >= this.getSelectedPhase().getYear()
             && deliverableInfo.getStatus() != null
             && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
             addDeliverable = true;
