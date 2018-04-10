@@ -190,8 +190,11 @@
       
       <h2 id="copyRight">Copyright</h2>
       <div class="simpleBox">
-        <a class="pull-right" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html"> <img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /> </a>
-        <p>GNUv3 license</p>
+        <div class="image-container">
+          <a class="pull-right" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html"> <img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /> </a>
+          <a class="pull-right" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html"> <img height="51px" class="" src="https://www.gnu.org/graphics/heckert_gnu.small.png" alt="GPL" /> </a>
+        </div>
+        <p style="width:70%;"> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program. If not, see <a target="_blank" href="http://www.gnu.org/licenses">http://www.gnu.org/licenses</a>.</p>
         <div class="clearfix"></div>
       </div>
       
