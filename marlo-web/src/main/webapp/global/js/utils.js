@@ -275,7 +275,7 @@ function isImpactPathwaySection() {
 
 function isCenterImpactPathwaySection() {
   var url = window.location.href;
-  return url.includes("/centerImpactPathway/");
+  return (url.includes("/impactPathway/")) && centerGlobalUnit;
 }
 
 function isMonitoringSection() {
@@ -314,7 +314,7 @@ function getParameterByName(name,url) {
 /**
  * Get Parameter from a class, example:
  * <p class="parameter-100">, the function will return 100
- * 
+ *
  * @param selector
  *          <p class="parameter-100">
  *          </p>
@@ -559,6 +559,15 @@ function validateField($input) {
   } else {
     return true;
   }
+}
+
+// Validate Email
+function isEmail(email){
+  var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+  if(!emailReg.test(email)) {
+    return false;
+  }
+  return true;
 }
 
 function getCookie(cname) {

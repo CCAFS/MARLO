@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -143,7 +144,7 @@ public class MilestoneAddAction extends BaseAction {
         monitoringMilestone.setModifiedBy(this.getCurrentUser());
         monitoringMilestone.setResearchMilestone(milestone);
         monitoringMilestone.setMonitoringOutcome(monitoringOutcome);
-        monitoringMilestone.setModificationJustification("Added in Monitoring " + this.getCenterYear());
+        monitoringMilestone.setModificationJustification("Added in Monitoring " + this.getActualPhase().getYear());
 
         monitoringMilestone = monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestone);
         monitoringData.put("Elementid", monitoringMilestone.getId());

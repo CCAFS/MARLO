@@ -62,15 +62,18 @@ public class User implements java.io.Serializable, IAuditLog {
 
   private boolean autoSave;
 
+  private Boolean agreeTerms;
+
 
   private User createdBy;
 
-  private Date activeSince;
 
+  private Date activeSince;
 
   private User modifiedBy;
 
   private String modificationJustification;
+
 
   private boolean active;
 
@@ -88,14 +91,15 @@ public class User implements java.io.Serializable, IAuditLog {
 
   private Set<LiaisonUser> liasonsUsers = new HashSet<LiaisonUser>(0);
 
-
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
+
   private Set<Submission> submissions = new HashSet<Submission>(0);
+
+
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
   private List<CrpUser> crpUser;
   // MARLO CIAT relations
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
-
 
   public User() {
   }
@@ -106,6 +110,7 @@ public class User implements java.io.Serializable, IAuditLog {
     this.cgiarUser = cgiarUser;
     this.active = active;
   }
+
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
     User createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
@@ -149,6 +154,12 @@ public class User implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public Boolean getAgreeTerms() {
+    if (agreeTerms == null) {
+      return false;
+    }
+    return agreeTerms;
+  }
 
   /**
    * This method returns the user's full name.
@@ -160,11 +171,11 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.firstName + " " + this.lastName;
   }
 
+
   public String getComposedID() {
     String composedId = this.email.split("@")[0] + "-" + this.id;
     return composedId;
   }
-
 
   /**
    * This method returns a composed way to show a User.
@@ -184,6 +195,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
     return crpClusterActivityLeaders;
   }
@@ -191,7 +203,6 @@ public class User implements java.io.Serializable, IAuditLog {
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
   }
-
 
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return crpSitesLeaders;
@@ -201,6 +212,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public List<CrpUser> getCrpUser() {
     return crpUser;
   }
+
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
@@ -213,7 +225,6 @@ public class User implements java.io.Serializable, IAuditLog {
   public String getFirstName() {
     return this.firstName;
   }
-
 
   @Override
   public Long getId() {
@@ -234,6 +245,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public String getLastName() {
     return this.lastName;
   }
+
 
   public Set<LiaisonUser> getLiasonsUsers() {
     return liasonsUsers;
@@ -276,7 +288,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.username;
   }
 
-
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
   }
@@ -296,14 +307,15 @@ public class User implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public boolean isAutoSave() {
     return autoSave;
   }
 
-
   public boolean isCgiarUser() {
     return cgiarUser;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -311,6 +323,10 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setAgreeTerms(Boolean agreeTerms) {
+    this.agreeTerms = agreeTerms;
   }
 
   public void setAutoSave(boolean autoSave) {

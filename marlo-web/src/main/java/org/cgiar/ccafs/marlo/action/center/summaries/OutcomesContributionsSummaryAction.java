@@ -446,10 +446,10 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   public void prepare() {
     long programID = -1;
     try {
-      programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
+      programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       researchProgram = programService.getProgramById(programID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.CENTER_PROGRAM_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get " + APConstants.CRP_PROGRAM_ID + " parameter. Exception: " + e.getMessage());
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();

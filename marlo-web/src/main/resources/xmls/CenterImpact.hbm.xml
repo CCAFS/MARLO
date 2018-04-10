@@ -44,9 +44,9 @@
 		  <property name="description" type="string">
       <column name="description" length="65535" not-null="true" />
     </property>
-    <many-to-one name="researchProgram" class="org.cgiar.ccafs.marlo.data.model.CenterProgram"
+    <many-to-one name="researchProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram"
       fetch="select">
-      <column name="research_program_id" not-null="true" />
+      <column name="program_id" not-null="true" />
     </many-to-one>
     <property name="targetYear" type="java.lang.Integer">
       <column name="target_year" not-null="false" />

@@ -86,6 +86,7 @@ public final class APConstants {
   public static final String CURRENT_PHASE = "crp_current_phase";
   public static final String PHASES = "crp_phases";
   public static final String ALL_PHASES = "crp_all_phases";
+  public static final String AVAILABLES_GLOBAL_TYPES = "availablesGlobalTypes";
 
   public static final String PHASES_IMPACT = "crp_phases_impact";
   public static final String CRP_REQUEST = "crp";
@@ -405,6 +406,8 @@ public final class APConstants {
 
   public static final String USER_EMAIL = "userEmail";
 
+  public static final String USER_PASSWORD = "userPassword";
+
   public static final String USER_ID = "userID";
 
   public static final String USER_TOKEN = "user_token";
@@ -478,10 +481,10 @@ public final class APConstants {
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchImpacts)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.researchImpacts)";
 
   public static final String RESEARCH_PROGRAM_TOPIC_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchTopics)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.researchTopics)";
 
   public static final String RESEARCH_OUTCOME_MILESTONE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterOutcome.researchMilestones)";

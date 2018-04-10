@@ -18,11 +18,11 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
@@ -37,13 +37,13 @@ import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -97,7 +97,7 @@ public class ProjectListAction extends BaseAction {
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private GlobalUnit loggedCenter;
   private long programID;
-  private ICenterProgramManager programService;
+  private CrpProgramManager programService;
   private ProjectManager projectManager;
   private long projectID;
   private List<CenterFundingSyncType> syncTypes;
@@ -107,8 +107,8 @@ public class ProjectListAction extends BaseAction {
 
 
   private ICenterAreaManager researchAreaService;
-  private List<CenterProgram> researchPrograms;
-  private CenterProgram selectedProgram;
+  private List<CrpProgram> researchPrograms;
+  private CrpProgram selectedProgram;
   private CenterArea selectedResearchArea;
   private UserManager userService;
   private String justification;
@@ -121,7 +121,7 @@ public class ProjectListAction extends BaseAction {
   private ProjectInfoManager projectInfoManager;
 
   @Inject
-  public ProjectListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
+  public ProjectListAction(APConfig config, GlobalUnitManager centerService, CrpProgramManager programService,
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
@@ -393,7 +393,7 @@ public class ProjectListAction extends BaseAction {
     centerProject.setModifiedBy(this.getCurrentUser());
     centerProject.setStartDate(new Date());
     centerProject.setDateCreated(new Date());
-    centerProject.setResearchProgram(selectedProgram);
+    // centerProject.setResearchProgram(selectedProgram);
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
     centerProject.setAutoFill(autofill);
     centerProject.setSync(autofill);
@@ -449,7 +449,7 @@ public class ProjectListAction extends BaseAction {
     centerProject.setModifiedBy(this.getCurrentUser());
     centerProject.setStartDate(new Date());
     centerProject.setDateCreated(new Date());
-    centerProject.setResearchProgram(selectedProgram);
+    // centerProject.setResearchProgram(selectedProgram);
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
     centerProject.setAutoFill(false);
     centerProject.setSync(false);
@@ -721,11 +721,11 @@ public class ProjectListAction extends BaseAction {
   }
 
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
@@ -769,7 +769,7 @@ public class ProjectListAction extends BaseAction {
         areaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_AREA_ID)));
       } catch (Exception e) {
         try {
-          programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
+          programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
           // Check if the User is an Area Leader
@@ -796,10 +796,10 @@ public class ProjectListAction extends BaseAction {
               if (!userScientistLeader.isEmpty()) {
                 programID = userScientistLeader.get(0).getResearchProgram().getId();
               } else {
-                List<CenterProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                List<CrpProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
                   .collect(Collectors.toList());
                 Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-                CenterProgram rp = rps.get(0);
+                CrpProgram rp = rps.get(0);
                 programID = rp.getId();
                 areaID = rp.getResearchArea().getId();
               }
@@ -815,7 +815,7 @@ public class ProjectListAction extends BaseAction {
         Collections.sort(researchPrograms, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
         if (researchPrograms != null) {
           try {
-            programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
+            programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
           } catch (Exception e) {
             User user = userService.getUser(this.getCurrentUser().getId());
             List<CenterLeader> userLeads = new ArrayList<>(user.getResearchLeaders().stream()
@@ -835,28 +835,28 @@ public class ProjectListAction extends BaseAction {
 
 
         if (programID != -1) {
-          selectedProgram = programService.getProgramById(programID);
+          selectedProgram = programService.getCrpProgramById(programID);
         }
 
       } else {
 
         if (programID != -1) {
-          selectedProgram = programService.getProgramById(programID);
+          selectedProgram = programService.getCrpProgramById(programID);
           areaID = selectedProgram.getResearchArea().getId();
           selectedResearchArea = researchAreaService.find(areaID);
         }
 
       }
 
-      List<CenterProject> centerProjects =
-        new ArrayList<>(selectedProgram.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+      // List<CenterProject> centerProjects =
+      // new ArrayList<>(selectedProgram.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
 
       List<Project> pList = new ArrayList<>();
       projects = new ArrayList<>();
 
-      for (CenterProject centerProject : centerProjects) {
-        pList.add(centerProject.getProject());
-      }
+      // for (CenterProject centerProject : centerProjects) {
+      // pList.add(centerProject.getProject());
+      // }
 
 
       for (Project project : pList) {
@@ -916,11 +916,11 @@ public class ProjectListAction extends BaseAction {
     this.researchAreas = researchAreas;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 

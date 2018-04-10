@@ -18,15 +18,15 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.center.summaries.ImpactSubmissionSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -58,26 +58,29 @@ public class IPSubmissionAction extends BaseAction {
 
   /// LOG
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
+
   private ICenterSubmissionManager submissionService;
-  private ICenterProgramManager programService;
+
+
+  private CrpProgramManager programService;
   private ICenterCycleManager cycleService;
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
-
-
   private SendMail sendMail;
-  private CenterProgram program;
-  private CenterCycle cycle;
+  private CrpProgram program;
 
+
+  private CenterCycle cycle;
   private GlobalUnit loggedCenter;
-  private long programID;
   private boolean isSubmited = false;
 
   private ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
 
+  private long crpProgramID;
+
   @Inject
   public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
-    ICenterProgramManager programService, ICenterCycleManager cycleService, GlobalUnitManager centerService,
+    CrpProgramManager programService, ICenterCycleManager cycleService, GlobalUnitManager centerService,
     SendMail sendMail, ImpactSubmissionSummaryAction impactSubmissionSummaryAction) {
     super(config);
     this.programService = programService;
@@ -91,12 +94,13 @@ public class IPSubmissionAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     if (this.hasPermissionCenter("*")) {
-      if (this.isCompleteIP(programID)) {
+      if (this.isCompleteIP(crpProgramID)) {
         if (submissionService.findAll() != null) {
-          CenterProgram program = programService.getProgramById(programID);
+          CrpProgram program = programService.getCrpProgramById(crpProgramID);
 
-          List<CenterSubmission> submissions = new ArrayList<>(program.getSubmissions().stream()
-            .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
+          List<CenterSubmission> submissions = new ArrayList<>(program.getCenterSubmissions().stream()
+            .filter(
+              s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList()));
 
           if (submissions != null && submissions.size() > 0) {
@@ -111,7 +115,7 @@ public class IPSubmissionAction extends BaseAction {
           submission.setResearchProgram(program);
           submission.setDateTime(new Date());
           submission.setUser(this.getCurrentUser());
-          submission.setYear((short) this.getCenterYear());
+          submission.setYear((short) this.getActualPhase().getYear());
           submission.setResearchCycle(cycle);
 
           submission = submissionService.saveSubmission(submission);
@@ -130,24 +134,18 @@ public class IPSubmissionAction extends BaseAction {
 
   }
 
-  public String getFileName() {
-    StringBuffer fileName = new StringBuffer();
-    fileName.append("ImpactPathway-");
-    fileName.append(loggedCenter.getName() + "-");
-    fileName.append("IP" + programID + "-");
-    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".pdf");
-    return fileName.toString();
-
+  public long getCrpProgramID() {
+    return crpProgramID;
   }
 
-  // public boolean isCompleteIP(long programId) {
+
+  // public boolean isCompleteIP(long crpProgramID) {
   //
   // if (sectionStatusService.findAll() == null) {
   // return false;
   // }
   //
-  // CenterProgram researchProgram = programService.getProgramById(programId);
+  // CrpProgram researchProgram = programService.getProgramById(crpProgramID);
   //
   // List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getSectionStatuses().stream()
   // .filter(ss -> ss.getYear() == (short) this.getYear()).collect(Collectors.toList()));
@@ -164,8 +162,15 @@ public class IPSubmissionAction extends BaseAction {
   // return true;
   // }
 
-  public long getProgramID() {
-    return programID;
+  public String getFileName() {
+    StringBuffer fileName = new StringBuffer();
+    fileName.append("ImpactPathway-");
+    fileName.append(loggedCenter.getName() + "-");
+    fileName.append("IP" + crpProgramID + "-");
+    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append(".pdf");
+    return fileName.toString();
+
   }
 
   @Override
@@ -175,13 +180,13 @@ public class IPSubmissionAction extends BaseAction {
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
-      programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
+      crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
     } catch (NumberFormatException e) {
-      programID = -1;
+      crpProgramID = -1;
       return; // Stop here and go to execute method.
     }
 
-    program = programService.getProgramById(programID);
+    program = programService.getCrpProgramById(crpProgramID);
 
     String params[] = {loggedCenter.getAcronym(), program.getResearchArea().getId() + "", program.getId() + ""};
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
@@ -198,7 +203,7 @@ public class IPSubmissionAction extends BaseAction {
     values[1] = loggedCenter.getAcronym() != null && !loggedCenter.getAcronym().isEmpty() ? loggedCenter.getAcronym()
       : loggedCenter.getName();
     values[2] = program.getName();
-    values[3] = String.valueOf(this.getCenterYear());
+    values[3] = String.valueOf(this.getActualPhase().getYear());
     values[4] = cycle.getName();
 
     String subject = null;
@@ -230,15 +235,15 @@ public class IPSubmissionAction extends BaseAction {
       }
     }
 
-    List<CenterLeader> programLeaders =
-      new ArrayList<>(program.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
-
-    if (!programLeaders.isEmpty()) {
-      for (CenterLeader leader : programLeaders) {
-        ccEmails.append(leader.getUser().getEmail());
-        ccEmails.append(", ");
-      }
-    }
+    // List<CenterLeader> programLeaders =
+    // new ArrayList<>(program.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+    //
+    // if (!programLeaders.isEmpty()) {
+    // for (CenterLeader leader : programLeaders) {
+    // ccEmails.append(leader.getUser().getEmail());
+    // ccEmails.append(", ");
+    // }
+    // }
 
     // CC will be the other MLs.
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
@@ -257,7 +262,7 @@ public class IPSubmissionAction extends BaseAction {
     String fileName = null;
     String contentType = null;
     try {
-      CenterProgram program = programService.getProgramById(programID);
+      CrpProgram program = programService.getCrpProgramById(crpProgramID);
       impactSubmissionSummaryAction.setResearchProgram(program);
       impactSubmissionSummaryAction.execute();
 
@@ -279,8 +284,8 @@ public class IPSubmissionAction extends BaseAction {
 
   }
 
-  public void setProgramID(long programID) {
-    this.programID = programID;
+  public void setCrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
   }
 
 }

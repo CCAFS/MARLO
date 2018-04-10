@@ -196,14 +196,10 @@ public class AutoSaveWriterAction extends BaseAction {
 
 
       try {
-        /*
-         * TODO
-         * Fix When Centers Contains Phases*
-         */
+
         Phase phase = null;
-        if (this.getCrpID() != 23) {
-          phase = this.getActualPhase();
-        }
+        phase = this.getActualPhase();
+
         String fileName = "";
         if (phase != null) {
           fileName = fileId + "_" + fileClass + "_" + phase.getDescription() + "_" + phase.getYear() + "_" + fileAction
