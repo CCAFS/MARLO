@@ -61,32 +61,17 @@
     
     [#-- Other (Please specify)--]
     <div class="licenseOptions">
-      [#if editable]
       <div class="form-group row">
-        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType)?? && (deliverable.deliverableInfo.licenseType)=="OTHER"]block[#else]none [/#if];" >
+        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
           [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
         </div>
-        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType)?? && (deliverable.deliverableInfo.licenseType)=="OTHER"]block[#else]none [/#if];" >
+        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
           <label class="col-md-6" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
           <div class="col-md-6">
             [@customForm.yesNoInput name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
           </div>  
         </div>
       </div>
-      [#else]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "OTHER"]
-          <p class="checked"> Other </p>
-          <div class="form-group row">
-            <div class="col-md-6 licence-modifications">
-              [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
-            </div>
-            <div class="col-md-6 licence-modifications">
-              <label class="col-md-6" for="">Does this license allows modifications?</label>
-              <div class="col-md-6">[@customForm.yesNoInput name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] </div>  
-            </div>
-          </div>
-        [/#if]
-      [/#if]
     </div>
   </div>
 </div>
