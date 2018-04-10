@@ -14,8 +14,8 @@
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/fundingSourcesListTemplate.ftl" as fundingSourcesList /]
     
 <section class="container">
@@ -68,4 +68,4 @@
 [@customForm.confirmJustification action="deleteFundingSource.do" namespace="/${currentSection}" nameId="fundingSourceID" title="Remove Funding Source" /]
 
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]

@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.interceptor.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -52,7 +52,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private GlobalUnitManager centerService;
 
   private UserManager userService;
-  private ICenterProgramManager programService;
+  private CrpProgramManager programService;
   private ICenterAreaManager areaServcie;
 
   private Map<String, Parameter> parameters;
@@ -63,7 +63,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   @Inject
   public EditImpactPathwayInterceptor(GlobalUnitManager centerService, UserManager userService,
-    ICenterProgramManager programService, ICenterAreaManager areaServcie) {
+    CrpProgramManager programService, ICenterAreaManager areaServcie) {
     this.centerService = centerService;
     this.userService = userService;
     this.programService = programService;
@@ -73,7 +73,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   void getprogramId() {
     try {
       // programID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]);
-      programID = Long.parseLong(parameters.get(APConstants.CENTER_PROGRAM_ID).getMultipleValues()[0]);
+      programID = Long.parseLong(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       GlobalUnit loggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
       loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
@@ -87,7 +87,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       if (!userAreaLeads.isEmpty()) {
         areaID = userAreaLeads.get(0).getResearchArea().getId();
         CenterArea area = areaServcie.find(areaID);
-        List<CenterProgram> programs =
+        List<CrpProgram> programs =
           area.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
         programID = programs.get(0).getId();
       } else {
@@ -109,10 +109,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
             List<CenterArea> ras =
               loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
             Collections.sort(ras, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-            List<CenterProgram> rps =
+            List<CrpProgram> rps =
               ras.get(0).getResearchPrograms().stream().filter(r -> r.isActive()).collect(Collectors.toList());
             Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-            CenterProgram rp = rps.get(0);
+            CrpProgram rp = rps.get(0);
             programID = rp.getId();
             areaID = rp.getResearchArea().getId();
           }
@@ -151,7 +151,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     boolean editParameter = false;
     BaseAction baseAction = (BaseAction) invocation.getAction();
 
-    CenterProgram researchProgram = programService.getProgramById(programID);
+    CrpProgram researchProgram = programService.getCrpProgramById(programID);
 
     if (researchProgram != null) {
 

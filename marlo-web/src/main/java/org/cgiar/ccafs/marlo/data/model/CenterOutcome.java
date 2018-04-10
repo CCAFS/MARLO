@@ -52,6 +52,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private BigDecimal value;
 
+
   @Expose
   private CenterImpact researchImpact;
 
@@ -60,7 +61,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   @Expose
   private Date activeSince;
-
 
   @Expose
   private CenterTopic researchTopic;
@@ -72,13 +72,13 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private CenterTargetUnit targetUnit;
 
 
   @Expose
   private String modificationJustification;
+
 
   @Expose
   private boolean impactPathway;
@@ -87,19 +87,22 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private String shortName;
 
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
+
+
   private Set<CenterMilestone> researchMilestones = new HashSet<CenterMilestone>(0);
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   private Set<CenterMonitoringOutcome> monitoringOutcomes = new HashSet<CenterMonitoringOutcome>(0);
 
-
   private List<CenterMilestone> milestones;
 
   private List<CenterMonitoringOutcome> monitorings;
 
-  private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
 
+  private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
 
   public CenterOutcome() {
     super();
@@ -126,6 +129,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.researchTopic = researchTopic;
     this.value = value;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -174,7 +178,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -183,6 +186,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
   public Set<CenterMonitoringOutcome> getMonitoringOutcomes() {
     return monitoringOutcomes;
   }
+
 
   public List<CenterMonitoringOutcome> getMonitorings() {
     return monitorings;
@@ -199,7 +203,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return researchMilestones;
   }
 
-
   /**
    * @return the researchTopic
    */
@@ -211,8 +214,13 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return sectionStatuses;
   }
 
+
   public String getShortName() {
     return shortName;
+  }
+
+  public SrfTargetUnit getSrfTargetUnit() {
+    return srfTargetUnit;
   }
 
   public CenterTargetUnit getTargetUnit() {
@@ -261,7 +269,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   /**
    * @param description the description to set
    */
@@ -277,6 +284,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setImpactPathway(boolean impactPathway) {
     this.impactPathway = impactPathway;
   }
@@ -288,7 +296,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
-
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -317,6 +324,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.researchMilestones = researchMilestones;
   }
 
+
   /**
    * @param researchTopic the researchTopic to set
    */
@@ -328,9 +336,13 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
-
   public void setShortName(String shortName) {
     this.shortName = shortName;
+  }
+
+
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
 

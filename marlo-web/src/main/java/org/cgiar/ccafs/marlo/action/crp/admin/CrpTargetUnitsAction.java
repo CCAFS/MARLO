@@ -20,6 +20,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -110,6 +113,39 @@ public class CrpTargetUnitsAction extends BaseAction {
                 if (targetUnit.equals(targetUnitMilestone)) {
                   return false;
                 }
+              }
+
+            }
+
+            List<CenterTopic> centerTopics = new ArrayList<>(
+              crpProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+
+            for (CenterTopic centerTopic : centerTopics) {
+
+              List<CenterOutcome> centerOutcomes = new ArrayList<>(
+                centerTopic.getResearchOutcomes().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
+
+              for (CenterOutcome centerOutcome : centerOutcomes) {
+
+                SrfTargetUnit targetUnitOutcome = centerOutcome.getSrfTargetUnit();
+
+                if (targetUnit.equals(targetUnitOutcome)) {
+                  return false;
+                }
+
+                List<CenterMilestone> centerMilestones = new ArrayList<>(centerOutcome.getResearchMilestones().stream()
+                  .filter(cm -> cm.isActive()).collect(Collectors.toList()));
+
+                for (CenterMilestone centerMilestone : centerMilestones) {
+
+                  SrfTargetUnit targetUnitMilestone = centerMilestone.getSrfTargetUnit();
+
+                  if (targetUnit.equals(targetUnitMilestone)) {
+                    return false;
+                  }
+                }
+
+
               }
 
             }

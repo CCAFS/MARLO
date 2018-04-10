@@ -44,9 +44,9 @@ public class CenterMilestone implements Serializable, IAuditLog {
   @Expose
   private String title;
 
+
   @Expose
   private Integer targetYear;
-
 
   @Expose
   private BigDecimal value;
@@ -57,8 +57,11 @@ public class CenterMilestone implements Serializable, IAuditLog {
 
   @Expose
   private Date activeSince;
+
   @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -69,6 +72,8 @@ public class CenterMilestone implements Serializable, IAuditLog {
   private CenterTargetUnit targetUnit;
   @Expose
   private boolean impactPathway;
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
   private Set<CenterMonitoringMilestone> monitoringMilestones = new HashSet<CenterMonitoringMilestone>(0);
 
   public CenterMilestone() {
@@ -160,6 +165,10 @@ public class CenterMilestone implements Serializable, IAuditLog {
     return researchOutcome;
   }
 
+  public SrfTargetUnit getSrfTargetUnit() {
+    return srfTargetUnit;
+  }
+
   public CenterTargetUnit getTargetUnit() {
     return targetUnit;
   }
@@ -198,10 +207,10 @@ public class CenterMilestone implements Serializable, IAuditLog {
     return active;
   }
 
-
   public boolean isImpactPathway() {
     return impactPathway;
   }
+
 
   /**
    * @param active the active to set
@@ -213,7 +222,6 @@ public class CenterMilestone implements Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -227,10 +235,10 @@ public class CenterMilestone implements Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setImpactPathway(boolean impactPathway) {
     this.impactPathway = impactPathway;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -252,6 +260,11 @@ public class CenterMilestone implements Serializable, IAuditLog {
    */
   public void setResearchOutcome(CenterOutcome researchOutcome) {
     this.researchOutcome = researchOutcome;
+  }
+
+
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
 

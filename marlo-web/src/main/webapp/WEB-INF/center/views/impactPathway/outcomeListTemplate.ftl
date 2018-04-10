@@ -20,7 +20,7 @@
           <td class="outcomeId">
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outcomeID']${outcome.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">OC${outcome.id}</a>
           </td>
-          [#-- outcome statement --]
+          [#-- Outcome statement --]
           <td class="left"> 
             [#if outcome.description?has_content]
                 <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outcomeID']${outcome.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${outcome.description}">
@@ -31,17 +31,9 @@
                 </a>
             [/#if]
           </td>
-          [#-- outcome Year --]
+          [#-- Outcome Year --]
           <td class="text-center">
-          [#if outcome.targetYear== -1 ]
-          none
-          [#else]
-          ${(outcome.targetYear)!'none'}
-          
-          
-          
-          [/#if]
-            
+            [#if outcome.targetYear == -1 ]none[#else]${(outcome.targetYear)!'none'}[/#if]
           </td>
           [#-- Outcome required fields --]
           <td class="text-center">

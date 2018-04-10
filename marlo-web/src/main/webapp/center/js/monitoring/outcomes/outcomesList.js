@@ -35,11 +35,11 @@ $(document).ready(
       $("#researchTopics").on(
           "change",
           function() {
-            var programID = $("#programSelected").html();
+            var crpProgramID = $("#programSelected").html();
             var option = $(this).find("option:selected");
 
             var url =
-                baseURL + "/monitoring/" + centerSession + "/monitoringOutcomesList.do?programID=" + programID
+                baseURL + "/monitoring/" + crpSession + "/monitoringOutcomesList.do?crpProgramID=" + crpProgramID
                     + "&edit=" + editable + "&topicID=" + option.val();
             window.location = url;
 

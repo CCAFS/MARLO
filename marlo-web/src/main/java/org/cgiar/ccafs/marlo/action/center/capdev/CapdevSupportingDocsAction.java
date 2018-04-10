@@ -118,7 +118,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
-      capdevID = -1;
       projectID = 0;
     }
     capdev = capdevService.getCapacityDevelopmentById(capdevID);

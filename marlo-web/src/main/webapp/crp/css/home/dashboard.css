@@ -8,13 +8,13 @@
 }
 
 #dashboardContent li a:hover{
-  background-color: #69aec8;
+  /* background-color: #69aec8; */
   color:white;
 }
 
 #dashboardContent li.active a{
-  background-color: rgb(17, 127, 168);
-  color: white;
+  /* background-color: rgb(17, 127, 168); */
+  color: #337ab7;
   bottom: 0px;
   height: 42px;
 }

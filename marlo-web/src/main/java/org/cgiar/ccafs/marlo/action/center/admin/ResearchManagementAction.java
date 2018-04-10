@@ -18,14 +18,14 @@ package org.cgiar.ccafs.marlo.action.center.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterAllTypesManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterLeaderManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -52,7 +52,7 @@ public class ResearchManagementAction extends BaseAction {
 
   private ICenterAreaManager centerAreaService;
 
-  private ICenterProgramManager centerProgramService;
+  private CrpProgramManager CrpProgramService;
   private ICenterLeaderManager centerLeaderService;
   private CenterAllTypesManager centerAllTypesService;
   private GlobalUnit loggedCenter;
@@ -60,12 +60,12 @@ public class ResearchManagementAction extends BaseAction {
 
   @Inject
   public ResearchManagementAction(APConfig config, GlobalUnitManager centerService, ICenterAreaManager areaService,
-    ICenterProgramManager programService, ICenterLeaderManager centerLeaderService,
+    CrpProgramManager programService, ICenterLeaderManager centerLeaderService,
     CenterAllTypesManager centerAllTypesService) {
     super(config);
     this.centerService = centerService;
     this.centerAreaService = areaService;
-    this.centerProgramService = programService;
+    this.CrpProgramService = programService;
     this.centerLeaderService = centerLeaderService;
     this.centerAllTypesService = centerAllTypesService;
   }
@@ -110,39 +110,39 @@ public class ResearchManagementAction extends BaseAction {
           }
 
           // save new programs
-          List<CenterProgram> newCenterPrograms = centerArea.getPrograms();
-          if (newCenterPrograms != null) {
-            for (CenterProgram centerProgram : newCenterPrograms) {
-              CenterProgram newCenterProgram = new CenterProgram();
+          List<CrpProgram> newCrpPrograms = centerArea.getPrograms();
+          if (newCrpPrograms != null) {
+            for (CrpProgram CrpProgram : newCrpPrograms) {
+              CrpProgram newCrpProgram = new CrpProgram();
               // Save center program
-              newCenterProgram.setAcronym(centerProgram.getAcronym());
-              newCenterProgram.setName(centerProgram.getName());
-              newCenterProgram.setActive(true);
-              newCenterProgram.setActiveSince(new Date());
-              newCenterProgram.setCreatedBy(this.getCurrentUser());
-              newCenterProgram.setModificationJustification("");
-              newCenterProgram.setModifiedBy(this.getCurrentUser());
-              newCenterProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
-                Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
-              newCenterProgram.setResearchArea(newCenterArea);
-              List<CenterLeader> programLeaders = centerProgram.getLeaders();
-              centerProgramService.saveProgram(newCenterProgram);
-              if (programLeaders != null) {
-                for (CenterLeader programLeader : programLeaders) {
-                  CenterLeader newProgramLeader = new CenterLeader();
-                  newProgramLeader.setActive(true);
-                  newProgramLeader.setActiveSince(new Date());
-                  newProgramLeader.setCreatedBy(this.getCurrentUser());
-                  newProgramLeader.setModificationJustification("");
-                  newProgramLeader.setModifiedBy(this.getCurrentUser());
-                  newProgramLeader.setResearchCenter(loggedCenter);
-                  newProgramLeader.setResearchProgram(newCenterProgram);
-                  newProgramLeader.setType(centerAllTypesService
-                    .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
-                  newProgramLeader.setUser(programLeader.getUser());
-                  centerLeaderService.saveResearchLeader(newProgramLeader);
-                }
-              }
+              newCrpProgram.setAcronym(CrpProgram.getAcronym());
+              newCrpProgram.setName(CrpProgram.getName());
+              newCrpProgram.setActive(true);
+              newCrpProgram.setActiveSince(new Date());
+              newCrpProgram.setCreatedBy(this.getCurrentUser());
+              newCrpProgram.setModificationJustification("");
+              newCrpProgram.setModifiedBy(this.getCurrentUser());
+              // newCrpProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
+              // Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
+              // newCrpProgram.setResearchArea(newCenterArea);
+              // List<CenterLeader> programLeaders = CrpProgram.getLeaders();
+              // CrpProgramService.saveProgram(newCrpProgram);
+              // if (programLeaders != null) {
+              // for (CenterLeader programLeader : programLeaders) {
+              // CenterLeader newProgramLeader = new CenterLeader();
+              // newProgramLeader.setActive(true);
+              // newProgramLeader.setActiveSince(new Date());
+              // newProgramLeader.setCreatedBy(this.getCurrentUser());
+              // newProgramLeader.setModificationJustification("");
+              // newProgramLeader.setModifiedBy(this.getCurrentUser());
+              // newProgramLeader.setResearchCenter(loggedCenter);
+              // newProgramLeader.setResearchProgram(newCrpProgram);
+              // newProgramLeader.setType(centerAllTypesService
+              // .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
+              // newProgramLeader.setUser(programLeader.getUser());
+              // centerLeaderService.saveResearchLeader(newProgramLeader);
+              // }
+              // }
             }
           }
         } else {
@@ -188,77 +188,77 @@ public class ResearchManagementAction extends BaseAction {
           // check new programs
           if (centerArea.getPrograms() != null && centerArea.getPrograms().size() > 0) {
             // save new programs
-            for (CenterProgram centerProgram : centerArea.getPrograms()) {
-              if (centerProgram.getId() == null || centerProgram.getId() == -1) {
-                CenterProgram newCenterProgram = new CenterProgram();
+            for (CrpProgram CrpProgram : centerArea.getPrograms()) {
+              if (CrpProgram.getId() == null || CrpProgram.getId() == -1) {
+                CrpProgram newCrpProgram = new CrpProgram();
                 // Save center program
-                newCenterProgram.setAcronym(centerProgram.getAcronym());
-                newCenterProgram.setName(centerProgram.getName());
-                newCenterProgram.setActive(true);
-                newCenterProgram.setActiveSince(new Date());
-                newCenterProgram.setCreatedBy(this.getCurrentUser());
-                newCenterProgram.setModificationJustification("");
-                newCenterProgram.setModifiedBy(this.getCurrentUser());
-                newCenterProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
-                  Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
-                newCenterProgram.setResearchArea(centerArea);
-                List<CenterLeader> programLeaders = centerProgram.getLeaders();
-                centerProgramService.saveProgram(newCenterProgram);
-                if (programLeaders != null) {
-                  for (CenterLeader programLeader : programLeaders) {
-                    CenterLeader newProgramLeader = new CenterLeader();
-                    newProgramLeader.setActive(true);
-                    newProgramLeader.setActiveSince(new Date());
-                    newProgramLeader.setCreatedBy(this.getCurrentUser());
-                    newProgramLeader.setModificationJustification("");
-                    newProgramLeader.setModifiedBy(this.getCurrentUser());
-                    newProgramLeader.setResearchCenter(loggedCenter);
-                    newProgramLeader.setResearchProgram(newCenterProgram);
-                    newProgramLeader.setType(centerAllTypesService
-                      .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
-                    newProgramLeader.setUser(programLeader.getUser());
-                    centerLeaderService.saveResearchLeader(newProgramLeader);
-                  }
-                }
+                newCrpProgram.setAcronym(CrpProgram.getAcronym());
+                newCrpProgram.setName(CrpProgram.getName());
+                newCrpProgram.setActive(true);
+                newCrpProgram.setActiveSince(new Date());
+                newCrpProgram.setCreatedBy(this.getCurrentUser());
+                newCrpProgram.setModificationJustification("");
+                newCrpProgram.setModifiedBy(this.getCurrentUser());
+                // newCrpProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
+                // Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
+                // newCrpProgram.setResearchArea(centerArea);
+                // List<CenterLeader> programLeaders = CrpProgram.getLeaders();
+                // CrpProgramService.saveProgram(newCrpProgram);
+                // if (programLeaders != null) {
+                // for (CenterLeader programLeader : programLeaders) {
+                // CenterLeader newProgramLeader = new CenterLeader();
+                // newProgramLeader.setActive(true);
+                // newProgramLeader.setActiveSince(new Date());
+                // newProgramLeader.setCreatedBy(this.getCurrentUser());
+                // newProgramLeader.setModificationJustification("");
+                // newProgramLeader.setModifiedBy(this.getCurrentUser());
+                // newProgramLeader.setResearchCenter(loggedCenter);
+                // newProgramLeader.setResearchProgram(newCrpProgram);
+                // newProgramLeader.setType(centerAllTypesService
+                // .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
+                // newProgramLeader.setUser(programLeader.getUser());
+                // centerLeaderService.saveResearchLeader(newProgramLeader);
+                // }
+                // }
               } else {
                 // check programs changes
-                CenterProgram centerProgramDB = centerProgramService.getProgramById(centerProgram.getId());
+                // CrpProgram CrpProgramDB = CrpProgramService.getProgramById(CrpProgram.getId());
                 boolean hasChangesProgram = false;
-                if (!centerProgram.getAcronym().equals(centerProgramDB.getAcronym())) {
-                  centerProgramDB.setAcronym(centerProgram.getAcronym());
-                  hasChangesProgram = true;
-                }
-                if (!centerProgram.getName().equals(centerProgramDB.getName())) {
-                  centerProgramDB.setName(centerProgram.getName());
-                  hasChangesProgram = true;
-                }
-                if (hasChangesProgram) {
-                  centerProgramDB.setActive(true);
-                  centerProgramDB.setModifiedBy(this.getCurrentUser());
-                  centerProgramService.saveProgram(centerProgramDB);
-                }
+                // if (!CrpProgram.getAcronym().equals(CrpProgramDB.getAcronym())) {
+                // CrpProgramDB.setAcronym(CrpProgram.getAcronym());
+                // hasChangesProgram = true;
+                // }
+                // if (!CrpProgram.getName().equals(CrpProgramDB.getName())) {
+                // CrpProgramDB.setName(CrpProgram.getName());
+                // hasChangesProgram = true;
+                // }
+                // if (hasChangesProgram) {
+                // CrpProgramDB.setActive(true);
+                // CrpProgramDB.setModifiedBy(this.getCurrentUser());
+                // // CrpProgramService.saveProgram(CrpProgramDB);
+                // }
                 // check if there are new program leaders
 
-                List<CenterLeader> newProgramLeaders = centerProgram.getLeaders();
-                if (newProgramLeaders != null) {
-                  for (CenterLeader programLeader : newProgramLeaders) {
-                    // check new area leader
-                    if (programLeader.getId() == null || programLeader.getId() == -1) {
-                      CenterLeader newProgramLeader = new CenterLeader();
-                      newProgramLeader.setActive(true);
-                      newProgramLeader.setActiveSince(new Date());
-                      newProgramLeader.setCreatedBy(this.getCurrentUser());
-                      newProgramLeader.setModificationJustification("");
-                      newProgramLeader.setModifiedBy(this.getCurrentUser());
-                      newProgramLeader.setResearchArea(centerAreaDB);
-                      newProgramLeader.setResearchCenter(loggedCenter);
-                      newProgramLeader.setType(centerAllTypesService
-                        .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
-                      newProgramLeader.setUser(programLeader.getUser());
-                      centerLeaderService.saveResearchLeader(newProgramLeader);
-                    }
-                  }
-                }
+                // List<CenterLeader> newProgramLeaders = CrpProgram.getLeaders();
+                // if (newProgramLeaders != null) {
+                // for (CenterLeader programLeader : newProgramLeaders) {
+                // // check new area leader
+                // if (programLeader.getId() == null || programLeader.getId() == -1) {
+                // CenterLeader newProgramLeader = new CenterLeader();
+                // newProgramLeader.setActive(true);
+                // newProgramLeader.setActiveSince(new Date());
+                // newProgramLeader.setCreatedBy(this.getCurrentUser());
+                // newProgramLeader.setModificationJustification("");
+                // newProgramLeader.setModifiedBy(this.getCurrentUser());
+                // newProgramLeader.setResearchArea(centerAreaDB);
+                // newProgramLeader.setResearchCenter(loggedCenter);
+                // newProgramLeader.setType(centerAllTypesService
+                // .getCenterAllTypesById(CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()));
+                // newProgramLeader.setUser(programLeader.getUser());
+                // centerLeaderService.saveResearchLeader(newProgramLeader);
+                // }
+                // }
+                // }
               }
             }
           }
@@ -285,19 +285,19 @@ public class ResearchManagementAction extends BaseAction {
           centerLeaderService.deleteResearchLeader(centerLeader.getId());
         }
         // delete research programs
-        List<CenterProgram> centerProgramsDB = centerAreaDB.getResearchPrograms().stream()
+        List<CrpProgram> CrpProgramsDB = centerAreaDB.getResearchPrograms().stream()
           .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerAreaDB.getId())
           .collect(Collectors.toList());
 
-        for (CenterProgram centerProgramDB : centerProgramsDB) {
-          List<CenterLeader> programLeadersDB =
-            centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-          // delete program leaders
-          for (CenterLeader centerLeaderDB : programLeadersDB) {
-            centerLeaderService.deleteResearchLeader(centerLeaderDB.getId());
-          }
-          centerProgramService.deleteProgram(centerProgramDB.getId());
-        }
+        // for (CrpProgram CrpProgramDB : CrpProgramsDB) {
+        // List<CenterLeader> programLeadersDB =
+        // CrpProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+        // // delete program leaders
+        // for (CenterLeader centerLeaderDB : programLeadersDB) {
+        // centerLeaderService.deleteResearchLeader(centerLeaderDB.getId());
+        // }
+        // CrpProgramService.deleteProgram(CrpProgramDB.getId());
+        // }
         // delete center area
         centerAreaService.deleteResearchArea(centerAreaDB.getId());
       }
@@ -315,33 +315,33 @@ public class ResearchManagementAction extends BaseAction {
           }
         }
         // Delete programs
-        List<CenterProgram> centerProgramsDB =
+        List<CrpProgram> CrpProgramsDB =
           centerAreaDB.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
-        for (CenterProgram centerProgramDB : centerProgramsDB) {
-          if (centerArea.getPrograms() == null || !centerArea.getPrograms().contains(centerProgramDB)) {
-            List<CenterLeader> programLeadersDB =
-              centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-            // delete program leaders
-            for (CenterLeader centerLeaderDB : programLeadersDB) {
-              centerLeaderService.deleteResearchLeader(centerLeaderDB.getId());
-            }
-            centerProgramService.deleteProgram(centerProgramDB.getId());
-          }
-        }
+        // for (CrpProgram CrpProgramDB : CrpProgramsDB) {
+        // if (centerArea.getPrograms() == null || !centerArea.getPrograms().contains(CrpProgramDB)) {
+        // List<CenterLeader> programLeadersDB =
+        // CrpProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+        // // delete program leaders
+        // for (CenterLeader centerLeaderDB : programLeadersDB) {
+        // centerLeaderService.deleteResearchLeader(centerLeaderDB.getId());
+        // }
+        // CrpProgramService.deleteProgram(CrpProgramDB.getId());
+        // }
+        // }
         // Delete program leaders
-        List<CenterProgram> centerPrograms = centerArea.getPrograms();
-        if (centerPrograms != null) {
-          for (CenterProgram centerProgram : centerPrograms) {
-            if (centerProgram.getId() != null && centerProgram.getId() != -1) {
-              CenterProgram centerProgramDB = centerProgramService.getProgramById(centerProgram.getId());
-              List<CenterLeader> programLeadersDB =
-                centerProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
-              for (CenterLeader programLeaderDB : programLeadersDB) {
-                if (centerProgram.getLeaders() == null || !centerProgram.getLeaders().contains(programLeaderDB)) {
-                  centerLeaderService.deleteResearchLeader(programLeaderDB.getId());
-                }
-              }
-            }
+        List<CrpProgram> CrpPrograms = centerArea.getPrograms();
+        if (CrpPrograms != null) {
+          for (CrpProgram CrpProgram : CrpPrograms) {
+            // if (CrpProgram.getId() != null && CrpProgram.getId() != -1) {
+            // CrpProgram CrpProgramDB = CrpProgramService.getProgramById(CrpProgram.getId());
+            // List<CenterLeader> programLeadersDB =
+            // CrpProgramDB.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList());
+            // for (CenterLeader programLeaderDB : programLeadersDB) {
+            // if (CrpProgram.getLeaders() == null || !CrpProgram.getLeaders().contains(programLeaderDB)) {
+            // centerLeaderService.deleteResearchLeader(programLeaderDB.getId());
+            // }
+            // }
+            // }
           }
         }
       }
@@ -378,10 +378,10 @@ public class ResearchManagementAction extends BaseAction {
         .filter(cps -> cps.isActive() && cps.getResearchArea().getId() == centerArea.getId())
         .collect(Collectors.toList()));
       // set program leader
-      for (CenterProgram centerProgram : centerArea.getPrograms()) {
-        centerProgram.setLeaders(
-          centerProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
-      }
+      // for (CrpProgram CrpProgram : centerArea.getPrograms()) {
+      // CrpProgram.setLeaders(
+      // CrpProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+      // }
     }
     if (this.isHttpPost()) {
       if (centerAreas != null) {

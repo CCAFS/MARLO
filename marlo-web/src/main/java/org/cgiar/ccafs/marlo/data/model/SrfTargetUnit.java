@@ -36,6 +36,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private String name;
 
@@ -50,6 +51,11 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
 
+  private Set<CenterMilestone> centerMilestones = new HashSet<CenterMilestone>(0);
+
+  private Set<CenterOutcome> centerOutcomes = new HashSet<CenterOutcome>(0);
+
+
   private boolean active;
 
   private User createdBy;
@@ -58,10 +64,10 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   private User modifiedBy;
 
+
   private String modificationJustification;
 
   private Boolean checkCrp;
-
 
   public SrfTargetUnit() {
   }
@@ -70,7 +76,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     this.name = name;
 
   }
-
 
   public SrfTargetUnit(String name, Set<CrpMilestone> crpMilestones, Set<SrfSloIndicatorTarget> srfSloIndicatorTargets,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
@@ -110,23 +115,33 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
 
+  public Set<CenterMilestone> getCenterMilestones() {
+    return centerMilestones;
+  }
+
+
+  public Set<CenterOutcome> getCenterOutcomes() {
+    return centerOutcomes;
+  }
 
   public Boolean getCheckCrp() {
     return checkCrp;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
+
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
@@ -141,7 +156,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -153,6 +167,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -185,9 +200,17 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCenterMilestones(Set<CenterMilestone> centerMilestones) {
+    this.centerMilestones = centerMilestones;
+  }
+
+
+  public void setCenterOutcomes(Set<CenterOutcome> centerOutcomes) {
+    this.centerOutcomes = centerOutcomes;
   }
 
   public void setCheckCrp(Boolean checkCrp) {

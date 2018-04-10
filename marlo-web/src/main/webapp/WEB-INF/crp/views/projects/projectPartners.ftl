@@ -22,8 +22,8 @@
 
 [#assign partnerRespRequired = action.hasSpecificities('crp_nonPPAPartner_resp_required') ]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 
@@ -260,7 +260,7 @@
 [/#list]
 </ul>
   
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#------------------------------------------------------            ------------------------------------------------------]
 [#----------------------------------------------------     MACROS     ----------------------------------------------------]

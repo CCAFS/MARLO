@@ -26,8 +26,8 @@
 
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
@@ -47,15 +47,8 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Program (Flagships) --]
-        <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
-          [#list programs as program]
-            [#assign isActive = (program.id == crpProgramID)/]
-            <li class="${isActive?string('active','')}">
-              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
-            </li>
-          [/#list]
-        </ul>
+        [#-- Sub Menu --]
+        [#include "/WEB-INF/crp/views/impactPathway/submenu-impactPathway.ftl" /]
         
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
@@ -146,7 +139,7 @@
 [#-- Baseline Indicator Template --]
 [@baselineIndicatorMacro indicator={} name="outcomes[-1].indicators" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#-----------------------------------  Outcomes Macros  -------------------------------------------]
 
