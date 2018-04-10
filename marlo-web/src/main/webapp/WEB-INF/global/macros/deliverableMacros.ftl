@@ -79,47 +79,48 @@
 
 
 [#macro isOpenaccessMacro ]
-<div class="simpleBox form-group">
-<input type="hidden"  name="deliverable.dissemination.id" value="${(deliverable.dissemination.id)!"-1"}" />
-  <div class="row ">
-    <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req /]</label>
-    <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
-    </div>
-  </div> 
-  <div class="openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
-    <hr />
-    [#if editable]
-    <label for="">Select the Open Access restriction:[@customForm.req /]</label>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination?? && deliverable.dissemination.intellectualProperty?? && (deliverable.dissemination.intellectualProperty))]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if deliverable.dissemination?? &&  deliverable.dissemination.limitedExclusivity?? && (deliverable.dissemination.limitedExclusivity)]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedUseAgreement" [#if deliverable.dissemination?? &&  deliverable.dissemination.restrictedUseAgreement?? && (deliverable.dissemination.restrictedUseAgreement)]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="effectiveDateRestriction"[#if deliverable.dissemination?? &&  deliverable.dissemination.effectiveDateRestriction?? && (deliverable.dissemination.effectiveDateRestriction)]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="notDisseminated" [#if (deliverable.dissemination?? &&  deliverable.dissemination.notDisseminated?? && (deliverable.dissemination.notDisseminated))]checked="checked"[/#if]>Not Disseminated</label>
-    </div>
-    [#else]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.intellectualProperty?? && deliverable.dissemination.intellectualProperty]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.limitedExclusivity?? && deliverable.dissemination.limitedExclusivity]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.restrictedUseAgreement?? && deliverable.dissemination.restrictedUseAgreement]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.effectiveDateRestriction?? && deliverable.dissemination.effectiveDateRestriction]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.notDisseminated?? && deliverable.dissemination.notDisseminated]<p class="checked">Not Disseminated </p>[/#if]
-    [/#if]
-    <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination??) && (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
-      <div class="col-md-5">
-        [@customForm.input name="deliverable.dissemination.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!'restrictedAccessUntil'}" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
+  [#local customName = "deliverable.dissemination"]
+  <div class="simpleBox form-group">
+  <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
+    <div class="row ">
+      <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req /]</label>
+      <div class="col-md-3">
+        [@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
+      </div>
+    </div> 
+    <div class="openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
+      <hr />
+      [#if editable]
+      <label for="">Select the Open Access restriction:[@customForm.req /]</label>
+      <div class="radio">
+        <label><input type="radio" name="${customName}.type" value="intellectualProperty" [#if (deliverable.dissemination.intellectualProperty)!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      </div>
+      <div class="radio">
+        <label><input type="radio" name="${customName}.type" value="limitedExclusivity" [#if (deliverable.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
+      </div>
+      <div class="radio">
+        <label><input type="radio" name="${customName}.type" value="restrictedUseAgreement" [#if (deliverable.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
+      </div>
+      <div class="radio">
+        <label><input type="radio" name="${customName}.type" value="effectiveDateRestriction"[#if (deliverable.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
+      </div>
+      <div class="radio">
+        <label><input type="radio" name="${customName}.type" value="notDisseminated" [#if (deliverable.dissemination.notDisseminated)!false]checked="checked"[/#if]>Not Disseminated</label>
+      </div>
+      [#else]
+        [#if (deliverable.dissemination.intellectualProperty)!false]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
+        [#if (deliverable.dissemination.limitedExclusivity)!false]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
+        [#if (deliverable.dissemination.restrictedUseAgreement)!false]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
+        [#if (deliverable.dissemination.effectiveDateRestriction)!false]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
+        [#if (deliverable.dissemination.notDisseminated)!false]<p class="checked">Not Disseminated </p>[/#if]
+      [/#if]
+      <div class="row restrictionDate-block" style="display:[#if ((deliverable.dissemination.restrictedUseAgreement)!false) || ((deliverable.dissemination.effectiveDateRestriction)!false) ]block[#else]none [/#if];">
+        <div class="col-md-5">
+          [@customForm.input name="${customName}.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!'restrictedAccessUntil'}" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
+        </div>
       </div>
     </div>
   </div>
-</div>
 [/#macro]
 
 
@@ -142,69 +143,70 @@
 [/#macro]
 
 [#macro findableOptions ]
-[#local isSynced = (deliverable.dissemination.synced)!false ]
-<div class="form-group row disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
-  [#-- Note --]
-  <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
-  <div class="col-md-4">
-    [#if editable]
-      [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
-    [#else]
-    <div class="input">
-      <label for="disChannel" style="display:block;">Dissemination channel:</label>
-      <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
-    </div>
-    [/#if]
-  </div>
-  <div class="col-md-8">
-    [#if editable]
-      [#list repositoryChannels  as channel]
-        [#if channel.shortName != "other"]
-          [#-- Examples & instructions --]
-          [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
-        [/#if]
-      [/#list]
-    [/#if]
-  </div>
-</div>
-
-[#assign channelsArray = [] /] 
-<ul id="channelsList" style="display:none">
-  [#list repositoryChannels  as channel]
-    [#if channel.shortName != "other"]
-      <li>
-        [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
-        <span class="id">${channel.shortName}</span>
-        <span class="name">${channel.name}</span>
-      </li>
-    [/#if]
-  [/#list]
-</ul>
-<div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
-  <div class="form-group" > 
-    <div class="url-field">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
-    </div>
-    <div class="buttons-field">
+  [#local isSynced = (deliverable.dissemination.synced)!false ]
+  [#local customName = "deliverable.dissemination" /]
+  <div class="form-group row disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+    [#-- Note --]
+    <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
+    <div class="col-md-4">
       [#if editable]
-        [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
-        <div id="fillMetadata" style="display:${showSync?string('block','none')};">
-          <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
-          [#-- Sync Button --]
-          <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
-          <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
-            [#-- Update Button --]
-            <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
-            [#-- Unsync Button --]
-            <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
-          </div>
-        </div>
+        [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+      [#else]
+      <div class="input">
+        <label for="disChannel" style="display:block;">Dissemination channel:</label>
+        <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
+      </div>
+      [/#if]
+    </div>
+    <div class="col-md-8">
+      [#if editable]
+        [#list repositoryChannels  as channel]
+          [#if channel.shortName != "other"]
+            [#-- Examples & instructions --]
+            [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
+          [/#if]
+        [/#list]
       [/#if]
     </div>
   </div>
-  <div class="clearfix"></div>
-</div>
-<div id="metadata-output"></div>
+  
+  [#assign channelsArray = [] /] 
+  <ul id="channelsList" style="display:none">
+    [#list repositoryChannels  as channel]
+      [#if channel.shortName != "other"]
+        <li>
+          [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
+          <span class="id">${channel.shortName}</span>
+          <span class="name">${channel.name}</span>
+        </li>
+      [/#if]
+    [/#list]
+  </ul>
+  <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
+    <div class="form-group" > 
+      <div class="url-field">
+        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
+      </div>
+      <div class="buttons-field">
+        [#if editable]
+          [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
+          <div id="fillMetadata" style="display:${showSync?string('block','none')};">
+            <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
+            [#-- Sync Button --]
+            <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+            <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+              [#-- Update Button --]
+              <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+              [#-- Unsync Button --]
+              <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+            </div>
+          </div>
+        [/#if]
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div id="metadata-output"></div>
 [/#macro]
 
 [#macro channelExampleMacro name="" url="" ]
@@ -305,13 +307,13 @@
     <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
     <div class="checkbox">
       [#if editable]
-        <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
-        <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
-        <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
+        <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if (deliverable.publication.isiPublication)!false]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
+        <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if (deliverable.publication.nasr)!false]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
+        <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if (deliverable.publication.coAuthor)!false]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
       [#else]
-        <p [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
-        <p [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
-        <p [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
+        <p [#if (deliverable.publication.isiPublication)!false]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
+        <p [#if (deliverable.publication.nasr)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
+        <p [#if (deliverable.publication.coAuthor)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
       [/#if]
     </div>
   </div> 
@@ -384,7 +386,7 @@
         [#if editable]
         <label><input type="radio" class="qualityAssurance" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
         [#else]
-        <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
+        <p [#if (deliverable.qualityCheck.qualityAssurance.id==answer.id)!false] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
         [/#if]
       </div>
     [/#list]
