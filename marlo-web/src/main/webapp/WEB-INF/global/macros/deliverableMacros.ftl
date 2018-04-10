@@ -8,66 +8,72 @@
     <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] </div>  
   </div>
   [#-- Deliverable type computer software --]
+  [#local licenceOptions = [
+    { "name": "computerLicense",
+      "display": displayDeliverableRule(deliverable, deliverableComputerLicense)!,
+      "options": [
+        {"name": "MIT"},
+        {"name": "GNU"}
+      ]
+    },
+    { "name": "dataLicense",
+      "display": displayDeliverableRule(deliverable, deliverableDataLicense),
+      "options": [
+        {"name": "CC_LICENSES"},
+        {"name": "CC_PUBLIC"}
+        {"name": "OPEN_DATA"}
+      ]
+    },
+    { "name": "otherLicenses",
+      "display": "block",
+      "options": [
+        {"name": "CC_BY"},
+        {"name": "CC_BY_SA"}
+        {"name": "CC_BY_ND"},
+        {"name": "CC_BY_NC"},
+        {"name": "CC_BY_NC_SA"},
+        {"name": "CC_BY_NC_ND"},
+        {"name": "OTHER"}
+      ]
+    }
+  
+  ] /]
+  
   <div class="radio-block licenseOptions-block" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
     <hr />
-    [#if editable]
-      <div class="licenseOptions computerLicense" style="display:${displayDeliverableRule(deliverable, deliverableComputerLicense)!};">
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="MIT" [#if ((deliverable.deliverableInfo.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License</div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="GNU" [#if ((deliverable.deliverableInfo.licenseType) == "GNU")!false]checked="checked"[/#if]/> GNU General Public License</div>
-      </div>
-      [#-- Deliverable type data --]
-      <div class=" licenseOptions dataLicense" style="display:${displayDeliverableRule(deliverable, deliverableDataLicense)!};">
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_LICENSES" [#if ((deliverable.deliverableInfo.licenseType) == "CC_LICENSES")!false]checked="checked"[/#if]/> CC licenses version 4.0</div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_PUBLIC" [#if ((deliverable.deliverableInfo.licenseType) == "CC_PUBLIC")!false]checked="checked"[/#if]/> CC Public Domain Dedication (CC0 1.0)</div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="OPEN_DATA" [#if ((deliverable.deliverableInfo.licenseType) == "OPEN_DATA")!false]checked="checked"[/#if]/> Open Data Commons (ODC)</div>
-      </div>
-      [#-- Deliverable type other research types --]
-      <div class=" licenseOptions" style="display:block;">
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_BY" [#if ((deliverable.deliverableInfo.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_BY_SA" [#if ((deliverable.deliverableInfo.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_BY_ND" [#if ((deliverable.deliverableInfo.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_BY_NC" [#if ((deliverable.deliverableInfo.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_BY_NC_SA" [#if ((deliverable.deliverableInfo.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="CC_BY_NC_ND" [#if ((deliverable.deliverableInfo.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.deliverableInfo.license" id="" value="OTHER" [#if ((deliverable.deliverableInfo.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other</div>
-      </div>
-      [#-- Other --]
-      <div class="licenseOptions">
-        <div class="form-group row">
-          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType)?? && (deliverable.deliverableInfo.licenseType)=="OTHER"]block[#else]none [/#if];" >
-            [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+    [#list licenceOptions as licenseType]
+      <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
+        [#list licenseType.options as option]
+          <div class="radio">
+            [#if editable]
+              <input type="radio" name="deliverable.deliverableInfo.license" id="" value="${option.name}" [#if ((deliverable.deliverableInfo.licenseType) == (option.name))!false]checked="checked"[/#if]/> 
+              [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
+              [@s.text name="license.${option.name}" /] [#if licenseDescription?has_content]<small>(${licenseDescription})</small>[/#if]
+            [#else]
+              [#if (deliverable.deliverableInfo.licenseType == (option.name))!false]
+                <p class="checked">[@s.text name="license.${option.name}" /] [#if licenseDescription?has_content]<small>(${licenseDescription})</small>[/#if]</p>
+              [/#if]
+            [/#if]
           </div>
-          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType)?? && (deliverable.deliverableInfo.licenseType)=="OTHER"]block[#else]none [/#if];" >
-            <label class="col-md-6" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
-            <div class="col-md-6">
-              [@customForm.yesNoInput name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
-            </div>  
-          </div>
+        [/#list]
+      </div>
+    [/#list]
+    
+    [#-- Other (Please specify)--]
+    <div class="licenseOptions">
+      [#if editable]
+      <div class="form-group row">
+        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType)?? && (deliverable.deliverableInfo.licenseType)=="OTHER"]block[#else]none [/#if];" >
+          [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+        </div>
+        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType)?? && (deliverable.deliverableInfo.licenseType)=="OTHER"]block[#else]none [/#if];" >
+          <label class="col-md-6" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
+          <div class="col-md-6">
+            [@customForm.yesNoInput name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
+          </div>  
         </div>
       </div>
-    [#else]
-      [#-- Deliverable type computer software --]
-      <div class=" licenseOptions computerLicense" style="display:${displayDeliverableRule(deliverable, deliverableComputerLicense)!};">
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "MIT"]<p class="checked">MIT License</p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "GNU"]<p class="checked">GNU General Public License</p>[/#if]
-      </div>
-      [#-- Deliverable type data --]
-      <div class=" licenseOptions dataLicense" style="display:${displayDeliverableRule(deliverable, deliverableDataLicense)!};">
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_LICENSES"]<p class="checked">CC licenses version 4.0</p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_PUBLIC"]<p class="checked">CC Public Domain Dedication (CC0 1.0)</p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "OPEN_DATA"]<p class="checked">Open Data Commons (ODC)</p>[/#if]
-      </div>
-      [#-- Deliverable type other research types --]
-      <div class="licenseOptions" style="display:block;">
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_BY"]<p class="checked">CC-BY <small>(allow modifications and commercial use)</small></p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_BY_SA"]<p class="checked">CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_BY_ND"]<p class="checked">CC-BY-ND <small>(allow commercial use but no modifications)</small></p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_BY_NC"]<p class="checked">CC-BY-NC <small>(allow modifications but no commercial use)</small></small></p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_BY_NC_SA"]<p class="checked">CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></p>[/#if]
-        [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "CC_BY_NC_ND"]<p class="checked">CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></small></p>[/#if]
-      </div>
-      [#-- Other --]
-      <div class="licenseOptions">
+      [#else]
         [#if deliverable.deliverableInfo.licenseType?? && deliverable.deliverableInfo.licenseType == "OTHER"]
           <p class="checked"> Other </p>
           <div class="form-group row">
@@ -80,8 +86,8 @@
             </div>
           </div>
         [/#if]
-      </div>
-    [/#if]
+      [/#if]
+    </div>
   </div>
 </div>
 [/#macro]
