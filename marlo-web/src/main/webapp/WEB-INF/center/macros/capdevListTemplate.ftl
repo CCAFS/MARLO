@@ -7,10 +7,7 @@
 		    <th style="width: 3%">ID</th>
 		    <th style="width: 21%">Title</th> 
 		    <th style="width: 7%">Type</th>
-		    <th style="width: 7%">Start date</th>
-		    <th style="width: 7%">End date</th>
-		    <th style="width: 7%">Research Area</th>
-		    <th style="width: 7%">Research Program</th>
+		    <th style="width: 7%">Created By</th>
 		    <th style="width: 7%">Annexes</th>
 		    <th style="width: 1%">Remove</th>
 		  </tr>
@@ -36,36 +33,14 @@
 						    [#else]
 						    	Not defined
 						    [/#if]
-					    </td>
-					     <td>
-						    [#if i.startDate??]
-						    	${i.startDate}
-						    [#else]
-						    	Not defined
-						    [/#if]
-					    </td>
-					    
+					    </td>	
 					    <td>
-						    [#if i.endDate??]
-						    	${i.endDate}
-						    [#else]
-						    	Not defined
-						    [/#if]
-					    </td>
-					    <td>
-						    [#if i.researchArea??] 
-						    	${i.researchArea.name}
-						    [#else]
-						    	Not defined
-						    [/#if]
-					    </td>
-					    <td>
-						    [#if i.researchProgram??]
-						    	${i.researchProgram.name}
-						    [#else]
-						    	Not defined
-						    [/#if]
-					    </td>
+                [#if i.createdBy??]
+                  ${i.createdBy.composedCompleteName}
+                [#else]
+                  Not defined
+                [/#if]
+              </td> 				    
 					    <td>
 					    	<div class="icon">
 					    		
