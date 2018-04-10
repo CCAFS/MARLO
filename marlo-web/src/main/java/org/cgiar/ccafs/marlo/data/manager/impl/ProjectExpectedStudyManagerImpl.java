@@ -90,6 +90,17 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     projectExpectedStudyAdd.setTopicStudy(projectExpectedStudy.getTopicStudy());
     projectExpectedStudyAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
     projectExpectedStudyAdd.setType(projectExpectedStudy.getType());
+    projectExpectedStudyAdd.setStament(projectExpectedStudy.getStament());
+    projectExpectedStudyAdd.setStage(projectExpectedStudy.getStage());
+    projectExpectedStudyAdd.setElaboration(projectExpectedStudy.getElaboration());
+    projectExpectedStudyAdd.setReferencesCited(projectExpectedStudy.getReferencesCited());
+    projectExpectedStudyAdd.setQuantification(projectExpectedStudy.getQuantification());
+    projectExpectedStudyAdd.setGenderDescribe(projectExpectedStudy.getGenderDescribe());
+    projectExpectedStudyAdd.setGenderRelevance(projectExpectedStudy.getGenderRelevance());
+    projectExpectedStudyAdd.setYouthDescribe(projectExpectedStudy.getYouthDescribe());
+    projectExpectedStudyAdd.setYouthRelevance(projectExpectedStudy.getYouthRelevance());
+    projectExpectedStudyAdd.setCapdevDescribe(projectExpectedStudy.getCapdevDescribe());
+    projectExpectedStudyAdd.setCapdevRelevance(projectExpectedStudy.getCapdevRelevance());
     projectExpectedStudyAdd.setModifiedBy(projectExpectedStudy.getCreatedBy());
     projectExpectedStudyAdd.setPhase(phase);
     projectExpectedStudyAdd.setProject(projectDAO.find(projectExpectedStudy.getProject().getId()));

@@ -46,13 +46,47 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   private SrfSloIndicator srfSloIndicator;
   @Expose
   private String comments;
+
+
+  @Expose
+  private String stament;
+  @Expose
+  private Long stage;
+  @Expose
+  private String elaboration;
+  @Expose
+  private String referencesCited;
+  @Expose
+  private String quantification;
+  @Expose
+  private Integer genderRelevance;
+  @Expose
+  private String genderDescribe;
+  @Expose
+  private Integer youthRelevance;
+  @Expose
+  private String youthDescribe;
+  @Expose
+  private Integer capdevRelevance;
+  @Expose
+  private String capdevDescribe;
+
+
   @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private String modificationJustification;
+
+
   private Set<ExpectedStudyProject> expectedStudyProjects = new HashSet<ExpectedStudyProject>(0);
+
+
   private List<ExpectedStudyProject> projects;
 
 
@@ -88,6 +122,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getCapdevDescribe() {
+    return capdevDescribe;
+  }
+
+
+  public Integer getCapdevRelevance() {
+    return capdevRelevance;
+  }
+
+
   public String getComments() {
     return comments;
   }
@@ -103,8 +147,23 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getElaboration() {
+    return elaboration;
+  }
+
+
   public Set<ExpectedStudyProject> getExpectedStudyProjects() {
     return expectedStudyProjects;
+  }
+
+
+  public String getGenderDescribe() {
+    return genderDescribe;
+  }
+
+
+  public Integer getGenderRelevance() {
+    return genderRelevance;
   }
 
 
@@ -143,14 +202,20 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
-
   public Project getProject() {
     return project;
   }
 
-
   public List<ExpectedStudyProject> getProjects() {
     return projects;
+  }
+
+  public String getQuantification() {
+    return quantification;
+  }
+
+  public String getReferencesCited() {
+    return referencesCited;
   }
 
 
@@ -178,13 +243,25 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Long getStage() {
+    return stage;
+  }
+
+
+  public String getStament() {
+    return stament;
+  }
+
+
   public String getTopicStudy() {
     return topicStudy;
   }
 
+
   public Integer getType() {
     return type;
   }
+
 
   public String getTypeName() {
     if (type == null || type.intValue() == -1) {
@@ -192,6 +269,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     }
     return TypeExpectedStudiesEnum.getValue(type.intValue()).getType();
 
+  }
+
+
+  public String getYouthDescribe() {
+    return youthDescribe;
+  }
+
+
+  public Integer getYouthRelevance() {
+    return youthRelevance;
   }
 
 
@@ -211,6 +298,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCapdevDescribe(String capdevDescribe) {
+    this.capdevDescribe = capdevDescribe;
+  }
+
+
+  public void setCapdevRelevance(Integer capdevRelevance) {
+    this.capdevRelevance = capdevRelevance;
+  }
+
+
   public void setComments(String comments) {
     this.comments = comments;
   }
@@ -226,8 +323,21 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setElaboration(String elaboration) {
+    this.elaboration = elaboration;
+  }
+
   public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
     this.expectedStudyProjects = expectedStudyProjects;
+  }
+
+  public void setGenderDescribe(String genderDescribe) {
+    this.genderDescribe = genderDescribe;
+  }
+
+
+  public void setGenderRelevance(Integer genderRelevance) {
+    this.genderRelevance = genderRelevance;
   }
 
 
@@ -266,6 +376,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setQuantification(String quantification) {
+    this.quantification = quantification;
+  }
+
+
+  public void setReferencesCited(String referencesCited) {
+    this.referencesCited = referencesCited;
+  }
+
+
   public void setScope(Integer scope) {
     this.scope = scope;
   }
@@ -281,6 +401,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setStage(Long stage) {
+    this.stage = stage;
+  }
+
+
+  public void setStament(String stament) {
+    this.stament = stament;
+  }
+
+
   public void setTopicStudy(String topicStudy) {
     this.topicStudy = topicStudy;
   }
@@ -288,6 +418,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   public void setType(Integer type) {
     this.type = type;
+  }
+
+
+  public void setYouthDescribe(String youthDescribe) {
+    this.youthDescribe = youthDescribe;
+  }
+
+
+  public void setYouthRelevance(Integer youthRelevance) {
+    this.youthRelevance = youthRelevance;
   }
 
 
