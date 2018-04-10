@@ -20,8 +20,8 @@
 ] /]
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
@@ -255,7 +255,7 @@
 </section>
 [/#if]
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#-- Get if the year is required--]

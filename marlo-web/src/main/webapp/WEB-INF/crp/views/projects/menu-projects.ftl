@@ -60,7 +60,7 @@
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
-[#assign canUnSubmit = (action.hasPersmissionUnSubmit(projectID))!false /]
+[#assign canUnSubmit = ((action.hasPersmissionUnSubmit(projectID))!false) && canEdit/]
 
 [#assign sectionsForChecking = [] /]
 
@@ -72,7 +72,14 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>[@s.text name="projects.menu.project" /]<br /><small> [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]</small> </p> 
+  <p>[@s.text name="projects.menu.project" /]<br />
+    <small> 
+    [#-- Global Unit Acronym --]
+    ${(project.projectInfo.phase.crp.acronym)!}
+    [#-- Project Type --]
+    [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]
+    </small> 
+  </p> 
   <ul>
     [#list menus as menu]
       [#if menu.show]
@@ -122,41 +129,32 @@
   [/#if]
 [/#if]
 
+[#-- Submition message --]
+[#if !submission && completed && !canSubmit]
+  <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
+[/#if]
 
+[#-- Check button --]
+[#if canEdit && !completed && !submission  && ((project.projectInfo.projectEditLeader)!false)]
+  <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
+  <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
+  <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
+[/#if]
 
+[#-- Submit button --]
+[#if canEdit]
+  [#assign showSubmit=(canSubmit && !submission && completed)]
+  <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+    [@s.text name="form.buttons.submit" /]
+  </a>
+[/#if]
 
-
-  [#-- Submition message --]
-  [#if !submission && completed && !canSubmit]
-    <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
-  [/#if]
-  
-  
-  
- 
-  
-
-    [#-- Check button --]
-   [#if canEdit && !completed && !submission  && ((project.projectInfo.projectEditLeader)!false)]
-    <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
-    <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
-    <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
-  [/#if]
-  
-  [#-- Submit button --]
-  [#if canEdit]
-    [#assign showSubmit=(canSubmit && !submission && completed)]
-    <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-      [@s.text name="form.buttons.submit" /]
-    </a>
-  [/#if]
-  
-  [#-- Unsubmit button --]
-  [#if (canUnSubmit && submission) && canEditPhase && !crpClosed && !reportingActive]
-    <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-      [@s.text name="form.buttons.unsubmit" /]
-    </a>
-  [/#if]
+[#-- Unsubmit button --]
+[#if (canUnSubmit && submission) && canEditPhase && !crpClosed && !reportingActive]
+  <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+    [@s.text name="form.buttons.unsubmit" /]
+  </a>
+[/#if]
 
 [#-- Justification --]
 <div id="unSubmit-justification" title="[@s.text name="form.buttons.unsubmit" /] justification" style="display:none"> 

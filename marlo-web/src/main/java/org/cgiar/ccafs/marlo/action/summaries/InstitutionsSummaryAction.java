@@ -326,7 +326,11 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ProjectPartnersSummary-");
+    if (!partnerType.equals("All")) {
+      fileName.append("ProjectPartnersSummary-");
+    } else {
+      fileName.append("ProjectLeadingInstitutionsSummary-");
+    }
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

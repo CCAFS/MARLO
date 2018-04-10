@@ -14,8 +14,8 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/views/powb/macros-powb.ftl" as powbMacros /]
 
 [#-- Helptext --]
@@ -73,7 +73,7 @@
     </div> 
   </div> 
 </section>
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
 

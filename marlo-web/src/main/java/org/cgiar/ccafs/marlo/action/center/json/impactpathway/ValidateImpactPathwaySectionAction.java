@@ -17,21 +17,16 @@ package org.cgiar.ccafs.marlo.action.center.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.CenterImpact;
-import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.OutcomesValidator;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.OutputsValidator;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.ProgramImpactsValidator;
-import org.cgiar.ccafs.marlo.validation.center.impactpathway.ResearchTopicsValidator;
+import org.cgiar.ccafs.marlo.validation.center.impactpathway.CenterImpactPathwaySectionValidation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -49,65 +45,65 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ValidateImpactPathwaySectionAction extends BaseAction {
 
 
   private static final long serialVersionUID = 9053048564427813253L;
+
+
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateImpactPathwaySectionAction.class);
+
+
   // Managers
-  private ICenterProgramManager programServcie;
+  private CrpProgramManager programServcie;
+
+
   private ICenterSectionStatusManager sectionStatusService;
+
   // Parameters
   private boolean existProgram;
   private boolean validSection;
   private String sectionName;
-  private long programID;
+  private long crpProgramID;
   private Map<String, Object> section;
   // Model
   private CenterSectionStatus sectionStatus;
-
-  // Validator
-  private OutcomesValidator outcomeValidator;
-  private OutputsValidator outputValidator;
-  private ProgramImpactsValidator impactValidator;
-  private ResearchTopicsValidator topicValidator;
+  private final CenterImpactPathwaySectionValidation<ValidateImpactPathwaySectionAction> centerImpactPathwaySectionValidation;
 
   @Inject
-  public ValidateImpactPathwaySectionAction(APConfig config, ICenterProgramManager programServcie,
-    ICenterSectionStatusManager sectionStatusService, OutcomesValidator outcomeValidator,
-    OutputsValidator outputValidator, ProgramImpactsValidator impactValidator, ResearchTopicsValidator topicValidator) {
+  public ValidateImpactPathwaySectionAction(APConfig config, CrpProgramManager programServcie,
+    ICenterSectionStatusManager sectionStatusService,
+    CenterImpactPathwaySectionValidation<ValidateImpactPathwaySectionAction> centerImpactPathwaySectionValidation) {
     super(config);
     this.programServcie = programServcie;
     this.sectionStatusService = sectionStatusService;
-    this.outcomeValidator = outcomeValidator;
-    this.outputValidator = outputValidator;
-    this.impactValidator = impactValidator;
-    this.topicValidator = topicValidator;
+    this.centerImpactPathwaySectionValidation = centerImpactPathwaySectionValidation;
   }
 
-  @SuppressWarnings("incomplete-switch")
+
   @Override
   public String execute() throws Exception {
     if (existProgram && validSection) {
       switch (ImpactPathwaySectionsEnum.getValue(sectionName)) {
         case PROGRAM_IMPACT:
-          this.validateImpact();
+          this.centerImpactPathwaySectionValidation.validateImpact(this, crpProgramID);
           break;
         case TOPIC:
-          this.validateTopic();
+          this.centerImpactPathwaySectionValidation.validateTopic(this, crpProgramID);
           break;
         case OUTCOMES:
-          this.validateOutcome();
+          this.centerImpactPathwaySectionValidation.validateOutcome(this, crpProgramID);
           break;
         case OUTPUTS:
-          this.validateOutput();
+          this.centerImpactPathwaySectionValidation.validateOutput(this, crpProgramID);
           break;
       }
 
     }
 
-    CenterProgram program = programServcie.getProgramById(programID);
+    CrpProgram program = programServcie.getCrpProgramById(crpProgramID);
 
     switch (ImpactPathwaySectionsEnum.getValue(sectionName)) {
       case OUTCOMES:
@@ -125,7 +121,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
               if (outcomes != null && !outcomes.isEmpty()) {
                 for (CenterOutcome researchOutcome : outcomes) {
                   sectionStatus = sectionStatusService.getSectionStatusByOutcome(program.getId(),
-                    researchOutcome.getId(), sectionName, this.getCenterYear());
+                    researchOutcome.getId(), sectionName, this.getActualPhase().getYear());
 
                   if (sectionStatus == null) {
                     sectionStatus = new CenterSectionStatus();
@@ -161,7 +157,7 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
           if (outputs != null && !outputs.isEmpty()) {
             for (CenterOutput researchOutput : outputs) {
               sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(), researchOutput.getId(),
-                sectionName, this.getCenterYear());
+                sectionName, this.getActualPhase().getYear());
 
               if (sectionStatus == null) {
                 sectionStatus = new CenterSectionStatus();
@@ -180,19 +176,19 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
 
         break;
       default:
-        sectionStatus = sectionStatusService.getSectionStatusByProgram(programID, sectionName, this.getCenterYear());
+        sectionStatus =
+          sectionStatusService.getSectionStatusByProgram(crpProgramID, sectionName, this.getActualPhase().getYear());
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionStatus.getSectionName());
         section.put("missingFields", sectionStatus.getMissingFields());
         break;
 
     }
-
-
-    Thread.sleep(500);
-
-
     return SUCCESS;
+  }
+
+  public long getCrpProgramID() {
+    return crpProgramID;
   }
 
 
@@ -200,25 +196,26 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     return section;
   }
 
+
   @Override
   public void prepare() throws Exception {
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
     // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
     sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
-    programID = -1;
+    crpProgramID = -1;
 
     try {
-      // programID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
-      programID =
-        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_PROGRAM_ID).getMultipleValues()[0]));
+      // crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
+      crpProgramID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the crp program id = {} ",
         // StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]));
-        StringUtils.trim(parameters.get(APConstants.CENTER_PROGRAM_ID).getMultipleValues()[0]));
+        StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     }
 
-    existProgram = programServcie.existProgram(programID);
+    existProgram = programServcie.existCrpProgram(crpProgramID);
 
     // Validate if the section exists.
     List<String> sections = new ArrayList<>();
@@ -231,94 +228,12 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
   }
 
 
+  public void setCrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
   public void setSection(Map<String, Object> section) {
     this.section = section;
   }
-
-  public void validateImpact() {
-    CenterProgram program = programServcie.getProgramById(programID);
-
-    if (program != null) {
-      List<CenterImpact> impacts =
-        new ArrayList<>(program.getResearchImpacts().stream().filter(ri -> ri.isActive()).collect(Collectors.toList()));
-
-      for (CenterImpact researchImpact : impacts) {
-        researchImpact.setObjectives(new ArrayList<>());
-        if (researchImpact.getResearchImpactObjectives() != null) {
-          for (CenterImpactObjective impactObjective : researchImpact.getResearchImpactObjectives().stream()
-            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-            researchImpact.getObjectives().add(impactObjective.getResearchObjective());
-            if (researchImpact.getObjectiveValue() == null) {
-              researchImpact.setObjectiveValue(impactObjective.getResearchObjective().getId().toString());
-            } else {
-              researchImpact.setObjectiveValue(
-                researchImpact.getObjectiveValue() + "," + impactObjective.getResearchObjective().getId().toString());
-            }
-          }
-        }
-
-        researchImpact.setBeneficiaries(new ArrayList<>(researchImpact.getResearchImpactBeneficiaries().stream()
-          .filter(rib -> rib.isActive()).collect(Collectors.toList())));
-      }
-
-      impactValidator.validate(this, impacts, program, false);
-    }
-  }
-
-  public void validateOutcome() {
-    CenterProgram program = programServcie.getProgramById(programID);
-
-    if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if (topics != null) {
-        for (CenterTopic researchTopic : topics) {
-          List<CenterOutcome> outcomes = new ArrayList<>(
-            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-
-          for (CenterOutcome researchOutcome : outcomes) {
-            researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-              .filter(rm -> rm.isActive()).collect(Collectors.toList())));
-
-            outcomeValidator.validate(this, researchOutcome, program, false);
-          }
-        }
-      }
-    }
-  }
-
-  public void validateOutput() {
-
-    CenterProgram program = programServcie.getProgramById(programID);
-
-    if (program != null) {
-      List<CenterOutput> outputs =
-        new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
-
-      for (CenterOutput researchOutput : outputs) {
-
-        researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
-          .filter(nu -> nu.isActive()).collect(Collectors.toList())));
-
-        researchOutput.setOutcomes(new ArrayList<>(
-          researchOutput.getCenterOutputsOutcomes().stream().filter(op -> op.isActive()).collect(Collectors.toList())));
-
-        outputValidator.validate(this, researchOutput, program, false);
-      }
-    }
-
-  }
-
-  public void validateTopic() {
-    CenterProgram program = programServcie.getProgramById(programID);
-
-    if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-
-      topicValidator.validate(this, topics, program, false);
-    }
-  }
-
 
 }

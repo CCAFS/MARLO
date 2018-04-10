@@ -9,8 +9,8 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
-			fetch="select">
+		<many-to-one name="crp"
+			class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
 			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
 		<property name="name" type="string">
@@ -25,9 +25,9 @@
 		<property name="programType" type="int">
 			<column name="program_type" not-null="true" />
 		</property>
-		 <property name="baseLine"  type="java.lang.Boolean">
-            <column name="base_line"  default="0"/>
-        </property>
+		<property name="baseLine" type="java.lang.Boolean">
+			<column name="base_line" default="0" />
+		</property>
 		<set lazy="true" name="crpClusterOfActivities" order-by="id"
 			table="crp_cluster_of_activities" inverse="true" fetch="select">
 			<key>
@@ -74,7 +74,10 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
-
+		<many-to-one name="researchArea"
+			class="org.cgiar.ccafs.marlo.data.model.CenterArea" fetch="select">
+			<column name="area_id" not-null="true" />
+		</many-to-one>
 		<set name="sectionStatuses" table="section_statuses" order-by="id"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -90,6 +93,22 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
 		</set>
+		
+		<set name="centerSectionStatuses" table="center_section_statuses" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="program_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSectionStatus" />
+    </set>
+    
+    <set name="centerSubmissions" table="center_submissions" inverse="true" lazy="true"
+      fetch="select">
+      <key>
+        <column name="crp_program_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSubmission" />
+    </set>
 
 		<set name="liaisonInstitutions" table="liaison_institutions"
 			inverse="true" lazy="true" fetch="select">
@@ -105,5 +124,26 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
 		</set>
+		<set lazy="true" name="researchTopics" table="center_topics"
+			inverse="true" fetch="select" order-by="id">
+			<key>
+				<column name="program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterTopic" />
+		</set>
+		<set lazy="true" name="researchImpacts" table="center_impacts"
+			inverse="true" fetch="select" order-by="id">
+			<key>
+				<column name="program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterImpact" />
+		</set>
+		<set lazy="true" name="centerOutputs" table="center_topics"
+      inverse="true" fetch="select" order-by="id">
+      <key>
+        <column name="program_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterOutput" />
+    </set>
 	</class>
 </hibernate-mapping>

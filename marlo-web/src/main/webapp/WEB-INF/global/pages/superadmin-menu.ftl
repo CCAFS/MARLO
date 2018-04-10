@@ -27,45 +27,29 @@
           [/#if]
         [/#list]
         [#if action.isVisibleTopGUList()]
+        
         [#-- Global units --]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-chevron-down"></span> [#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if]
+            <span class="glyphicon glyphicon-chevron-down"></span> ${(currentGlobalUnit.acronym)!'null'}
           </a>
           <ul class="subMenu">
-          [#-- CRPs --]
-          [#if crpList?has_content]
-            <li text-align:center>  CRPs  </li>
-            [#list crpList as globalUnit]
-              [#if globalUnit.login]
-              <li class="[#if crpSession?? && crpSession == globalUnit.acronym ]currentSection[/#if]" >
-                <a href="[@s.url namespace="/" action="${globalUnit.acronym}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${globalUnit.acronym}</a>
-              </li>
-              [/#if]
-            [/#list]              
-          [/#if]
-          [#-- Centers --]
-          [#if centersList?has_content]
-            <li text-align:center>   Centers  </li>
-            [#list centersList as globalUnit]
-              [#if globalUnit.login]
-              <li class="[#if centerSession?? && centerSession == globalUnit.acronym ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${globalUnit.acronym}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${globalUnit.acronym}</a>
-              </li>
-              [/#if]
-            [/#list]
-          [/#if]
-          [#-- Platforms --]
-          [#if platformsList?has_content]
-            <li text-align:center>   Platforms   </li>
-            [#list platformsList as globalUnit]
-              [#if globalUnit.login]
-              <li class="[#if centerSession?? && centerSession == globalUnit.acronym ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${globalUnit.acronym}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${globalUnit.acronym}</a>
-              </li>
-              [/#if]
-            [/#list]
-          [/#if]
+           
+            [#if listGlobalUnitTypesUser??]
+              [#list listGlobalUnitTypesUser as globalUnitType]
+                <li text-align:center>  ${globalUnitType.name}  </li>
+                [#list globalUnitType.globalUnitsList as globalUnit]
+                  [#if globalUnit.login]
+                    [#assign guAction = "crpDashboard" /]
+                    [#if globalUnitType.id == 2][#assign guAction = "centerDashboard" /][/#if]
+                    <li class="[#if crpSession?? && crpSession == globalUnit.acronym ]currentSection[/#if]" >
+                      <a href="[@s.url namespace="/" action="${globalUnit.acronym}/${guAction}" ][@s.param name="edit" value="true"/][/@s.url]" title="">${globalUnit.acronym}</a>
+                    </li>
+                  [/#if]
+                [/#list]
+              [/#list]
+            [/#if]
+          
           </ul>
         </li>
         [/#if]

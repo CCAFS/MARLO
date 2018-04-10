@@ -1,11 +1,11 @@
 [#ftl]
 [#assign title = "Outcomes List" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/impactPathway/outcomeList.js?20180305"
+  "${baseUrlMedia}/js/impactPathway/centerOutcomeList.js?20180305"
   ] 
 /]
 [#assign customCSS = [
@@ -13,7 +13,7 @@
   "${baseUrlMedia}/css/impactPathway/outcomeList.css"
   ]
 /]
-[#assign currentSection = "centerImpactPathway" /]
+[#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 
 [#assign breadCrumb = [
@@ -22,10 +22,11 @@
 ]/]
 [#assign leadersName = "leaders"/]
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
+
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutcomesList.help" /]
 [#--  marlo cluster of activities--]
@@ -34,7 +35,7 @@
     [#if researchAreas?has_content]
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center/views/impactPathway/menu-impactPathway.ftl" /]
+        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Section Messages --]
@@ -42,48 +43,45 @@
         [#-- Impact pathway sub menu --]
         [#include "/WEB-INF/center/views/impactPathway/submenu-impactPathway.ftl" /]
         
-          [#-- Program Title --]
-          <div class="col-md-12">
-            <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outcomes</h3>
-            <hr />
-          </div><div class="clearfix"></div>
-        
-          [#-- Hidden Parameters --]
-          <input type="hidden" name="programID" value="${programID}" />
+        [#-- Program Title --]
+        <h3 class="subTitle headTitle outcomeListTitle">${selectedProgram.name} - Outcomes</h3>
+        <hr />
+    
+        [#-- Hidden Parameters --]
+        <input type="hidden" name="programID" value="${crpProgramID}" />
         
         [#if researchTopics?has_content]
         
         <span id="programSelected" class="hidden">${selectedProgram.id}</span>
         
         
-        <div class="simpleBox col-md-12">
-            <label for="">Research Topic:<span class="red">*</span></label>
-            <select name="researchTopics" id="researchTopics">
-              <option value="-1" >View All</option>
-              
-                [#list researchTopics as researchTopic]
-                  <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
-                [/#list]
-               
-            </select>            
-          </div>
+        <div class="simpleBox form-group">
+          <label for="">Research Topic:<span class="red">*</span></label>
+          <select name="researchTopics" id="researchTopics">
+            <option value="-1" >View All</option>
+            [#list researchTopics as researchTopic]
+              <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
+            [/#list]
+          </select>
+        </div>
+        <br />
           
         [@s.form action=actionName enctype="multipart/form-data" ]
         
           
           [#-- Outcomes Table --]
           [#if outcomes?has_content]
-          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/centerImpactPathway" defaultAction="${(centerSession)!}/outcomes"/]</div>
+          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/impactPathway" defaultAction="${(centerSession)!}/centerOutcome"/]</div>
           [#else]
             [#if selectedResearchTopic?has_content] 
             <div class="clearfix"></div>
             <div class="notOutcome">
-            There are NO OUTCOMES added to "<b>${selectedResearchTopic.researchTopic}</b>" as of yet. [#if editable] If you want to add a new outcome, please click on the button below: [/#if]
+              There are NO OUTCOMES added to "<b>${selectedResearchTopic.researchTopic}</b>" as of yet. [#if editable] If you want to add a new outcome, please click on the button below: [/#if]
             </div>
             [#else]
             <div class="clearfix"></div>
             <div class="notOutcome">
-            There are NO OUTCOMES added to "<b>${selectedProgram.name}</b>" as of yet.
+              There are NO OUTCOMES added to "<b>${selectedProgram.name}</b>" as of yet.
             </div>
             [/#if]
           [/#if]
@@ -93,7 +91,7 @@
             [#if outcomes?has_content]
               [#if selectedResearchTopic?has_content] 
               <div class="text-right">
-              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutcome'] [@s.param name="programID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewCenterOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome" /]
               </a></div>
               </div>
@@ -105,7 +103,7 @@
             [#else]
               [#if selectedResearchTopic?has_content] 
               <div class="text-center">
-              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutcome'] [@s.param name="programID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewCenterOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome" /]
               </a></div>
               </div>
@@ -118,7 +116,7 @@
          [/#if]          
         [/@s.form]
         [#else]
-         <p class="text-center borderBox inf">Before completing this section, please add at least one Research Topic by <a href="[@s.url action='${centerSession}/programimpacts'][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p> 
+         <p class="text-center borderBox inf">Before completing this section, please add at least one Research Topic by <a href="[@s.url action='${centerSession}/researchTopics'][@s.param name="crpProgramID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p> 
         [/#if]
       </div>
     </div>
@@ -130,6 +128,6 @@
 
 [@customForm.confirmJustificationOutcome action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 

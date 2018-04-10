@@ -12,7 +12,7 @@
   {"label":"customLocations", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
 
 <div class="container">
@@ -66,7 +66,7 @@
 [#-- Unit Target Template --]
 [@locElementTypeMacro element={} name="locElementTypeList" index=-1 isTemplate=true canDelete=true /]
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro locElementTypeMacro element name index isTemplate=false canDelete=false]
   <li id="locElementType-${isTemplate?string('template',index)}" class="li-item locElementType" style="display:${isTemplate?string('none','block')}">

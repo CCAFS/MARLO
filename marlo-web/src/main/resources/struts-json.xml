@@ -103,6 +103,7 @@
 			</result>
 		</action>
 
+  
 
 		<action name="institutionsByTypeAndCountry"
 			class="org.cgiar.ccafs.marlo.action.json.global.InstitutionsByFilterAction">
@@ -473,15 +474,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-
-		<action name="validateCenterImpactPathway"
-			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.ValidateImpactPathwaySectionAction">
-			<result type="json">
-				<param name="noCache">true</param>
-				<param name="excludeNullProperties">true</param>
-			</result>
-		</action>
-
+		
 		<action name="impactPathwayGraphByProgram"
 			class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.graph.GraphByProgramAction">
 			<result type="json">
@@ -827,5 +820,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="validateCenterImpactPathway"
+      class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.ValidateImpactPathwaySectionAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>    
+    
 	</package>
 </struts>

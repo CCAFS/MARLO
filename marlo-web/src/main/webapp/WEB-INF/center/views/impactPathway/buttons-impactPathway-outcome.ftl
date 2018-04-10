@@ -1,6 +1,7 @@
 [#ftl]
 [#-- Program identifier --]
-<input type="hidden" name="programID" value="${programID}" />
+<input type="hidden" name="programID" value="${crpProgramID}" />
+<input type="hidden" name="crpProgramID" value="${crpProgramID}" />
 <input type="hidden" name="outcomeID" value="${outcomeID}" />
 <input type="hidden"  name="className" value="${(outcome.class.name)!}"/>
 <input type="hidden"  name="id" value="${(outcome.id)!}"/>

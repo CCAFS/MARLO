@@ -22,12 +22,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterNextuserTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputsNextUserManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
@@ -35,8 +35,8 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ResearchTopicsOutcomesDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -77,30 +77,32 @@ public class OutputsAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
   private AuditLogManager auditLogService;
-  private ICenterProgramManager programService;
+
+
+  private CrpProgramManager programService;
   private ICenterOutputManager outputService;
   private ICenterNextuserTypeManager nextUserService;
   private ICenterOutputsNextUserManager outputNextUserService;
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
   private ICenterOutcomeManager outcomeManager;
-
-
   // Front Variables
   private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
-  private CenterArea selectedResearchArea;
-  private List<CenterProgram> researchPrograms;
-  private CenterProgram selectedProgram;
-  private CenterOutcome selectedResearchOutcome;
 
+
+  private CenterArea selectedResearchArea;
+  private List<CrpProgram> researchPrograms;
+  private CrpProgram selectedProgram;
+  private CenterOutcome selectedResearchOutcome;
   private CenterOutput output;
   private CenterTopic selectedResearchTopic;
+
   private List<CenterLeader> contacPersons;
   private List<CenterNextuserType> nextuserTypes;
   // Parameter Variables
-  private long programID;
   private long areaID;
   private long outcomeID;
+
   private long outputID;
   private String transaction;
   private long nextUserTypeID;
@@ -108,13 +110,14 @@ public class OutputsAction extends BaseAction {
   private List<ResearchTopicsOutcomesDTO> outcomes;
   // Validator
   private OutputsValidator validator;
+  private long crpProgramID;
 
   /**
    * @param config
    */
   @Inject
   public OutputsAction(APConfig config, GlobalUnitManager centerService, AuditLogManager auditLogService,
-    ICenterProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
+    CrpProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
     ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService,
     CenterOutputsOutcomeManager centerOutputsOutcomeManager, ICenterOutcomeManager outcomeManager) {
     super(config);
@@ -165,14 +168,19 @@ public class OutputsAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = output.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = output.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = output.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<CenterLeader> getContacPersons() {
     return contacPersons;
+  }
+
+
+  public long getCrpProgramID() {
+    return crpProgramID;
   }
 
 
@@ -188,10 +196,10 @@ public class OutputsAction extends BaseAction {
     return nextuserTypes;
   }
 
+
   public long getOutcomeID() {
     return outcomeID;
   }
-
 
   public List<ResearchTopicsOutcomesDTO> getOutcomes() {
     return outcomes;
@@ -203,10 +211,6 @@ public class OutputsAction extends BaseAction {
 
   public long getOutputID() {
     return outputID;
-  }
-
-  public long getProgramID() {
-    return programID;
   }
 
   public void getProgramOutcomes() {
@@ -238,11 +242,11 @@ public class OutputsAction extends BaseAction {
   }
 
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
@@ -268,7 +272,7 @@ public class OutputsAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     areaID = -1;
-    programID = -1;
+    crpProgramID = -1;
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
@@ -300,8 +304,8 @@ public class OutputsAction extends BaseAction {
 
     if (researchAreas != null && output != null) {
 
-      programID = output.getCenterProgram().getId();
-      selectedProgram = programService.getProgramById(programID);
+      crpProgramID = output.getCenterProgram().getId();
+      selectedProgram = programService.getCrpProgramById(crpProgramID);
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
 
@@ -385,8 +389,8 @@ public class OutputsAction extends BaseAction {
           output.getCenterOutputsOutcomes().stream().filter(op -> op.isActive()).collect(Collectors.toList())));
       }
 
-      contacPersons = new ArrayList<>(
-        selectedProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
+      // contacPersons = new ArrayList<>(
+      // selectedProgram.getResearchLeaders().stream().filter(rl -> rl.isActive()).collect(Collectors.toList()));
 
       if (nextUserService.findAll() != null) {
         nextuserTypes = new ArrayList<>(nextUserService.findAll().stream()
@@ -586,19 +590,22 @@ public class OutputsAction extends BaseAction {
     this.contacPersons = contacPersons;
   }
 
+  public void setCrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
   public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
-
 
   public void setNextUserID(long nextUserID) {
     this.nextUserTypeID = nextUserID;
   }
 
+
   public void setNextuserTypes(List<CenterNextuserType> nextuserTypes) {
     this.nextuserTypes = nextuserTypes;
   }
-
 
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
@@ -612,13 +619,9 @@ public class OutputsAction extends BaseAction {
     this.output = output;
   }
 
+
   public void setOutputID(long outputID) {
     this.outputID = outputID;
-  }
-
-
-  public void setProgramID(long programID) {
-    this.programID = programID;
   }
 
 
@@ -627,12 +630,12 @@ public class OutputsAction extends BaseAction {
   }
 
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 

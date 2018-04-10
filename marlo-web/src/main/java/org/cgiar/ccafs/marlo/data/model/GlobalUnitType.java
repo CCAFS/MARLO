@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -26,17 +27,20 @@ public class GlobalUnitType implements java.io.Serializable {
   private String name;
   @Expose
   private boolean active;
+
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
-
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
+  private List<GlobalUnit> globalUnitsList;
 
   private Set<Parameter> parameters = new HashSet<Parameter>(0);
 
   public GlobalUnitType() {
   }
+
 
   public GlobalUnitType(Long id, User modifiedBy, User createdBy, String name, boolean active, Date activeSince,
     String modificationJustification, Set<GlobalUnit> globalUnits) {
@@ -51,6 +55,27 @@ public class GlobalUnitType implements java.io.Serializable {
     this.globalUnits = globalUnits;
   }
 
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    GlobalUnitType other = (GlobalUnitType) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -61,6 +86,10 @@ public class GlobalUnitType implements java.io.Serializable {
 
   public Set<GlobalUnit> getGlobalUnits() {
     return globalUnits;
+  }
+
+  public List<GlobalUnit> getGlobalUnitsList() {
+    return globalUnitsList;
   }
 
   public Long getId() {
@@ -83,6 +112,14 @@ public class GlobalUnitType implements java.io.Serializable {
     return parameters;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
   public boolean isActive() {
     return active;
   }
@@ -101,6 +138,10 @@ public class GlobalUnitType implements java.io.Serializable {
 
   public void setGlobalUnits(Set<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
+  }
+
+  public void setGlobalUnitsList(List<GlobalUnit> globalUnitsList) {
+    this.globalUnitsList = globalUnitsList;
   }
 
   public void setId(Long id) {

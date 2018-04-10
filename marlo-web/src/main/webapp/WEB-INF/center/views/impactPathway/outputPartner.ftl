@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Outcome" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -23,8 +23,8 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outcomesList /]
 
@@ -53,7 +53,7 @@
         
         [#-- Back --]
         <small class="pull-right">
-          <a href="[@s.url action='${centerSession}/outputsList'][@s.param name="programID" value=programID /][@s.param name="outcomeID" value=outcomeID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/outputsList'][@s.param name="crpProgramID" value=programID /][@s.param name="outcomeID" value=outcomeID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outputs list
           </a>
         </small>
@@ -110,7 +110,7 @@
 [#-- UserItem Template --]
 [@userItem element={} name="${outputCustomName}.partners[-1].users" index="-1" template=true /]
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro partnerMacro element name index isTemplate=false]
   <div id="partner-${isTemplate?string('template', index)}" class="partner borderBox" style="display:${isTemplate?string('none','block')}">

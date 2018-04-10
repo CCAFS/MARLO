@@ -99,7 +99,8 @@ public class ProjectSubmissionAction extends BaseAction {
           project = projectService.getCenterProjectById(projectID);
 
           List<CenterSubmission> submissions = new ArrayList<>(project.getSubmissions().stream()
-            .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
+            .filter(
+              s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList()));
 
           if (submissions != null && submissions.size() > 0) {
@@ -114,7 +115,7 @@ public class ProjectSubmissionAction extends BaseAction {
           submission.setProject(project);
           submission.setDateTime(new Date());
           submission.setUser(this.getCurrentUser());
-          submission.setYear((short) this.getCenterYear());
+          submission.setYear((short) this.getActualPhase().getYear());
           submission.setResearchCycle(cycle);
 
           submission = submissionService.saveSubmission(submission);
@@ -173,7 +174,7 @@ public class ProjectSubmissionAction extends BaseAction {
     values[1] = loggedCenter.getAcronym() != null && !loggedCenter.getAcronym().isEmpty() ? loggedCenter.getAcronym()
       : loggedCenter.getName();
     values[2] = project.getName();
-    values[3] = String.valueOf(this.getCenterYear());
+    values[3] = String.valueOf(this.getActualPhase().getYear());
     values[4] = cycle.getName();
 
     String subject = null;
