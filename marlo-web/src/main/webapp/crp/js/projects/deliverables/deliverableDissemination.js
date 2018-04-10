@@ -114,7 +114,7 @@ function addDisseminationEvents() {
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
   // Other license type
-  $("input[name='deliverable.license']").on("change", function() {
+  $('.licenseOptions input[type="radio"]').on("change", function() {
     if($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
     } else {
