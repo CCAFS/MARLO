@@ -84,7 +84,7 @@
         </div>
         <div>
           <strong>Google</strong>
-          <p>Google, as a third-party vendor, uses cookies to track statistics on our site. More information can be found in: <a href='www.google.com/intl/en/policies/privacy'>https://www.google.com/intl/en/policies/privacy</a></p>
+          <p>Google, as a third-party vendor, uses cookies to track statistics on our site. More information can be found in: </p> <a target="_blank" href="https://www.google.com/intl/en/policies/privacy"> www.google.com/intl/en/policies/privacy </a>
         </div>
         <div>
           <strong>We have implemented the following:</strong>
@@ -122,7 +122,7 @@
       <div class="simpleBox">
         <div>
           <strong>1. Terms</strong>
-          <p>By accessing the website at <a target="_blank" href="marlo.cgiar.org">https://marlo.cgiar.org</a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
+          <p>By accessing the website at <a target="_blank" href="marlo.cgiar.org"> marlo.cgiar.org </a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
         </div>
         <div>
           <strong>2. Copyright </strong>
@@ -190,7 +190,7 @@
       
       <h2 id="copyRight">Copyright</h2>
       <div class="simpleBox">
-        <a class="pull-right" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /></a>
+        <a class="pull-right" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html"> <img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /> </a>
         <p>GNUv3 license</p>
         <div class="clearfix"></div>
       </div>
