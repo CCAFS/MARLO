@@ -22,8 +22,12 @@
 					     
 					    <td>
 						    [#if i.title?has_content]
+						      [#if i.category == 1]<span class="label label-primary">[@s.text name="Individual" /]</span>[/#if]
+						      [#if i.category == 2]<span class="label label-success">[@s.text name="Grupal" /]</span>[/#if]
 						    	<a href="${capdevUrl}">${i.title}</a>
 						    [#else]
+						      [#if i.category == 1]<span class="label label-primary">[@s.text name="Individual" /]</span>[/#if]
+                  [#if i.category == 2]<span class="label label-success">[@s.text name="Grupal" /]</span>[/#if]
 						    	<a href="${capdevUrl}">Not defined</a>
 						    [/#if]
 					    </td> 
