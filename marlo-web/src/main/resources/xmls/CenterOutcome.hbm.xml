@@ -36,6 +36,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.CenterTopic" fetch="select">
 			<column name="research_topic_id" not-null="true" />
 		</many-to-one>
+		<many-to-one name="srfTargetUnit"
+      class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+      <column name="srf_target_unit_id" not-null="false" />
+    </many-to-one>
 		<property name="description" type="string">
 			<column name="description" length="65535" not-null="false" />
 		</property>

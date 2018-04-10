@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Output Next-users" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -21,8 +21,8 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
@@ -114,4 +114,4 @@
   </div>
 </section>
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]

@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.interceptor.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -44,7 +44,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
   private final ICenterOutcomeManager outcomeService;
 
-  private final ICenterProgramManager programService;
+  private final CrpProgramManager programService;
   private Map<String, Parameter> parameters;
 
   private Map<String, Object> session;
@@ -54,7 +54,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
   private long programID = -1;
 
   @Inject
-  public EditOutcomeInterceptor(ICenterOutcomeManager outcomeService, ICenterProgramManager programService) {
+  public EditOutcomeInterceptor(ICenterOutcomeManager outcomeService, CrpProgramManager programService) {
     this.outcomeService = outcomeService;
     this.programService = programService;
   }
@@ -99,7 +99,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
 
       programID = outcome.getResearchTopic().getResearchProgram().getId();
-      CenterProgram program = programService.getProgramById(programID);
+      CrpProgram program = programService.getCrpProgramById(programID);
 
       if (program != null) {
 

@@ -1,9 +1,14 @@
 [#ftl]
-[#assign objs= [
-  { 'slug': 'capdevIntervention',      'name': 'capdev.menu.hrefCapdev',           'action': 'detailCapdev',           'active': true  },
-  { 'slug': 'capdevDescription',           'name': 'capdev.menu.hrefDescription',      'action': 'descriptionCapdev',           'active': true  },
-  { 'slug': 'supportingDocuments',         'name': 'capdev.menu.hrefSupportingDocs',    'action': 'supportingDocs',           'active': true  }
-  
+
+
+[#assign menus= [
+  { 'title': 'Information', 'show': true,
+    'items': [
+    { 'slug': 'capdevIntervention',       'name': 'capdev.menu.hrefCapdev',           'action': 'detailCapdev',       'active': true  },
+    { 'slug': 'capdevDescription',        'name': 'capdev.menu.hrefDescription',      'action': 'descriptionCapdev',  'active': true  },
+    { 'slug': 'supportingDocuments',      'name': 'capdev.menu.hrefSupportingDocs',   'action': 'supportingDocs',     'active': true  }
+    ]
+  }
 ]/]
 
 [#attempt]
@@ -18,26 +23,39 @@
 
 [#assign sectionsForChecking = [] /]
 
+[#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Capdev Menu</p>
-   <ul>
-    [#list objs as item]
-    [#assign submitStatus = (action.getCenterSectionStatusCapDev(item.action, capdevID))!false /]
+  <p>Capdev Menu</p> 
+  <ul>
+    [#list menus as menu]
+      [#if menu.show]
       <li>
-        <ul> 
-               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
-                <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit' value="true" /][/@s.url]"  class="action-${centerSession}/${item.action}">
+        <ul><p class="menuTitle">${menu.title}</p>
+          [#list menu.items as item]
+            [#assign submitStatus = (action.getCenterSectionStatusCapDev(item.action, capdevID))!false /]
+            [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
+            [#if (item.show)!true ]
+              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${submitStatus?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
+                <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name="capdevID" value=capdevID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${centerSession}/${item.action}">
+                  [#-- Name --]
                   [@s.text name=item.name/]
+                  [#-- Draft Tag 
+                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
+                  --]
                 </a>
               </li>
+              [#if item.active]
+                [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
+              [/#if]
+            [/#if]
+          [/#list] 
         </ul>
       </li>
-       [#if item.active]
-              [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
-            [/#if]
+      [/#if]
     [/#list]
   </ul> 
 </nav>
+
 
 <div class="clearfix"></div>
 

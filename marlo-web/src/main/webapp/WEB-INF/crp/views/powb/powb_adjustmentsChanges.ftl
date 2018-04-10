@@ -14,8 +14,8 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="adjustmentsChanges.help" /]
@@ -80,7 +80,7 @@
     </div> 
   </div> 
 </section>
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro FlagshipsTableACMacro elements={}]
   <table class="table-flagshipsAdjustments table-border-powb" id="table-flagshipsAdjustments">

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -90,7 +91,7 @@ public class SuggestedProjectsAction extends BaseAction {
       List<Map<String, Object>> dataSuggestions = new ArrayList<>();
       for (FundingSource fundingSource : fundingSources) {
         List<ProjectBudget> projectBudgets = fundingSource.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList());
+          .filter(pb -> pb.isActive() && pb.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList());
         if (projectBudgets != null) {
           for (ProjectBudget projectBudget : projectBudgets) {
             Map<String, Object> dataSuggestion = new HashMap<>();
@@ -152,7 +153,7 @@ public class SuggestedProjectsAction extends BaseAction {
     // dataProject.put("name", project.getTitle());
 
     List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
 

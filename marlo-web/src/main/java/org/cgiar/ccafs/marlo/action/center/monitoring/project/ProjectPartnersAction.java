@@ -25,10 +25,10 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -87,9 +87,9 @@ public class ProjectPartnersAction extends BaseAction {
   private GlobalUnit loggedCenter;
   private CenterArea selectedResearchArea;
 
-  private CenterProgram selectedProgram;
+  private CrpProgram selectedProgram;
   private List<CenterArea> researchAreas;
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
   private List<Institution> institutions;
   private List<CenterProjectPartner> projectPartners;
   private HashMap<Boolean, String> partnerModes;
@@ -190,11 +190,11 @@ public class ProjectPartnersAction extends BaseAction {
     return researchAreas;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
-  public CenterProgram getSelectedProgram() {
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
@@ -243,7 +243,7 @@ public class ProjectPartnersAction extends BaseAction {
     if (project != null) {
 
       CenterProject ProjectDB = projectService.getCenterProjectById(projectID);
-      selectedProgram = ProjectDB.getResearchProgram();
+      // selectedProgram = ProjectDB.getResearchProgram();
       programID = selectedProgram.getId();
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
@@ -516,11 +516,11 @@ public class ProjectPartnersAction extends BaseAction {
     this.researchAreas = researchAreas;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
 
@@ -536,7 +536,7 @@ public class ProjectPartnersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project, selectedProgram, true);
+      // validator.validate(this, project, selectedProgram, true);
     }
   }
 

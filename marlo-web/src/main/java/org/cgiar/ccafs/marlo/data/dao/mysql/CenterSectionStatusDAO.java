@@ -22,8 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -44,7 +45,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
 
   @Override
   public List<Map<String, Object>> distinctSectionStatus(long programID) {
-    String query = "select DISTINCT section_name from center_section_statuses where research_program_id=" + programID;
+    String query = "select DISTINCT section_name from center_section_statuses where program_id=" + programID;
     return super.findCustomQuery(query);
   }
 
@@ -90,7 +91,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   @Override
   public List<CenterSectionStatus> getSectionStatus(long programId, String sectionName) {
     String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and research_program_id=" + programId;
+      + "' and program_id=" + programId;
     List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
@@ -124,7 +125,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   @Override
   public CenterSectionStatus getSectionStatusByOutcome(long programId, long outcomeId, String sectionName, int year) {
     String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and research_program_id=" + programId + " and research_outcome_id=" + outcomeId + " and year=" + year;
+      + "' and program_id=" + programId + " and research_outcome_id=" + outcomeId + " and year=" + year;
     List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -135,7 +136,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   @Override
   public CenterSectionStatus getSectionStatusByOutput(long programId, long outputId, String sectionName, int year) {
     String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and research_program_id=" + programId + " and research_output_id=" + outputId + " and year=" + year;
+      + "' and program_id=" + programId + " and research_output_id=" + outputId + " and year=" + year;
     List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -146,7 +147,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   @Override
   public CenterSectionStatus getSectionStatusByProgram(long programId, String sectionName, int year) {
     String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and research_program_id=" + programId + " and year=" + year;
+      + "' and program_id=" + programId + " and year=" + year;
     List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
