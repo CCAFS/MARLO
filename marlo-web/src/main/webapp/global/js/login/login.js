@@ -341,7 +341,7 @@ function secondForm(data){
     if(data.crps.length>1){
       $(".crps-select").removeClass("hidden");
       //move crps select side bar
-      var sideBarPosition=-$(".loginForm").position().left-120;
+      var sideBarPosition=-$(".loginForm").position().left-135;
       $(".crps-select").css("left",sideBarPosition);
     }else{
       //click unique crp loaded
