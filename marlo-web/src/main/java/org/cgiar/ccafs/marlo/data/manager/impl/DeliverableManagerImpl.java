@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.CrpClusterKeyOutputDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
@@ -121,13 +120,14 @@ public class DeliverableManagerImpl implements DeliverableManager {
   public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
     Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
 
-    Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
-        this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
-          deliverable);
-      }
+    // Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
+    // if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
+      this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
+        deliverable);
     }
+    // }
+
     return resultDeliverable;
   }
 

@@ -1738,7 +1738,7 @@ public class DeliverableAction extends BaseAction {
       // The next three statements, could possibly be merged into a single mapping class.
       Deliverable deliverableManagedState = this.updateDeliverable();
       this.updateDeliverableInReportingPhase(deliverableManagedState);
-      this.updateDeliverableInPlanningPhase(deliverableManagedState);
+      this.updateDeliverableFSInPlanningPhase(deliverableManagedState);
 
       // Set CrpClusterKeyOutput to null if has an -1 id
       if (deliverableManagedState.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null
@@ -2535,18 +2535,8 @@ public class DeliverableAction extends BaseAction {
    * 
    * @param deliverablePrew
    */
-  private void updateDeliverableInPlanningPhase(Deliverable deliverablePrew) {
+  private void updateDeliverableFSInPlanningPhase(Deliverable deliverablePrew) {
     if (this.isPlanningActive()) {
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null
-        && deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId() != null
-        && deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId().longValue() != -1) {
-        CrpClusterKeyOutput keyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(
-          deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId());
-
-        deliverablePrew.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(keyOutput);
-      } else {
-        deliverablePrew.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
-      }
 
       if (deliverable.getFundingSources() != null) {
         if (deliverablePrew.getDeliverableFundingSources() != null
