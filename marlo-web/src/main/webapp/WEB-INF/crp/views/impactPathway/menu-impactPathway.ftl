@@ -81,7 +81,7 @@
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
-                  [#if item.action == "outcomesList"]
+                  [#if item.action == "centerOutcomesList"]
                       <span class="glyphicon glyphicon-chevron-right"></span>
                   [#elseif item.action == "outputsList"]
                       &nbsp; <span class="glyphicon glyphicon-chevron-right"></span>
@@ -151,11 +151,12 @@
 [#if centerGlobalUnit]
 
 [#-- Impact Pathway PDF --]
-<div class="col-md-12">
-<p class="title">Download Impact Pathway</p>
-<a class="col-md-12" href="${baseUrl}/summaries/impactPathwaySubmissions.do?crpProgramID=${crpProgramID}" target="__BLANK" style="text-align:center;">
-  <img src="${baseUrl}/global/images/download-summary.png" width="40" height="50" title="Download" />
-</a>
+<div class="text-center">
+  <br />
+  <a class="btn btn-default" href="${baseUrl}/summaries/impactPathwaySubmissions.do?crpProgramID=${crpProgramID}" target="_BLANK" style="text-align:center;">
+    <p class="title ">Download Impact Pathway</p>
+    <img src="${baseUrl}/global/images/download-summary.png" width="40" height="50" title="Download" />
+  </a>
 </div>
 
 
