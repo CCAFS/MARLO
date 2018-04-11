@@ -64,7 +64,7 @@ function addDataTable() {
       "bAutoWidth": false, // This option enables the auto adjust columns width
       "iDisplayLength": 50,// Number of rows to show on the table
       "language": {
-        "emptyTable": "No outcome case studies entered into the system yet."
+        "emptyTable": "No studies entered into the system yet."
       },
       aoColumnDefs: [
         {
