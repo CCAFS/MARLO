@@ -816,12 +816,11 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list =
-        deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+        .collect(Collectors.toList());
 
 
       return list;
@@ -1364,15 +1363,19 @@ public class DeliverableAction extends BaseAction {
       }
       crps = new HashMap<>();
       for (GlobalUnit crp : crpManager.findAll().stream()
-        .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()).collect(Collectors.toList())) {
-        crps.put(crp.getId().toString(), crp.getName());
+        .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()
+          && c.getGlobalUnitType().getId().toString() != APConstants.GLOBAL_UNIT_CENTER_TYPE
+          && c.getGlobalUnitType().getId().toString() != APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE)
+        .collect(Collectors.toList())) {
+        crps.put(crp.getId().toString(), crp.getAcronym());
       }
 
       programs = new HashMap<>();
       for (CrpProgram program : crpProgramManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+          && c.getCrp() != null && c.getCrp().equals(this.getLoggedCrp()))
         .collect(Collectors.toList())) {
-        programs.put(program.getId().toString(), program.getAcronym());
+        programs.put(program.getId().toString(), program.getComposedName());
       }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
@@ -1388,8 +1391,8 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager
-            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 

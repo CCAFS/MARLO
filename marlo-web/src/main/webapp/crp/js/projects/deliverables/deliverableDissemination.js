@@ -127,21 +127,23 @@ function addDisseminationEvents() {
   $(".flaghsipSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "" && option.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.idFlagship[value='" + option.val() + "']").exists()) {
+      if($(".flagshipList").find(".flagships input.idCRPProgram[value='" + option.val() + "']").exists()) {
       } else {
-        var composedText = currentCrpSession.toUpperCase() + " - " + option.text();
-        var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
-        addFlagship(option.val(), v, composedText, "");
+        var composedText = currentCrpSession + "  " + option.text();
+        var shortText = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
+        addFlagship(option.val(), shortText, composedText, "");
+        // addFlagship(id,text,title,crpId)
       }
     }
   });
   $(".crpSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "" && option.val() != "-1") {
-      if(!($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists())) {
-        var composedText = option.text().toUpperCase();
-        var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
-        addCrp("", v, composedText, option.val());
+      if(!($(".flagshipList").find(".flagships input.idGlobalUnit[value='" + option.val() + "']").exists())) {
+        var composedText = option.text();
+        var shortText = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
+        addCrp("", shortText, composedText, option.val());
+        // addCrp(id,text,title,crpId)
       }
     }
   });
@@ -205,8 +207,8 @@ function addFlagship(id,text,title,crpId) {
   $item.find(".name").text(text);
   $item.find(".name").attr("title", title);
   $item.find(".idElemento").val("-1");
-  $item.find(".idCrp").val(crpId);
-  $item.find(".idFlagship").val(id);
+  $item.find(".idGlobalUnit").val(crpId);
+  $item.find(".idCRPProgram").val(id);
   $list.append($item);
   $item.show('slow');
   checkNextFlagshipItems($list);
@@ -219,8 +221,8 @@ function addCrp(id,text,title,crpId) {
   $item.find(".name").text(text);
   $item.find(".name").attr("title", title);
   $item.find(".idElemento").val("-1");
-  $item.find(".idCrp").val(crpId);
-  $item.find(".idFlagship").val(id);
+  $item.find(".idGlobalUnit").val(crpId);
+  $item.find(".idCRPProgram").val(id);
   $list.append($item);
   $item.show('slow');
   checkNextFlagshipItems($list);
