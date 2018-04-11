@@ -2371,12 +2371,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
           for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
             .collect(Collectors.toList())) {
-            if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-              flContrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
-                + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "<br>";
+            if (deliverableCrp.getCrpProgram() != null) {
+              flContrib += "● " + deliverableCrp.getCrpProgram().getCrp().getAcronym().toUpperCase() + " - "
+                + deliverableCrp.getCrpProgram().getAcronym().toUpperCase() + "<br>";
             } else {
-              if (deliverableCrp.getCrpPandr() != null) {
-                flContrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
+              if (deliverableCrp.getGlobalUnit() != null) {
+                flContrib += "● " + deliverableCrp.getGlobalUnit().getName().toUpperCase() + "<br>";
               }
             }
           }

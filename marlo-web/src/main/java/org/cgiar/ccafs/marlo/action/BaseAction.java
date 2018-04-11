@@ -4724,7 +4724,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPhaseOne() {
     try {
-      if (this.isReportingActive() && this.getCrpSession().equals("ccafs") && (this.getCurrentCycleYear() == 2016)) {
+      if (this.isReportingActive() && this.getCrpSession().equals("ccafs") && (this.getCurrentCycleYear() <= 2016)) {
         return true;
       } else {
         return false;

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
@@ -197,6 +198,7 @@ public class DeliverableAction extends BaseAction {
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
   private List<DeliverableType> deliverableTypeParent;
+  private CrpProgramManager crpProgramManager;
 
 
   private DeliverableValidator deliverableValidator;
@@ -283,7 +285,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
     IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager,
     RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager,
-    CrossCuttingScoringManager crossCuttingManager) {
+    CrossCuttingScoringManager crossCuttingManager, CrpProgramManager crpProgramManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -317,6 +319,7 @@ public class DeliverableAction extends BaseAction {
     this.partnerDivisionManager = partnerDivisionManager;
     this.repositoryChannelManager = repositoryChannelManager;
     this.crossCuttingManager = crossCuttingManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
 
@@ -1115,16 +1118,13 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
-
-              if (deliverableCrp.getIpProgram() == null || deliverableCrp.getIpProgram().getId() == null
-                || deliverableCrp.getIpProgram().getId().intValue() == -1) {
-                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
-
+              if (deliverableCrp.getCrpProgram() == null || deliverableCrp.getCrpProgram().getId() == null
+                || deliverableCrp.getCrpProgram().getId().intValue() == -1) {
+                deliverableCrp.setGlobalUnit(crpManager.getGlobalUnitById(deliverableCrp.getGlobalUnit().getId()));
               } else {
-                deliverableCrp.setIpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
-                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+                deliverableCrp
+                  .setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));
               }
-
             }
           }
         }
@@ -1848,9 +1848,9 @@ public class DeliverableAction extends BaseAction {
 
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
-
       deliverable.setCrps(new ArrayList<>());
     }
+    /* Delete */
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
     for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
@@ -1859,27 +1859,11 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
+    /* Save */
     for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
-
       if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
-
-        if (deliverableCrp.getCrpPandr() != null) {
-          if (deliverableCrp.getCrpPandr().getId() == null) {
-            deliverableCrp.setCrpPandr(null);
-          } else {
-            if (deliverableCrp.getCrpPandr().getId().intValue() == -1) {
-              deliverableCrp.setCrpPandr(null);
-            }
-          }
-        }
-
-        if (deliverableCrp.getCrpPandr() == null) {
-          deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(new Long(3)));
-        } else {
-          deliverableCrp.setIpProgram(null);
-        }
         deliverableCrp.setPhase(this.getActualPhase());
         deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }

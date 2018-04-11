@@ -19,8 +19,8 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
@@ -39,7 +39,6 @@ import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -112,7 +111,6 @@ public class PublicationAction extends BaseAction {
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
   private List<GenderType> genderLevels;
-  private CrpPandrManager crpPandrManager;
   private IpProgramManager ipProgramManager;
   private Map<String, String> programs;
 
@@ -152,6 +150,7 @@ public class PublicationAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
   private RepositoryChannelManager repositoryChannelManager;
   private List<RepositoryChannel> repositoryChannels;
+  private CrpProgramManager crpProgramManager;
 
   @Inject
   public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
@@ -165,14 +164,13 @@ public class PublicationAction extends BaseAction {
     DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
     PublicationValidator publicationValidator, HistoryComparator historyComparator,
     DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
-    RepositoryChannelManager repositoryChannelManager) {
+    RepositoryChannelManager repositoryChannelManager, CrpProgramManager crpProgramManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.historyComparator = historyComparator;
     this.crpManager = crpManager;
     this.publicationValidator = publicationValidator;
-    this.crpPandrManager = crpPandrManager;
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverableManager = deliverableManager;
     this.genderTypeManager = genderTypeManager;
@@ -190,6 +188,7 @@ public class PublicationAction extends BaseAction {
     this.ipProgramManager = ipProgramManager;
     this.userManager = userManager;
     this.repositoryChannelManager = repositoryChannelManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
 
@@ -380,13 +379,12 @@ public class PublicationAction extends BaseAction {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
 
-              if (deliverableCrp.getIpProgram() == null || deliverableCrp.getIpProgram().getId() == null
-                || deliverableCrp.getIpProgram().getId().intValue() == -1) {
-                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
-
+              if (deliverableCrp.getCrpProgram() == null || deliverableCrp.getCrpProgram().getId() == null
+                || deliverableCrp.getCrpProgram().getId().intValue() == -1) {
+                deliverableCrp.setGlobalUnit(crpManager.getGlobalUnitById(deliverableCrp.getGlobalUnit().getId()));
               } else {
-                deliverableCrp.setIpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
-                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+                deliverableCrp
+                  .setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));
               }
 
             }
@@ -608,8 +606,8 @@ public class PublicationAction extends BaseAction {
       genderLevels.add(projectStatusEnum);
     }
     crps = new HashMap<>();
-    for (CrpPandr crp : crpPandrManager.findAll().stream().filter(c -> c.getId() != 3 && c.isActive())
-      .collect(Collectors.toList())) {
+    for (GlobalUnit crp : crpManager.findAll().stream()
+      .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()).collect(Collectors.toList())) {
       crps.put(crp.getId().toString(), crp.getName());
     }
 
@@ -796,38 +794,23 @@ public class PublicationAction extends BaseAction {
 
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
-
       deliverable.setCrps(new ArrayList<>());
     }
+    /* Delete */
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps()) {
+    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       if (!deliverable.getCrps().contains(deliverableCrp)) {
         deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
       }
     }
 
+    /* Save */
     for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
-
       if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
-
-        if (deliverableCrp.getCrpPandr() != null) {
-          if (deliverableCrp.getCrpPandr().getId() == null) {
-            deliverableCrp.setCrpPandr(null);
-          } else {
-            if (deliverableCrp.getCrpPandr().getId().intValue() == -1) {
-              deliverableCrp.setCrpPandr(null);
-            }
-          }
-        }
-
-        if (deliverableCrp.getCrpPandr() == null) {
-          deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(new Long(3)));
-        } else {
-          deliverableCrp.setIpProgram(null);
-        }
-
+        deliverableCrp.setPhase(this.getActualPhase());
         deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }
     }
