@@ -81,7 +81,7 @@
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
-                  [#if item.action == "outcomesList"]
+                  [#if item.action == "centerOutcomesList"]
                       <span class="glyphicon glyphicon-chevron-right"></span>
                   [#elseif item.action == "outputsList"]
                       &nbsp; <span class="glyphicon glyphicon-chevron-right"></span>
@@ -211,6 +211,6 @@
 
 [#-- program Submit JS --]
 [#if !centerGlobalUnit]
-  [#assign customJS = [ "${baseUrlMedia}/js/impactPathway/impactGraphic.js" ] + customJS  /]
+  [#assign customJS = [ "${baseUrl}/js/impactPathway/impactGraphic.js" ] + customJS  /]
 [/#if]
 [#assign customJS = [ "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]
