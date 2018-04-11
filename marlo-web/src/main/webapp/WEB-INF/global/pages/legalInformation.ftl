@@ -84,7 +84,7 @@
         </div>
         <div>
           <strong>Google</strong>
-          <p>Google, as a third-party vendor, uses cookies to track statistics on our site. More information can be found in: <a href='www.google.com/intl/en/policies/privacy'>https://www.google.com/intl/en/policies/privacy</a></p>
+          <p>Google, as a third-party vendor, uses cookies to track statistics on our site. More information can be found in: <a target="_blank" href="https://www.google.com/intl/en/policies/privacy" >www.google.com/intl/en/policies/privacy</a> </p>
         </div>
         <div>
           <strong>We have implemented the following:</strong>
@@ -105,7 +105,7 @@
           </ul>
         </div>
         <div>
-          <strong>Conacting Us</strong>
+          <strong>Contacting Us</strong>
           <p>If there are any questions regarding this privacy policy, you may contact us using the information below.</p>
           <span>International Center for Tropical Agriculture (CIAT)</span><br />
           <span>Km 17 Recta Cali-Palmira</span><br />
@@ -122,16 +122,16 @@
       <div class="simpleBox">
         <div>
           <strong>1. Terms</strong>
-          <p>By accessing the website at <a target="_blank" href="marlo.cgiar.org">https://marlo.cgiar.org</a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
+          <p>By accessing the website at <a target="_blank" href="https://marlo.cgiar.org"> marlo.cgiar.org </a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
         </div>
         <div>
           <strong>2. Copyright </strong>
-          <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the <a targe="_blank" href="ciat.cgiar.org/">International Center for Tropical Agriculture (CIAT)</a>.</p>
+          <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the <a target="_blank" href="https://ciat.cgiar.org/">International Center for Tropical Agriculture (CIAT)</a>.</p>
         </div>
         <div>
           <strong>3. Use License</strong>
           <h5>Software</h5>
-          <p>MARLO is a free software licensed under the <a target="_blank" href="www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License V 3.0 (GPL-3) </a></p>
+          <p>MARLO is a free software licensed under the <a target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License V 3.0 (GPL-3) </a></p>
           <ul>
             <li>
               <p>According to the GPL-3 you may:</p>
@@ -154,7 +154,7 @@
           <p>This license shall automatically terminate if you violate any of these restrictions and may be terminated by the International Center for Tropical Agriculture (CIAT) at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</p>
           <h5>Content</h5>
           <p>Staff or personnel associated with CGIAR Research Programs and CGIAR Centers must acknowledge and agree that data and information or any other informational content uploaded in MARLO (hereinafter referred to as “Contributions”) could be used on public CGIAR Research Programs and/or CGIAR Centers’ websites and other knowledge sharing platforms.</p>
-          <p>Such Contributions, and for that matter, all informational products at CGIAR level are regulated by the <a target="_blank" href="www.cgiar.org/resources/cgiar-intellectual-asset-management">CGIAR Principles on the Management of Intellectual Assets</a> and the <a target="_blank" href="www.cgiar.org/resources/open-access/">CGIAR Open Access Policy</a>.</p>
+          <p>Such Contributions, and for that matter, all informational products at CGIAR level are regulated by the <a target="_blank" href="https://www.cgiar.org/how-we-work/accountability/cgiar-intellectual-asset-management/">CGIAR Principles on the Management of Intellectual Assets</a> and the <a target="_blank" href="https://www.cgiar.org/how-we-work/accountability/open-access/">CGIAR Open Access Policy</a>.</p>
           <p>In order to make a Contribution to the MARLO website, you must have a registered account. The owner of any Contribution retains copyright rights to such content, as applicable.  If you make a contribution you must have the right to contribute such Contribution.  Please make certain that any Contribution is consistent with these Terms and Conditions.</p>
           <p>The International Center for Tropical Agriculture (CIAT) or the MARLO Team may, but is not obligated to, review your Contributions. CIAT or the MARLO Team may, in its sole discretion, terminate or suspend your registered account if your Contribution violates these Terms and Conditions. Acceptance of a Contribution does not constitute an endorsement or sponsorship of the Contribution by CIAT.</p>
           <p> If you delete your Contribution, CIAT does not warrant that it will be able to or will take responsibility for removing deleted Contributions from the MARLO website, including but not limited to those outside of its reasonable control or those to whom you or others may have forwarded your Contribution.</p>
@@ -190,8 +190,11 @@
       
       <h2 id="copyRight">Copyright</h2>
       <div class="simpleBox">
-        <a class="pull-right" href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /></a>
-        <p>GNUv3 license</p>
+        <div class="image-container">
+          <a class="pull-right" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html"> <img class="" src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL" /> </a>
+          <a class="pull-right" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.en.html"> <img height="51px" class="" src="https://www.gnu.org/graphics/heckert_gnu.small.png" alt="GPL" /> </a>
+        </div>
+        <p style="width:70%;"> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program. If not, see <a target="_blank" href="http://www.gnu.org/licenses">http://www.gnu.org/licenses</a>.</p>
         <div class="clearfix"></div>
       </div>
       

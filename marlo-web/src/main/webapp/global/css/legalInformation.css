@@ -1,3 +1,7 @@
-p,li {
+li, p{
     text-align: justify;
+}
+
+#draggable-button p{
+    text-align: inherit;
 }
