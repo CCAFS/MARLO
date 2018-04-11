@@ -342,10 +342,10 @@
     [#if editable]
       <div class="form-group row">
         <div class="col-md-5">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
+          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName="crps" className="crpSelect" editable=editable/]
         </div>
         <div class="col-md-7">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName="programs"   multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
+          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName="programs" className="flaghsipSelect" editable=editable/]
         </div>
       </div>
     [/#if] 
@@ -623,10 +623,12 @@
   [#assign customName = "${name}[${index}]" /]
   <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if]
+    [#-- Hidden Inputs --]
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
-    <input class="idCrp" type="hidden" name="${customName}.crpPandr.id" value="${(element.crpPandr.id)!}" />
-    <input class="idFlagship" type="hidden" name="${customName}.ipProgram.id" value="${(element.ipProgram.id)!}" />
-    <span class="name">${(element.crpPandr.acronym?upper_case)!((element.crpPandr.name?upper_case)!)} - ${(element.ipProgram.acronym)!}</span>
+    <input class="idGlobalUnit" type="hidden" name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!}" />
+    <input class="idCRPProgram" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!}" />
+    [#-- Title --]
+    <span class="name">${(element.globalUnit.acronymValid)!}  ${(element.crpProgram.composedName)!}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

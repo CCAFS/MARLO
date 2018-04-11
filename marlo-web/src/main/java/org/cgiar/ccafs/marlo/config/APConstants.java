@@ -563,6 +563,10 @@ public final class APConstants {
   public static final String DELIVERABLE_RULE_COMPILANCE_CHECK = "complianceCheck";
   public static final String DELIVERABLE_RULE_JORNAL_ARTICLES = "journalArticles";
 
+
+  public static final String GLOBAL_UNIT_CENTER_TYPE = "2";
+  public static final String GLOBAL_UNIT_CGIAR_CENTER_TYPE = "4";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
