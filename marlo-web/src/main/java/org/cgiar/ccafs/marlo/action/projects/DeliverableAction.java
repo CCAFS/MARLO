@@ -816,11 +816,12 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list =
+        deliverable.getDeliverablePartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+          .collect(Collectors.toList());
 
 
       return list;
@@ -1364,8 +1365,8 @@ public class DeliverableAction extends BaseAction {
       crps = new HashMap<>();
       for (GlobalUnit crp : crpManager.findAll().stream()
         .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()
-          && c.getGlobalUnitType().getId().toString() != APConstants.GLOBAL_UNIT_CENTER_TYPE
-          && c.getGlobalUnitType().getId().toString() != APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE)
+          && c.getGlobalUnitType().getId() != APConstants.GLOBAL_UNIT_CENTER_TYPE
+          && c.getGlobalUnitType().getId() != APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE)
         .collect(Collectors.toList())) {
         crps.put(crp.getId().toString(), crp.getAcronym());
       }
@@ -1391,8 +1392,8 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager.findAll()
-            .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager
+            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 
@@ -1869,6 +1870,12 @@ public class DeliverableAction extends BaseAction {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
         deliverableCrp.setPhase(this.getActualPhase());
+        if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
+          && deliverableCrp.getGlobalUnit().getId() != -1) {
+          deliverableCrp.setCrpProgram(null);
+        } else {
+          deliverableCrp.setGlobalUnit(null);
+        }
         deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }
     }
