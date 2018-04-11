@@ -125,25 +125,19 @@ function addDisseminationEvents() {
 
   // Add many flagships
   $(".flaghsipSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "" && option.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.idCRPProgram[value='" + option.val() + "']").exists()) {
+    var CRPProgram = $(this).find("option:selected");
+    if(CRPProgram.val() != "" && CRPProgram.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.idCRPProgram[value='" + CRPProgram.val() + "']").exists()) {
       } else {
-        var composedText = currentCrpSession + "  " + option.text();
-        var shortText = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
-        addFlagship(option.val(), shortText, composedText, "");
-        // addFlagship(id,text,title,crpId)
+        addFlagship(CRPProgram.val(), CRPProgram.text());
       }
     }
   });
   $(".crpSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "" && option.val() != "-1") {
-      if(!($(".flagshipList").find(".flagships input.idGlobalUnit[value='" + option.val() + "']").exists())) {
-        var composedText = option.text();
-        var shortText = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
-        addCrp("", shortText, composedText, option.val());
-        // addCrp(id,text,title,crpId)
+    var globalUnit = $(this).find("option:selected");
+    if(globalUnit.val() != "" && globalUnit.val() != "-1") {
+      if(!($(".flagshipList").find(".flagships input.idGlobalUnit[value='" + globalUnit.val() + "']").exists())) {
+        addCrp(globalUnit.val(), globalUnit.text());
       }
     }
   });
@@ -201,28 +195,28 @@ function addDisseminationEvents() {
   }
 }
 
-function addFlagship(id,text,title,crpId) {
+function addFlagship(idCRPProgram,text) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
+  var tooltip = text.length > 60 ? text.substr(0, 60) + ' ... ' : text;
   $item.find(".name").text(text);
-  $item.find(".name").attr("title", title);
+  $item.find(".name").attr("title", tooltip);
   $item.find(".idElemento").val("-1");
-  $item.find(".idGlobalUnit").val(crpId);
-  $item.find(".idCRPProgram").val(id);
+  $item.find(".idCRPProgram").val(idCRPProgram);
   $list.append($item);
   $item.show('slow');
   checkNextFlagshipItems($list);
   updateFlagship();
 }
 
-function addCrp(id,text,title,crpId) {
+function addCrp(idGlobalUnit,text) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
+  var tooltip = text.length > 60 ? text.substr(0, 60) + ' ... ' : text;
   $item.find(".name").text(text);
-  $item.find(".name").attr("title", title);
+  $item.find(".name").attr("title", tooltip);
   $item.find(".idElemento").val("-1");
-  $item.find(".idGlobalUnit").val(crpId);
-  $item.find(".idCRPProgram").val(id);
+  $item.find(".idGlobalUnit").val(idGlobalUnit);
   $list.append($item);
   $item.show('slow');
   checkNextFlagshipItems($list);
@@ -587,5 +581,4 @@ function validateAuthors(lastName,firstName) {
   } else {
     return false;
   }
-
 }

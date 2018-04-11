@@ -628,7 +628,7 @@
     <input class="idGlobalUnit" type="hidden" name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!}" />
     <input class="idCRPProgram" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!}" />
     [#-- Title --]
-    <span class="name">${(element.globalUnit.acronymValid)!}  ${(element.crpProgram.composedName)!}</span>
+    <span class="name">${(element.globalUnit.acronym)!}  ${(element.crpProgram.composedName)!}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
