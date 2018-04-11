@@ -211,6 +211,6 @@
 
 [#-- program Submit JS --]
 [#if !centerGlobalUnit]
-  [#assign customJS = [ "${baseUrlMedia}/js/impactPathway/impactGraphic.js" ] + customJS  /]
+  [#assign customJS = [ "${baseUrl}/js/impactPathway/impactGraphic.js" ] + customJS  /]
 [/#if]
 [#assign customJS = [ "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]
