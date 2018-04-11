@@ -23,8 +23,8 @@
 [#assign locationName = "locElements"/]
 [#assign countID = 0/]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 <div class="container helpText viewMore-block">
@@ -370,18 +370,20 @@
                 [#if element.name?has_content]
                   [#if element.name == 'Country']
                     [#if project.countryFS?has_content]
-                      [#if element.locElements?has_content]
-                      <hr class="suggestedLocations" />
-                      [/#if]
-                      <div class="row suggestedLocations-container">
-                        <div class="col-sm-4 col-md-4">
-                          <div class="suggestedLocations-label">
-                            Suggested countries:
-                          </div>
-                        </div>
-                      </div>
                       [#list project.countryFS as suggestedCountry]
                         [#if suggestedCountry.selected]
+                          [#if element.locElements?has_content]
+                          <hr class="suggestedLocations" />
+                          [/#if]
+                          [#if suggestedCountry?is_first]
+                          <div class="row suggestedLocations-container">
+                            <div class="col-sm-4 col-md-4">
+                              <div class="suggestedLocations-label">
+                                Suggested countries:
+                              </div>
+                            </div>
+                          </div>
+                          [/#if]
                           <div class="col-md-4">
                             <div class="locations col-md-12">
                               <div id="${suggestedCountry.locElement.isoAlpha2!}" class="locationName">
@@ -470,7 +472,16 @@
   </li>
 </ul>
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#-- Suggested locations separator in table - template --]
+<div id="suggested-separator-template" class="row suggestedLocations-container" style="display:none">
+  <div class="col-sm-4 col-md-4">
+    <div class="suggestedLocations-label">
+      Suggested countries:
+    </div>
+  </div>
+</div>
+
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro recommendedLocation element  name index template=false ]
   [#local customName = "${name}[${index}]" /]

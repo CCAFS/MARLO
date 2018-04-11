@@ -184,23 +184,25 @@ function attachEvents() {
     if($(this).is(":checked")){
 
       //addLocLevel(locationName,locationId,locationIsList,$locationSelect);
-      if(countryRow.exists() && countryList.exists()){
-        // Add suggested country in locations table
-        var $tableItem = $('#suggestedLocation-template').clone(true).removeAttr("id");
-
-        $tableItem.find(".locationName").attr('id',locIso);
-        $tableItem.find(".lName").text(locName);
-        countryRow.parent().find('.suggestedCountriesList').children().append($tableItem);
-        $tableItem.show('slow');
-
-        // Add suggested country in locations list (all locations modal)
-        var $listItem = $('#itemList-template').clone(true).removeAttr("id");
-        $listItem.attr('id',locId);
-        $listItem.attr('name',locName);
-        $listItem.find(".item-name").text(locName);
-        countryList.append($listItem);
+      if(countryRow.exists()){
+        addSuggestedCountry(locIso,locName,locId);
 
       }else{
+        var $suggestedCountrySeparator = $("#suggested-separator-template").clone(true).removeAttr("id");
+
+        // If Country level location doesn't exists, so create level location in table
+        var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
+        $locationItem.find(".locLevelName").html('Country');
+        $locationItem.find("input.locationLevelId").val('2');
+        $locationItem.find("input.locationLevelName").val('Country');
+        $locationItem.find("input.isList").val(true);
+        $(".locationsDataTable > tbody:last-child").append($locationItem);
+
+        //$(".locationsDataTable").find("countriesList").children().append($locationItem);
+        $locationItem.show("slow");
+        updateIndex();
+
+        addSuggestedCountry(locIso,locName,locId);
       }
 
       countries.push(locIso);
@@ -224,7 +226,7 @@ function attachEvents() {
   });
 
   $('#countriesCmvs').on('change', function() {
-    console.log('Change');
+    //console.log('Change');
   });
 
   $('.allLocationsButton').on('click',function(){
@@ -764,6 +766,7 @@ function notify(text) {
   noty(notyOptions);
 }
 
+//Here
 //Adding location level with locElements
 function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
   var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
@@ -772,6 +775,7 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
   $locationItem.find("input.locationLevelName").val(locationName);
   $locationItem.find("input.isList").val(locationIsList);
   $(".locationsDataTable > tbody:last-child").append($locationItem);
+
   //$(".locationsDataTable").find("countriesList").children().append($locationItem);
   $locationItem.show("slow");
   updateIndex();
@@ -1067,9 +1071,6 @@ function changeMapDiv(selectedButton){
   var mapCurrentNode = map.getDiv();
   var selectedModal = $(selectedButton).data('target');
 
-
-
-
   //infoWindow.close();
 
   if(selectedModal == '.addLocationModal'){
@@ -1097,4 +1098,26 @@ function closeAllInfoWindows(){
   for(var i=0; i<arInfoWindows.length;i++){
     arInfoWindows[i].close();
   }
+}
+
+function addSuggestedCountry(locIso,locName,locId){
+  console.log(locIso+' - '+locName);
+
+  var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
+  var countryList = $(".list-container").find(".Country");
+
+  // Add suggested country in locations table
+  var $tableItem = $('#suggestedLocation-template').clone(true).removeAttr("id");
+
+  $tableItem.find(".locationName").attr('id',locIso);
+  $tableItem.find(".lName").text(locName);
+  countryRow.parent().find('.suggestedCountriesList').children().append($tableItem);
+  $tableItem.show('slow');
+
+  // Add suggested country in locations list (all locations modal)
+  var $listItem = $('#itemList-template').clone(true).removeAttr("id");
+  $listItem.attr('id',locId);
+  $listItem.attr('name',locName);
+  $listItem.find(".item-name").text(locName);
+  countryList.append($listItem);
 }
