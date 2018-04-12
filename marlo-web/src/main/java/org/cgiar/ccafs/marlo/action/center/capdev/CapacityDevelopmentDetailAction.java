@@ -979,10 +979,14 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
     }
+    if (participant.getSync() == null) {
+      participant.setSync(null);
+    }
     participant.setActive(true);
     participant.setAciveSince(new Date());
     participant.setCreatedBy(this.getCurrentUser());
     participant.setModifiedBy(this.getCurrentUser());
+
 
     participantService.saveParticipant(participant);
   }
