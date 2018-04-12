@@ -108,40 +108,33 @@
         
         [#-- Deliverable table with categories and sub categories --]
         <div class="form-group deliverableTypeMessage">
-          <!-- Large modal -->
-          
           <div class="note left">
-            <div id="popup" class="helpMessage3">
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">[@s.text name="project.deliverable.generalInformation.deliverableType" /]</button>
-            </div>
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target=".deliverablesTypeModal">
+              <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]
+            </button>
           </div>
-          
-          
-          <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+          <div class="modal fade deliverablesTypeModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
-                <table id="deliverableTypes" style="height:700px; width:950px;">
-                  <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
-                  <th> [@s.text name="project.deliverables.dialogMessage.part2" /] </th>
-                  <th> [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
-                  [#if deliverablesList?has_content]
-                  [#list deliverablesList as mt]
-                    [#list action.getDeliverablesSubTypes(mt.id) as st]
-                      [#if st_index == 0]
-                      <tr>
-                        <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
-                        <td> ${st.name} </td>
-                        <td> ${(st.description)!}</td>
-                      </tr>
-                      [#else]
-                      <tr>
-                        <td> ${st.name} </td>
-                        <td> ${(st.description)!} </td>
-                      </tr>
-                      [/#if]
-                    [/#list]
-                  [/#list]
-                  [/#if]  
+                <table id="deliverableTypes" class="table" style="">
+                  <thead>
+                    <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
+                    <th> [@s.text name="project.deliverables.dialogMessage.part2" /] </th>
+                  </thead>
+                  <tbody>
+                    [#if deliverablesList?has_content]
+                      [#list deliverablesList as mt]
+                        [#list action.getDeliverablesSubTypes(mt.id) as st]
+                          <tr>
+                            [#if st_index == 0]
+                            <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                            [/#if]
+                            <td> ${st.name} [#if st.description?has_content]<br /><small><i>(${(st.description)!})</i></small>[/#if]</td>
+                          </tr>
+                        [/#list]
+                      [/#list]
+                    [/#if]  
+                  </tbody>
                 </table>
               </div>
             </div>
