@@ -1,10 +1,11 @@
 [#ftl]
 
-[#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css",
-                      "${baseUrl}/global/css/customDataTable.css"] /]
-
+[#assign customCSS = [
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css",
+  "${baseUrl}/global/css/customDataTable.css"
+  ] 
+/]
 [#assign pageLibs = ["select2","flat-flags"] /]
-
 [#assign customJS = [
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/capdevDescription.js",
@@ -38,8 +39,8 @@
   <div class="col-md-9 ">
 
     [#-- Section Messages --]
-        [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
-        <br />
+    [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
+    <br />
         
     <div class="">
       <div class="pull-right">
@@ -53,8 +54,6 @@
   
 
     <h3 class="headTitle"> Capacity Development Description</h3>    
-
-    
     <div class="form-group "> 
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       <!-- Radio Buttons-->
@@ -79,18 +78,17 @@
             <div id="disciplinesList" class="approachesList" >
               <ul class="list">
                 [#if (capdev.capdevDisciplineList?has_content)!false]
-                [#list capdev.capdevDisciplineList as discipline]
-                <li id="" class="discipline clearfix col-md-3">
-                  [#if editable]
-                    <a class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline" href="[@s.url action='${centerSession}/deleteDiscipline'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevDiscipline" value=discipline.id /][/@s.url]"></a>
-                  [/#if]
-                  <input class="id" type="hidden"  value="${(discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].id" />
-                  <input class="disciplineId" type="hidden"  value="${(discipline.discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].discipline.id" />
-                  
-                  <span class="name"> ${discipline.discipline.name}</span>
-                  
-                  <div class="clearfix"></div>
-                </li>
+                  [#list capdev.capdevDisciplineList as discipline]
+                  <li id="" class="discipline">
+                    [#if editable]
+                      <a class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline" href="[@s.url action='${centerSession}/deleteDiscipline'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevDiscipline" value=discipline.id /][/@s.url]"></a>
+                    [/#if]
+                    <input class="id" type="hidden"  value="${(discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].id" />
+                    <input class="disciplineId" type="hidden"  value="${(discipline.discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].discipline.id" />
+                    
+                    <span class="name"> ${discipline.discipline.name}</span>
+                    
+                  </li>
                 [#else]
 
                 [/#list]
