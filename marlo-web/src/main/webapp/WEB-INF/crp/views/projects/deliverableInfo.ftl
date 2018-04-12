@@ -46,6 +46,7 @@
         [/#if]  
       </table>
     </div> <!-- End dialog-->
+
     <div class="note left">
       <div id="popup" class="helpMessage3">
         <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
