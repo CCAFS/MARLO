@@ -1054,8 +1054,9 @@ public class DeliverableAction extends BaseAction {
       }
 
       if (deliverable.getDeliverableQualityChecks() != null) {
-        List<DeliverableQualityCheck> checks = new ArrayList<>(
-          deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList()));
+        List<DeliverableQualityCheck> checks = new ArrayList<>(deliverable.getDeliverableQualityChecks().stream()
+          .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
         if (!checks.isEmpty()) {
           deliverable.setQualityCheck(checks.get(0));
         }
@@ -1620,11 +1621,7 @@ public class DeliverableAction extends BaseAction {
           deliverable.getGenderLevels().clear();
         }
 
-        if (deliverable.getQualityCheck() != null) {
-          deliverable.getQualityCheck().setFileAssurance(null);
-          deliverable.getQualityCheck().setFileDictionary(null);
-          deliverable.getQualityCheck().setFileTools(null);
-        }
+        deliverable.setQualityCheck(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
@@ -2180,7 +2177,10 @@ public class DeliverableAction extends BaseAction {
     }
 
     if (deliverable.getQualityCheck().getFileAssurance() != null) {
-      if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
+      if (deliverable.getQualityCheck().getFileAssurance().getId() != null
+        && deliverable.getQualityCheck().getQualityAssurance() != null
+        && Integer.valueOf(deliverable.getQualityCheck().getQualityAssurance().getId().intValue())
+          .equals(APConstants.DELIVERABLE_QUALITY_ANSWER_YES)) {
         FileDB fileDb;
         // Set FileDB to null if an exception occurs (-1 id)
         try {
@@ -2203,7 +2203,10 @@ public class DeliverableAction extends BaseAction {
 
 
     if (deliverable.getQualityCheck().getFileDictionary() != null) {
-      if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
+      if (deliverable.getQualityCheck().getFileDictionary().getId() != null
+        && deliverable.getQualityCheck().getFileDictionary() != null
+        && Integer.valueOf(deliverable.getQualityCheck().getFileDictionary().getId().intValue())
+          .equals(APConstants.DELIVERABLE_QUALITY_ANSWER_YES)) {
         FileDB fileDb;
         // Set FileDB to null if an exception occurs (-1 id)
         try {
@@ -2225,7 +2228,10 @@ public class DeliverableAction extends BaseAction {
     }
 
     if (deliverable.getQualityCheck().getFileTools() != null) {
-      if (deliverable.getQualityCheck().getFileTools().getId() != null) {
+      if (deliverable.getQualityCheck().getFileTools().getId() != null
+        && deliverable.getQualityCheck().getDataTools() != null
+        && Integer.valueOf(deliverable.getQualityCheck().getDataTools().getId().intValue())
+          .equals(APConstants.DELIVERABLE_QUALITY_ANSWER_YES)) {
         FileDB fileDb;
         // Set FileDB to null if an exception occurs (-1 id)
         try {
