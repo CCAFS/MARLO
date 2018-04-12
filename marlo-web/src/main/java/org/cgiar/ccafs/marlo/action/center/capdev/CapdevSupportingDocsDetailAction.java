@@ -191,8 +191,8 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     CenterDeliverableType deliverableType = centerDeliverableTypeService.getDeliverableTypeById(deliverableTypeID);
     if (deliverableType != null) {
-      if (deliverableType.getDeliverables() != null) {
-        for (CenterDeliverableType deliverableSubType : deliverableType.getDeliverables().stream()
+      if (deliverableType.getCenterDeliverableTypes() != null) {
+        for (CenterDeliverableType deliverableSubType : deliverableType.getCenterDeliverableTypes().stream()
           .collect(Collectors.toList())) {
           keyOutput = new HashMap<String, Object>();
           keyOutput.put("id", deliverableSubType.getId());
