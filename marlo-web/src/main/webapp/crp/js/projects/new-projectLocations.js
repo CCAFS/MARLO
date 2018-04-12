@@ -31,6 +31,14 @@ function attachEvents() {
     countries.push($(e).find(".locElementCountry").val());
   });
 
+  if( $('.suggestedCountriesList').find('.locations').exists() ){
+    $('.suggestedCountriesList').find('.suggestedLocations-container').show();
+
+    if( $(".locationsDataTable").find("input.locationLevelId[value='2']").parent().find(".locElement").exists() ){
+      $('.suggestedCountriesList').find('.suggestedLocations-separator').show();
+    }
+  }
+
   // Add suggested countries list into the blue mapped countries in map
   $('.suggestedCountriesList').find('.locations').each(function(i,e){
     countries.push($(e).find('.locationName').attr('id'));
@@ -192,6 +200,7 @@ function attachEvents() {
 
         // If Country level location doesn't exists, so create level location in table
         var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
+        $locationItem.attr("data-name","Country");
         $locationItem.find(".locLevelName").html('Country');
         $locationItem.find("input.locationLevelId").val('2');
         $locationItem.find("input.locationLevelName").val('Country');
@@ -209,11 +218,19 @@ function attachEvents() {
       layer.setMap(null);
       mappingCountries();
     }else{
-      // Remove unmarked locations from locations table
+      // Remove unmarked location from locations table
       countryRow.parent().find('.suggestedCountriesList').children().find('#'+locIso).
         parent().parent().remove();
-      // Remove unmarked locations from locations list (all locations modal)
+      // Remove unmarked location from locations list (all locations modal)
       countryList.find(".item-name").parent().remove();
+
+      console.log($(".locationLevel[data-name='Country']").find('.locations').length);
+      if($(".locationLevel[data-name='Country']").find('.locations').length == 0) {
+        //here
+        $(".locationLevel[data-name='Country']").remove();
+        updateIndex();
+        checkItems($('#selectsContent'));
+      }
 
       // Search the unmarked location in countries array and remove it
       var index = $.inArray(locIso,countries);
@@ -695,7 +712,7 @@ function removeLocationItem() {
       removeMarker(id);
     }
   }
-  $item.hide(function() {
+  $item.hide(function() { //here
     $item.remove();
     if($(list).find(".locElement").length == 0) {
       $(list).parents(".locationLevel").remove();
@@ -766,7 +783,7 @@ function notify(text) {
   noty(notyOptions);
 }
 
-//Here
+
 //Adding location level with locElements
 function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
   var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
