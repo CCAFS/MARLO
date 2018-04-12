@@ -582,7 +582,7 @@ span.select2-selection.select2-selection--multiple{
     overflow-y: auto;
 }
 
-hr.suggestedLocations{
+hr.suggestedLocations-separator{
     margin-bottom: 5px;
 }
 

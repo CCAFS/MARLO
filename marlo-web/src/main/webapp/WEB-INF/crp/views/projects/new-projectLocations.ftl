@@ -348,7 +348,7 @@
 [#macro locationsTableMacro element name index template=false list=false]
   [#if template]<table>[/#if]
       [#local customName = "${name}[${index}]" /]
-      <tr id="locationLevel-${template?string('template',index)}" class="locationLevel" style="display:${template?string('none','')}">
+      <tr id="locationLevel-${template?string('template',index)}" class="locationLevel" style="display:${template?string('none','')}" data-name="${(element.name)!''}">
         <th class="locLevelName" width="20%">${(element.name)!''}</th>
         <td width="80%">
           <div class=" locationLevel-optionContent " listname="${customName}.locElements">
@@ -370,20 +370,16 @@
                 [#if element.name?has_content]
                   [#if element.name == 'Country']
                     [#if project.countryFS?has_content]
+                      <hr class="suggestedLocations-separator" style="display:none" />
+                      <div class="row suggestedLocations-container" style="display:none">
+                        <div class="col-sm-4 col-md-4">
+                          <div class="suggestedLocations-label">
+                            Suggested countries:
+                          </div>
+                        </div>
+                      </div>
                       [#list project.countryFS as suggestedCountry]
                         [#if suggestedCountry.selected]
-                          [#if element.locElements?has_content]
-                          <hr class="suggestedLocations" />
-                          [/#if]
-                          [#if suggestedCountry?is_first]
-                          <div class="row suggestedLocations-container">
-                            <div class="col-sm-4 col-md-4">
-                              <div class="suggestedLocations-label">
-                                Suggested countries:
-                              </div>
-                            </div>
-                          </div>
-                          [/#if]
                           <div class="col-md-4">
                             <div class="locations col-md-12">
                               <div id="${suggestedCountry.locElement.isoAlpha2!}" class="locationName">
@@ -471,15 +467,6 @@
     <br />
   </li>
 </ul>
-
-[#-- Suggested locations separator in table - template --]
-<div id="suggested-separator-template" class="row suggestedLocations-container" style="display:none">
-  <div class="col-sm-4 col-md-4">
-    <div class="suggestedLocations-label">
-      Suggested countries:
-    </div>
-  </div>
-</div>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
