@@ -20,6 +20,9 @@
         <property name="name" type="string">
             <column name="name" length="65535" not-null="true" />
         </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
@@ -29,6 +32,12 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" />
         </property>
+        <set name="centerDeliverableTypes" table="center_deliverable_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="parent_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" />
+        </set>
         <set name="deliverables" table="center_deliverables" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="type_id" />
