@@ -365,13 +365,23 @@
                 </div>
               </div>
               [#-- Countries from suggested locations list --]
-              <div class="row suggestedCountriesList">
+              <div class="row suggestedCountriesList" style="display:none">
                 <div class="col-sm-12">
+                [#if template]
+                  <hr class="suggestedLocations-separator" />
+                  <div class="row suggestedLocations-separator">
+                    <div class="col-sm-4 col-md-4">
+                      <div class="suggestedLocations-label">
+                        Suggested countries:
+                      </div>
+                    </div>
+                  </div>
+                [/#if]
                 [#if element.name?has_content]
                   [#if element.name == 'Country']
                     [#if project.countryFS?has_content]
-                      <hr class="suggestedLocations-separator" style="display:none" />
-                      <div class="row suggestedLocations-container" style="display:none">
+                      <hr class="suggestedLocations-separator" />
+                      <div class="row suggestedLocations-separator">
                         <div class="col-sm-4 col-md-4">
                           <div class="suggestedLocations-label">
                             Suggested countries:

@@ -32,11 +32,8 @@ function attachEvents() {
   });
 
   if( $('.suggestedCountriesList').find('.locations').exists() ){
-    $('.suggestedCountriesList').find('.suggestedLocations-container').show();
+    $('.suggestedCountriesList').show();
 
-    if( $(".locationsDataTable").find("input.locationLevelId[value='2']").parent().find(".locElement").exists() ){
-      $('.suggestedCountriesList').find('.suggestedLocations-separator').show();
-    }
   }
 
   // Add suggested countries list into the blue mapped countries in map
@@ -214,6 +211,8 @@ function attachEvents() {
         addSuggestedCountry(locIso,locName,locId);
       }
 
+      $('.suggestedCountriesList').show();
+
       countries.push(locIso);
       layer.setMap(null);
       mappingCountries();
@@ -224,7 +223,9 @@ function attachEvents() {
       // Remove unmarked location from locations list (all locations modal)
       countryList.find(".item-name").parent().remove();
 
-      console.log($(".locationLevel[data-name='Country']").find('.locations').length);
+      if($(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0){
+        $('.suggestedCountriesList').hide();
+      }
       if($(".locationLevel[data-name='Country']").find('.locations').length == 0) {
         //here
         $(".locationLevel[data-name='Country']").remove();
@@ -714,7 +715,7 @@ function removeLocationItem() {
   }
   $item.hide(function() { //here
     $item.remove();
-    if($(list).find(".locElement").length == 0) {
+    if($(list).find(".locElement").length == 0 && $(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0) {
       $(list).parents(".locationLevel").remove();
     }
     updateIndex();
