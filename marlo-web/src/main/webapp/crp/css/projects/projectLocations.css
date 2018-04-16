@@ -590,7 +590,7 @@ hr.suggestedLocations-separator{
     opacity: 0.4;
 }
 
-.suggestedLocations-container{
+div.suggestedLocations-separator{
     margin: -5px 50px 10px -26px;
 }
 
