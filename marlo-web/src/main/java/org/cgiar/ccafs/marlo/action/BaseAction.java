@@ -2196,8 +2196,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       clazz = Class.forName(className);
       if (clazz == CrpClusterKeyOutput.class) {
         CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        List<DeliverableInfo> deList =
-          crpClusterKeyOutput.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<DeliverableInfo> deList = crpClusterKeyOutput.getDeliverables().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
         for (DeliverableInfo deliverableInfo : deList) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
@@ -2241,7 +2242,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == ProjectBudget.class) {
         ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
         List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
           .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
@@ -2274,7 +2275,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == Project.class) {
         ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
         List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
           .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
@@ -4146,8 +4147,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       int caseStudySection = 0;
       int highlightSection = 0;
 
-      List<Deliverable> deliverables =
-        project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+      List<Deliverable> deliverables = project.getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null).collect(Collectors.toList());
       List<Deliverable> openA = deliverables.stream()
         .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
           || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
