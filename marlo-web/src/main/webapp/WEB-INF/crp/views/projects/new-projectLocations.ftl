@@ -321,7 +321,7 @@
       [#list element.locElements as location]
         <li id="${location.id!}" name="${location.name!}" class="marker-map">
           <span class="glyphicon glyphicon-map-marker"></span>
-          ${location.name!}
+          <span class="item-name">${location.name!}</span>
           <br />
           [#if list!=true]<span class="coordinates">(${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})</span>[/#if]
         </li>

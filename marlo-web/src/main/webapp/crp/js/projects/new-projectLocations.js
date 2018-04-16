@@ -31,9 +31,8 @@ function attachEvents() {
     countries.push($(e).find(".locElementCountry").val());
   });
 
-  if( $('.suggestedCountriesList').find('.locations').exists() ){
-    $('.suggestedCountriesList').show();
-
+  if( $('.locationLevel[data-name="Country"] .suggestedCountriesList').find('.locations').exists() ){
+    $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
   }
 
   // Add suggested countries list into the blue mapped countries in map
@@ -174,6 +173,7 @@ function attachEvents() {
     $(document).trigger('updateComponent');
   });
 
+  //When suggested locations checkbox change do
   $('input.recommendedSelected').on('change', function() {
     // On checkbox change, put value (true or false) in next input
     $(this).next().val($(this).is(":checked"));
@@ -211,7 +211,7 @@ function attachEvents() {
         addSuggestedCountry(locIso,locName,locId);
       }
 
-      $('.suggestedCountriesList').show();
+      $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
 
       countries.push(locIso);
       layer.setMap(null);
@@ -221,13 +221,12 @@ function attachEvents() {
       countryRow.parent().find('.suggestedCountriesList').children().find('#'+locIso).
         parent().parent().remove();
       // Remove unmarked location from locations list (all locations modal)
-      countryList.find(".item-name").parent().remove();
+      countryList.find(".item-name").parent().remove(); // here
 
       if($(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0){
-        $('.suggestedCountriesList').hide();
+        $('.locationLevel[data-name="Country"] .suggestedCountriesList').hide();
       }
       if($(".locationLevel[data-name='Country']").find('.locations').length == 0) {
-        //here
         $(".locationLevel[data-name='Country']").remove();
         updateIndex();
         checkItems($('#selectsContent'));
@@ -704,6 +703,9 @@ function removeLocationItem() {
   var globalList = $(this).parents("#selectsContent");
   var list = $(this).parents(".optionSelect-content");
   var $item = $(this).parents('.locElement');
+  console.log($item.attr('data-locId'));
+  //var $allLocListItem = $('.allLocations-container .list-container').find();
+
   if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
     var optionValue = $item.attr("id").split('-');
     var id = optionValue[1];
@@ -715,6 +717,7 @@ function removeLocationItem() {
   }
   $item.hide(function() { //here
     $item.remove();
+
     if($(list).find(".locElement").length == 0 && $(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0) {
       $(list).parents(".locationLevel").remove();
     }
