@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapdevSupportingDocsValidator;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,13 +73,21 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   private List<Map<String, Object>> json;
   private List<CenterDeliverableDocument> documents;
 
+  private DeliverableTypeManager deliverableTypeManager;
+  private List<DeliverableType> deliverableTypeParent;
+
+
   private ICenterDeliverableTypeManager centerDeliverableTypeService;
+
+
   private ICapacityDevelopmentService capdevService;
+
+
   private ICenterDeliverableManager centerDeliverableService;
   private ICenterDeliverableDocumentManager centerDeliverableDocService;
-
   private String transaction;
   private final AuditLogManager auditLogService;
+
   private CenterDeliverable supportingDocDB;
 
   @Inject
@@ -94,7 +105,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     this.centerDeliverableDocService = centerDeliverableDocService;
 
   }
-
 
   @Override
   public String cancel() {
@@ -145,7 +155,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public CapacityDevelopment getCapdev() {
     return capdev;
   }
@@ -176,10 +185,36 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
+  public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
+    List<Map<String, Object>> subTypes = new ArrayList<>();
+    Map<String, Object> keyOutput;
+
+    CenterDeliverableType deliverableType = centerDeliverableTypeService.getDeliverableTypeById(deliverableTypeID);
+    if (deliverableType != null) {
+      if (deliverableType.getCenterDeliverableTypes() != null) {
+        for (CenterDeliverableType deliverableSubType : deliverableType.getCenterDeliverableTypes().stream()
+          .collect(Collectors.toList())) {
+          keyOutput = new HashMap<String, Object>();
+          keyOutput.put("id", deliverableSubType.getId());
+          keyOutput.put("name", deliverableSubType.getName());
+          keyOutput.put("description", deliverableSubType.getDescription());
+          subTypes.add(keyOutput);
+        }
+      }
+    }
+    return subTypes;
+
+
+  }
+
+
   public List<CenterDeliverableType> getDeliverablesSubtypesList() {
     return deliverablesSubtypesList;
   }
 
+  public List<DeliverableType> getDeliverableTypeParent() {
+    return deliverableTypeParent;
+  }
 
   public List<CenterDeliverableDocument> getDocuments() {
     return documents;
@@ -457,8 +492,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     this.deliverablesList = deliverablesList;
   }
 
+
   public void setDeliverablesSubtypesList(List<CenterDeliverableType> deliverablesSubtypesList) {
     this.deliverablesSubtypesList = deliverablesSubtypesList;
+  }
+
+  public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
+    this.deliverableTypeParent = deliverableTypeParent;
   }
 
   public void setDocuments(List<CenterDeliverableDocument> documents) {
