@@ -73,6 +73,15 @@
       "action": "${crpSession}/LeveragesReportingSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
+    },
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.projectsList", 
+      "description": "summaries.board.report.projectsList.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/projectsSummary",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning", "Reporting" ]
     }
   ]},
   [#-- PARTNERS REPORTS --]
