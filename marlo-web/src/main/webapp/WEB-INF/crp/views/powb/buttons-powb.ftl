@@ -1,5 +1,5 @@
 [#ftl]
-[#-- Project identifier --] 
+[#-- Hidden Inputs --] 
 <input type="hidden"  name="liaisonInstitutionID" value="${(liaisonInstitutionID)!}" />
 <input type="hidden"  name="powbSynthesisID" value="${(powbSynthesis.id)!}" />
 <input type="hidden"  name="id" value="${(powbSynthesis.id)!}"/>

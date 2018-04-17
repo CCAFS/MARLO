@@ -288,14 +288,21 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
     for (Institution institution : result.keySet()) {
       String insName = "", insAcr = "", webSite = "", insType = "", country = "", projects = "";
-      insName = institution.getName();
-      insAcr = institution.getAcronym();
-      webSite = institution.getWebsiteLink();
-      insType = institution.getInstitutionType().getName();
+      insName = institution.getName() != null && !institution.getName().trim().isEmpty() ? institution.getName() : null;
+      insAcr = institution.getAcronym() != null && !institution.getAcronym().trim().isEmpty() ? institution.getAcronym()
+        : null;
+      webSite = institution.getWebsiteLink() != null && !institution.getWebsiteLink().trim().isEmpty()
+        ? institution.getWebsiteLink() : null;
+      insType = institution.getInstitutionType().getName() != null
+        && !institution.getInstitutionType().getName().trim().isEmpty() ? institution.getInstitutionType().getName()
+          : null;
       List<InstitutionLocation> locations = institution.getInstitutionsLocations().stream()
         .filter(l -> l.isActive() && l.isHeadquater()).collect(Collectors.toList());
       if (locations != null && !locations.isEmpty()) {
         country = locations.get(0).getLocElement().getName();
+      }
+      if (country.isEmpty()) {
+        country = null;
       }
 
       Set<Project> projectSet = projectsPerInstitution.get(institution);
@@ -309,6 +316,9 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
             projects += ", P" + project.getId();
           }
         }
+      }
+      if (projects.isEmpty()) {
+        projects = null;
       }
       model.addRow(new Object[] {insName, insAcr, webSite, insType, country, projects});
     }
