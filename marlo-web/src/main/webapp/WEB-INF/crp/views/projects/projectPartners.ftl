@@ -84,7 +84,7 @@
                   </div>
                   [/#if]
                   [#-- Planning/Reporting lessons --]
-                   [#if (action.isReportingActive())]
+                   [#if reportingActive]
                   <div class="fullBlock">
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
@@ -306,7 +306,7 @@
     <div class="blockContent" style="display:none">
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-       <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
+      <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
       
       [#-- Institution / Organization --]
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
@@ -330,6 +330,36 @@
         [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=partnerRespRequired editable=editable /]
         <div class="clearfix"></div>
       </div>
+      [/#if]
+      
+      [#-- Reporting Partnerships --]
+      [#if reportingActive]
+        <div class="${reportingActive?string('fieldFocus','')}">
+          <div class="form-group">
+            <label for="">[@s.text name="projectPartners.hasPartnerships" /]</label>
+            [@customForm.radioFlat id="hasPartnerships-yes-${(element.id)!}" name="${name}.hasPartnerships" label="Yes" value="true" checked=false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes"/]
+            [@customForm.radioFlat id="hasPartnerships-no-${(element.id)!}" name="${name}.hasPartnerships" label="No" value="false" checked=false cssClass="hasPartnerships-no" cssClassLabel="radio-label-no"/]
+          </div>
+          <div class="form-group">
+            <div class="form-group row">
+              <div class="col-md-6">
+                [@customForm.select name="${name}.researchPhase.id" className="" i18nkey="projectPartners.researchPhase" listName="" keyFieldName="id"  displayFieldName="name" /]
+              </div>
+              <div class="col-md-6">
+                [@customForm.select name="${name}.geographicScope.id" className="" i18nkey="projectPartners.geographicScope" listName="" keyFieldName="id"  displayFieldName="name" /]
+              </div>
+            </div>
+            <div class="form-group">
+              [@customForm.select name="${name}.region.id" className="" i18nkey="projectPartners.region" listName="" keyFieldName="id"  displayFieldName="name" /]
+            </div>
+            <div class="form-group">
+              [@customForm.select name="${name}.partnershipsCountries" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.partnershipsCountries" multiple=true required=true className="countriesSelect" disabled=!editable/]
+            </div>
+            <div class="form-group">
+              [@customForm.textArea name="${name}.partnershipMainarea" className="limitWords-30" i18nkey="projectPartners.partnershipMainarea"  editable=editable /]
+            </div>
+          </div>
+        </div>
       [/#if]
       
       [#--Select country office  (if applicable)  --] 
