@@ -100,5 +100,8 @@
         <property name="newPartnershipsPlanned" type="string">
             <column name="new_partnerships_planned" length="65535" />
         </property>
+        <property name="partnerOverall" type="string">
+            <column name="partner_overall" length="65535" />
+        </property>
     </class>
 </hibernate-mapping>

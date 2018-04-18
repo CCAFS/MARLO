@@ -114,11 +114,11 @@ public class ProjectPartnersValidator extends BaseValidator {
       if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
         if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-          if (!this.isValidString(project.getOverall())) {
+          if (!this.isValidString(project.getProjectInfo().getPartnerOverall())) {
             action.addMessage(
               action.getText("Please provide Partnerships overall performance over the last reporting period"));
-            action.addMissingField("project.partners.overall");
-            action.getInvalidFields().put("input-project.overall", InvalidFieldsMessages.EMPTYFIELD);
+            action.addMissingField("project.projectInfo.partnerOverall");
+            action.getInvalidFields().put("input-project.projectInfo.partnerOverall", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
@@ -130,18 +130,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         action.getInvalidFields().put("list-project.partners",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
       }
-      if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-        /*
-         * if (!action.isProjectNew(project.getId())) {
-         * this.validateLessonsLearn(action, project);
-         * if (action.getValidationMessage().toString().contains("Lessons")) {
-         * this.replaceAll(action.getValidationMessage(), "Lessons",
-         * "Lessons regarding partnerships and possible implications for the coming planning cycle");
-         * action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * }/
-         */
+      if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader() && !action.isReportingActive()) {
 
         if (project.getProjectInfo().getNewPartnershipsPlanned() == null
           || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
