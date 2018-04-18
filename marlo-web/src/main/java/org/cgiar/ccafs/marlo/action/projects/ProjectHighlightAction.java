@@ -123,6 +123,8 @@ public class ProjectHighlightAction extends BaseAction {
   private Map<String, String> statuses;
 
 
+  private ProjectHighlight highlightDB;
+
   private List<Integer> allYears;
 
 
@@ -192,10 +194,19 @@ public class ProjectHighlightAction extends BaseAction {
       + "hightlihts" + File.separator;
   }
 
+  /**
+   * The name of the autosave file is constructed and the path is searched
+   * 
+   * @return Auto save file path
+   */
   private Path getAutoSaveFilePath() {
+    // get the class simple name
     String composedClassName = highlight.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = highlight.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = highlight.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -366,6 +377,8 @@ public class ProjectHighlightAction extends BaseAction {
             highlight.getProjectHighlightInfo(this.getActualPhase()).setFile(null);
           }
         }
+
+
         if (highlight.getCountriesIdsText() != null) {
           String[] countriesText = highlight.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
           List<Long> countries = new ArrayList<>();
@@ -374,6 +387,8 @@ public class ProjectHighlightAction extends BaseAction {
           }
           highlight.setCountriesIds(countries);
         }
+
+
         if (highlight.getTypesidsText() != null) {
           String[] countriesText = highlight.getTypesidsText().trim().replace("[", "").replace("]", "").split(",");
 
@@ -393,21 +408,26 @@ public class ProjectHighlightAction extends BaseAction {
         }
 
         Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+
         if (highlight.getProjectHighlightCountries() == null) {
           highlight.setCountries(new ArrayList<>());
         } else {
-          highlight.setCountries(phase.getProjectHighlightCountries().stream()
-            .filter(c -> c.getProjectHighligth().getId().longValue() == highlight.getId().longValue())
-            .collect(Collectors.toList()));
+
+          List<ProjectHighlightCountry> countries =
+            projectHighligthCountryManager.getHighlightCountrybyPhase(highlight.getId(), phase.getId());
+
+          highlight.setCountries(countries);
 
         }
+
         if (highlight.getProjectHighligthsTypes() == null) {
           highlight.setTypes(new ArrayList<>());
         } else {
 
-          highlight.setTypes(phase.getProjectHighligthsTypes().stream()
-            .filter(c -> c.getProjectHighligth().getId().longValue() == highlight.getId().longValue())
-            .collect(Collectors.toList()));
+          List<ProjectHighlightType> types =
+            projectHighligthTypeManager.getHighlightTypebyPhase(highlight.getId(), phase.getId());
+
+          highlight.setTypes(types);
 
         }
         this.setDraft(false);
@@ -461,6 +481,8 @@ public class ProjectHighlightAction extends BaseAction {
     countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
       .collect(Collectors.toList());
 
+    highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_HIGHLIGHT_BASE_PERMISSION, params));
 
@@ -502,7 +524,7 @@ public class ProjectHighlightAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_COUNTRY_RELATION);
 
       // projectHighlightInfoManager.saveProjectHighlightInfo(projectHighlightInfo)
-      ProjectHighlight highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
+      // highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
       highlight.setActiveSince(new Date());
       highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
@@ -522,43 +544,82 @@ public class ProjectHighlightAction extends BaseAction {
       }
 
       highlight.setActive(true);
-      for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
-        .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-        if (!highlight.getTypesids().contains(String.valueOf(projectHighlightType.getIdType()))) {
-          projectHighligthTypeManager.deleteProjectHighligthType(projectHighlightType.getId().intValue());
+
+      // for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
+      // .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+      // if (!highlight.getTypesids().contains(String.valueOf(projectHighlightType.getIdType()))) {
+      // projectHighligthTypeManager.deleteProjectHighligthType(projectHighlightType.getId().intValue());
+      // }
+      //
+      // }
+
+      /**
+       * April 17th 2018 - Change the Highlight Types Save Logic
+       * 
+       * @author hjimenez
+       */
+      if (highlight.getTypesids() != null || !highlight.getTypesids().isEmpty()) {
+
+        List<ProjectHighlightType> types =
+          projectHighligthTypeManager.getHighlightTypebyPhase(highlight.getId(), this.getActualPhase().getId());
+        List<ProjectHighlightType> typesSave = new ArrayList<>();
+        for (String type : highlight.getTypesids()) {
+
+          ProjectHighlightType typeHigh = new ProjectHighlightType();
+          typeHigh.setIdType(Integer.parseInt(type));
+          typeHigh.setProjectHighligth(highlight);
+          typeHigh.setPhase(this.getActualPhase());
+          typesSave.add(typeHigh);
+          if (!types.contains(typeHigh)) {
+            projectHighligthTypeManager.saveProjectHighligthType(typeHigh);
+          }
+        }
+
+        for (ProjectHighlightType projectHighlightType : types) {
+          if (!typesSave.contains(projectHighlightType)) {
+            projectHighligthTypeManager.deleteProjectHighligthType(projectHighlightType.getId());
+          }
         }
 
       }
-      for (String type : highlight.getTypesids()) {
-        ProjectHighlightType typeHigh = new ProjectHighlightType();
-        typeHigh.setIdType(Integer.parseInt(type));
-        typeHigh.setProjectHighligth(highlight);
-        typeHigh.setPhase(this.getActualPhase());
-        if (!highlightDB.getProjectHighligthsTypes().contains(typeHigh)) {
-          projectHighligthTypeManager.saveProjectHighligthType(typeHigh);
+
+
+      // for (ProjectHighlightCountry projectHighlightCountry : highlightDB.getProjectHighlightCountries().stream()
+      // .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+      // if (!highlight.getCountriesIds()
+      // .contains(new Integer(projectHighlightCountry.getLocElement().getId().intValue()))) {
+      // projectHighligthCountryManager.deleteProjectHighligthCountry(projectHighlightCountry.getId().intValue());
+      // }
+      //
+      // }
+
+      /**
+       * April 17th 2018 - Change the Highlight Types Save Logic
+       * 
+       * @author hjimenez
+       */
+      if (highlight.getCountriesIds() != null || !highlight.getCountriesIds().isEmpty()) {
+
+        List<ProjectHighlightCountry> countries =
+          projectHighligthCountryManager.getHighlightCountrybyPhase(highlight.getId(), this.getActualPhase().getId());
+        List<ProjectHighlightCountry> countriesSave = new ArrayList<>();
+        for (Long countryIds : highlight.getCountriesIds()) {
+          ProjectHighlightCountry countryHigh = new ProjectHighlightCountry();
+          countryHigh.setLocElement(locElementManager.getLocElementById(countryIds));
+          countryHigh.setProjectHighligth(highlight);
+          countryHigh.setPhase(this.getActualPhase());
+          countriesSave.add(countryHigh);
+          if (!countries.contains(countryHigh)) {
+            projectHighligthCountryManager.saveProjectHighligthCountry(countryHigh);
+          }
         }
 
-
-      }
-
-
-      for (ProjectHighlightCountry projectHighlightCountry : highlightDB.getProjectHighlightCountries().stream()
-        .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-        if (!highlight.getCountriesIds()
-          .contains(new Integer(projectHighlightCountry.getLocElement().getId().intValue()))) {
-          projectHighligthCountryManager.deleteProjectHighligthCountry(projectHighlightCountry.getId().intValue());
+        for (ProjectHighlightCountry projectHighlightCountry : countries) {
+          if (!countriesSave.contains(projectHighlightCountry)) {
+            projectHighligthCountryManager.deleteProjectHighligthCountry(projectHighlightCountry.getId());
+          }
         }
 
-      }
-
-      for (Long countries : highlight.getCountriesIds()) {
-        ProjectHighlightCountry countryHigh = new ProjectHighlightCountry();
-        countryHigh.setLocElement(locElementManager.getLocElementById(countries));
-        countryHigh.setProjectHighligth(highlight);
-        countryHigh.setPhase(this.getActualPhase());
-        if (!highlightDB.getProjectHighlightCountries().contains(countryHigh)) {
-          projectHighligthCountryManager.saveProjectHighligthCountry(countryHigh);
-        }
       }
 
 
