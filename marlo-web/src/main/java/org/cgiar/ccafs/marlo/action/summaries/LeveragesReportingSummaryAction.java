@@ -270,9 +270,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.getBaseUrl()});
     return model;
   }
 
