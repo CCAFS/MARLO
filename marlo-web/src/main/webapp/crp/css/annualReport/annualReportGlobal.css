@@ -232,3 +232,8 @@ tfoot {
   right: 3px;
   bottom: 6px;
 }
+
+
+li#menu-melia a, li#menu-plannedVariance a {
+  font-size: 0.95em;
+}

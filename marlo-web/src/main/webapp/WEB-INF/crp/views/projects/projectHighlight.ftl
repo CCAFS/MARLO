@@ -88,8 +88,10 @@
               </div>
               [#-- Year --]
               <div class="col-md-6">
-                [@customForm.select name="highlight.projectHighlightInfo.year" value="${(highlight.projectHighlightInfo.year)!currentCycleYear}" i18nkey="highlight.year" listName="allYears" editable=editable header=false stringKey=true required=false  /]
-                [#if !editable]${(highlight.projectHighlightInfo.year)!}[/#if]
+                <label for="">[@s.text name="highlight.year" /]:</label>
+                [#assign highlightYear = (highlight.projectHighlightInfo.year)!actualPhase.year ]
+                <p>${highlightYear}</p>
+                <input type="hidden" name="highlight.projectHighlightInfo.year" value="${highlightYear}" />
               </div>
             </div>
           </div>
