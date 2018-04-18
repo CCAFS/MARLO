@@ -55,7 +55,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -820,15 +819,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     for (ProjectPartner projectPartner : project.getPartners()) {
       List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
-      if (action.isReportingActive()) {
-
-        List<ProjectPartnerOverall> overalls = projectPartner.getProjectPartnerOveralls().stream()
-          .filter(c -> c.isActive() && c.getYear() == action.getReportingYear()).collect(Collectors.toList());
-        if (!overalls.isEmpty()) {
-          project.setOverall(overalls.get(0).getOverall());
-
-        }
-      }
       List<ProjectPartnerContribution> partnerContributions =
         projectPartner.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {

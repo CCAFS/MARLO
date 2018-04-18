@@ -69,7 +69,7 @@
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <div class="form-group">
-                [@customForm.textArea name="project.projectInfo.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.partnerOverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
               

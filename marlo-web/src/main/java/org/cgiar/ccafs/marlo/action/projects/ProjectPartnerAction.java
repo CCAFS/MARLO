@@ -55,7 +55,6 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
@@ -161,7 +160,6 @@ public class ProjectPartnerAction extends BaseAction {
   private long projectID;
   private GlobalUnit loggedCrp;
   private Project project;
-  private ProjectComponentLesson projectComponentLesson;
 
   // Model for the view
   private List<InstitutionType> intitutionTypes;
@@ -1036,21 +1034,6 @@ public class ProjectPartnerAction extends BaseAction {
           project.setPartners(partnes);
 
         }
-        if (!project.getPartners().isEmpty()) {
-          if (this.isReportingActive()) {
-
-            ProjectPartner partner =
-              project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()).get(0);
-
-            List<ProjectPartnerOverall> overalls = partner.getProjectPartnerOveralls().stream()
-              .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList());
-            if (!overalls.isEmpty()) {
-              project.setOverall(overalls.get(0).getOverall());
-              partnerOverall = overalls.get(0);
-            }
-          }
-
-        }
         for (ProjectPartner projectPartner : project.getPartners()) {
           projectPartner.setSelectedLocations(new ArrayList<>());
           for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
@@ -1284,36 +1267,6 @@ public class ProjectPartnerAction extends BaseAction {
 
         }
       }
-      if (this.isReportingActive()) {
-        Project projectReporting = projectManager.getProjectById(projectID);
-
-        List<ProjectPartner> partnersReporting = new ArrayList<>(
-          projectReporting.getProjectPartners().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
-
-        if (!partnersReporting.isEmpty()) {
-          for (ProjectPartner partner : partnersReporting) {
-            List<ProjectPartnerOverall> overalls = new ArrayList<>(partner.getProjectPartnerOveralls().stream()
-              .filter(ppo -> ppo.isActive() && ppo.getYear() == this.getActualPhase().getYear())
-              .collect(Collectors.toList()));
-
-            ProjectPartnerOverall overall = new ProjectPartnerOverall();
-            if (overalls.isEmpty()) {
-              overall.setProjectPartner(partner);
-              overall.setYear(this.getActualPhase().getYear());
-            } else {
-              overall = overalls.get(0);
-            }
-
-            if (project.getOverall() != null) {
-              overall.setOverall(project.getOverall());
-              projectPartnerOverallManager.saveProjectPartnerOverall(overall);
-            }
-          }
-        }
-
-      }
-
-
       if (this.isLessonsActive() && this.isReportingActive()) {
         this.saveLessons(loggedCrp, project);
       }
