@@ -205,6 +205,15 @@ function attachEvents() {
         $locationItem.show("slow");
         updateIndex();
 
+        var $locLevelList = $("#itemLoc-template").clone(true).removeAttr("id");
+        $locLevelList.find(".loc-level").attr('name',"Country");
+        $locLevelList.find(".loc-level").text("Country");
+        $locLevelList.find("ul").addClass("Country");
+        $locLevelList.find("#itemList-template").remove();
+
+        $(".list-container").append($locLevelList);
+        $locLevelList.show();
+
         //when country level is created, then add the checked suggested location
         addSuggestedCountry(locIso,locName,locId);
       }
@@ -225,6 +234,8 @@ function attachEvents() {
       // If also that is the last country, remove the table country level
       if($(".locationLevel[data-name='Country']").find('.locations').length == 0) {
         $(".locationLevel[data-name='Country']").remove();
+        $(".list-container").find("h4[name='Country']").parent().remove();
+
         updateIndex();
         checkItems($('#selectsContent'));
       }
