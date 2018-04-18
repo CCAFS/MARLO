@@ -69,3 +69,8 @@ form .form-group.margin-panel {
 .table-border-powb tr:nth-child(even) {
   background-color: #fcfcfc;
 }
+
+.addInnovation a {
+  color: #fff;
+  text-decoration: initial;
+}

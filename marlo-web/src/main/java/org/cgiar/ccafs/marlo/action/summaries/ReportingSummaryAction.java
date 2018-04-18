@@ -82,7 +82,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
@@ -1823,6 +1822,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
+          && d.getDeliverableInfo(this.getSelectedPhase()) != null
           && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
           && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -3380,19 +3380,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String overall = "";
     if (this.getSelectedCycle().equals("Reporting")) {
       // Get project partners overall
-      for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-        .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
-        for (ProjectPartnerOverall projectPartnerOverall : projectPartner.getProjectPartnerOveralls().stream()
-          .filter(ppo -> ppo.getYear() == this.getSelectedYear()).collect(Collectors.toList())) {
-          if (!projectPartnerOverall.getOverall().isEmpty()) {
-            if (!projectPartnerOverall.getOverall().equals("null")) {
-              overall = projectPartnerOverall.getOverall();
-            }
-          }
-        }
-      }
-      if (overall.isEmpty()) {
+      overall = project.getProjectInfoLast(this.getSelectedPhase()).getPartnerOverall();
+      if (overall == null || overall.isEmpty()) {
         overall = "&lt;Not Defined&gt;";
       }
     }

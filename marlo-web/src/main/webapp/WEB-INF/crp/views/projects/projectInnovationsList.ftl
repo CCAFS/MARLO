@@ -1,10 +1,10 @@
 [#ftl]
-[#assign title = "Project Innovaions" /]
+[#assign title = "Project Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js,
+  "${baseUrlMedia}/js/projects/projectInnovations.js",
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
 ] /]
@@ -23,43 +23,42 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#-- Helptext --]
-[@utilities.helpBox name="innovations.help" /]
-
 <section class="container">
   <div class="row">
-      [#-- Project Menu --]
-      <div class="col-md-3">
-        [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
-      </div>
-      [#-- Project Section Content --]
-      <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-        
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-           
-          <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
+    [#-- Project Menu --]
+    <div class="col-md-3">
+      [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
+    </div>
+    [#-- Project Section Content --]
+    <div class="col-md-9">
+      [#-- Section Messages --]
+      [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
+  
+      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
-          [#-- Innovations List Table --]
-          [@innovationsTableMacro /]
+        <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
 
-          [#-- Add Innovation Button --]
-          [#if canEdit]
-          <div class="buttons">
-            <div class="buttons-content">
-              <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                [@s.text name="form.buttons.addInnovation" /]
-              </a></div>
-              <div class="clearfix"></div>
-            </div>
+        [#-- Innovations List Table --]
+        [@innovationsTableMacro /]
+
+        [#-- Add Innovation Button --]
+        [#if canEdit]
+        <div class="buttons">
+          <div class="buttons-content">
+            <div class="addInnovation button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              [@s.text name="form.buttons.addInnovation" /]
+            </a></div>
+            <div class="clearfix"></div>
           </div>
-          [/#if]
+        </div>
+        [/#if]
 
-        [/@s.form]
-      </div>
+      [/@s.form]
+    </div>
   </div>
 </section>
+
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro innovationsTableMacro]
   <table class="table-innovations table-border-powb" id="table-innovations">
