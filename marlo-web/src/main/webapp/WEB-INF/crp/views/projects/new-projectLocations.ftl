@@ -334,7 +334,7 @@
             [#if suggestedCountry.selected]
               <li id="${suggestedCountry.locElement.id!}" name="${suggestedCountry.locElement.name!}" class="marker-map">
                 <span class="glyphicon glyphicon-map-marker"></span>
-                ${(suggestedCountry.locElement.name)!}
+                <span class="item-name">${(suggestedCountry.locElement.name)!}</span>
                 <br />
               </li>
             [/#if]
