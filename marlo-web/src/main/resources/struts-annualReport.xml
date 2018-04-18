@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+   
+  <!-- CRP Annual Report -->
+  <package name="annualReport" namespace="/annualReport" extends="marlo-default">
+    
+    <!--  1.1 Adjustments/ Changes to Your Theories of Change -->
+    <action name="{crp}/crpProgress" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_crpProgress.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crpProgress</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="annualReportID">${annualReportID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    
+
+    
+  </package>
+</struts>
