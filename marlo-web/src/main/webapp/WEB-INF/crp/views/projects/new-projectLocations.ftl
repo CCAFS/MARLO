@@ -315,7 +315,8 @@
 <input type="hidden" id="locationName" value="${locationName}" />
 
 [#macro allLocationsListMacro element list]
-  <h4>${element.name!}</h4>
+<div>
+  <h4 name="${element.name!}" class="loc-level">${element.name!}</h4>
   <ul class="${element.name!}">
     [#if element.locElements?has_content]
       [#list element.locElements as location]
@@ -343,6 +344,7 @@
       [/#if]
     [/#if]
   </ul>
+</div>
 [/#macro]
 
 [#macro locationsTableMacro element name index template=false list=false]
@@ -470,13 +472,16 @@
 </div>
 
 [#-- list element template (all locations modal) --]
-<ul style="display:none">
-  <li id="itemList-template" name="" class="marker-map">
-    <span class="glyphicon glyphicon-map-marker"></span>
-    <span class="item-name"></span>
-    <br />
-  </li>
-</ul>
+<div id="itemLoc-template" style="display:none">
+  <h4 name="" class="loc-level"></h4>
+  <ul class="">
+    <li id="itemList-template" name="" class="marker-map">
+      <span class="glyphicon glyphicon-map-marker"></span>
+      <span class="item-name"></span>
+      <br />
+    </li>
+  </ul>
+</div>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
