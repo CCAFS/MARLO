@@ -241,6 +241,8 @@
     <mapping resource="xmls/PowbCollaborationGlobalUnits.hbm.xml"/>
     <mapping resource="xmls/PowbCollaborationRegions.hbm.xml"/>
     <mapping resource="xmls/ProjectHighlightsInfo.hbm.xml"/>
+    <mapping resource="xmls/DeliverableRules.hbm.xml"/>
+    <mapping resource="xmls/DeliverableTypeRules.hbm.xml"/>
     <mapping resource="xmls/RepIndGenderYouthFocusLevels.hbm.xml"/>
     <mapping resource="xmls/RepIndGeographicScopes.hbm.xml"/>
     <mapping resource="xmls/RepIndInnovationTypes.hbm.xml"/>
