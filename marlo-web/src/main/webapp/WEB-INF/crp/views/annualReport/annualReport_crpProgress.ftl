@@ -1,16 +1,16 @@
 [#ftl]
 [#assign title = "Annual Report" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
-[#assign pageLibs = [ "blueimp-file-upload" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_crpProgress.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
-[#assign currentStage = "annualReport" /]
+[#assign currentStage = actionName?split('/')[1]/]
+[#assign pageLibs = [ ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"annualReport", "nameSpace":"annualReport", "action":"${crpSession}/crpProgress"},
-  {"label":"crpProgress", "nameSpace":"annualReport", "action":"${crpSession}/crpProgress"}
+  {"label":"${currentStage}", "nameSpace":"annualReport", "action":"${crpSession}/{currentStage}"}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
@@ -18,7 +18,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#-- Helptext --]
-[@utilities.helpBox name="adjustmentsChanges.help" /]
+[@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
@@ -34,22 +34,15 @@
       [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-         
         [#-- Title --]
-        <h3 class="headTitle">[@s.text name="TITLE" /]</h3>
+        <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
         <div class="borderBox">
         
-
-          
         </div>
-        
         [#-- Section Buttons & hidden inputs--]
         [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-        
       [/@s.form] 
     </div> 
   </div> 
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-
