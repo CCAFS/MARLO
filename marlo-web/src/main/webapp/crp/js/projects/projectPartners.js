@@ -623,8 +623,9 @@ function addPartnerEvent(e) {
       width: '100%'
   });
 
-  $newElement.find('select.countriesList').select2({
-      placeholder: "Select a country office",
+  // Countries
+  $newElement.find('select.countriesList, select.countriesSelect').select2({
+      placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
@@ -777,8 +778,8 @@ function addSelect2() {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
-  $('form select.countriesList, select.countriesRequest').select2({
-      placeholder: "Select a country office",
+  $('form select.countriesList, select.countriesRequest, form select.countriesSelect').select2({
+      placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
