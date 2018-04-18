@@ -188,13 +188,10 @@ function attachEvents() {
     // Add the selected country in map, table and list
     if($(this).is(":checked")){
 
-      //addLocLevel(locationName,locationId,locationIsList,$locationSelect);
+      //Add suggested location in table
       if(countryRow.exists()){
         addSuggestedCountry(locIso,locName,locId);
-
       }else{
-        var $suggestedCountrySeparator = $("#suggested-separator-template").clone(true).removeAttr("id");
-
         // If Country level location doesn't exists, so create level location in table
         var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
         $locationItem.attr("data-name","Country");
@@ -204,28 +201,28 @@ function attachEvents() {
         $locationItem.find("input.isList").val(true);
         $(".locationsDataTable > tbody:last-child").append($locationItem);
 
-        //$(".locationsDataTable").find("countriesList").children().append($locationItem);
+
         $locationItem.show("slow");
         updateIndex();
 
+        //when country level is created, then add the checked suggested location
         addSuggestedCountry(locIso,locName,locId);
       }
 
+      // When a suggested location is added, show the suggested row into the country level
       $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
 
       countries.push(locIso);
       layer.setMap(null);
       mappingCountries();
     }else{
-      // Remove unmarked location from locations table
-      countryRow.parent().find('.suggestedCountriesList').children().find('#'+locIso).
-        parent().parent().remove();
-      // Remove unmarked location from locations list (all locations modal)
-      countryList.find(".item-name").parent().remove(); // here
+      removeSuggestedCountry(locIso,locId,countryRow,countryList);
 
+      // If there is not suggested countries in list, hide the row in table
       if($(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0){
         $('.locationLevel[data-name="Country"] .suggestedCountriesList').hide();
       }
+      // If also that is the last country, remove the table country level
       if($(".locationLevel[data-name='Country']").find('.locations').length == 0) {
         $(".locationLevel[data-name='Country']").remove();
         updateIndex();
@@ -953,7 +950,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       // Add Country into all locations modal list
       var $listItem = $('#itemList-template').clone(true).removeAttr("id");
       $listItem.attr('id',locId);
-      $listItem.attr('name',locName);
+      $listItem.attr('name',locIso);
       $listItem.find(".item-name").text(locName);
       countryList.append($listItem);
     }
@@ -1122,7 +1119,6 @@ function closeAllInfoWindows(){
 }
 
 function addSuggestedCountry(locIso,locName,locId){
-  console.log(locIso+' - '+locName);
 
   var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
   var countryList = $(".list-container").find(".Country");
@@ -1141,4 +1137,14 @@ function addSuggestedCountry(locIso,locName,locId){
   $listItem.attr('name',locName);
   $listItem.find(".item-name").text(locName);
   countryList.append($listItem);
+}
+
+// here
+function removeSuggestedCountry(locIso,locId,countryRow,countryList){
+  // Remove unmarked location from locations table
+  countryRow.parent().find('.suggestedCountriesList').children().find('#'+locIso).
+    parent().parent().remove();
+
+  // Remove unmarked location from locations list (all locations modal)
+  countryList.find("#"+locId).remove();
 }
