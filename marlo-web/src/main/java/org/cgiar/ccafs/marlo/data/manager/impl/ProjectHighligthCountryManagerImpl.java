@@ -49,12 +49,13 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   @Override
   public void deleteProjectHighligthCountry(long projectHighligthCountryId) {
 
-
     ProjectHighlightCountry projectHighlightCountry = this.getProjectHighligthCountryById(projectHighligthCountryId);
+
     if (projectHighlightCountry.getPhase().getNext() != null) {
       this.deleteProjectHighligthCountryPhase(projectHighlightCountry.getPhase().getNext(),
         projectHighlightCountry.getProjectHighligth().getId(), projectHighlightCountry);
     }
+
     projectHighligthCountryDAO.deleteProjectHighligthCountry(projectHighligthCountryId);
 
   }
