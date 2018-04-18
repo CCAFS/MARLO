@@ -49,12 +49,13 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   @Override
   public void deleteProjectHighligthCountry(long projectHighligthCountryId) {
 
-
     ProjectHighlightCountry projectHighlightCountry = this.getProjectHighligthCountryById(projectHighligthCountryId);
+
     if (projectHighlightCountry.getPhase().getNext() != null) {
       this.deleteProjectHighligthCountryPhase(projectHighlightCountry.getPhase().getNext(),
         projectHighlightCountry.getProjectHighligth().getId(), projectHighlightCountry);
     }
+
     projectHighligthCountryDAO.deleteProjectHighligthCountry(projectHighligthCountryId);
 
   }
@@ -92,10 +93,16 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   }
 
   @Override
+  public List<ProjectHighlightCountry> getHighlightCountrybyPhase(long higlightID, long phaseID) {
+    return projectHighligthCountryDAO.getHighlightCountrybyPhase(higlightID, phaseID);
+  }
+
+  @Override
   public ProjectHighlightCountry getProjectHighligthCountryById(long projectHighligthCountryID) {
 
     return projectHighligthCountryDAO.find(projectHighligthCountryID);
   }
+
 
   public void saveHighlightCountryPhase(Phase next, long projectHighlightid,
     ProjectHighlightCountry projectHighlightCountry) {
@@ -122,7 +129,6 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
       this.saveHighlightCountryPhase(phase.getNext(), projectHighlightid, projectHighlightCountry);
     }
   }
-
 
   @Override
   public ProjectHighlightCountry saveProjectHighligthCountry(ProjectHighlightCountry projectHighlightCountry) {
