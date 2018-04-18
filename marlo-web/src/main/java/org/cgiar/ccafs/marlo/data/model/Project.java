@@ -103,9 +103,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   private List<ProjectLocation> projectRegions;
 
 
-  private String overall;
-
-
   private List<ProjectPartner> partners;
 
   private List<Activity> projectActivities;
@@ -809,11 +806,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getOverall() {
-    return overall;
-  }
-
-
   public List<IpProjectContributionOverview> getOverviews() {
     return overviews;
   }
@@ -1329,10 +1321,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setOutputs(List<IpElement> outputs) {
     this.outputs = outputs;
-  }
-
-  public void setOverall(String overall) {
-    this.overall = overall;
   }
 
   public void setOverviews(List<IpProjectContributionOverview> overviews) {

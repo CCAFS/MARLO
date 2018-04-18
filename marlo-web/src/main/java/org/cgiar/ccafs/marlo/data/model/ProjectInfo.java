@@ -79,9 +79,13 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   private Boolean locationRegional;
   @Expose
   private String newPartnershipsPlanned;
+  @Expose
+  private String partnerOverall;
+
 
   public ProjectInfo() {
   }
+
 
   public ProjectInfo(LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, Phase phase, Project project,
     User user, String title, String summary, Date startDate, Date endDate, String type, boolean isCofinancing,
@@ -121,7 +125,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.newPartnershipsPlanned = newPartnershipsPlanned;
   }
 
-
   public ProjectInfo(User user, boolean isCofinancing, String modificationJustification, int scale) {
     this.modifiedBy = user;
     this.cofinancing = isCofinancing;
@@ -129,10 +132,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.scale = scale;
   }
 
-
   public Boolean getAdministrative() {
     return administrative;
   }
+
 
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
@@ -155,6 +158,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
     return allYears;
   }
+
 
   /**
    * This method calculates all the years between the start date and the end date.
@@ -184,7 +188,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
@@ -193,10 +196,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return crossCuttingGender;
   }
 
+
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -206,15 +209,14 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return dimension;
   }
 
+
   public Date getEndDate() {
     return endDate;
   }
 
-
   public String getGenderAnalysis() {
     return genderAnalysis;
   }
-
 
   @Override
   public Long getId() {
@@ -231,6 +233,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return liaisonInstitution;
   }
 
+
   public LiaisonUser getLiaisonUser() {
     return liaisonUser;
   }
@@ -239,7 +242,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public Boolean getLocationGlobal() {
     return locationGlobal;
   }
-
 
   public Boolean getLocationRegional() {
     return locationRegional;
@@ -272,6 +274,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public Boolean getNoRegional() {
     return noRegional;
+  }
+
+
+  public String getPartnerOverall() {
+    return partnerOverall;
   }
 
 
@@ -487,6 +494,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public void setNoRegional(Boolean noRegional) {
     this.noRegional = noRegional;
+  }
+
+
+  public void setPartnerOverall(String partnerOverall) {
+    this.partnerOverall = partnerOverall;
   }
 
 
