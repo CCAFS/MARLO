@@ -477,6 +477,7 @@ public class ProjectHighlightAction extends BaseAction {
     allYears.clear();
     allYears.addAll(listYears);
 
+
     // Getting countries list
     countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
       .collect(Collectors.toList());
