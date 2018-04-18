@@ -22,14 +22,18 @@ public class Participant implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 1L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private Long code;
@@ -91,12 +95,16 @@ public class Participant implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Boolean sync;
+
+  @Expose
+  private Date syncedDate;
 
   private Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(0);
 
   public Participant() {
   }
-
 
   public Participant(User createdBy, Long code, String name, String middleName, String lastName, String gender,
     LocElement locElementsByCitizenship, String email, String personalEmail, boolean active) {
@@ -143,6 +151,7 @@ public class Participant implements java.io.Serializable, IAuditLog {
     this.capdevParticipants = capdevParticipants;
   }
 
+
   public Date getAciveSince() {
     return this.aciveSince;
   }
@@ -156,7 +165,6 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return this.capdevParticipants;
   }
 
-
   public Long getCode() {
     return this.code;
   }
@@ -169,14 +177,15 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return this.email;
   }
 
+
   public CapdevFoundingType getFellowship() {
     return this.fellowship;
   }
 
+
   public String getGender() {
     return this.gender;
   }
-
 
   public CapdevHighestDegree getHighestDegree() {
     return this.highestDegree;
@@ -195,6 +204,7 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return institutionsSuggested;
   }
 
+
   public String getLastName() {
     return this.lastName;
   }
@@ -203,11 +213,9 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return locElementsByCitizenship;
   }
 
-
   public LocElement getLocElementsByCountryOfInstitucion() {
     return locElementsByCountryOfInstitucion;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -215,7 +223,6 @@ public class Participant implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public String getMiddleName() {
     return middleName;
@@ -225,6 +232,7 @@ public class Participant implements java.io.Serializable, IAuditLog {
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -236,6 +244,7 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
+
   public String getOtherInstitution() {
     return otherInstitution;
   }
@@ -244,13 +253,21 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return personalEmail;
   }
 
-
   public String getReference() {
     return this.reference;
   }
 
+
   public String getSupervisor() {
     return this.supervisor;
+  }
+
+  public Boolean getSync() {
+    return sync;
+  }
+
+  public Date getSyncedDate() {
+    return syncedDate;
   }
 
 
@@ -258,7 +275,6 @@ public class Participant implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
     return this.active;
   }
-
 
   public void setAciveSince(Date aciveSince) {
     this.aciveSince = aciveSince;
@@ -289,9 +305,11 @@ public class Participant implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setEmail(String email) {
     this.email = email;
   }
+
 
   public void setFellowship(CapdevFoundingType fellowship) {
     this.fellowship = fellowship;
@@ -305,11 +323,9 @@ public class Participant implements java.io.Serializable, IAuditLog {
     this.highestDegree = highestDegree;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setInstitutions(Institution institutions) {
     this.institutions = institutions;
@@ -373,6 +389,16 @@ public class Participant implements java.io.Serializable, IAuditLog {
 
   public void setSupervisor(String supervisor) {
     this.supervisor = supervisor;
+  }
+
+
+  public void setSync(Boolean sync) {
+    this.sync = sync;
+  }
+
+
+  public void setSyncedDate(Date syncedDate) {
+    this.syncedDate = syncedDate;
   }
 
 

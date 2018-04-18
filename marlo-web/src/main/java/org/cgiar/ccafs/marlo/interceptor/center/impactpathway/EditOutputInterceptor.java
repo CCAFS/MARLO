@@ -95,15 +95,18 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
         areaID = program.getResearchArea().getId();
 
-        String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
+        // String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
         if (baseAction.canAccessSuperAdmin()) {
           canEdit = true;
         } else {
-
-          if (baseAction.hasPermissionCenter(
-            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+          if (baseAction.hasPermissionNoBase(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+            researchCenter.getAcronym(), programID + ""))) {
             canEdit = true;
           }
+          // if (baseAction.hasPermissionCenter(
+          // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+          // canEdit = true;
+          // }
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
@@ -118,8 +121,12 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
-            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+          // hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+          // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true
+            : baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+              researchCenter.getAcronym(), programID + ""));
         }
 
         if (baseAction.isSubmitIP(programID)) {

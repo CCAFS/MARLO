@@ -37,7 +37,7 @@
     ]
   },
   [#-- Cap Dev - CENTER --]
-  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': false, 'active': true}, [#-- action.centerCapDevActive() --]
+  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': logged && centerGlobalUnit, 'active': config.debug}, [#-- action.centerCapDevActive() --]
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged && !centerGlobalUnit, 'active': true }
 
@@ -122,7 +122,6 @@
   [#attempt]
     [#include "/WEB-INF/global/pages/timeline-phases.ftl" /]
   [#recover]
-    
   [/#attempt]
   <div class="clearFix"></div>
 </div>

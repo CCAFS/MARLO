@@ -30,14 +30,21 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private String name;
+
 
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
+
+
+  @Expose
+  private String description;
 
   @Expose
   private CenterDeliverableType deliverableType;
@@ -46,6 +53,8 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
 
   private Set<CenterDeliverable> deliverables = new HashSet<CenterDeliverable>(0);
+
+  private Set<CenterDeliverableType> centerDeliverableTypes = new HashSet<CenterDeliverableType>(0);
 
   public CenterDeliverableType() {
   }
@@ -70,19 +79,25 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public Set<CenterDeliverableType> getCenterDeliverableTypes() {
+    return centerDeliverableTypes;
+  }
 
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public Set<CenterDeliverable> getDeliverables() {
     return deliverables;
   }
 
-
   public CenterDeliverableType getDeliverableType() {
     return deliverableType;
+  }
+
+
+  public String getDescription() {
+    return description;
   }
 
 
@@ -116,10 +131,12 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
     return name;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -127,6 +144,10 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCenterDeliverableTypes(Set<CenterDeliverableType> centerDeliverableTypes) {
+    this.centerDeliverableTypes = centerDeliverableTypes;
   }
 
   public void setCreatedBy(User createdBy) {
@@ -139,6 +160,10 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
 
   public void setDeliverableType(CenterDeliverableType deliverableType) {
     this.deliverableType = deliverableType;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public void setId(Long id) {
