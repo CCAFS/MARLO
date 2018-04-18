@@ -1494,7 +1494,7 @@ a#userLogOut {
 
 #mainMenu .menuContent ul a{
  text-decoration: none;
- padding: 0px 18px;
+ padding: 0px 14px;
  color: #fff;
 } 
 #mainMenu .menuContent ul a p{
@@ -1507,7 +1507,7 @@ a#userLogOut {
   color: #FFFFFF;
   position: relative;
   display: inline-block;
-  font-size: 0.95em;
+  font-size: 0.925em;
 }
 
 #mainMenu .menuContent ul li:hover {
