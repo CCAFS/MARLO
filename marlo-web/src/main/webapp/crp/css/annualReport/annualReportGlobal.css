@@ -1,0 +1,234 @@
+table {
+}
+
+.powb-table{
+  display: inline-block;
+}
+
+span.powb-doc.badge{
+  background-color: #0d8dc0;
+}
+
+.label-powb-table{
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.powb-label{
+  width: 100%;
+}
+
+table tr {
+  list-style: none;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 0.95em;
+}
+
+table tr.text-small{
+  font-size: 0.85em;
+}
+
+table tr a {
+  color: #444;
+}
+
+thead th {
+  background: #f5f5f5;
+  color: #a9a8a8;
+  padding: 9px;
+}
+
+td {
+  padding: 3px 10px;
+  vertical-align: middle !important;
+}
+
+span.icon-20 {
+  margin-top: 7px;
+}
+
+table {
+  border: 1px solid #e6e6e6;
+  font-size: 0.95em;
+}
+
+.outcomeStatement {
+  float: left;
+}
+
+table ul {
+  padding-left: 15px;
+}
+
+/** MARLO Responsibe Tables */
+.table-responsive table {
+  min-width: 1500px;
+  margin-bottom: 0;
+}
+
+.table-responsive {
+  border: 1px solid #ddd;
+  max-height: 500px;
+}
+
+.table > thead > tr > th {
+  vertical-align:middle;
+}
+
+form .form-group.margin-panel {
+  margin-bottom: 40px;
+}
+
+.table-border-powb {
+  border-collapse: collapse;
+}
+.table-border-powb td {
+  border: 1px solid rgb(224, 224, 224);
+}
+.table-border-powb tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+/************* 1.1 ToC Adjustments/Changes ***************/
+
+.table-flagshipsAdjustments .flagship-name, .table-flagshipsAdjustments .narrative{
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/************* 1.2 Expected CRP Progress ***************/
+
+.powbOutcome {
+  padding-top: 16px;
+}
+.powbMilestone{
+  padding-top: 20px;
+}
+
+.milestoneContributionButton {
+  margin-left: 10px;
+}
+
+/************* 1.3 Evidence ***************/
+
+.evidence-plannedStudies-header .flagship-planned-studies-button {
+  position: absolute;
+  margin-top: 15px;
+  padding: 5px;
+  font-size: 85%;
+  right: 0;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.evidence-plannedStudies-header .flagship-planned-studies-button:hover{
+  background-color: #41b9dd;
+}
+
+.label-min-width{
+  max-width: 85% !important;
+}
+
+#table-plannedStudies .subHeader th {
+  text-align: center;
+}
+
+#table-plannedStudies .relevantSubIDO ul {
+  padding-left: 12px;
+}
+
+#table-plannedStudies .relevantSubIDO ul li{
+  margin-bottom: 3px;
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.modal-content h3.subTitle.headTitle {
+  display: inline;
+}
+
+.modal-dialog.modal-lg.bigger {
+  width: 95%;
+}
+
+.table-plannedStudies td.checkbox {
+  display: table-cell;
+}
+
+.plannedStudiesCheckbox p.checked{
+  height: 20px;
+  margin-left: 15px;
+}
+
+tfoot {
+  font-weight: bold;
+}
+
+
+/* View more */
+
+.viewMoreSyntesis-block {
+  overflow: hidden;
+  -webkit-transition: height 1s;
+  -moz-transition: height 1s;
+  transition: height 1s;
+  position: relative;
+}
+
+.viewMoreSyntesis {
+  color: #6b6b6b;
+  /* border-bottom: 1px solid #dddddd; */
+  position:absolute;
+  bottom: 0;
+  width: 94%;
+  margin: 0 0.5%;
+  cursor: pointer;
+  padding: 23px 0 0px 0;
+  height: 50px;
+  font-weight: 900;
+  text-align: center;
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0)), color-stop(50%, #fff));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 70%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+
+.viewMoreSyntesis:hover{
+  color:#999;
+  text-decoration:underline;
+}
+
+#tableE td {
+  padding: 4px;
+}
+
+.powb-submenuItem {
+  padding: 6px 7px 6px 0;
+  margin: 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  height: 32px;
+  vertical-align: middle;
+  border-radius: 2px;
+  color: #a9a9a9;
+  text-decoration: none;
+  position: relative;
+}
+
+.powb-submenuItem.active {
+  background-color: #1da5ce;
+  color:#fff;
+  border-color: #1c96bb;
+}
+
+.powb-submenuItem img.check {
+  position:absolute;
+  right: 3px;
+  bottom: 6px;
+}
