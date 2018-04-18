@@ -1,3 +1,66 @@
+[#ftl]
+[#assign title = "Project Innovaions" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
+[#-- TODO: Remove unused pageLibs--]
+[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectInnovations.js,
+  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/fieldsValidation.js"
+] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
+[#assign currentSection = "projects" /]
+[#assign currentStage = "innovations" /]
+
+[#assign breadCrumb = [
+  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+  {"label":"innovationsList", "nameSpace":"/projects", "action":"${(crpSession)!}/innovations" ,"param":"projectID=${projectID}"},
+  {"label":"innovationInformation", "nameSpace":"/projects", "action":""}
+]/]
+
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+
+[#-- Helptext --]
+[@utilities.helpBox name="innovations.help" /]
+
+<section class="container">
+  <div class="row">
+      [#-- Project Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
+      </div>
+      [#-- Project Section Content --]
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
+        
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+           
+          <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
+
+          [#-- Innovations List Table --]
+          [@innovationsTableMacro /]
+
+          [#-- Add Innovation Button --]
+          [#if canEdit]
+          <div class="buttons">
+            <div class="buttons-content">
+              <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                [@s.text name="form.buttons.addInnovation" /]
+              </a></div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          [/#if]
+
+        [/@s.form]
+      </div>
+  </div>
+</section>
+
 [#macro innovationsTableMacro]
   <table class="table-innovations table-border-powb" id="table-innovations">
     <thead>
