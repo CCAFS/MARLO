@@ -241,7 +241,16 @@
     <mapping resource="xmls/PowbCollaborationGlobalUnits.hbm.xml"/>
     <mapping resource="xmls/PowbCollaborationRegions.hbm.xml"/>
     <mapping resource="xmls/ProjectHighlightsInfo.hbm.xml"/>
-    <mapping resource="xmls/DeliverableRules.hbm.xml"/>
-    <mapping resource="xmls/DeliverableTypeRules.hbm.xml"/>
+    <mapping resource="xmls/RepIndGenderYouthFocusLevels.hbm.xml"/>
+    <mapping resource="xmls/RepIndGeographicScopes.hbm.xml"/>
+    <mapping resource="xmls/RepIndInnovationTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndLandUseTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndOrganizationTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndPhaseResearchPartnerships.hbm.xml"/>
+    <mapping resource="xmls/RepIndPolicyInvestimentTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndRegions.hbm.xml"/>
+    <mapping resource="xmls/RepIndStageInnovations.hbm.xml"/>
+    <mapping resource="xmls/RepIndTypeActivities.hbm.xml"/>
+    <mapping resource="xmls/RepIndTypeParticipants.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
