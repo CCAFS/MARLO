@@ -739,7 +739,58 @@
 				name="deliverableID">${deliverable.id}</param> </result> -->
 		</action>
 
-
+    <!-- TODO: Review the following actions (JZ) START -->
+    <action name="{crp}/innovationsList"
+      class="org.cgiar.ccafs.marlo.action.projects.DeliverableListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectInnovationList.ftl
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/addNewInnovation" method="add"
+      class="org.cgiar.ccafs.marlo.action.projects.DeliverableListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectInnovationList.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/innovation</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/innovation"
+      class="org.cgiar.ccafs.marlo.action.projects.DeliverableAction">
+      <interceptor-ref name="editProjectListStack" />
+      <interceptor-ref name="editDeliverable" />
+      <interceptor-ref name="defaultStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectInnovation.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/innovation</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+    <!-- END -->
 
 		<action name="{crp}/budgetByPartners"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByPartnersAction">
