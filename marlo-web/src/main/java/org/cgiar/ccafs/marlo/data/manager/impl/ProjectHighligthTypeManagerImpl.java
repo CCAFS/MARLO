@@ -49,13 +49,11 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
 
   @Override
   public void deleteProjectHighligthType(long projectHighligthTypeId) {
+    ProjectHighlightType projectHighlightType = this.getProjectHighligthTypeById(projectHighligthTypeId);
 
-    projectHighligthTypeDAO.deleteProjectHighligthType(projectHighligthTypeId);
-
-    ProjectHighlightType projectHighlightCountry = this.getProjectHighligthTypeById(projectHighligthTypeId);
-    if (projectHighlightCountry.getPhase().getNext() != null) {
-      this.deleteProjectHighligthTypePhase(projectHighlightCountry.getPhase().getNext(),
-        projectHighlightCountry.getProjectHighligth().getId(), projectHighlightCountry);
+    if (projectHighlightType.getPhase().getNext() != null) {
+      this.deleteProjectHighligthTypePhase(projectHighlightType.getPhase().getNext(),
+        projectHighlightType.getProjectHighligth().getId(), projectHighlightType);
     }
     projectHighligthTypeDAO.deleteProjectHighligthType(projectHighligthTypeId);
   }
@@ -89,6 +87,11 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
 
     return projectHighligthTypeDAO.findAll();
 
+  }
+
+  @Override
+  public List<ProjectHighlightType> getHighlightTypebyPhase(long higlightID, long phaseID) {
+    return projectHighligthTypeDAO.getHighlightTypebyPhase(higlightID, phaseID);
   }
 
   @Override
