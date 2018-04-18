@@ -630,6 +630,11 @@ function addPartnerEvent(e) {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+  
+  // Other Selects
+  $newElement.find('select.setSelect2').select2({
+      width: '100%'
+  });
 
   // Update indexes
   setProjectPartnersIndexes();
@@ -784,6 +789,11 @@ function addSelect2() {
       templateSelection: formatStateCountries,
       width: '100%'
   });
+  
+  // Other selects
+  $("form select.setSelect2 ").select2({
+      width: '100%'
+  });
 
 }
 
@@ -815,6 +825,11 @@ function PartnerObject(partner) {
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
       $(li).setNameIndexes(2, li_index);
     });
+    
+    // Update radio buttons labels and for
+    $(partner).find('input.hasPartnerships-yes').attr('id', "hasPartnerships-yes-"+ index).next().attr('for',"hasPartnerships-yes-"+ index);
+    $(partner).find('input.hasPartnerships-no').attr('id', "hasPartnerships-no-"+ index).next().attr('for',"hasPartnerships-no-"+ index);
+    
     // Update index for partner persons
     $(partner).find('.contactPerson').each(function(person_index,partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
