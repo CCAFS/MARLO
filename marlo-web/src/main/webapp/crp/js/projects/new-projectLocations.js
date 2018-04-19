@@ -3,7 +3,7 @@ var map;
 var style;
 var infoWindow = null;
 var markers = [];
-var countID;
+var countID=0;
 var countries = [];
 var layer;
 var arSelectedLocations = [];
@@ -271,35 +271,43 @@ function attachEvents() {
     $(this).addClass('selected');
 
     /* GET COORDINATES */
-    var url = baseURL + "/geopositionByElement.do";
-    var data = {
-        "locElementID": markerId,
-        phaseID: phaseID
-    };
-    $.ajax({
+    if($(this).hasClass("unsaved-location")){
+      var url = baseURL + "/geopositionByElement.do";
+      var data = {
+          "locElementID": markerId,
+          phaseID: phaseID
+      };
+      $.ajax({
         url: url,
         type: 'GET',
         dataType: "json",
         data: data
-    }).done(function(m) {
+      }).done(function(m) {
 
-      if(m.geopositions.length != 0) {
-        latitude = m.geopositions[0].latitude;
-        longitude = m.geopositions[0].longitude;
-        var latLng = new google.maps.LatLng(latitude, longitude);
-        map.setCenter(latLng);
-        map.setZoom(15);
-      }else{
-        var geocoder = new google.maps.Geocoder();
+        if(m.geopositions.length != 0) {
+          latitude = m.geopositions[0].latitude;
+          longitude = m.geopositions[0].longitude;
+          var latLng = new google.maps.LatLng(latitude, longitude);
+          map.setCenter(latLng);
+          map.setZoom(15);
+        }else{
+          var geocoder = new google.maps.Geocoder();
 
-        geocoder.geocode( {'address' : markerName}, function(results, status) {
-          if (status == google.maps.GeocoderStatus.OK) {
+          geocoder.geocode( {'address' : markerName}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
               map.setCenter(results[0].geometry.location);
               map.fitBounds(results[0].geometry.viewport);
-          }
-        });
-      }
-    });
+            }
+          });
+        }
+      });
+    }else{
+      latitude = $(this).find('.coordinates').attr('data-lat');
+      longitude = $(this).find('.coordinates').attr('data-lon');
+      var latLng = new google.maps.LatLng(latitude, longitude);
+      map.setCenter(latLng);
+      map.setZoom(15);
+    }
   });
 
   $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").blur(function() {
@@ -705,14 +713,13 @@ function mappingCountries() {
   }
 
 }
-
+//here
 //Remove a location element-Function
 function removeLocationItem() {
   var globalList = $(this).parents("#selectsContent");
   var list = $(this).parents(".optionSelect-content");
   var $item = $(this).parents('.locElement');
-  console.log($item.attr('data-locId'));
-  //var $allLocListItem = $('.allLocations-container .list-container').find();
+  var countryList = $(".list-container");
 
   if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
     var optionValue = $item.attr("id").split('-');
@@ -723,8 +730,13 @@ function removeLocationItem() {
       removeMarker(id);
     }
   }
-  $item.hide(function() { //here
+  $item.hide(function() {
     $item.remove();
+
+    // Remove unmarked location from locations list (all locations modal)
+    console.log($item);
+    var locId = $item.attr('data-locId');
+    countryList.find("#"+locId).remove();
 
     if($(list).find(".locElement").length == 0 && $(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0) {
       $(list).parents(".locationLevel").remove();
@@ -733,8 +745,8 @@ function removeLocationItem() {
     checkItems(globalList);
   });
   layer.setMap(null);
-  /* Remove of countries array */
 
+  /* Remove of countries array */
   var index = countries.indexOf($item.find(".locElementCountry").val());
   if(index > -1) {
     countries.splice(index, 1);
@@ -833,6 +845,8 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
   console.log(latitude);
   console.log(longitude);
   var name = $("#inputFormWrapper").find("input.name").val();
+  var locLevelList = $(".list-container").find("ul[name='"+locationName+"']");
+
   // Ajax for country name
   $.ajax({
       'url': 'https://maps.googleapis.com/maps/api/geocode/json',
@@ -848,7 +862,10 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         }
       },
       complete: function(data) {
+        //Add item into locations table
         $item.attr("id", "location-" + (countID));
+        $item.attr("data-locId",(countID));
+        $item.addClass('unsaved-location');
         $item.find('.locationName').html(
             '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
                 + parseFloat(longitude).toFixed(4) + ' )</span> ');
@@ -858,8 +875,25 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         $item.find('.locElementId').val(-1);
         $list.append($item);
         $item.show('slow');
-        // add marker
+
+        // add marker in map
         addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
+
+        // Add location in all locations list (Modal)
+        var $listItem = $('#itemList-template').clone(true).removeAttr("id");
+        $listItem.attr('id',countID);
+        $listItem.attr('name',name);
+        $listItem.find(".item-name").text(name);
+
+        // Round value to max 4 decimals
+        latitude = parseFloat(latitude).toFixed(4);
+        longitude = parseFloat(longitude).toFixed(4);
+
+        $listItem.find(".coordinates").attr('data-lat',latitude);
+        $listItem.find(".coordinates").attr('data-lon',longitude);
+        $listItem.find(".coordinates").text("("+latitude+", "+longitude+")").show();
+        locLevelList.append($listItem);
+
 
       //Show and hide Successfully added message
         $('#alert-succesfully-added').slideDown();
@@ -947,7 +981,6 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       $item.find(".lName").html(locName);
       $item.find(".locElementName").val(locName);
       $item.find(".locElementId").val(locId);
-      //here
 
       // If is a country
       if(locationName == "Country") {
