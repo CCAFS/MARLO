@@ -275,15 +275,17 @@
                     [#-- END All locations map(Modal) --]
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
+                        <table class="locationsDataTable">
+                          <tbody>
                           [#if project.locationsData?has_content]
-                            <table class="locationsDataTable">
                             [#list project.locationsData as locationLevels]
                                 [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
                             [/#list]
-                            </table>
                           [#else]
-                            <p>No locations has been added, please add locations.</p>
+                            <p id="noLocationsAdded">No locations has been added, please add locations.</p>
                           [/#if]
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   [#if editable && action.hasSpecificities('crp_other_locations')]
