@@ -79,7 +79,7 @@
       "title": "summaries.board.report.projectsList", 
       "description": "summaries.board.report.projectsList.description",
       "namespace": "/projects",
-      "action": "${crpSession}/ProjectsSummaryAction",
+      "action": "${crpSession}/projectsSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning", "Reporting" ]
     }
