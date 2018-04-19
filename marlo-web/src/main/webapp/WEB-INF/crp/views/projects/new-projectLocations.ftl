@@ -317,7 +317,7 @@
 [#macro allLocationsListMacro element list]
 <div>
   <h4 name="${element.name!}" class="loc-level">${element.name!}</h4>
-  <ul class="${element.name!}">
+  <ul name="${element.name!}">
     [#if element.locElements?has_content]
       [#list element.locElements as location]
         <li id="${location.id!}" name="${location.name!}" class="marker-map">
@@ -474,7 +474,7 @@
 [#-- list element template (all locations modal) --]
 <div id="itemLoc-template" style="display:none">
   <h4 name="" class="loc-level"></h4>
-  <ul class="">
+  <ul name="">
     <li id="itemList-template" name="" class="marker-map">
       <span class="glyphicon glyphicon-map-marker"></span>
       <span class="item-name"></span>

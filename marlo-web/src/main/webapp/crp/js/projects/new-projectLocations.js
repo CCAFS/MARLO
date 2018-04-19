@@ -208,7 +208,7 @@ function attachEvents() {
         var $locLevelList = $("#itemLoc-template").clone(true).removeAttr("id");
         $locLevelList.find(".loc-level").attr('name',"Country");
         $locLevelList.find(".loc-level").text("Country");
-        $locLevelList.find("ul").addClass("Country");
+        $locLevelList.find("ul").attr("name","Country");
         $locLevelList.find("#itemList-template").remove();
 
         $(".list-container").append($locLevelList);
@@ -799,6 +799,7 @@ function notify(text) {
 //Adding location level with locElements
 function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
   var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
+  $locationItem.attr('data-name',locationName);
   $locationItem.find(".locLevelName").html(locationName);
   $locationItem.find("input.locationLevelId").val(locationId);
   $locationItem.find("input.locationLevelName").val(locationName);
@@ -924,7 +925,11 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
       $(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").parent().find(
           ".optionSelect-content");
-  var countryList = $(".list-container").find(".Country");
+  //Level location name
+  var locLevelName=$(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").next().val();
+  console.log(locLevelName);
+  //All locations modal lists
+  var locLevelList = $(".list-container").find("ul[name='"+locLevelName+"']");
   $.each($locationSelect.val(), function(i,e) {
     var $item = $("#location-template").clone(true).removeAttr("id");
     var locId = e.split("-")[0];
@@ -942,6 +947,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       $item.find(".lName").html(locName);
       $item.find(".locElementName").val(locName);
       $item.find(".locElementId").val(locId);
+      //here
 
       // If is a country
       if(locationName == "Country") {
@@ -958,12 +964,12 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       }, 2000);
 
 
-      // Add Country into all locations modal list
+      // Add location into all locations modal list
       var $listItem = $('#itemList-template').clone(true).removeAttr("id");
       $listItem.attr('id',locId);
-      $listItem.attr('name',locIso);
+      $listItem.attr('name',locName);
       $listItem.find(".item-name").text(locName);
-      countryList.append($listItem);
+      locLevelList.append($listItem);
     }
   });
   updateIndex();
