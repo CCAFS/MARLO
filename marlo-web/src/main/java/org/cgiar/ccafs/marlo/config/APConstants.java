@@ -32,6 +32,7 @@ public final class APConstants {
 
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
+  public static final String STUDY_REQUEST_ID = "studyID";
   public static final String CLASS_NAME = "className";
   public static final String CRP_ACTIVITES_MODULE = "crp_activities_module";
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
