@@ -594,13 +594,13 @@
 		</action>
 
 
-		<action name="{crp}/caseStudies"
+		<action name="{crp}/studies"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectCaseStudiesListAction">
 			<interceptor-ref name="editProjectsStack" />
-			<result name="input">/WEB-INF/crp/views/projects/projectCaseStudies.ftl
+			<result name="input">/WEB-INF/crp/views/projects/projectStudies.ftl
 			</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">"${crpSession}/caseStudies"</param>
+				<param name="actionName">"${crpSession}/studies"</param>
 				<param name="projectID">${project.id}</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
@@ -614,11 +614,11 @@
 		</action>
 
 
-		<action name="{crp}/addNewCaseStudy" method="add"
+		<action name="{crp}/addNewStudy" method="add"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectCaseStudiesListAction">
-			<result name="input">/WEB-INF/projects/projectCaseStudies.ftl</result>
+			<result name="input">/WEB-INF/projects/projectStudies.ftl</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/caseStudy</param>
+				<param name="actionName">${crpSession}/study</param>
 				<param name="caseStudyID">${caseStudyID}</param>
 				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
@@ -626,24 +626,24 @@
 			</result>
 		</action>
 
-		<action name="{crp}/deleteCaseStudy" method="delete"
+		<action name="{crp}/deleteStudy" method="delete"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectCaseStudiesListAction">
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/caseStudies</param>
+				<param name="actionName">${crpSession}/studies</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
 
 
-		<action name="{crp}/caseStudy"
+		<action name="{crp}/study"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectCaseStudyAction">
 			<interceptor-ref name="editProjectListStack" />
 			<interceptor-ref name="editCaseStudy" />
 			<interceptor-ref name="defaultStack" />
-			<result name="input">/WEB-INF/crp/views/projects/projectCaseStudy.ftl
+			<result name="input">/WEB-INF/crp/views/projects/projectStudy.ftl
 			</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/caseStudy</param>
+				<param name="actionName">${crpSession}/study</param>
 				<param name="caseStudyID">${caseStudyID}</param>
 				<param name="projectID">${projectID}</param>
 				<param name="edit">true</param>
@@ -657,7 +657,7 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
-				<param name="actionName">${crpSession}/caseStudy</param>
+				<param name="actionName">${crpSession}/study</param>
 				<param name="edit">true</param>
 				<param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
@@ -705,6 +705,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/deliverableList</param>
 				<param name="projectID">${projectID}</param>
+				<param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>

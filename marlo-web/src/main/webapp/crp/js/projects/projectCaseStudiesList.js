@@ -66,13 +66,23 @@ function addDataTable() {
       "language": {
         "emptyTable": "No studies entered into the system yet."
       },
+      "order": [
+        [
+            4, 'desc'
+        ]
+      ],
       aoColumnDefs: [
-        {
-            bSortable: false,
-            aTargets: [
-              -1
-            ]
-        }
+          {
+              bSortable: true,
+              aTargets: [
+                -1
+              ]
+          }, {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
       ]
   });
   $('table#projectHighlights').on('draw.dt', function() {
