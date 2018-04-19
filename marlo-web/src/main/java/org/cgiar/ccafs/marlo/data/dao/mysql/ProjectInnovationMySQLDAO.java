@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovation, Long> implements ProjectInnovationDAO {
+public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovation, Long>
+  implements ProjectInnovationDAO {
 
 
   @Inject
@@ -78,6 +79,16 @@ public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovatio
     }
 
 
+    return projectInnovation;
+  }
+
+  @Override
+  public ProjectInnovation save(ProjectInnovation projectInnovation, String section, List<String> relationsName) {
+    if (projectInnovation.getId() == null) {
+      super.saveEntity(projectInnovation, section, relationsName);
+    } else {
+      projectInnovation = super.update(projectInnovation, section, relationsName);
+    }
     return projectInnovation;
   }
 

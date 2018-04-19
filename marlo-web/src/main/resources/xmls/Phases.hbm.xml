@@ -230,5 +230,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry" />
         </set>
+        <set name="projectInnovationInfos" table="project_innovation_info" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo" />
+        </set>
 	</class>
 </hibernate-mapping>
