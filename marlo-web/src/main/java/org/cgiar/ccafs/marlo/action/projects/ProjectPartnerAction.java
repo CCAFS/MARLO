@@ -35,6 +35,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
@@ -145,6 +147,8 @@ public class ProjectPartnerAction extends BaseAction {
   private DeliverablePartnershipManager deliverablePartnershipManager;
 
   private final ProjectPartnerContributionManager projectPartnerContributionManager;
+  private final ProjectPartnerPartnershipManager projectPartnerPartnershipManager;
+  private final ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager;
 
   private final ProjectPartnerOverallManager projectPartnerOverallManager;
   private final InstitutionManager institutionManager;
@@ -214,7 +218,9 @@ public class ProjectPartnerAction extends BaseAction {
     DeliverablePartnershipManager deliverablePartnershipManager, InstitutionLocationManager institutionLocationManager,
     ProjectInfoManager projectInfoManager, GlobalUnitProjectManager globalUnitProjectManager,
     RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager) {
+    RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
+    ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
+    ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -242,6 +248,8 @@ public class ProjectPartnerAction extends BaseAction {
     this.repIndPhaseResearchPartnershipManager = repIndPhaseResearchPartnershipManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.repIndRegionManager = repIndRegionManager;
+    this.projectPartnerPartnershipManager = projectPartnerPartnershipManager;
+    this.projectPartnerPartnershipLocationManager = projectPartnerPartnershipLocationManager;
   }
 
   public void addCrpUser(User user) {
@@ -1042,7 +1050,6 @@ public class ProjectPartnerAction extends BaseAction {
             }
           }
 
-
         }
 
         this.setDraft(true);
@@ -1321,6 +1328,7 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
+            projectPartnerDB.setHasPartnerships(projectPartnerClient.getHasPartnerships());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }
 
@@ -1330,6 +1338,7 @@ public class ProjectPartnerAction extends BaseAction {
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
           this.saveLocations(projectPartnerClient, projectPartnerDB);
+          this.saveProjectPartnership(projectPartnerClient);
 
 
         }
@@ -1605,6 +1614,83 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     }
+  }
+
+  private void saveProjectPartnership(ProjectPartner projectPartnerClient) {
+    if (projectPartnerClient.getProjectPartnerPartnership() != null) {
+      ProjectPartnerPartnership partnershipClient = projectPartnerClient.getProjectPartnerPartnership();
+      ProjectPartnerPartnership partnershipUpdate = new ProjectPartnerPartnership();
+
+      if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+        partnershipUpdate =
+          projectPartnerPartnershipManager.getProjectPartnerPartnershipById(partnershipClient.getId());
+      } else {
+        partnershipUpdate.setProjectPartner(projectPartnerClient);
+        partnershipUpdate.setCreatedBy(this.getCurrentUser());
+      }
+
+      partnershipUpdate.setMainArea(partnershipClient.getMainArea());
+      if (partnershipClient.getResearchPhase() != null && partnershipClient.getResearchPhase().getId() != -1) {
+        partnershipUpdate.setResearchPhase(partnershipClient.getResearchPhase());
+      } else {
+        partnershipUpdate.setResearchPhase(null);
+      }
+      if (partnershipClient.getGeographicScope() != null && partnershipClient.getGeographicScope().getId() != -1) {
+        partnershipUpdate.setGeographicScope(partnershipClient.getGeographicScope());
+      } else {
+        partnershipUpdate.setGeographicScope(null);
+      }
+      if (partnershipClient.getRegion() != null && partnershipClient.getRegion().getId() != -1) {
+        partnershipUpdate.setRegion(partnershipClient.getRegion());
+      } else {
+        partnershipUpdate.setRegion(null);
+      }
+
+      partnershipUpdate.setActive(true);
+      partnershipUpdate.setActiveSince(new Date());
+      partnershipUpdate.setModifiedBy(this.getCurrentUser());
+      partnershipUpdate.setModificationJustification("");
+
+      // Locations
+
+      if (partnershipClient.getPartnershipLocationsIds() != null
+        || !partnershipClient.getPartnershipLocationsIds().isEmpty()) {
+        List<ProjectPartnerPartnershipLocation> locationsDB = new ArrayList<>();
+        if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+          locationsDB =
+            projectPartnerPartnershipLocationManager.findParnershipLocationByPartnership(partnershipClient.getId());
+        } else {
+          locationsDB = new ArrayList<>();
+        }
+
+
+        List<ProjectPartnerPartnershipLocation> locationsSave = new ArrayList<>();
+        for (String locationIsoAlpha2 : partnershipClient.getPartnershipLocationsIds()) {
+          ProjectPartnerPartnershipLocation locationPartnership = new ProjectPartnerPartnershipLocation();
+          locationPartnership.setLocation(locationManager.getLocElementByISOCode(locationIsoAlpha2));
+          locationPartnership.setProjectPartnerPartnership(partnershipClient);
+          locationsSave.add(locationPartnership);
+          if (!locationsDB.contains(locationPartnership)) {
+            locationPartnership.setActive(true);
+            locationPartnership.setActiveSince(new Date());
+            locationPartnership.setCreatedBy(this.getCurrentUser());
+            locationPartnership.setModificationJustification("");
+            locationPartnership.setModifiedBy(this.getCurrentUser());
+            projectPartnerPartnershipLocationManager.saveProjectPartnerPartnershipLocation(locationPartnership);
+          }
+        }
+        for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
+          if (!locationsSave.contains(projectPartnerPartnershipLocation)) {
+            projectPartnerPartnershipLocation.setModifiedBy(this.getCurrentUser());
+            projectPartnerPartnershipLocationManager
+              .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
+          }
+        }
+      }
+
+      projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+    }
+
   }
 
   public void setAllInstitutions(List<Institution> allInstitutions) {

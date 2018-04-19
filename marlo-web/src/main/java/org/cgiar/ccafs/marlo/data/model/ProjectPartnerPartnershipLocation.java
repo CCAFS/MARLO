@@ -42,13 +42,15 @@ public class ProjectPartnerPartnershipLocation implements java.io.Serializable, 
     if (obj == null) {
       return false;
     }
-
-    Project other = (Project) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectPartnerPartnershipLocation other = (ProjectPartnerPartnershipLocation) obj;
+    if (location == null) {
+      if (other.location != null) {
         return false;
       }
-    } else if (!this.getId().equals(other.getId())) {
+    } else if (!location.getId().equals(other.location.getId())) {
       return false;
     }
     return true;
