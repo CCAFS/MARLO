@@ -256,5 +256,7 @@
     <mapping resource="xmls/RepIndTypeParticipants.hbm.xml"/>
     <mapping resource="xmls/ProjectInnovations.hbm.xml"/>
     <mapping resource="xmls/ProjectInnovationInfo.hbm.xml"/>
+    <mapping resource="xmls/ProjectPartnerPartnerships.hbm.xml"/>
+    <mapping resource="xmls/ProjectPartnerPartnershipLocation.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
