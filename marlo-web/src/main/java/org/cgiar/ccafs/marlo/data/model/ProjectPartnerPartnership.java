@@ -64,7 +64,7 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
       return false;
     }
 
-    Project other = (Project) obj;
+    ProjectPartnerPartnership other = (ProjectPartnerPartnership) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;

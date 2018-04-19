@@ -40,7 +40,8 @@ public interface ProjectPartnerPartnershipLocationDAO {
   public boolean existProjectPartnerPartnershipLocation(long projectPartnerPartnershipLocationID);
 
   /**
-   * This method gets a projectPartnerPartnershipLocation object by a given projectPartnerPartnershipLocation identifier.
+   * This method gets a projectPartnerPartnershipLocation object by a given projectPartnerPartnershipLocation
+   * identifier.
    * 
    * @param projectPartnerPartnershipLocationID is the projectPartnerPartnershipLocation identifier.
    * @return a ProjectPartnerPartnershipLocation object.
@@ -55,11 +56,15 @@ public interface ProjectPartnerPartnershipLocationDAO {
   public List<ProjectPartnerPartnershipLocation> findAll();
 
 
+  public List<ProjectPartnerPartnershipLocation> findParnershipLocationByPartnership(long projectPartnerPartnershipnId);
+
   /**
    * This method saves the information of the given projectPartnerPartnershipLocation
    * 
-   * @param projectPartnerPartnershipLocation - is the projectPartnerPartnershipLocation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPartnerPartnershipLocation was
+   * @param projectPartnerPartnershipLocation - is the projectPartnerPartnershipLocation object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectPartnerPartnershipLocation was
    *         updated
    *         or -1 is some error occurred.
    */

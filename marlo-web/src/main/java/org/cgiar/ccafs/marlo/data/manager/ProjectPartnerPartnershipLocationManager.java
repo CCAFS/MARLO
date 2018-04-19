@@ -53,22 +53,33 @@ public interface ProjectPartnerPartnershipLocationManager {
 
 
   /**
-   * This method gets a projectPartnerPartnershipLocation object by a given projectPartnerPartnershipLocation identifier.
+   * This method gets a list of projectPartnerPartnershipLocation that are active with the given id exists in the system
+   * 
+   * @return a list from ProjectPartnerPartnershipLocation null if no exist records
+   */
+  public List<ProjectPartnerPartnershipLocation> findParnershipLocationByPartnership(long projectPartnerPartnershipnId);
+
+  /**
+   * This method gets a projectPartnerPartnershipLocation object by a given projectPartnerPartnershipLocation
+   * identifier.
    * 
    * @param projectPartnerPartnershipLocationID is the projectPartnerPartnershipLocation identifier.
    * @return a ProjectPartnerPartnershipLocation object.
    */
-  public ProjectPartnerPartnershipLocation getProjectPartnerPartnershipLocationById(long projectPartnerPartnershipLocationID);
+  public ProjectPartnerPartnershipLocation
+    getProjectPartnerPartnershipLocationById(long projectPartnerPartnershipLocationID);
 
   /**
    * This method saves the information of the given projectPartnerPartnershipLocation
    * 
-   * @param projectPartnerPartnershipLocation - is the projectPartnerPartnershipLocation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPartnerPartnershipLocation was
+   * @param projectPartnerPartnershipLocation - is the projectPartnerPartnershipLocation object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectPartnerPartnershipLocation was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectPartnerPartnershipLocation saveProjectPartnerPartnershipLocation(ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation);
-
+  public ProjectPartnerPartnershipLocation
+    saveProjectPartnerPartnershipLocation(ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation);
 
 }

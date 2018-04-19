@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectPartnerPartnershipLocationMySQLDAO extends AbstractMarloDAO<ProjectPartnerPartnershipLocation, Long> implements ProjectPartnerPartnershipLocationDAO {
+public class ProjectPartnerPartnershipLocationMySQLDAO extends AbstractMarloDAO<ProjectPartnerPartnershipLocation, Long>
+  implements ProjectPartnerPartnershipLocationDAO {
 
 
   @Inject
@@ -37,14 +38,16 @@ public class ProjectPartnerPartnershipLocationMySQLDAO extends AbstractMarloDAO<
 
   @Override
   public void deleteProjectPartnerPartnershipLocation(long projectPartnerPartnershipLocationId) {
-    ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation = this.find(projectPartnerPartnershipLocationId);
+    ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation =
+      this.find(projectPartnerPartnershipLocationId);
     projectPartnerPartnershipLocation.setActive(false);
     this.update(projectPartnerPartnershipLocation);
   }
 
   @Override
   public boolean existProjectPartnerPartnershipLocation(long projectPartnerPartnershipLocationID) {
-    ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation = this.find(projectPartnerPartnershipLocationID);
+    ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation =
+      this.find(projectPartnerPartnershipLocationID);
     if (projectPartnerPartnershipLocation == null) {
       return false;
     }
@@ -67,6 +70,18 @@ public class ProjectPartnerPartnershipLocationMySQLDAO extends AbstractMarloDAO<
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectPartnerPartnershipLocation>
+    findParnershipLocationByPartnership(long projectPartnerPartnershipnId) {
+    String query = "from " + ProjectPartnerPartnershipLocation.class.getName() + " where project_partner_partnership="
+      + projectPartnerPartnershipnId + " and is_active=1";
+    List<ProjectPartnerPartnershipLocation> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
