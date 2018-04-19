@@ -324,7 +324,7 @@
           <span class="glyphicon glyphicon-map-marker"></span>
           <span class="item-name">${location.name!}</span>
           <br />
-          [#if list!=true]<span class="coordinates">(${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})</span>[/#if]
+          [#if list!=true]<span class="coordinates" data-lat="${(location.locGeoposition.latitude)!}" data-lon="${(location.locGeoposition.longitude)!}">(${(location.locGeoposition.latitude)!}, ${(location.locGeoposition.longitude)!})</span>[/#if]
         </li>
       [/#list]
     [/#if]
@@ -479,6 +479,7 @@
       <span class="glyphicon glyphicon-map-marker"></span>
       <span class="item-name"></span>
       <br />
+      <span class="coordinates" data-lat="" data-lon="" style="display:none"></span>
     </li>
   </ul>
 </div>
