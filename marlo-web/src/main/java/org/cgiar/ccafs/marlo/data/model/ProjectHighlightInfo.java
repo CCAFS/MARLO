@@ -304,6 +304,7 @@ public class ProjectHighlightInfo implements java.io.Serializable, IAuditLog {
     this.setSubject(projectHighlightInfoUpdate.getSubject());
     this.setTitle(projectHighlightInfoUpdate.getTitle());
     this.setYear(projectHighlightInfoUpdate.getYear());
+    this.setPartners(projectHighlightInfoUpdate.getPartners());
   }
 
 

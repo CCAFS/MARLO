@@ -103,6 +103,9 @@
 
 			<interceptor name="canEditCrp"
 				class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditCrpIndicatorsInterceptor" />
+				
+				<interceptor name="editInnovation"
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditInnovationInterceptor" />
 
 			<!-- SuperAdmin interceptors -->
 			<interceptor name="superAdminValidation"

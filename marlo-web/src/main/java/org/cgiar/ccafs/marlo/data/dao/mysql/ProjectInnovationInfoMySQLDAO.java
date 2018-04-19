@@ -60,7 +60,7 @@ public class ProjectInnovationInfoMySQLDAO extends AbstractMarloDAO<ProjectInnov
 
   @Override
   public List<ProjectInnovationInfo> findAll() {
-    String query = "from " + ProjectInnovationInfo.class.getName() + " where is_active=1";
+    String query = "from " + ProjectInnovationInfo.class.getName();
     List<ProjectInnovationInfo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

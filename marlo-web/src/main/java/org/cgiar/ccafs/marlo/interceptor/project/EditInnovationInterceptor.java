@@ -18,12 +18,11 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -40,35 +39,32 @@ import org.apache.struts2.dispatcher.Parameter;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class EditHighLightInterceptor extends AbstractInterceptor implements Serializable {
+public class EditInnovationInterceptor extends AbstractInterceptor implements Serializable {
 
-  private static final long serialVersionUID = 7287623847333177230L;
-
+  private static final long serialVersionUID = 4178469256964398247L;
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private GlobalUnit crp;
-  private long highLightId = 0;
+  private long innovationId = 0;
 
-  private ProjectHighligthManager projectHighligthManager;
+  private ProjectInnovationManager projectInnovationManager;
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
   @Inject
-  public EditHighLightInterceptor(ProjectHighligthManager deliverableManager, ProjectManager projectManager,
+  public EditInnovationInterceptor(ProjectInnovationManager projectInnovationManager, ProjectManager projectManager,
     GlobalUnitManager crpManager) {
-    this.crpManager = crpManager;
+    this.projectInnovationManager = projectInnovationManager;
     this.projectManager = projectManager;
-    this.projectHighligthManager = deliverableManager;
+    this.crpManager = crpManager;
   }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-
     crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     crp = crpManager.getGlobalUnitById(crp.getId());
     try {
@@ -89,16 +85,15 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
     boolean editParameter = false;
     boolean canSwitchProject = false;
     baseAction.setSession(session);
-    // String projectParameter = ((String[]) parameters.get(APConstants.HIGHLIGHT_REQUEST_ID))[0];
-    String projectParameter = parameters.get(APConstants.HIGHLIGHT_REQUEST_ID).getMultipleValues()[0];
+    String projectParameter = parameters.get(APConstants.INNOVATION_REQUEST_ID).getMultipleValues()[0];
 
-    highLightId = Long.parseLong(projectParameter);
+    innovationId = Long.parseLong(projectParameter);
 
-    ProjectHighlight projectHighlight = projectHighligthManager.getProjectHighligthById(highLightId);
+    ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(innovationId);
 
-    if (projectHighlight != null && projectHighlight.isActive()) {
+    if (projectInnovation != null && projectInnovation.isActive()) {
 
-      String params[] = {crp.getAcronym(), projectHighlight.getProject().getId() + ""};
+      String params[] = {crp.getAcronym(), projectInnovation.getProject().getId() + ""};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
 
@@ -107,25 +102,20 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(projectHighlight.getProject()) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params))) {
+        if (projects.contains(projectInnovation.getProject()) && baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_INNOVATIONS_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
-        if (baseAction.isSubmit(projectHighlight.getProject().getId())) {
+        if (baseAction.isSubmit(projectInnovation.getProject().getId())) {
           canEdit = false;
-
         }
         if (baseAction.isCrpClosed()) {
           if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
             canEdit = false;
           }
-
         }
-
-
       }
 
-      // TODO Validate is the project is new
       if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
         // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
         String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
@@ -138,27 +128,13 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params));
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_INNOVATIONS_EDIT_PERMISSION, params));
       }
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }
 
-
-      if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getStatus() != null) {
-        if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-          canEdit = false;
-        }
-      }
-
-      /*
-       * if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getYear() != baseAction
-       * .getCurrentCycleYear()) {
-       * canEdit = false;
-       * }
-       */
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
@@ -167,6 +143,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
     } else {
       throw new NullPointerException();
     }
+
   }
 
 }

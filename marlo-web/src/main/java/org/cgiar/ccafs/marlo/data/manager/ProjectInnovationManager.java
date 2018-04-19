@@ -70,5 +70,18 @@ public interface ProjectInnovationManager {
    */
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation);
 
+  /**
+   * This method saves the information of the given projectInnovation
+   * 
+   * @param projectInnovation - is the projectInnovation object with the new information to be added/updated.
+   * @param section - the name of the map section.
+   * @param relationsName - a List of set relations that the object have it.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovation was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation, String section,
+    List<String> relationsName);
+
 
 }
