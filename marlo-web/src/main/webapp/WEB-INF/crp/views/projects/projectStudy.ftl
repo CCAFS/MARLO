@@ -90,9 +90,19 @@
   
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
-      [#-- Case study ID --]
+      [#-- Hidden ID --]
       <input type="hidden" name="${customName}.id" class="caseStudyID" value="${(element.id)!}"/>
       
+      <div class="form-group row">
+        <div class="col-md-6">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.type" listName="" keyFieldName="id"  displayFieldName="name" /]
+        </div>
+        <div class="col-md-6">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" /]
+        </div>
+      </div>
+    </div>
+    <div class="borderBox">
       [#-- 1. Title (up to 20 words) --]
       <div class="form-group">
         [@customForm.input name="${customName}.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" required=true editable=editable /]
@@ -106,23 +116,46 @@
       [#-- 3. Link to Common Results Reporting Indicator #I3 --]
       <div class="form-group">
         [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
-        <label for="">[@s.text name="study.reportingIndicatorThree" /]:</label>
-        [@customForm.radioFlat id="reportingIndicatorThree-yes" name="${name}.reportingIndicatorThree" label="Yes" value="true" checked=false cssClass="" cssClassLabel="radio-label-yes"/]
-        [@customForm.radioFlat id="reportingIndicatorThree-no" name="${name}.reportingIndicatorThree" label="No" value="false" checked=false cssClass="" cssClassLabel="radio-label-no"/]
-        
         <div class="form-group">
-          Insert link to loop on disaggregates for I3 here.
+          <label for="">[@s.text name="study.reportingIndicatorThree" /]:</label>
+          <p><small>[@s.text name="study.reportingIndicatorThree.help" /]</small></p>
+          [@customForm.radioFlat id="reportingIndicatorThree-yes" name="${name}.reportingIndicatorThree.value" label="Yes" value="true" checked=false cssClass="" cssClassLabel="radio-label-yes"/]
+          [@customForm.radioFlat id="reportingIndicatorThree-no" name="${name}.reportingIndicatorThree.value" label="No" value="false" checked=false cssClass="" cssClassLabel="radio-label-no"/]
+        </div>
+        
+        [#-- Disaggregates for CGIAR Indicator I3  --]
+        <div class="form-group simpleBox">
+          <div class="form-group row">
+            <div class="col-md-6">
+              [#-- Policy/Investment Type --]
+              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.policyType" listName="" keyFieldName="id"  displayFieldName="name" /]
+            </div>
+            <div class="col-md-6">
+              [#-- Amount (Only for Budget or Investment) --]
+              [@customForm.input name="${customName}.reportingIndicatorThree.amount" i18nkey="study.reportingIndicatorThree.amount" help="study.reportingIndicatorThree.amount.help" className="" required=true editable=editable /]
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-md-6">
+              [#-- Implementing Organization Type --]
+              [@customForm.select name="${customName}.reportingIndicatorThree.organizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="" keyFieldName="id"  displayFieldName="name" /]
+            </div>
+            <div class="col-md-6">
+              [#-- Stage in Process --]
+              [@customForm.select name="${customName}.reportingIndicatorThree.stage.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.stage" listName="" keyFieldName="id"  displayFieldName="name" /]
+            </div>
+          </div>
         </div>
       </div>
       
       [#-- 4.  Maturity of change reported (tick-box)  --]
       <div class="form-group">
         <label for="">[@s.text name="study.maturityChange" /]:</label>
-        <p><small>[@s.text name="study.maturityChange.help" /]</small></p>
+        <p><small>[@s.text name="study.maturityChange.help" /]  [@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]</small></p>
         <div class="form-group">
-          [@customForm.radioFlat id="maturityChange-1" name="${name}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/] <br />
-          [@customForm.radioFlat id="maturityChange-2" name="${name}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel=""/] <br />
-          [@customForm.radioFlat id="maturityChange-3" name="${name}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel=""/] 
+          <p>[@customForm.radioFlat id="maturityChange-1" name="${name}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/]</p> 
+          <p>[@customForm.radioFlat id="maturityChange-2" name="${name}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel=""/]</p>
+          <p>[@customForm.radioFlat id="maturityChange-3" name="${name}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel=""/]</p>
         </div>
       </div>
 
@@ -132,25 +165,80 @@
         <p><small>[@s.text name="study.stratgicResultsLink.help" /]</small></p>
         
         [#-- 5. Links to the Strategic Results Framework  --]
-        <div class="form-group">
-          a) Sub-IDOs
+        <div class="form-group simpleBox">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.stratgicResultsLink.subIDOs" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [#-- List --]
+          <div class="panel tertiary">
+            <div class="panel-body">
+              <ul class="list">
+                <li>Increased capacity for innovation in partner development organizations and in poor and vulnerable communities</li>
+              </ul>
+            </div>
+          </div>
+          
         </div>
-        <div class="form-group">
-          b) SRF 2022/2030 targets 
+        <div class="form-group simpleBox">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.stratgicResultsLink.srfTargets" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [#-- List --]
+          <div class="panel tertiary">
+            <div class="panel-body">
+              <ul class="list">
+                <li>1.2. 30 million people, of which 50% are women, assisted to exit poverty</li>
+                <li>3.1. 5% increase in water and nutrient efficiency in agroecosystems</li>
+              </ul>
+            </div>
+          </div>
+          
         </div>
-        <div class="form-group">
-          c) Comment box 
+        <div class="form-group simpleBox">
+          [@customForm.textArea name="${customName}.stratgicResultsLink.comments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" className="" required=true editable=editable /]
         </div>
       </div>
       
       [#-- 6.  Geographic scope - Countries  --]
       <div class="form-group">
-        6. Geographic scope - Countries (tick box and optional comment box)
+        <label for="">[@s.text name="study.geographicScope" /]:</label>
       </div>
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">
-        7. Key Contributors
+        <label for="">[@s.text name="study.keyContributors" /]:</label>
+        <div class="form-group simpleBox">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.keyContributors.crps" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [#-- List --]
+          <div class="panel tertiary">
+            <div class="panel-body">
+              <ul class="list">
+                <li>A4NH - Agriculture for Nutrition and Health</li>
+              </ul>
+            </div>
+          </div>
+          
+        </div>
+        <div class="form-group simpleBox">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.keyContributors.flagships" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [#-- List --]
+          <div class="panel tertiary">
+            <div class="panel-body">
+              <ul class="list">
+                <li>F1 - Priorities and Policies for CSA</li>
+                <li>F3 - Low emissions development</li>
+              </ul>
+            </div>
+          </div>
+          
+        </div>
+        <div class="form-group simpleBox">
+          [@customForm.select name="" className="setSelect2" i18nkey="study.keyContributors.externalPartners" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [#-- List --]
+          <div class="panel tertiary">
+            <div class="panel-body">
+              <ul class="list">
+                <li>Ministries of Agriculture for Bangladesh</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
 
       [#-- 8. Elaboration of Outcome/Impact Statement  --]
@@ -160,7 +248,8 @@
       
       [#-- 9. References cited  --]
       <div class="form-group">
-        9. References cited
+        <label for="">[@s.text name="study.referencesCited" /]:</label>
+        <p><small>[@s.text name="study.referencesCited.help" /]</small></p>
       </div>
       
       [#-- 10. Quantification (where data is available)  --]
@@ -170,7 +259,34 @@
       
       [#-- 11. Gender, Youth, and Capacity Development  --]
       <div class="form-group">
-        11. Gender, Youth, and Capacity Development 
+        [#local ccDimensions = [
+          { "name": "0 - Not Targeted" },
+          { "name": "1 - Significant" },
+          { "name": "2 - Principal" }
+        ] /]
+        <label for="">[@s.text name="study.crossCuttingRelevance" /]:</label>
+        [#-- Gender --]
+        <div class="simpleBox">
+          [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" help="study.achievementsGenderRelevance.help" className="limitWords-100" required=true editable=editable /]
+          [#list ccDimensions as cc]
+            [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
+          [/#list]
+        </div>
+        [#-- Youth  --]
+        <div class="simpleBox">
+          [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance" help="study.achievementsYouthRelevance.help" className="limitWords-100" required=true editable=editable /]
+          [#list ccDimensions as cc]
+            [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
+          [/#list]
+        </div>
+        [#-- CapDev   --]
+        <div class="simpleBox">
+          [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance" help="study.achievementsCapDevRelevance.help" className="limitWords-100" required=true editable=editable /]
+          [#list ccDimensions as cc]
+            [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
+          [/#list]
+        </div>
+        
       </div>
       
       [#-- 12. Other cross-cutting dimensions   --]
