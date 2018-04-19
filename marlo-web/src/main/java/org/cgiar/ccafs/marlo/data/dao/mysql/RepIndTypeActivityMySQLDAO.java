@@ -60,7 +60,7 @@ public class RepIndTypeActivityMySQLDAO extends AbstractMarloDAO<RepIndTypeActiv
 
   @Override
   public List<RepIndTypeActivity> findAll() {
-    String query = "from " + RepIndTypeActivity.class.getName() + " where is_active=1";
+    String query = "from " + RepIndTypeActivity.class.getName();
     List<RepIndTypeActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

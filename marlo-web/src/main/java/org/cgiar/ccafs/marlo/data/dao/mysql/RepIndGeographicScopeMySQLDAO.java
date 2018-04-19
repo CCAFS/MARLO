@@ -60,7 +60,7 @@ public class RepIndGeographicScopeMySQLDAO extends AbstractMarloDAO<RepIndGeogra
 
   @Override
   public List<RepIndGeographicScope> findAll() {
-    String query = "from " + RepIndGeographicScope.class.getName() + " where is_active=1";
+    String query = "from " + RepIndGeographicScope.class.getName();
     List<RepIndGeographicScope> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

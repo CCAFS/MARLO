@@ -60,7 +60,7 @@ public class RepIndLandUseTypeMySQLDAO extends AbstractMarloDAO<RepIndLandUseTyp
 
   @Override
   public List<RepIndLandUseType> findAll() {
-    String query = "from " + RepIndLandUseType.class.getName() + " where is_active=1";
+    String query = "from " + RepIndLandUseType.class.getName();
     List<RepIndLandUseType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

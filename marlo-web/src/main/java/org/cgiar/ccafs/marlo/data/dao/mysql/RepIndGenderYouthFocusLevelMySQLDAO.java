@@ -60,7 +60,7 @@ public class RepIndGenderYouthFocusLevelMySQLDAO extends AbstractMarloDAO<RepInd
 
   @Override
   public List<RepIndGenderYouthFocusLevel> findAll() {
-    String query = "from " + RepIndGenderYouthFocusLevel.class.getName() + " where is_active=1";
+    String query = "from " + RepIndGenderYouthFocusLevel.class.getName();
     List<RepIndGenderYouthFocusLevel> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

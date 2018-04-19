@@ -60,7 +60,7 @@ public class RepIndStageInnovationMySQLDAO extends AbstractMarloDAO<RepIndStageI
 
   @Override
   public List<RepIndStageInnovation> findAll() {
-    String query = "from " + RepIndStageInnovation.class.getName() + " where is_active=1";
+    String query = "from " + RepIndStageInnovation.class.getName();
     List<RepIndStageInnovation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
