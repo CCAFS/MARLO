@@ -60,7 +60,7 @@ public class RepIndTypeParticipantMySQLDAO extends AbstractMarloDAO<RepIndTypePa
 
   @Override
   public List<RepIndTypeParticipant> findAll() {
-    String query = "from " + RepIndTypeParticipant.class.getName() + " where is_active=1";
+    String query = "from " + RepIndTypeParticipant.class.getName();
     List<RepIndTypeParticipant> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

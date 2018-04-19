@@ -60,7 +60,7 @@ public class RepIndPhaseResearchPartnershipMySQLDAO extends AbstractMarloDAO<Rep
 
   @Override
   public List<RepIndPhaseResearchPartnership> findAll() {
-    String query = "from " + RepIndPhaseResearchPartnership.class.getName() + " where is_active=1";
+    String query = "from " + RepIndPhaseResearchPartnership.class.getName();
     List<RepIndPhaseResearchPartnership> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

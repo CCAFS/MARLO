@@ -59,7 +59,7 @@ public class RepIndRegionMySQLDAO extends AbstractMarloDAO<RepIndRegion, Long> i
 
   @Override
   public List<RepIndRegion> findAll() {
-    String query = "from " + RepIndRegion.class.getName() + " where is_active=1";
+    String query = "from " + RepIndRegion.class.getName();
     List<RepIndRegion> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

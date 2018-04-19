@@ -60,7 +60,7 @@ public class RepIndOrganizationTypeMySQLDAO extends AbstractMarloDAO<RepIndOrgan
 
   @Override
   public List<RepIndOrganizationType> findAll() {
-    String query = "from " + RepIndOrganizationType.class.getName() + " where is_active=1";
+    String query = "from " + RepIndOrganizationType.class.getName();
     List<RepIndOrganizationType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
