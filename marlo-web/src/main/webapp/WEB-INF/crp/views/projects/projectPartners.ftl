@@ -337,35 +337,35 @@
         <h5 class="sectionSubTitle">Partnership</h5>
         <div class="${reportingActive?string('fieldFocus','')}">
           [#-- Hidden Inputs --]
-          <input type="hidden" name="${name}.partnership.id" value="${(element.partnership.id)!}"/>
+          <input type="hidden" name="${name}.projectPartnerPartnership.id" value="${(element.projectPartnerPartnership.id)!}"/>
           <div class="form-group">
             [#-- Is This partner a formal partner --]
             <label for="">[@s.text name="projectPartners.hasPartnerships" /]</label>
-            [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.partnership.hasPartnerships" label="Yes" value="true" checked=false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes"/]
-            [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.partnership.hasPartnerships" label="No" value="false" checked=false cssClass="hasPartnerships-no" cssClassLabel="radio-label-no"/]
+            [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.hasPartnerships" label="Yes" value="true" checked=(element.hasPartnerships)!false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes"/]
+            [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no"/]
           </div>
           <div class="form-group">
             <div class="form-group row">
               <div class="col-md-6">
                 [#-- Phase of research --]
-                [@customForm.select name="${name}.partnership.researchPhase.id" className="setSelect2" i18nkey="projectPartners.researchPhase" listName="" keyFieldName="id"  displayFieldName="name" /]
+                [@customForm.select name="${name}.projectPartnerPartnership.researchPhase.id" className="setSelect2" i18nkey="projectPartners.researchPhase" listName="allRepIndResearchPhases" keyFieldName="id"  displayFieldName="name" /]
               </div>
               <div class="col-md-6">
                 [#-- Geographic Scope --]
-                [@customForm.select name="${name}.partnership.geographicScope.id" className="setSelect2" i18nkey="projectPartners.geographicScope" listName="" keyFieldName="id"  displayFieldName="name" /]
+                [@customForm.select name="${name}.projectPartnerPartnership.geographicScope.id" className="setSelect2" i18nkey="projectPartners.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" /]
               </div>
             </div>
             <div class="form-group">
               [#-- Regional scope --]
-              [@customForm.select name="${name}.partnership.region.id" className="setSelect2" i18nkey="projectPartners.region" listName="" keyFieldName="id"  displayFieldName="name" /]
+              [@customForm.select name="${name}.projectPartnerPartnership.region.id" className="setSelect2" i18nkey="projectPartners.region" listName="allRepIndRegions" keyFieldName="id"  displayFieldName="name" /]
             </div>
             <div class="form-group">
               [#-- Multinational, National and Subnational scope --]
-              [@customForm.select name="${name}.partnership.partnershipsCountries" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.partnershipsCountries" multiple=true required=true className="countriesSelect" disabled=!editable/]
+              [@customForm.select name="${name}.projectPartnerPartnership.partnershipLocationsIds" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
             </div>
             <div class="form-group">
               [#-- Main area of partnership --]
-              [@customForm.textArea name="${name}.partnership.partnershipMainarea" className="limitWords-30" i18nkey="projectPartners.partnershipMainarea"  editable=editable /]
+              [@customForm.textArea name="${name}.projectPartnerPartnership.mainArea" className="limitWords-30" i18nkey="projectPartners.partnershipMainarea"  editable=editable /]
             </div>
           </div>
         </div>
