@@ -112,7 +112,7 @@
           </td>
           -->
           <td class="text-center">
-            <button type="button" class="btn btn-default btn-xs outcomeProjects-${outcome.id}" data-toggle="modal" data-target="#outcomeProjectsModal">
+            <button type="button" class="btn btn-default btn-xs disabled outcomeProjects-${outcome.id}" data-toggle="modal" data-target="#outcomeProjectsModal">
               <span class="glyphicon glyphicon-pushpin"></span> Projects
             </button> 
           </td>
