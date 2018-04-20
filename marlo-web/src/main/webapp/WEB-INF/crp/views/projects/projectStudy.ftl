@@ -154,9 +154,9 @@
           [@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
         </label>
         <div class="form-group">
-          <p>[@customForm.radioFlat id="maturityChange-1" name="${name}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/]</p> 
-          <p>[@customForm.radioFlat id="maturityChange-2" name="${name}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel=""/]</p>
-          <p>[@customForm.radioFlat id="maturityChange-3" name="${name}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel=""/]</p>
+          <p>[@customForm.radioFlat id="maturityChange-1" name="${customName}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/]</p> 
+          <p>[@customForm.radioFlat id="maturityChange-2" name="${customName}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel=""/]</p>
+          <p>[@customForm.radioFlat id="maturityChange-3" name="${customName}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel=""/]</p>
         </div>
       </div>
 
@@ -168,27 +168,31 @@
         
         [#-- Sub IDOs  --]
         <div class="form-group simpleBox">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.stratgicResultsLink.subIDOs" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
+          [#assign keyContributions = [
+            { "name": "Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" }
+          ] /]
           <div class="panel tertiary">
+            <div class="panel-head"><label for="">[@s.text name="study.stratgicResultsLink.subIDOs" /]</label></div>
             <div class="panel-body">
-              <ul class="list">
-                <li>Increased capacity for innovation in partner development organizations and in poor and vulnerable communities</li>
-              </ul>
+              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.subIDOs" element=keyContribution type="subIDO" index=keyContribution_index /][/#list]</ul>
+              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
             </div>
           </div>
         </div>
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.stratgicResultsLink.srfTargets" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
+          [#assign keyContributions = [
+            { "name": "1.2. 30 million people, of which 50% are women, assisted to exit poverty" },
+            { "name": "3.1. 5% increase in water and nutrient efficiency in agroecosystems" }
+          ] /]
           <div class="panel tertiary">
+            <div class="panel-head"><label for="">[@s.text name="study.stratgicResultsLink.srfTargets" /]</label></div>
             <div class="panel-body">
-              <ul class="list">
-                <li>1.2. 30 million people, of which 50% are women, assisted to exit poverty</li>
-                <li>3.1. 5% increase in water and nutrient efficiency in agroecosystems</li>
-              </ul>
+              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.srfTargets" element=keyContribution type="srfTarget" index=keyContribution_index /][/#list]</ul>
+              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
             </div>
           </div>
         </div>
@@ -233,38 +237,44 @@
       <div class="form-group">
         <label for="">[@s.text name="study.keyContributors" /]:</label>
         <div class="form-group simpleBox">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.keyContributors.crps" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
+          [#assign keyContributions = [
+            { "name": "A4NH - Agriculture for Nutrition and Health" }
+          ] /]
           <div class="panel tertiary">
+            <div class="panel-head"><label for="">[@s.text name="study.keyContributors.crps" /]</label></div>
             <div class="panel-body">
-              <ul class="list">
-                <li>A4NH - Agriculture for Nutrition and Health</li>
-              </ul>
+              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.crps" element=keyContribution type="globalUnit" index=keyContribution_index /][/#list]</ul>
+              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
             </div>
           </div>
           
         </div>
         <div class="form-group simpleBox">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.keyContributors.flagships" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
+          [#assign keyContributions = [
+            { "name": "F1 - Priorities and Policies for CSA" },
+            { "name": "F3 - Low emissions development" }
+          ] /]
           <div class="panel tertiary">
+            <div class="panel-head"><label for="">[@s.text name="study.keyContributors.flagships" /]</label></div>
             <div class="panel-body">
-              <ul class="list">
-                <li>F1 - Priorities and Policies for CSA</li>
-                <li>F3 - Low emissions development</li>
-              </ul>
+              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.flagships" element=keyContribution type="crpProgram" index=keyContribution_index /][/#list]</ul>
+              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
             </div>
           </div>
           
         </div>
         <div class="form-group simpleBox">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.keyContributors.externalPartners" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
+          [#assign keyContributions = [
+            { "name": "Ministries of Agriculture for Bangladesh" }
+          ] /]
           <div class="panel tertiary">
+            <div class="panel-head"><label for="">[@s.text name="study.keyContributors.externalPartners" /]</label></div>
             <div class="panel-body">
-              <ul class="list">
-                <li>Ministries of Agriculture for Bangladesh</li>
-              </ul>
+              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.externalPartners" element=keyContribution type="institution" index=keyContribution_index /][/#list]</ul>
+              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
             </div>
           </div>
         </div>
@@ -400,4 +410,16 @@
   <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
   <div class="clearfix"></div>
 </li>
+[/#macro]
+
+[#macro listElementMacro element name type index=-1 template=false]
+  [#local customName = "${name}[${index}]"]
+  <li id="keyContributor-${type}-${template?string('template', index)}" class="keyContributor">
+    [#-- Hidden Inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    [#-- Remove button --]
+    [#if editable]<div class="removeElement sm removeIcon" title="Remove"></div>[/#if] 
+    [#-- Title --]
+    <span class="title">${element.name}</span>
+  </li>
 [/#macro]
