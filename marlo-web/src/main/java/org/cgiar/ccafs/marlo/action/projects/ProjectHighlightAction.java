@@ -83,7 +83,6 @@ public class ProjectHighlightAction extends BaseAction {
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-
   private GlobalUnit loggedCrp;
   private ProjectHighLightValidator highLightValidator;
 

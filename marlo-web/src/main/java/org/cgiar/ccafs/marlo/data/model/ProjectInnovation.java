@@ -24,22 +24,38 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private User modifiedBy;
 
 
   @Expose
   private User createdBy;
+
+
   @Expose
   private Project project;
+
+
   @Expose
   private boolean active;
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private String modificationJustification;
+
   private ProjectInnovationInfo projectInnovationInfo;
+
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+  private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
+  private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
+    new HashSet<ProjectInnovationOrganization>(0);
+  private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
+    new HashSet<ProjectInnovationDeliverable>(0);
 
   public Date getActiveSince() {
     return activeSince;
@@ -75,6 +91,14 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return project;
   }
 
+  public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
+    return projectInnovationCountries;
+  }
+
+  public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
+    return projectInnovationDeliverables;
+  }
+
   public ProjectInnovationInfo getProjectInnovationInfo() {
     return projectInnovationInfo;
   }
@@ -99,11 +123,18 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return projectInnovationInfos;
   }
 
+  public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
+    return projectInnovationOrganizations;
+  }
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
+
   @Override
   public boolean isActive() {
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -121,6 +152,7 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -133,12 +165,28 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
+  public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
+    this.projectInnovationCountries = projectInnovationCountries;
+  }
+
+  public void setProjectInnovationDeliverables(Set<ProjectInnovationDeliverable> projectInnovationDeliverables) {
+    this.projectInnovationDeliverables = projectInnovationDeliverables;
+  }
+
   public void setProjectInnovationInfo(ProjectInnovationInfo projectInnovationInfo) {
     this.projectInnovationInfo = projectInnovationInfo;
   }
 
   public void setProjectInnovationInfos(Set<ProjectInnovationInfo> projectInnovationInfos) {
     this.projectInnovationInfos = projectInnovationInfos;
+  }
+
+  public void setProjectInnovationOrganizations(Set<ProjectInnovationOrganization> projectInnovationOrganizations) {
+    this.projectInnovationOrganizations = projectInnovationOrganizations;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

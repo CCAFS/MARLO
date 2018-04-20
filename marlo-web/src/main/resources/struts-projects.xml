@@ -760,7 +760,7 @@
     </action>
     
     <action name="{crp}/addNewInnovation" method="add"
-      class="org.cgiar.ccafs.marlo.action.projects.DeliverableListAction">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectInnovationListAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/crp/views/projects/projectInnovationList.ftl
       </result>
@@ -768,17 +768,12 @@
         <param name="actionName">${crpSession}/innovation</param>
         <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
-      </result>
-      <result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="phaseID">${phaseID}</param>
-        <param name="projectID">${projectID}</param>
+        <param name="innovationID">${innovationID}</param>
       </result>
     </action>
     
     <action name="{crp}/innovation"
-      class="org.cgiar.ccafs.marlo.action.projects.DeliverableAction">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectInnovationAction">
       <interceptor-ref name="editProjectListStack" />
       <interceptor-ref name="editDeliverable" />
       <interceptor-ref name="defaultStack" />
@@ -788,12 +783,21 @@
         <param name="actionName">${crpSession}/innovation</param>
         <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
+        <param name="innovationID">${innovationID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+        <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/highlight</param>
+        <param name="innovationID">${innovationID}</param>
+        <param name="projectID">${projectID}</param>
+        <param name="phaseID">${phaseID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
+        <param name="innovationID">${innovationID}</param>
       </result>
     </action>
     <!-- END -->

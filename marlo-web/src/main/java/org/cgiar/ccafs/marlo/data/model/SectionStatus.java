@@ -54,16 +54,18 @@ public class SectionStatus implements java.io.Serializable {
 
   private CaseStudy caseStudy;
 
-
   private ProjectHighlight projectHighlight;
+
 
   private IpProgram ipProgram;
 
 
   private IpLiaisonInstitution ipLiaisonInstitution;
 
-
   private PowbSynthesis powbSynthesis;
+
+
+  private ProjectInnovation projectInnovation;
 
 
   public SectionStatus() {
@@ -82,14 +84,15 @@ public class SectionStatus implements java.io.Serializable {
     this.sectionName = sectionName;
   }
 
-
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
 
+
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
+
 
   public String getCycle() {
     return this.cycle;
@@ -131,6 +134,10 @@ public class SectionStatus implements java.io.Serializable {
     return projectHighlight;
   }
 
+  public ProjectInnovation getProjectInnovation() {
+    return projectInnovation;
+  }
+
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
@@ -143,7 +150,6 @@ public class SectionStatus implements java.io.Serializable {
     return this.year;
   }
 
-
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
   }
@@ -153,14 +159,15 @@ public class SectionStatus implements java.io.Serializable {
     this.crpProgram = crpProgram;
   }
 
+
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
@@ -169,7 +176,6 @@ public class SectionStatus implements java.io.Serializable {
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
@@ -185,17 +191,22 @@ public class SectionStatus implements java.io.Serializable {
     this.missingFields = missingFields;
   }
 
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
   }
 
+
   public void setProjectHighlight(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
+  }
+
+  public void setProjectInnovation(ProjectInnovation projectInnovation) {
+    this.projectInnovation = projectInnovation;
   }
 
 

@@ -23,9 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +79,47 @@ public class ProjectInnovationListAction extends BaseAction {
     this.projectInnovationInfoManager = projectInnovationInfoManager;
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
+  }
+
+  @Override
+  public String add() {
+    ProjectInnovation projectInnovation = new ProjectInnovation();
+
+    projectInnovation.setModifiedBy(this.getCurrentUser());
+    projectInnovation.setActiveSince(new Date());
+    projectInnovation.setCreatedBy(this.getCurrentUser());
+    projectInnovation.setActive(true);
+    projectInnovation.setProject(project);
+    projectInnovation.setModificationJustification("");
+
+    projectInnovation = projectInnovationManager.saveProjectInnovation(projectInnovation);
+
+    ProjectInnovationInfo projectInnovationInfo = new ProjectInnovationInfo(projectInnovation, this.getActualPhase(),
+      "", "", "", "", "", "", new Long(this.getActualPhase().getYear()));
+
+    projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+
+    innovationID = projectInnovation.getId();
+
+    if (innovationID > 0) {
+      return SUCCESS;
+    }
+
+    return INPUT;
+  }
+
+  @Override
+  public String delete() {
+    for (ProjectInnovation projectInnovation : project.getInnovations()) {
+      if (projectInnovation.getId().longValue() == innovationID) {
+        ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(innovationID);
+        for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+        projectInnovationManager.deleteProjectInnovation(projectInnovation.getId());
+      }
+    }
+    return SUCCESS;
   }
 
   @Override

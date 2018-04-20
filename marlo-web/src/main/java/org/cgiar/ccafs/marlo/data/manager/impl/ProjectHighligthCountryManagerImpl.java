@@ -110,7 +110,7 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
 
     List<ProjectHighlightCountry> projectHighlightCountries = phase.getProjectHighlightCountries().stream()
       .filter(c -> c.getProjectHighligth().getId().longValue() == projectHighlightid
-        && projectHighlightCountry.getLocElement().getId().equals(projectHighlightCountry.getLocElement().getId()))
+        && c.getLocElement().getId().equals(projectHighlightCountry.getLocElement().getId()))
       .collect(Collectors.toList());
     if (projectHighlightCountries.isEmpty()) {
 
