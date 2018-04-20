@@ -92,6 +92,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -317,6 +318,15 @@ public class ProjectPartnerAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+  private void deletePartnershipLocations(List<ProjectPartnerPartnershipLocation> locationsDB) {
+    if (locationsDB != null) {
+      for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
+        projectPartnerPartnershipLocationManager
+          .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
+      }
+    }
+  }
+
   public List<Activity> getActivitiesLedByUser(long userID) {
     Project project = projectManager.getProjectById(projectID);
     List<Activity> activities = project.getActivities().stream()
@@ -352,6 +362,7 @@ public class ProjectPartnerAction extends BaseAction {
     return allUsers;
   }
 
+
   private Path getAutoSaveFilePath() {
     // get the class simple name
     String composedClassName = project.getClass().getSimpleName();
@@ -364,10 +375,10 @@ public class ProjectPartnerAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
@@ -406,7 +417,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
     return deliverablesLeads;
   }
-
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
 
@@ -466,6 +476,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   public List<InstitutionType> getIntitutionTypes() {
     return intitutionTypes;
   }
@@ -480,15 +491,14 @@ public class ProjectPartnerAction extends BaseAction {
     return partnerPersonTypes;
   }
 
-
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
@@ -497,6 +507,7 @@ public class ProjectPartnerAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -727,7 +738,6 @@ public class ProjectPartnerAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
-
   /**
    * This method notify the the user that he/she stopped contributing to a specific project.
    * 
@@ -938,6 +948,14 @@ public class ProjectPartnerAction extends BaseAction {
               }
             }
           }
+          k = 0;
+          for (ProjectPartnerPartnership projectPartnerPartnership : projectPartner.getProjectPartnerPartnerships()) {
+            specialList.put(APConstants.PROJECT_PARTNER_PARTNERSHIP_COUNTRY_RELATION, "partnershipLocationsIds");
+            differences.addAll(historyComparator.getDifferencesList(projectPartnerPartnership, transaction, specialList,
+              "project.partners[" + i + "].projectPartnerPartnership[" + k + "]",
+              "project.projectPartner.partnerPartnerships", 2));
+            k++;
+          }
 
           i++;
         }
@@ -952,6 +970,8 @@ public class ProjectPartnerAction extends BaseAction {
         if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
           project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         }
+        int k = 0;
+
 
         this.setDifferences(differences);
 
@@ -1053,7 +1073,19 @@ public class ProjectPartnerAction extends BaseAction {
 
             }
           }
+          if (pp.getProjectPartnerPartnership() != null) {
+            ProjectPartnerPartnership projectPartnerPartnership = pp.getProjectPartnerPartnership();
+            if (projectPartnerPartnership.getPartnershipLocationsIsosText() != null) {
+              String[] locationsIsos = projectPartnerPartnership.getPartnershipLocationsIsosText().replace("[", "")
+                .replace("]", "").split(",");
+              List<String> locations = new ArrayList<>();
+              for (String value : Arrays.asList(locationsIsos)) {
+                locations.add(value.trim());
+              }
+              projectPartnerPartnership.setPartnershipLocationsIsos(locations);
+            }
 
+          }
         }
 
         this.setDraft(true);
@@ -1116,7 +1148,7 @@ public class ProjectPartnerAction extends BaseAction {
               if (projectPartner.getProjectPartnerPartnership().getPartnershipLocations() != null) {
                 for (ProjectPartnerPartnershipLocation location : projectPartner.getProjectPartnerPartnership()
                   .getPartnershipLocations()) {
-                  projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIds()
+                  projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIsos()
                     .add(location.getLocation().getIsoAlpha2());
                 }
               }
@@ -1239,6 +1271,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
    * 
@@ -1269,7 +1302,6 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
-
 
   private void removeProjectPartnerPersons(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
     for (ProjectPartnerPerson partnerPerson : projectPartnerDB.getProjectPartnerPersons()) {
@@ -1639,59 +1671,80 @@ public class ProjectPartnerAction extends BaseAction {
       } else {
         partnershipUpdate.setResearchPhase(null);
       }
+      List<ProjectPartnerPartnershipLocation> locationsDB = new ArrayList<>();
+      if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+        locationsDB =
+          projectPartnerPartnershipLocationManager.findParnershipLocationByPartnership(partnershipClient.getId());
+      }
       if (partnershipClient.getGeographicScope() != null && partnershipClient.getGeographicScope().getId() != -1) {
         partnershipUpdate.setGeographicScope(partnershipClient.getGeographicScope());
+        RepIndGeographicScope repIndGeographicScope =
+          repIndGeographicScopeManager.getRepIndGeographicScopeById(partnershipUpdate.getGeographicScope().getId());
+
+        // Global
+        if (repIndGeographicScope.getName().equals(APConstants.PROJECT_PARTNER_PARTNERSHIP_GLOBAL)) {
+
+          partnershipUpdate.setRegion(null);
+          this.deletePartnershipLocations(locationsDB);
+
+        } else
+        // Regional
+        if (repIndGeographicScope.getName().equals(APConstants.PROJECT_PARTNER_PARTNERSHIP_REGIONAL)) {
+
+          if (partnershipClient.getRegion() != null && partnershipClient.getRegion().getId() != -1) {
+            partnershipUpdate.setRegion(partnershipClient.getRegion());
+          } else {
+            partnershipUpdate.setRegion(null);
+          }
+          this.deletePartnershipLocations(locationsDB);
+
+        } else {
+          // Multi-national || National || Sub-national
+          // Save Locations
+
+          if (partnershipClient.getPartnershipLocationsIsos() != null
+            || !partnershipClient.getPartnershipLocationsIsos().isEmpty()) {
+            if (locationsDB == null) {
+              locationsDB = new ArrayList<>();
+            }
+
+            List<ProjectPartnerPartnershipLocation> locationsSave = new ArrayList<>();
+            for (String locationIsoAlpha2 : partnershipClient.getPartnershipLocationsIsos()) {
+              ProjectPartnerPartnershipLocation locationPartnership = new ProjectPartnerPartnershipLocation();
+              locationPartnership.setLocation(locationManager.getLocElementByISOCode(locationIsoAlpha2));
+              locationPartnership.setProjectPartnerPartnership(partnershipClient);
+              locationsSave.add(locationPartnership);
+              if (!locationsDB.contains(locationPartnership)) {
+                locationPartnership.setActive(true);
+                locationPartnership.setActiveSince(new Date());
+                locationPartnership.setCreatedBy(this.getCurrentUser());
+                locationPartnership.setModificationJustification("");
+                locationPartnership.setModifiedBy(this.getCurrentUser());
+                projectPartnerPartnershipLocationManager.saveProjectPartnerPartnershipLocation(locationPartnership);
+              }
+            }
+            for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
+              if (!locationsSave.contains(projectPartnerPartnershipLocation)) {
+                projectPartnerPartnershipLocation.setModifiedBy(this.getCurrentUser());
+                projectPartnerPartnershipLocationManager
+                  .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
+              }
+            }
+          }
+
+        }
+
       } else {
         partnershipUpdate.setGeographicScope(null);
-      }
-      if (partnershipClient.getRegion() != null && partnershipClient.getRegion().getId() != -1) {
-        partnershipUpdate.setRegion(partnershipClient.getRegion());
-      } else {
         partnershipUpdate.setRegion(null);
       }
+
 
       partnershipUpdate.setActive(true);
       partnershipUpdate.setActiveSince(new Date());
       partnershipUpdate.setModifiedBy(this.getCurrentUser());
       partnershipUpdate.setModificationJustification("");
 
-      // Locations
-
-      if (partnershipClient.getPartnershipLocationsIds() != null
-        || !partnershipClient.getPartnershipLocationsIds().isEmpty()) {
-        List<ProjectPartnerPartnershipLocation> locationsDB = new ArrayList<>();
-        if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
-          locationsDB =
-            projectPartnerPartnershipLocationManager.findParnershipLocationByPartnership(partnershipClient.getId());
-        }
-        if (locationsDB == null) {
-          locationsDB = new ArrayList<>();
-        }
-
-
-        List<ProjectPartnerPartnershipLocation> locationsSave = new ArrayList<>();
-        for (String locationIsoAlpha2 : partnershipClient.getPartnershipLocationsIds()) {
-          ProjectPartnerPartnershipLocation locationPartnership = new ProjectPartnerPartnershipLocation();
-          locationPartnership.setLocation(locationManager.getLocElementByISOCode(locationIsoAlpha2));
-          locationPartnership.setProjectPartnerPartnership(partnershipClient);
-          locationsSave.add(locationPartnership);
-          if (!locationsDB.contains(locationPartnership)) {
-            locationPartnership.setActive(true);
-            locationPartnership.setActiveSince(new Date());
-            locationPartnership.setCreatedBy(this.getCurrentUser());
-            locationPartnership.setModificationJustification("");
-            locationPartnership.setModifiedBy(this.getCurrentUser());
-            projectPartnerPartnershipLocationManager.saveProjectPartnerPartnershipLocation(locationPartnership);
-          }
-        }
-        for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
-          if (!locationsSave.contains(projectPartnerPartnershipLocation)) {
-            projectPartnerPartnershipLocation.setModifiedBy(this.getCurrentUser());
-            projectPartnerPartnershipLocationManager
-              .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
-          }
-        }
-      }
 
       projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
     }

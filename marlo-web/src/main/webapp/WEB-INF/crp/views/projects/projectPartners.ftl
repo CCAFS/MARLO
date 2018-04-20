@@ -368,7 +368,7 @@
             </div>
             <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
               [#-- Multinational, National and Subnational scope --]
-              [@customForm.select name="${customPartnershipName}.partnershipLocationsIds" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+              [@customForm.select name="${customPartnershipName}.partnershipLocationsIsos" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIsos" multiple=true required=true className="countriesSelect" disabled=!editable/]
             </div>
             <div class="form-group">
               [#-- Main area of partnership --]
