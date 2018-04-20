@@ -28,28 +28,16 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class Deliverable implements java.io.Serializable, IAuditLog {
+public class Deliverable extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 1867818669925473872L;
 
-
-  @Expose
-  private Long id;
-
-
   @Expose
   private Project project;
-  @Expose
-  private boolean active;
-  @Expose
-  private Date activeSince;
-  @Expose
-  private User createdBy;
 
   @Expose
   private Date createDate;
-
 
   @Expose
   private GlobalUnit crp;
@@ -155,17 +143,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public Date getActiveSince() {
-    return this.activeSince;
-  }
-
   public String getComposedName() {
     if (this.getDeliverableInfo() != null) {
       try {
-        return "<b> (D" + this.id + ") " + this.getDeliverableInfo().getDeliverableType().getName() + "</b> - "
+        return "<b> (D" + this.getId() + ") " + this.getDeliverableInfo().getDeliverableType().getName() + "</b> - "
           + this.getDeliverableInfo().getTitle();
       } catch (Exception e) {
-        return "<b> (D" + this.id + ") </b> - " + this.getDeliverableInfo().getTitle();
+        return "<b> (D" + this.getId() + ") </b> - " + this.getDeliverableInfo().getTitle();
 
       }
     }
@@ -175,10 +159,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Date getCreateDate() {
     return createDate;
-  }
-
-  public User getCreatedBy() {
-    return createdBy;
   }
 
   public GlobalUnit getCrp() {
@@ -314,12 +294,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  @Override
-  public Long getId() {
-    return id;
-  }
-
-
   public long getID(int metadataID) {
 
     if (metadataElements != null) {
@@ -404,7 +378,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public int getMetadataID(String metadataName) {
+  public long getMetadataID(String metadataName) {
     for (MetadataElement mData : metadata) {
       if (mData != null) {
         if (mData.getEcondedName().equals(metadataName)) {
@@ -488,13 +462,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
-  @Override
-  public User getModifiedBy() {
-    return createdBy;
-  }
-
-
   public List<DeliverablePartnership> getOtherPartners() {
     return otherPartners;
   }
@@ -552,30 +519,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
   }
 
   public void setCreateDate(Date createDate) {
     this.createDate = createDate;
-  }
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
   }
 
   public void setCrp(GlobalUnit crp) {
@@ -696,11 +645,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setGenderLevels(List<DeliverableGenderLevel> genderLevels) {
     this.genderLevels = genderLevels;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setIsPublication(Boolean isPublication) {

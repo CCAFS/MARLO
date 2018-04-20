@@ -25,14 +25,10 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverableType implements java.io.Serializable, IAuditLog {
+public class DeliverableType extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 2591192504126616140L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private DeliverableType deliverableCategory;
@@ -62,18 +58,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public DeliverableType() {
   }
 
-
-  public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
-    Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
-    this.deliverableCategory = deliverableType;
-    this.name = name;
-    this.description = description;
-    this.timeline = timeline;
-    this.deliverableTypes = deliverableTypes;
-    this.deliverables = deliverables;
-  }
-
-
   public Boolean getAdminType() {
     return adminType;
   }
@@ -84,13 +68,13 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<Deliverable> getDeliverables() {
-    return this.deliverables;
+  public DeliverableType getDeliverableCategory() {
+    return this.deliverableCategory;
   }
 
 
-  public DeliverableType getDeliverableCategory() {
-    return this.deliverableCategory;
+  public Set<Deliverable> getDeliverables() {
+    return this.deliverables;
   }
 
   public Set<DeliverableType> getDeliverableTypes() {
@@ -104,12 +88,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public Boolean getFair() {
     return fair;
   }
-
-  @Override
-  public Long getId() {
-    return this.id;
-  }
-
 
   @Override
   public String getLogDeatil() {
@@ -156,12 +134,12 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setDeliverables(Set<Deliverable> deliverables) {
-    this.deliverables = deliverables;
-  }
-
   public void setDeliverableCategory(DeliverableType deliverableType) {
     this.deliverableCategory = deliverableType;
+  }
+
+  public void setDeliverables(Set<Deliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
@@ -177,10 +155,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setName(String name) {
     this.name = name;
   }
@@ -191,8 +165,8 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "DeliverableType [id=" + id + ", deliverableCategory=" + deliverableCategory + ", name=" + name + ", description="
-      + description + ", timeline=" + timeline + ", fair=" + fair + ", crp=" + crp + "]";
+    return "DeliverableType [id=" + this.getId() + ", deliverableCategory=" + deliverableCategory + ", name=" + name
+      + ", description=" + description + ", timeline=" + timeline + ", fair=" + fair + ", crp=" + crp + "]";
   }
 
 }

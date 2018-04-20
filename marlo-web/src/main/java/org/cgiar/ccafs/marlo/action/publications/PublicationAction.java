@@ -68,7 +68,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -338,8 +337,6 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
-        deliverable.getDeliverableInfo(this.getActualPhase())
-          .setModifiedBy(userManager.getUser(deliverable.getModifiedBy().getId()));
         Map<String, String> specialList = new HashMap<>();
 
         this.setDifferences(historyComparator.getDifferences(transaction, specialList, "deliverable"));
@@ -713,11 +710,6 @@ public class PublicationAction extends BaseAction {
 
 
           deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableFundingSource.setActive(true);
-          deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-          deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-          deliverableFundingSource.setModificationJustification("");
-          deliverableFundingSource.setActiveSince(new Date());
 
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableFundingSource);
 
@@ -725,7 +717,6 @@ public class PublicationAction extends BaseAction {
         } else {
           DeliverableGenderLevel deliverableGenderLevelDB =
             deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableFundingSource.getId());
-          deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
           deliverableGenderLevelDB.setGenderLevel(deliverableFundingSource.getGenderLevel());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
 
@@ -760,8 +751,6 @@ public class PublicationAction extends BaseAction {
     relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
 
     deliverable = deliverableManager.getDeliverableById(deliverableID);
-    deliverable.setActiveSince(new Date());
-    // deliverable.setModifiedBy(this.getCurrentUser());
     // deliverable.setModificationJustification(this.getJustification());
 
     deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, this.getActualPhase());

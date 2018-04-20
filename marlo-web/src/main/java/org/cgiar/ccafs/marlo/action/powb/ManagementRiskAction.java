@@ -46,7 +46,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -332,11 +331,6 @@ public class ManagementRiskAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getPowbManagementRisk() == null) {
           PowbManagementRisk managementRisk = new PowbManagementRisk();
-          managementRisk.setActive(true);
-          managementRisk.setActiveSince(new Date());
-          managementRisk.setCreatedBy(this.getCurrentUser());
-          managementRisk.setModifiedBy(this.getCurrentUser());
-          managementRisk.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setPowbManagementRisk(managementRisk);
           managementRisk.setPowbSynthesis(powbSynthesis);
@@ -395,8 +389,6 @@ public class ManagementRiskAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

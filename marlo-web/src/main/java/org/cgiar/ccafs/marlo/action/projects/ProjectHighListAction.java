@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,16 +68,12 @@ public class ProjectHighListAction extends BaseAction {
     ProjectHighlight projectHighlight = new ProjectHighlight();
     // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
     projectHighlight.setYear(new Long(this.getCurrentCycleYear()));
-    projectHighlight.setModifiedBy(this.getCurrentUser());
-    projectHighlight.setActiveSince(new Date());
     projectHighlight.setAuthor("");
     // newDeliverable.setContributor("");
     // newDeliverable.setCoverage("");
-    projectHighlight.setCreatedBy(this.getCurrentUser());
     projectHighlight.setDescription("");
 
 
-    projectHighlight.setActive(true);
     // newDeliverable.setIsGlobal(false);
     projectHighlight.setKeywords("");
     // newDeliverable.setLeader(0);
@@ -102,7 +99,6 @@ public class ProjectHighListAction extends BaseAction {
     projectHighlight.setStatus(new Long(1));
     projectHighlight.setSubject("");
     projectHighlight.setTitle("");
-    projectHighlight.setModificationJustification("");
 
     projectHighlight = projectHighligthManager.saveProjectHighligth(projectHighlight);
     higlightID = projectHighlight.getId();

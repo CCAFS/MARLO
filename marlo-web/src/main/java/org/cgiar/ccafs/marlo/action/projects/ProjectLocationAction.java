@@ -55,7 +55,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -633,11 +632,10 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(
-                c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
-                    && fp.getProject().getId().longValue() == projectID)
-                  .collect(Collectors.toList()).size() > 0)
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(
+                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
             }
@@ -668,11 +666,10 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(
-                c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
-                    && fp.getProject().getId().longValue() == projectID)
-                  .collect(Collectors.toList()).size() > 0)
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(
+                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
             }
@@ -711,7 +708,7 @@ public class ProjectLocationAction extends BaseAction {
             this
               .getDBLocations().stream().filter(p -> p.isActive() && p.getLocElementType() != null
                 && p.getLocElement() == null && p.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
 
       }
     }
@@ -1002,22 +999,12 @@ public class ProjectLocationAction extends BaseAction {
                   ProjectLocation projectLocation = new ProjectLocation();
                   projectLocation.setProject(project);
                   projectLocation.setLocElement(element);
-                  projectLocation.setActive(true);
-                  projectLocation.setActiveSince(new Date());
-                  projectLocation.setCreatedBy(this.getCurrentUser());
-                  projectLocation.setModificationJustification("");
-                  projectLocation.setModifiedBy(this.getCurrentUser());
                   projectLocation.setPhase(this.getActualPhase());
                   projectLocationManager.saveProjectLocation(projectLocation);
 
                 } else {
 
                   if (!existProjectLocation.isActive()) {
-                    existProjectLocation.setActive(true);
-                    existProjectLocation.setActiveSince(new Date());
-                    existProjectLocation.setCreatedBy(this.getCurrentUser());
-                    existProjectLocation.setModificationJustification("");
-                    existProjectLocation.setModifiedBy(this.getCurrentUser());
                     existProjectLocation.setPhase(this.getActualPhase());
                     projectLocationManager.saveProjectLocation(existProjectLocation);
                   }
@@ -1086,11 +1073,6 @@ public class ProjectLocationAction extends BaseAction {
                     ProjectLocation projectLocation = new ProjectLocation();
                     projectLocation.setProject(project);
                     projectLocation.setLocElement(element);
-                    projectLocation.setActive(true);
-                    projectLocation.setActiveSince(new Date());
-                    projectLocation.setCreatedBy(this.getCurrentUser());
-                    projectLocation.setModificationJustification("");
-                    projectLocation.setModifiedBy(this.getCurrentUser());
                     projectLocation.setPhase(this.getActualPhase());
                     projectLocationManager.saveProjectLocation(projectLocation);
                   }
@@ -1126,11 +1108,6 @@ public class ProjectLocationAction extends BaseAction {
     for (CountryFundingSources countryFundingSources : project.getCountryFS()) {
 
       ProjectLocation projectLocationSave = new ProjectLocation();
-      projectLocationSave.setActive(true);
-      projectLocationSave.setActiveSince(new Date());
-      projectLocationSave.setCreatedBy(this.getCurrentUser());
-      projectLocationSave.setModifiedBy(this.getCurrentUser());
-      projectLocationSave.setModificationJustification("");
       projectLocationSave.setProject(project);
       projectLocationSave.setPhase(this.getActualPhase());
       if (!regionsCustomSaved.contains(countryFundingSources.getLocElement()) && countryFundingSources.isSelected()) {
@@ -1222,11 +1199,6 @@ public class ProjectLocationAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.getProjecInfoPhase(this.getActualPhase()).setModificationJustification("");
-      project.setActiveSince(projectDB.getActiveSince());
 
       boolean isProjectGlobal = project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal();
       boolean isProjectRegional = project.getProjecInfoPhase(this.getActualPhase()).getLocationRegional();
@@ -1239,9 +1211,7 @@ public class ProjectLocationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
       project.getProjecInfoPhase(this.getActualPhase()).setModificationJustification(this.getJustification());
-      project.setModifiedBy(this.getCurrentUser());
       projectDB.getProjecInfoPhase(this.getActualPhase()).setLocationGlobal(isProjectGlobal);
       projectDB.getProjecInfoPhase(this.getActualPhase()).setLocationRegional(isProjectRegional);
       projectInfoManager.saveProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
@@ -1279,11 +1249,6 @@ public class ProjectLocationAction extends BaseAction {
     LocElementType typeLement = locElementTypeManager.getLocElementTypeById(elementTypeId);
 
     LocGeoposition geoposition = new LocGeoposition();
-    geoposition.setActive(true);
-    geoposition.setActiveSince(new Date());
-    geoposition.setCreatedBy(this.getCurrentUser());
-    geoposition.setModifiedBy(this.getCurrentUser());
-    geoposition.setModificationJustification("");
     geoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
     geoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
 
@@ -1291,11 +1256,6 @@ public class ProjectLocationAction extends BaseAction {
 
     if (geoposition.getId() != null) {
       LocElement element = new LocElement();
-      element.setActive(true);
-      element.setActiveSince(new Date());
-      element.setCreatedBy(this.getCurrentUser());
-      element.setModifiedBy(this.getCurrentUser());
-      element.setModificationJustification("");
       element.setCrp(loggedCrp);
       element.setLocElement(parentElement);
       element.setLocElementType(typeLement);
@@ -1308,11 +1268,6 @@ public class ProjectLocationAction extends BaseAction {
       ProjectLocation projectLocation = new ProjectLocation();
       projectLocation.setProject(project);
       projectLocation.setLocElement(element);
-      projectLocation.setActive(true);
-      projectLocation.setActiveSince(new Date());
-      projectLocation.setCreatedBy(this.getCurrentUser());
-      projectLocation.setModificationJustification("");
-      projectLocation.setModifiedBy(this.getCurrentUser());
       projectLocation.setPhase(this.getActualPhase());
       projectLocationManager.saveProjectLocation(projectLocation);
     }
@@ -1402,11 +1357,6 @@ public class ProjectLocationAction extends BaseAction {
       if (projectLocation.getId() == null || projectLocation.getId() == -1) {
 
         ProjectLocation projectLocationSave = new ProjectLocation();
-        projectLocationSave.setActive(true);
-        projectLocationSave.setActiveSince(new Date());
-        projectLocationSave.setCreatedBy(this.getCurrentUser());
-        projectLocationSave.setModifiedBy(this.getCurrentUser());
-        projectLocationSave.setModificationJustification("");
         projectLocationSave.setProject(project);
         projectLocationSave.setPhase(this.getActualPhase());
         if (!projectLocation.isScope()) {
@@ -1451,11 +1401,6 @@ public class ProjectLocationAction extends BaseAction {
     for (CountryFundingSources countryFundingSources : project.getRegionFS()) {
 
       ProjectLocation projectLocationSave = new ProjectLocation();
-      projectLocationSave.setActive(true);
-      projectLocationSave.setActiveSince(new Date());
-      projectLocationSave.setCreatedBy(this.getCurrentUser());
-      projectLocationSave.setModifiedBy(this.getCurrentUser());
-      projectLocationSave.setModificationJustification("");
       projectLocationSave.setProject(project);
       projectLocationSave.setPhase(this.getActualPhase());
       if (countryFundingSources.getLocElement() == null) {

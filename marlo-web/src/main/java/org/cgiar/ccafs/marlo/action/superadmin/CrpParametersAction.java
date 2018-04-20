@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,30 +136,19 @@ public class CrpParametersAction extends BaseAction {
           if (parameter != null) {
             if (parameter.getId() == null || parameter.getId().intValue() == -1) {
               parameter.setId(null);
-              parameter.setActiveSince(new Date());
-              parameter.setActive(true);
-              parameter.setCreatedBy(this.getCurrentUser());
               parameter.setCrp(crpDB);
 
               Parameter parameterDB = parameterManager.getParameterById(parameter.getParameter().getId());
 
               parameter.setParameter(parameterDB);
-              parameter.setModificationJustification("");
-              parameter.setModifiedBy(this.getCurrentUser());
               crpParameterManager.saveCustomParameter(parameter);
             } else {
 
-              CustomParameter customParameterDB = crpParameterManager.getCustomParameterById(parameter.getId());
-              parameter.setActiveSince(customParameterDB.getActiveSince());
-              parameter.setActive(true);
-              parameter.setCreatedBy(customParameterDB.getCreatedBy());
               parameter.setCrp(crpDB);
               Parameter parameterDB =
                 // parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId);
                 parameterManager.getParameterById(parameter.getParameter().getId());
               parameter.setParameter(parameterDB);
-              parameter.setModificationJustification("");
-              parameter.setModifiedBy(this.getCurrentUser());
               crpParameterManager.saveCustomParameter(parameter);
             }
 

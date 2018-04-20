@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,11 +157,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         if (projectExpectedStudy.getId() == null) {
 
           projectExpectedStudyNew = new ProjectExpectedStudy();
-          projectExpectedStudyNew.setActive(true);
-          projectExpectedStudyNew.setCreatedBy(this.getCurrentUser());
-          projectExpectedStudyNew.setModifiedBy(this.getCurrentUser());
-          projectExpectedStudyNew.setModificationJustification("");
-          projectExpectedStudyNew.setActiveSince(new Date());
           projectExpectedStudyNew.setProject(project);
           projectExpectedStudyNew.setPhase(this.getActualPhase());
           projectExpectedStudyNew.setComposedId(projectExpectedStudy.getComposedId());
@@ -203,11 +197,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               ExpectedStudyProject expectedStudyNew = new ExpectedStudyProject();
 
               expectedStudyNew.setProjectExpectedStudy(projectExpectedStudyNew);
-              expectedStudyNew.setActive(true);
-              expectedStudyNew.setCreatedBy(this.getCurrentUser());
-              expectedStudyNew.setModifiedBy(this.getCurrentUser());
-              expectedStudyNew.setModificationJustification("");
-              expectedStudyNew.setActiveSince(new Date());
               expectedStudyNew.setMyProject(expectedStudy.getMyProject());
 
 
@@ -479,8 +468,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       Project projectDB = projectManager.getProjectById(projectID);
-      projectDB.setActiveSince(new Date());
-      projectDB.setModifiedBy(this.getCurrentUser());
       projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 

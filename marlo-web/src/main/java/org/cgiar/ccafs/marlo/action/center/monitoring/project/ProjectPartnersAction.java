@@ -442,8 +442,6 @@ public class ProjectPartnersAction extends BaseAction {
               if (partnerPerson.getId() == null) {
 
                 CenterProjectPartnerPerson partnerPersonNew = new CenterProjectPartnerPerson();
-                partnerPersonNew.setModificationJustification("");
-
 
                 partnerPersonNew.setProjectPartner(partnerNew);
 

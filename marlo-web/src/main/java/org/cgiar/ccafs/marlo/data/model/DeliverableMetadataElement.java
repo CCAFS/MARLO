@@ -24,13 +24,11 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverableMetadataElement implements Serializable, IAuditLog {
+public class DeliverableMetadataElement extends MarloBaseEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -44359971548335546L;
 
-  @Expose
-  private Integer id;
   @Expose
   private MetadataElement metadataElement;
   @Expose
@@ -46,19 +44,6 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
   public DeliverableMetadataElement() {
   }
 
-  public DeliverableMetadataElement(MetadataElement metadataElement, Deliverable deliverable) {
-    this.metadataElement = metadataElement;
-    this.deliverable = deliverable;
-  }
-
-
-  public DeliverableMetadataElement(MetadataElement metadataElement, Deliverable deliverable, String elementValue) {
-    this.metadataElement = metadataElement;
-    this.deliverable = deliverable;
-    this.elementValue = elementValue;
-  }
-
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -69,11 +54,6 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
   public Boolean getHide() {
     return hide;
-  }
-
-  @Override
-  public Integer getId() {
-    return id;
   }
 
   @Override
@@ -124,11 +104,6 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     this.hide = hide;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-
   public void setMetadataElement(MetadataElement metadataElement) {
     this.metadataElement = metadataElement;
   }
@@ -139,7 +114,7 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "DeliverableMetadataElement [id=" + id + ", metadataElement=" + metadataElement + ", deliverable="
+    return "DeliverableMetadataElement [id=" + this.getId() + ", metadataElement=" + metadataElement + ", deliverable="
       + deliverable + ", elementValue=" + elementValue + ", hide=" + hide + "]";
   }
 

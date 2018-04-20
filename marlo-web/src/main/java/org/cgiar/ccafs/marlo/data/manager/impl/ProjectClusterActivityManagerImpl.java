@@ -54,15 +54,10 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectCluster
         .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
       .collect(Collectors.toList());
-    if ( clusters.isEmpty()) {
+    if (clusters.isEmpty()) {
 
       ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
-      projectClusterAdd.setActive(true);
-      projectClusterAdd.setActiveSince(projectCluster.getActiveSince());
-      projectClusterAdd.setCreatedBy(projectCluster.getCreatedBy());
       projectClusterAdd.setCrpClusterOfActivity(projectCluster.getCrpClusterOfActivity());
-      projectClusterAdd.setModificationJustification(projectCluster.getModificationJustification());
-      projectClusterAdd.setModifiedBy(projectCluster.getModifiedBy());
       projectClusterAdd.setPhase(phase);
       projectClusterAdd.setProject(projectCluster.getProject());
       this.projectClusterActivityDAO.save(projectClusterAdd);
@@ -79,13 +74,15 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   public void deleteProjectClusterActivity(long projectClusterActivityId) {
 
     ProjectClusterActivity projectClusterActivity = this.getProjectClusterActivityById(projectClusterActivityId);
-    projectClusterActivity.setActive(false);
-    this.saveProjectClusterActivity(projectClusterActivity);
+
 
     if (projectClusterActivity.getPhase().getNext() != null) {
       this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
         projectClusterActivity.getProject().getId(), projectClusterActivity);
     }
+
+    this.deleteProjectClusterActivity(projectClusterActivity.getId());
+
   }
 
   public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {

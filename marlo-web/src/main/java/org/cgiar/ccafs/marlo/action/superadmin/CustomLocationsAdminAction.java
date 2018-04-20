@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,11 +92,6 @@ public class CustomLocationsAdminAction extends BaseAction {
         if (locElementType != null) {
           if (locElementType.getId() == null) {
 
-            locElementType.setActive(true);
-            locElementType.setCreatedBy(this.getCurrentUser());
-            locElementType.setModifiedBy(this.getCurrentUser());
-            locElementType.setModificationJustification("");
-            locElementType.setActiveSince(new Date());
             locElementType.setCrp(null);
 
             locElementType.setScope(false);
@@ -106,11 +100,6 @@ public class CustomLocationsAdminAction extends BaseAction {
           } else {
             LocElementType locElementTypeDB = locElementTypeManager.getLocElementTypeById(locElementType.getId());
 
-            locElementType.setActive(true);
-            locElementType.setCreatedBy(locElementTypeDB.getCreatedBy());
-            locElementType.setModifiedBy(this.getCurrentUser());
-            locElementType.setModificationJustification("");
-            locElementType.setActiveSince(locElementTypeDB.getActiveSince());
             locElementType.setScope(locElementTypeDB.isScope());
             locElementTypeManager.saveLocElementType(locElementType);
           }
