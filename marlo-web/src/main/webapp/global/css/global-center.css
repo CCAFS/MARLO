@@ -1,0 +1,249 @@
+a {
+  color: #909090;
+  text-decoration: none;
+}
+
+#mainMenu .menuContent {
+  width: 100%;
+  background-image: url(../../global/images/header-menu-bar-center.png);
+  font-size: 1.2em;
+  font-family: 'Open Sans', sans-serif;
+}
+
+#userInfo {
+  background: #33b174;
+  border-bottom: 4px solid #2c9c66;
+}
+
+.infoText {
+  background: #c6e2d5;
+}
+
+.footer {
+  background: #179457 url(./../../global/images/footerBackground-center.png) repeat-x 0 0;
+}
+
+.footer a{
+  color:white;
+}
+.footer:before {
+  background: none;
+     
+}
+
+.addButton {
+  background: url(../../global/images/add.png) no-repeat 4px #8ea786;
+}
+
+input[type="submit"], button, .addButton, a.form-button {
+  background-color: #8ea786;
+  border-bottom: 3px solid #7b9074;
+}
+
+.button-blue {
+  background: #8ea786;
+  border-bottom: 2px solid #7b9074;
+}
+
+.button-blue a {
+  color: #fff;
+}
+
+.button-blue:hover {
+  background: #7c9274;
+}
+
+ul.horizontalSubMenu li.active {
+  background: #8ea786;
+  border-color: #7b9074;
+}
+
+#secondaryMenu > p {
+  color: #7b9074; 
+}
+
+#secondaryMenu .menuList p.active {
+  background: #8ea786;
+  border-color: #7b9074;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border-top: 4px solid #7b9074 !important;
+  color: #8ea786 !important;
+}
+
+.summariesSection.current {
+  background-color: #8ea786 !important;
+}
+
+.title-file {
+  color: #7b9074 !important;
+}
+
+.sectionSubTitle {
+  border-bottom: 1px solid #7b9074;
+  color: #7b9074;
+}
+
+#mainMenu .menuContent ul li ul.subMenu li {
+  border-top: 1px solid #7b9074;
+}
+
+#mainMenu .menuContent ul li:hover ul.subMenu {
+  background: #1d8854;
+}
+
+#dashboardContent li.active a {
+  color: #7b9074 !important;
+}
+#dashboardContent li a:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.viewMore {
+  color: #444444;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#bbd4c8 70%);
+}
+
+#draggable-button {
+  background-color: #12894d;
+}
+
+.ui-dialog-titlebar {
+  border-color: #8ea786;
+  background-color: #8ea786;
+}
+
+.ui-dialog {
+  border: 2px solid #8ea786 !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+  border-color: #8ea786;
+  background: #8ea786;
+}
+
+
+#secondaryMenu ul p.menuTitle {
+  background: #25a76a;
+}
+
+.fileUpload .upload::before {
+  background: #8ea786;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #8ea786;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+  background-color: #8ea786;
+  border-color: #8ea786;
+}
+
+.example .frame ul li.planning.phaseSelected {
+  background-color: #35ad75 !important;
+}
+
+
+.phaseTag span.planning {
+  background-color: #35ad75 !important;
+}
+
+/** CSS sectionSubMenu  **/
+.sectionSubMenu{
+  margin: 15px 0;
+}
+
+.sectionSubMenu .nav>li>a {
+  padding: 4px 42px;
+}
+
+.sectionSubMenu .nav-tabs>li.active>a, 
+.sectionSubMenu .nav-tabs>li.active>a:focus, 
+.sectionSubMenu .nav-tabs>li.active>a:hover {
+  color: #fff !important;
+  background-color: #389767;
+}
+
+.sectionSubMenu .nav-tabs>li>a {
+  border-radius: 2px 2px 0 0;
+  border: 1px solid #ddd;
+  color: #b1afaf;
+}
+
+.relVal{
+  position: relative;
+  margin-bottom:25px;
+}
+
+.relVal label{
+	margin-bottom:15px;
+}
+
+.missingSelect{
+  border: 1px solid #F44;
+  border-bottom: 1px solid #F44;
+}
+
+span.errorTag {
+    position: absolute;
+    text-align: center;
+    color: rgb(148, 125, 3);
+    background: url(./../../global/images/errorTag.png);
+    background-size: 100% 100%;
+    width: 50px;
+    cursor: help;
+    height: 22px;
+    padding: 3px;
+    z-index: 99;
+}
+
+.sectionSubMenu .nav-tabs>li.active:after, 
+.sectionSubMenu .nav-tabs>li.active:before {
+	top: 92%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.sectionSubMenu .nav-tabs>li.active:after {
+	border-top-color:  #389767;
+	border-width: 8px 20px 0 20px;;
+	margin-left: -20px;
+}
+
+
+
+.sectionSubMenu .tab-pane ul  {
+  padding: 8px;
+  margin: 0;
+}
+
+.sectionSubMenu .tab-pane ul li {
+  display: inline-block;
+  padding: 3px 16px;
+  border-right: 2px solid #eaeaea;
+}
+
+.sectionSubMenu .tab-pane ul li.active {
+  font-weight:bold;
+}
+
+.sectionSubMenu .tab-pane ul li.active a{
+  color: #6d6d6d;
+}
+
+.sectionSubMenu .tab-content>.tab-pane {
+   background-color: #f1f1f1;
+   border-left: 1px solid #ddd;
+   border-right: 1px solid #ddd;
+   border-bottom: 1px solid #ddd;
+}
+
+#secondaryMenu > p small {
+  color: #6ccc9f;
+}

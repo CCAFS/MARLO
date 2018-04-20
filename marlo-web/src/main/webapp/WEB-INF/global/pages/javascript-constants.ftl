@@ -35,4 +35,6 @@
   var currentCenterID=${(centerID)!'-1'};
   var centerSession="${(centerSession)!}";
   
+  var centerGlobalUnit = ${((centerGlobalUnit)!false)?string};
+  
 </script>

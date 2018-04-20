@@ -44,6 +44,12 @@
 		<property name="gender" type="string">
 			<column name="gender"  length="10"/>
 		</property>
+		<property name="sync" type="java.lang.Boolean">
+      <column name="sync" default="0" />
+    </property>
+    <property name="syncedDate" type="date">
+      <column name="syn_date" length="10" />
+    </property>
 		<many-to-one name="age" class="org.cgiar.ccafs.marlo.data.model.CapdevRangeAge"
 			fetch="select">
 			<column name="age"/>

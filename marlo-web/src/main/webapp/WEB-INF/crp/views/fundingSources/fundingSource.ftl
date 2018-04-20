@@ -16,8 +16,8 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false) || (((fundingSource.fundingSourceInfo.extensionDate?has_content)!false) && !editable)/]
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
@@ -624,4 +624,4 @@
 [/#if]
 
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]

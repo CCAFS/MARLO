@@ -25,6 +25,15 @@ public interface GlobalUnitManager {
 
 
   /**
+   * Gets a Global Units that the user have access
+   * 
+   * @param emai - The user Email
+   * @return A List of Global Units
+   */
+  public List<GlobalUnit> crpUsers(String emai);
+
+
+  /**
    * This method removes a specific globalUnit value from the database.
    * 
    * @param globalUnitId is the globalUnit identifier.
@@ -48,7 +57,6 @@ public interface GlobalUnitManager {
    */
   public List<GlobalUnit> findAll();
 
-
   /**
    * This method find a global unit from it acronym
    * 
@@ -57,6 +65,7 @@ public interface GlobalUnitManager {
    */
   public GlobalUnit findGlobalUnitByAcronym(String acronym);
 
+
   /**
    * This method gets a globalUnit object by a given globalUnit identifier.
    * 
@@ -64,7 +73,6 @@ public interface GlobalUnitManager {
    * @return a GlobalUnit object.
    */
   public GlobalUnit getGlobalUnitById(long globalUnitID);
-
 
   /**
    * This method saves the information of the given globalUnit

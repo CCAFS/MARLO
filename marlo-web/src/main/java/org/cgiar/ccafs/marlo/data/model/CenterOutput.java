@@ -45,11 +45,10 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
   private String shortName;
 
   @Expose
-  private CenterProgram centerProgram;
+  private CrpProgram centerProgram;
 
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
-
 
   private Set<CenterOutputsNextUser> researchOutputsNextUsers = new HashSet<CenterOutputsNextUser>(0);
 
@@ -59,6 +58,7 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
   private List<CenterOutputsNextUser> nextUsers;
 
   private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
+
 
   private List<CenterOutputsOutcome> outcomes;
 
@@ -88,11 +88,12 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
     return true;
   }
 
+
   public Set<CenterOutputsOutcome> getCenterOutputsOutcomes() {
     return centerOutputsOutcomes;
   }
 
-  public CenterProgram getCenterProgram() {
+  public CrpProgram getCenterProgram() {
     return centerProgram;
   }
 
@@ -107,6 +108,7 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
     return dateAdded;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -114,10 +116,10 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
     return sb.toString();
   }
 
+
   public List<CenterOutputsNextUser> getNextUsers() {
     return nextUsers;
   }
-
 
   public List<CenterOutputsOutcome> getOutcomes() {
     return outcomes;
@@ -138,6 +140,7 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
     return sectionStatuses;
   }
 
+
   public String getShortName() {
     return shortName;
   }
@@ -145,7 +148,6 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
   public String getTitle() {
     return title;
   }
-
 
   @Override
   public int hashCode() {
@@ -159,8 +161,7 @@ public class CenterOutput extends MarloAuditableEntity implements Serializable, 
     this.centerOutputsOutcomes = centerOutputsOutcomes;
   }
 
-
-  public void setCenterProgram(CenterProgram centerProgram) {
+  public void setCenterProgram(CrpProgram centerProgram) {
     this.centerProgram = centerProgram;
   }
 

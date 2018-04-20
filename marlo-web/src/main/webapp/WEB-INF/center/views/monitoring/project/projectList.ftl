@@ -12,8 +12,8 @@
   {"label":"projectsList", "nameSpace":"/monitoring", "action":"${(centerSession)!}/projectList"}
 ]/]
 
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/center/macros/projectsListTemplate-center.ftl" as projectList /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
@@ -57,4 +57,4 @@
 [#include "/WEB-INF/center/macros/addProjectsPopup-center.ftl" /]
 
 
-[#include "/WEB-INF/center/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]

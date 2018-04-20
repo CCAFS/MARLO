@@ -18,14 +18,14 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.outcome;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringOutcomeEvidenceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
@@ -33,10 +33,11 @@ import org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcomeEvidence;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
-import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -80,36 +81,53 @@ public class MonitoringOutcomeAction extends BaseAction {
 
 
   private AuditLogManager auditLogService;
-  private ICenterTargetUnitManager targetUnitService;
-  private ICenterProgramManager programService;
-  private ICenterMilestoneManager milestoneService;
-  private ICenterMonitoringOutcomeManager monitoringOutcomeService;
-  private ICenterMonitoringMilestoneManager monitoringMilestoneService;
-  private ICenterMonitoringOutcomeEvidenceManager evidenceService;
-  private GlobalUnit loggedCenter;
-  private List<CenterArea> researchAreas;
-  private CenterArea selectedResearchArea;
-  private List<CenterProgram> researchPrograms;
-  private CenterProgram selectedProgram;
-  private CenterOutcome outcome;
 
+  private SrfTargetUnitManager targetUnitService;
+
+
+  private CrpProgramManager programService;
+
+
+  private ICenterMilestoneManager milestoneService;
+
+
+  private ICenterMonitoringOutcomeManager monitoringOutcomeService;
+
+
+  private ICenterMonitoringMilestoneManager monitoringMilestoneService;
+
+
+  private ICenterMonitoringOutcomeEvidenceManager evidenceService;
+
+  private GlobalUnit loggedCenter;
+
+
+  private List<CenterArea> researchAreas;
+
+  private CenterArea selectedResearchArea;
+
+
+  private List<CrpProgram> researchPrograms;
+  private CrpProgram selectedProgram;
+  private CenterOutcome outcome;
   private List<CenterTopic> researchTopics;
   private CenterTopic selectedResearchTopic;
   private List<CenterImpact> researchImpacts;
   private HashMap<Long, String> targetUnitList;
   // Parameter Variables
-  private long programID;
+  private long crpProgramID;
   private long areaID;
   private long topicID;
   private long outcomeID;
   private String transaction;
   private CenterOutcome outcomeDB;
 
+  private int currentYear;
+
   @Inject
   public MonitoringOutcomeAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
-    ICenterTargetUnitManager targetUnitService, ICenterProgramManager programService,
-    ICenterMilestoneManager milestoneService, AuditLogManager auditLogService,
-    ICenterMonitoringOutcomeManager monitoringOutcomeService,
+    SrfTargetUnitManager targetUnitService, CrpProgramManager programService, ICenterMilestoneManager milestoneService,
+    AuditLogManager auditLogService, ICenterMonitoringOutcomeManager monitoringOutcomeService,
     ICenterMonitoringMilestoneManager monitoringMilestoneService,
     ICenterMonitoringOutcomeEvidenceManager evidenceService) {
     super(config);
@@ -149,8 +167,8 @@ public class MonitoringOutcomeAction extends BaseAction {
   }
 
   public void fillFrontValues() {
-    programID = outcome.getResearchTopic().getResearchProgram().getId();
-    selectedProgram = programService.getProgramById(programID);
+    crpProgramID = outcome.getResearchTopic().getResearchProgram().getId();
+    selectedProgram = programService.getCrpProgramById(crpProgramID);
     selectedResearchTopic = outcome.getResearchTopic();
     topicID = selectedResearchTopic.getId();
     selectedResearchArea = selectedProgram.getResearchArea();
@@ -159,15 +177,22 @@ public class MonitoringOutcomeAction extends BaseAction {
     targetUnitList = new HashMap<>();
     if (targetUnitService.findAll() != null) {
 
-      List<CenterTargetUnit> targetUnits =
-        targetUnitService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+
+      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+        loggedCenter.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+      }
 
       Collections.sort(targetUnits,
         (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
 
-      for (CenterTargetUnit srfTargetUnit : targetUnits) {
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
         targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
       }
+
 
       targetUnitList = this.sortByComparator(targetUnitList);
     }
@@ -178,7 +203,7 @@ public class MonitoringOutcomeAction extends BaseAction {
 
 
     Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, this.getCenterYear());
+    calendarStart.set(Calendar.YEAR, this.getActualPhase().getYear());
     Calendar calendarEnd = Calendar.getInstance();
     calendarEnd.set(Calendar.YEAR, outcome.getTargetYear());
 
@@ -228,19 +253,24 @@ public class MonitoringOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public long getcrpProgramID() {
+    return crpProgramID;
+  }
+
+  public long getCrpProgramID() {
+    return crpProgramID;
+  }
+
+  public int getCurrentYear() {
+    return currentYear;
+  }
 
   public CenterOutcome getOutcome() {
     return outcome;
   }
 
-
   public long getOutcomeID() {
     return outcomeID;
-  }
-
-
-  public long getProgramID() {
-    return programID;
   }
 
   public List<CenterArea> getResearchAreas() {
@@ -251,18 +281,19 @@ public class MonitoringOutcomeAction extends BaseAction {
     return researchImpacts;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
-
 
   public List<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
 
-  public CenterProgram getSelectedProgram() {
+
+  public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
+
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
@@ -273,11 +304,9 @@ public class MonitoringOutcomeAction extends BaseAction {
     return selectedResearchTopic;
   }
 
-
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
   }
-
 
   public long getTopicID() {
     return topicID;
@@ -292,7 +321,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     areaID = -1;
-    programID = -1;
+    crpProgramID = -1;
     topicID = -1;
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -417,6 +446,7 @@ public class MonitoringOutcomeAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
     outcomeDB = outcomeService.getResearchOutcomeById(outcomeID);
+    currentYear = this.getActualPhase().getYear();
 
     if (this.isHttpPost()) {
       if (targetUnitList != null) {
@@ -430,6 +460,7 @@ public class MonitoringOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -502,6 +533,7 @@ public class MonitoringOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveEvidences(CenterMonitoringOutcome monitoringOutcomeDB, CenterMonitoringOutcome monitoringOutcome) {
 
     if (monitoringOutcomeDB.getEvidences() != null && monitoringOutcomeDB.getEvidences().size() > 0) {
@@ -550,8 +582,23 @@ public class MonitoringOutcomeAction extends BaseAction {
     }
   }
 
+
   public void setAreaID(long areaID) {
     this.areaID = areaID;
+  }
+
+
+  public void setcrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
+
+  public void setCrpProgramID(long crpProgramID) {
+    this.crpProgramID = crpProgramID;
+  }
+
+  public void setCurrentYear(int currentYear) {
+    this.currentYear = currentYear;
   }
 
 
@@ -564,9 +611,6 @@ public class MonitoringOutcomeAction extends BaseAction {
     this.outcomeID = outcomeID;
   }
 
-  public void setProgramID(long programID) {
-    this.programID = programID;
-  }
 
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;
@@ -576,7 +620,7 @@ public class MonitoringOutcomeAction extends BaseAction {
     this.researchImpacts = researchImpacts;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 
@@ -584,9 +628,11 @@ public class MonitoringOutcomeAction extends BaseAction {
     this.researchTopics = researchTopics;
   }
 
-  public void setSelectedProgram(CenterProgram selectedProgram) {
+
+  public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
+
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;

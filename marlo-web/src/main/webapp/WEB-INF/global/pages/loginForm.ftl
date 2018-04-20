@@ -2,119 +2,109 @@
 <div id="loginFormContainer">
   [#if !config.production]
   <div class="loginForm instructions">
-    [#-- @s.text name="home.login.message.nonCgiar" / --]
     <p>[@s.text name="login.testersMessage"/]</p>
   </div>
   [/#if]
-  [@s.form method="POST" namespace="/" action="login" cssClass="loginForm"]
-    [#-- Login error message --]
-    [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
-    <div class="firstForm  form-group row" style="display:${(crpSession?has_content)?string('none', 'block')}">
-      <ul class="nav nav-tabs" role="tablist">
-        <li id="crp" role="presentation" class="type-crp [#if (typeSession == "crp")!false]active[/#if]"><a href="#crps" aria-controls="home" role="tab" data-toggle="tab">CRPs</a></li>
-        <li id="center" role="presentation" class="type-center [#if (typeSession == "center")!false]active[/#if]"><a href="#centers" aria-controls="messages" role="tab" data-toggle="tab">Centers</a></li> 
-        <li id="platform" role="presentation" class="type-platform [#if (typeSession == "platform")!false]active[/#if]"><a href="#platforms" aria-controls="profile" role="tab" data-toggle="tab">Platforms</a></li>
-      </ul>
-      
-      <div class="crpGroup tab-content">
-      
-        [#-- CRPs --]
-        <div role="tabpanel" id="crps" class="tab-pane type-crp [#if (typeSession == "crp")!false]class="active"[/#if] col-sm-12">
-          <ul>
-          [#attempt] 
-            [#assign crpList = action.getCrpCategoryList("1") /]
-          [#recover]
-            [#assign crpList = [] /]
-          [/#attempt]
-          [#if crpList?has_content]
-            [#list crpList as crp]
-              [@crpItem element=crp /]
+  [#-- Form --]
+  [@s.form method="POST" namespace="/" action="login"]
+     <div class="crps-select hidden">
+      [#if listGlobalUnitTypes??]
+        [#list listGlobalUnitTypes as globalUnitType]
+          [#if globalUnitType.globalUnitsList?has_content]
+          <div class="name-type-container type-${globalUnitType.id} hidden">
+            [#-- When CGIAR Center(id=4) name is replaced for Center in the database, the if condition below should be removed --]
+            <span class="selection-bar-title">[#if globalUnitType.name=='CGIAR Center']Center[#else]${globalUnitType.name}[/#if]s:</span>
+          </div>
+          <div class="selection-bar-options">
+            <ul>
+            [#list globalUnitType.globalUnitsList as globalUnit]
+              [#if globalUnit.login][@availableItems element=globalUnit /][/#if]
             [/#list]
-          [#else]
-            <p>Not CRPs loaded</p>
+            </ul>
+          </div>
           [/#if]
-          </ul>
-        </div>
-        [#-- Centers --]
-        <div id="centers" class="tab-pane type-center [#if (typeSession == "center")!false]class="active"[/#if] col-sm-12">
-          <ul>
-          [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("2") /]
-          [#recover]
-            [#assign centerList = [] /]
-          [/#attempt]
-          [#if centerList?has_content]
-            [#list centerList as center]
-              [@crpItem element=center /]
-            [/#list]
-          [#else]
-            <p>Not Centers loaded</p>
-          [/#if]
-          </ul>
-        </div>
-        
-        [#-- Platforms --]
-        <div id="platforms" class="tab-pane type-platform [#if (typeSession == "platform")!false]class="active"[/#if] col-sm-12">
-          <ul>
-          [#attempt] 
-            [#assign platformsList = action.getCrpCategoryList("3") /]
-          [#recover]
-            [#assign platformsList = [] /]
-          [/#attempt]
-          [#if platformsList?has_content]
-            [#list platformsList as platform]
-              [@crpItem element=platform /]
-            [/#list]
-          [#else]
-            <p>Not Platforms loaded</p>
-          [/#if]
-          </ul> 
-        </div>
-        
-      </div>
-    </div>
-    <div class="secondForm" style="display:${(crpSession?has_content)?string('block', 'none')}">
-      <div class="row">
-        [#-- Form --]
-        <div class="col-sm-12">
-          [#-- Image --]
-          <div class="form-group text-center">
-            <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
-          </div>
-          [#-- CRP Session --]
-          <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
-          [#-- Type Session --]
-          <input type="hidden" id="type-input" name="type" value="${(typeSession)!}" />
-          [#-- Email --]
-          <div class="form-group text-left">
-            [@customForm.input name="user.email" i18nkey="login.email" required=true /]
-          </div>
-          [#-- Password --]
-          <div class="form-group text-left">
-            [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
-          </div>
-          [#-- Login (Submit button) --]
-          <div class="text-center">
-            [@s.submit key="login.button" name="login" /]
-          </div>
-         
-          <br />
-          [#-- Go back --]
-          <div class="text-center">
-            <a class="goBackToSelect" href="#"><span class="glyphicon glyphicon-menu-down"></span> Select another (CRP, Center or Platform)</a>
+        [/#list]
+      [/#if]
+     </div>
+     [#-- End crps select --]
+     [#-- Check if the inputs can be replaced with the macro from forms.ftl --]
+     [#-- Trick for IE z-index --]
+     <div style="position:relative;">
+     <div class="loginForm" style="z-index: 1000">
+        [#-- Email --]
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="login-input-container" id="login-email">
+              <input id="user.email" class="login-input user-email form-control" type="text" name="user.email" value="" required/>
+              <label for="user.email">[@s.text name="login.email"/]</label>
+            </div>
+            [#-- CRP Session --]
+            <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
+            
+            [#-- Image --]
+            <div class="form-group text-center hidden" >
+              <img id="crpSelectedImage" width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
+            </div>
+            [#-- Welcome info --]
+            <div class="row">
+              <div class="col-sm-10 welcome-message-container hidden" >
+                <span class="login-input-container welcome-message">[@s.text name="login.welcome"/]:</span>
+                <br>
+                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i><span></span></span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+        [#-- Password --]
+        <div class="row" >
+          <div class="col-sm-12">
+            <div class="login-input-container hidden" id="login-password" >
+              <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=1 required/>
+              <label for="user.password">[@s.text name="login.password"/]</label>
+            </div>
+            <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
+            <p class="invalidField emailNotFound hidden">[@s.text name="login.error.invalidField.emailNotFound"/]</p>
+            <p class="invalidField deniedAccess hidden">[@s.text name="login.error.invalidField.deniedAccess"/]</p>
+            <p class="invalidField voidPassword hidden">[@s.text name="login.error.invalidField.voidPassword"/]</p>
+            <p class="invalidField incorrectPassword hidden">[@s.text name="login.error.invalidField.incorrectPassword"/]</p>
+          </div>
+        </div>
+        [#-- Terms and conditions checkbox --]
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="terms-container hidden">
+              <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> I agree to the <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a>
+            </div>
+          </div>
+        </div>
+        [#-- Submit button --]
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="login-button-container">
+              [@s.submit key="Next" name="next" cssClass="login-form-button" role="button" disabled=false /]
+              [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
+            </div>
+          </div>
+        </div>
+        [#-- Login with different user --]
+        <div class="login-back-container hidden">
+          <p class="loginBack">[@s.text name="login.differentUser"/]</p>
+        </div>
+     </div>
+     </div>
   [/@s.form]
   <br />
   [#-- Disclaimer --]
-  <div class="alert alert-warning" role="alert">[@s.text name="login.disclaimer"/]</div>
-  
+  <div class="row">
+    <div class="col-md-11 col-center">
+      <div class="login-disclaimer text-justify">[@s.text name="login.disclaimer"/]</div>
+    </div>
+  </div>
 </div><!-- End loginFormContainer -->
 
-[#macro crpItem element]
-  <li id="crp-${element.acronym}" class="loginOption ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
-    <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+[#macro availableItems element]
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="">
+    <img class="selection-bar-image animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
+    <div class="selection-bar-acronym hidden">${element.acronym}</div>
   </li>
 [/#macro]

@@ -196,6 +196,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbEvidence() == null) {
       PowbEvidence evidence = new PowbEvidence();
+
       // create one to one relation
       powbSynthesis.setPowbEvidence(evidence);
       evidence.setPowbSynthesis(powbSynthesis);
@@ -236,6 +237,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getFinancialPlan() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
+
       newPowbFinancialPlan.setFinancialPlanIssues("");
       newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
@@ -269,6 +271,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbFlagshipPlans() == null && !this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbFlagshipPlans newPowbFlagshipPlans = new PowbFlagshipPlans();
+
       newPowbFlagshipPlans.setPlanSummary("");
       newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setPowbFlagshipPlans(newPowbFlagshipPlans);
@@ -304,6 +307,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbManagementGovernance() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
+
       // create one to one relation
       powbSynthesis.setPowbManagementGovernance(managementGovernance);
       managementGovernance.setPowbSynthesis(powbSynthesis);
@@ -324,6 +328,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbManagementRisk() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbManagementRisk managementRisk = new PowbManagementRisk();
+
       // create one to one relation
       powbSynthesis.setPowbManagementRisk(managementRisk);
       managementRisk.setPowbSynthesis(powbSynthesis);
@@ -388,6 +393,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     // Check if ToC relation is null -create it
     if (powbSynthesis.getPowbToc() == null) {
       PowbToc toc = new PowbToc();
+
       // create one to one relation
       powbSynthesis.setPowbToc(toc);
       toc.setPowbSynthesis(powbSynthesis);

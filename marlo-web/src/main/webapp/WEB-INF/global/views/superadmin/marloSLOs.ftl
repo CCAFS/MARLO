@@ -12,7 +12,7 @@
   {"label":"marloSLOs", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
 
 <div class="container">
@@ -64,7 +64,7 @@
 [#-- SLO targetsIndicator Template --]
 [@targetIndicator element={} name="slosList[-1].srfSloIndicators[-1].targetsIndicator[-1]" index=-1 isTemplate=true /]
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro srfSloMacro element name index isTemplate=false]
   <div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox" style="display:${isTemplate?string('none','block')}">

@@ -16,7 +16,7 @@ public class CenterSubmission extends MarloBaseEntity implements java.io.Seriali
 
   private CenterCycle researchCycle;
 
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
 
   private CapacityDevelopment capacityDevelopment;
 
@@ -57,7 +57,7 @@ public class CenterSubmission extends MarloBaseEntity implements java.io.Seriali
   }
 
 
-  public CenterProgram getResearchProgram() {
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
 
@@ -91,7 +91,7 @@ public class CenterSubmission extends MarloBaseEntity implements java.io.Seriali
     this.researchCycle = researchCycle;
   }
 
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 

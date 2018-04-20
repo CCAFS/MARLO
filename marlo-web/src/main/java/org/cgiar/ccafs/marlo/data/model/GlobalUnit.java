@@ -315,6 +315,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return result;
   }
 
+  public boolean isCenterType() {
+    return this.globalUnitType.getId().intValue() == 4;
+  }
+
   public boolean isHasRegions() {
     return hasRegions;
   }

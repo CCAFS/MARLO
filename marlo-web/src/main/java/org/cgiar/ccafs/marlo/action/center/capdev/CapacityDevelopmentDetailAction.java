@@ -951,7 +951,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
-    } ;
+    }
 
     participantService.saveParticipant(participant);
   }

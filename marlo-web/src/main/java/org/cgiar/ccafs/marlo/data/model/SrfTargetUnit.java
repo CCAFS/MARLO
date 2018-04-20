@@ -44,8 +44,11 @@ public class SrfTargetUnit extends MarloAuditableEntity implements java.io.Seria
 
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
-  private Boolean checkCrp;
+  private Set<CenterMilestone> centerMilestones = new HashSet<CenterMilestone>(0);
 
+  private Set<CenterOutcome> centerOutcomes = new HashSet<CenterOutcome>(0);
+
+  private Boolean checkCrp;
 
   public SrfTargetUnit() {
   }
@@ -79,13 +82,25 @@ public class SrfTargetUnit extends MarloAuditableEntity implements java.io.Seria
     return true;
   }
 
+  public Set<CenterMilestone> getCenterMilestones() {
+    return centerMilestones;
+  }
+
+
+  public Set<CenterOutcome> getCenterOutcomes() {
+    return centerOutcomes;
+  }
+
+
   public Boolean getCheckCrp() {
     return checkCrp;
   }
 
+
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
+
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
@@ -119,6 +134,17 @@ public class SrfTargetUnit extends MarloAuditableEntity implements java.io.Seria
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
+
+
+  public void setCenterMilestones(Set<CenterMilestone> centerMilestones) {
+    this.centerMilestones = centerMilestones;
+  }
+
+
+  public void setCenterOutcomes(Set<CenterOutcome> centerOutcomes) {
+    this.centerOutcomes = centerOutcomes;
+  }
+
 
   public void setCheckCrp(Boolean checkCrp) {
     this.checkCrp = checkCrp;

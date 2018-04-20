@@ -39,9 +39,9 @@ public class CenterMilestone extends MarloAuditableEntity implements Serializabl
   @Expose
   private String title;
 
+
   @Expose
   private Integer targetYear;
-
 
   @Expose
   private BigDecimal value;
@@ -52,6 +52,8 @@ public class CenterMilestone extends MarloAuditableEntity implements Serializabl
   private CenterTargetUnit targetUnit;
   @Expose
   private boolean impactPathway;
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
   private Set<CenterMonitoringMilestone> monitoringMilestones = new HashSet<CenterMonitoringMilestone>(0);
 
   public CenterMilestone() {
@@ -95,6 +97,10 @@ public class CenterMilestone extends MarloAuditableEntity implements Serializabl
    */
   public CenterOutcome getResearchOutcome() {
     return researchOutcome;
+  }
+
+  public SrfTargetUnit getSrfTargetUnit() {
+    return srfTargetUnit;
   }
 
   public CenterTargetUnit getTargetUnit() {
@@ -148,6 +154,11 @@ public class CenterMilestone extends MarloAuditableEntity implements Serializabl
    */
   public void setResearchOutcome(CenterOutcome researchOutcome) {
     this.researchOutcome = researchOutcome;
+  }
+
+
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
 

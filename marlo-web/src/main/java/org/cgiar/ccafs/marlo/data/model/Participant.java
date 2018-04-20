@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,6 +73,12 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private CapdevFoundingType fellowship;
 
+  @Expose
+  private Boolean sync;
+
+  @Expose
+  private Date syncedDate;
+
   private Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(0);
 
   public Participant() {
@@ -86,7 +93,6 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     return this.capdevParticipants;
   }
 
-
   public Long getCode() {
     return this.code;
   }
@@ -95,14 +101,15 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     return this.email;
   }
 
+
   public CapdevFoundingType getFellowship() {
     return this.fellowship;
   }
 
+
   public String getGender() {
     return this.gender;
   }
-
 
   public CapdevHighestDegree getHighestDegree() {
     return this.highestDegree;
@@ -116,6 +123,7 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     return institutionsSuggested;
   }
 
+
   public String getLastName() {
     return this.lastName;
   }
@@ -124,11 +132,9 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     return locElementsByCitizenship;
   }
 
-
   public LocElement getLocElementsByCountryOfInstitucion() {
     return locElementsByCountryOfInstitucion;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -136,7 +142,6 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public String getMiddleName() {
     return middleName;
@@ -146,6 +151,7 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     return this.name;
   }
 
+
   public String getOtherInstitution() {
     return otherInstitution;
   }
@@ -154,13 +160,21 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
     return personalEmail;
   }
 
-
   public String getReference() {
     return this.reference;
   }
 
+
   public String getSupervisor() {
     return this.supervisor;
+  }
+
+  public Boolean getSync() {
+    return sync;
+  }
+
+  public Date getSyncedDate() {
+    return syncedDate;
   }
 
   public void setAge(CapdevRangeAge age) {
@@ -180,6 +194,7 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
   public void setEmail(String email) {
     this.email = email;
   }
+
 
   public void setFellowship(CapdevFoundingType fellowship) {
     this.fellowship = fellowship;
@@ -245,6 +260,16 @@ public class Participant extends MarloAuditableEntity implements java.io.Seriali
 
   public void setSupervisor(String supervisor) {
     this.supervisor = supervisor;
+  }
+
+
+  public void setSync(Boolean sync) {
+    this.sync = sync;
+  }
+
+
+  public void setSyncedDate(Date syncedDate) {
+    this.syncedDate = syncedDate;
   }
 
 

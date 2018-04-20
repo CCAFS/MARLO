@@ -135,7 +135,7 @@ public class ValidateCapDevSectionAction extends BaseAction {
 
               List<CenterSectionStatus> sectionStatuses;
               sectionStatuses = new ArrayList<>(deliverable.getSectionStatuses().stream()
-                .filter(c -> c.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+                .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
 
 
               if (!sectionStatuses.isEmpty()) {
@@ -161,7 +161,7 @@ public class ValidateCapDevSectionAction extends BaseAction {
         break;
       default:
         sectionStatus =
-          sectionStatusService.getSectionStatusByCapdev(capdev.getId(), sectionName, this.getCenterYear());
+          sectionStatusService.getSectionStatusByCapdev(capdev.getId(), sectionName, this.getActualPhase().getYear());
 
         section = new HashMap<String, Object>();
         if (sectionStatus != null) {

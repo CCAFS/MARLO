@@ -17,8 +17,8 @@
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
 ]/]
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 
 [#assign timeline = [
@@ -45,32 +45,64 @@
     [#-- What do you want to do --]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree">
-      [#-- Add new Project --]
-      <div class="flex-container">
-      [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
-      [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
-        <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
-          <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
-        </div>
-      [#if canAddCoreProject]</a>[/#if]
-      </div>
       
-      [#-- Update an ongoing Project --]
-      <div class="flex-container">
-      [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
-      [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
-        <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
-          <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
+    
+      [#if centerGlobalUnit]
+        [#-- CENTER Impact patchway --]
+        <div class="flex-container">
+          <div id="newImpactPathway" class="option hvr-float">
+            <a href="[@s.url action="impactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
+            </a>
+          </div>
         </div>
-      [#if canUpdateOngoingProjects]</a>[/#if]
-      </div>
+        
+        [#-- Projects --]
+        <div class="flex-container">
+          <div id="startMonitoring" class="option hvr-float">
+            <a href="[@s.url action="monitoring/${centerSession}/monitoringOutcomesList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
+            </a>  
+          </div>
+        </div>
+        
+        [#-- Summaries --]
+        <div class="flex-container">
+          <div id="finalDes" class="option hvr-float disabled" title="This link is disabled">
+            <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
+          </div>
+        </div>
       
-      [#-- Evaluate Project --]
-      <div class="flex-container">
+      [#else]
+      
+        [#-- Add new Project --]
+        <div class="flex-container">
+        [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
+        [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
+          <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
+            <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
+          </div>
+        [#if canAddCoreProject]</a>[/#if]
+        </div>
+        
+        [#-- Update an ongoing Project --]
+        <div class="flex-container">
+        [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
+        [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
+          <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
+            <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
+          </div>
+        [#if canUpdateOngoingProjects]</a>[/#if]
+        </div>
+        
+        [#-- Evaluate Project --]
+        <div class="flex-container">
           <div id="reportProject" class="option disabled" title="This link is disabled">
             <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
           </div>
-      </div>
+        </div>
+      
+      [/#if]
       <div class="clearfix"></div>
     </div>
     
@@ -179,4 +211,4 @@
  
 </section>
 
-[#include "/WEB-INF/crp/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]

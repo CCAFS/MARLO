@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.interceptor.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -41,7 +41,7 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
   private static final long serialVersionUID = 8386352290491092445L;
 
   private final ICenterOutputManager outputService;
-  private final ICenterProgramManager programService;
+  private final CrpProgramManager programService;
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
@@ -52,7 +52,7 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
   private long programID = -1;
 
   @Inject
-  public EditOutputInterceptor(ICenterProgramManager programService, ICenterOutputManager outputService) {
+  public EditOutputInterceptor(CrpProgramManager programService, ICenterOutputManager outputService) {
     this.programService = programService;
     this.outputService = outputService;
   }
@@ -90,20 +90,23 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
     if (output != null) {
       programID = output.getCenterProgram().getId();
-      CenterProgram program = programService.getProgramById(programID);
+      CrpProgram program = programService.getCrpProgramById(programID);
       if (program != null) {
 
         areaID = program.getResearchArea().getId();
 
-        String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
+        // String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
         if (baseAction.canAccessSuperAdmin()) {
           canEdit = true;
         } else {
-
-          if (baseAction.hasPermissionCenter(
-            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+          if (baseAction.hasPermissionNoBase(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+            researchCenter.getAcronym(), programID + ""))) {
             canEdit = true;
           }
+          // if (baseAction.hasPermissionCenter(
+          // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+          // canEdit = true;
+          // }
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
@@ -118,8 +121,12 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
-            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+          // hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+          // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true
+            : baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+              researchCenter.getAcronym(), programID + ""));
         }
 
         if (baseAction.isSubmitIP(programID)) {

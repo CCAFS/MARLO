@@ -1,8 +1,18 @@
 [#ftl]
 [#-- MESSAGES PARAMETERS --]
-[#assign object = selectedProgram /]
-[#assign nameParameter = "programID" /]
-[#assign parameterID = programID /]
+[#if output??]
+  [#assign object = output /]
+  [#assign nameParameter = "outputID" /]
+  [#assign parameterID = outputID /]
+[#elseif outcome??]
+  [#assign object = outcome /]
+  [#assign nameParameter = "outcomeID" /]
+  [#assign parameterID = outcomeID /]
+[#elseif selectedProgram??]
+  [#assign object = selectedProgram /]
+  [#assign nameParameter = "crpProgramID" /]
+  [#assign parameterID = crpProgramID /]
+[/#if]
 
 [#-- History Message --]
 [#if transaction??]
@@ -18,45 +28,46 @@
       </p>
     [/#if]
   </div>
-[/#if]
+[#else]
 
-[#-- Submission Message --]
-[#if submission]
-  <div class="submission-mode text-center animated flipInX">
-    <p>[@s.text name="message.submittedOn" ][/@s.text]</p>
+  [#-- Submission Message --]
+  [#if submission]
+    <div class="submission-mode text-center animated flipInX">
+      <p>[@s.text name="message.submittedOn" ][/@s.text]</p>
+    </div>
+  [/#if]
+  
+  [#-- Privileges Message --]
+  [#if !canEdit && !transaction?? && !submission ]
+    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [/#if] 
+  
+  [#-- Completed Message--]
+  [#if canSubmit && !submission && completed]
+    <div class="completed-mode text-center animated flipInX">
+      <p>[@s.text name="message.completed" /]</p>
+    </div>
+  [/#if]
+  
+  [#-- Concurrence Message --]
+  <div id="concurrenceMessage" class="text-center" style="display:none">
+    <p><span class="glyphicon glyphicon-flash"></span> 
+    [@s.text name="message.sectionSaved"]
+      [@s.param]<span class="person"></span>[/@s.param]
+      [@s.param] <a href="#" onclick="location.reload()">click here</a> [/@s.param]
+    [/@s.text]
+    </p>
   </div>
-[/#if]
-
-[#-- Privileges Message --]
-[#if !canEdit && !transaction?? && !submission ]
-  <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-[/#if] 
-
-[#-- Completed Message--]
-[#if canSubmit && !submission && completed]
-  <div class="completed-mode text-center animated flipInX">
-    <p>[@s.text name="message.completed" /]</p>
+  
+  [#-- Concurrence Hidden Block --]
+  <div id="concurrenceBlock" class="text-center" style="display:none">
+    <div class="layer"></div>
+    <div class="content">
+      <span class="glyphicon glyphicon-lock"></span>
+      <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=nameParameter value=parameterID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+    </div> 
   </div>
+  
+  [#-- Draft Message --]
+  [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 [/#if]
-
-[#-- Concurrence Message --]
-<div id="concurrenceMessage" class="text-center" style="display:none">
-  <p><span class="glyphicon glyphicon-flash"></span> 
-  [@s.text name="message.sectionSaved"]
-    [@s.param]<span class="person"></span>[/@s.param]
-    [@s.param] <a href="#" onclick="location.reload()">click here</a> [/@s.param]
-  [/@s.text]
-  </p>
-</div>
-
-[#-- Concurrence Hidden Block --]
-<div id="concurrenceBlock" class="text-center" style="display:none">
-  <div class="layer"></div>
-  <div class="content">
-    <span class="glyphicon glyphicon-lock"></span>
-    <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=nameParameter value=parameterID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
-  </div> 
-</div>
-
-[#-- Draft Message --]
-[#include "/WEB-INF/global/macros/draftMessage.ftl" /]

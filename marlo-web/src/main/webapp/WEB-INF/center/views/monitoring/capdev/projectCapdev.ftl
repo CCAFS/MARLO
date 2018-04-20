@@ -23,8 +23,8 @@
   {"label":"projectCapdev", "nameSpace":"/monitoring", "action":""}]/]
   
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/pages/header.ftl" /]
-[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/macros/capdevListTemplate.ftl" as capdevList /]
 [#-- Help text --]
@@ -69,4 +69,4 @@
 
 
 
-[#include "/WEB-INF/center/pages/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]

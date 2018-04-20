@@ -47,6 +47,7 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
   @Expose
   private BigDecimal value;
 
+
   @Expose
   private CenterImpact researchImpact;
 
@@ -63,19 +64,22 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
   @Expose
   private String shortName;
 
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
+
+
   private Set<CenterMilestone> researchMilestones = new HashSet<CenterMilestone>(0);
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   private Set<CenterMonitoringOutcome> monitoringOutcomes = new HashSet<CenterMonitoringOutcome>(0);
 
-
   private List<CenterMilestone> milestones;
 
   private List<CenterMonitoringOutcome> monitorings;
 
-  private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
 
+  private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
 
   public CenterOutcome() {
   }
@@ -108,10 +112,10 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     return milestones;
   }
 
-
   public Set<CenterMonitoringOutcome> getMonitoringOutcomes() {
     return monitoringOutcomes;
   }
+
 
   public List<CenterMonitoringOutcome> getMonitorings() {
     return monitorings;
@@ -128,7 +132,6 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     return researchMilestones;
   }
 
-
   /**
    * @return the researchTopic
    */
@@ -140,8 +143,13 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     return sectionStatuses;
   }
 
+
   public String getShortName() {
     return shortName;
+  }
+
+  public SrfTargetUnit getSrfTargetUnit() {
+    return srfTargetUnit;
   }
 
   public CenterTargetUnit getTargetUnit() {
@@ -176,7 +184,6 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     this.description = description;
   }
 
-
   public void setImpactPathway(boolean impactPathway) {
     this.impactPathway = impactPathway;
   }
@@ -208,6 +215,7 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     this.researchMilestones = researchMilestones;
   }
 
+
   /**
    * @param researchTopic the researchTopic to set
    */
@@ -219,9 +227,13 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     this.sectionStatuses = sectionStatuses;
   }
 
-
   public void setShortName(String shortName) {
     this.shortName = shortName;
+  }
+
+
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
 

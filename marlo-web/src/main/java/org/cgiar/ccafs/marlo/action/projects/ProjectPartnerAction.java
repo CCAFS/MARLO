@@ -1248,6 +1248,7 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setPhase(projectPartnerDB.getPhase());
             projectPartnerDB.setPartnerPersons(projectPartnerClient.getPartnerPersons());
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
+            projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }

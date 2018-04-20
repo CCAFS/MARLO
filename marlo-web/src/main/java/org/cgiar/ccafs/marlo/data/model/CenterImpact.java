@@ -45,7 +45,8 @@ public class CenterImpact extends MarloAuditableEntity implements Serializable, 
 
 
   @Expose
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
+
 
   @Expose
   private String color;
@@ -63,8 +64,8 @@ public class CenterImpact extends MarloAuditableEntity implements Serializable, 
 
   private Set<CenterOutcome> researchOutcomes = new HashSet<CenterOutcome>(0);
 
-  private Set<CenterImpactObjective> researchImpactObjectives = new HashSet<>(0);
 
+  private Set<CenterImpactObjective> researchImpactObjectives = new HashSet<>(0);
 
   private Set<CenterImpactBeneficiary> researchImpactBeneficiaries = new HashSet<CenterImpactBeneficiary>(0);
 
@@ -174,10 +175,8 @@ public class CenterImpact extends MarloAuditableEntity implements Serializable, 
     return researchOutcomes;
   }
 
-  /**
-   * @return the researchProgram
-   */
-  public CenterProgram getResearchProgram() {
+
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
 
@@ -247,10 +246,7 @@ public class CenterImpact extends MarloAuditableEntity implements Serializable, 
     this.researchOutcomes = researchOutcomes;
   }
 
-  /**
-   * @param researchProgram the researchProgram to set
-   */
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 

@@ -81,20 +81,19 @@ public class SendMailS {
     // Get a Properties object
     Properties properties = System.getProperties();
     if (ccEmail != null) {
+      Set<String> noRepeatEmails = new HashSet<>();
       ccEmail = ccEmail.replaceAll(", " + toEmail, "");
-
+      String[] ccEmails = ccEmail.split(", ");
+      ccEmail = new String();
+      for (String string : ccEmails) {
+        noRepeatEmails.add(string.trim());
+      }
+      for (String string : noRepeatEmails) {
+        ccEmail = ccEmail + ", " + string;
+      }
     }
-    String[] ccEmails = ccEmail.split(", ");
 
-    ccEmail = new String();
-    Set<String> noRepeatEmails = new HashSet<>();
 
-    for (String string : ccEmails) {
-      noRepeatEmails.add(string.trim());
-    }
-    for (String string : noRepeatEmails) {
-      ccEmail = ccEmail + ", " + string;
-    }
     // properties.put("mail.smtp.auth", "true");
     // properties.put("mail.smtp.starttls.enable", "true");
     // properties.put("mail.smtp.ssl.trust", config.getEmailHost());
