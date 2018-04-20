@@ -47,8 +47,8 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   private Set<ProjectPartnerPartnershipLocation> projectPartnerPartnershipLocations =
     new HashSet<ProjectPartnerPartnershipLocation>(0);
   private List<ProjectPartnerPartnershipLocation> partnershipLocations = new ArrayList<>();
-  private List<String> partnershipLocationsIds = new ArrayList<>();
-  private String partnershipLocationsIdsText;
+  private List<String> partnershipLocationsIsos = new ArrayList<>();
+  private String partnershipLocationsIsosText;
 
 
   public ProjectPartnerPartnership() {
@@ -125,12 +125,12 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   }
 
 
-  public List<String> getPartnershipLocationsIds() {
-    return partnershipLocationsIds;
+  public List<String> getPartnershipLocationsIsos() {
+    return partnershipLocationsIsos;
   }
 
-  public String getPartnershipLocationsIdsText() {
-    return partnershipLocationsIdsText;
+  public String getPartnershipLocationsIsosText() {
+    return partnershipLocationsIsosText;
   }
 
   public ProjectPartner getProjectPartner() {
@@ -205,13 +205,13 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   }
 
 
-  public void setPartnershipLocationsIds(List<String> partnershipLocationsIds) {
-    this.partnershipLocationsIds = partnershipLocationsIds;
+  public void setPartnershipLocationsIsos(List<String> partnershipLocationsIsos) {
+    this.partnershipLocationsIsos = partnershipLocationsIsos;
   }
 
 
-  public void setPartnershipLocationsIdsText(String partnershipLocationsIdsText) {
-    this.partnershipLocationsIdsText = partnershipLocationsIdsText;
+  public void setPartnershipLocationsIsosText(String partnershipLocationsIsosText) {
+    this.partnershipLocationsIsosText = partnershipLocationsIsosText;
   }
 
 

@@ -350,6 +350,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighlight.projectHighligthCountries)";
   public static final String PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighlight.projectHighligthsTypes)";
+  public static final String PROJECT_PARTNER_PARTNERSHIP_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership.projectPartnerPartnershipLocations)";
 
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String PROJECT_SCAPE_GLOBAL = "3";
@@ -564,6 +566,9 @@ public final class APConstants {
   public static final String DELIVERABLE_RULE_DATA_LICENSE = "dataLicense";
   public static final String DELIVERABLE_RULE_COMPILANCE_CHECK = "complianceCheck";
   public static final String DELIVERABLE_RULE_JORNAL_ARTICLES = "journalArticles";
+
+  public static final String PROJECT_PARTNER_PARTNERSHIP_GLOBAL = "Global";
+  public static final String PROJECT_PARTNER_PARTNERSHIP_REGIONAL = "Regional";
 
 
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
