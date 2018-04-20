@@ -48,9 +48,6 @@
         
         [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
           
-          
-          <strong>STUDIES NEW!</strong>
-          
           [#-- Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudiestitle" /]</h3>
           <div id="caseStudiesBlock" class="simpleBox">
