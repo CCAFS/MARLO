@@ -16,7 +16,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-public class CenterSectionStatus extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
+public class CenterSectionStatus extends MarloSoftDeleteableEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -5830242271701358980L;

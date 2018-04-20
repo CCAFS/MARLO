@@ -475,7 +475,6 @@ public class OutcomesAction extends BaseAction {
           selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
           outcomes = selectedProgram.getOutcomes();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
-          selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
           selectedProgram.setBaseLine(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getBaseLine());
 
           selectedProgram.setCrp(loggedCrp);
@@ -558,8 +557,6 @@ public class OutcomesAction extends BaseAction {
 
 
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      selectedProgram.setActiveSince(new Date());
-      selectedProgram.setModifiedBy(this.getCurrentUser());
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       selectedProgram.setModificationJustification(this.getJustification());
@@ -624,16 +621,9 @@ public class OutcomesAction extends BaseAction {
         CrpAssumption crpAssumptionDB = null;
         if (crpAssumptionDetached.getId() == null) {
           crpAssumptionDB = new CrpAssumption();
-          crpAssumptionDB.setActive(true);
-          crpAssumptionDB.setCreatedBy(this.getCurrentUser());
-          crpAssumptionDB.setActiveSince(new Date());
-
         } else {
           crpAssumptionDB = crpAssumptionManager.getCrpAssumptionById(crpAssumptionDetached.getId());
         }
-
-        crpAssumptionDB.setModifiedBy(this.getCurrentUser());
-        crpAssumptionDB.setModificationJustification("");
 
         crpAssumptionDB.setCrpOutcomeSubIdo(crpOutcomeSubIdoDB);
 
@@ -684,10 +674,6 @@ public class OutcomesAction extends BaseAction {
       if (crpProgramOutcomeDetached.getId() == null) {
 
         crpProgramOutcomeDB = new CrpProgramOutcome();
-
-        crpProgramOutcomeDB.setActive(true);
-        crpProgramOutcomeDB.setCreatedBy(this.getCurrentUser());
-        crpProgramOutcomeDB.setActiveSince(new Date());
         crpProgramOutcomeDB.setPhase(this.getActualPhase());
       } else {
         crpProgramOutcomeDB = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcomeDetached.getId());
@@ -704,8 +690,6 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcomeDetached.setFile(null);
       }
       crpProgramOutcomeDB.setFile(crpProgramOutcomeDetached.getFile());
-      crpProgramOutcomeDB.setModifiedBy(this.getCurrentUser());
-      crpProgramOutcomeDB.setModificationJustification("");
       crpProgramOutcomeDB.setIndicators(crpProgramOutcomeDetached.getIndicators());
       crpProgramOutcomeDB.setMilestones(crpProgramOutcomeDetached.getMilestones());
       crpProgramOutcomeDB.setSubIdos(crpProgramOutcomeDetached.getSubIdos());
@@ -745,9 +729,6 @@ public class OutcomesAction extends BaseAction {
         CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDB = null;
         if (crpProgramOutcomeIndicatorDetached.getId() == null) {
           crpProgramOutcomeIndicatorDB = new CrpProgramOutcomeIndicator();
-          crpProgramOutcomeIndicatorDB.setActive(true);
-          crpProgramOutcomeIndicatorDB.setCreatedBy(this.getCurrentUser());
-          crpProgramOutcomeIndicatorDB.setActiveSince(new Date());
           crpProgramOutcomeIndicatorDB.setComposeID(crpProgramOutcomeIndicatorDetached.getComposeID());
         } else {
           crpProgramOutcomeIndicatorDB = crpProgramOutcomeIndicatorManager
@@ -756,9 +737,6 @@ public class OutcomesAction extends BaseAction {
 
         crpProgramOutcomeIndicatorDB.setCrpProgramOutcome(crpProgramOutcomeDB);
         crpProgramOutcomeIndicatorDB.setIndicator(crpProgramOutcomeIndicatorDetached.getIndicator());
-
-        crpProgramOutcomeIndicatorDB.setModifiedBy(this.getCurrentUser());
-        crpProgramOutcomeIndicatorDB.setModificationJustification("");
 
         crpProgramOutcomeIndicatorDB =
           crpProgramOutcomeIndicatorManager.saveCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDB);
@@ -791,9 +769,6 @@ public class OutcomesAction extends BaseAction {
         CrpMilestone crpMilestoneDB = null;
         if (crpMilestoneDetached.getId() == null) {
           crpMilestoneDB = new CrpMilestone();
-          crpMilestoneDB.setActive(true);
-          crpMilestoneDB.setCreatedBy(this.getCurrentUser());
-          crpMilestoneDB.setActiveSince(new Date());
           crpMilestoneDB.setComposeID(crpMilestoneDetached.getComposeID());
 
         } else {
@@ -806,8 +781,6 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneDB.setTitle(crpMilestoneDetached.getTitle());
         crpMilestoneDB.setValue(crpMilestoneDetached.getValue());
         crpMilestoneDB.setYear(crpMilestoneDetached.getYear());
-        crpMilestoneDB.setModifiedBy(this.getCurrentUser());
-        crpMilestoneDB.setModificationJustification("");
 
         crpMilestoneDB = crpMilestoneManager.saveCrpMilestone(crpMilestoneDB);
       }
@@ -852,17 +825,9 @@ public class OutcomesAction extends BaseAction {
         if (crpOutcomeSubIdoDetached.getId() == null) {
 
           crpOutcomeSubIdoDB = new CrpOutcomeSubIdo();
-
-          crpOutcomeSubIdoDB.setActive(true);
-          crpOutcomeSubIdoDB.setCreatedBy(this.getCurrentUser());
-          crpOutcomeSubIdoDB.setActiveSince(new Date());
-
         } else {
           crpOutcomeSubIdoDB = crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(crpOutcomeSubIdoDetached.getId());
         }
-
-        crpOutcomeSubIdoDB.setModifiedBy(this.getCurrentUser());
-        crpOutcomeSubIdoDB.setModificationJustification("");
 
         crpOutcomeSubIdoDB.setContribution(crpOutcomeSubIdoDetached.getContribution());
         crpOutcomeSubIdoDB.setCrpProgramOutcome(crpProgramOutcomeDB);

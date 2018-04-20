@@ -30,7 +30,7 @@ public class CenterProjectStatus extends MarloAuditableEntity implements java.io
 
   public CenterProjectStatus(Long id, boolean active) {
     this.setId(id);
-    this.setActive(true);
+    this.setActive(active);
   }
 
 

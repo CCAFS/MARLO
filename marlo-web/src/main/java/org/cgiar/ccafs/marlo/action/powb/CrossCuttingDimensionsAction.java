@@ -52,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -360,11 +359,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
         if (powbSynthesis.getPowbCrossCuttingDimension() == null && this.isPMU()) {
 
           PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
-          crossCutting.setActive(true);
-          crossCutting.setActiveSince(new Date());
-          crossCutting.setCreatedBy(this.getCurrentUser());
-          crossCutting.setModifiedBy(this.getCurrentUser());
-          crossCutting.setModificationJustification("");
 
           // create one to one relation
           powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
@@ -427,8 +421,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

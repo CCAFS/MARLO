@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,13 +58,8 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   public void cloneExpectedStudyProject(ExpectedStudyProject expectedStudyProjectAdd,
     ExpectedStudyProject expectedStudyProject, ProjectExpectedStudy projectExpectedStudy,
     ProjectExpectedStudy projectExpectedStudyAdd, Phase phase) {
-    expectedStudyProjectAdd.setActive(true);
-    expectedStudyProjectAdd.setActiveSince(projectExpectedStudy.getActiveSince());
     expectedStudyProjectAdd.setProjectExpectedStudy(projectExpectedStudyAdd);
-    expectedStudyProjectAdd.setCreatedBy(projectExpectedStudy.getCreatedBy());
     expectedStudyProjectAdd.setMyProject(expectedStudyProject.getMyProject());
-    expectedStudyProjectAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
-    expectedStudyProjectAdd.setModifiedBy(projectExpectedStudy.getModifiedBy());
 
   }
 
@@ -78,9 +72,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
    */
   public void cloneProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudyAdd,
     ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-    projectExpectedStudyAdd.setActive(true);
-    projectExpectedStudyAdd.setActiveSince(new Date());
-    projectExpectedStudyAdd.setCreatedBy(projectExpectedStudy.getCreatedBy());
     projectExpectedStudyAdd.setComments(projectExpectedStudy.getComments());
     projectExpectedStudyAdd.setComposedId(projectExpectedStudy.getComposedId());
     projectExpectedStudyAdd.setOtherType(projectExpectedStudy.getOtherType());
@@ -88,8 +79,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     projectExpectedStudyAdd.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
     projectExpectedStudyAdd.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
     projectExpectedStudyAdd.setTopicStudy(projectExpectedStudy.getTopicStudy());
-    projectExpectedStudyAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
-    projectExpectedStudyAdd.setModifiedBy(projectExpectedStudy.getCreatedBy());
     projectExpectedStudyAdd.setPhase(phase);
     projectExpectedStudyAdd.setProject(projectDAO.find(projectExpectedStudy.getProject().getId()));
 
@@ -184,8 +173,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
         if (projectExpectedStudy.getProjects().stream()
           .filter(c -> c.getMyProject().getId().equals(expectedStudyProject.getMyProject().getId()))
           .collect(Collectors.toList()).isEmpty()) {
-          expectedStudyProject.setActive(false);
-          expectedStudyProjectDAO.save(expectedStudyProject);
+          expectedStudyProjectDAO.deleteExpectedStudyProject(expectedStudyProject.getId());
         }
 
       }

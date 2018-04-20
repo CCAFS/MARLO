@@ -232,10 +232,6 @@ public class ProjectListAction extends BaseAction {
     projectID = project.getId();
 
     globalUnitProject = new GlobalUnitProject();
-    globalUnitProject.setActive(true);
-    globalUnitProject.setActiveSince(new Date());
-    globalUnitProject.setModifiedBy(this.getCurrentUser());
-    globalUnitProject.setCreatedBy(this.getCurrentUser());
     globalUnitProject.setGlobalUnit(loggedCenter);
     globalUnitProject.setProject(project);
     globalUnitProject.setOrigin(false);
@@ -255,10 +251,6 @@ public class ProjectListAction extends BaseAction {
     Phase phase = this.getCurrentCenterPhase();
 
     Project project = new Project();
-    project.setCreatedBy(this.getCurrentUser());
-    project.setModifiedBy(this.getCurrentUser());
-    project.setActive(true);
-    project.setActiveSince(new Date());
     project.setCreateDate(new Date());
     project = projectManager.saveProject(project);
     projectID = project.getId();
@@ -271,10 +263,6 @@ public class ProjectListAction extends BaseAction {
     centerProject.setOcsCode(syncCode.trim());
 
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
-    globalUnitProject.setActive(true);
-    globalUnitProject.setActiveSince(new Date());
-    globalUnitProject.setModifiedBy(this.getCurrentUser());
-    globalUnitProject.setCreatedBy(this.getCurrentUser());
     globalUnitProject.setGlobalUnit(loggedCenter);
     globalUnitProject.setProject(project);
     globalUnitProject.setOrigin(true);
@@ -296,8 +284,6 @@ public class ProjectListAction extends BaseAction {
     projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
     projectInfo.setAdministrative(new Boolean(false));
     projectInfo.setPhase(phase);
-    projectInfo.setModifiedBy(this.getCurrentUser());
-    projectInfo.setModificationJustification("");
     projectInfo.setProject(project);
 
     projectInfo = projectInfoManager.saveProjectInfo(projectInfo);
@@ -376,11 +362,6 @@ public class ProjectListAction extends BaseAction {
     // CenterFundingSourceType fundingSourceType = centerFundingTypeManager.getFundingSourceTypeById(fundingtypeID);
     // fundingSource.setCenterFundingSourceType(fundingSourceType);
     //
-    // fundingSource.setActive(true);
-    // fundingSource.setCreatedBy(this.getCurrentUser());
-    // fundingSource.setModifiedBy(this.getCurrentUser());
-    // fundingSource.setActiveSince(new Date());
-    //
     // centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
@@ -426,10 +407,6 @@ public class ProjectListAction extends BaseAction {
     Phase phase = this.getCurrentCenterPhase();
 
     Project project = new Project();
-    project.setCreatedBy(this.getCurrentUser());
-    project.setModifiedBy(this.getCurrentUser());
-    project.setActive(true);
-    project.setActiveSince(new Date());
 
     CenterProject centerProject = new CenterProject();
     centerProject.setStartDate(new Date());
@@ -462,10 +439,6 @@ public class ProjectListAction extends BaseAction {
 
 
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
-    globalUnitProject.setActive(true);
-    globalUnitProject.setActiveSince(new Date());
-    globalUnitProject.setModifiedBy(this.getCurrentUser());
-    globalUnitProject.setCreatedBy(this.getCurrentUser());
     globalUnitProject.setGlobalUnit(loggedCenter);
     globalUnitProject.setProject(project);
     globalUnitProject.setOrigin(true);
@@ -483,8 +456,6 @@ public class ProjectListAction extends BaseAction {
     projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
     projectInfo.setAdministrative(new Boolean(false));
     projectInfo.setPhase(phase);
-    projectInfo.setModifiedBy(this.getCurrentUser());
-    projectInfo.setModificationJustification("");
     projectInfo.setProject(project);
 
     projectInfo = projectInfoManager.saveProjectInfo(projectInfo);
@@ -734,9 +705,8 @@ public class ProjectListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(rl -> rl.isActive()
-              && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()))
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream().filter(
+            rl -> rl.isActive() && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()))
             .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();

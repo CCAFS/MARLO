@@ -46,7 +46,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -337,11 +336,6 @@ public class ManagementGovernanceAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getPowbManagementGovernance() == null) {
           PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
-          managementGovernance.setActive(true);
-          managementGovernance.setActiveSince(new Date());
-          managementGovernance.setCreatedBy(this.getCurrentUser());
-          managementGovernance.setModifiedBy(this.getCurrentUser());
-          managementGovernance.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setPowbManagementGovernance(managementGovernance);
           managementGovernance.setPowbSynthesis(powbSynthesis);
@@ -400,8 +394,6 @@ public class ManagementGovernanceAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

@@ -85,7 +85,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,11 +230,6 @@ public class ProjectPartnerAction extends BaseAction {
       .collect(Collectors.toList());
 
     if (userCrp == null || userCrp.isEmpty()) {
-      crpUser.setActive(true);
-      crpUser.setActiveSince(new Date());
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
   }
@@ -505,9 +499,6 @@ public class ProjectPartnerAction extends BaseAction {
           config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
         message.append(this.getText("email.bye"));
 
-        // Saving the new user configuration.
-        // user.setActive(true);
-        // userManager.saveUser(user, this.getCurrentUser());
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
         mapUser.put("password", password);
@@ -1247,26 +1238,14 @@ public class ProjectPartnerAction extends BaseAction {
           ProjectPartner projectPartnerDB = null;
           if (projectPartnerClient.getId() == null) {
 
-
-            projectPartnerClient.setActive(true);
-
-            projectPartnerClient.setCreatedBy(this.getCurrentUser());
-            projectPartnerClient.setModifiedBy(this.getCurrentUser());
-            projectPartnerClient.setModificationJustification("");
-            projectPartnerClient.setActiveSince(new Date());
             projectPartnerClient.setProject(project);
             projectPartnerClient.setPhase(this.getActualPhase());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerClient);
           } else {
             projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
-            projectPartnerDB.setActive(true);
             projectPartnerDB.setProject(project);
-            projectPartnerDB.setCreatedBy(projectPartnerDB.getCreatedBy());
             projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
-            projectPartnerDB.setModifiedBy(this.getCurrentUser());
-            projectPartnerDB.setModificationJustification("");
             projectPartnerDB.setPhase(projectPartnerDB.getPhase());
-            projectPartnerDB.setActiveSince(projectPartnerDB.getActiveSince());
             projectPartnerDB.setPartnerPersons(projectPartnerClient.getPartnerPersons());
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
@@ -1325,9 +1304,6 @@ public class ProjectPartnerAction extends BaseAction {
 
       this.updateRoles(previousCoordinators, project.getCoordinatorPersons(this.getActualPhase()), pcRole);
       // project = projectManager.getProjectById(projectID);
-      projectDB.setActiveSince(new Date());
-      projectDB.setCreatedBy(this.getCurrentUser());
-      projectDB.setModifiedBy(this.getCurrentUser());
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
@@ -1405,11 +1381,6 @@ public class ProjectPartnerAction extends BaseAction {
           institutionLocationManager.findByLocation(locElement.getId(), projectPartnerClient.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
         partnerLocation.setInstitutionLocation(institutionLocation);
-        partnerLocation.setActive(true);
-        partnerLocation.setActiveSince(new Date());
-        partnerLocation.setCreatedBy(this.getCurrentUser());
-        partnerLocation.setModificationJustification("");
-        partnerLocation.setModifiedBy(this.getCurrentUser());
         partnerLocation.setProjectPartner(projectPartnerDB);
         partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
         LOG.debug("Saving : " + partnerLocation);
@@ -1422,11 +1393,6 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectPartner saveProjectPartner(ProjectPartner projectPartnerClient, Project projectDB) {
     if (projectPartnerClient.getId() == null) {
       // New entity
-      projectPartnerClient.setActive(true);
-      projectPartnerClient.setCreatedBy(this.getCurrentUser());
-      projectPartnerClient.setModifiedBy(this.getCurrentUser());
-      projectPartnerClient.setModificationJustification("");
-      projectPartnerClient.setActiveSince(new Date());
       projectPartnerClient.setProject(projectDB);
 
       projectPartnerClient = projectPartnerManager.saveProjectPartner(projectPartnerClient);
@@ -1434,10 +1400,7 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       // Existing entity
       ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
-      projectPartnerDB.setActive(true);
       projectPartnerDB.setProject(projectDB);
-      projectPartnerDB.setModifiedBy(this.getCurrentUser());
-      projectPartnerDB.setModificationJustification("");
       projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
       projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
       projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
@@ -1466,12 +1429,6 @@ public class ProjectPartnerAction extends BaseAction {
          * PartnerContributors
          */
         if (partnerContributionClient.getId() == null) {
-          partnerContributionClient.setActive(true);
-
-          partnerContributionClient.setCreatedBy(this.getCurrentUser());
-          partnerContributionClient.setModifiedBy(this.getCurrentUser());
-          partnerContributionClient.setModificationJustification("");
-          partnerContributionClient.setActiveSince(new Date());
           partnerContributionClient.setProjectPartner(projectPartnerClient);
           // This looks like we are setting the partnerContribution to the first PPA partner???
           if (partnerContributionClient.getProjectPartnerContributor().getId() == null) {
@@ -1502,12 +1459,6 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
 
       if (partnerPersonClient.getId() == null) {
-        partnerPersonClient.setActive(true);
-
-        partnerPersonClient.setCreatedBy(this.getCurrentUser());
-        partnerPersonClient.setModifiedBy(this.getCurrentUser());
-        partnerPersonClient.setModificationJustification("");
-        partnerPersonClient.setActiveSince(new Date());
         partnerPersonClient.setProjectPartner(projectPartnerDB);
         if (partnerPersonClient.getUser() == null || (partnerPersonClient.getUser().getId() == null
           || partnerPersonClient.getUser().getId().longValue() == -1)) {
@@ -1525,9 +1476,6 @@ public class ProjectPartnerAction extends BaseAction {
 
         ProjectPartnerPerson dbPerson =
           projectPartnerPersonManager.getProjectPartnerPersonById(partnerPersonClient.getId());
-        dbPerson.setActive(true);
-        dbPerson.setModifiedBy(this.getCurrentUser());
-        dbPerson.setModificationJustification("");
         dbPerson.setContactType(partnerPersonClient.getContactType());
         if (partnerPersonClient.getUser() == null || (partnerPersonClient.getUser().getId() == null
           || partnerPersonClient.getUser().getId().longValue() == -1)) {
@@ -1571,11 +1519,7 @@ public class ProjectPartnerAction extends BaseAction {
             .collect(Collectors.toList()).isEmpty()) {
             CrpUser crpUser = new CrpUser();
             crpUser.setUser(userDB);
-            crpUser.setActiveSince(new Date());
-            crpUser.setCreatedBy(this.getCurrentUser());
             crpUser.setCrp(loggedCrp);
-            crpUser.setModificationJustification("");
-            crpUser.setModifiedBy(this.getCurrentUser());
             crpUserManager.saveCrpUser(crpUser);
 
           }

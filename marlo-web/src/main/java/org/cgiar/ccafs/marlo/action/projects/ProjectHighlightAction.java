@@ -49,16 +49,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -488,10 +488,7 @@ public class ProjectHighlightAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION);
       relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_COUNTRY_RELATION);
       ProjectHighlight highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
-      highlight.setActiveSince(new Date());
-      highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
-      highlight.setCreatedBy(highlightDB.getCreatedBy());
       if (file != null) {
         highlight.setFile(this.getFileDB(highlightDB.getFile(), file, fileFileName, this.getHightlightImagePath()));
         LOG.info("HIGHTL IMAGE " + this.getHightlightImagePath() + "/" + fileFileName);
@@ -504,7 +501,6 @@ public class ProjectHighlightAction extends BaseAction {
         }
       }
 
-      highlight.setActive(true);
       for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
         .collect(Collectors.toList())) {
         if (!highlight.getTypesids().contains(String.valueOf(projectHighlightType.getIdType()))) {

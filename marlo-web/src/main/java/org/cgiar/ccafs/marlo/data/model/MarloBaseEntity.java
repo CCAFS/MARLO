@@ -34,28 +34,13 @@ public abstract class MarloBaseEntity {
   /**
    * Entities loaded from the database will override the value by calling the setActive method using reflection.
    */
-  @Expose
-  private boolean active = true;
-
-
   public Long getId() {
     return id;
-  }
-
-
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
   }
 
 
   public void setId(Long id) {
     this.id = id;
   }
-
 
 }

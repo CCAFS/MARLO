@@ -36,7 +36,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -176,13 +175,6 @@ public class FundingSourceAddAction extends BaseAction {
         .getBudgetTypeById(Long.parseLong(StringUtils.trim(parameters.get(TYPE).getMultipleValues()[0])));
     fundingSourceInfo.setBudgetType(budgetType);
 
-
-    fundingSource.setActive(true);
-    fundingSource.setActiveSince(new Date());
-    fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSourceInfo.setModificationJustification("");
-    fundingSource.setModifiedBy(this.getCurrentUser());
-    fundingSourceInfo.setModifiedBy(this.getCurrentUser());
     fundingSourceInfo.setPhase(this.getActualPhase());
 
 
@@ -255,11 +247,6 @@ public class FundingSourceAddAction extends BaseAction {
         if (hasYear && hasAmount) {
 
           fundingSourceBudget.setFundingSource(fundingSource);
-          fundingSourceBudget.setActive(true);
-          fundingSourceBudget.setActiveSince(new Date());
-          fundingSourceBudget.setCreatedBy(this.getCurrentUser());
-          fundingSourceBudget.setModificationJustification("");
-          fundingSourceBudget.setModifiedBy(this.getCurrentUser());
 
           fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
 

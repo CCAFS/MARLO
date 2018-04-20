@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -558,8 +557,6 @@ public class ProjectOutcomeAction extends BaseAction {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
-      projectOutcomeDB.setActiveSince(new Date());
       projectOutcomeDB.setPhase(this.getActualPhase());
       projectOutcomeDB.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
@@ -623,13 +620,7 @@ public class ProjectOutcomeAction extends BaseAction {
         if (projectCommunication != null) {
           if (projectCommunication.getId() == null || projectCommunication.getId() == -1L) {
             // New entity
-            projectCommunication.setCreatedBy(this.getCurrentUser());
-
-            projectCommunication.setActiveSince(new Date());
-            projectCommunication.setActive(true);
             projectCommunication.setProjectOutcome(projectOutcomeDB);
-            projectCommunication.setModifiedBy(this.getCurrentUser());
-            projectCommunication.setModificationJustification("");
 
             if (projectCommunication.getFile() != null) {
 
@@ -652,10 +643,7 @@ public class ProjectOutcomeAction extends BaseAction {
             ProjectCommunication projectCommunicationDB =
               projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
 
-            projectCommunicationDB.setActive(true);
             projectCommunicationDB.setProjectOutcome(projectOutcomeDB);
-            projectCommunicationDB.setModifiedBy(this.getCurrentUser());
-            projectCommunicationDB.setModificationJustification("");
 
             if (projectCommunication.getFile() != null) {
 
@@ -702,13 +690,7 @@ public class ProjectOutcomeAction extends BaseAction {
         if (projectOutcomeIndicator != null) {
           if (projectOutcomeIndicator.getId() == null) {
             // Create new entity
-            projectOutcomeIndicator.setCreatedBy(this.getCurrentUser());
-
-            projectOutcomeIndicator.setActiveSince(new Date());
-            projectOutcomeIndicator.setActive(true);
             projectOutcomeIndicator.setProjectOutcome(projectOutcomeDB);
-            projectOutcomeIndicator.setModifiedBy(this.getCurrentUser());
-            projectOutcomeIndicator.setModificationJustification("");
 
             projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicator);
 
@@ -717,11 +699,7 @@ public class ProjectOutcomeAction extends BaseAction {
             ProjectOutcomeIndicator projectOutcomeIndicatorDB =
               projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
 
-            projectOutcomeIndicatorDB.setActive(true);
             projectOutcomeIndicatorDB.setProjectOutcome(projectOutcomeDB);
-
-            projectOutcomeIndicatorDB.setModifiedBy(this.getCurrentUser());
-            projectOutcomeIndicatorDB.setModificationJustification("");
 
             // update existing fields
             projectOutcomeIndicatorDB.setNarrative(projectOutcomeIndicator.getNarrative());
@@ -759,13 +737,8 @@ public class ProjectOutcomeAction extends BaseAction {
         if (projectMilestone != null) {
           // Add new entity
           if (projectMilestone.getId() == null) {
-            projectMilestone.setCreatedBy(this.getCurrentUser());
 
-            projectMilestone.setActiveSince(new Date());
-            projectMilestone.setActive(true);
             projectMilestone.setProjectOutcome(projectOutcomeDB);
-            projectMilestone.setModifiedBy(this.getCurrentUser());
-            projectMilestone.setModificationJustification("");
 
             if (projectMilestone.getExpectedUnit() != null) {
               if (projectMilestone.getExpectedUnit().getId() == null
@@ -780,10 +753,7 @@ public class ProjectOutcomeAction extends BaseAction {
             ProjectMilestone projectMilestoneDB =
               projectMilestoneManager.getProjectMilestoneById(projectMilestone.getId());
 
-            projectMilestoneDB.setActive(true);
             projectMilestoneDB.setProjectOutcome(projectOutcomeDB);
-            projectMilestoneDB.setModifiedBy(this.getCurrentUser());
-            projectMilestoneDB.setModificationJustification("");
             /**
              * Set fields from non managed entity to managed entity (double check if these fields are editable in the
              * client)
@@ -834,13 +804,7 @@ public class ProjectOutcomeAction extends BaseAction {
         if (projectNextuser != null) {
           if (projectNextuser.getId() == null) {
             // Create new entity
-            projectNextuser.setCreatedBy(this.getCurrentUser());
-
-            projectNextuser.setActiveSince(new Date());
-            projectNextuser.setActive(true);
             projectNextuser.setProjectOutcome(projectOutcomeDB);
-            projectNextuser.setModifiedBy(this.getCurrentUser());
-            projectNextuser.setModificationJustification("");
 
             projectNextuserManager.saveProjectNextuser(projectNextuser);
 
@@ -848,10 +812,7 @@ public class ProjectOutcomeAction extends BaseAction {
             // Update existing entity
             ProjectNextuser projectNextuserDB = projectNextuserManager.getProjectNextuserById(projectNextuser.getId());
 
-            projectNextuserDB.setActive(true);
             projectNextuserDB.setProjectOutcome(projectOutcomeDB);
-            projectNextuserDB.setModifiedBy(this.getCurrentUser());
-            projectNextuserDB.setModificationJustification("");
 
             // update existing fields
             projectNextuserDB.setKnowledge(projectNextuser.getKnowledge());
@@ -886,10 +847,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
     if (this.isPlanningActive()) {
       // projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-      projectOutcome.setActive(true);
-      projectOutcome.setModifiedBy(this.getCurrentUser());
-      projectOutcome.setCreatedBy(this.getCurrentUser());
-      projectOutcome.setActiveSince(new Date());
       projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
       projectOutcome.setProject(project);
       if (projectOutcome.getExpectedUnit() != null) {
@@ -904,7 +861,6 @@ public class ProjectOutcomeAction extends BaseAction {
       // projectOutcome.setId(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
 
-      projectOutcome.setModificationJustification("");
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     }

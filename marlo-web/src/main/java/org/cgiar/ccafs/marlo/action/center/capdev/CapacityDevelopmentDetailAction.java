@@ -55,7 +55,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -215,9 +214,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     for (CapdevParticipant obj : listOfParticipants) {
       capdevParicipantService.deleteCapdevParticipant(obj.getId());
       Participant participant = obj.getParticipant();
-      participant.setActive(false);
-      participant.setModifiedBy(this.getCurrentUser());
-      participantService.saveParticipant(participant);
+      participantService.deleteParticipant(participant.getId());
     }
     capdev.setNumParticipants(null);
     capdev.setNumMen(null);
@@ -485,10 +482,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       participant.setEmail((String) data[i][8]);
       participant.setInstitutionsSuggested((String) data[i][9]);
-
-
-      participant.setActive(true);
-      participant.setCreatedBy(currentUser);
 
       participantList.add(participant);
     }
@@ -958,11 +951,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
-    }
-    participant.setActive(true);
-    participant.setAciveSince(new Date());
-    participant.setCreatedBy(this.getCurrentUser());
-    participant.setModifiedBy(this.getCurrentUser());
+    } ;
 
     participantService.saveParticipant(participant);
   }

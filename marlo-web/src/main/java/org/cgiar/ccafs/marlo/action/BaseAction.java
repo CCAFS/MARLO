@@ -498,12 +498,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (usersToActive != null) {
       for (Map<String, Object> userMap : usersToActive) {
         User user = (User) userMap.get("user");
+        /**
+         * Leaving this here for now as there is strangeness as to how users are set active and inactive that needs to
+         * be sorted out.
+         */
         user.setActive(true);
         if (!user.isCgiarUser()) {
           user.setPassword(userMap.get("password").toString());
         }
 
-        userManager.saveUser(user, this.getCurrentUser());
+        userManager.saveUser(user);
       }
     }
 
@@ -1222,10 +1226,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase phase = phaseManager.getPhaseById(phaseID);
 
     PowbSynthesis synthesis = new PowbSynthesis();
-    synthesis.setActive(true);
-    synthesis.setActiveSince(new Date());
-    synthesis.setCreatedBy(this.getCurrentUser());
-    synthesis.setModifiedBy(this.getCurrentUser());
     synthesis.setPhase(phase);
     synthesis.setLiaisonInstitution(liaisonInstitution);
 
@@ -5203,12 +5203,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-      project.getProjectComponentLesson().setActive(true);
-      project.getProjectComponentLesson().setActiveSince(new Date());
       project.getProjectComponentLesson().setComponentName(actionName);
-      project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-      project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-      project.getProjectComponentLesson().setModificationJustification("");
       project.getProjectComponentLesson().setProject(project);
 
       project.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
@@ -5239,12 +5234,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectComponentLesson projectComponenetLesson = projectOutcome.getProjectComponentLesson();
         projectComponenetLesson.setId(null);
 
-        projectComponenetLesson.setActive(true);
-        projectComponenetLesson.setActiveSince(new Date());
         projectComponenetLesson.setComponentName(actionName);
-        projectComponenetLesson.setCreatedBy(this.getCurrentUser());
-        projectComponenetLesson.setModifiedBy(this.getCurrentUser());
-        projectComponenetLesson.setModificationJustification("");
         projectComponenetLesson.setProjectOutcome(projectOutcome);
         projectComponenetLesson.setPhase(this.getActualPhase());
         projectComponenetLesson.setCycle(this.getActualPhase().getDescription());
@@ -5258,10 +5248,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectComponentLesson projectComponentDB =
           projectComponentLessonManager.getProjectComponentLessonById(projectComponenetLesson.getId());;
 
-        projectComponentDB.setActive(true);
         projectComponentDB.setComponentName(actionName);
-        projectComponentDB.setModifiedBy(this.getCurrentUser());
-        projectComponentDB.setModificationJustification("");
 
         projectOutcome.getProjectComponentLesson().setPhase(this.getActualPhase());
         projectOutcome.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
@@ -5283,13 +5270,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-
-    ipProgram.getProjectComponentLesson().setActive(true);
-    ipProgram.getProjectComponentLesson().setActiveSince(new Date());
     ipProgram.getProjectComponentLesson().setComponentName(actionName);
-    ipProgram.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-    ipProgram.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-    ipProgram.getProjectComponentLesson().setModificationJustification("");
     ipProgram.getProjectComponentLesson().setIpProgram(ipProgram);
     if (ipProgram.getProjectComponentLesson().getId().longValue() == -1) {
       ipProgram.getProjectComponentLesson().setId(null);

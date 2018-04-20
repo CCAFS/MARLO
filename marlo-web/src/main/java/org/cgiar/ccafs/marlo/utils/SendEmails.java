@@ -1,4 +1,5 @@
 package org.cgiar.ccafs.marlo.utils;
+
 import org.cgiar.ccafs.marlo.ApplicationContextConfig;
 import org.cgiar.ccafs.marlo.action.json.project.ProjectLeaderEditAction;
 import org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction;
@@ -269,6 +270,9 @@ public class SendEmails {
       user = userDAO.getUser(user.getId());
 
       if (!user.isActive()) {
+        /**
+         * So inactive users are being set to active once they are notified????
+         */
         user.setActive(true);
         // user = userDAO.saveUser(user);
         String toEmail = user.getEmail();
@@ -298,7 +302,8 @@ public class SendEmails {
           if (crpAdmins.isEmpty()) {
             crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
           } else {
-            crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+            crpAdmins +=
+              ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
           }
         }
 
@@ -307,9 +312,6 @@ public class SendEmails {
             password, action.getText("email.support", new String[] {crpAdmins})}));
         // message.append(action);
 
-        // Saving the new user configuration.
-        // user.setActive(true);
-        // userManager.saveUser(user, this.getCurrentUser());
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
         mapUser.put("password", password);

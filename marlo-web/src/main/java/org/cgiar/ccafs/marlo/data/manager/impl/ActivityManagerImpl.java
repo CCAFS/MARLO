@@ -92,13 +92,8 @@ public class ActivityManagerImpl implements ActivityManager {
    */
   public void cloneDeliverableActivity(DeliverableActivity deliverableActivityAdd,
     DeliverableActivity deliverableActivity, Activity activity, Activity activityAdd, Phase phase) {
-    deliverableActivityAdd.setActive(true);
-    deliverableActivityAdd.setActiveSince(activity.getActiveSince());
     deliverableActivityAdd.setActivity(activityAdd);
-    deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
     deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
-    deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
-    deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
     deliverableActivityAdd.setPhase(phase);
   }
 
@@ -247,8 +242,7 @@ public class ActivityManagerImpl implements ActivityManager {
         if (activity.getDeliverables().stream()
           .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())
           .isEmpty()) {
-          deliverableActivity.setActive(false);
-          deliverableActivityDAO.save(deliverableActivity);
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
 
       }

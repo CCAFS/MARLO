@@ -27,7 +27,7 @@ import com.google.gson.annotations.Expose;
  * @author GrantL
  */
 @MappedSuperclass
-public abstract class MarloAuditableEntity extends MarloBaseEntity {
+public abstract class MarloAuditableEntity extends MarloSoftDeleteableEntity {
 
 
   @Expose

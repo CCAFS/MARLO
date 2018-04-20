@@ -27,8 +27,6 @@ import java.util.List;
 
 public interface UserManager {
 
-  public User activeUser(User user, User modifiedBy);
-
   /**
    * This method gets the data of a Permissions identified with a given id.
    * 
@@ -99,10 +97,9 @@ public interface UserManager {
    * Create or update a user in the system by saving it into the the database.
    * 
    * @param user - The user information
-   * @param modifiedBy - is the user that is creating/updating the given user.
    * @return the id of the user id that was created, 0 if the user was updated and -1 if some error occurred.
    */
-  public User saveUser(User user, User modifiedBy);
+  public User saveUser(User user);
 
   /**
    * This method looks for the active users that contains the

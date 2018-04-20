@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -828,12 +827,6 @@ public class FundingSourceAction extends BaseAction {
       // FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
       // FundingSourceInfo funginsSourceInfoDB =
       // fundingSourceInfoManager.getFundingSourceInfoById(fundingSource.getFundingSourceInfo().getId());
-      // fundingSource.getFundingSourceInfo().setCreatedBy(this.getCurrentUser());
-      fundingSource.getFundingSourceInfo().setModifiedBy(this.getCurrentUser());
-      // fundingSource.getFundingSourceInfo().setActiveSince(new Date());
-      fundingSource.getFundingSourceInfo().setModifiedBy(this.getCurrentUser());
-      fundingSource.getFundingSourceInfo().setModificationJustification("");
-
 
       // if donor has a select option, no option put donor null
       if (fundingSource.getFundingSourceInfo().getDirectDonor() != null
@@ -935,23 +928,11 @@ public class FundingSourceAction extends BaseAction {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
 
           if (fundingSourceBudget.getId() == null) {
-            fundingSourceBudget.setActive(true);
-            fundingSourceBudget.setCreatedBy(this.getCurrentUser());
-            fundingSourceBudget.setModifiedBy(this.getCurrentUser());
-            fundingSourceBudget.setModificationJustification("");
             fundingSourceBudget.setFundingSource(fundingSource);
-            fundingSourceBudget.setActiveSince(new Date());
             fundingSourceBudget.setPhase(this.getActualPhase());
             fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           } else {
-            FundingSourceBudget fundingSourceBudgetBD =
-              fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
-            fundingSourceBudget.setActive(true);
             fundingSourceBudget.setFundingSource(fundingSource);
-            fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
-            fundingSourceBudget.setModifiedBy(this.getCurrentUser());
-            fundingSourceBudget.setModificationJustification("");
-            fundingSourceBudget.setActiveSince(new Date());
             fundingSourceBudget.setPhase(this.getActualPhase());
             fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           }
@@ -1019,8 +1000,6 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoManager.saveFundingSourceInfo(fundingSource.getFundingSourceInfo());
 
       fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-      fundingSource.setModifiedBy(this.getCurrentUser());
-      fundingSource.setActiveSince(new Date());
       fundingSourceManager.saveFundingSource(fundingSource, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
@@ -1102,11 +1081,6 @@ public class FundingSourceAction extends BaseAction {
         if (fundingSourceLocation.getId() == null || fundingSourceLocation.getId() == -1) {
 
           FundingSourceLocation fundingSourceLocationSave = new FundingSourceLocation();
-          fundingSourceLocationSave.setActive(true);
-          fundingSourceLocationSave.setActiveSince(new Date());
-          fundingSourceLocationSave.setCreatedBy(this.getCurrentUser());
-          fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
-          fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
           fundingSourceLocationSave.setPhase(this.getActualPhase());
           fundingSourceLocationSave.setPercentage(fundingSourceLocation.getPercentage());
@@ -1153,11 +1127,6 @@ public class FundingSourceAction extends BaseAction {
         if (fundingSourceLocation.getId() == null || fundingSourceLocation.getId() == -1) {
 
           FundingSourceLocation fundingSourceLocationSave = new FundingSourceLocation();
-          fundingSourceLocationSave.setActive(true);
-          fundingSourceLocationSave.setActiveSince(new Date());
-          fundingSourceLocationSave.setCreatedBy(this.getCurrentUser());
-          fundingSourceLocationSave.setModifiedBy(this.getCurrentUser());
-          fundingSourceLocationSave.setModificationJustification("");
           fundingSourceLocationSave.setFundingSource(fundingSourceDB);
           fundingSourceLocationSave.setPhase(this.getActualPhase());
           LocElement locElement =

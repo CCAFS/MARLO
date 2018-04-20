@@ -88,9 +88,6 @@ public class PublicationListAction extends BaseAction {
     if (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params))) {
       Deliverable deliverable = new Deliverable();
 
-      deliverable.setCreatedBy(this.getCurrentUser());
-      deliverable.setActive(true);
-      deliverable.setActiveSince(new Date());
       deliverable.setCrp(loggedCrp);
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
@@ -102,7 +99,6 @@ public class PublicationListAction extends BaseAction {
       deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
       DeliverableInfo deliverableInfo = new DeliverableInfo();
       deliverableInfo.setYear(this.getCurrentCycleYear());
-      deliverableInfo.setModifiedBy(this.getCurrentUser());
       deliverableInfo.setDeliverable(deliverable);
       deliverableInfo.setPhase(this.getActualPhase());
       deliverableInfo.setModificationJustification("New publication created");

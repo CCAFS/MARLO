@@ -52,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -706,8 +705,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -777,23 +774,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void saveBudget(ProjectBudget projectBudget) {
 
     if (projectBudget.getId() == null) {
-      projectBudget.setCreatedBy(this.getCurrentUser());
 
-      projectBudget.setActiveSince(new Date());
-      projectBudget.setActive(true);
       projectBudget.setProject(project);
-      projectBudget.setModifiedBy(this.getCurrentUser());
-      projectBudget.setModificationJustification("");
       projectBudget.setPhase(this.getActualPhase());
     } else {
-      ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
-      projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
       projectBudget.setPhase(this.getActualPhase());
-      projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
-      projectBudget.setActive(true);
       projectBudget.setProject(project);
-      projectBudget.setModifiedBy(this.getCurrentUser());
-      projectBudget.setModificationJustification("");
     }
 
 
