@@ -55,8 +55,6 @@
             </a>
           </small>
           
-          <strong>STUDY NEW!</strong>
-          
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
           <div id="caseStudiesBlock" class="">
@@ -105,20 +103,21 @@
     <div class="borderBox">
       [#-- 1. Title (up to 20 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" required=true editable=editable /]
+        [@customForm.input name="${customName}.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=false required=true editable=editable /]
       </div>
       
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.outcomeStatement" i18nkey="study.outcomeStatement" help="study.outcomeStatement.help" className="limitWords-80" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.outcomeStatement" i18nkey="study.outcomeStatement" help="study.outcomeStatement.help" className="limitWords-80" helpIcon=false required=true editable=editable /]
       </div>
 
       [#-- 3. Link to Common Results Reporting Indicator #I3 --]
       <div class="form-group">
         [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
         <div class="form-group">
-          <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /]</label>
-          <p><small>[@s.text name="study.reportingIndicatorThree.help" /]</small></p>
+          <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /]
+            [@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]
+          </label>
           [@customForm.radioFlat id="reportingIndicatorThree-yes" name="${name}.reportingIndicatorThree.value" label="Yes" value="true" checked=false cssClass="" cssClassLabel="radio-label-yes"/]
           [@customForm.radioFlat id="reportingIndicatorThree-no" name="${name}.reportingIndicatorThree.value" label="No" value="false" checked=false cssClass="" cssClassLabel="radio-label-no"/]
         </div>
@@ -150,8 +149,10 @@
       
       [#-- 4.  Maturity of change reported (tick-box)  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable /]</label>
-        <p><small>[@s.text name="study.maturityChange.help" /]  [@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]</small></p>
+        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable /]
+          [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/]
+          [@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
+        </label>
         <div class="form-group">
           <p>[@customForm.radioFlat id="maturityChange-1" name="${name}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/]</p> 
           <p>[@customForm.radioFlat id="maturityChange-2" name="${name}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel=""/]</p>
@@ -161,8 +162,9 @@
 
       [#-- 5. Links to the Strategic Results Framework  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]</label>
-        <p><small>[@s.text name="study.stratgicResultsLink.help" /]</small></p>
+        <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]
+          [@customForm.helpLabel name="study.stratgicResultsLink.help" showIcon=false editable=editable/]
+        </label>
         
         [#-- Sub IDOs  --]
         <div class="form-group simpleBox">
@@ -270,18 +272,30 @@
 
       [#-- 8. Elaboration of Outcome/Impact Statement  --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.elaborationStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" className="limitWords-400" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.elaborationStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=true editable=editable /]
       </div>
       
       [#-- 9. References cited  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.referencesCited" /]:</label>
-        <p><small>[@s.text name="study.referencesCited.help" /]</small></p>
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.referencesCited" i18nkey="study.referencesCited" help="study.referencesCited.help" helpIcon=false className="" required=true editable=editable /]
+        </div>
+        <div class="form-group" style="position:relative" listname="">
+          [@customForm.fileUploadAjax 
+            fileDB=(element.referencesCitedAttach.file)!{} 
+            name="${customName}.referencesCitedAttach.file.id" 
+            label="study.referencesCitedAttach" 
+            dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+            path="${(action.getPath(caseStudyID))!}"
+            isEditable=editable
+            labelClass="label-min-width"
+          /]
+        </div>
       </div>
       
       [#-- 10. Quantification (where data is available)  --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.quantification" i18nkey="study.quantification" help="study.quantification.help" className=" " required=true editable=editable /]
+        [@customForm.textArea name="${customName}.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=true editable=editable /]
       </div>
       
       [#-- 11. Gender, Youth, and Capacity Development  --]
@@ -291,24 +305,26 @@
           { "name": "1 - Significant" },
           { "name": "2 - Principal" }
         ] /]
-        <label for="">[@s.text name="study.crossCuttingRelevance" /]:</label>
+        <label for="">[@s.text name="study.crossCuttingRelevance" /]:
+          [@customForm.helpLabel name="study.crossCuttingRelevance.help" showIcon=false editable=editable/]
+        </label>
         [#-- Gender --]
         <div class="simpleBox">
-          [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" help="study.achievementsGenderRelevance.help" className="limitWords-100" required=true editable=editable /]
+          [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
           [#list ccDimensions as cc]
             [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
           [/#list]
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
-          [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance" help="study.achievementsYouthRelevance.help" className="limitWords-100" required=true editable=editable /]
+          [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
           [#list ccDimensions as cc]
             [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
           [/#list]
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
-          [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance" help="study.achievementsCapDevRelevance.help" className="limitWords-100" required=true editable=editable /]
+          [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
           [#list ccDimensions as cc]
             [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
           [/#list]
@@ -318,17 +334,31 @@
       
       [#-- 12. Other cross-cutting dimensions   --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.otherCrossCutting" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" className="limitWords-100" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.otherCrossCutting" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=true editable=editable /]
       </div>
       
       [#-- 13. Communications materials    --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.communicationMaterials" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" className=" " required=true editable=editable /]
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.communicationMaterials" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=true editable=editable /]
+        </div>
+        
+        <div class="form-group" style="position:relative" listname="">
+          [@customForm.fileUploadAjax 
+            fileDB=(element.communicationMaterialsAttach.file)!{} 
+            name="${customName}.communicationMaterialsAttach.file.id" 
+            label="study.communicationMaterialsAttach" 
+            dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+            path="${(action.getPath(caseStudyID))!}"
+            isEditable=editable
+            labelClass="label-min-width"
+          /]
+        </div>
       </div>
 
       [#-- 14. Contact person    --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.contacts" i18nkey="study.contacts" help="study.contacts.help" className=" " required=true editable=editable /]
+        [@customForm.textArea name="${customName}.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=true editable=editable /]
       </div>
     </div>
     
