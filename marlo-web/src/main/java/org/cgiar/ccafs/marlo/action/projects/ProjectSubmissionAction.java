@@ -118,7 +118,8 @@ public class ProjectSubmissionAction extends BaseAction {
           this.submitProject();
           complete = true;
         } else {
-          Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
+          long submissionId = submissions.get(0).getId();
+          Submission submission = submissionManager.getSubmissionById(submissionId);
           submission.setUser(userManager.getUser(submission.getUser().getId()));
           this.setSubmission(submission);
           complete = true;
