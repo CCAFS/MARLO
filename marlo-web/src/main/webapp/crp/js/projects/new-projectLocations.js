@@ -25,12 +25,13 @@ function init() {
 
 function attachEvents() {
 
-  /** Array countries * */
-  // From other countries
+  /** Array countries **/
+  // From countries in locations table
   $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
     countries.push($(e).find(".locElementCountry").val());
   });
 
+  // From suggested countries
   if( $('.locationLevel[data-name="Country"] .suggestedCountriesList').find('.locations').exists() ){
     $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
   }
@@ -68,7 +69,7 @@ function attachEvents() {
   });
 
 
-  /** Remove region option from region select */
+  /** Remove region option from region select **/
   var regionSelect = $("#regionSelect");
   $(".regionsContent").find(".recommended.locElement").each(function(i,e) {
     if($(e).find(".recommendedSelected").val() == "true") {
@@ -91,30 +92,30 @@ function attachEvents() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addRegion(option);
-      // Remove option from select
-      // option.remove();
+      // Disable option from select
       option.prop('disabled', true);
       $('#regionSelect').select2();
-      // $(this).trigger("select2:change");
     }
   });
 
   //Events
   $("#locLevelSelect").on("change",function() {
     var option = $(this).find("option:selected");
+    //If the selected option is "Select an option" or "Climate Smart Village" hide the center indicator in the map
     if(option.val() == "-1" || option.val().split("-")[0] == "10"){
-      //If the selected option is "Climate Smart Village" hide the center indicator in the map
       $('#map .centerMarker').hide();
     }else{
       $('#map .centerMarker').show();
     }
+    // When the selected option is "Select an option" hide the form
     if(option.val() == "-1") {
       $("#addLocationButton").hide("slow");
       $(".locationForm-container .selectLocations").hide("slow");
       $(".locationForm-container .inputFormCoordinates-container").hide("slow");
     } else {
+      // Show the add location button
       $("#addLocationButton").show("slow");
-      console.log(option.val());
+      // If is list, get the available options in select
       if(option.val().split("-")[1] == "true") {
         // LocElements options using ajax
         var select = $("#countriesCmvs");
@@ -137,10 +138,12 @@ function attachEvents() {
                     + m.locElements[i].name + "</option>");
               }
             });
+        // Show the form for list inputs (Country - CSV)
         $("#inputFormWrapper").slideUp();
         $(".selectLocations").slideDown();
 
       } else {
+        // Show the form for name, latitude and longitude inputs
         $(".selectLocations").slideUp();
         $("#inputFormWrapper").slideDown();
       }
@@ -148,9 +151,12 @@ function attachEvents() {
 
   });
 
+  // Commented here
+
+  // Add the modal buttons listeners
   modalButtonsListeners();
 
-  // Clicking recommended location
+  // Clicking recommended location checkbox
   $('.recommendedLocName, .iconSelected').on('click',function() {
     var parent = $(this).parent();
     var selectedInput = parent.find("input.recommendedSelected");

@@ -190,14 +190,13 @@
                   
                   [#-- LOCATION LIST --]
                   <div class="col-md-12">
-                    [#-- Add new location (Modal) --]
+                    [#-- START Add new location (Modal) --]
                     <div id="addLocationModal" class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                           <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                           
                           <div class="locationForm-container">
-                            [#-- <div class="title">Adding a new location</div> --]
                             <h3 class="title">[@s.text name="projectLocations.addingNewLocation" /]</h3>
                             <hr />
                               <div class="form-group col-md-7">
@@ -217,7 +216,7 @@
                                 <label for="">[@s.text name="projectLocations.selectLocations" /]</label>
                                 <select name="" data-placeholder="[@s.text name="projectLocations.selectPlaceholder" /]" id="countriesCmvs" multiple="true"></select>
                               </div>
-                              [#-- Location name -Lat -Lon --]
+                              [#-- Location name -Latitude -Longitude --]
                               <div id="inputFormWrapper" class="inputFormCoordinates-container" style="display:none;">
                                 <div class="nameWrapper"><label for="">[@s.text name="projectLocations.locationName" /]:</label><input placeholder="Name (Required)" class="name form-control" type="text" /></div>
                                 <div class="latitudeWrapper"><label for="">[@s.text name="projectLocations.latitude" /]:</label><input placeholder="[@s.text name="projectLocations.latitude" /]" class="latitude form-control" type="text" value="" /></div>
@@ -234,6 +233,7 @@
                             </div>
                           </div>
                           
+                          [#-- Add location MAP --]
                           <div class="map-container col-md-5">
                             <div id="add-location-map" class="col-md-12 map">
                               <input id="pac-input" class="controls" type="text" placeholder="Search Box">
@@ -245,12 +245,12 @@
                       </div>
                     </div>
                     [#-- END Add new location (Modal) --]
-                    [#-- All locations map(Modal) --]
+                    [#-- START All locations map (Modal) --]
                     <div id="allLocationsModal" class="modal fade allLocationsModal" tabindex="-1" role="dialog" aria-labelledby="allLocations" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                           <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          
+                          [#-- All locations list --]
                           <div class="allLocations-container">
                             <h3 class="title">[@s.text name="projectLocations.allLocations" /]</h3>
                             <hr />
@@ -262,19 +262,18 @@
                               [/#list]
                             [/#if]
                             </div>
-                            
                           </div>
+                          [#-- All locations MAP --]
                           <div class="map-container col-md-9">
                             <div id="all-locations-map" class="col-md-12 map">
-                              [#-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> --]
-                              [#-- <div id="all-locations-map" class="col-md-12"></div> --]
                             </div>
                           </div>
                           
                         </div>
                       </div>
                     </div>
-                    [#-- END All locations map(Modal) --]
+                    [#-- END All locations map (Modal) --]
+                    [#-- Locations list table --]
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
                         <table class="locationsDataTable">
@@ -290,6 +289,7 @@
                         </table>
                       </div>
                     </div>
+                  [#-- Add new location button --]
                   [#if editable && action.hasSpecificities('crp_other_locations')]
                     <span id="addNewLocation-button" class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
                   [/#if]
@@ -463,7 +463,7 @@
     </li>
 </ul>
 
-[#-- location element template --]
+[#-- location element template (table) --]
 <div id="suggestedLocation-template" class="col-md-4" style="display:none">
   <div class="locations col-md-12">
     <div id="" class="locationName">
