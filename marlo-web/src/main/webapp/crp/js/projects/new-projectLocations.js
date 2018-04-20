@@ -722,7 +722,7 @@ function removeLocationItem() {
   var $item = $(this).parents('.locElement');
   var locLevel= $item.parents('.locationLevel').attr('data-name');
 
-  var countryList = $(".list-container").find("h4[name='"+locLevel+"']").parent();
+  var locLevelList = $(".list-container").find("h4[name='"+locLevel+"']").parent();
 
   if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
     var optionValue = $item.attr("id").split('-');
@@ -736,13 +736,20 @@ function removeLocationItem() {
   $item.hide(function() {
     // Remove unmarked location from locations list (all locations modal)
     var locId = $item.attr('data-locId');
-    countryList.find("#"+locId).remove();
+    locLevelList.find("#"+locId).remove();
 
     $item.remove();
 
-    if($(list).find(".locElement").length == 0 && $(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0) {
-      $(list).parents(".locationLevel").remove();
-      countryList.remove();
+    if($(list).find(".locElement").length == 0) {
+      if(locLevel=="Country"){
+        if($(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0){
+          $(list).parents(".locationLevel").remove();
+          locLevelList.remove();
+        }
+      }else{
+        $(list).parents(".locationLevel").remove();
+        locLevelList.remove();
+      }
 
       if($(".locationsDataTable").find(".locationLevel").length == 0){
         $("#selectsContent").find("#noLocationsAdded").show();
@@ -974,7 +981,6 @@ function setMapCenterPosition($item,locId,locName,countID){
   });
 }
 
-// here
 //Adding locElement into location level(Country and CSVS)
 function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
