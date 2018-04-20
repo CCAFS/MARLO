@@ -35,6 +35,9 @@
         <many-to-one name="youthFocusLevel" class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel" fetch="select">
             <column name="youth_focus_level_id" />
         </many-to-one>
+        <many-to-one name="projectExpectedStudy" class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
+            <column name="project_expected_studies_id" />
+        </many-to-one>
         <property name="title" type="string">
             <column name="title" length="65535" />
         </property>
@@ -52,6 +55,9 @@
         </property>
         <property name="youthExplaniation" type="string">
             <column name="youth_explaniation" length="65535" />
+        </property>
+        <property name="year" type="java.lang.Long">
+            <column name="year" />
         </property>
     </class>
 </hibernate-mapping>

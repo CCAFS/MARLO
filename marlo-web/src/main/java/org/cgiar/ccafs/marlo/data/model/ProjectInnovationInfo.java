@@ -10,13 +10,16 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 6466188559245022941L;
+
 
   @Expose
   private Long id;
 
   @Expose
   private ProjectInnovation projectInnovation;
+
 
   @Expose
   private RepIndPhaseResearchPartnership repIndPhaseResearchPartnership;
@@ -60,17 +63,35 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private String youthExplaniation;
 
+  @Expose
+  private Long year;
+
+  @Expose
+  private ProjectExpectedStudy projectExpectedStudy;
 
   public ProjectInnovationInfo() {
   }
 
+  public ProjectInnovationInfo(ProjectInnovation projectInnovation, Phase phase, String title, String narrative,
+    String novel, String evidenceLink, String genderExplaniation, String youthExplaniation, Long year) {
+    super();
+    this.projectInnovation = projectInnovation;
+    this.phase = phase;
+    this.title = title;
+    this.narrative = narrative;
+    this.novel = novel;
+    this.evidenceLink = evidenceLink;
+    this.genderExplaniation = genderExplaniation;
+    this.youthExplaniation = youthExplaniation;
+    this.year = year;
+  }
 
   public ProjectInnovationInfo(ProjectInnovation projectInnovation,
     RepIndPhaseResearchPartnership repIndPhaseResearchPartnership, RepIndStageInnovation repIndStageInnovation,
     Phase phase, RepIndRegion repIndRegion, RepIndInnovationType repIndInnovationType,
     RepIndGeographicScope repIndGeographicScope, RepIndGenderYouthFocusLevel genderFocusLevel,
     RepIndGenderYouthFocusLevel youthFocusLevel, String title, String narrative, String novel, String evidenceLink,
-    String genderExplaniation, String youthExplaniation) {
+    String genderExplaniation, String youthExplaniation, Long year) {
     super();
     this.projectInnovation = projectInnovation;
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
@@ -87,6 +108,7 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.evidenceLink = evidenceLink;
     this.genderExplaniation = genderExplaniation;
     this.youthExplaniation = youthExplaniation;
+    this.year = year;
   }
 
 
@@ -148,6 +170,11 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
   }
 
 
+  public ProjectExpectedStudy getProjectExpectedStudy() {
+    return projectExpectedStudy;
+  }
+
+
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
@@ -172,12 +199,19 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     return repIndRegion;
   }
 
+
   public RepIndStageInnovation getRepIndStageInnovation() {
     return repIndStageInnovation;
   }
 
+
   public String getTitle() {
     return title;
+  }
+
+
+  public Long getYear() {
+    return year;
   }
 
   public String getYouthExplaniation() {
@@ -221,6 +255,10 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
+  public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
+    this.projectExpectedStudy = projectExpectedStudy;
+  }
+
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
@@ -241,7 +279,6 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.repIndRegion = repIndRegion;
   }
 
-
   public void setRepIndStageInnovation(RepIndStageInnovation repIndStageInnovation) {
     this.repIndStageInnovation = repIndStageInnovation;
   }
@@ -249,6 +286,11 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public void setYear(Long year) {
+    this.year = year;
   }
 
 
@@ -285,6 +327,8 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.setEvidenceLink(projectInnovationInfoUpdate.getEvidenceLink());
     this.setGenderExplaniation(projectInnovationInfoUpdate.getGenderExplaniation());
     this.setYouthExplaniation(projectInnovationInfoUpdate.getYouthExplaniation());
+    this.setYear(projectInnovationInfoUpdate.getYear());
+    this.setProjectExpectedStudy(projectInnovationInfoUpdate.getProjectExpectedStudy());
 
   }
 

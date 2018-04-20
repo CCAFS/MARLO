@@ -258,5 +258,8 @@
     <mapping resource="xmls/ProjectInnovationInfo.hbm.xml"/>
     <mapping resource="xmls/ProjectPartnerPartnerships.hbm.xml"/>
     <mapping resource="xmls/ProjectPartnerPartnershipLocation.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationCountries.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationDeliverables.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationOrganizations.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
