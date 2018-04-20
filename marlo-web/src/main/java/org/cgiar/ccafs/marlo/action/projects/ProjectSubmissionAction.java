@@ -44,7 +44,9 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -323,7 +325,11 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setLoggedCrp(loggedCrp);
       reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
       reportingSummaryAction.setProjectID(projectID);
-      reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
+      Project project = projectManager.getProjectById(projectID);
+      Set<Submission> submissions = new HashSet<>();
+      submissions.add(this.getSubmission());
+      project.setSubmissions(submissions);
+      reportingSummaryAction.setProject(project);
       reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
       reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
         reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));

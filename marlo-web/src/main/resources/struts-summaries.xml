@@ -22,6 +22,15 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
+		
+		<action name="impactPathwaySubmissions"
+      class="org.cgiar.ccafs.marlo.action.center.summaries.ImpactSubmissionSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
 
 	</package>
 

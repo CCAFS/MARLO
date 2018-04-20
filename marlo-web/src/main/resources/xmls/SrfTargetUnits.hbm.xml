@@ -58,6 +58,20 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
 		</set>
+		<set lazy="true" name="centerOutcomes" table="center_outcomes"
+      inverse="true" fetch="select">
+      <key>
+        <column name="srf_target_unit_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterOutcome" />
+    </set>
+    <set lazy="true" name="centerMilestones" table="center_milestones"
+      inverse="true" fetch="select">
+      <key>
+        <column name="srf_target_unit" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterMilestone" />
+    </set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

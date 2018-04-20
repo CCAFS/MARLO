@@ -73,6 +73,15 @@
       "action": "${crpSession}/LeveragesReportingSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
+    },
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.projectsList", 
+      "description": "summaries.board.report.projectsList.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/projectsSummary",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning", "Reporting" ]
     }
   ]},
   [#-- PARTNERS REPORTS --]
@@ -152,8 +161,8 @@
 ]/]
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <span class="hidden planningYear">${(action.getPlanningYear())!}</span>
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
@@ -189,7 +198,7 @@
   </article>
 </section>
 
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#macro reportMacro report]

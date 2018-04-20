@@ -41,19 +41,18 @@ public class CenterTopic extends MarloAuditableEntity implements Serializable, I
   @Expose
   private String researchTopic;
 
+
   /**
    * The research program related to this research topic or flagship project.
    */
   @Expose
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
 
   @Expose
   private String color;
 
-
   @Expose
   private String shortName;
-
 
   @Expose
   private Integer order;
@@ -91,10 +90,10 @@ public class CenterTopic extends MarloAuditableEntity implements Serializable, I
     return true;
   }
 
+
   public String getColor() {
     return color;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -103,23 +102,19 @@ public class CenterTopic extends MarloAuditableEntity implements Serializable, I
     return sb.toString();
   }
 
-
   public Integer getOrder() {
     return order;
   }
-
 
   public Set<CenterOutcome> getResearchOutcomes() {
     return researchOutcomes;
   }
 
 
-  /**
-   * @return the researchProgram
-   */
-  public CenterProgram getResearchProgram() {
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
+
 
   /**
    * @return the researchTopic
@@ -127,6 +122,7 @@ public class CenterTopic extends MarloAuditableEntity implements Serializable, I
   public String getResearchTopic() {
     return researchTopic;
   }
+
 
   public String getShortName() {
     return shortName;
@@ -144,19 +140,17 @@ public class CenterTopic extends MarloAuditableEntity implements Serializable, I
     this.color = color;
   }
 
+
   public void setOrder(Integer order) {
     this.order = order;
   }
+
 
   public void setResearchOutcomes(Set<CenterOutcome> researchOutcomes) {
     this.researchOutcomes = researchOutcomes;
   }
 
-
-  /**
-   * @param researchProgram the researchProgram to set
-   */
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 

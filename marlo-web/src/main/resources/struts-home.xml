@@ -3,16 +3,34 @@
 "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
   "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
+
+  <package name="homeJson" namespace="/" extends="json-default">
+  
+		 <action name="crpByEmail" class="org.cgiar.ccafs.marlo.action.json.global.CrpByUserEmailAction">
+	    <result type="json">
+	      <param name="noCache">true</param>
+	    </result>
+	   </action>
+	   
+	   <action name="validateUser"
+      class="org.cgiar.ccafs.marlo.action.json.global.ValidateUserAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+	   
+  </package>
 	<!-- Add addition packages and configuration here. -->
 	<package name="home" namespace="/" extends="marlo-default">
 
 		<action name="login" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="login">
-			<result name="input">/WEB-INF/crp/views/home/login.ftl</result>
+			<result name="input">/WEB-INF/global/views/login/login.ftl</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/crpDashboard</param>
+			   <param name="actionName">${crpSession}/crpDashboard</param>
 			</result>
-			<result name="login" type="redirect">${url}</result>
+		  <result name="login" type="redirect">${url}</result>
 		</action>
 
 		<action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest">
@@ -21,6 +39,7 @@
 			</result>
 		</action>
 
+	
 		<action name="testCIATOCS" class="org.cgiar.ccafs.marlo.action.TestCIATOCSAction">
 			<result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
 			<result name="input" type="httpheader">
@@ -35,7 +54,7 @@
 
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="logout">
-			<result name="success">/WEB-INF/crp/views/home/login.ftl</result>
+			<result name="success">/WEB-INF/global/views/login/login.ftl</result>
 		</action>
 
 		<action name="{*}/crpDashboard"

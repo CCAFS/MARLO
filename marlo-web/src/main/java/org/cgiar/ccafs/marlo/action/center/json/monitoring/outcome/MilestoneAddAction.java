@@ -135,7 +135,7 @@ public class MilestoneAddAction extends BaseAction {
         CenterMonitoringMilestone monitoringMilestone = new CenterMonitoringMilestone();
         monitoringMilestone.setResearchMilestone(milestone);
         monitoringMilestone.setMonitoringOutcome(monitoringOutcome);
-        monitoringMilestone.setModificationJustification("Added in Monitoring " + this.getCenterYear());
+        monitoringMilestone.setModificationJustification("Added in Monitoring " + this.getActualPhase().getYear());
 
         monitoringMilestone = monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestone);
         monitoringData.put("Elementid", monitoringMilestone.getId());

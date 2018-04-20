@@ -23,9 +23,9 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -55,12 +55,12 @@ public class DeliverableListAction extends BaseAction {
 
 
   private CenterArea selectedResearchArea;
-  private CenterProgram selectedProgram;
+  private CrpProgram selectedProgram;
   private GlobalUnit loggedCenter;
   private CenterProject project;
   private List<CenterDeliverable> deliverables;
   private List<CenterArea> researchAreas;
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
   private long programID;
   private long areaID;
   private long projectID;
@@ -168,15 +168,6 @@ public class DeliverableListAction extends BaseAction {
     return researchAreas;
   }
 
-
-  public List<CenterProgram> getResearchPrograms() {
-    return researchPrograms;
-  }
-
-  public CenterProgram getSelectedProgram() {
-    return selectedProgram;
-  }
-
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
   }
@@ -199,7 +190,7 @@ public class DeliverableListAction extends BaseAction {
 
     if (project != null) {
 
-      selectedProgram = project.getResearchProgram();
+      // selectedProgram = project.getResearchProgram();
       programID = selectedProgram.getId();
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
@@ -245,13 +236,6 @@ public class DeliverableListAction extends BaseAction {
     this.researchAreas = researchAreas;
   }
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
-    this.researchPrograms = researchPrograms;
-  }
-
-  public void setSelectedProgram(CenterProgram selectedProgram) {
-    this.selectedProgram = selectedProgram;
-  }
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;

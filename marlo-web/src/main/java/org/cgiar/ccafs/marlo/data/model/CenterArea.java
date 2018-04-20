@@ -51,17 +51,17 @@ public class CenterArea extends MarloAuditableEntity implements Serializable, IA
   @Expose
   private String color;
 
-  private Set<CenterProgram> researchPrograms = new HashSet<CenterProgram>(0);
+  private Set<CrpProgram> researchPrograms = new HashSet<CrpProgram>(0);
 
   private Set<CenterLeader> researchLeaders = new HashSet<CenterLeader>(0);
 
-  private List<CenterProgram> programs;
+
+  private List<CrpProgram> programs;
 
   private List<CenterLeader> leaders;
 
   public CenterArea() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -115,7 +115,7 @@ public class CenterArea extends MarloAuditableEntity implements Serializable, IA
     return name;
   }
 
-  public List<CenterProgram> getPrograms() {
+  public List<CrpProgram> getPrograms() {
     return programs;
   }
 
@@ -127,13 +127,10 @@ public class CenterArea extends MarloAuditableEntity implements Serializable, IA
     return researchLeaders;
   }
 
-
-  /**
-   * @return the researchPrograms
-   */
-  public Set<CenterProgram> getResearchPrograms() {
+  public Set<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
+
 
   @Override
   public int hashCode() {
@@ -169,7 +166,7 @@ public class CenterArea extends MarloAuditableEntity implements Serializable, IA
   }
 
 
-  public void setPrograms(List<CenterProgram> programs) {
+  public void setPrograms(List<CrpProgram> programs) {
     this.programs = programs;
   }
 
@@ -184,12 +181,10 @@ public class CenterArea extends MarloAuditableEntity implements Serializable, IA
   }
 
 
-  /**
-   * @param researchPrograms the researchPrograms to set
-   */
-  public void setResearchPrograms(Set<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(Set<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
+
 
   @Override
   public String toString() {

@@ -21,13 +21,21 @@ public class CenterDeliverableType extends MarloAuditableEntity implements java.
   private String name;
 
   @Expose
+  private String description;
+
+  @Expose
   private CenterDeliverableType deliverableType;
 
   private Set<CenterDeliverable> deliverables = new HashSet<CenterDeliverable>(0);
 
+  private Set<CenterDeliverableType> centerDeliverableTypes = new HashSet<CenterDeliverableType>(0);
+
   public CenterDeliverableType() {
   }
 
+  public Set<CenterDeliverableType> getCenterDeliverableTypes() {
+    return centerDeliverableTypes;
+  }
 
   public Set<CenterDeliverable> getDeliverables() {
     return deliverables;
@@ -36,6 +44,11 @@ public class CenterDeliverableType extends MarloAuditableEntity implements java.
 
   public CenterDeliverableType getDeliverableType() {
     return deliverableType;
+  }
+
+
+  public String getDescription() {
+    return description;
   }
 
 
@@ -50,6 +63,11 @@ public class CenterDeliverableType extends MarloAuditableEntity implements java.
     return name;
   }
 
+
+  public void setCenterDeliverableTypes(Set<CenterDeliverableType> centerDeliverableTypes) {
+    this.centerDeliverableTypes = centerDeliverableTypes;
+  }
+
   public void setDeliverables(Set<CenterDeliverable> deliverables) {
     this.deliverables = deliverables;
   }
@@ -58,6 +76,9 @@ public class CenterDeliverableType extends MarloAuditableEntity implements java.
     this.deliverableType = deliverableType;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
   public void setName(String name) {
     this.name = name;

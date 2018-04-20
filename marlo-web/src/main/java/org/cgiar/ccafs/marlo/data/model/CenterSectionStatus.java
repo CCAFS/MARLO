@@ -21,8 +21,7 @@ public class CenterSectionStatus extends MarloSoftDeleteableEntity implements ja
 
   private static final long serialVersionUID = -5830242271701358980L;
 
-  private CenterProgram researchProgram;
-
+  private CrpProgram researchProgram;
 
   private CenterOutcome researchOutcome;
   private CenterOutput researchOutput;
@@ -83,7 +82,7 @@ public class CenterSectionStatus extends MarloSoftDeleteableEntity implements ja
     return researchOutput;
   }
 
-  public CenterProgram getResearchProgram() {
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
 
@@ -123,7 +122,7 @@ public class CenterSectionStatus extends MarloSoftDeleteableEntity implements ja
     this.researchOutput = researchOutput;
   }
 
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 

@@ -9,7 +9,6 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -24,8 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-
-import java.util.Calendar;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -102,12 +99,12 @@ public class BaseValidator {
    * *******************************************************************************************
    * This method saves the missing fields into the database for a section at CapDev.
    * 
-   * @param program is a CenterProgram.
+   * @param program is a CrpProgram.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
   protected void saveMissingFields(CapacityDevelopment capacityDevelopment, String sectionName, BaseAction action) {
 
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByCapdev(capacityDevelopment.getId(), sectionName, year);
@@ -139,7 +136,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(CenterDeliverable deliverable, CapacityDevelopment capacityDevelopment,
     String sectionName, BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status = centerSectionStatusManager.getSectionStatusBySupDocs(deliverable.getId(),
       capacityDevelopment.getId(), sectionName, year);
@@ -167,13 +164,13 @@ public class BaseValidator {
    * *******************************************************************************************
    * This method saves the missing fields into the database for a section at Project - Deliverable.
    * 
-   * @param program is a CenterProgram.
+   * @param program is a CrpProgram.
    * @param project is a CenterProject.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
   protected void saveMissingFields(CenterDeliverable deliverable, CenterProject project, String sectionName,
     BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), project.getId(), sectionName, year);
@@ -200,13 +197,12 @@ public class BaseValidator {
    * *******************************************************************************************
    * This method saves the missing fields into the database for a section at ImpactPathway - Outcome.
    * 
-   * @param program is a CenterProgram.
+   * @param program is a CrpProgram.
    * @param outcome is a CenterOutcome.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, CenterOutcome outcome, String sectionName,
-    BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+  protected void saveMissingFields(CrpProgram program, CenterOutcome outcome, String sectionName, BaseAction action) {
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByOutcome(program.getId(), outcome.getId(), sectionName, year);
@@ -233,12 +229,12 @@ public class BaseValidator {
    * *******************************************************************************************
    * This method saves the missing fields into the database for a section at ImpactPathway - Output.
    * 
-   * @param program is a CenterProgram.
+   * @param program is a CrpProgram.
    * @param output is a CenterOutput.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, CenterOutput output, String sectionName, BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+  protected void saveMissingFields(CrpProgram program, CenterOutput output, String sectionName, BaseAction action) {
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByOutput(program.getId(), output.getId(), sectionName, year);
@@ -265,13 +261,12 @@ public class BaseValidator {
    * *******************************************************************************************
    * This method saves the missing fields into the database for a section at ImpactPathway - project.
    * 
-   * @param program is a CenterProgram.
+   * @param program is a CrpProgram.
    * @param project is a CenterProject.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, CenterProject project, String sectionName,
-    BaseAction action) {
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+  protected void saveMissingFields(CrpProgram program, CenterProject project, String sectionName, BaseAction action) {
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByProject(program.getId(), project.getId(), sectionName, year);
@@ -297,12 +292,12 @@ public class BaseValidator {
    * *******************************************************************************************
    * This method saves the missing fields into the database for a section at ImpactPathway.
    * 
-   * @param program is a CenterProgram.
+   * @param program is a CrpProgram.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, String sectionName, BaseAction action) {
+  protected void saveMissingFields(CrpProgram program, String sectionName, BaseAction action) {
 
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = action.getActualPhase().getYear();
 
     CenterSectionStatus status =
       centerSectionStatusManager.getSectionStatusByProgram(program.getId(), sectionName, year);

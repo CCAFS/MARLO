@@ -47,6 +47,9 @@
         </td>
           [#-- Project Title --]
           <td class="left">
+            [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
+              <span class="label label-warning">${(project.projectInfo.phase.crp.acronym)!}</span>
+            [/#if]
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.projectInfo.title?has_content]
@@ -59,20 +62,22 @@
             [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.startDate??)!false) ]
               <p><small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small></p>
             [/#if]
+            
           </td>
           [#-- Project Leader --]
+          [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
+            [#assign pLeader =  (project.getLeader(project.projectInfo.phase))! ]
+            [#assign pLeaderPerson =  (project.getLeaderPersonDB(project.projectInfo.phase))! ]
+          [#else]
+            [#assign pLeader =  (project.getLeader(action.getActualPhase()))! ]
+            [#assign pLeaderPerson =  (project.getLeaderPersonDB(action.getActualPhase()))! ]
+          [/#if]
           <td class=""> 
-            [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          
           <td class=""> 
-            [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          [#-- Project Type 
-          <td>
-            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
-          </td>
-          --]
           [#-- Flagship / Regions --]
           <td>
           [#if !project.projectInfo.administrative]
@@ -82,7 +87,13 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           [#else] 
-             <span class="programTag" style="border-color:#444">${(project.projectInfo.liaisonInstitution.crpProgram.acronym)!}</span>
+             <span class="programTag" style="border-color:#444">
+              [#if (project.liaisonInstitution.crpProgram.acronym??)!false]
+                ${project.liaisonInstitution.crpProgram.acronym}
+              [#else]
+                [@s.text name="global.pmu" /]
+              [/#if]
+            </span>
           [/#if]
           </td>
           [#if !reportingActive]
@@ -118,15 +129,6 @@
             [#assign completed = (action.isCompleteProject(project.id))!false /]
             [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
             
-            [#-- Check button 
-            [#if !submission ]
-              [#if canEdit && canSubmit && !completed]
-                <a id="validateProject-${project.id}" title="Check for missing fields" class="validateButton ${(project.type)!''}" href="#" >[@s.text name="form.buttons.check" /]</a>
-                <div id="progressbar-${project.id}" class="progressbar" style="display:none"></div>
-              [/#if]
-            [/#if]
-            --] 
-            
             [#-- Submit button --]
             [#if submission]
               <p title="Submitted">Submitted</p>
@@ -144,13 +146,7 @@
                 <p title="Ready for project leader completion">Ready for PL</p>
               [/#if]
             [/#if]
-            
-            
           </td>
-          [#-- Track completition of entry --]
-          [#if isPlanning]
-          <td> <a href="#">Complete / Incomplete</a></td>
-          [/#if]
           [#-- Summary PDF download --]
           <td>
             [#if true]
@@ -178,8 +174,6 @@
     </tbody>
   </table>
 [/#macro]
-
-
 
 
 [#macro projectsListArchived projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
@@ -271,6 +265,7 @@
     </tbody>
   </table>
 [/#macro]
+
 [#macro evaluationProjects projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="evaluation"]
   <table class="evaluationProjects" id="projects">
     <thead> 

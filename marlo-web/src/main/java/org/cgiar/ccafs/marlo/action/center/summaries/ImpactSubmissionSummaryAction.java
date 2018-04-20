@@ -17,17 +17,17 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -79,15 +79,15 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
   // PDF bytes
   private byte[] bytesPDF;
   // Services
-  private ICenterProgramManager programService;
+  private CrpProgramManager programService;
   private ICenterCycleManager cycleService;
   // Params
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
   private CenterCycle researchCycle;
   private long startTime;
 
   @Inject
-  public ImpactSubmissionSummaryAction(APConfig config, ICenterProgramManager programService,
+  public ImpactSubmissionSummaryAction(APConfig config, CrpProgramManager programService,
     ICenterCycleManager cycleService) {
     super(config);
     this.programService = programService;
@@ -326,8 +326,9 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
 
     // Filling submission
     List<CenterSubmission> submissions = new ArrayList<>();
-    for (CenterSubmission submission : researchProgram.getSubmissions().stream()
-      .filter(s -> s.getResearchCycle().getId() == researchCycle.getId() && s.getYear() == this.getCenterYear())
+    for (CenterSubmission submission : researchProgram.getCenterSubmissions().stream()
+      .filter(
+        s -> s.getResearchCycle().getId() == researchCycle.getId() && s.getYear() == this.getActualPhase().getYear())
       .collect(Collectors.toList())) {
       submissions.add(submission);
     }
@@ -343,8 +344,8 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
       impactSubmission = "Submitted on " + submissionDate + " (" + fisrtSubmission.getResearchCycle().getName()
         + " cycle " + fisrtSubmission.getYear() + ")";
     } else {
-      impactSubmission =
-        "Center Submission for " + researchCycle.getName() + " cycle " + this.getCenterYear() + ": &lt;pending&gt;";
+      impactSubmission = "Center Submission for " + researchCycle.getName() + " cycle "
+        + this.getActualPhase().getYear() + ": &lt;pending&gt;";
     }
 
     // Get CIAT imgage URL from repo
@@ -418,7 +419,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
           programImpact = "&lt;Not Defined&gt;";
         }
         if (researchOutcome.getTargetUnit() != null) {
-          targetUnit = researchOutcome.getTargetUnit().getName();
+          targetUnit = researchOutcome.getSrfTargetUnit().getName();
         }
         if (targetUnit.isEmpty()) {
           targetUnit = "&lt;Not Defined&gt;";
@@ -578,7 +579,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     return model;
   }
 
-  public CenterProgram getResearchProgram() {
+  public CrpProgram getResearchProgram() {
     return researchProgram;
   }
 
@@ -586,11 +587,11 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
   public void prepare() {
     long programID = -1;
     try {
-      programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
-      researchProgram = programService.getProgramById(programID);
+      programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+      researchProgram = programService.getCrpProgramById(programID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.CENTER_PROGRAM_ID
-        + " parameter. Parameter will be set as -1. Exception: " + e.getMessage());
+      LOG.error("Failed to get " + APConstants.CRP_PROGRAM_ID + " parameter. Parameter will be set as -1. Exception: "
+        + e.getMessage());
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
@@ -602,7 +603,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
     this.bytesPDF = bytesPDF;
   }
 
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 

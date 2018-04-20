@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.interceptor.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -44,7 +44,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
   private final ICenterOutcomeManager outcomeService;
 
-  private final ICenterProgramManager programService;
+  private final CrpProgramManager programService;
   private Map<String, Parameter> parameters;
 
   private Map<String, Object> session;
@@ -54,7 +54,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
   private long programID = -1;
 
   @Inject
-  public EditOutcomeInterceptor(ICenterOutcomeManager outcomeService, ICenterProgramManager programService) {
+  public EditOutcomeInterceptor(ICenterOutcomeManager outcomeService, CrpProgramManager programService) {
     this.outcomeService = outcomeService;
     this.programService = programService;
   }
@@ -99,21 +99,25 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
 
       programID = outcome.getResearchTopic().getResearchProgram().getId();
-      CenterProgram program = programService.getProgramById(programID);
+      CrpProgram program = programService.getCrpProgramById(programID);
 
       if (program != null) {
 
         areaID = program.getResearchArea().getId();
 
-        String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
+        // String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
         if (baseAction.canAccessSuperAdmin()) {
           canEdit = true;
         } else {
 
-          if (baseAction.hasPermissionCenter(
-            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+          if (baseAction.hasPermissionNoBase(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+            researchCenter.getAcronym(), programID + ""))) {
             canEdit = true;
           }
+          // if (baseAction.hasPermissionCenter(
+          // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+          // canEdit = true;
+          // }
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
@@ -128,8 +132,11 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
-            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+          // hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+          // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true
+            : baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+              researchCenter.getAcronym(), programID + ""));
         }
 
         if (baseAction.isSubmitIP(programID)) {

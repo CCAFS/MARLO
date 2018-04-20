@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -19,14 +20,39 @@ public class GlobalUnitType extends MarloAuditableEntity implements java.io.Seri
   private String name;
 
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
+  private List<GlobalUnit> globalUnitsList;
 
   private Set<Parameter> parameters = new HashSet<Parameter>(0);
 
   public GlobalUnitType() {
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    GlobalUnitType other = (GlobalUnitType) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
   public Set<GlobalUnit> getGlobalUnits() {
     return globalUnits;
+  }
+
+  public List<GlobalUnit> getGlobalUnitsList() {
+    return globalUnitsList;
   }
 
   public String getName() {
@@ -37,8 +63,20 @@ public class GlobalUnitType extends MarloAuditableEntity implements java.io.Seri
     return parameters;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
   public void setGlobalUnits(Set<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
+  }
+
+  public void setGlobalUnitsList(List<GlobalUnit> globalUnitsList) {
+    this.globalUnitsList = globalUnitsList;
   }
 
   public void setName(String name) {

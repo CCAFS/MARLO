@@ -57,6 +57,8 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
 
   private boolean autoSave;
 
+  private Boolean agreeTerms;
+
   private Date lastLogin;
 
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
@@ -71,18 +73,18 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
 
   private Set<LiaisonUser> liasonsUsers = new HashSet<LiaisonUser>(0);
 
-
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
+
   private Set<Submission> submissions = new HashSet<Submission>(0);
+
+
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
   private List<CrpUser> crpUser;
   // MARLO CIAT relations
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
-
   public User() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -106,6 +108,13 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return true;
   }
 
+  public Boolean getAgreeTerms() {
+    if (agreeTerms == null) {
+      return false;
+    }
+    return agreeTerms;
+  }
+
   /**
    * This method returns the user's full name.
    * 
@@ -116,11 +125,11 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.firstName + " " + this.lastName;
   }
 
+
   public String getComposedID() {
     String composedId = this.email.split("@")[0] + "-" + this.getId();
     return composedId;
   }
-
 
   /**
    * This method returns a composed way to show a User.
@@ -143,7 +152,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return crpProgramLeaders;
   }
 
-
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return crpSitesLeaders;
   }
@@ -152,6 +160,7 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
   public List<CrpUser> getCrpUser() {
     return crpUser;
   }
+
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
@@ -178,6 +187,7 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
   public String getLastName() {
     return this.lastName;
   }
+
 
   public Set<LiaisonUser> getLiasonsUsers() {
     return liasonsUsers;
@@ -210,7 +220,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.username;
   }
 
-
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
   }
@@ -224,13 +233,18 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return result;
   }
 
+
   public boolean isAutoSave() {
     return autoSave;
   }
 
-
   public boolean isCgiarUser() {
     return cgiarUser;
+  }
+
+
+  public void setAgreeTerms(Boolean agreeTerms) {
+    this.agreeTerms = agreeTerms;
   }
 
   public void setAutoSave(boolean autoSave) {

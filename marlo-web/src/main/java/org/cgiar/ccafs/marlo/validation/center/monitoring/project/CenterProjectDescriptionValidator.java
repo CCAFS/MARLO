@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.validation.center.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -62,7 +62,7 @@ public class CenterProjectDescriptionValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction baseAction, CenterProject project, CenterProgram selectedProgram, boolean saving) {
+  public void validate(BaseAction baseAction, CenterProject project, CrpProgram selectedProgram, boolean saving) {
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
