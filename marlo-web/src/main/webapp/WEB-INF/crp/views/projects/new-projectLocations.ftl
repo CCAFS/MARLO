@@ -90,7 +90,7 @@
                             [#list project.projectRegions as region]
                               <li id="" class="region clearfix col-md-3">
                                 [#if editable ]
-                                  <div class="removeRegion removeIcon" title="Remove region"></div>
+                                  <div class="removeRegion removeIcon" title="[@s.text name="projectLocations.removeRegion" /]"></div>
                                 [/#if]
                                   <input class="id" type="hidden" name="project.projectRegions[${region_index}].id" value="${region.id}" />
                                 [#if region.locElement?has_content ]
@@ -145,13 +145,16 @@
                 </div>
                 [#-- RECOMMENDED LOCATIONS --]
                 <div class="col-md-12">
-                  <h5 class="sectionSubTitle">Suggested Locations:</h5>
+                  <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedLocations" /]:</h5>
                   <label for="">[@s.text name="projectLocations.locationsBelow" /]:</label>
                   <div class="simpleBox col-md-12">
                     <div class="row recommendedList">
                       [#-- RECOMMENDED REGIONS LIST --]
                       [#if project.regionFS?has_content]
                       <div class="regionsContent" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
+                        <div class="col-md-12" >
+                          <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedRegions" /]:</h5>
+                        </div>
                         [#list project.regionFS as location]
                           [@recommendedLocation element=location name="project.regionFS" index=location_index template=false /]
                         [/#list]
@@ -161,6 +164,9 @@
                       [/#if]
                       [#-- RECOMMENDED COUNTRIES LIST --]
                       [#if project.countryFS?has_content]
+                        <div class="col-md-12">
+                          <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedCountries" /]:</h5>
+                        </div>
                         [#list project.countryFS as location]
                           [@recommendedLocation element=location name="project.countryFS" index=location_index template=false /]
                         [/#list]
@@ -177,9 +183,9 @@
                 [#-- OTHER LOCATIONS --]   
                 [#if action.hasSpecificities('crp_other_locations')]
                   <div class="col-md-12">
-                    <span class="text-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal">All locations map</span>
+                    <span class="text-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal">[@s.text name="projectLocations.allLocationsMap" /]</span>
                     <div class="icon-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal"><span class="glyphicon glyphicon-map-marker"></span></div>
-                    <h5 id="locations-list-title" class="sectionSubTitle">Locations list:</h5>
+                    <h5 id="locations-list-title" class="sectionSubTitle">[@s.text name="projectLocations.locationsList" /]:</h5>
                   </div>
                   
                   [#-- LOCATION LIST --]
@@ -192,13 +198,13 @@
                           
                           <div class="locationForm-container">
                             [#-- <div class="title">Adding a new location</div> --]
-                            <h3 class="title">Adding a new location</h3>
+                            <h3 class="title">[@s.text name="projectLocations.addingNewLocation" /]</h3>
                             <hr />
                               <div class="form-group col-md-7">
                               <div class="locLevelSelect-container">
-                                <label for="locLevelSelect" style="display:block;">Select a location level:</label>
+                                <label for="locLevelSelect" style="display:block;">[@s.text name="projectLocations.selectLocationLevel" /]:</label>
                                 <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
-                                  <option value="-1" >Select an option...</option>
+                                  <option value="-1" >[@s.text name="projectLocations.selectOption" /]...</option>
                                   [#list locationsLevels as locLevels]
                                     [#list locLevels.locations as locations]
                                       <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
@@ -208,26 +214,22 @@
                               </div>
                               [#-- Select location(s) Form --]
                               <div class="selectLocations" style="display:none;">
-                                <label for="">Select location(s)</label>
-                                <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
+                                <label for="">[@s.text name="projectLocations.selectLocations" /]</label>
+                                <select name="" data-placeholder="[@s.text name="projectLocations.selectPlaceholder" /]" id="countriesCmvs" multiple="true"></select>
                               </div>
                               [#-- Location name -Lat -Lon --]
                               <div id="inputFormWrapper" class="inputFormCoordinates-container" style="display:none;">
-                                <div class="nameWrapper"><label for="">Location name:</label><input placeholder="Name (Required)" class="name form-control" type="text" /></div>
-                                <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
-                                <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
+                                <div class="nameWrapper"><label for="">[@s.text name="projectLocations.locationName" /]:</label><input placeholder="Name (Required)" class="name form-control" type="text" /></div>
+                                <div class="latitudeWrapper"><label for="">[@s.text name="projectLocations.latitude" /]:</label><input placeholder="[@s.text name="projectLocations.latitude" /]" class="latitude form-control" type="text" value="" /></div>
+                                <div class="longitudeWrapper"><label for="">[@s.text name="projectLocations.longitude" /]:</label><input placeholder="[@s.text name="projectLocations.longitude" /]" class="longitude form-control " type="text"  value=""/></div>
                               </div>
-                              [#-- Big Button to add more inputs --]
-                              <div style="display:none;">
-                                <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add another location</div>
-                              </div> 
                               [#-- add Location Button --]
                               <div class="addLocationButton-container">
-                                <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location(s)</span>
+                                <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="projectLocations.addLocations" /]</span>
                               </div>
                               [#-- Successfully added alert --]
                               <div>
-                                <div id="alert-succesfully-added" class="alert alert-success" role="alert" style="display:none">Successfully added</div>
+                                <div id="alert-succesfully-added" class="alert alert-success" role="alert" style="display:none">[@s.text name="projectLocations.successfullyAdded" /]</div>
                               </div>
                             </div>
                           </div>
@@ -250,7 +252,7 @@
                           <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                           
                           <div class="allLocations-container">
-                            <h3 class="title">All locations</h3>
+                            <h3 class="title">[@s.text name="projectLocations.allLocations" /]</h3>
                             <hr />
                             
                             <div class="form-group col-md-3 list-container">
@@ -282,7 +284,7 @@
                                 [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
                             [/#list]
                           [#else]
-                            <p id="noLocationsAdded">No locations has been added, please add locations.</p>
+                            <p id="noLocationsAdded">[@s.text name="projectLocations.notLocationsAdded" /].</p>
                           [/#if]
                           </tbody>
                         </table>
@@ -376,7 +378,7 @@
                   <div class="row suggestedLocations-separator">
                     <div class="col-sm-4 col-md-4">
                       <div class="suggestedLocations-label">
-                        Suggested countries:
+                        [@s.text name="projectLocations.suggestedCountriesSeparator" /]:
                       </div>
                     </div>
                   </div>
@@ -388,7 +390,7 @@
                       <div class="row suggestedLocations-separator">
                         <div class="col-sm-4 col-md-4">
                           <div class="suggestedLocations-label">
-                            Suggested countries:
+                            [@s.text name="projectLocations.suggestedCountriesSeparator" /]:
                           </div>
                         </div>
                       </div>
@@ -400,7 +402,7 @@
                                 <span class="lName">${(suggestedCountry.locElement.name)!}</span>
                               </div>
                               [#if editable]
-                              <div class="removeIcon removeDisabled" title="This country should be removed by uncheck it from the suggested list"></div>
+                              <div class="removeIcon removeDisabled" title="[@s.text name="projectLocations.suggestedCountryRemove" /]"></div>
                               [/#if]
                             </div>
                           </div>
@@ -435,7 +437,7 @@
         [/#if] 
       </div>
       [#if editable]
-      <div class="removeLocation removeIcon" title="Remove Location"></div>
+      <div class="removeLocation removeIcon" title="[@s.text name="projectLocations.removeLocation" /]"></div>
       [/#if]
     </div>
     [#-- Hidden inputs --]
@@ -452,7 +454,7 @@
 [#-- Region element template --]
 <ul style="display:none">
   <li id="regionTemplate" class="region clearfix col-md-3">
-      <div class="removeRegion removeIcon" title="Remove region"></div>
+      <div class="removeRegion removeIcon" title="[@s.text name="projectLocations.removeRegion" /]"></div>
       <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
       <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
       <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
@@ -468,7 +470,7 @@
       <span class="lName"></span>
     </div>
     [#if editable]
-    <div class="removeIcon removeDisabled" title="This country should be removed by uncheck it from the suggested list"></div>
+    <div class="removeIcon removeDisabled" title="[@s.text name="projectLocations.suggestedCountryRemove" /]"></div>
     [/#if]
   </div>
 </div>
