@@ -181,14 +181,16 @@ function attachEvents() {
     var isNational = this.value == 4;
     var isSubNational = this.value == 5;
     
+    // Regions
     if(isRegional){
       $regionalBlock.show();
     }else{
       $regionalBlock.hide();
     }
     
+    // Countries
+    $nationalBlock.find("select").val(null).trigger('change');
     if(isMultiNational || isNational || isSubNational){
-      $nationalBlock.find("select").val(null).trigger('change');
       if (isMultiNational){
         $nationalBlock.find("select").select2({
           maximumSelectionLength: 0,

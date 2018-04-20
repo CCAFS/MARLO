@@ -117,7 +117,7 @@
       <div class="form-group">
         [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
         <div class="form-group">
-          <label for="">[@s.text name="study.reportingIndicatorThree" /]:</label>
+          <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /]</label>
           <p><small>[@s.text name="study.reportingIndicatorThree.help" /]</small></p>
           [@customForm.radioFlat id="reportingIndicatorThree-yes" name="${name}.reportingIndicatorThree.value" label="Yes" value="true" checked=false cssClass="" cssClassLabel="radio-label-yes"/]
           [@customForm.radioFlat id="reportingIndicatorThree-no" name="${name}.reportingIndicatorThree.value" label="No" value="false" checked=false cssClass="" cssClassLabel="radio-label-no"/]
@@ -128,7 +128,7 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.policyType" listName="" keyFieldName="id"  displayFieldName="name" /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.policyType" listName="" keyFieldName="id"  displayFieldName="name" required=true /]
             </div>
             <div class="col-md-6">
               [#-- Amount (Only for Budget or Investment) --]
@@ -138,11 +138,11 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Implementing Organization Type --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.organizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="" keyFieldName="id"  displayFieldName="name" /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.organizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="" keyFieldName="id"  displayFieldName="name" required=true /]
             </div>
             <div class="col-md-6">
               [#-- Stage in Process --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.stage.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.stage" listName="" keyFieldName="id"  displayFieldName="name" /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.stage.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.stage" listName="" keyFieldName="id"  displayFieldName="name"required=true  /]
             </div>
           </div>
         </div>
@@ -150,7 +150,7 @@
       
       [#-- 4.  Maturity of change reported (tick-box)  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.maturityChange" /]:</label>
+        <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable /]</label>
         <p><small>[@s.text name="study.maturityChange.help" /]  [@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]</small></p>
         <div class="form-group">
           <p>[@customForm.radioFlat id="maturityChange-1" name="${name}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/]</p> 
@@ -161,10 +161,10 @@
 
       [#-- 5. Links to the Strategic Results Framework  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.stratgicResultsLink" /]:</label>
+        <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]</label>
         <p><small>[@s.text name="study.stratgicResultsLink.help" /]</small></p>
         
-        [#-- 5. Links to the Strategic Results Framework  --]
+        [#-- Sub IDOs  --]
         <div class="form-group simpleBox">
           [@customForm.select name="" className="setSelect2" i18nkey="study.stratgicResultsLink.subIDOs" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
@@ -175,8 +175,9 @@
               </ul>
             </div>
           </div>
-          
         </div>
+        
+        [#-- SRF Targets  --]
         <div class="form-group simpleBox">
           [@customForm.select name="" className="setSelect2" i18nkey="study.stratgicResultsLink.srfTargets" listName="" keyFieldName="id"  displayFieldName="name" /]
           [#-- List --]
@@ -188,16 +189,42 @@
               </ul>
             </div>
           </div>
-          
         </div>
+        
+        [#-- Comments  --]
         <div class="form-group simpleBox">
-          [@customForm.textArea name="${customName}.stratgicResultsLink.comments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" className="" required=true editable=editable /]
+          [@customForm.textArea name="${customName}.stratgicResultsLink.comments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" className="" editable=editable /]
         </div>
       </div>
       
       [#-- 6.  Geographic scope - Countries  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.geographicScope" /]:</label>
+        [#assign isRegional = true ]
+        [#assign isMultiNational = true ]
+        [#assign isNational = true ]
+        [#assign isSubNational = true ]
+        
+        <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
+        <div class="form-group simpleBox">
+          <div class="form-group row">
+            <div class="col-md-6">
+              [#-- Geographic Scope --]
+              [@customForm.select name="${customName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="study.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" required=true /]
+            </div>
+          </div>
+          <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+            [#-- Regional scope --]
+            [@customForm.select name="${customName}.region.id" className="setSelect2" i18nkey="study.region" listName="allRepIndRegions" keyFieldName="id"  displayFieldName="name" required=true /]
+          </div>
+          <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+            [#-- Multinational, National and Subnational scope --]
+            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+          </div>
+          <div class="form-group">
+            [#-- Comment box --]
+            [@customForm.textArea name="${customName}.geographicScopeComments" className="limitWords-30" i18nkey="study.geographicScopeComments" help="study.geographicScopeComments.help" editable=editable required=true/]
+          </div>
+        </div>
       </div>
 
       [#-- 7. Key Contributors  --]
