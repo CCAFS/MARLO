@@ -94,7 +94,12 @@
           [#assign dlurl][@s.url namespace=namespace action='${crpSession}/highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
           <tr>
             <td class="id" ><a href="${dlurl}">${hl.id}</a></td> 
-            <td class="name"><a href="${dlurl}">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.title}[#else]Untitled[/#if]</a></td>
+            <td class="name">
+              [#if reportingActive && ((hl.projectHighlightInfo.year == currentCycleYear)!false)]
+                <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
+              [/#if]
+              <a href="${dlurl}">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.title}[#else]Untitled[/#if]</a>
+            </td>
             <td class="type">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.author}[#else]Not defined[/#if]</td>
             <td class="year">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.year}[#else]Not defined[/#if]</td>
             <td class="removeHighlight-row text-center">
