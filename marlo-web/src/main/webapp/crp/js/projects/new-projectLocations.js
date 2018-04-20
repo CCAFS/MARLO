@@ -114,6 +114,7 @@ function attachEvents() {
       $(".locationForm-container .inputFormCoordinates-container").hide("slow");
     } else {
       $("#addLocationButton").show("slow");
+      console.log(option.val());
       if(option.val().split("-")[1] == "true") {
         // LocElements options using ajax
         var select = $("#countriesCmvs");
@@ -144,8 +145,10 @@ function attachEvents() {
         $("#inputFormWrapper").slideDown();
       }
     }
-    modalButtonsListeners();
+
   });
+
+  modalButtonsListeners();
 
   // Clicking recommended location
   $('.recommendedLocName, .iconSelected').on('click',function() {
@@ -378,12 +381,6 @@ function modalButtonsListeners(){
   $('#addLocationModal').on('hidden.bs.modal', function () {
     cleanSelected();
   });
-
-  // Cancel button
-/*  $("#cancelButton-locations").on("click", function(e) {
-    e.preventDefault();
-    $("#close-modal-button").click();
-  });*/
 
 }
 
@@ -718,7 +715,6 @@ function mappingCountries() {
 
 }
 
-//here
 //Remove a location element-Function
 function removeLocationItem() {
   var globalList = $(this).parents("#selectsContent");
@@ -978,6 +974,7 @@ function setMapCenterPosition($item,locId,locName,countID){
   });
 }
 
+// here
 //Adding locElement into location level(Country and CSVS)
 function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
@@ -985,15 +982,19 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
           ".optionSelect-content");
   //Level location name
   var locLevelName=$(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").next().val();
-  console.log(locLevelName);
+
   //All locations modal lists
   var locLevelList = $(".list-container").find("ul[name='"+locLevelName+"']");
+
+  console.log($locationSelect.val());
+
   $.each($locationSelect.val(), function(i,e) {
     var $item = $("#location-template").clone(true).removeAttr("id");
     var locId = e.split("-")[0];
     var locIso = e.split("-")[1];
     var locName = e.split("-")[2];
     // Check if the item doesn't exists into the list
+    console.log(locId);
     if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
       notify(locName + " already exists into the " + locationContent.parent().parent().parent().find(".locationLevelName").val()
           + " list")
