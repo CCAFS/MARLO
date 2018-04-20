@@ -881,6 +881,10 @@ public class ProjectPartnerAction extends BaseAction {
         project = history;
         project
           .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectPartner projectPartner : project.getPartners()) {
+          projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
+            .filter(ppp -> ppp.isActive()).collect(Collectors.toList()));
+        }
         ProjectPartner leader = project.getLeader();
         if (leader != null) {
           // First we remove the element from the array.
@@ -1659,7 +1663,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
           locationsDB =
             projectPartnerPartnershipLocationManager.findParnershipLocationByPartnership(partnershipClient.getId());
-        } else {
+        }
+        if (locationsDB == null) {
           locationsDB = new ArrayList<>();
         }
 
