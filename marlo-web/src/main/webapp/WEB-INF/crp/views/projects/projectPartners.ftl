@@ -337,7 +337,7 @@
         <h5 class="sectionSubTitle">Partnership</h5>
         <div class="${reportingActive?string('fieldFocus','')}">
           [#assign customPartnershipName = "${name}.projectPartnerPartnership"]
-          [#assign isRegional = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeGlobal)!false) ]
+          [#assign isRegional = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
           [#assign isMultiNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
           [#assign isNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
           [#assign isSubNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]

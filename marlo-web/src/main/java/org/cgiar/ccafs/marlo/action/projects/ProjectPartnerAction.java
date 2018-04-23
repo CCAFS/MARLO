@@ -2022,7 +2022,6 @@ public class ProjectPartnerAction extends BaseAction {
             if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
               projectPartner
                 .setInstitution(institutionManager.getInstitutionById(projectPartner.getInstitution().getId()));
-
             }
 
             if (projectPartner.getPartnerPersons() != null) {
@@ -2040,6 +2039,18 @@ public class ProjectPartnerAction extends BaseAction {
                 projectPartnerContribution.getProjectPartnerContributor()
                   .setInstitution(institutionManager.getInstitutionById(
                     projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+              }
+            }
+            if (projectPartner.getProjectPartnerPartnership() != null
+              && projectPartner.getProjectPartnerPartnership().getId().longValue() != -1) {
+              projectPartner.setProjectPartnerPartnership(projectPartnerPartnershipManager
+                .getProjectPartnerPartnershipById(projectPartner.getProjectPartnerPartnership().getId()));
+              List<ProjectPartnerPartnershipLocation> partnerPartnershipLocations =
+                projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
+                  .filter(p -> p.isActive()).collect(Collectors.toList());
+              for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : partnerPartnershipLocations) {
+                projectPartner.getProjectPartnerPartnership().getPartnershipLocations()
+                  .add(projectPartnerPartnershipLocation);
               }
             }
           }
