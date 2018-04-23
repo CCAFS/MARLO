@@ -72,27 +72,27 @@
           [#-- Phase of research and Stage of innovation --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.phase" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.stage" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
           </div>
         
           [#-- Geographic scope and innovation type --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.geographicScope" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.innovationType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
           </div>
         
           [#-- Region (if scope is Region) --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.region" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
             </div>
@@ -156,7 +156,7 @@
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
           <div class="form-group">
-          [@customForm.select name="" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+          [@customForm.select name="" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
           </div>
         
           [#-- Novel or adaptative research --] 
@@ -192,7 +192,7 @@
               [/#if]
               </ul>
               [#if editable ]
-                [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
+                [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="deliverableList" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
               [/#if] 
             </div>
           </div>
@@ -212,7 +212,7 @@
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.global)!false)?string('none','block')}" >
             [#if editable]
-              [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectInnovations.contributing" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]
+              [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectInnovations.contributing" listName="crpList" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]
             [#else]
               <label>[@s.text name="projectInnovations.contributing" /]:</label>
               <div class="select">
@@ -242,7 +242,7 @@
           <div class="relevance-container">
             <ul>
               <li>
-                [@customForm.radioButtonGroup label="projectInnovations.genderRelevance" name=""  listName="" i18nkey="projectInnovations.genderRelevance.notTargeted" value="" required=true checked="" editable=editable /]
+                [@customForm.radioButtonGroup label="projectInnovations.genderRelevance" name=""  listName="focusLevelList" i18nkey="projectInnovations.genderRelevance.notTargeted" value="" required=true checked="" editable=editable /]
               </li>
             </ul>
         
