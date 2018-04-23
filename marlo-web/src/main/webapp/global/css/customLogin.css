@@ -257,6 +257,7 @@
 .login-button-container .login-form-button{
   width: 20% !important;
   height: 100%;
+  margin-top: 2px;
 }
 
 .login-back-container{
@@ -371,6 +372,23 @@ span.login-input-container.username:hover i{
   color: #fff;
   background-color: #438cb1;
   width: 50%;
+}
+
+.crps-select.show-select-bar{
+  left: -135px;
+}
+
+@media(max-width:767px){
+  .crps-select.show-select-bar{
+    /* Firefox */
+    left: -moz-calc(100% - 20px);
+    /* WebKit */
+    left: -webkit-calc(100% - 20px);
+    /* Opera */
+    left: -o-calc(100% - 20px);
+    /* Standard */
+    left: calc(100% - 20px);
+  }  
 }
 
 p.login-description{
