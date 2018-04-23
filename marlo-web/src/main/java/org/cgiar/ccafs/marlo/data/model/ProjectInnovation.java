@@ -32,7 +32,6 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
-
   @Expose
   private Project project;
 
@@ -48,17 +47,21 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+
   private ProjectInnovationInfo projectInnovationInfo;
 
 
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
 
-
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
+
   private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
+
+
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
+
   private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
     new HashSet<ProjectInnovationDeliverable>(0);
   private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
@@ -66,6 +69,7 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   private List<Long> countriesIds = new ArrayList<>();
   private List<ProjectInnovationOrganization> organizations;
   private List<ProjectInnovationDeliverable> deliverables;
+  private List<ProjectInnovationCrp> crps;
 
   public Date getActiveSince() {
     return activeSince;
@@ -79,6 +83,10 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public List<ProjectInnovationCrp> getCrps() {
+    return crps;
+  }
+
   public List<ProjectInnovationDeliverable> getDeliverables() {
     return deliverables;
   }
@@ -88,13 +96,13 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -177,6 +185,10 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrps(List<ProjectInnovationCrp> crps) {
+    this.crps = crps;
   }
 
   public void setDeliverables(List<ProjectInnovationDeliverable> deliverables) {
