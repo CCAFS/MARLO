@@ -427,6 +427,12 @@
       [#if path?has_content]</a>[/#if]
       [#if isEditable]<span class="removeIcon"> </span>[/#if]
     </p>
+    [#-- Progress Bar --]
+    <div class="progress" style="height: 5px; display: none;">
+      <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+        <span class="sr-only"></span>
+      </div>
+    </div>
   </div>
 [/#macro]
 
