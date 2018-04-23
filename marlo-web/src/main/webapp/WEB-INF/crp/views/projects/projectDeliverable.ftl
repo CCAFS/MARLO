@@ -107,6 +107,9 @@
                 [#-- Is this deliverable Open Access? --]
                 [@deliverableMacros.isOpenaccessMacro /]
                 
+                [#--  Intellectual Asset--]
+                [@deliverableMacros.intellectualAsset /]
+                
                 [#-- Have you adopted a license?  --]
                 [@deliverableMacros.deliverableLicenseMacro /]
                 
