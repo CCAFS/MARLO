@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Outcome Case Studies" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = [ "select2", "blueimp-file-upload" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js",
   "${baseUrl}/global/js/fieldsValidation.js"
@@ -14,6 +14,8 @@
 
 [#assign currentSection = "projects" /]
 [#assign currentStage = "caseStudies" /]
+
+[#assign isOutcomeCaseStudy = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -115,11 +117,14 @@
       </div>
       
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [@customForm.textArea name="${customName}.outcomeStatement" i18nkey="study.outcomeStatement" help="study.outcomeStatement.help" className="limitWords-80" helpIcon=false required=true editable=editable /]
       </div>
-
+      [/#if]
+      
       [#-- 3. Link to Common Results Reporting Indicator #I3 --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
         <div class="form-group">
@@ -155,8 +160,10 @@
           </div>
         </div>
       </div>
+      [/#if]
       
       [#-- 4.  Maturity of change reported (tick-box)  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable /]
           [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/]
@@ -168,13 +175,18 @@
           <p>[@customForm.radioFlat id="maturityChange-3" name="${customName}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel=""/]</p>
         </div>
       </div>
-
+      [/#if]
+      
       [#-- 5. Links to the Strategic Results Framework  --]
       <div class="form-group">
-        <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]
-          [@customForm.helpLabel name="study.stratgicResultsLink.help" showIcon=false editable=editable/]
-        </label>
-        
+        [#if isOutcomeCaseStudy]
+          <label for="">[@s.text name="study.stratgicResultsLink" /]:[@customForm.req required=editable /]
+            [@customForm.helpLabel name="study.stratgicResultsLink.help" showIcon=false editable=editable/]
+          </label>
+        [#else]
+          <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
+          </label> 
+        [/#if]
         [#-- Sub IDOs  --]
         <div class="form-group simpleBox">
           [#-- List --]
@@ -187,7 +199,7 @@
               [#assign elementType = "subIDO"]
               <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.subIDOs" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
               [#if editable]
-                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+                [@customForm.select name="" className="setSelect2 elementType-${elementType} maxLimit-2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
               [/#if]
             </div>
           </div>
@@ -213,12 +225,15 @@
         </div>
         
         [#-- Comments  --]
+        [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.textArea name="${customName}.stratgicResultsLink.comments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" className="" editable=editable /]
         </div>
+        [/#if]
       </div>
       
       [#-- 6.  Geographic scope - Countries  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [#assign isRegional = true ]
         [#assign isMultiNational = true ]
@@ -247,8 +262,10 @@
           </div>
         </div>
       </div>
+      [/#if]
 
       [#-- 7. Key Contributors  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         <label for="">[@s.text name="study.keyContributors" /]:</label>
         <div class="form-group simpleBox">
@@ -303,13 +320,17 @@
           </div>
         </div>
       </div>
+      [/#if]
 
       [#-- 8. Elaboration of Outcome/Impact Statement  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [@customForm.textArea name="${customName}.elaborationStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=true editable=editable /]
       </div>
+      [/#if]
       
       [#-- 9. References cited  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         <div class="form-group">
           [@customForm.textArea name="${customName}.referencesCited" i18nkey="study.referencesCited" help="study.referencesCited.help" helpIcon=false className="" required=true editable=editable /]
@@ -319,20 +340,24 @@
             fileDB=(element.referencesCitedAttach.file)!{} 
             name="${customName}.referencesCitedAttach.file.id" 
             label="study.referencesCitedAttach" 
-            dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+            dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
             path="${(action.getPath(caseStudyID))!}"
             isEditable=editable
             labelClass="label-min-width"
           /]
         </div>
       </div>
+      [/#if]
       
       [#-- 10. Quantification (where data is available)  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [@customForm.textArea name="${customName}.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=true editable=editable /]
       </div>
+      [/#if]
       
       [#-- 11. Gender, Youth, and Capacity Development  --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [#local ccDimensions = [
           { "name": "0 - Not Targeted" },
@@ -362,16 +387,19 @@
           [#list ccDimensions as cc]
             [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
           [/#list]
-        </div>
-        
+        </div> 
       </div>
+      [/#if]
       
       [#-- 12. Other cross-cutting dimensions   --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [@customForm.textArea name="${customName}.otherCrossCutting" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=true editable=editable /]
       </div>
+      [/#if]
       
       [#-- 13. Communications materials    --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         <div class="form-group">
           [@customForm.textArea name="${customName}.communicationMaterials" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=true editable=editable /]
@@ -382,18 +410,29 @@
             fileDB=(element.communicationMaterialsAttach.file)!{} 
             name="${customName}.communicationMaterialsAttach.file.id" 
             label="study.communicationMaterialsAttach" 
-            dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+            dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
             path="${(action.getPath(caseStudyID))!}"
             isEditable=editable
             labelClass="label-min-width"
           /]
         </div>
       </div>
+      [/#if]
 
       [#-- 14. Contact person    --]
+      [#if isOutcomeCaseStudy]
       <div class="form-group">
         [@customForm.textArea name="${customName}.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=true editable=editable /]
       </div>
+      [/#if]
+      
+      [#-- Comments for other studies--]
+      [#if !isOutcomeCaseStudy]
+      <div class="form-group"> 
+        [@customForm.textArea name="${customName}.comments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+      </div>
+      [/#if]
+      
     </div>
     
     <h3 class="headTitle"> Share Study </h3>
