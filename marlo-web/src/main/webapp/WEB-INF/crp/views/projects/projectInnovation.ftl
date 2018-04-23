@@ -50,7 +50,7 @@
         [#-- Back --]
         <small class="pull-right">
           <a href="[@s.url action='${crpSession}/innovations'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-            <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project innovations
+            <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
           </a>
         </small>
         
@@ -72,27 +72,27 @@
           [#-- Phase of research and Stage of innovation --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.phase" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.stage" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
           </div>
         
           [#-- Geographic scope and innovation type --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.geographicScope" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.innovationType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
           </div>
         
           [#-- Region (if scope is Region) --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="" label=""  i18nkey="projectInnovations.region" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
             </div>
@@ -110,7 +110,7 @@
                  <p class="checked">${element.locElement.name}</p>
                 [/#list]
               [#else]
-                <p>Field is empty</p>
+                <p>[@s.text name="projectInnovations.countries" /]</p>
               [/#if]
               </div>
             [/#if]
@@ -124,7 +124,7 @@
               [#if deliverable.fundingSources?has_content]
                 [#list deliverable.fundingSources as element]
                   <li class="fundingSources clearfix">
-                    [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
+                    [#if editable]<div class="removeFundingSource removeIcon" title="[@s.text name="projectInnovations.remove" /]"></div>[/#if] 
                     <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
                     <span class="name">
                       <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
@@ -132,9 +132,9 @@
                     <div class="clearfix"></div>
                   </li>
                 [/#list]
-                <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>   
+                <p style="display:none;" class="emptyText"> [@s.text name="projectInnovations.empty" /] </p>
               [#else]
-                <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+                <p class="emptyText"> [@s.text name="projectInnovations.empty" /] </p> 
               [/#if]
               </ul>
               [#if editable ]
@@ -156,7 +156,7 @@
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
           <div class="form-group">
-          [@customForm.select name="" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+          [@customForm.select name="" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
           </div>
         
           [#-- Novel or adaptative research --] 
@@ -177,7 +177,7 @@
               [#if deliverable.fundingSources?has_content]
                 [#list deliverable.fundingSources as element]
                   <li class="fundingSources clearfix">
-                    [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
+                    [#if editable]<div class="removeFundingSource removeIcon" title="[@s.text name="projectInnovations.remove.deliverable" /]"></div>[/#if] 
                     <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
                     <span class="name">
                         <span>${(element.fundingSourceInfo.id)!} - </span>
@@ -186,13 +186,13 @@
                     <div class="clearfix"></div>
                   </li>
                 [/#list]
-                <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>   
+                <p style="display:none;" class="emptyText"> [@s.text name="projectInnovations.empty.deliverables" /]</p>   
               [#else]
-                <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+                <p class="emptyText"> [@s.text name="projectInnovations.empty.deliverables" /]</p> 
               [/#if]
               </ul>
               [#if editable ]
-                [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
+                [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="deliverableList" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
               [/#if] 
             </div>
           </div>
@@ -212,7 +212,7 @@
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.global)!false)?string('none','block')}" >
             [#if editable]
-              [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectInnovations.contributing" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]
+              [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectInnovations.contributing" listName="crpList" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]
             [#else]
               <label>[@s.text name="projectInnovations.contributing" /]:</label>
               <div class="select">
@@ -221,7 +221,7 @@
                  <p class="checked">${element.locElement.name}</p>
                 [/#list]
               [#else]
-                <p>Field is empty</p>
+                <p>[@s.text name="projectInnovations.empty" /]</p>
               [/#if]
               </div>
             [/#if]
@@ -242,7 +242,7 @@
           <div class="relevance-container">
             <ul>
               <li>
-                [@customForm.radioButtonGroup label="projectInnovations.genderRelevance" name=""  listName="" i18nkey="projectInnovations.genderRelevance.notTargeted" value="" required=true checked="" editable=editable /]
+                [@customForm.radioButtonGroup label="projectInnovations.genderRelevance" name=""  listName="focusLevelList" i18nkey="projectInnovations.genderRelevance.notTargeted" value="" required=true checked="" editable=editable /]
               </li>
             </ul>
         
@@ -260,17 +260,3 @@
 [/#if]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-[#macro locElementMacro element name index isTemplate=false ]
-  <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
-    [#assign locElementName = "${name}[${index}]" ]
-    [#-- Remove Button --]
-    [#if editable]<div class="removeLocElement removeIcon" title="Remove Location"></div>[/#if] 
-    
-    [#-- Location Name --]
-    <span class="flag-icon"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
-    
-    [#-- Hidden inputs --]
-    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" /> 
-  </li>
-[/#macro]
