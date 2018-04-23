@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -522,6 +523,35 @@ public class BaseValidator {
       status.setCycle(cycle);
       status.setYear(year);
       status.setProjectHighlight(highlight);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+
+  /**
+   * This method saves the missing fields into the database for a section at project Innovation.
+   * 
+   * @param innovation is a Project Innovation.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectInnovation innovation, String cycle, int year,
+    String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectInnovation(innovation);
       status.setSectionName(sectionName);
       status.setProject(project);
 

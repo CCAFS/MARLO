@@ -73,55 +73,49 @@
       </tr>
     </thead>
     <tbody>
-    [#if flagshipPlannedList?has_content]
-      [#list flagshipPlannedList as flagshipPlanned]
-        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(flagshipPlanned.projectExpectedStudy.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+    [#if project.innovations?has_content]
+      [#list project.innovations as innovation]
+        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
           <td class="tb-id text-center">
-            <a href="${tsURL}" target="_blank">${(flagshipPlanned.projectExpectedStudy.project.id)!}</a>
+            <a href="${tsURL}" target="_blank">${(innovation.id)!}</a>
           </td>
           [#-- Title --]
           <td class="tb-title">
-            [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
-                <span>${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}</span>
+            [#if innovation.projectInnovationInfo.title?has_content]
+                <span>${(innovation.projectInnovationInfo.title)!''}</span>
             [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
             [/#if]
           </td>
           [#-- Type --]
           <td>
-          [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
-            <span>${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}</span>
+          [#if innovation.projectInnovationInfo.repIndInnovationType?has_content]
+            <span>${(innovation.projectInnovationInfo.repIndInnovationType.name)!''}</span>
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Stage --]
           <td class="text-center">
-          [#if flagshipPlanned.projectExpectedStudy.scopeName?has_content]
-            ${flagshipPlanned.projectExpectedStudy.scopeName!''}
+          [#if innovation.projectInnovationInfo.repIndStageInnovation?has_content]
+            ${innovation.projectInnovationInfo.repIndStageInnovation.name!''}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Stage --]
           <td class="text-center">
-          [#if flagshipPlanned.projectExpectedStudy.scopeName?has_content]
-            ${flagshipPlanned.projectExpectedStudy.scopeName!''}
+          [#if innovation.year?has_content]
+            ${innovation.year!''}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Remove --]
-          <td class="remove" title="${(flagshipPlanned.projectExpectedStudy.comments)!''}">
-            [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable ]
-              <a id="remove-innovation" class="removeInnovation" href="#" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
-              </a>
-            [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
-            [/#if]
+          <td class="remove" title="Remove">
+          
           </td>
         </tr>
       [/#list]
