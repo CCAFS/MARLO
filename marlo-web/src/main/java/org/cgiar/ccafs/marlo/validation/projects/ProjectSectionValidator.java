@@ -55,6 +55,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -822,9 +824,22 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       List<ProjectPartnerContribution> partnerContributions =
         projectPartner.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
-        contributors.add(projectPartnerContribution);
+        projectPartner.getPartnerContributors().add(projectPartnerContribution);
       }
-      projectPartner.setPartnerContributors(contributors);
+      List<ProjectPartnerPartnership> partnerPartnerships =
+        projectPartner.getProjectPartnerPartnerships().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (partnerPartnerships.size() > 0) {
+        projectPartner.setProjectPartnerPartnership(partnerPartnerships.get(0));
+        List<ProjectPartnerPartnershipLocation> partnerPartnershipLocations =
+          projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
+            .filter(p -> p.isActive()).collect(Collectors.toList());
+        for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : partnerPartnershipLocations) {
+          projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIsos()
+            .add(projectPartnerPartnershipLocation.getLocation().getIsoAlpha2());
+        }
+
+      }
+
       projectPartner.setPartnerPersons(
         projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectPartner.setSelectedLocations(new ArrayList<>());

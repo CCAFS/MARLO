@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -138,7 +139,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         int j = 0;
         this.validatePersonResponsibilities(action, project, c, partner);
         // Validate CRP PPA Partners
-        this.validateCrpPPAPartners(action, project, partner, c);
+        this.validatePartnerContributors(action, project, partner, c);
 
         Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
 
@@ -180,7 +181,36 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
 
-  private void validateCrpPPAPartners(BaseAction action, Project project, ProjectPartner partner, int c) {
+  private void validateEmptyInstitution(BaseAction action, ProjectPartner partner, int i) {
+    if (partner.getInstitution() == null || partner.getInstitution().getId() == -1) {
+      action.addFieldError("project.partners[" + i + "].institution.id",
+        action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
+      // No need to add missing fields because field error doesn't allow to save into the database.
+    }
+  }
+
+  private void validateEmptyPartners(BaseAction action, Project project) {
+    if (project.getPartners() == null || project.getPartners().isEmpty()) {
+      action.addMissingField("project.partners.empty");
+      action.getInvalidFields().put("list-project.partners",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
+    }
+  }
+
+
+  private void validateOffices(BaseAction action, Project project, ProjectPartner partner, int c) {
+    if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
+      if (partner.getSelectedLocations() == null || partner.getSelectedLocations().isEmpty()) {
+
+        action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
+        action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
+
+      }
+    }
+  }
+
+  private void validatePartnerContributors(BaseAction action, Project project, ProjectPartner partner, int c) {
     if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
       Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
       if (inst.getCrpPpaPartners().stream()
@@ -197,42 +227,71 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
-  private void validateEmptyInstitution(BaseAction action, ProjectPartner partner, int i) {
-    if (partner.getInstitution() == null || partner.getInstitution().getId() == -1) {
-      action.addFieldError("project.partners[" + i + "].institution.id",
-        action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
-      // No need to add missing fields because field error doesn't allow to save into the database.
-    }
-  }
-
-
-  private void validateEmptyPartners(BaseAction action, Project project) {
-    if (project.getPartners() == null || project.getPartners().isEmpty()) {
-      action.addMissingField("project.partners.empty");
-      action.getInvalidFields().put("list-project.partners",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
-    }
-  }
-
-  private void validateOffices(BaseAction action, Project project) {
-    int c = 0;
-
-    for (ProjectPartner partner : project.getPartners()) {
-      if (partner.getSelectedLocations() == null) {
-
-        action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
-        action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
-      } else {
-
-        if (partner.getSelectedLocations().isEmpty()) {
-          action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
-          action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
+  private void validatePartnership(BaseAction action, Project project, ProjectPartner partner, int c) {
+    if (action.isReportingActive()) {
+      try {
+        ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
+        if (partner.getHasPartnerships() == null) {
+          action.addMessage(action.getText("Please provide partnership formal partner"));
+          action.addMissingField("project.partners[" + c + "].hasPartnerships");
+          action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
-      }
+        if (projectPartnerPartnership.getResearchPhase() == null
+          || projectPartnerPartnership.getResearchPhase().getId() == -1) {
+          action.addMessage(action.getText("Please provide partnership research phase"));
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.researchPhase.id");
+          action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.researchPhase.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (projectPartnerPartnership.getGeographicScope() == null
+          || projectPartnerPartnership.getGeographicScope().getId() == -1) {
+          action.addMessage(action.getText("Please provide partnership geographic scope"));
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.geographicScope.id");
+          action.getInvalidFields().put(
+            "input-project.partners[" + c + "].projectPartnerPartnership.geographicScope.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (projectPartnerPartnership.getGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeRegional())) {
+            if (projectPartnerPartnership.getRegion() == null || projectPartnerPartnership.getRegion().getId() == -1) {
+              action.addMessage(action.getText("Please provide partnership region"));
+              action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.region.id");
+              action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.region.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
 
-      c++;
+          if (projectPartnerPartnership.getGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeMultiNational())
+            || projectPartnerPartnership.getGeographicScope().getId()
+              .equals(action.getReportingIndGeographicScopeNational())
+            || projectPartnerPartnership.getGeographicScope().getId()
+              .equals(action.getReportingIndGeographicScopeSubNational())) {
+            if (projectPartnerPartnership.getPartnershipLocationsIsos() == null
+              || projectPartnerPartnership.getPartnershipLocationsIsos().isEmpty()) {
+              action.addMessage(action.getText("Please provide partnership countries"));
+              action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.partnershipLocationsIsos");
+              action.getInvalidFields().put(
+                "input-project.partners[" + c + "].projectPartnerPartnership.partnershipLocationsIsos",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+        }
+
+        if (!this.isValidString(projectPartnerPartnership.getMainArea())) {
+          action.addMessage(action.getText("Please provide partnership main area"));
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.mainArea");
+          action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.mainArea",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      } catch (
+
+      Exception e) {
+        LOG.error("Unable to validate partner partnership for Project: " + project + " - Partner: " + partner, e);
+      }
     }
 
   }
@@ -260,6 +319,7 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
+
   private void validatePlanningNewPartnershipsPlanned(BaseAction action, Project project) {
     if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader() && !action.isReportingActive()) {
 
@@ -271,7 +331,6 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
     }
   }
-
 
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
@@ -288,13 +347,14 @@ public class ProjectPartnersValidator extends BaseValidator {
       for (ProjectPartner partner : project.getPartners()) {
         this.validateEmptyInstitution(action, partner, c);
         this.validateContactPersons(action, project, partner, c);
+        this.validateOffices(action, project, partner, c);
+        this.validatePartnership(action, project, partner, c);
+
         c++;
       }
     }
 
-    if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
-      this.validateOffices(action, project);
-    }
+
   }
 
   private void validateReportingOverall(BaseAction action, Project project) {
