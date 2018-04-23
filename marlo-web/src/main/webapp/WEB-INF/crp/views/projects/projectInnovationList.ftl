@@ -1,8 +1,7 @@
 [#ftl]
 [#assign title = "Project Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#-- TODO: Remove unused pageLibs--]
-[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js",
   "${baseUrl}/global/js/autoSave.js",
@@ -46,7 +45,7 @@
         <div class="buttons">
           <div class="buttons-content">
             <div class="addInnovation button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewInnovation'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              [@s.text name="form.buttons.addInnovation" /]
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addInnovation" /]
             </a></div>
             <div class="clearfix"></div>
           </div>
@@ -61,10 +60,10 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro innovationsTableMacro]
-  <table class="table-innovations table-border-powb" id="table-innovations">
+  <table id="table-innovations" class="table table-striped table-hover">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id" width="9%">[@s.text name="projectInnovations.table.id" /]</th>
+        <th id="tb-id" class="id" width="9%">[@s.text name="projectInnovations.table.id" /]</th>
         <th id="tb-title" width="43%">[@s.text name="projectInnovations.table.title" /]</th>
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="13%">[@s.text name="projectInnovations.table.stage" /]</th>
@@ -78,7 +77,7 @@
         [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
-          <td class="tb-id text-center">
+          <td class="tb-id text-center id">
             <a href="${tsURL}" target="_blank">${(innovation.id)!}</a>
           </td>
           [#-- Title --]

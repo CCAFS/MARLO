@@ -3,14 +3,17 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectCaseStudy.js",
+  "${baseUrlMedia}/js/projects/projectStudy.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css"] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectStudies.css"
+  ] 
+/]
+
 [#assign currentSection = "projects" /]
 [#assign currentStage = "caseStudies" /]
-
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -73,6 +76,11 @@
 [#-- Internal parameters --]
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
+[#-- Element Macro Template --]
+<ul style="display:none">
+  [@listElementMacro name="relationName" element={} type="typeName" index=-1 template=true /]
+</ul>
+
 [#-- File upload Template--] 
 [@customForm.inputFile name="annexesFile" className="annexesFile"  template=true /]
 
@@ -118,12 +126,13 @@
           <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /]
             [@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]
           </label>
-          [@customForm.radioFlat id="reportingIndicatorThree-yes" name="${name}.reportingIndicatorThree.value" label="Yes" value="true" checked=false cssClass="" cssClassLabel="radio-label-yes"/]
-          [@customForm.radioFlat id="reportingIndicatorThree-no" name="${name}.reportingIndicatorThree.value" label="No" value="false" checked=false cssClass="" cssClassLabel="radio-label-no"/]
+          [#assign studyIndicatorThree = "studyIndicatorThree"]
+          [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.${studyIndicatorThree}.value" label="Yes" value="true" checked=((element.reportingIndicatorThree.value)!false) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes"/]
+          [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.${studyIndicatorThree}.value" label="No" value="false" checked=!((element.reportingIndicatorThree.value)!true) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no"/]
         </div>
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
-        <div class="form-group simpleBox">
+        <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.reportingIndicatorThree.value)!false)?string('block','none')}">
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
@@ -175,8 +184,11 @@
           <div class="panel tertiary">
             <div class="panel-head"><label for="">[@s.text name="study.stratgicResultsLink.subIDOs" /]</label></div>
             <div class="panel-body">
-              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.subIDOs" element=keyContribution type="subIDO" index=keyContribution_index /][/#list]</ul>
-              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [#assign elementType = "subIDO"]
+              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.subIDOs" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
+              [#if editable]
+                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [/#if]
             </div>
           </div>
         </div>
@@ -191,8 +203,11 @@
           <div class="panel tertiary">
             <div class="panel-head"><label for="">[@s.text name="study.stratgicResultsLink.srfTargets" /]</label></div>
             <div class="panel-body">
-              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.srfTargets" element=keyContribution type="srfTarget" index=keyContribution_index /][/#list]</ul>
-              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [#assign elementType = "srfTarget"]
+              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.srfTargets" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
+              [#if editable]
+                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [/#if]
             </div>
           </div>
         </div>
@@ -244,8 +259,11 @@
           <div class="panel tertiary">
             <div class="panel-head"><label for="">[@s.text name="study.keyContributors.crps" /]</label></div>
             <div class="panel-body">
-              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.crps" element=keyContribution type="globalUnit" index=keyContribution_index /][/#list]</ul>
-              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [#assign elementType = "globalUnit"]
+              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.crps" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
+              [#if editable]
+                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [/#if]
             </div>
           </div>
           
@@ -259,8 +277,11 @@
           <div class="panel tertiary">
             <div class="panel-head"><label for="">[@s.text name="study.keyContributors.flagships" /]</label></div>
             <div class="panel-body">
-              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.flagships" element=keyContribution type="crpProgram" index=keyContribution_index /][/#list]</ul>
-              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [#assign elementType = "crpProgram"]
+              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.flagships" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
+              [#if editable]
+                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [/#if]
             </div>
           </div>
           
@@ -273,8 +294,11 @@
           <div class="panel tertiary">
             <div class="panel-head"><label for="">[@s.text name="study.keyContributors.externalPartners" /]</label></div>
             <div class="panel-body">
-              <ul class="list">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.externalPartners" element=keyContribution type="institution" index=keyContribution_index /][/#list]</ul>
-              [@customForm.select name="" className="setSelect2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [#assign elementType = "institution"]
+              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.externalPartners" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
+              [#if editable]
+                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
+              [/#if]
             </div>
           </div>
         </div>
@@ -397,29 +421,27 @@
 [/#macro]
 
 [#macro shareOutcomeCaseStudy element name index=-1 template=false]
-[#local own = (!template) && (element.project.id == projectID) /]
-<li id="sharedProject-${template?string('template', index)}" class="sharedProject ${own?string('hide','')} clearfix" style="display:${template?string('none','block')}">
-  [#-- Remove button --]
-  [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
-  
-  [#-- Hidden inputs --]
-  <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
-  <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
-  
-  [#-- title --]
-  <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
-  <div class="clearfix"></div>
-</li>
+  [#local own = (!template) && (element.project.id == projectID) /]
+  <li id="sharedProject-${template?string('template', index)}" class="sharedProject ${own?string('hide','')} clearfix" style="display:${template?string('none','block')}">
+    [#-- Remove button --]
+    [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
+    [#-- Hidden inputs --]
+    <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
+    <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
+    [#-- title --]
+    <span title="${(element.project.projectInfo.title)!'undefined'}" class="name">${(element.project.projectInfo.composedName)!'undefined'}</span>
+    <div class="clearfix"></div>
+  </li>
 [/#macro]
 
 [#macro listElementMacro element name type index=-1 template=false]
   [#local customName = "${name}[${index}]"]
-  <li id="keyContributor-${type}-${template?string('template', index)}" class="keyContributor">
+  <li id="keyContributor-${template?string('template', index)}" class="keyContributor">
     [#-- Hidden Inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove button --]
-    [#if editable]<div class="removeElement sm removeIcon" title="Remove"></div>[/#if] 
+    [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="title">${element.name}</span>
+    <span class="title">${(element.name)!'{elementName}'}</span>
   </li>
 [/#macro]
