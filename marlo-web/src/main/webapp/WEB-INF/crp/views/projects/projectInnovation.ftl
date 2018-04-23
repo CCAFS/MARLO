@@ -98,31 +98,24 @@
             </div>
           </div>
         
-          [#-- Country(ies) (if scope is Multi-national, National or Sub-National)  --] 
-          [#-- <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices${action.hasSpecificities('crp_partners_office')?string('.required','')}" /] <small>[@customForm.req required=action.hasSpecificities('crp_partners_office') /]</small></h5> --]
-          [#-- <label for="">[@s.text name="projectInnovations.countries" /]:</label>
-          <div class="countries-list items-list simpleBox" listname="selectedLocations">
-            <ul class="">
-              [#if (element.selectedLocations?has_content)!false]
-                [#list element.selectedLocations as locElement]
-                  [@locElementMacro element=locElement!{} name="selectedLocations" index=locElement_index /]
-                [/#list]
-              [#else] 
-                <p class="message text-center">No country added</p>
-              [/#if]
-            </ul>
-            <div class="clearfix"></div>  
-            --]
-            [#-- Add Location Element --]
-            [#-- 
+          [#-- Country(ies) (if scope is Multi-national, National or Sub-National)  --]
+          <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.global)!false)?string('none','block')}" >
             [#if editable]
-              <hr />
-              <div class="form-group">
-                [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
+              [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]
+            [#else]
+              <label>[@s.text name="projectInnovations.countries" /]:</label>
+              <div class="select">
+              [#if highlight.countries?has_content]
+                [#list highlight.countries as element]
+                 <p class="checked">${element.locElement.name}</p>
+                [/#list]
+              [#else]
+                <p>Field is empty</p>
+              [/#if]
               </div>
             [/#if]
           </div>
-           --]
+          
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="panel tertiary">
            <div class="panel-head"><label for=""> [@customForm.text name="projectInnovations.nextUserOrganizationalType" readText=!editable /]:[@customForm.req required=editable /]</label></div>
@@ -217,31 +210,21 @@
           </div>
         
           [#-- Contributing CRPs/Platforms --]
-          <div class="panel tertiary">
-           <div class="panel-head"><label for=""> [@customForm.text name="projectInnovations.contributing" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-            <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
-              <ul class="list">
-              [#if deliverable.fundingSources?has_content]
-                [#list deliverable.fundingSources as element]
-                  <li class="fundingSources clearfix">
-                    [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
-                    <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
-                    <span class="name">
-                        <span>${(element.fundingSourceInfo.id)!} - </span>
-                      <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
-                    </span>
-                    <div class="clearfix"></div>
-                  </li>
+          <div class="form-group countriesBlock chosen ${customForm.changedField('highlight.countries')}" style="display:${((highlight.global)!false)?string('none','block')}" >
+            [#if editable]
+              [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectInnovations.contributing" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]
+            [#else]
+              <label>[@s.text name="projectInnovations.contributing" /]:</label>
+              <div class="select">
+              [#if highlight.countries?has_content]
+                [#list highlight.countries as element]
+                 <p class="checked">${element.locElement.name}</p>
                 [/#list]
-                <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>   
               [#else]
-                <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+                <p>Field is empty</p>
               [/#if]
-              </ul>
-              [#if editable ]
-                [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
-              [/#if] 
-            </div>
+              </div>
+            [/#if]
           </div>
           
           [#-- Selected options List --]
