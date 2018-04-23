@@ -226,11 +226,11 @@ public class ProjectInnovationAction extends BaseAction {
       // TODO Autosave
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
 
-      if (innovation) {
-        // Getting The list
-        countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
-          .collect(Collectors.toList());
-      }
+
+      // Getting The list
+      countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
+        .collect(Collectors.toList());
+
 
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
