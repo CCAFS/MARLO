@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 
@@ -42,7 +41,7 @@ public class ProjectHighLightValidator extends BaseValidator {
   private final GlobalUnitManager crpManager;
   private BaseAction baseAction;
 
-  @Inject
+
   public ProjectHighLightValidator(GlobalUnitManager crpManager) {
     super();
     this.crpManager = crpManager;
