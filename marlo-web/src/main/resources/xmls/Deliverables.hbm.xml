@@ -159,6 +159,13 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLeader" />
         </set>
+        <set name="deliverableIntellectualAssets" table="deliverable_intellectual_assets" inverse="true"
+          lazy="true" fetch="select">
+          <key>
+            <column name="deliverable" />
+          </key>
+          <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset" />
+        </set>
         
 	</class>
 </hibernate-mapping>
