@@ -145,7 +145,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
           crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
         List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
-          .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
+          .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
           .collect(Collectors.toList());
         if (!clusterKeyOutputs.isEmpty()) {
           deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
