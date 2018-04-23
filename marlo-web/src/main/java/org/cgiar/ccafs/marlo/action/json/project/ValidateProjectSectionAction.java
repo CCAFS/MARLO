@@ -142,7 +142,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateLeverage(this, this.getProjectID());
           break;
 
-        case HIGHLIGHT:
+        case HIGHLIGHTS:
           this.projectSectionValidator.validateHighlight(this, this.getProjectID());
           break;
 
@@ -325,14 +325,15 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         break;
 
-      case HIGHLIGHT:
-        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.isActive()
-            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
-          .collect(Collectors.toList());
+      case HIGHLIGHTS:
+        List<ProjectHighlight> highlights =
+          project
+            .getProjectHighligths().stream().filter(d -> d.isActive() && d
+              .getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
+            .collect(Collectors.toList());
 
         section = new HashMap<String, Object>();
-        section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHT);
+        section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHTS);
         section.put("missingFields", "");
 
 
