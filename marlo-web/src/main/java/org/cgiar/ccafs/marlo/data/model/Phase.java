@@ -107,9 +107,13 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
   private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
+  private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
+    new HashSet<DeliverableIntellectualAsset>(0);
+
 
   public Phase() {
   }
+
 
   public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
@@ -166,6 +170,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return deliverableInfos;
   }
 
+  public Set<DeliverableIntellectualAsset> getDeliverableIntellectualAssets() {
+    return deliverableIntellectualAssets;
+  }
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -206,6 +213,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return fundingSourceLocations;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
@@ -239,7 +247,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return outcomes;
   }
 
-
   public Set<ProjectPartner> getPartners() {
     return partners;
   }
@@ -249,14 +256,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return powbSynthesis;
   }
 
+
   public Set<Activity> getProjectActivites() {
     return projectActivites;
   }
 
-
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
+
 
   public Set<ProjectBudgetsCluserActvity> getProjectBudgetsActivities() {
     return projectBudgetsActivities;
@@ -269,7 +277,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
-
 
   public Set<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
@@ -310,6 +317,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectInnovationCrps;
   }
 
+
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return projectInnovationDeliverables;
   }
@@ -325,7 +333,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Set<ProjectLeverage> getProjectLeverages() {
     return projectLeverages;
   }
-
 
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
@@ -400,6 +407,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
     this.deliverableInfos = deliverableInfos;
+  }
+
+
+  public void setDeliverableIntellectualAssets(Set<DeliverableIntellectualAsset> deliverableIntellectualAssets) {
+    this.deliverableIntellectualAssets = deliverableIntellectualAssets;
   }
 
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
