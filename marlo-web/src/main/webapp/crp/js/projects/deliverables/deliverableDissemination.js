@@ -67,6 +67,16 @@ function addDisseminationEvents() {
     }
   });
 
+  // Has Intellectual Asset
+  $(".intellectualAsset .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    if(valueSelected) {
+      $(".intellectualAssetOptions").show("slow");
+    } else {
+      $(".intellectualAssetOptions").hide("slow");
+    }
+  });
+
   // Does the publication acknowledge
   $(".acknowledge .button-label").on("click", function() {
     // Do Something

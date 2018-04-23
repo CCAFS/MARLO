@@ -81,7 +81,7 @@
 [#macro isOpenaccessMacro ]
   [#local customName = "deliverable.dissemination"]
   <div class="simpleBox form-group">
-  <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
+    <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row ">
       <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req /]</label>
       <div class="col-md-3">
@@ -90,30 +90,25 @@
     </div> 
     <div class="openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
       <hr />
-      [#if editable]
+      [#local oaRestrictions = [
+        {"value": "intellectualProperty", "isChecked": (deliverable.dissemination.intellectualProperty)!false },
+        {"value": "limitedExclusivity", "isChecked": (deliverable.dissemination.limitedExclusivity)!false }
+        {"value": "restrictedUseAgreement", "isChecked": (deliverable.dissemination.restrictedUseAgreement)!false }
+        {"value": "effectiveDateRestriction", "isChecked": (deliverable.dissemination.effectiveDateRestriction)!false }
+        {"value": "notDisseminated", "isChecked": (deliverable.dissemination.notDisseminated)!false }
+      ] /]
+      
       <label for="">Select the Open Access restriction:[@customForm.req /]</label>
-      <div class="radio">
-        <label><input type="radio" name="${customName}.type" value="intellectualProperty" [#if (deliverable.dissemination.intellectualProperty)!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
-      </div>
-      <div class="radio">
-        <label><input type="radio" name="${customName}.type" value="limitedExclusivity" [#if (deliverable.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
-      </div>
-      <div class="radio">
-        <label><input type="radio" name="${customName}.type" value="restrictedUseAgreement" [#if (deliverable.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
-      </div>
-      <div class="radio">
-        <label><input type="radio" name="${customName}.type" value="effectiveDateRestriction"[#if (deliverable.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
-      </div>
-      <div class="radio">
-        <label><input type="radio" name="${customName}.type" value="notDisseminated" [#if (deliverable.dissemination.notDisseminated)!false]checked="checked"[/#if]>Not Disseminated</label>
-      </div>
-      [#else]
-        [#if (deliverable.dissemination.intellectualProperty)!false]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
-        [#if (deliverable.dissemination.limitedExclusivity)!false]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
-        [#if (deliverable.dissemination.restrictedUseAgreement)!false]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
-        [#if (deliverable.dissemination.effectiveDateRestriction)!false]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
-        [#if (deliverable.dissemination.notDisseminated)!false]<p class="checked">Not Disseminated </p>[/#if]
-      [/#if]
+      [#list oaRestrictions as restriction]
+        [#if editable]
+          <div class="radio">
+            <label><input type="radio" name="${customName}.type" value="${restriction.value}" [#if restriction.isChecked]checked="checked"[/#if]>[@s.text name="deliverable.oaRestriction.${restriction.value}" /]</label>
+          </div>
+        [#else]
+          <p class="checked">[@s.text name="deliverable.oaRestriction.${restriction.value}" /]</p>
+        [/#if]
+      [/#list]
+
       <div class="row restrictionDate-block" style="display:[#if ((deliverable.dissemination.restrictedUseAgreement)!false) || ((deliverable.dissemination.effectiveDateRestriction)!false) ]block[#else]none [/#if];">
         <div class="col-md-5">
           [@customForm.input name="${customName}.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!'restrictedAccessUntil'}" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
@@ -123,6 +118,48 @@
   </div>
 [/#macro]
 
+[#macro intellectualAsset ]
+  [#local customName = "deliverable.intellectualAsset"]
+  <div class="simpleBox form-group">
+    <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
+    <div class="row">
+      <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req /]</label>
+      <div class="col-md-3">
+        [@customForm.yesNoInput name="${customName}.hasIntellectualAsset"  editable=editable cssClass="intellectualAsset text-center" /]  
+      </div>
+    </div> 
+    <div class="intellectualAssetOptions radio-block" style="display: ${((deliverable.intellectualAsset.hasIntellectualAsset)!false)?string("block","none")};">
+      <hr />
+      [#-- Applicant(s) / owner(s) (Center or partner) --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.applicants" i18nkey="deliverable.intellectualAsset.applicants" className="" required=true editable=editable /]
+      </div>
+      [#-- Type --]
+      <div class="form-group">
+        <label for="">[@s.text name="deliverable.intellectualAsset.type" /]:[@customForm.req required=editable /] </label><br />
+        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="patent"  checked=((element.intellectualAsset.type == "patent")!false) cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="pvp"     checked=!((element.intellectualAsset.type == "pvp")!true) cssClass="" cssClassLabel=""/]
+      </div>
+      [#-- Title --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.title" i18nkey="deliverable.intellectualAsset.title" help="deliverable.intellectualAsset.title.help" className="" required=true editable=editable /]
+      </div>
+      [#-- Additional information --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.additionalInformation" i18nkey="deliverable.intellectualAsset.additionalInformation" className="" required=true editable=editable /]
+      </div>
+      [#-- Link of published application/ registration --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.link" i18nkey="deliverable.intellectualAsset.link" className="" required=true editable=editable /]
+      </div>
+      [#-- Public communication relevant to the application/registration --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.publicCommunication" i18nkey="deliverable.intellectualAsset.publicCommunication" className="" required=true editable=editable /]
+      </div>
+      
+    </div>
+  </div>
+[/#macro]
 
 [#macro alreadyDisseminatedMacro ]
 <div class="simpleBox form-group">
