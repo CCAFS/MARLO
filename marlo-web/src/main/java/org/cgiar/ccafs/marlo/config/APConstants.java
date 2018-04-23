@@ -567,8 +567,11 @@ public final class APConstants {
   public static final String DELIVERABLE_RULE_COMPILANCE_CHECK = "complianceCheck";
   public static final String DELIVERABLE_RULE_JORNAL_ARTICLES = "journalArticles";
 
-  public static final String PROJECT_PARTNER_PARTNERSHIP_GLOBAL = "Global";
-  public static final String PROJECT_PARTNER_PARTNERSHIP_REGIONAL = "Regional";
+  public static final long PROJECT_PARTNER_PARTNERSHIP_GLOBAL = 1;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_REGIONAL = 2;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_MULTI_NATIONAL = 3;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_NATIONAL = 4;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_SUB_NATIONAL = 5;
 
 
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;

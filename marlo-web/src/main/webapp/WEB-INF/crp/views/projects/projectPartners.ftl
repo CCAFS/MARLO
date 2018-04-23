@@ -337,10 +337,10 @@
         <h5 class="sectionSubTitle">Partnership</h5>
         <div class="${reportingActive?string('fieldFocus','')}">
           [#assign customPartnershipName = "${name}.projectPartnerPartnership"]
-          [#assign isRegional = ((element.projectPartnerPartnership.geographicScope.id == 2)!false) ]
-          [#assign isMultiNational = ((element.projectPartnerPartnership.geographicScope.id == 3)!false) ]
-          [#assign isNational = ((element.projectPartnerPartnership.geographicScope.id == 4)!false) ]
-          [#assign isSubNational = ((element.projectPartnerPartnership.geographicScope.id == 5)!false) ]
+          [#assign isRegional = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeGlobal)!false) ]
+          [#assign isMultiNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
+          [#assign isNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
+          [#assign isSubNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
           
           [#-- Hidden Inputs --]
           <input type="hidden" name="${name}.projectPartnerPartnership.id" value="${(element.projectPartnerPartnership.id)!}"/>

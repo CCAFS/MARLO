@@ -3368,6 +3368,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return "---";
   }
 
+  public long getReportingIndGeographicScopeGlobal() {
+    return APConstants.PROJECT_PARTNER_PARTNERSHIP_GLOBAL;
+  }
+
+  public long getReportingIndGeographicScopeMultiNational() {
+    return APConstants.PROJECT_PARTNER_PARTNERSHIP_MULTI_NATIONAL;
+  }
+
+  public long getReportingIndGeographicScopeNational() {
+    return APConstants.PROJECT_PARTNER_PARTNERSHIP_NATIONAL;
+  }
+
+  public long getReportingIndGeographicScopeRegional() {
+    return APConstants.PROJECT_PARTNER_PARTNERSHIP_REGIONAL;
+  }
+
+  public long getReportingIndGeographicScopeSubNational() {
+    return APConstants.PROJECT_PARTNER_PARTNERSHIP_SUB_NATIONAL;
+  }
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }

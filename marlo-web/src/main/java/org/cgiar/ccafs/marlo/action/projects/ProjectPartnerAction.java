@@ -1682,14 +1682,14 @@ public class ProjectPartnerAction extends BaseAction {
           repIndGeographicScopeManager.getRepIndGeographicScopeById(partnershipUpdate.getGeographicScope().getId());
 
         // Global
-        if (repIndGeographicScope.getName().equals(APConstants.PROJECT_PARTNER_PARTNERSHIP_GLOBAL)) {
+        if (repIndGeographicScope.getId().equals(this.getReportingIndGeographicScopeGlobal())) {
 
           partnershipUpdate.setRegion(null);
           this.deletePartnershipLocations(locationsDB);
 
         } else
         // Regional
-        if (repIndGeographicScope.getName().equals(APConstants.PROJECT_PARTNER_PARTNERSHIP_REGIONAL)) {
+        if (repIndGeographicScope.getId().equals(this.getReportingIndGeographicScopeRegional())) {
 
           if (partnershipClient.getRegion() != null && partnershipClient.getRegion().getId() != -1) {
             partnershipUpdate.setRegion(partnershipClient.getRegion());
@@ -1737,6 +1737,7 @@ public class ProjectPartnerAction extends BaseAction {
       } else {
         partnershipUpdate.setGeographicScope(null);
         partnershipUpdate.setRegion(null);
+        this.deletePartnershipLocations(locationsDB);
       }
 
 
