@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,6 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   @Expose
   private User modifiedBy;
 
@@ -40,6 +40,7 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
@@ -49,26 +50,44 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
 
   private ProjectInnovationInfo projectInnovationInfo;
 
+
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
+
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
   private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
   private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
     new HashSet<ProjectInnovationDeliverable>(0);
+  private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
+
+  private List<Long> countriesIds = new ArrayList<>();
+  private List<ProjectInnovationOrganization> organizations;
+  private List<ProjectInnovationDeliverable> deliverables;
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public List<Long> getCountriesIds() {
+    return countriesIds;
   }
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+  public List<ProjectInnovationDeliverable> getDeliverables() {
+    return deliverables;
+  }
+
   @Override
   public Long getId() {
     return id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -87,12 +106,20 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public List<ProjectInnovationOrganization> getOrganizations() {
+    return organizations;
+  }
+
   public Project getProject() {
     return project;
   }
 
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return projectInnovationCountries;
+  }
+
+  public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
+    return projectInnovationCrps;
   }
 
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
@@ -144,14 +171,21 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+  public void setCountriesIds(List<Long> countriesIds) {
+    this.countriesIds = countriesIds;
+  }
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setDeliverables(List<ProjectInnovationDeliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -161,12 +195,21 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
+  public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
+    this.organizations = organizations;
+  }
+
   public void setProject(Project project) {
     this.project = project;
   }
 
   public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
     this.projectInnovationCountries = projectInnovationCountries;
+  }
+
+  public void setProjectInnovationCrps(Set<ProjectInnovationCrp> projectInnovationCrps) {
+    this.projectInnovationCrps = projectInnovationCrps;
   }
 
   public void setProjectInnovationDeliverables(Set<ProjectInnovationDeliverable> projectInnovationDeliverables) {

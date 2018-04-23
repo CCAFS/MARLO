@@ -261,5 +261,6 @@
     <mapping resource="xmls/ProjectInnovationCountries.hbm.xml"/>
     <mapping resource="xmls/ProjectInnovationDeliverables.hbm.xml"/>
     <mapping resource="xmls/ProjectInnovationOrganizations.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationCrps.hbm.xml"/>    
 	</session-factory>
 </hibernate-configuration>

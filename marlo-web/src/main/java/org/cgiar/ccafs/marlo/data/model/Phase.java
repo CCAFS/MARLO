@@ -26,7 +26,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   private GlobalUnit crp;
 
 
@@ -40,6 +39,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Boolean editable;
+
 
   @Expose
   private Boolean visible;
@@ -55,24 +55,23 @@ public class Phase implements java.io.Serializable, IAuditLog {
   @Expose
   private Date endDate;
 
-
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
+
+
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
+
 
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
+
   private Set<CrpPpaPartner> crpPpaPartner = new HashSet<CrpPpaPartner>(0);
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
-
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
 
-
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
-
-
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
 
 
@@ -80,15 +79,19 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
 
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
+
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
+
   private Set<FundingSourceInfo> fundingSourceInfo = new HashSet<FundingSourceInfo>(0);
-
-
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
 
   private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
+
+
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
+
   private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
   private Set<ProjectExpectedStudy> projectExpectedStudies = new HashSet<ProjectExpectedStudy>(0);
   private Set<ProjectBudgetsFlagship> projectBudgetsFlagships = new HashSet<ProjectBudgetsFlagship>(0);
@@ -103,6 +106,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
+  private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
 
   public Phase() {
   }
@@ -154,11 +158,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return crpPpaPartner;
   }
 
-
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
-
 
   public Set<DeliverableInfo> getDeliverableInfos() {
     return deliverableInfos;
@@ -194,9 +196,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return fundingSourceInfo;
   }
 
+
   public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
+
 
   public Set<FundingSourceLocation> getFundingSourceLocations() {
     return fundingSourceLocations;
@@ -227,15 +231,14 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return u;
   }
 
-
   public Phase getNext() {
     return next;
   }
 
-
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   public Set<ProjectPartner> getPartners() {
     return partners;
@@ -250,6 +253,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectActivites;
   }
 
+
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
@@ -258,11 +262,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectBudgetsActivities;
   }
 
-
   public Set<ProjectBudgetsFlagship> getProjectBudgetsFlagships() {
     return projectBudgetsFlagships;
   }
-
 
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
@@ -298,8 +300,14 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectInfos;
   }
 
+
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return projectInnovationCountries;
+  }
+
+
+  public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
+    return projectInnovationCrps;
   }
 
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
@@ -313,7 +321,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
     return projectInnovationOrganizations;
   }
-
 
   public Set<ProjectLeverage> getProjectLeverages() {
     return projectLeverages;
@@ -390,6 +397,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.deliverableFundingSources = deliverableFundingSources;
   }
 
+
   public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
     this.deliverableInfos = deliverableInfos;
   }
@@ -397,7 +405,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
-
 
   public void setDescription(String description) {
     this.description = description;
@@ -408,10 +415,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.editable = editable;
   }
 
+
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
-
 
   public void setFundingSourceBudgets(Set<FundingSourceBudget> fundingSourceBudgets) {
     this.fundingSourceBudgets = fundingSourceBudgets;
@@ -422,6 +429,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.fundingSourceInfo = fundingSourceInfo;
   }
 
+
   public void setFundingSourceInstitutions(Set<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
   }
@@ -429,7 +437,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
     this.fundingSourceLocations = fundingSourceLocations;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -450,14 +457,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.partners = partners;
   }
 
+
   public void setPowbSynthesis(Set<PowbSynthesis> powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
 
-
   public void setProjectActivites(Set<Activity> projectActivites) {
     this.projectActivites = projectActivites;
   }
+
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
     this.projectBudgets = projectBudgets;
@@ -467,10 +475,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.projectBudgetsActivities = projectBudgetsActivities;
   }
 
-
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;
   }
+
 
   public void setProjectClusters(Set<ProjectClusterActivity> projectClusters) {
     this.projectClusters = projectClusters;
@@ -479,7 +487,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setProjectExpectedStudies(Set<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
   }
-
 
   public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
     this.projectFocuses = projectFocuses;
@@ -495,6 +502,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.projectHighlightInfos = projectHighlightInfos;
   }
 
+
   public void setProjectHighligthsTypes(Set<ProjectHighlightType> projectHighligthsTypes) {
     this.projectHighligthsTypes = projectHighligthsTypes;
   }
@@ -505,6 +513,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
     this.projectInnovationCountries = projectInnovationCountries;
+  }
+
+  public void setProjectInnovationCrps(Set<ProjectInnovationCrp> projectInnovationCrps) {
+    this.projectInnovationCrps = projectInnovationCrps;
   }
 
   public void setProjectInnovationDeliverables(Set<ProjectInnovationDeliverable> projectInnovationDeliverables) {

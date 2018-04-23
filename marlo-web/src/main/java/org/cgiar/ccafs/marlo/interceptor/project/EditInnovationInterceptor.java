@@ -76,7 +76,7 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
     }
   }
 
-  void setPermissionParameters(ActionInvocation invocation) {
+  void setPermissionParameters(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
