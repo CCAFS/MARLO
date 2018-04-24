@@ -53,10 +53,14 @@ public class ProjectInnovationCrp implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getComposedName() {
+    return this.getGlobalUnit().getComposedName();
+  }
+
+
   public GlobalUnit getGlobalUnit() {
     return globalUnit;
   }
-
 
   @Override
   public Long getId() {
@@ -89,6 +93,10 @@ public class ProjectInnovationCrp implements java.io.Serializable, IAuditLog {
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  public GlobalUnit getRelationship() {
+    return globalUnit;
   }
 
   @Override
