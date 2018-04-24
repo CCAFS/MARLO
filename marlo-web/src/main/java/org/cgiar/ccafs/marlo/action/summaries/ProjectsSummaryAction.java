@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -359,6 +360,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(projectExpectedStudy);
+      }
+      for (ExpectedStudyProject expectedStudyProject : globalUnitProject.getProject().getExpectedStudyProjects()
+        .stream().filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
+        projectExpectedStudySet.add(expectedStudyProject.getProjectExpectedStudy());
       }
       Integer expectedStudies = projectExpectedStudySet.size();
 
