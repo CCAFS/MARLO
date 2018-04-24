@@ -2351,6 +2351,7 @@ public class DeliverableAction extends BaseAction {
   private void saveUpdateDeliverablePartnershipResponsible(DeliverablePartnership partnershipResponsibleDB,
     DeliverablePartnership partnershipResponsibleManaged) {
     if (partnershipResponsibleManaged.getProjectPartner() != null
+      && partnershipResponsibleManaged.getProjectPartner().getId() != null
       && partnershipResponsibleManaged.getProjectPartner().getId() != -1) {
       partnershipResponsibleManaged.setProjectPartner(
         projectPartnerManager.getProjectPartnerById(partnershipResponsibleManaged.getProjectPartner().getId()));
