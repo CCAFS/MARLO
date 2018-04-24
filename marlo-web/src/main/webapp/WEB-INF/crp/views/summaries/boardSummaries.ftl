@@ -116,7 +116,8 @@
       "namespace": "/projects",
       "action": "${crpSession}/expectedDeliverablesSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Planning" ]
+      "cycles": [ "Planning" ],
+      "allowPpaPartners": action.hasSpecificities("crp_report_deliverable_ppa_filter") 
     },
     { "active": true,
       "available": false,
@@ -294,6 +295,15 @@
       [#--  Partner Type --]
       [#if report.partnerType??]
       <input type="hidden" name="partnerType" value="${report.partnerType}" />
+      [/#if]
+      
+      [#--  PPA Partners --]
+      [#if (report.allowPpaPartners)!false ]
+      <div class="form-group row">
+        <div class="col-md-10">
+          [@customForm.select name="ppaPartnerID" label="" i18nkey="summaries.board.report.selectPPA" listName="ppaPartners" placeholder="All Institutions" keyFieldName="id" displayFieldName="institution.composedName" className="" /]
+        </div>
+      </div>
       [/#if]
       
       [#-- Generate Button--]
