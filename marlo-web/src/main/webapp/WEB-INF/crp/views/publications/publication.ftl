@@ -11,7 +11,7 @@
   "${baseUrl}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css" ] /]
-[#assign currentSection = "publications" /]
+[#assign currentSection = "additionalReporting" /]
 
 [#assign breadCrumb = [
   {"label":"publicationsList", "nameSpace":"publications", "action":"${crpSession}/publicationsList"},
