@@ -40,7 +40,8 @@ function onChangeRadioButton() {
 }
 
 function onSelectElement() {
-  var thisValue = this.value === "true";
+  var $select = $(this);
+  var $option = $select.find('option:selected');
   var elementType = $(this).classParam('elementType');
   var maxLimit = $(this).classParam('maxLimit');
   var $list = $('.listType-' + elementType);
@@ -51,17 +52,43 @@ function onSelectElement() {
     return;
   }
 
-  var $element = $('#keyContributor-template').clone(true).removeAttr("id");
+  // Verify repeated selection
+  if($list.find('.elementRelationID[value="' + $option.val() + '"]').length) {
+    $select.val('-1').trigger('change.select2');
+    $select.parent().animateCss('shake');
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'It was already selected';
+    noty(notyOptions);
+    return;
+  }
 
-  $element.appendTo($list).hide().show('slow');
+  // Clone the new element
+  var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
+  // Set attributes
+  $element.find('.elementRelationID').val($option.val());
+  $element.find('.elementName').html($option.text());
+  // Show the element
+  $element.appendTo($list).hide().show('slow', function() {
+    $select.val('-1').trigger('change.select2');
+  });
+
+  // Update indexes
+  $list.find('li.relationElement').each(function(i,element) {
+    $(element).setNameIndexes(1, i);
+  });
 }
 
 function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
-
+  var $list = $('.listType-' + removeElementType);
   $parent.slideUp(function() {
     $parent.remove();
+
+    // Update indexes
+    $list.find('li.relationElement').each(function(i,element) {
+      $(element).setNameIndexes(1, i);
+    });
   });
 }
 
