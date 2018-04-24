@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
@@ -60,6 +61,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -266,6 +268,8 @@ public class DeliverableAction extends BaseAction {
 
   private Map<Long, String> crossCuttingScoresMap;
 
+  private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -285,7 +289,8 @@ public class DeliverableAction extends BaseAction {
     DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
     IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager,
     RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager,
-    CrossCuttingScoringManager crossCuttingManager, CrpProgramManager crpProgramManager) {
+    CrossCuttingScoringManager crossCuttingManager, CrpProgramManager crpProgramManager,
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -320,6 +325,7 @@ public class DeliverableAction extends BaseAction {
     this.repositoryChannelManager = repositoryChannelManager;
     this.crossCuttingManager = crossCuttingManager;
     this.crpProgramManager = crpProgramManager;
+    this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
   }
 
 
@@ -1061,6 +1067,14 @@ public class DeliverableAction extends BaseAction {
           deliverable.setQualityCheck(checks.get(0));
         }
       }
+      if (deliverable.getDeliverableQualityChecks() != null) {
+        List<DeliverableQualityCheck> checks = new ArrayList<>(deliverable.getDeliverableQualityChecks().stream()
+          .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
+        if (!checks.isEmpty()) {
+          deliverable.setQualityCheck(checks.get(0));
+        }
+      }
 
     } else {
       deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -1155,19 +1169,6 @@ public class DeliverableAction extends BaseAction {
               deliverable.getQualityCheck().setFileDictionary(db);
             }
           }
-
-          if (deliverable.getQualityCheck().getFileTools() != null) {
-            if (deliverable.getQualityCheck().getFileTools().getId() != null) {
-              FileDB db;
-              // Set FileDB to null if an error occur (-1 id)
-              try {
-                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
-              } catch (IllegalArgumentException e) {
-                db = null;
-              }
-              deliverable.getQualityCheck().setFileTools(db);
-            }
-          }
         }
 
 
@@ -1260,6 +1261,17 @@ public class DeliverableAction extends BaseAction {
             deFile.setId(dataSharingFile.getId());
             deFile.setSize(0);
             deliverable.getFiles().add(deFile);
+          }
+          if (deliverable.getDeliverableIntellectualAssets() != null) {
+            List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+              .stream().filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+            if (intellectualAssets.size() > 0) {
+              deliverable.setIntellectualAsset(intellectualAssets.get(0));
+            } else {
+              deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+            }
+
           }
         }
 
@@ -1626,7 +1638,6 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
         }
-        deliverable.setDissemination(null);
       }
 
       try {
@@ -1781,8 +1792,6 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-
-
         }
         this.saveDissemination();
         this.saveMetadata();
@@ -1790,6 +1799,7 @@ public class DeliverableAction extends BaseAction {
         this.savePublicationMetadata();
         this.saveDataSharing();
         this.saveUsers();
+        this.saveIntellectualAsset();
       }
 
       deliverableManagedState.getDeliverableInfo(this.getActualPhase()).setModifiedBy(this.getCurrentUser());
@@ -1810,6 +1820,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
+        relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
       }
       deliverableManagedState.setActiveSince(new Date());
       deliverableManagedState.setCreatedBy(this.getCurrentUser());
@@ -1930,6 +1941,7 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
+
 
   private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
     if (deliverable.getGenderLevels() != null) {
@@ -2104,6 +2116,44 @@ public class DeliverableAction extends BaseAction {
     }
 
 
+  }
+
+  private void saveIntellectualAsset() {
+    if (deliverable.getIntellectualAsset() != null) {
+      DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
+
+      if (deliverable.getIntellectualAsset().getId() != null && deliverable.getIntellectualAsset().getId() != -1) {
+        intellectualAsset = deliverableIntellectualAssetManager
+          .getDeliverableIntellectualAssetById(deliverable.getIntellectualAsset().getId());
+
+      } else {
+        intellectualAsset = new DeliverableIntellectualAsset();
+        intellectualAsset.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+        intellectualAsset.setPhase(this.getActualPhase());
+      }
+
+      intellectualAsset.setHasPatentPvp(deliverable.getIntellectualAsset().getHasPatentPvp());
+      if (intellectualAsset.getHasPatentPvp() != null) {
+
+        if (intellectualAsset.getHasPatentPvp()) {
+          intellectualAsset.setAdditionalInformation(deliverable.getIntellectualAsset().getAdditionalInformation());
+          intellectualAsset.setApplicant(deliverable.getIntellectualAsset().getApplicant());
+          intellectualAsset.setLink(deliverable.getIntellectualAsset().getLink());
+          intellectualAsset.setPublicCommunication(deliverable.getIntellectualAsset().getPublicCommunication());
+          intellectualAsset.setTitle(deliverable.getIntellectualAsset().getTitle());
+          intellectualAsset.setType(deliverable.getIntellectualAsset().getType());
+        } else {
+          intellectualAsset.setAdditionalInformation(null);
+          intellectualAsset.setApplicant(null);
+          intellectualAsset.setLink(null);
+          intellectualAsset.setPublicCommunication(null);
+          intellectualAsset.setTitle(null);
+          intellectualAsset.setType(null);
+        }
+
+        deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAsset);
+      }
+    }
   }
 
 

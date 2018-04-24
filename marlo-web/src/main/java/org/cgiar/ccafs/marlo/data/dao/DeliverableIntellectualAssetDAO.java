@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -55,11 +57,15 @@ public interface DeliverableIntellectualAssetDAO {
   public List<DeliverableIntellectualAsset> findAll();
 
 
+  public DeliverableIntellectualAsset findIntellectualAssetByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
+
   /**
    * This method saves the information of the given deliverableIntellectualAsset
    * 
-   * @param deliverableIntellectualAsset - is the deliverableIntellectualAsset object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableIntellectualAsset was
+   * @param deliverableIntellectualAsset - is the deliverableIntellectualAsset object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableIntellectualAsset was
    *         updated
    *         or -1 is some error occurred.
    */

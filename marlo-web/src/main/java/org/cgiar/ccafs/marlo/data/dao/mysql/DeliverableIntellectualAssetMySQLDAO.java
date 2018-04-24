@@ -17,13 +17,16 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableIntellectualAssetDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -67,6 +70,22 @@ public class DeliverableIntellectualAssetMySQLDAO extends AbstractMarloDAO<Deliv
     }
     return null;
 
+  }
+
+  @Override
+  public DeliverableIntellectualAsset findIntellectualAssetByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    String query = "select distinct di from DeliverableIntellectualAsset di "
+      + " where phase.id = :phaseId and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+
+    Object findSingleResult = super.findSingleResult(DeliverableIntellectualAsset.class, createQuery);
+
+    DeliverableIntellectualAsset deliverableIntellectualAssetResult = (DeliverableIntellectualAsset) findSingleResult;
+
+
+    return deliverableIntellectualAssetResult;
   }
 
   @Override
