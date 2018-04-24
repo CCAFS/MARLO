@@ -393,6 +393,24 @@ public class ProjectInnovationAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_INNOVATIONS_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      if (innovation.getCountries() != null) {
+        innovation.getCountries().clear();
+      }
+
+      if (innovation.getOrganizations() != null) {
+        innovation.getOrganizations().clear();
+      }
+
+      if (innovation.getCrps() != null) {
+        innovation.getCrps().clear();
+      }
+
+      if (innovation.getDeliverables() != null) {
+        innovation.getDeliverables().clear();
+      }
+    }
   }
 
 
@@ -400,6 +418,11 @@ public class ProjectInnovationAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
+      Phase phase = this.getActualPhase();
+
+      this.saveOrganizations(innovationDB, phase);
+      this.saveDeliverables(innovationDB, phase);
+      this.saveCrps(innovationDB, phase);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_INNOVATION_COUNTRY_RELATION);
@@ -451,6 +474,82 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
+   * Save Project Innovation Crp Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveCrps(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationCrps() != null
+      && projectInnovation.getProjectInnovationCrps().size() > 0) {
+
+      List<ProjectInnovationCrp> crpPrev = new ArrayList<>(projectInnovation.getProjectInnovationCrps().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectInnovationCrp innovationCrp : crpPrev) {
+        if (!innovation.getCrps().contains(innovationCrp)) {
+          projectInnovationCrpManager.deleteProjectInnovationCrp(innovationCrp.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getCrps() != null) {
+      for (ProjectInnovationCrp innovationCrp : innovation.getCrps()) {
+        if (innovationCrp.getId() == null) {
+          ProjectInnovationCrp innovationCrpSave = new ProjectInnovationCrp();
+          innovationCrpSave.setProjectInnovation(projectInnovation);
+          innovationCrpSave.setPhase(phase);
+
+          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(innovationCrp.getGlobalUnit().getId());
+
+          innovationCrpSave.setGlobalUnit(globalUnit);
+
+          projectInnovationCrpManager.saveProjectInnovationCrp(innovationCrpSave);
+        }
+      }
+    }
+  }
+
+  public void saveDeliverables(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationDeliverables() != null
+      && projectInnovation.getProjectInnovationDeliverables().size() > 0) {
+
+      List<ProjectInnovationDeliverable> deliverablePrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationDeliverables().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectInnovationDeliverable innovationDeliverable : deliverablePrev) {
+        if (!innovation.getDeliverables().contains(innovationDeliverable)) {
+          projectInnovationDeliverableManager.deleteProjectInnovationDeliverable(innovationDeliverable.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getDeliverables() != null) {
+      for (ProjectInnovationDeliverable innovationDeliverable : innovation.getDeliverables()) {
+        if (innovationDeliverable.getId() == null) {
+          ProjectInnovationDeliverable innovationDeliverableSave = new ProjectInnovationDeliverable();
+          innovationDeliverableSave.setProjectInnovation(projectInnovation);
+          innovationDeliverableSave.setPhase(phase);
+
+          Deliverable deliverable =
+            deriverableManager.getDeliverableById(innovationDeliverable.getDeliverable().getId());
+
+          innovationDeliverableSave.setDeliverable(deliverable);
+
+          projectInnovationDeliverableManager.saveProjectInnovationDeliverable(innovationDeliverableSave);
+        }
+      }
+    }
+  }
+
+  /**
    * Save Project Innovation Organization Information
    * 
    * @param projectInnovation
@@ -458,7 +557,7 @@ public class ProjectInnovationAction extends BaseAction {
    */
   public void saveOrganizations(ProjectInnovation projectInnovation, Phase phase) {
 
-    // Search and Delete Info
+    // Search and deleted form Information
     if (projectInnovation.getProjectInnovationOrganizations() != null
       && projectInnovation.getProjectInnovationOrganizations().size() > 0) {
 
@@ -469,6 +568,24 @@ public class ProjectInnovationAction extends BaseAction {
       for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
         if (!innovation.getOrganizations().contains(innovationOrganization)) {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getOrganizations() != null) {
+      for (ProjectInnovationOrganization innovationOrganization : innovation.getOrganizations()) {
+        if (innovationOrganization.getId() == null) {
+          ProjectInnovationOrganization innovationOrganizationSave = new ProjectInnovationOrganization();
+          innovationOrganizationSave.setProjectInnovation(projectInnovation);
+          innovationOrganizationSave.setPhase(phase);
+
+          RepIndOrganizationType repIndOrganizationType = repIndOrganizationTypeManager
+            .getRepIndOrganizationTypeById(innovationOrganization.getRepIndOrganizationType().getId());
+
+          innovationOrganizationSave.setRepIndOrganizationType(repIndOrganizationType);
+
+          projectInnovationOrganizationManager.saveProjectInnovationOrganization(innovationOrganizationSave);
         }
       }
     }
