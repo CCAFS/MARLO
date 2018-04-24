@@ -176,10 +176,13 @@
               </div>
             </div>
           </div>
-          
         </div>
+      </div>
+        
+      [#-- Section Buttons & hidden inputs--]
+      [#include "/WEB-INF/crp/views/projects/buttons-innovation.ftl" /]
+        
       [/@s.form] 
-    </div>
   </div>  
 </section>
 [/#if]
