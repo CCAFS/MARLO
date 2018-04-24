@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
@@ -824,65 +825,61 @@ public class FundingSourceAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      // FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-      // FundingSourceInfo funginsSourceInfoDB =
-      // fundingSourceInfoManager.getFundingSourceInfoById(fundingSource.getFundingSourceInfo().getId());
+      FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+      FundingSourceInfo fundingSourceInfoDB =
+        fundingSourceInfoManager.getFundingSourceInfoById(fundingSource.getFundingSourceInfo().getId());
 
       // if donor has a select option, no option put donor null
       if (fundingSource.getFundingSourceInfo().getDirectDonor() != null
         && fundingSource.getFundingSourceInfo().getDirectDonor().getId() != null
         && fundingSource.getFundingSourceInfo().getDirectDonor().getId().longValue() != -1) {
-        fundingSource.getFundingSourceInfo().setDirectDonor(fundingSource.getFundingSourceInfo().getDirectDonor());
+        fundingSourceInfoDB.setDirectDonor(fundingSource.getFundingSourceInfo().getDirectDonor());
       } else {
-        fundingSource.getFundingSourceInfo().setDirectDonor(null);
+        fundingSourceInfoDB.setDirectDonor(null);
       }
       if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null
         && fundingSource.getFundingSourceInfo().getOriginalDonor().getId() != null
         && fundingSource.getFundingSourceInfo().getOriginalDonor().getId().longValue() != -1) {
-        fundingSource.getFundingSourceInfo().setOriginalDonor(fundingSource.getFundingSourceInfo().getOriginalDonor());
+        fundingSourceInfoDB.setOriginalDonor(fundingSource.getFundingSourceInfo().getOriginalDonor());
       } else {
-        fundingSource.getFundingSourceInfo().setOriginalDonor(null);
+        fundingSourceInfoDB.setOriginalDonor(null);
       }
 
-      fundingSource.getFundingSourceInfo().setTitle(fundingSource.getFundingSourceInfo().getTitle());
-      fundingSource.getFundingSourceInfo().setStatus(fundingSource.getFundingSourceInfo().getStatus());
-      fundingSource.getFundingSourceInfo().setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
-      fundingSource.getFundingSourceInfo().setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
-      fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
-      fundingSource.getFundingSourceInfo()
-        .setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
-      fundingSource.getFundingSourceInfo().setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
+      fundingSourceInfoDB.setTitle(fundingSource.getFundingSourceInfo().getTitle());
+      fundingSourceInfoDB.setStatus(fundingSource.getFundingSourceInfo().getStatus());
+      fundingSourceInfoDB.setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
+      fundingSourceInfoDB.setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
+      fundingSourceInfoDB.setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
+      fundingSourceInfoDB.setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
+      fundingSourceInfoDB.setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
 
-      fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
-      fundingSource.getFundingSourceInfo()
-        .setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
-      fundingSource.getFundingSourceInfo()
-        .setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
-      fundingSource.getFundingSourceInfo().setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
+      fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
+      fundingSourceInfoDB.setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
+      fundingSourceInfoDB.setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
+      fundingSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
 
-      fundingSource.setBudgets(fundingSource.getBudgets());
+      fundingSourceDB.setBudgets(fundingSource.getBudgets());
 
       if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null
         || fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null
         || fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
-        fundingSource.getFundingSourceInfo().setPartnerDivision(null);
+        fundingSourceInfoDB.setPartnerDivision(null);
       } else {
-        fundingSource.getFundingSourceInfo()
-          .setPartnerDivision(fundingSource.getFundingSourceInfo().getPartnerDivision());
+        fundingSourceInfoDB.setPartnerDivision(fundingSource.getFundingSourceInfo().getPartnerDivision());
       }
 
       if (fundingSource.getFundingSourceInfo().getW1w2() == null) {
-        fundingSource.getFundingSourceInfo().setW1w2(false);
+        fundingSourceInfoDB.setW1w2(false);
       } else {
-        fundingSource.getFundingSourceInfo().setW1w2(true);
+        fundingSourceInfoDB.setW1w2(true);
       }
-      fundingSource.getFundingSourceInfo().setDescription(fundingSource.getFundingSourceInfo().getDescription());
+      fundingSourceInfoDB.setDescription(fundingSource.getFundingSourceInfo().getDescription());
 
       if (fundingSource.getFundingSourceInfo().getFile() != null) {
         if (fundingSource.getFundingSourceInfo().getFile().getId() == null) {
           fundingSource.getFundingSourceInfo().setFile(null);
         } else {
-          fundingSource.getFundingSourceInfo().setFile(fundingSource.getFundingSourceInfo().getFile());
+          fundingSourceInfoDB.setFile(fundingSource.getFundingSourceInfo().getFile());
         }
       }
 
@@ -894,14 +891,13 @@ public class FundingSourceAction extends BaseAction {
 
             if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
               if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
-                fundingSource.getFundingSourceInfo().setFileResearch(null);
+                fundingSourceInfoDB.setFileResearch(null);
               } else {
-                fundingSource.getFundingSourceInfo()
-                  .setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+                fundingSourceInfoDB.setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
               }
             }
           } else {
-            fundingSource.getFundingSourceInfo().setFileResearch(null);
+            fundingSourceInfoDB.setFileResearch(null);
           }
         }
       }
@@ -928,21 +924,22 @@ public class FundingSourceAction extends BaseAction {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
 
           if (fundingSourceBudget.getId() == null) {
-            fundingSourceBudget.setFundingSource(fundingSource);
+            fundingSourceBudget.setFundingSource(fundingSourceDB);
             fundingSourceBudget.setPhase(this.getActualPhase());
-            fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+            fundingSourceBudget = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           } else {
-            fundingSourceBudget.setFundingSource(fundingSource);
-            fundingSourceBudget.setPhase(this.getActualPhase());
-            fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+            FundingSourceBudget fundingSourceBudgetDB =
+              fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
+            fundingSourceBudgetDB.setBudget(fundingSourceBudget.getBudget());
+            fundingSourceBudgetDB.setFundingSource(fundingSourceDB);
+            fundingSourceBudgetDB.setPhase(this.getActualPhase());
+            fundingSourceBudgetDB = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudgetDB);
           }
 
 
         }
       }
 
-
-      FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
       // if remove some institution or add new we call clearPermissionsCache to refresh permissions -CGARCIA
       boolean instituionsEdited = false;
       if (fundingSource.getInstitutions() != null) {
@@ -965,8 +962,13 @@ public class FundingSourceAction extends BaseAction {
               fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
             instituionsEdited = true;
           } else {
-            fundingSourceInstitutionManager.saveFundingSourceInstitution(
-              fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId()));
+            /**
+             * Looks like there are no fields to update.
+             */
+            // FundingSourceInstitution fundingSourceInstitutionDB =
+            // fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId());
+            // fundingSourceInstitutionDB.setFundingSource(fundingSourceDB);
+            // fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitutionDB);
 
           }
 
@@ -990,17 +992,21 @@ public class FundingSourceAction extends BaseAction {
       relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
       // fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
-      fundingSource.getFundingSourceInfo().setPhase(this.getActualPhase());
-      fundingSource.getFundingSourceInfo().setFundingSource(fundingSource);
+      fundingSourceInfoDB.setPhase(this.getActualPhase());
+      fundingSourceInfoDB.setFundingSource(fundingSource);
       if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null
         && (fundingSource.getFundingSourceInfo().getOriginalDonor().getId() == null
           || fundingSource.getFundingSourceInfo().getOriginalDonor().getId() <= 0)) {
-        fundingSource.getFundingSourceInfo().setOriginalDonor(null);
+        fundingSourceInfoDB.setOriginalDonor(null);
       }
-      fundingSourceInfoManager.saveFundingSourceInfo(fundingSource.getFundingSourceInfo());
+      /**
+       * 
+       */
+      fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfoDB);
 
-      fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-      fundingSourceManager.saveFundingSource(fundingSource, this.getActionName(), relationsName, this.getActualPhase());
+
+      fundingSourceDB = fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName,
+        this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
 
@@ -1097,8 +1103,11 @@ public class FundingSourceAction extends BaseAction {
 
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         } else {
-          fundingSourceLocationsManager.saveFundingSourceLocations(
-            fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId()));
+          // Looks like we don't need to do anything here.
+          // FundingSourceLocation fundingSourceLocationDB =
+          // fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId());
+          // fundingSourceLocationDB.setSomething
+          // fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationDB);
 
         }
       }
@@ -1136,8 +1145,10 @@ public class FundingSourceAction extends BaseAction {
 
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         } else {
-          fundingSourceLocationsManager.saveFundingSourceLocations(
-            fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId()));
+          // Looks like we don't need to do anything.
+          // FundingSourceLocation fundingSourceLocationDB =
+          // fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId());
+          // fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationDB);
 
         }
       }
