@@ -133,9 +133,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private Set<DeliverableUser> deliverableUsers = new HashSet<DeliverableUser>(0);
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
   private List<DeliverableUser> users;
+  private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
+    new HashSet<DeliverableIntellectualAsset>(0);
+  private DeliverableIntellectualAsset intellectualAsset;
+
 
   public Deliverable() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -157,9 +162,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public String getComposedName() {
     if (this.getDeliverableInfo() != null) {
@@ -195,7 +202,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return dataSharing;
   }
 
-
   public List<DeliverableDataSharingFile> getDataSharingFiles() {
     return dataSharingFiles;
   }
@@ -211,6 +217,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverableDataSharingFile> getDeliverableDataSharingFiles() {
     return deliverableDataSharingFiles;
   }
+
 
   public Set<DeliverableDataSharing> getDeliverableDataSharings() {
     return deliverableDataSharings;
@@ -252,11 +259,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableInfos;
   }
 
+  public Set<DeliverableIntellectualAsset> getDeliverableIntellectualAssets() {
+    return deliverableIntellectualAssets;
+  }
 
   public Set<DeliverableLeader> getDeliverableLeaders() {
     return deliverableLeaders;
   }
-
 
   public Set<DeliverableMetadataElement> getDeliverableMetadataElements() {
     return deliverableMetadataElements;
@@ -265,6 +274,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
+
 
   public Set<DeliverableProgram> getDeliverablePrograms() {
     return deliverablePrograms;
@@ -275,11 +285,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverablePublicationMetadatas;
   }
 
-
   public Set<DeliverableQualityCheck> getDeliverableQualityChecks() {
     return deliverableQualityChecks;
   }
-
 
   public Set<DeliverableUser> getDeliverableUsers() {
     return deliverableUsers;
@@ -289,6 +297,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public DeliverableDissemination getDissemination() {
     return dissemination;
   }
+
 
   public List<DeliverableDissemination> getDisseminations() {
     return disseminations;
@@ -303,7 +312,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public String getFlagshipValue() {
     return flagshipValue;
   }
-
 
   public List<DeliverableFundingSource> getFundingSources() {
     return fundingSources;
@@ -342,6 +350,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
+  public DeliverableIntellectualAsset getIntellectualAsset() {
+    return intellectualAsset;
+  }
+
+
   public Boolean getIsPublication() {
     return isPublication;
   }
@@ -359,6 +372,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public long getMElementID(int metadataID) {
     if (metadataElements != null) {
       for (DeliverableMetadataElement dmetadata : metadataElements) {
@@ -373,8 +387,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
     return -1;
   }
-
-  // Data List from Data Sharing
 
 
   public List<MetadataElement> getMetadata() {
@@ -399,11 +411,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+  // Data List from Data Sharing
+
 
   public List<DeliverableMetadataElement> getMetadataElements() {
     return metadataElements;
   }
-
 
   public int getMetadataID(String metadataName) {
     for (MetadataElement mData : metadata) {
@@ -430,6 +443,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
     return -1;
   }
+
 
   public String getMetadataValue(int metadataID) {
     String value = "";
@@ -465,7 +479,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
     return "";
   }
-
 
   public String getMetadataValueByEncondedName(String metadataName) {
     if (metadataElements != null) {
@@ -510,9 +523,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return programs;
   }
 
+
   public Project getProject() {
     return project;
   }
+
 
   public DeliverablePublicationMetadata getPublication() {
     return publication;
@@ -546,10 +561,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return users;
   }
 
-
-  // End
-
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -563,10 +574,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
+  // End
+
+
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -575,6 +589,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setCreateDate(Date createDate) {
     this.createDate = createDate;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -588,7 +603,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crps = crps;
   }
 
-
   public void setDataSharing(List<DeliverableDataSharing> dataSharing) {
     this.dataSharing = dataSharing;
   }
@@ -597,10 +611,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.dataSharingFiles = dataSharingFiles;
   }
 
+
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
   }
-
 
   public void setDeliverableCrps(Set<DeliverableCrp> deliverableCrps) {
     this.deliverableCrps = deliverableCrps;
@@ -615,7 +629,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableDataSharings = deliverableDataSharings;
   }
 
-
   public void setDeliverableDisseminations(Set<DeliverableDissemination> deliverableDisseminations) {
     this.deliverableDisseminations = deliverableDisseminations;
   }
@@ -624,6 +637,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setDeliverableFundingSources(Set<DeliverableFundingSource> deliverableFundingSources) {
     this.deliverableFundingSources = deliverableFundingSources;
   }
+
 
   public void setDeliverableGenderLevels(Set<DeliverableGenderLevel> deliverableGenderLevels) {
     this.deliverableGenderLevels = deliverableGenderLevels;
@@ -634,15 +648,20 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableInfo = deliverableInfo;
   }
 
-
   public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
     this.deliverableInfos = deliverableInfos;
+  }
+
+
+  public void setDeliverableIntellectualAssets(Set<DeliverableIntellectualAsset> deliverableIntellectualAssets) {
+    this.deliverableIntellectualAssets = deliverableIntellectualAssets;
   }
 
 
   public void setDeliverableLeaders(Set<DeliverableLeader> deliverableLeaders) {
     this.deliverableLeaders = deliverableLeaders;
   }
+
 
   public void setDeliverableMetadataElements(Set<DeliverableMetadataElement> deliverableMetadataElements) {
     this.deliverableMetadataElements = deliverableMetadataElements;
@@ -651,7 +670,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
-
 
   public void setDeliverablePrograms(Set<DeliverableProgram> deliverablePrograms) {
     this.deliverablePrograms = deliverablePrograms;
@@ -667,10 +685,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableQualityChecks = deliverableQualityChecks;
   }
 
+
   public void setDeliverableUsers(Set<DeliverableUser> deliverableUsers) {
     this.deliverableUsers = deliverableUsers;
   }
-
 
   public void setDissemination(DeliverableDissemination dissemination) {
     this.dissemination = dissemination;
@@ -691,17 +709,22 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.flagshipValue = flagshipValue;
   }
 
+
   public void setFundingSources(List<DeliverableFundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
-
 
   public void setGenderLevels(List<DeliverableGenderLevel> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIntellectualAsset(DeliverableIntellectualAsset intellectualAsset) {
+    this.intellectualAsset = intellectualAsset;
   }
 
 
