@@ -17,12 +17,14 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
@@ -52,6 +54,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -60,6 +63,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.ibm.icu.util.Calendar;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -97,29 +102,34 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private static Logger LOG = LoggerFactory.getLogger(ExpectedDeliverablesSummaryAction.class);
   // Parameters
   private long startTime;
-
-  // Managers
-  private GenderTypeManager genderTypeManager;
-  private CrpProgramManager crpProgramManager;
-  private CrossCuttingScoringManager crossCuttingScoringManager;
+  private Boolean showPpaFilter;
   private Set<Deliverable> currentPhaseDeliverables = new HashSet<>();
-  // XLS bytes
-  private byte[] bytesXLSX;
-  // Streams
-  InputStream inputStream;
+  private String ppa;
   // Store deliverables with year and type HashMap<Deliverable, List<year, type>>
   HashMap<Integer, Set<Deliverable>> deliverablePerYearList = new HashMap<Integer, Set<Deliverable>>();
   HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
   Set<Long> projectsList = new HashSet<Long>();
 
+  // Managers
+  private GenderTypeManager genderTypeManager;
+  private CrpProgramManager crpProgramManager;
+  private CrossCuttingScoringManager crossCuttingScoringManager;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
+  // XLS bytes
+  private byte[] bytesXLSX;
+  // Streams
+  InputStream inputStream;
+
+
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
-    CrossCuttingScoringManager crossCuttingScoringManager) {
+    CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
   }
 
 
@@ -276,6 +286,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Long.class, String.class, String.class, String.class, String.class, String.class},
       0);
+    Boolean activePPAFilter = showPpaFilter && ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
+    Boolean addDeliverableRow = true;
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
@@ -303,230 +315,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
     for (Deliverable deliverable : currentPhaseDeliverables.stream()
       .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
-      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
-      Long phaseID = deliverableInfo.getPhase().getId();
-
-      Long deliverableId = deliverable.getId();
-      String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
-        ? deliverableInfo.getTitle() : null;
-      String deliverableDescription =
-        (deliverableInfo.getDescription() != null && !deliverableInfo.getDescription().isEmpty())
-          ? deliverableInfo.getDescription() : null;
-      Integer completionYear = deliverableInfo.getYear();
-      String deliverableSubType =
-        (deliverableInfo.getDeliverableType() != null && deliverableInfo.getDeliverableType().getName() != null
-          && !deliverableInfo.getDeliverableType().getName().isEmpty()) ? deliverableInfo.getDeliverableType().getName()
-            : null;
-      String deliverableType = (deliverableInfo.getDeliverableType() != null
-        && deliverableInfo.getDeliverableType().getDeliverableCategory() != null
-        && deliverableInfo.getDeliverableType().getDeliverableCategory().getName() != null
-        && !deliverableInfo.getDeliverableType().getDeliverableCategory().getName().isEmpty())
-          ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
-
-      // Get cross_cutting dimension
-      String crossCutting = "";
-      String genderScoring = "0-Not Targeted", youthScoring = "0-Not Targeted", capScoring = "0-Not Targeted";
-      if (deliverableInfo.getCrossCuttingNa() != null) {
-        if (deliverableInfo.getCrossCuttingNa() == true) {
-          crossCutting += "N/A";
-        }
-      }
-      if (deliverableInfo.getCrossCuttingGender() != null) {
-        if (deliverableInfo.getCrossCuttingGender() == true) {
-          if (crossCutting.isEmpty()) {
-            crossCutting += "Gender";
-          } else {
-            crossCutting += ", Gender";
-          }
-        }
-      }
-      if (deliverableInfo.getCrossCuttingScoreGender() != null) {
-        Long scoring = deliverableInfo.getCrossCuttingScoreGender();
-        if (scoring != null) {
-          CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-          genderScoring = crossCuttingScoring.getDescription();
-        }
-      }
-      if (deliverableInfo.getCrossCuttingYouth() != null) {
-        if (deliverableInfo.getCrossCuttingYouth() == true) {
-          if (crossCutting.isEmpty()) {
-            crossCutting += "Youth";
-          } else {
-            crossCutting += ", Youth";
-          }
-        }
-      }
-      if (deliverableInfo.getCrossCuttingScoreYouth() != null) {
-        Long scoring = deliverableInfo.getCrossCuttingScoreYouth();
-        if (scoring != null) {
-          CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-          youthScoring = crossCuttingScoring.getDescription();
-        }
-      }
-      if (deliverableInfo.getCrossCuttingCapacity() != null) {
-        if (deliverableInfo.getCrossCuttingCapacity() == true) {
-          if (crossCutting.isEmpty()) {
-            crossCutting += "Capacity Development";
-          } else {
-            crossCutting += ", Capacity Development";
-          }
-        }
-      }
-      if (deliverableInfo.getCrossCuttingScoreCapacity() != null) {
-        Long scoring = deliverableInfo.getCrossCuttingScoreCapacity();
-        if (scoring != null) {
-          CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-          capScoring = crossCuttingScoring.getDescription();
-        }
-      }
-
-      if (crossCutting.isEmpty()) {
-        crossCutting = null;
-      }
-      String genderLevels = "";
-
-      int countGender = 0;
-      if (deliverableInfo.getCrossCuttingGender() != null) {
-        if (deliverableInfo.getCrossCuttingGender() == true) {
-          if (deliverable.getDeliverableGenderLevels() == null || deliverable.getDeliverableGenderLevels().isEmpty()) {
-            genderLevels += "Gender level(s): &lt;Not Defined&gt;";
-          } else {
-            genderLevels += "Gender level(s): ";
-            for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-              .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
-              .collect(Collectors.toList())) {
-              if (dgl.getGenderLevel() != 0.0) {
-                if (countGender == 0) {
-                  genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
-                } else {
-                  genderLevels += ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
-                }
-                countGender++;
-              }
-            }
-          }
-        }
-      }
-      if (genderLevels.isEmpty()) {
-        genderLevels = null;
-      }
-      String keyOutput = "";
-      String outcomes = "";
-
-      if (deliverableInfo.getCrpClusterKeyOutput() != null) {
-        keyOutput += "• ";
-
-        if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
-          keyOutput +=
-            deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
-        }
-        keyOutput += deliverableInfo.getCrpClusterKeyOutput().getKeyOutput();
-        // Get Outcomes Related to the KeyOutput
-        for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverableInfo.getCrpClusterKeyOutput()
-          .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null)
-          .collect(Collectors.toList())) {
-          outcomes += " • ";
-          if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
-            && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
-            outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym() + " Outcome: ";
-          }
-          outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getDescription() + "\n";
-        }
-      }
-      if (keyOutput.isEmpty()) {
-        keyOutput = null;
-      }
-
-      String delivStatus = (deliverableInfo.getStatusName(this.getSelectedPhase()) != null
-        && !deliverableInfo.getStatusName(this.getSelectedPhase()).isEmpty())
-          ? deliverableInfo.getStatusName(this.getSelectedPhase()) : null;
-      String delivNewYear = null;
-      if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
-          ? deliverableInfo.getNewExpectedYear().toString() : null;
-      } else {
-        delivNewYear = "&lt;Not Applicable&gt;";
-      }
-
-      Long projectID = null;
-      String projectTitle = null;
-      String projectLeadPartner = null;
-
-      if (deliverable.getProject() != null) {
-        projectID = deliverable.getProject().getId();
-        if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && deliverable.getProject().getProjectInfo().getTitle() != null
-          && !deliverable.getProject().getProjectInfo().getTitle().trim().isEmpty()) {
-          projectTitle = deliverable.getProject().getProjectInfo().getTitle();
-        }
-        // Get project leader
-        if (deliverable.getProject().getLeader(this.getSelectedPhase()) != null) {
-          ProjectPartner leader = deliverable.getProject().getLeader(this.getSelectedPhase());
-          if (leader.getInstitution() != null) {
-            if (leader.getInstitution().getAcronym() != null
-              && !leader.getInstitution().getAcronym().trim().isEmpty()) {
-              projectLeadPartner = leader.getInstitution().getAcronym();
-            } else {
-              projectLeadPartner = leader.getInstitution().getName();
-            }
-          }
-        }
-      }
-      String projectClusterActivities = "";
-      if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
-        for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
-          .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-          .collect(Collectors.toList())) {
-          if (projectClusterActivities.isEmpty()) {
-            projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
-          } else {
-            projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
-          }
-        }
-      }
-      if (projectClusterActivities.isEmpty()) {
-        projectClusterActivities = null;
-      }
-
-
-      String flagships = null;
-      // get Flagships related to the project sorted by acronym
-      for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
-        .collect(Collectors.toList())) {
-        if (flagships == null || flagships.isEmpty()) {
-          flagships = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-        } else {
-          flagships += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-        }
-      }
-      String regions = null;
-      // If has regions, add the regions to regionsArrayList
-      // Get Regions related to the project sorted by acronym
-      if (this.hasProgramnsRegions()) {
-        for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-          .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-          .collect(Collectors.toList())) {
-          if (regions == null || regions.isEmpty()) {
-            regions = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-          } else {
-            regions += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-          }
-        }
-        if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
-          && deliverable.getProject().getProjectInfo().getNoRegional()) {
-          if (regions != null && !regions.isEmpty()) {
-            LOG.warn("Project is global and has regions selected");
-          }
-          regions = "Global";
-        }
-      } else {
-        regions = null;
+      if (activePPAFilter) {
+        addDeliverableRow = false;
       }
       // Store Institution and PartnerPerson
       String individual = "";
@@ -636,7 +426,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       for (Institution partnerResponsible : institutionsResponsibleList) {
         // Check if is ppa
-        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getSelectedPhase())) {
+        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getActualPhase())) {
           managingResponsibleList.add(partnerResponsible);
         } else {
           // If is not a ppa, get the crp linked to the partner
@@ -676,7 +466,21 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
 
       String managingResponsible = "";
+      CrpPpaPartner ppaFilter;
+      if (activePPAFilter) {
+        ppaFilter = crpPpaPartnerManager.getCrpPpaPartnerById(Long.parseLong(ppa));
+      } else {
+        ppaFilter = new CrpPpaPartner();
+      }
+
+
       for (Institution managingInstitution : managingResponsibleList) {
+        if (activePPAFilter) {
+          if (managingInstitution.getId().equals(ppaFilter.getInstitution().getId())) {
+            addDeliverableRow = true;
+          }
+        }
+
         String institution = "";
         if (managingInstitution.getAcronym() != null && !managingInstitution.getAcronym().trim().isEmpty()) {
           institution = managingInstitution.getAcronym();
@@ -694,95 +498,325 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
 
 
-      String openFS = "";
-      String finishedFS = "";
-      Set<String> fsWindowsSet = new HashSet<String>();
+      if (addDeliverableRow) {
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+        Long phaseID = deliverableInfo.getPhase().getId();
 
-      for (DeliverableFundingSource deliverableFundingSource : deliverable.getDeliverableFundingSources().stream()
-        .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase())
-          && df.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
-        .collect(Collectors.toList())) {
-        FundingSourceInfo fundingSourceInfo = deliverableFundingSource.getFundingSource().getFundingSourceInfo();
-        if (fundingSourceInfo.getEndDate() != null) {
-          Date endDate = fundingSourceInfo.getEndDate();
-          Date extentionDate = fundingSourceInfo.getExtensionDate();
-          int endYear = this.getCalendarFromDate(endDate);
-          int extentionYear = this.getCalendarFromDate(extentionDate);
-          if ((endYear >= this.getSelectedYear()
-            && fundingSourceInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-            || (extentionYear >= this.getSelectedYear() && fundingSourceInfo.getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
-            if (openFS.isEmpty()) {
-              openFS += "FS" + deliverableFundingSource.getFundingSource().getId();
+        Long deliverableId = deliverable.getId();
+        String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
+          ? deliverableInfo.getTitle() : null;
+        String deliverableDescription =
+          (deliverableInfo.getDescription() != null && !deliverableInfo.getDescription().isEmpty())
+            ? deliverableInfo.getDescription() : null;
+        Integer completionYear = deliverableInfo.getYear();
+        String deliverableSubType =
+          (deliverableInfo.getDeliverableType() != null && deliverableInfo.getDeliverableType().getName() != null
+            && !deliverableInfo.getDeliverableType().getName().isEmpty())
+              ? deliverableInfo.getDeliverableType().getName() : null;
+        String deliverableType = (deliverableInfo.getDeliverableType() != null
+          && deliverableInfo.getDeliverableType().getDeliverableCategory() != null
+          && deliverableInfo.getDeliverableType().getDeliverableCategory().getName() != null
+          && !deliverableInfo.getDeliverableType().getDeliverableCategory().getName().isEmpty())
+            ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
+
+        // Get cross_cutting dimension
+        String crossCutting = "";
+        String genderScoring = "0-Not Targeted", youthScoring = "0-Not Targeted", capScoring = "0-Not Targeted";
+        if (deliverableInfo.getCrossCuttingNa() != null) {
+          if (deliverableInfo.getCrossCuttingNa() == true) {
+            crossCutting += "N/A";
+          }
+        }
+        if (deliverableInfo.getCrossCuttingGender() != null) {
+          if (deliverableInfo.getCrossCuttingGender() == true) {
+            if (crossCutting.isEmpty()) {
+              crossCutting += "Gender";
             } else {
-              openFS += ", FS" + deliverableFundingSource.getFundingSource().getId();
-            }
-            if (fundingSourceInfo.getBudgetType() != null) {
-              fsWindowsSet.add(fundingSourceInfo.getBudgetType().getName());
-            }
-          } else {
-            if (finishedFS.isEmpty()) {
-              finishedFS += "FS" + deliverableFundingSource.getFundingSource().getId();
-            } else {
-              finishedFS += ", FS" + deliverableFundingSource.getFundingSource().getId();
-            }
-            if (fundingSourceInfo.getBudgetType() != null) {
-              fsWindowsSet.add(fundingSourceInfo.getBudgetType().getName());
+              crossCutting += ", Gender";
             }
           }
         }
-      }
-      if (openFS.isEmpty()) {
-        openFS = null;
-      }
-      if (finishedFS.isEmpty()) {
-        finishedFS = null;
-      }
-
-
-      String fsWindows = "";
-      for (String fsType : fsWindowsSet.stream().sorted((s1, s2) -> s1.compareTo(s2)).collect(Collectors.toList())) {
-        if (fsWindows.isEmpty()) {
-          fsWindows += fsType;
-        } else {
-          fsWindows += ", " + fsType;
+        if (deliverableInfo.getCrossCuttingScoreGender() != null) {
+          Long scoring = deliverableInfo.getCrossCuttingScoreGender();
+          if (scoring != null) {
+            CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+            genderScoring = crossCuttingScoring.getDescription();
+          }
         }
-      }
-      if (fsWindows.isEmpty()) {
-        fsWindows = null;
-      }
+        if (deliverableInfo.getCrossCuttingYouth() != null) {
+          if (deliverableInfo.getCrossCuttingYouth() == true) {
+            if (crossCutting.isEmpty()) {
+              crossCutting += "Youth";
+            } else {
+              crossCutting += ", Youth";
+            }
+          }
+        }
+        if (deliverableInfo.getCrossCuttingScoreYouth() != null) {
+          Long scoring = deliverableInfo.getCrossCuttingScoreYouth();
+          if (scoring != null) {
+            CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+            youthScoring = crossCuttingScoring.getDescription();
+          }
+        }
+        if (deliverableInfo.getCrossCuttingCapacity() != null) {
+          if (deliverableInfo.getCrossCuttingCapacity() == true) {
+            if (crossCutting.isEmpty()) {
+              crossCutting += "Capacity Development";
+            } else {
+              crossCutting += ", Capacity Development";
+            }
+          }
+        }
+        if (deliverableInfo.getCrossCuttingScoreCapacity() != null) {
+          Long scoring = deliverableInfo.getCrossCuttingScoreCapacity();
+          if (scoring != null) {
+            CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+            capScoring = crossCuttingScoring.getDescription();
+          }
+        }
 
-      model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
-        crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
-        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, openFS, fsWindows, outcomes,
-        projectLeadPartner, managingResponsible, phaseID, finishedFS, genderScoring, youthScoring, capScoring,
-        deliverableDescription});
+        if (crossCutting.isEmpty()) {
+          crossCutting = null;
+        }
+        String genderLevels = "";
 
-      if (deliverablePerYearList.containsKey(completionYear)) {
-        Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
-        deliverableSet.add(deliverable);
-        deliverablePerYearList.put(completionYear, deliverableSet);
-      } else {
-        Set<Deliverable> deliverableSet = new HashSet<>();
-        deliverableSet.add(deliverable);
-        deliverablePerYearList.put(completionYear, deliverableSet);
-      }
+        int countGender = 0;
+        if (deliverableInfo.getCrossCuttingGender() != null) {
+          if (deliverableInfo.getCrossCuttingGender() == true) {
+            if (deliverable.getDeliverableGenderLevels() == null
+              || deliverable.getDeliverableGenderLevels().isEmpty()) {
+              genderLevels += "Gender level(s): &lt;Not Defined&gt;";
+            } else {
+              genderLevels += "Gender level(s): ";
+              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
+                .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList())) {
+                if (dgl.getGenderLevel() != 0.0) {
+                  if (countGender == 0) {
+                    genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
+                  } else {
+                    genderLevels += ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
+                  }
+                  countGender++;
+                }
+              }
+            }
+          }
+        }
+        if (genderLevels.isEmpty()) {
+          genderLevels = null;
+        }
+        String keyOutput = "";
+        String outcomes = "";
 
-      if (deliverableType != null) {
-        if (deliverablePerTypeList.containsKey(deliverableType)) {
-          Set<Deliverable> deliverableSet = deliverablePerTypeList.get(deliverableType);
+        if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+          keyOutput += "• ";
+
+          if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
+            keyOutput +=
+              deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+          }
+          keyOutput += deliverableInfo.getCrpClusterKeyOutput().getKeyOutput();
+          // Get Outcomes Related to the KeyOutput
+          for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverableInfo.getCrpClusterKeyOutput()
+            .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null)
+            .collect(Collectors.toList())) {
+            outcomes += " • ";
+            if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
+              && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
+              outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym() + " Outcome: ";
+            }
+            outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getDescription() + "\n";
+          }
+        }
+        if (keyOutput.isEmpty()) {
+          keyOutput = null;
+        }
+
+        String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
+          && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
+            ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
+        String delivNewYear = null;
+        if (deliverableInfo.getStatus() != null
+          && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+          delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
+            ? deliverableInfo.getNewExpectedYear().toString() : null;
+        } else {
+          delivNewYear = "&lt;Not Applicable&gt;";
+        }
+
+        Long projectID = null;
+        String projectTitle = null;
+        String projectLeadPartner = null;
+
+        if (deliverable.getProject() != null) {
+          projectID = deliverable.getProject().getId();
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+            && deliverable.getProject().getProjectInfo().getTitle() != null
+            && !deliverable.getProject().getProjectInfo().getTitle().trim().isEmpty()) {
+            projectTitle = deliverable.getProject().getProjectInfo().getTitle();
+          }
+          // Get project leader
+          if (deliverable.getProject().getLeader(this.getSelectedPhase()) != null) {
+            ProjectPartner leader = deliverable.getProject().getLeader(this.getSelectedPhase());
+            if (leader.getInstitution() != null) {
+              if (leader.getInstitution().getAcronym() != null
+                && !leader.getInstitution().getAcronym().trim().isEmpty()) {
+                projectLeadPartner = leader.getInstitution().getAcronym();
+              } else {
+                projectLeadPartner = leader.getInstitution().getName();
+              }
+            }
+          }
+        }
+        String projectClusterActivities = "";
+        if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
+          for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
+            .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
+            if (projectClusterActivities.isEmpty()) {
+              projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+            } else {
+              projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+            }
+          }
+        }
+        if (projectClusterActivities.isEmpty()) {
+          projectClusterActivities = null;
+        }
+
+
+        String flagships = null;
+        // get Flagships related to the project sorted by acronym
+        for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+          .collect(Collectors.toList())) {
+          if (flagships == null || flagships.isEmpty()) {
+            flagships = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          } else {
+            flagships +=
+              ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          }
+        }
+        String regions = null;
+        // If has regions, add the regions to regionsArrayList
+        // Get Regions related to the project sorted by acronym
+        if (this.hasProgramnsRegions()) {
+          for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+            .collect(Collectors.toList())) {
+            if (regions == null || regions.isEmpty()) {
+              regions = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            } else {
+              regions +=
+                ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            }
+          }
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+            && deliverable.getProject().getProjectInfo().getNoRegional()) {
+            if (regions != null && !regions.isEmpty()) {
+              LOG.warn("Project is global and has regions selected");
+            }
+            regions = "Global";
+          }
+        } else {
+          regions = null;
+        }
+        String openFS = "";
+        String finishedFS = "";
+        Set<String> fsWindowsSet = new HashSet<String>();
+
+        for (DeliverableFundingSource deliverableFundingSource : deliverable.getDeliverableFundingSources().stream()
+          .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase())
+            && df.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+          .collect(Collectors.toList())) {
+          FundingSourceInfo fundingSourceInfo = deliverableFundingSource.getFundingSource().getFundingSourceInfo();
+          if (fundingSourceInfo.getEndDate() != null) {
+            Date endDate = fundingSourceInfo.getEndDate();
+            Date extentionDate = fundingSourceInfo.getExtensionDate();
+            int endYear = this.getCalendarFromDate(endDate);
+            int extentionYear = this.getCalendarFromDate(extentionDate);
+            if ((endYear >= this.getSelectedYear()
+              && fundingSourceInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+              || (extentionYear >= this.getSelectedYear() && fundingSourceInfo.getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+              if (openFS.isEmpty()) {
+                openFS += "FS" + deliverableFundingSource.getFundingSource().getId();
+              } else {
+                openFS += ", FS" + deliverableFundingSource.getFundingSource().getId();
+              }
+              if (fundingSourceInfo.getBudgetType() != null) {
+                fsWindowsSet.add(fundingSourceInfo.getBudgetType().getName());
+              }
+            } else {
+              if (finishedFS.isEmpty()) {
+                finishedFS += "FS" + deliverableFundingSource.getFundingSource().getId();
+              } else {
+                finishedFS += ", FS" + deliverableFundingSource.getFundingSource().getId();
+              }
+              if (fundingSourceInfo.getBudgetType() != null) {
+                fsWindowsSet.add(fundingSourceInfo.getBudgetType().getName());
+              }
+            }
+          }
+        }
+        if (openFS.isEmpty()) {
+          openFS = null;
+        }
+        if (finishedFS.isEmpty()) {
+          finishedFS = null;
+        }
+
+
+        String fsWindows = "";
+        for (String fsType : fsWindowsSet.stream().sorted((s1, s2) -> s1.compareTo(s2)).collect(Collectors.toList())) {
+          if (fsWindows.isEmpty()) {
+            fsWindows += fsType;
+          } else {
+            fsWindows += ", " + fsType;
+          }
+        }
+        if (fsWindows.isEmpty()) {
+          fsWindows = null;
+        }
+        model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
+          crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
+          projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, openFS, fsWindows, outcomes,
+          projectLeadPartner, managingResponsible, phaseID, finishedFS, genderScoring, youthScoring, capScoring,
+          deliverableDescription});
+
+        if (deliverablePerYearList.containsKey(completionYear)) {
+          Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
           deliverableSet.add(deliverable);
-          deliverablePerTypeList.put(deliverableType, deliverableSet);
+          deliverablePerYearList.put(completionYear, deliverableSet);
         } else {
           Set<Deliverable> deliverableSet = new HashSet<>();
           deliverableSet.add(deliverable);
-          deliverablePerTypeList.put(deliverableType, deliverableSet);
+          deliverablePerYearList.put(completionYear, deliverableSet);
+        }
+
+        if (deliverableType != null) {
+          if (deliverablePerTypeList.containsKey(deliverableType)) {
+            Set<Deliverable> deliverableSet = deliverablePerTypeList.get(deliverableType);
+            deliverableSet.add(deliverable);
+            deliverablePerTypeList.put(deliverableType, deliverableSet);
+          } else {
+            Set<Deliverable> deliverableSet = new HashSet<>();
+            deliverableSet.add(deliverable);
+            deliverablePerTypeList.put(deliverableType, deliverableSet);
+          }
+        }
+
+        if (projectID != null) {
+          projectsList.add(projectID);
         }
       }
 
-      if (projectID != null) {
-        projectsList.add(projectID);
-      }
     }
     return model;
 
@@ -867,6 +901,23 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   @Override
   public void prepare() {
+    // Get PPA Filter crp_parameter
+    try {
+      showPpaFilter = this.hasSpecificities(this.getText(APConstants.CRP_REPORT_DELIVERABLE_PPA_FILTER));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_REPORT_DELIVERABLE_PPA_FILTER
+        + " parameter. Parameter will be set false. Exception: " + e.getMessage());
+      showPpaFilter = false;
+    }
+    // Get PPA for filtering
+    try {
+      Map<String, Parameter> parameters = this.getParameters();
+      ppa = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_PPA).getMultipleValues()[0]);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.SUMMARY_DELIVERABLE_PPA
+        + " parameter. Parameter will be set as All. Exception: " + e.getMessage());
+      ppa = "All";
+    }
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
