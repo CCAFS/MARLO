@@ -83,15 +83,20 @@
           [#-- Geographic scope and innovation type --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name" required=true  className="geographicScopeSelect" editable=editable/]
             </div>
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>
+          
+          [#assign isRegional = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
+          [#assign isMultiNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
+          [#assign isNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
+          [#assign isSubNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
         
           [#-- Region (if scope is Region) --] 
-          <div class="form-group row">
+          <div class="form-group row regionalBlock" style="display:${isRegional?string('block','none')}">
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndRegion.id" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
@@ -100,9 +105,9 @@
           </div>
         
           [#-- Country(ies) (if scope is Multi-national, National or Sub-National)  --]
-          <div class="form-group countriesBlock chosen" >
+          <div class="form-group countriesBlock nationalBlock chosen" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#if editable]
-              [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" className="countriesIds" multiple=true  /]
+              [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" required=true  className="countriesIds" multiple=true  /]
             [#else]
               <label>[@s.text name="projectInnovations.countries" /]:</label>
               <div class="select">
@@ -132,12 +137,12 @@
         
           [#-- Evidence Link --] 
           <div class="form-group">
-            [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=false editable=editable /]
+            [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=true editable=editable /]
           </div>
         
           [#-- Or Deliverable ID (optional) --]
           <div class="form-group">
-            [@elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList " keyFieldName="id" displayFieldName="composedName"/]
+            [@elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList" required=false keyFieldName="id" displayFieldName="composedName"/]
           </div>
         
           [#-- Contributing CRPs/Platforms --]
@@ -199,9 +204,9 @@
 
 [#-- MACROS --]
 
-[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" ]
+[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" required=true ]
   <div class="panel tertiary">
-    <div class="panel-head"><label for="">[@s.text name=label /]</label></div>
+    <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
       <ul class="list listType-${elementType}">
         [#if elementList?has_content]
