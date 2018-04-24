@@ -197,7 +197,7 @@
 [#-- MACROS --]
 
 [#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" required=true ]
-  <div class="panel tertiary">
+  <div class="panel tertiary" listname="${name}" style="position:relative">
     <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
       <ul class="list listType-${elementType}">
