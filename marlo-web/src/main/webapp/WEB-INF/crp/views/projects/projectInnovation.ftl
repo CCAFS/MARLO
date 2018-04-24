@@ -221,6 +221,6 @@
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="elementName">${(element.composedName)!'{elementName}'}</span>
+    <span class="elementName">${(element.composedName)!(element.name)!'{elementName}'}</span>
   </li>
 [/#macro]
