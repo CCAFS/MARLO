@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -634,7 +635,16 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           } else {
             deliverable.setDissemination(new DeliverableDissemination());
           }
+        }
 
+        if (deliverable.getDeliverableIntellectualAssets() != null) {
+          List<DeliverableIntellectualAsset> intellectualAssets =
+            new ArrayList<>(deliverable.getDeliverableIntellectualAssets());
+          if (deliverable.getDeliverableIntellectualAssets().size() > 0) {
+            deliverable.setIntellectualAsset(intellectualAssets.get(0));
+          } else {
+            deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+          }
         }
 
         if (deliverable.getDeliverableDataSharingFiles() != null) {
