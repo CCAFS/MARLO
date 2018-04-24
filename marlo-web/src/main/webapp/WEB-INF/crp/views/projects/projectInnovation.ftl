@@ -116,11 +116,6 @@
           
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group">
-            [#-- List --]
-            [#assign keyContributions = [
-              { "name": "Development organizations (NGOs, networks and regional organizations)" },
-              { "name": "Foundations and Financial Institutions" }
-            ] /]
             [@elementsListComponent name="innovation.organizationTypes" elementType="organizationType" elementList=keyContributions label="projectInnovations.nextUserOrganizationalType"  listName=" " keyFieldName="id" displayFieldName="composedName"/]
           </div>
         
@@ -141,19 +136,11 @@
         
           [#-- Or Deliverable ID (optional) --]
           <div class="form-group">
-            [#-- List --]
-            [#assign keyContributions = [
-              { "name": "Deliverable title #1" }
-            ] /]
             [@elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=keyContributions label="projectInnovations.deliverableId"  listName="deliverableList " keyFieldName="id" displayFieldName="composedName"/]
           </div>
         
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group">
-            [#-- List --]
-            [#assign keyContributions = [
-              { "name": "A4NH - Agriculture for Nutrition and Health" }
-            ] /]
             [@elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=keyContributions label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
           
@@ -208,11 +195,15 @@
 
 [#-- MACROS --]
 
-[#macro elementsListComponent name elementType elementList label listName="" keyFieldName="" displayFieldName="" ]
+[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" ]
   <div class="panel tertiary">
     <div class="panel-head"><label for="">[@s.text name=label /]</label></div>
-    <div class="panel-body" style="min-height: 30px;"> 
-      <ul class="list listType-${elementType}">[#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index /][/#list]</ul>
+    <div class="panel-body" style="min-height: 30px;">
+      <ul class="list listType-${elementType}">
+        [#if elementList?has_content]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index /][/#list]
+        [/#if]
+      </ul>
       [#if editable]
         [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
       [/#if]
