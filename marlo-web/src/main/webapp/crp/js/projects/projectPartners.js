@@ -30,9 +30,9 @@ function init() {
     // Update initial project CCAFS partners list for each partner
     updateProjectPPAPartnersLists();
 
-    // Activate the chosen to the existing partners
-    addSelect2();
   }
+  // Activate the chosen to the existing partners
+  addSelect2();
 
   addUser = function(composedName,userId) {
     var $contact = $elementSelected.parents('.contactsPerson ').find('input[value="' + userId + '"]');
