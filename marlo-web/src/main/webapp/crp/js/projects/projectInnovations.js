@@ -32,7 +32,7 @@ function onSelectElement() {
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
   // Set attributes
   $element.find('.elementRelationID').val($option.val());
-  $element.find('.elementName').text($option.text());
+  $element.find('.elementName').html($option.text());
   // Show the element
   $element.appendTo($list).hide().show('slow', function() {
     $select.val('-1').trigger('change.select2');
@@ -59,5 +59,18 @@ function onClickRemoveElement() {
 }
 
 function addSelect2() {
-  $('form select').select2();
+  $('form select').select2({
+      width: '100%',
+      templateResult: formatList,
+      templateSelection: formatList
+  });
 }
+
+function formatList(state) {
+  console.log(state);
+  if(!state.id || (state.id == "-1")) {
+    return state.text;
+  }
+  var result = "<span>" + state.text + "</span>";
+  return $(result);
+};
