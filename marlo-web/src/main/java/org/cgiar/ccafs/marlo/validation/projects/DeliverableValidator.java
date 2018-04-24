@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
@@ -320,6 +321,15 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
 
+        if (deliverable.getIntellectualAsset() != null
+          || deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+        } else {
+          action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
+          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
       }
 
 
@@ -491,6 +501,16 @@ public class DeliverableValidator extends BaseValidator {
       action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
         InvalidFieldsMessages.EMPTYFIELD);
 
+    }
+  }
+
+  private void validateIntellectualAsset(DeliverableIntellectualAsset intellectualAsset, BaseAction action) {
+    if (intellectualAsset.getHasPatentPvp()) {
+      if (!this.isValidString(intellectualAsset.getApplicant())) {
+        action.addMessage(action.getText("deliverable.intellectualAsset.applicant"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.applicant",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
   }
 
