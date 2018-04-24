@@ -266,6 +266,8 @@ public final class APConstants {
 
   public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
+  public static final String PROJECT_DELIVERABLES_INTELLECTUAL_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableIntellectualAssets)";
   public static final String PROJECT_DELIVERABLE_FUNDING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableFundingSources)";
 

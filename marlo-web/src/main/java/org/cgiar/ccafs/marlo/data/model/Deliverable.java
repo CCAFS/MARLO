@@ -135,7 +135,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private List<DeliverableUser> users;
   private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
     new HashSet<DeliverableIntellectualAsset>(0);
-  private DeliverableIntellectualAsset deliverableIntellectualAsset;
+  private DeliverableIntellectualAsset intellectualAsset;
 
 
   public Deliverable() {
@@ -259,10 +259,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableInfos;
   }
 
-  public DeliverableIntellectualAsset getDeliverableIntellectualAsset() {
-    return deliverableIntellectualAsset;
-  }
-
   public Set<DeliverableIntellectualAsset> getDeliverableIntellectualAssets() {
     return deliverableIntellectualAssets;
   }
@@ -275,7 +271,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableMetadataElements;
   }
 
-
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
@@ -285,6 +280,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverablePrograms;
   }
 
+
   public Set<DeliverablePublicationMetadata> getDeliverablePublicationMetadatas() {
     return deliverablePublicationMetadatas;
   }
@@ -292,7 +288,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverableQualityCheck> getDeliverableQualityChecks() {
     return deliverableQualityChecks;
   }
-
 
   public Set<DeliverableUser> getDeliverableUsers() {
     return deliverableUsers;
@@ -313,10 +308,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return files;
   }
 
+
   public String getFlagshipValue() {
     return flagshipValue;
   }
-
 
   public List<DeliverableFundingSource> getFundingSources() {
     return fundingSources;
@@ -352,6 +347,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
 
     return -1;
+  }
+
+
+  public DeliverableIntellectualAsset getIntellectualAsset() {
+    return intellectualAsset;
   }
 
 
@@ -653,11 +653,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
-    this.deliverableIntellectualAsset = deliverableIntellectualAsset;
-  }
-
-
   public void setDeliverableIntellectualAssets(Set<DeliverableIntellectualAsset> deliverableIntellectualAssets) {
     this.deliverableIntellectualAssets = deliverableIntellectualAssets;
   }
@@ -667,6 +662,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableLeaders = deliverableLeaders;
   }
 
+
   public void setDeliverableMetadataElements(Set<DeliverableMetadataElement> deliverableMetadataElements) {
     this.deliverableMetadataElements = deliverableMetadataElements;
   }
@@ -674,7 +670,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
-
 
   public void setDeliverablePrograms(Set<DeliverableProgram> deliverablePrograms) {
     this.deliverablePrograms = deliverablePrograms;
@@ -690,10 +685,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableQualityChecks = deliverableQualityChecks;
   }
 
+
   public void setDeliverableUsers(Set<DeliverableUser> deliverableUsers) {
     this.deliverableUsers = deliverableUsers;
   }
-
 
   public void setDissemination(DeliverableDissemination dissemination) {
     this.dissemination = dissemination;
@@ -714,17 +709,22 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.flagshipValue = flagshipValue;
   }
 
+
   public void setFundingSources(List<DeliverableFundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
-
 
   public void setGenderLevels(List<DeliverableGenderLevel> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIntellectualAsset(DeliverableIntellectualAsset intellectualAsset) {
+    this.intellectualAsset = intellectualAsset;
   }
 
 

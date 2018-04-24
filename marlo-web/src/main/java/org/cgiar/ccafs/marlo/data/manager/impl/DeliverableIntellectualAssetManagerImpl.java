@@ -15,9 +15,13 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableIntellectualAssetDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -32,14 +36,30 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
 
 
   private DeliverableIntellectualAssetDAO deliverableIntellectualAssetDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public DeliverableIntellectualAssetManagerImpl(DeliverableIntellectualAssetDAO deliverableIntellectualAssetDAO) {
+  public DeliverableIntellectualAssetManagerImpl(DeliverableIntellectualAssetDAO deliverableIntellectualAssetDAO,
+    PhaseDAO phaseDAO) {
     this.deliverableIntellectualAssetDAO = deliverableIntellectualAssetDAO;
+    this.phaseDAO = phaseDAO;
 
 
+  }
+
+  private void cloneDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableDissemination,
+    DeliverableIntellectualAsset newDeliverableIntellectualAsset, Phase next) {
+    newDeliverableIntellectualAsset.setDeliverable(deliverableDissemination.getDeliverable());
+    newDeliverableIntellectualAsset.setPhase(next);
+    newDeliverableIntellectualAsset.setAdditionalInformation(deliverableDissemination.getAdditionalInformation());
+    newDeliverableIntellectualAsset.setApplicant(deliverableDissemination.getApplicant());
+    newDeliverableIntellectualAsset.setLink(deliverableDissemination.getLink());
+    newDeliverableIntellectualAsset.setPublicCommunication(deliverableDissemination.getPublicCommunication());
+    newDeliverableIntellectualAsset.setTitle(deliverableDissemination.getTitle());
+    newDeliverableIntellectualAsset.setType(deliverableDissemination.getType());
+    newDeliverableIntellectualAsset.setHasPatentPvp(deliverableDissemination.getHasPatentPvp());
   }
 
   @Override
@@ -68,9 +88,36 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
   }
 
   @Override
-  public DeliverableIntellectualAsset saveDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
+  public DeliverableIntellectualAsset
+    saveDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
+    DeliverableIntellectualAsset deliverableIntellectualAssetResult =
+      deliverableIntellectualAssetDAO.save(deliverableIntellectualAsset);
+    Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
+          deliverableIntellectualAsset.getDeliverable(), currentPhase.getNext().getId());
+      }
+    }
+    return deliverableIntellectualAssetResult;
+  }
 
-    return deliverableIntellectualAssetDAO.save(deliverableIntellectualAsset);
+  private void saveDeliverableIntellectualAssetPhase(DeliverableIntellectualAsset deliverableIntellectualAsset,
+    Deliverable deliverable, Long phaseID) {
+    Phase phase = phaseDAO.find(phaseID);
+    DeliverableIntellectualAsset deliverableDisseminationPhase = deliverableIntellectualAssetDAO
+      .findIntellectualAssetByPhaseAndDeliverable(phase, deliverableIntellectualAsset.getDeliverable());
+    if (deliverableDisseminationPhase != null) {
+      this.cloneDeliverableIntellectualAsset(deliverableIntellectualAsset, deliverableDisseminationPhase, phase);
+      deliverableIntellectualAssetDAO.save(deliverableDisseminationPhase);
+    } else {
+      DeliverableIntellectualAsset newDeliverableIntellectualAsset = new DeliverableIntellectualAsset();
+      this.cloneDeliverableIntellectualAsset(deliverableIntellectualAsset, newDeliverableIntellectualAsset, phase);
+      deliverableIntellectualAssetDAO.save(newDeliverableIntellectualAsset);
+    }
+    if (phase.getNext() != null) {
+      this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAsset, deliverable, phase.getNext().getId());
+    }
   }
 
 
