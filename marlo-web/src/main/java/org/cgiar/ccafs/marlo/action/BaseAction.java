@@ -1360,6 +1360,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       }
+      /**
+       * This throws a null pointer exception if invoked from a struts2 interceptor as the session has not been
+       * set on the BaseAction.
+       * I've made the RequireUserInterceptor set the session on the baseAction now but this seems a little hacky.
+       */
       allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
 
 

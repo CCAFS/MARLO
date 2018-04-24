@@ -914,11 +914,14 @@ public class ClusterActivitiesAction extends BaseAction {
                   if (crpClusterKeyOutputOutcome.getId() != null) {
                     CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
                       .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
-                    crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
-                  }
+                    crpClusterKeyOutputOutcomePrev.setContribution(crpClusterKeyOutputOutcome.getContribution());
+                    crpClusterKeyOutputOutcomePrev.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
+                    crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcomePrev);
+                  } else {
 
-                  crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
-                  crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
+                    crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
+                    crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
+                  }
                 }
 
               }
