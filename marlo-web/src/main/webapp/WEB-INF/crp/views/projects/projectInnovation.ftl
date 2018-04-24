@@ -117,7 +117,7 @@
           
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
-            [@elementsListComponent name="innovation.organizations" elementType="organizationType" elementList=keyContributions label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="composedName"/]
+            [@elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
           </div>
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
@@ -137,12 +137,12 @@
         
           [#-- Or Deliverable ID (optional) --]
           <div class="form-group">
-            [@elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=keyContributions label="projectInnovations.deliverableId"  listName="deliverableList " keyFieldName="id" displayFieldName="composedName"/]
+            [@elementsListComponent name="innovation.deliverables" elementType="deliverable" elementList=innovation.deliverables label="projectInnovations.deliverableId"  listName="deliverableList " keyFieldName="id" displayFieldName="composedName"/]
           </div>
         
           [#-- Contributing CRPs/Platforms --]
           <div class="form-group">
-            [@elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=keyContributions label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
+            [@elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
           
           [#-- Gender Relevance --]
@@ -189,7 +189,7 @@
 
 [#-- Element Macro Template --]
 <ul style="display:none">
-  [@listElementMacro name="innovation.organizationTypes" element={} type="organizationType" index=-1 template=true /]
+  [@listElementMacro name="innovation.organizations" element={} type="repIndOrganizationType" index=-1 template=true /]
   [@listElementMacro name="innovation.crps" element={} type="globalUnit" index=-1 template=true /]
   [@listElementMacro name="innovation.deliverables" element={} type="deliverable" index=-1 template=true /]
 </ul>
@@ -224,6 +224,6 @@
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="elementName">${(element.name)!'{elementName}'}</span>
+    <span class="elementName">${(element.composedName)!'{elementName}'}</span>
   </li>
 [/#macro]
