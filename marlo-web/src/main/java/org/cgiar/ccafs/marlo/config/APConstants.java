@@ -51,6 +51,7 @@ public final class APConstants {
   public static final String CRP_EMAIL_FUNDING_SOURCE = "crp_email_funding_source";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
   public static final String CRP_FPM_ROLE = "crp_fpm_rol";
+  public static final String CRP_REPORT_DELIVERABLE_PPA_FILTER = "crp_report_deliverable_ppa_filter";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
@@ -527,6 +528,8 @@ public final class APConstants {
   public static final String SUMMARY_FORMAT_EXCEL = "Excel";
   public static final String SUMMARY_FORMAT_PDF = "PDF";
   public static final String SUMMARY_PARTNER_TYPE = "partnerType";
+
+  public static final String SUMMARY_DELIVERABLE_PPA = "ppaPartnerID";
 
   public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";
