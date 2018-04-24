@@ -2,7 +2,7 @@
 [#assign title = "Project Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#-- TODO: Remove unused pageLibs--]
-[#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
+[#assign pageLibs = ["select2","font-awesome", "flat-flags"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js",
   "${baseUrl}/global/js/autoSave.js",
@@ -72,36 +72,37 @@
           [#-- Phase of research and Stage of innovation --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.repIndPhaseResearchPartnership.id" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndPhaseResearchPartnership.id" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"   required=true  className="" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"   required=true  className="stageInnovationSelect" editable=editable/]
+              [#assign isStageFour = (innovation.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
             </div>
           </div>
         
           [#-- Geographic scope and innovation type --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>
         
           [#-- Region (if scope is Region) --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.repIndRegion.id" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndRegion.id" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
             <div class="col-md-6 ">
             </div>
           </div>
         
           [#-- Country(ies) (if scope is Multi-national, National or Sub-National)  --]
-          <div class="form-group countriesBlock chosen ${customForm.changedField('innovation.countries')}" >
+          <div class="form-group countriesBlock chosen" >
             [#if editable]
-              [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true  /]
+              [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" className="countriesIds" multiple=true  /]
             [#else]
               <label>[@s.text name="projectInnovations.countries" /]:</label>
               <div class="select">
@@ -115,12 +116,12 @@
           </div>
           
           [#-- Specify next user organizational type (Only if stage 4) --]
-          <div class="form-group">
+          <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
             [@elementsListComponent name="innovation.organizationTypes" elementType="organizationType" elementList=keyContributions label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
-          <div class="form-group">
+          <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
             [@customForm.select name="innovation.projectExpectedStudy.id" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
           </div>
         

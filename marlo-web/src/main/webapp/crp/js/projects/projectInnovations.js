@@ -14,6 +14,16 @@ function attachEvents() {
 
   // On click remove button
   $('[class*="removeElementType-"]').on('click', onClickRemoveElement);
+
+  // Check the stage of innovation
+  $('select.stageInnovationSelect').on('change', function() {
+    var isStageFour = this.value == 4;
+    if(isStageFour) {
+      $('.stageFourBlock').slideDown();
+    } else {
+      $('.stageFourBlock').slideUp();
+    }
+  });
 }
 
 function onSelectElement() {
@@ -74,6 +84,14 @@ function addSelect2() {
       templateResult: formatList,
       templateSelection: formatList
   });
+
+  $('form select.countriesIds').select2({
+      maximumSelectionLength: 0,
+      placeholder: "Select a country(ies)",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
+      width: '100%'
+  });
 }
 
 function formatList(state) {
@@ -82,4 +100,18 @@ function formatList(state) {
   }
   var result = "<span>" + state.text + "</span>";
   return $(result);
+};
+
+function formatStateCountries(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var $state;
+  if(state.id != -1) {
+    $state = $('<span>' + flag + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
+  }
+  return $state;
 };
