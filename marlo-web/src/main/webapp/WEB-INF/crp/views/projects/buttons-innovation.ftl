@@ -4,6 +4,7 @@
 <input name="projectID" type="hidden" value="${project.id}" />
 <input name="innovationID" type="hidden" value="${(innovationID)!}" />
 <input type="hidden"  name="className" value="${(innovation.class.name)!}"/>
+<input type="hidden"  name="innovation.projectInnovationInfo.id" value="${(innovation.projectInnovationInfo.id)!}"/>
 <input type="hidden"  name="id" value="${(innovation.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
