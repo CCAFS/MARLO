@@ -102,7 +102,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private static Logger LOG = LoggerFactory.getLogger(ExpectedDeliverablesSummaryAction.class);
   // Parameters
   private long startTime;
-  private Boolean showPpaFilter;
   private Set<Deliverable> currentPhaseDeliverables = new HashSet<>();
   private String ppa;
   // Store deliverables with year and type HashMap<Deliverable, List<year, type>>
@@ -286,9 +285,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Long.class, String.class, String.class, String.class, String.class, String.class},
       0);
-    Boolean activePPAFilter = showPpaFilter && ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
+    Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
-
+    Set<Deliverable> phaseDeliverables = new HashSet<>();
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
         && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
@@ -309,12 +308,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             && d.getDeliverableInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {
-        currentPhaseDeliverables.add(deliverable);
+        phaseDeliverables.add(deliverable);
       }
     }
 
-    for (Deliverable deliverable : currentPhaseDeliverables.stream()
-      .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
+    for (Deliverable deliverable : phaseDeliverables.stream().sorted((d1, d2) -> d1.getId().compareTo(d2.getId()))
+      .collect(Collectors.toList())) {
       if (activePPAFilter) {
         addDeliverableRow = false;
       }
@@ -499,6 +498,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
 
       if (addDeliverableRow) {
+        currentPhaseDeliverables.add(deliverable);
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
         Long phaseID = deliverableInfo.getPhase().getId();
 
@@ -901,14 +901,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   @Override
   public void prepare() {
-    // Get PPA Filter crp_parameter
-    try {
-      showPpaFilter = this.hasSpecificities(this.getText(APConstants.CRP_REPORT_DELIVERABLE_PPA_FILTER));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CRP_REPORT_DELIVERABLE_PPA_FILTER
-        + " parameter. Parameter will be set false. Exception: " + e.getMessage());
-      showPpaFilter = false;
-    }
     // Get PPA for filtering
     try {
       Map<String, Parameter> parameters = this.getParameters();
