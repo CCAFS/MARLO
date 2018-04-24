@@ -80,7 +80,11 @@
 
 [#-- Element Macro Template --]
 <ul style="display:none">
-  [@listElementMacro name="relationName" element={} type="typeName" index=-1 template=true /]
+  [@customForm.listElementMacro name="caseStudy.subIDOs" element={} type="subIDO" index=-1 template=true /]
+  [@customForm.listElementMacro name="caseStudy.srfTargets" element={} type="srfTarget" index=-1 template=true /]
+  [@customForm.listElementMacro name="caseStudy.crps" element={} type="globalUnit" index=-1 template=true /]
+  [@customForm.listElementMacro name="caseStudy.flagships" element={} type="crpProgram" index=-1 template=true /]
+  [@customForm.listElementMacro name="caseStudy.externalPartners" element={} type="institution" index=-1 template=true /]
 </ul>
 
 [#-- File upload Template--] 
@@ -192,7 +196,7 @@
           [#assign keyContributions = [
             { "name": "Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" }
           ] /]
-          [@elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="" keyFieldName="id" displayFieldName="name"/]
         </div>
         
         [#-- SRF Targets  --]
@@ -202,7 +206,7 @@
             { "name": "1.2. 30 million people, of which 50% are women, assisted to exit poverty" },
             { "name": "3.1. 5% increase in water and nutrient efficiency in agroecosystems" }
           ] /]
-          [@elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="" keyFieldName="id" displayFieldName="name"/]
         </div>
         
         [#-- Comments  --]
@@ -254,7 +258,7 @@
           [#assign keyContributions = [
             { "name": "A4NH - Agriculture for Nutrition and Health" }
           ] /]
-          [@elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=keyContributions label="study.keyContributors.crps"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=keyContributions label="study.keyContributors.crps"  listName="" keyFieldName="id" displayFieldName="name"/]
           
         </div>
         <div class="form-group simpleBox">
@@ -263,7 +267,7 @@
             { "name": "F1 - Priorities and Policies for CSA" },
             { "name": "F3 - Low emissions development" }
           ] /]
-          [@elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=keyContributions label="study.keyContributors.flagships"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=keyContributions label="study.keyContributors.flagships"  listName="" keyFieldName="id" displayFieldName="name"/]
           
         </div>
         <div class="form-group simpleBox">
@@ -271,7 +275,7 @@
           [#assign keyContributions = [
             { "name": "Ministries of Agriculture for Bangladesh" }
           ] /]
-          [@elementsListComponent name="${customName}.externalPartners" elementType="institution" elementList=keyContributions label="study.keyContributors.externalPartners"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.externalPartners" elementType="institution" elementList=keyContributions label="study.keyContributors.externalPartners"  listName="" keyFieldName="id" displayFieldName="name"/]
         </div>
       </div>
       [/#if]
@@ -424,37 +428,5 @@
     [#-- title --]
     <span title="${(element.project.projectInfo.title)!'undefined'}" class="name">${(element.project.projectInfo.composedName)!'undefined'}</span>
     <div class="clearfix"></div>
-  </li>
-[/#macro]
-
-
-[#-- MACROS --]
-
-[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" required=true ]
-  <div class="panel tertiary">
-    <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
-    <div class="panel-body" style="min-height: 30px;">
-      <ul class="list listType-${elementType}">
-        [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index /][/#list]
-        [/#if]
-      </ul>
-      [#if editable]
-        [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
-      [/#if]
-    </div>
-  </div>
-[/#macro]
-
-[#macro listElementMacro element name type index=-1 template=false]
-  [#local customName = "${name}[${index}]"]
-  <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
-    [#-- Hidden Inputs --]
-    <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element.relationship.id)!}" />
-    [#-- Remove button --]
-    [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
-    [#-- Title --]
-    <span class="elementName">${(element.composedName)!(element.name)!'{elementName}'}</span>
   </li>
 [/#macro]
