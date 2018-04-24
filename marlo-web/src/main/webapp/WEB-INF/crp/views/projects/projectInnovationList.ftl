@@ -115,7 +115,7 @@
           [#-- Remove --]
           <td class="text-center">
             [#if canEdit ]
-              <a id="remove-innovation" class="remove-innovation" href="#" title="" >
+              <a id="remove-innovation" class="remove-innovation" href="[@s.url namespace="/projects" action="${(crpSession)!}/deleteInnovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="" >
                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectInnovations.table.remove" /]" /> 
               </a>
             [#else]
