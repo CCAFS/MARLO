@@ -515,7 +515,6 @@ public class ProjectHighlightAction extends BaseAction {
 
       Path path = this.getAutoSaveFilePath();
 
-
       highlight.setProject(project);
 
 

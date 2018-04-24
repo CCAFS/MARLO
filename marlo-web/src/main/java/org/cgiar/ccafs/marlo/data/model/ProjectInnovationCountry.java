@@ -12,8 +12,10 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
 
   private static final long serialVersionUID = 647788757422554260L;
 
+
   @Expose
   private Integer id;
+
 
   @Expose
   private ProjectInnovation projectInnovation;
@@ -24,8 +26,29 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
   @Expose
   private LocElement locElement;
 
-
   public ProjectInnovationCountry() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectInnovationCountry other = (ProjectInnovationCountry) obj;
+    if (locElement == null) {
+      if (other.locElement != null) {
+        return false;
+      }
+    } else if (!locElement.getId().equals(other.locElement.getId())) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -47,6 +70,7 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
@@ -65,6 +89,14 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((locElement == null) ? 0 : locElement.hashCode());
+    return result;
   }
 
   @Override

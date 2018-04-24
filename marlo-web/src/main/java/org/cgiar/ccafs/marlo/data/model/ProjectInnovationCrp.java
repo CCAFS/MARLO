@@ -13,8 +13,10 @@ public class ProjectInnovationCrp implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 7399357387397427743L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private ProjectInnovation projectInnovation;
@@ -25,8 +27,29 @@ public class ProjectInnovationCrp implements java.io.Serializable, IAuditLog {
   @Expose
   private GlobalUnit globalUnit;
 
-
   public ProjectInnovationCrp() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectInnovationCrp other = (ProjectInnovationCrp) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -39,6 +62,7 @@ public class ProjectInnovationCrp implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -65,6 +89,14 @@ public class ProjectInnovationCrp implements java.io.Serializable, IAuditLog {
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

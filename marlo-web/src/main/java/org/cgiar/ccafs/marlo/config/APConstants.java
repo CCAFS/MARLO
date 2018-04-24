@@ -353,6 +353,17 @@ public final class APConstants {
   public static final String PROJECT_PARTNER_PARTNERSHIP_COUNTRY_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership.projectPartnerPartnershipLocations)";
 
+  // Project innovations Relations
+  public static final String PROJECT_INNOVATION_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCountries)";
+  public static final String PROJECT_INNOVATION_ORGANIZATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationOrganizations)";
+  public static final String PROJECT_INNOVATION_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
+  public static final String PROJECT_DELIVERABLE_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
+
+  // End
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String PROJECT_SCAPE_GLOBAL = "3";
 
