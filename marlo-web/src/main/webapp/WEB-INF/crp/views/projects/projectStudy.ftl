@@ -103,10 +103,10 @@
       
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.type" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [@customForm.select name="" className="setSelect2" i18nkey="study.type" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
         <div class="col-md-6">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" /]
+          [@customForm.select name="" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
       </div>
     </div>
@@ -132,8 +132,8 @@
             [@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]
           </label>
           [#assign studyIndicatorThree = "studyIndicatorThree"]
-          [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.${studyIndicatorThree}.value" label="Yes" value="true" checked=((element.reportingIndicatorThree.value)!false) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes"/]
-          [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.${studyIndicatorThree}.value" label="No" value="false" checked=!((element.reportingIndicatorThree.value)!true) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no"/]
+          [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.${studyIndicatorThree}.value" label="Yes" value="true" checked=((element.reportingIndicatorThree.value)!false) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.${studyIndicatorThree}.value" label="No" value="false" checked=!((element.reportingIndicatorThree.value)!true) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
@@ -166,13 +166,12 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group">
         <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable /]
-          [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/]
-          [@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
+          [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
         </label>
         <div class="form-group">
-          <p>[@customForm.radioFlat id="maturityChange-1" name="${customName}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel=""/]</p> 
-          <p>[@customForm.radioFlat id="maturityChange-2" name="${customName}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel=""/]</p>
-          <p>[@customForm.radioFlat id="maturityChange-3" name="${customName}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel=""/]</p>
+          <p>[@customForm.radioFlat id="maturityChange-1" name="${customName}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel="" editable=editable/]</p> 
+          <p>[@customForm.radioFlat id="maturityChange-2" name="${customName}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel="" editable=editable/]</p>
+          <p>[@customForm.radioFlat id="maturityChange-3" name="${customName}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel="" editable=editable/]</p>
         </div>
       </div>
       [/#if]
@@ -227,12 +226,12 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Geographic Scope --]
-              [@customForm.select name="${customName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="study.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" required=true /]
+              [@customForm.select name="${customName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="study.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
             </div>
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
             [#-- Regional scope --]
-            [@customForm.select name="${customName}.region.id" className="setSelect2" i18nkey="study.region" listName="allRepIndRegions" keyFieldName="id"  displayFieldName="name" required=true /]
+            [@customForm.select name="${customName}.region.id" className="setSelect2" i18nkey="study.region" listName="allRepIndRegions" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]
@@ -326,21 +325,21 @@
         <div class="simpleBox">
           [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
           [#list ccDimensions as cc]
-            [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
+            [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" editable=editable /]
           [/#list]
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
           [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
           [#list ccDimensions as cc]
-            [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
+            [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" editable=editable /]
           [/#list]
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
           [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
           [#list ccDimensions as cc]
-            [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" /]
+            [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" editable=editable /]
           [/#list]
         </div> 
       </div>
