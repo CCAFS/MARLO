@@ -115,7 +115,7 @@
               [#if reportingActive && ((item.year == currentCycleYear)!false)]
                 <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
               [/#if]
-              <a href="${dlurl}">[#if item.title?trim?has_content]${item.title}[#else]Untitled[/#if]</a>
+              <a href="${dlurl}">[#if item.title?trim?has_content]${item.title}[#else][@s.text name="global.untitled" /][/#if]</a>
             </td>
             <td class="type">Outcome Case Study</td>
             <td class="owner">[#if item.owner?trim?has_content]P${item.owner.id}[#else]Not defined[/#if]</td>

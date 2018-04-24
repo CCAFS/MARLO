@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js",
+  "${baseUrlMedia}/js/projects/projectInnovationsList.js",
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
 ] /]
@@ -38,7 +38,9 @@
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
 
         [#-- Innovations List Table --]
-        [@innovationsTableMacro /]
+        <div class="simpleBox">
+          [@innovationsTableMacro /]
+        </div>
 
         [#-- Add Innovation Button --]
         [#if canEdit]
@@ -64,10 +66,10 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-id" width="9%">[@s.text name="projectInnovations.table.id" /]</th>
-        <th id="tb-title" width="43%">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-title" width="40%">[@s.text name="projectInnovations.table.title" /]</th>
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
-        <th id="tb-stage" width="13%">[@s.text name="projectInnovations.table.stage" /]</th>
-        <th id="tb-year" width="9%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
+        <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
         <th id="tb-remove" width="4%"></th>
       </tr>
     </thead>
@@ -78,15 +80,13 @@
         <tr>
           [#-- ID --]
           <td class="tb-id text-center">
-            <a href="${tsURL}" target="_blank">${(innovation.id)!}</a>
+            <a href="${tsURL}" >${(innovation.id)!}</a>
           </td>
           [#-- Title --]
           <td class="tb-title">
-            [#if innovation.projectInnovationInfo.title?has_content]
-                <span>${(innovation.projectInnovationInfo.title)!''}</span>
-            [#else]
-                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-            [/#if]
+            <a href="${tsURL}">
+              [#if innovation.projectInnovationInfo.title?has_content]${(innovation.projectInnovationInfo.title)!''}[#else][@s.text name="global.untitled"/] [/#if]
+            </a>
           </td>
           [#-- Type --]
           <td>
@@ -106,8 +106,8 @@
           </td>
           [#-- Stage --]
           <td class="text-center">
-          [#if innovation.year?has_content]
-            ${innovation.year!''}
+          [#if innovation.projectInnovationInfo.year?has_content]
+            ${innovation.projectInnovationInfo.year!''}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
