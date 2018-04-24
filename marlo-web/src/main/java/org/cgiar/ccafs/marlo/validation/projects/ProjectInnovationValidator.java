@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -74,6 +75,65 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
+  }
+
+  private void validateProjectInnovation(BaseAction action, ProjectInnovation projectInnovation) {
+
+    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getTitle())
+      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getTitle()) <= 20) {
+      action.addMessage(action.getText("Title"));
+      action.addMissingField("projectInnovations.title");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.title", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getNarrative())
+      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 50) {
+      action.addMessage(action.getText("Narrative of The Innovation"));
+      action.addMissingField("projectInnovations.narrative");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.narrative",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase())
+      .getRepIndPhaseResearchPartnership() != null) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndPhaseResearchPartnership()
+        .getId() == null
+        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndPhaseResearchPartnership()
+          .getId() == -1) {
+        action.addMessage(action.getText("Phase of Research"));
+        action.addMissingField("projectInnovations.phase");
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Phase of Research"));
+      action.addMissingField("projectInnovations.phase");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation() != null) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+        .getId() == null
+        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
+          .getId() == -1) {
+        action.addMessage(action.getText("Stage of innovation"));
+        action.addMissingField("projectInnovations.stage");
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndStageInnovation.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+
+        // Validate if Stage is = 4
+
+
+      }
+    } else {
+      action.addMessage(action.getText("Stage of innovation"));
+      action.addMissingField("projectInnovations.stage");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndStageInnovation.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
 }
