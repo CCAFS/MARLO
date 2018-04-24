@@ -8,7 +8,7 @@
   "${baseUrlMedia}/css/projects/projectDeliverable.css"
   ] 
 /]
-[#assign currentSection = "publications" /]
+[#assign currentSection = "additionalReporting" /]
 [#assign currentStage = (filterBy)!"all" /]
 
 

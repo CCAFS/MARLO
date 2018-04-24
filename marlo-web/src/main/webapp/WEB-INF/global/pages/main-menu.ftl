@@ -15,8 +15,13 @@
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- FUNDING SOURCES - ALL --]
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged && !centerGlobalUnit, 'active': true },
-  [#-- PUBLICATIONS REPORTING - ALL --]
-  { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive && !centerGlobalUnit, 'active': action.canAcessPublications() , 'help': true },
+  [#-- ADDITIONAL REPORTING - CRP --]
+  { 'slug': 'additionalReporting', 'name': 'menu.additionalReporting',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',  'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,  'help': true,  
+    'subItems' : [
+      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  action.canAcessPublications() },
+      { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studies',  'visible': logged, 'active':  false }
+    ]
+  },
   [#-- SYNTHESIS PLANNING - CRP --]
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && action.canAcessPOWB() && !reportingActive && !centerGlobalUnit, 'active': true,    
     'subItems' : [
