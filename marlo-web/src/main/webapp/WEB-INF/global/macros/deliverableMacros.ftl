@@ -125,20 +125,20 @@
     <div class="row">
       <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req /]</label>
       <div class="col-md-3">
-        [@customForm.yesNoInput name="${customName}.hasIntellectualAsset"  editable=editable cssClass="intellectualAsset text-center" /]  
+        [@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="intellectualAsset text-center" /]  
       </div>
     </div> 
-    <div class="intellectualAssetOptions radio-block" style="display: ${((deliverable.intellectualAsset.hasIntellectualAsset)!false)?string("block","none")};">
+    <div class="intellectualAssetOptions radio-block" style="display: ${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
       <hr />
       [#-- Applicant(s) / owner(s) (Center or partner) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.applicants" i18nkey="deliverable.intellectualAsset.applicants" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.applicant" i18nkey="deliverable.intellectualAsset.applicants" className="" required=true editable=editable /]
       </div>
       [#-- Type --]
       <div class="form-group">
         <label for="">[@s.text name="deliverable.intellectualAsset.type" /]:[@customForm.req required=editable /] </label><br />
-        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="patent"  checked=((element.intellectualAsset.type == "patent")!false) cssClass="" cssClassLabel=""/]
-        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="pvp"     checked=!((element.intellectualAsset.type == "pvp")!true) cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=((deliverable.intellectualAsset.type == 1)!false) cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"     checked=((deliverable.intellectualAsset.type == 2)!false) cssClass="" cssClassLabel=""/]
       </div>
       [#-- Title --]
       <div class="form-group">

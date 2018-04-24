@@ -193,16 +193,7 @@
           [#assign keyContributions = [
             { "name": "Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" }
           ] /]
-          <div class="panel tertiary">
-            <div class="panel-head"><label for="">[@s.text name="study.stratgicResultsLink.subIDOs" /]</label></div>
-            <div class="panel-body">
-              [#assign elementType = "subIDO"]
-              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.subIDOs" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
-              [#if editable]
-                [@customForm.select name="" className="setSelect2 elementType-${elementType} maxLimit-2" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
-              [/#if]
-            </div>
-          </div>
+          [@elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="" keyFieldName="id" displayFieldName="name"/]
         </div>
         
         [#-- SRF Targets  --]
@@ -212,16 +203,7 @@
             { "name": "1.2. 30 million people, of which 50% are women, assisted to exit poverty" },
             { "name": "3.1. 5% increase in water and nutrient efficiency in agroecosystems" }
           ] /]
-          <div class="panel tertiary">
-            <div class="panel-head"><label for="">[@s.text name="study.stratgicResultsLink.srfTargets" /]</label></div>
-            <div class="panel-body">
-              [#assign elementType = "srfTarget"]
-              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.srfTargets" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
-              [#if editable]
-                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
-              [/#if]
-            </div>
-          </div>
+          [@elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="" keyFieldName="id" displayFieldName="name"/]
         </div>
         
         [#-- Comments  --]
@@ -273,16 +255,7 @@
           [#assign keyContributions = [
             { "name": "A4NH - Agriculture for Nutrition and Health" }
           ] /]
-          <div class="panel tertiary">
-            <div class="panel-head"><label for="">[@s.text name="study.keyContributors.crps" /]</label></div>
-            <div class="panel-body">
-              [#assign elementType = "globalUnit"]
-              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.crps" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
-              [#if editable]
-                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
-              [/#if]
-            </div>
-          </div>
+          [@elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=keyContributions label="study.keyContributors.crps"  listName="" keyFieldName="id" displayFieldName="name"/]
           
         </div>
         <div class="form-group simpleBox">
@@ -291,16 +264,7 @@
             { "name": "F1 - Priorities and Policies for CSA" },
             { "name": "F3 - Low emissions development" }
           ] /]
-          <div class="panel tertiary">
-            <div class="panel-head"><label for="">[@s.text name="study.keyContributors.flagships" /]</label></div>
-            <div class="panel-body">
-              [#assign elementType = "crpProgram"]
-              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.flagships" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
-              [#if editable]
-                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
-              [/#if]
-            </div>
-          </div>
+          [@elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=keyContributions label="study.keyContributors.flagships"  listName="" keyFieldName="id" displayFieldName="name"/]
           
         </div>
         <div class="form-group simpleBox">
@@ -308,16 +272,7 @@
           [#assign keyContributions = [
             { "name": "Ministries of Agriculture for Bangladesh" }
           ] /]
-          <div class="panel tertiary">
-            <div class="panel-head"><label for="">[@s.text name="study.keyContributors.externalPartners" /]</label></div>
-            <div class="panel-body">
-              [#assign elementType = "institution"]
-              <ul class="list listType-${elementType}">[#list keyContributions as keyContribution][@listElementMacro name="${customName}.externalPartners" element=keyContribution type=elementType index=keyContribution_index /][/#list]</ul>
-              [#if editable]
-                [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName="" keyFieldName="id"  displayFieldName="name" /]
-              [/#if]
-            </div>
-          </div>
+          [@elementsListComponent name="${customName}.externalPartners" elementType="institution" elementList=keyContributions label="study.keyContributors.externalPartners"  listName="" keyFieldName="id" displayFieldName="name"/]
         </div>
       </div>
       [/#if]
@@ -471,6 +426,19 @@
     <span title="${(element.project.projectInfo.title)!'undefined'}" class="name">${(element.project.projectInfo.composedName)!'undefined'}</span>
     <div class="clearfix"></div>
   </li>
+[/#macro]
+
+
+[#macro elementsListComponent name elementType elementList label listName="" keyFieldName="" displayFieldName="" ]
+  <div class="panel tertiary">
+    <div class="panel-head"><label for="">[@s.text name=label /]</label></div>
+    <div class="panel-body"> 
+      <ul class="list listType-${elementType}">[#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index /][/#list]</ul>
+      [#if editable]
+        [@customForm.select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
+      [/#if]
+    </div>
+  </div>
 [/#macro]
 
 [#macro listElementMacro element name type index=-1 template=false]
