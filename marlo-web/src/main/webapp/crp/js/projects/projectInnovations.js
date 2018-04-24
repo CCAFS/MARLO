@@ -85,6 +85,7 @@ function onSelectElement() {
   // Verify repeated selection
   if($list.find('.elementRelationID[value="' + $option.val() + '"]').length) {
     $select.val('-1').trigger('change.select2');
+    $select.parent().animateCss('shake');
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
     notyOptions.text = 'It was already selected';
     noty(notyOptions);

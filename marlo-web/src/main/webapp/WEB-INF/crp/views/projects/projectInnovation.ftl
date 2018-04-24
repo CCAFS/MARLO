@@ -19,21 +19,13 @@
   {"label":"innovationInformation", "nameSpace":"/projects", "action":""}
 ]/]
 
-[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-<div class="container helpText viewMore-block">
-  <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="projectHighlight.help" /] </p>
-  </div> 
-  <div style="display:none" class="viewMore closed"></div>
-</div>
+[#-- Helptext --]
+[@utilities.helpBox name="projectInnovations.help" /]
 
-[#if (!availabePhase)!false]
-  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
-[#else]
 <section class="container">
   <div class="row">
     [#-- Project Menu --]
@@ -42,17 +34,17 @@
     </div>
     [#-- Project Section Content --]
     <div class="col-md-9">
-    [#-- Section Messages --]
-    [#include "/WEB-INF/crp/views/projects/messages-highlight.ftl" /]
+      [#-- Section Messages --]
+      [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
 
+      [#-- Back --]
+      <small class="pull-right">
+        <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
+        </a>
+      </small>
+        
       [@s.form action=actionName cssClass="pure-form" method="POST" enctype="multipart/form-data" ]
-      
-        [#-- Back --]
-        <small class="pull-right">
-          <a href="[@s.url action='${crpSession}/innovations'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-            <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectInnovations.back" /]
-          </a>
-        </small>
         
         [#--  Innovation Title --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
@@ -190,7 +182,7 @@
       [/@s.form] 
   </div>  
 </section>
-[/#if]
+
 
 [#-- Element Macro Template --]
 <ul style="display:none">

@@ -1117,7 +1117,7 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .panel.tertiary .panel-body > ul.list > li {
     list-style: none;
-    padding: 1px 4px 0px 6px;
+    padding: 1px 24px 0px 6px;
     background-color: #F7F7F7;
     border: 1px solid #E0E0E0 !important;
     box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);

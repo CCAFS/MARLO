@@ -4,7 +4,7 @@
 [#macro deliverableLicenseMacro ]
 <div class="simpleBox">
   <div class="form-group row">
-    <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req /]</label>
+    <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=editable /]</label>
     <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] </div>  
   </div>
   [#-- Deliverable type computer software --]
@@ -83,7 +83,7 @@
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row ">
-      <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req /]</label>
+      <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
       <div class="col-md-3">
         [@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
       </div>
@@ -98,7 +98,7 @@
         {"value": "notDisseminated", "isChecked": (deliverable.dissemination.notDisseminated)!false }
       ] /]
       
-      <label for="">Select the Open Access restriction:[@customForm.req /]</label>
+      <label for="">Select the Open Access restriction:[@customForm.req required=editable /]</label>
       [#list oaRestrictions as restriction]
         [#if editable]
           <div class="radio">
@@ -123,7 +123,7 @@
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
     <div class="row">
-      <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req /]</label>
+      <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
       <div class="col-md-3">
         [@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="intellectualAsset text-center" /]  
       </div>
@@ -137,8 +137,8 @@
       [#-- Type --]
       <div class="form-group">
         <label for="">[@s.text name="deliverable.intellectualAsset.type" /]:[@customForm.req required=editable /] </label><br />
-        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=((deliverable.intellectualAsset.type == 1)!false) cssClass="" cssClassLabel=""/]
-        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"     checked=((deliverable.intellectualAsset.type == 2)!false) cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=((deliverable.intellectualAsset.type == 1)!false) cssClass="" cssClassLabel="" editable=editable /]
+        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"     checked=((deliverable.intellectualAsset.type == 2)!false) cssClass="" cssClassLabel="" editable=editable /]
       </div>
       [#-- Title --]
       <div class="form-group">
