@@ -35,7 +35,7 @@
     [#-- Project Section Content --]
     <div class="col-md-9">
       [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
+      [#include "/WEB-INF/crp/views/projects/messages-innovation.ftl" /]
 
       [#-- Back --]
       <small class="pull-right">
