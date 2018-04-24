@@ -135,7 +135,8 @@ public class ProjectInnovationValidator extends BaseValidator {
           if (projectInnovation.getOrganizations() == null || projectInnovation.getOrganizations().isEmpty()) {
             action.addMessage(action.getText("Organization Types"));
             action.addMissingField("projectInnovations.nextUserOrganizationalType");
-            action.getInvalidFields().put("list-innovation.organizations", InvalidFieldsMessages.EMPTYLIST);
+            action.getInvalidFields().put("list-innovation.organizations",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Organization Types"}));
           }
 
           // Validate Outcome Case Study
@@ -188,7 +189,8 @@ public class ProjectInnovationValidator extends BaseValidator {
           if (projectInnovation.getCountries() == null || projectInnovation.getCountries().isEmpty()) {
             action.addMessage(action.getText("Countries"));
             action.addMissingField("projectInnovations.nextUserOrganizationalType");
-            action.getInvalidFields().put("list-projectInnovations.countries", InvalidFieldsMessages.EMPTYLIST);
+            action.getInvalidFields().put("list-projectInnovations.countries",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Countries"}));
           }
         }
 
@@ -261,7 +263,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {
       action.addMessage(action.getText("Crps"));
       action.addMissingField("projectInnovations.contributing");
-      action.getInvalidFields().put("list-innovation.crps", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-innovation.crps",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
     }
 
     // Validate Gender relevance radio Button
