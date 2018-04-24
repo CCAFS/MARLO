@@ -56,10 +56,21 @@ public interface ProjectInnovationCountryDAO {
 
 
   /**
+   * This method gets a projectInnovationCountry object list by a given innovation and phase identifier.
+   * 
+   * @param innovationID is the innovation identifier.
+   * @param phaseID is the phase identifier.
+   * @return a projectInnovationCountry object list.
+   */
+  public List<ProjectInnovationCountry> getInnovationCountrybyPhase(long innovationID, long phaseID);
+
+  /**
    * This method saves the information of the given projectInnovationCountry
    * 
-   * @param projectInnovationCountry - is the projectInnovationCountry object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationCountry was
+   * @param projectInnovationCountry - is the projectInnovationCountry object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationCountry
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

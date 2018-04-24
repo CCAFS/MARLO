@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
@@ -43,22 +44,38 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectInnovationValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -66,16 +83,21 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ProjectInnovationAction extends BaseAction {
 
+
   private static final long serialVersionUID = 2025842196563364380L;
 
+
   private long projectID;
+
   private long innovationID;
+
   private Project project;
   private ProjectInnovation innovation;
+  private ProjectInnovation innovationDB;
   private GlobalUnit loggedCrp;
-
   private List<RepIndPhaseResearchPartnership> phaseResearchList;
   private List<RepIndStageInnovation> stageInnovationList;
+
   private List<RepIndGeographicScope> geographicScopeList;
   private List<RepIndInnovationType> innovationTypeList;
   private List<RepIndRegion> regionList;
@@ -84,6 +106,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Deliverable> deliverableList;
   private List<GlobalUnit> crpList;
   private List<RepIndGenderYouthFocusLevel> focusLevelList;
+  private List<RepIndOrganizationType> organizationTypeList;
 
   private ProjectInnovationManager projectInnovationManager;
   private GlobalUnitManager globalUnitManager;
@@ -103,7 +126,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationOrganizationManager projectInnovationOrganizationManager;
   private ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private ProjectInnovationCountryManager projectInnovationCountryManager;
-
+  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private ProjectInnovationValidator validator;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -117,7 +141,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationCrpManager projectInnovationCrpManager,
     ProjectInnovationOrganizationManager projectInnovationOrganizationManager,
     ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
-    ProjectInnovationCountryManager projectInnovationCountryManager) {
+    ProjectInnovationCountryManager projectInnovationCountryManager,
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -137,14 +162,33 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationOrganizationManager = projectInnovationOrganizationManager;
     this.projectInnovationDeliverableManager = projectInnovationDeliverableManager;
     this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+    this.validator = validator;
 
 
+  }
+
+  /**
+   * The name of the autosave file is constructed and the path is searched
+   * 
+   * @return Auto save file path
+   */
+  private Path getAutoSaveFilePath() {
+    // get the class simple name
+    String composedClassName = innovation.getClass().getSimpleName();
+    // get the action name and replace / for _
+    String actionFile = this.getActionName().replace("/", "_");
+    // concatenate name and add the .json extension
+    String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
 
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   @Override
   public List<GlobalUnit> getCrpList() {
@@ -163,10 +207,10 @@ public class ProjectInnovationAction extends BaseAction {
     return focusLevelList;
   }
 
-
   public List<RepIndGeographicScope> getGeographicScopeList() {
     return geographicScopeList;
   }
+
 
   public ProjectInnovation getInnovation() {
     return innovation;
@@ -182,6 +226,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<RepIndOrganizationType> getOrganizationTypeList() {
+    return organizationTypeList;
   }
 
   public List<RepIndPhaseResearchPartnership> getPhaseResearchList() {
@@ -204,7 +252,6 @@ public class ProjectInnovationAction extends BaseAction {
     return stageInnovationList;
   }
 
-
   @Override
   public void prepare() throws Exception {
 
@@ -223,9 +270,87 @@ public class ProjectInnovationAction extends BaseAction {
       projectID = project.getId();
 
 
-      // TODO Autosave
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
 
+
+      Path path = this.getAutoSaveFilePath();
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        // Autosave File in
+        BufferedReader reader = null;
+        reader = new BufferedReader(new FileReader(path.toFile()));
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        innovation = (ProjectInnovation) autoSaveReader.readFromJson(jReader);
+
+        // Innovation Countries List AutoSave
+        if (innovation.getCountriesIdsText() != null) {
+          String[] countriesText = innovation.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+          List<Long> countries = new ArrayList<>();
+          for (String value : Arrays.asList(countriesText)) {
+            countries.add(Long.parseLong(value.trim()));
+          }
+          innovation.setCountriesIds(countries);
+        }
+
+        // Innovation Organization Type List Autosave
+        if (innovation.getOrganizations() != null) {
+          for (ProjectInnovationOrganization projectInnovationOrganization : innovation.getOrganizations()) {
+            projectInnovationOrganization.setRepIndOrganizationType(repIndOrganizationTypeManager
+              .getRepIndOrganizationTypeById(projectInnovationOrganization.getRepIndOrganizationType().getId()));
+          }
+        }
+
+        // Innovation Deliverable List Autosave
+        if (innovation.getDeliverables() != null) {
+          for (ProjectInnovationDeliverable projectInnovationDeliverable : innovation.getDeliverables()) {
+            projectInnovationDeliverable.setDeliverable(
+              deriverableManager.getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()));
+          }
+        }
+
+        // Innovation Crp List Autosave
+        if (innovation.getCrps() != null) {
+          for (ProjectInnovationCrp projectInnovationCrp : innovation.getCrps()) {
+            projectInnovationCrp
+              .setGlobalUnit(globalUnitManager.getGlobalUnitById(projectInnovationCrp.getGlobalUnit().getId()));
+          }
+        }
+
+
+      } else {
+
+        // Innovation Countries List
+        if (innovation.getProjectInnovationCountries() == null) {
+          innovation.setCountries(new ArrayList<>());
+        } else {
+          List<ProjectInnovationCountry> countries =
+            projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+          innovation.setCountries(countries);
+        }
+
+        // Innovation Organization Type List
+        if (innovation.getProjectInnovationOrganizations() != null) {
+          innovation.setOrganizations(new ArrayList<>(innovation.getProjectInnovationOrganizations().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Innovation Deliverable List
+        if (innovation.getProjectInnovationDeliverables() != null) {
+          innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
+            .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Innovation Crp list
+        if (innovation.getProjectInnovationCrps() != null) {
+          innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
+            .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+      }
 
       // Getting The list
       countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
@@ -238,6 +363,7 @@ public class ProjectInnovationAction extends BaseAction {
       innovationTypeList = repIndInnovationTypeManager.findAll();
       regionList = repIndRegionManager.findAll();
       focusLevelList = focusLevelManager.findAll();
+      organizationTypeList = repIndOrganizationTypeManager.findAll();
 
 
       expectedStudyList = projectExpectedStudyManager.findAll().stream()
@@ -263,10 +389,91 @@ public class ProjectInnovationAction extends BaseAction {
 
     }
 
+    innovationDB = projectInnovationManager.getProjectInnovationById(innovationID);
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_INNOVATIONS_BASE_PERMISSION, params));
   }
+
+
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_INNOVATION_COUNTRY_RELATION);
+      relationsName.add(APConstants.PROJECT_INNOVATION_ORGANIZATION_RELATION);
+      relationsName.add(APConstants.PROJECT_INNOVATION_CRP_RELATION);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_CRP_RELATION);
+
+      innovation.setActiveSince(new Date());
+      innovation.setModifiedBy(this.getCurrentUser());
+      innovation.setModificationJustification(this.getJustification());
+      innovation.setCreatedBy(innovationDB.getCreatedBy());
+      innovation.setActive(true);
+
+      // Save the Countries List (ProjectInnovationcountry)
+      if (innovation.getCountriesIds() != null || !innovation.getCountriesIds().isEmpty()) {
+
+        List<ProjectInnovationCountry> countries = projectInnovationCountryManager
+          .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
+        List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
+        for (Long countryIds : innovation.getCountriesIds()) {
+          ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
+          countryInn.setLocElement(locElementManager.getLocElementById(countryIds));
+          countryInn.setProjectInnovation(innovation);
+          countryInn.setPhase(this.getActualPhase());
+          countriesSave.add(countryInn);
+          if (!countries.contains(countryInn)) {
+            projectInnovationCountryManager.saveProjectInnovationCountry(countryInn);
+          }
+        }
+
+        for (ProjectInnovationCountry projectInnovationCountry : countries) {
+          if (!countriesSave.contains(projectInnovationCountry)) {
+            projectInnovationCountryManager.deleteProjectInnovationCountry(projectInnovationCountry.getId());
+          }
+        }
+
+      }
+
+
+      innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
+      innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
+      projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
+      projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName);
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+  }
+
+  /**
+   * Save Project Innovation Organization Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveOrganizations(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and Delete Info
+    if (projectInnovation.getProjectInnovationOrganizations() != null
+      && projectInnovation.getProjectInnovationOrganizations().size() > 0) {
+
+      List<ProjectInnovationOrganization> organizationPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationOrganizations().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
+        if (!innovation.getOrganizations().contains(innovationOrganization)) {
+          projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
+        }
+      }
+    }
+  }
+
 
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
@@ -308,6 +515,10 @@ public class ProjectInnovationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  public void setOrganizationTypeList(List<RepIndOrganizationType> organizationTypeList) {
+    this.organizationTypeList = organizationTypeList;
+  }
+
   public void setPhaseResearchList(List<RepIndPhaseResearchPartnership> phaseResearchList) {
     this.phaseResearchList = phaseResearchList;
   }
@@ -326,6 +537,13 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setStageInnovationList(List<RepIndStageInnovation> stageInnovationList) {
     this.stageInnovationList = stageInnovationList;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, project, innovation, true);
+    }
   }
 
 

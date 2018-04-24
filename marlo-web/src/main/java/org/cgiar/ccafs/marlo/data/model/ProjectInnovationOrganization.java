@@ -12,8 +12,10 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
 
   private static final long serialVersionUID = 6712723068462076861L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private ProjectInnovation projectInnovation;
@@ -24,8 +26,29 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
   @Expose
   private RepIndOrganizationType repIndOrganizationType;
 
-
   public ProjectInnovationOrganization() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectInnovationOrganization other = (ProjectInnovationOrganization) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -48,6 +71,7 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -65,6 +89,14 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
 
   public RepIndOrganizationType getRepIndOrganizationType() {
     return repIndOrganizationType;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

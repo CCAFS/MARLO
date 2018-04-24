@@ -39,7 +39,6 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
-
   @Expose
   private Date activeSince;
 
@@ -47,11 +46,11 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
   private ProjectInnovationInfo projectInnovationInfo;
 
 
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
+
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -62,21 +61,36 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
 
+
   private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
     new HashSet<ProjectInnovationDeliverable>(0);
+
   private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
 
+
   private List<Long> countriesIds = new ArrayList<>();
+
+
   private List<ProjectInnovationOrganization> organizations;
   private List<ProjectInnovationDeliverable> deliverables;
   private List<ProjectInnovationCrp> crps;
+  private List<ProjectInnovationCountry> countries;
+  private String countriesIdsText;
 
   public Date getActiveSince() {
     return activeSince;
   }
 
+  public List<ProjectInnovationCountry> getCountries() {
+    return countries;
+  }
+
   public List<Long> getCountriesIds() {
     return countriesIds;
+  }
+
+  public String getCountriesIdsText() {
+    return countriesIdsText;
   }
 
   public User getCreatedBy() {
@@ -103,7 +117,6 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -113,6 +126,7 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
@@ -179,8 +193,16 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+  public void setCountries(List<ProjectInnovationCountry> countries) {
+    this.countries = countries;
+  }
+
   public void setCountriesIds(List<Long> countriesIds) {
     this.countriesIds = countriesIds;
+  }
+
+  public void setCountriesIdsText(String countriesIdsText) {
+    this.countriesIdsText = countriesIdsText;
   }
 
   public void setCreatedBy(User createdBy) {
