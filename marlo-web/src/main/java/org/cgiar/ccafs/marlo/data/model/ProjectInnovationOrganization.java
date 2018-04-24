@@ -52,6 +52,11 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
   }
 
 
+  public String getComposedName() {
+    return this.getRepIndOrganizationType().getName();
+  }
+
+
   @Override
   public Long getId() {
     return id;
@@ -71,7 +76,6 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -85,6 +89,10 @@ public class ProjectInnovationOrganization implements java.io.Serializable, IAud
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  public RepIndOrganizationType getRelationship() {
+    return repIndOrganizationType;
   }
 
   public RepIndOrganizationType getRepIndOrganizationType() {

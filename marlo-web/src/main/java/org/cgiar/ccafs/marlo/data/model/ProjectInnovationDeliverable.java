@@ -52,10 +52,14 @@ public class ProjectInnovationDeliverable implements java.io.Serializable, IAudi
   }
 
 
+  public String getComposedName() {
+    return this.getDeliverable().getComposedName();
+  }
+
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
-
 
   @Override
   public Long getId() {
@@ -89,6 +93,10 @@ public class ProjectInnovationDeliverable implements java.io.Serializable, IAudi
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  public Deliverable getRelationship() {
+    return deliverable;
   }
 
   @Override
