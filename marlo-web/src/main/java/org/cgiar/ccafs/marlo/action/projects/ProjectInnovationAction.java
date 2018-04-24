@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -92,12 +93,16 @@ public class ProjectInnovationAction extends BaseAction {
 
   private long innovationID;
 
+
   private Project project;
+
   private ProjectInnovation innovation;
+
   private ProjectInnovation innovationDB;
   private GlobalUnit loggedCrp;
   private List<RepIndPhaseResearchPartnership> phaseResearchList;
   private List<RepIndStageInnovation> stageInnovationList;
+  private String transaction;
 
   private List<RepIndGeographicScope> geographicScopeList;
   private List<RepIndInnovationType> innovationTypeList;
@@ -108,9 +113,9 @@ public class ProjectInnovationAction extends BaseAction {
   private List<GlobalUnit> crpList;
   private List<RepIndGenderYouthFocusLevel> focusLevelList;
   private List<RepIndOrganizationType> organizationTypeList;
-
   private ProjectInnovationManager projectInnovationManager;
   private GlobalUnitManager globalUnitManager;
+
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
   private RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
@@ -129,6 +134,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationCountryManager projectInnovationCountryManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private ProjectInnovationValidator validator;
+  private AuditLogManager auditLogManager;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -143,7 +149,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationOrganizationManager projectInnovationOrganizationManager,
     ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
     ProjectInnovationCountryManager projectInnovationCountryManager,
-    RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator) {
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
+    AuditLogManager auditLogManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -165,6 +172,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.validator = validator;
+    this.auditLogManager = auditLogManager;
 
 
   }
@@ -185,20 +193,20 @@ public class ProjectInnovationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   @Override
   public List<GlobalUnit> getCrpList() {
     return crpList;
   }
 
+
   public List<Deliverable> getDeliverableList() {
     return deliverableList;
   }
+
 
   public List<ProjectExpectedStudy> getExpectedStudyList() {
     return expectedStudyList;
@@ -212,7 +220,6 @@ public class ProjectInnovationAction extends BaseAction {
     return geographicScopeList;
   }
 
-
   public ProjectInnovation getInnovation() {
     return innovation;
   }
@@ -220,6 +227,7 @@ public class ProjectInnovationAction extends BaseAction {
   public long getInnovationID() {
     return innovationID;
   }
+
 
   public List<RepIndInnovationType> getInnovationTypeList() {
     return innovationTypeList;
@@ -253,6 +261,10 @@ public class ProjectInnovationAction extends BaseAction {
     return stageInnovationList;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   @Override
   public void prepare() throws Exception {
 
@@ -262,7 +274,23 @@ public class ProjectInnovationAction extends BaseAction {
     innovationID =
       Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.INNOVATION_REQUEST_ID)));
 
-    innovation = projectInnovationManager.getProjectInnovationById(innovationID);
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      ProjectInnovation history = (ProjectInnovation) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        innovation = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      innovation = projectInnovationManager.getProjectInnovationById(innovationID);
+
+    }
 
 
     if (innovation != null) {
@@ -429,7 +457,6 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -570,6 +597,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Project Innovation Crp Information
    * 
@@ -688,10 +716,10 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
+
 
   public void setCrpList(List<GlobalUnit> crpList) {
     this.crpList = crpList;
@@ -751,6 +779,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setStageInnovationList(List<RepIndStageInnovation> stageInnovationList) {
     this.stageInnovationList = stageInnovationList;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
   @Override
