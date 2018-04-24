@@ -10,18 +10,21 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 647788757422554260L;
 
 
   @Expose
-  private Integer id;
+  private Long id;
 
 
   @Expose
   private ProjectInnovation projectInnovation;
 
+
   @Expose
   private Phase phase;
+
 
   @Expose
   private LocElement locElement;
@@ -51,12 +54,10 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
     return true;
   }
 
-
   @Override
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -75,6 +76,7 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -104,8 +106,7 @@ public class ProjectInnovationCountry implements java.io.Serializable, IAuditLog
     return true;
   }
 
-
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

@@ -321,8 +321,8 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.setRepIndRegion(projectInnovationInfoUpdate.getRepIndRegion());
     this.setRepIndInnovationType(projectInnovationInfoUpdate.getRepIndInnovationType());
     this.setRepIndGeographicScope(projectInnovationInfoUpdate.getRepIndGeographicScope());
-    this.setGenderFocusLevel(projectInnovationInfoUpdate.genderFocusLevel);
-    this.setYouthFocusLevel(projectInnovationInfoUpdate.getGenderFocusLevel());
+    this.setGenderFocusLevel(projectInnovationInfoUpdate.getGenderFocusLevel());
+    this.setYouthFocusLevel(projectInnovationInfoUpdate.getYouthFocusLevel());
     this.setNovel(projectInnovationInfoUpdate.getNovel());
     this.setEvidenceLink(projectInnovationInfoUpdate.getEvidenceLink());
     this.setGenderExplaniation(projectInnovationInfoUpdate.getGenderExplaniation());
