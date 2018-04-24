@@ -266,12 +266,12 @@ public class ProjectInnovationAction extends BaseAction {
 
 
     if (innovation != null) {
-
-      project = projectManager.getProjectById(innovation.getProject().getId());
-      projectID = project.getId();
+      projectID = innovation.getProject().getId();
+      project = projectManager.getProjectById(projectID);
 
 
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+      project.getProjecInfoPhase(phase);
 
 
       Path path = this.getAutoSaveFilePath();
@@ -291,9 +291,9 @@ public class ProjectInnovationAction extends BaseAction {
         // Innovation Countries List AutoSave
         if (innovation.getCountriesIdsText() != null) {
           String[] countriesText = innovation.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<Long> countries = new ArrayList<>();
+          List<String> countries = new ArrayList<>();
           for (String value : Arrays.asList(countriesText)) {
-            countries.add(Long.parseLong(value.trim()));
+            countries.add(value.trim());
           }
           innovation.setCountriesIds(countries);
         }
@@ -328,6 +328,10 @@ public class ProjectInnovationAction extends BaseAction {
 
         this.setDraft(false);
 
+        if (innovation.getProjectInnovationInfo() == null) {
+          innovation.getProjectInnovationInfo(phase);
+        }
+
         // Innovation Countries List
         if (innovation.getProjectInnovationCountries() == null) {
           innovation.setCountries(new ArrayList<>());
@@ -359,7 +363,7 @@ public class ProjectInnovationAction extends BaseAction {
       if (!this.isDraft()) {
         if (innovation.getCountries() != null) {
           for (ProjectInnovationCountry country : innovation.getCountries()) {
-            innovation.getCountriesIds().add(country.getLocElement().getId());
+            innovation.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
           }
         }
       }
@@ -459,9 +463,9 @@ public class ProjectInnovationAction extends BaseAction {
         List<ProjectInnovationCountry> countries = projectInnovationCountryManager
           .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
         List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
-        for (Long countryIds : innovation.getCountriesIds()) {
+        for (String countryIds : innovation.getCountriesIds()) {
           ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
-          countryInn.setLocElement(locElementManager.getLocElementById(countryIds));
+          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
           countryInn.setProjectInnovation(innovation);
           countryInn.setPhase(this.getActualPhase());
           countriesSave.add(countryInn);
@@ -481,6 +485,20 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
+
+      // Setup focusLevel
+      if (innovation.getProjectInnovationInfo().getGenderFocusLevel() != null) {
+        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+          .getRepIndGenderYouthFocusLevelById(innovation.getProjectInnovationInfo().getGenderFocusLevel().getId());
+        innovation.getProjectInnovationInfo().setGenderFocusLevel(focusLevel);
+      }
+
+      if (innovation.getProjectInnovationInfo().getYouthFocusLevel() != null) {
+        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+          .getRepIndGenderYouthFocusLevelById(innovation.getProjectInnovationInfo().getYouthFocusLevel().getId());
+        innovation.getProjectInnovationInfo().setYouthFocusLevel(focusLevel);
+      }
+      // End
 
       // Validate negative Values
       if (innovation.getProjectInnovationInfo().getProjectExpectedStudy() != null) {

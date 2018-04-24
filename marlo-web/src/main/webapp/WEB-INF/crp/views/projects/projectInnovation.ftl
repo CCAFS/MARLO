@@ -156,7 +156,7 @@
             <div class="simpleBox">
               <div class="form-group">
                 [#list focusLevelList as level]
-                  <p>[@customForm.radioFlat id="genderLevel-${level.id}" name="innovation.projectInnovationInfo.genderFocusLevel.id" label="${level.name}" value="${level.id}" checked=false cssClass="" cssClassLabel=""/]</p> 
+                  <p>[@customForm.radioFlat id="genderLevel-${level.id}" name="innovation.projectInnovationInfo.genderFocusLevel.id" label="${level.name}" value="${level.id}" checked=(innovation.projectInnovationInfo.genderFocusLevel.id == level.id)!false cssClass="" cssClassLabel=""/]</p> 
                 [/#list]
               </div>
               [#-- Brief explanation and evidence --] 
@@ -172,7 +172,7 @@
             <div class="simpleBox">
               <div class="form-group">
                 [#list focusLevelList as level]
-                  <p>[@customForm.radioFlat id="youthLevel-${level.id}" name="innovation.projectInnovationInfo.youthFocusLevel.id" label="${level.name}" value="${level.id}" checked=false cssClass="" cssClassLabel=""/]</p> 
+                  <p>[@customForm.radioFlat id="youthLevel-${level.id}" name="innovation.projectInnovationInfo.youthFocusLevel.id" label="${level.name}" value="${level.id}" checked=(innovation.projectInnovationInfo.youthFocusLevel.id == level.id)!false cssClass="" cssClassLabel=""/]</p> 
                 [/#list]
               </div>
               [#-- Brief explanation and evidence --] 

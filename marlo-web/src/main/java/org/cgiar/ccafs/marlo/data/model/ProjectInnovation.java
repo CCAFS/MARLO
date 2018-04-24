@@ -51,7 +51,6 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
 
-
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
@@ -65,14 +64,18 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
   private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
     new HashSet<ProjectInnovationDeliverable>(0);
 
+
   private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
 
 
-  private List<Long> countriesIds = new ArrayList<>();
-
+  private List<String> countriesIds = new ArrayList<>();
 
   private List<ProjectInnovationOrganization> organizations;
+
+
   private List<ProjectInnovationDeliverable> deliverables;
+
+
   private List<ProjectInnovationCrp> crps;
   private List<ProjectInnovationCountry> countries;
   private String countriesIdsText;
@@ -85,13 +88,14 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return countries;
   }
 
-  public List<Long> getCountriesIds() {
+  public List<String> getCountriesIds() {
     return countriesIds;
   }
 
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -127,10 +131,10 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
   }
+
 
   public Project getProject() {
     return project;
@@ -197,9 +201,10 @@ public class ProjectInnovation implements java.io.Serializable, IAuditLog {
     this.countries = countries;
   }
 
-  public void setCountriesIds(List<Long> countriesIds) {
+  public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
+
 
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;

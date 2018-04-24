@@ -86,7 +86,9 @@ public class ProjectInnovationCountryMySQLDAO extends AbstractMarloDAO<ProjectIn
 
     List<ProjectInnovationCountry> projectInnovationCountries = new ArrayList<ProjectInnovationCountry>();
     for (Map<String, Object> map : list) {
-      ProjectInnovationCountry projectInnovationCountry = this.find(Long.parseLong(map.get("contryId").toString()));
+      String contryId = map.get("contryId").toString();
+      long longContryId = Long.parseLong(contryId);
+      ProjectInnovationCountry projectInnovationCountry = this.find(longContryId);
       projectInnovationCountries.add(projectInnovationCountry);
     }
     return projectInnovationCountries;
