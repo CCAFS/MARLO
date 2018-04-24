@@ -321,8 +321,8 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
 
-        if (deliverable.getIntellectualAsset() != null
-          || deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+        if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getId() != null
+          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
           this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
         } else {
           action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
@@ -509,6 +509,28 @@ public class DeliverableValidator extends BaseValidator {
       if (!this.isValidString(intellectualAsset.getApplicant())) {
         action.addMessage(action.getText("deliverable.intellectualAsset.applicant"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.applicant",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (intellectualAsset.getType() == null) {
+        action.addMessage(action.getText("deliverable.intellectualAsset.type"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.type", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (!this.isValidString(intellectualAsset.getTitle())) {
+        action.addMessage(action.getText("deliverable.intellectualAsset.title"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.title", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (!this.isValidString(intellectualAsset.getAdditionalInformation())) {
+        action.addMessage(action.getText("deliverable.intellectualAsset.additionalInformation"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.additionalInformation",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (!this.isValidString(intellectualAsset.getLink())) {
+        action.addMessage(action.getText("deliverable.intellectualAsset.link"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.link", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (!this.isValidString(intellectualAsset.getPublicCommunication())) {
+        action.addMessage(action.getText("deliverable.intellectualAsset.publicCommunication"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.publicCommunication",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     }
