@@ -101,12 +101,7 @@ function attachEvents() {
   //Events
   $("#locLevelSelect").on("change",function() {
     var option = $(this).find("option:selected");
-    //If the selected option is "Select an option" or "Climate Smart Village" hide the center indicator in the map
-    if(option.val() == "-1" || option.val().split("-")[0] == "10"){
-      $('#map .centerMarker').hide();
-    }else{
-      $('#map .centerMarker').show();
-    }
+
     // When the selected option is "Select an option" hide the form
     if(option.val() == "-1") {
       $("#addLocationButton").hide("slow");
@@ -117,27 +112,8 @@ function attachEvents() {
       $("#addLocationButton").show("slow");
       // If is list, get the available options in select
       if(option.val().split("-")[1] == "true") {
-        // LocElements options using ajax
-        var select = $("#countriesCmvs");
-        var url = baseURL + "/searchCountryListPL.do";
-        var data = {
-            parentId: option.val().split("-")[0],
-            phaseID: phaseID
-        };
-        $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: "json",
-            data: data
-        }).done(
-            function(m) {
-              select.empty();
-              for(var i = 0; i < m.locElements.length; i++) {
-                select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
-                    + "-" + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name + "' >"
-                    + m.locElements[i].name + "</option>");
-              }
-            });
+        loadLocationElements(option.val().split("-")[0]);
+
         // Show the form for list inputs (Country - CSV)
         $("#inputFormWrapper").slideUp();
         $(".selectLocations").slideDown();
@@ -147,6 +123,13 @@ function attachEvents() {
         $(".selectLocations").slideUp();
         $("#inputFormWrapper").slideDown();
       }
+    }
+
+    // If the selected option is "Select an option" or "Climate Smart Village" hide the center indicator in the map
+    if(option.val() == "-1" || option.val().split("-")[0] == "10"){
+      $('#map .centerMarker').hide();
+    }else{
+      $('#map .centerMarker').show();
     }
 
   });
@@ -263,10 +246,6 @@ function attachEvents() {
     }
   });
 
-  $('#countriesCmvs').on('change', function() {
-    //console.log('Change');
-  });
-
   $('.allLocationsButton').on('click',function(){
     changeMapDiv(this);
   });
@@ -335,6 +314,33 @@ function attachEvents() {
     $(this).select();
   });
 
+  loadLocationElements(10);
+  loadLocationElements(2);
+}
+
+function loadLocationElements(option){
+
+  // LocElements options using ajax
+  var select = $("#countriesCmvs");
+  var url = baseURL + "/searchCountryListPL.do";
+  var data = {
+      parentId: option,
+      phaseID: phaseID
+  };
+  $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: "json",
+      data: data
+  }).done(
+      function(m) {
+        select.empty();
+        for(var i = 0; i < m.locElements.length; i++) {
+          select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
+              + "-" + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name + "' >"
+              + m.locElements[i].name + "</option>");
+        }
+      });
 }
 
 function modalButtonsListeners(){
@@ -487,6 +493,7 @@ function loadScript() {
     });
   }
   document.body.appendChild(script);
+
 }
 
 //Initialization Google Map API
@@ -648,10 +655,6 @@ function initMap() {
     $(".locations").removeClass("selected");
   });
 
-// google.maps.event.addListener(map, 'rightclick', function(e) {
-// openInfoWindowForm(e);
-// });
-
   if(markers.length > 0) {
     map.setCenter(markers[markers.length - 1].getPosition());
   }
@@ -714,9 +717,6 @@ function mappingCountries() {
     };
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
-/*    google.maps.event.addListener(layer, 'click', function(e) {
-      openInfoWindowCountries(e);
-    });*/
   }
 
 }
@@ -773,29 +773,6 @@ function removeLocationItem() {
     countries.splice(index, 1);
   }
   mappingCountries();
-}
-
-//Set default country to countries select
-function setCountryDefault() {
-// Ajax for country name
-  $.ajax({
-      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-      'data': {
-          key: GOOGLE_API_KEY,
-          latlng: (map.getCenter().lat() + "," + map.getCenter().lng())
-      },
-      success: function(data) {
-        if(data.status == 'OK') {
-          var country = getResultByType(data.results[0], 'country').short_name;
-          var $countrySelect = $("#countriesCmvs");
-          arSelectedLocations.push($countrySelect.find("option." + country).val());
-          $countrySelect.val(arSelectedLocations);
-          $countrySelect.select2().trigger("change");
-        } else {
-          console.log(data.status);
-        }
-      },
-  });
 }
 
 //Get short and long country name
@@ -927,7 +904,6 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         $listItem.find(".coordinates").text("("+latitude+", "+longitude+")").show();
         locLevelList.append($listItem);
 
-
       //Show and hide Successfully added message
         $('#alert-succesfully-added').slideDown();
         setTimeout(function(){
@@ -998,15 +974,12 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   //All locations modal lists
   var locLevelList = $(".list-container").find("ul[name='"+locLevelName+"']");
 
-  console.log($locationSelect.val());
-
   $.each($locationSelect.val(), function(i,e) {
     var $item = $("#location-template").clone(true).removeAttr("id");
     var locId = e.split("-")[0];
     var locIso = e.split("-")[1];
     var locName = e.split("-")[2];
     // Check if the item doesn't exists into the list
-    console.log(locId);
     if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
       notify(locName + " already exists into the " + locationContent.parent().parent().parent().find(".locationLevelName").val()
           + " list")
@@ -1033,7 +1006,6 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       setTimeout(function(){
         $('#alert-succesfully-added').slideUp();
       }, 2000);
-
 
       // Add location into all locations modal list
       var $listItem = $('#itemList-template').clone(true).removeAttr("id");
@@ -1093,7 +1065,6 @@ function checkItems(block) {
 
 function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
   // Close info window
-  //infoWindow.close();
   var drag;
   if(editable && isList == "false") {
     drag = true;
@@ -1174,10 +1145,13 @@ function showMarkers() {
 // This function is for change the map's div
 // for the "add locations modal" and the "all locations modal"
 function changeMapDiv(selectedButton){
+  // Show search box in map
+  setTimeout(function(){
+    $("#pac-input").show();
+  }, 1000);
+
   var mapCurrentNode = map.getDiv();
   var selectedModal = $(selectedButton).data('target');
-
-  //infoWindow.close();
 
   if(selectedModal == '.addLocationModal'){
     map.setZoom(3);
@@ -1197,12 +1171,6 @@ function changeMapDiv(selectedButton){
     $('#all-locations-map').append(mapCurrentNode);
     $('#map').addClass('all-locations');
     $('#map .centerMarker').hide();
-  }
-}
-
-function closeAllInfoWindows(){
-  for(var i=0; i<arInfoWindows.length;i++){
-    arInfoWindows[i].close();
   }
 }
 
@@ -1235,7 +1203,35 @@ function removeSuggestedCountry(locIso,locId,countryRow,countryList){
   countryRow.parent().find('.suggestedCountriesList').children().find('#'+locIso).
     parent().parent().remove();
 
-  console.log(locId);
   // Remove unmarked location from locations list (all locations modal)
   countryList.find("#"+locId).remove();
+}
+
+//Set default country to countries select
+function setCountryDefault() {
+// Ajax for country name
+  $.ajax({
+      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+      'data': {
+          key: GOOGLE_API_KEY,
+          latlng: (map.getCenter().lat() + "," + map.getCenter().lng())
+      },
+      success: function(data) {
+        if(data.status == 'OK') {
+          var country = getResultByType(data.results[0], 'country').short_name;
+          var $countrySelect = $("#countriesCmvs");
+          arSelectedLocations.push($countrySelect.find("option." + country).val());
+          $countrySelect.val(arSelectedLocations);
+          $countrySelect.select2().trigger("change");
+        } else {
+          console.log(data.status);
+        }
+      },
+  });
+}
+
+function closeAllInfoWindows(){
+  for(var i=0; i<arInfoWindows.length;i++){
+    arInfoWindows[i].close();
+  }
 }
