@@ -11,10 +11,10 @@
         <many-to-one name="projectPartner" class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" fetch="select">
             <column name="project_partner_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="ModifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" not-null="true" />
         </many-to-one>
-        <many-to-one name="CreatedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">

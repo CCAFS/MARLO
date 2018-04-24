@@ -698,7 +698,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
-      Project projectDB = projectManager.getProjectById(projectID);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
@@ -761,7 +760,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       for (ProjectBudget projectBudget : budgets) {
         if (projectBudget != null) {
           if (projectBudget.getYear() >= this.getActualPhase().getYear()) {
-            this.saveBudget(projectBudget);
+            this.saveBudget(projectBudget, projectDB);
           }
 
         }
@@ -771,19 +770,35 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public void saveBudget(ProjectBudget projectBudget) {
+  public void saveBudget(ProjectBudget projectBudget, Project projectDB) {
 
+    /**
+     * If the entity is new we can save it as is.
+     */
     if (projectBudget.getId() == null) {
 
-      projectBudget.setProject(project);
+      projectBudget.setProject(projectDB);
       projectBudget.setPhase(this.getActualPhase());
-    } else {
-      projectBudget.setPhase(this.getActualPhase());
-      projectBudget.setProject(project);
+
+      projectBudgetManager.saveProjectBudget(projectBudget);
+      return;
     }
+    /**
+     * The entity is existing so we need to retrieve and then update it. This is necessary to make sure we don't try and
+     * persist a projectBudget with no manadatory logging fields.
+     */
+    ProjectBudget projectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
+    projectBudgetDB.setPhase(this.getActualPhase());
+    projectBudgetDB.setProject(projectDB);
+    projectBudgetDB.setAmount(projectBudget.getAmount());
+    projectBudgetDB.setBudgetType(projectBudget.getBudgetType());
+    projectBudgetDB.setFundingSource(projectBudget.getFundingSource());
+    projectBudgetDB.setGenderPercentage(projectBudget.getGenderPercentage());
+    projectBudgetDB.setGenderValue(projectBudget.getGenderValue());
+    projectBudgetDB.setInstitution(projectBudget.getInstitution());
+    projectBudgetDB.setYear(projectBudget.getYear());
 
-
-    projectBudgetManager.saveProjectBudget(projectBudget);
+    projectBudgetManager.saveProjectBudget(projectBudgetDB);
   }
 
 

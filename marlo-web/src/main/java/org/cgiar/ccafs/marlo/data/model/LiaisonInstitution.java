@@ -47,8 +47,6 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
   @Expose
   private GlobalUnit crp;
 
-  @Expose
-  private boolean active;
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
   private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
   private Set<PowbSynthesis> powbSynthesis = new HashSet<PowbSynthesis>(0);

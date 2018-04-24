@@ -63,37 +63,38 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
   public boolean onPreInsert(PreInsertEvent event) {
 
     if (!(event.getEntity() instanceof MarloAuditableEntity)) {
+      LOG.debug("entity: " + event.getEntity().getClass() + "is not a MarloAuditableEntity");
       return false;
     }
 
-    MarloAuditableEntity entity = (MarloAuditableEntity) event.getEntity();
+    MarloAuditableEntity auditableEntity = (MarloAuditableEntity) event.getEntity();
 
     String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
     Object[] state = event.getState();
 
     User user = this.getUser();
     Date now = new Date();
-    String modificationJustification =
-      entity.getModificationJustification() != null ? entity.getModificationJustification() : new String();
+    String modificationJustification = auditableEntity.getModificationJustification() != null
+      ? auditableEntity.getModificationJustification() : new String();
     Boolean active = new Boolean(true);
 
-    this.setValue(state, propertyNames, "createdBy", user, entity);
-    this.setValue(state, propertyNames, "activeSince", now, entity);
-    this.setValue(state, propertyNames, "active", active, entity);
+    this.setValue(state, propertyNames, "createdBy", user, auditableEntity);
+    this.setValue(state, propertyNames, "activeSince", now, auditableEntity);
+    this.setValue(state, propertyNames, "active", active, auditableEntity);
 
 
     // Unfortunately for the moment we need to populate these - until the not-null constraints are dropped.
-    this.setValue(state, propertyNames, "modifiedBy", user, entity);
-    this.setValue(state, propertyNames, "modificationJustification", modificationJustification, entity);
+    this.setValue(state, propertyNames, "modifiedBy", user, auditableEntity);
+    this.setValue(state, propertyNames, "modificationJustification", modificationJustification, auditableEntity);
 
 
     // Required to guard against an insert happening together with an update.
-    entity.setCreatedBy(user);
-    entity.setActiveSince(now);
-    entity.setActive(active);
+    auditableEntity.setCreatedBy(user);
+    auditableEntity.setActiveSince(now);
+    auditableEntity.setActive(active);
     // Unfortunately for the moment we need to populate these - until the not-null constraints are dropped.
-    entity.setModificationJustification(modificationJustification);
-    entity.setModifiedBy(user);
+    auditableEntity.setModificationJustification(modificationJustification);
+    auditableEntity.setModifiedBy(user);
 
     return false;
   }
@@ -106,19 +107,27 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
   public boolean onPreUpdate(PreUpdateEvent event) {
 
     if (!(event.getEntity() instanceof MarloAuditableEntity)) {
+      LOG.debug("entity: " + event.getEntity().getClass() + "is not a MarloAuditableEntity");
       return false;
     }
 
     User user = this.getUser();
 
+    /**
+     *  This is to guard against an unauthenticated user making an update
+     */
+    if (user.getId() == null) {
+      return false;
+    }
+
     String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
     Object[] state = event.getState();
 
-    MarloAuditableEntity entity = (MarloAuditableEntity) event.getEntity();
-    this.setValue(state, propertyNames, "modifiedBy", user, entity);
+    MarloAuditableEntity auditableEntity = (MarloAuditableEntity) event.getEntity();
+    this.setValue(state, propertyNames, "modifiedBy", user, auditableEntity);
 
 
-    entity.setModifiedBy(user);
+    auditableEntity.setModifiedBy(user);
 
     return false;
   }

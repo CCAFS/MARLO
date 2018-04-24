@@ -24,7 +24,7 @@ import com.google.gson.annotations.Expose;
  * @date Nov 8, 2017
  * @time 8:42:04 AM: Creation of class
  */
-public class RepositoryChannel extends MarloBaseEntity implements java.io.Serializable {
+public class RepositoryChannel extends MarloSoftDeleteableEntity implements java.io.Serializable {
 
   private static final long serialVersionUID = -1855854307294714464L;
 
@@ -36,9 +36,6 @@ public class RepositoryChannel extends MarloBaseEntity implements java.io.Serial
 
   @Expose
   private String urlExample;
-
-  @Expose
-  private boolean active;
 
 
   public RepositoryChannel() {
@@ -91,15 +88,6 @@ public class RepositoryChannel extends MarloBaseEntity implements java.io.Serial
     int result = 1;
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
   }
 
   public void setName(String name) {

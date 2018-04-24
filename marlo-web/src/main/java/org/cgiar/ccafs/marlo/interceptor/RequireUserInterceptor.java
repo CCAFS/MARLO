@@ -47,6 +47,8 @@ public class RequireUserInterceptor extends AbstractInterceptor {
     User user = (User) session.get(APConstants.SESSION_USER);
     if (user != null) {
       BaseAction action = (BaseAction) invocation.getAction();
+      // set the session to the BaseAction.
+      action.setSession(session);
       if (action.getActualPhase() != null) {
         return invocation.invoke();
       } else {
