@@ -67,6 +67,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -321,8 +322,11 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        this.setDraft(true);
 
       } else {
+
+        this.setDraft(false);
 
         // Innovation Countries List
         if (innovation.getProjectInnovationCountries() == null) {
@@ -349,6 +353,14 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationCrps() != null) {
           innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
             .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+      }
+
+      if (!this.isDraft()) {
+        if (innovation.getCountries() != null) {
+          for (ProjectInnovationCountry country : innovation.getCountries()) {
+            innovation.getCountriesIds().add(country.getLocElement().getId());
+          }
         }
       }
 
@@ -420,9 +432,14 @@ public class ProjectInnovationAction extends BaseAction {
 
       Phase phase = this.getActualPhase();
 
+      Path path = this.getAutoSaveFilePath();
+
+      innovation.setProject(project);
+
       this.saveOrganizations(innovationDB, phase);
       this.saveDeliverables(innovationDB, phase);
       this.saveCrps(innovationDB, phase);
+
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_INNOVATION_COUNTRY_RELATION);
@@ -464,10 +481,72 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
+
+      // Validate negative Values
+      if (innovation.getProjectInnovationInfo().getProjectExpectedStudy() != null) {
+        if (innovation.getProjectInnovationInfo().getProjectExpectedStudy().getId() == -1) {
+          innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
+        }
+      }
+
+      if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
+        }
+      }
+
+      if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
+        }
+      }
+
+      if (innovation.getProjectInnovationInfo().getRepIndGeographicScope() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndGeographicScope(null);
+        }
+      }
+
+      if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
+        }
+      }
+
+      if (innovation.getProjectInnovationInfo().getRepIndRegion() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndRegion().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndRegion(null);
+        }
+      }
+      // End
+
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
       projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName);
 
-      return SUCCESS;
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
+      }
+
     } else {
       return NOT_AUTHORIZED;
     }
