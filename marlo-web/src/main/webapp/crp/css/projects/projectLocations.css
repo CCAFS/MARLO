@@ -448,6 +448,7 @@ tr:nth-child(even) {
 }
 
 #pac-input {
+    display: none;
     background-color: #fff;
     font-family: Roboto;
     font-size: 15px;

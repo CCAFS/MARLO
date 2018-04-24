@@ -236,7 +236,7 @@
                           [#-- Add location MAP --]
                           <div class="map-container col-md-5">
                             <div id="add-location-map" class="col-md-12 map">
-                              <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                              <input id="pac-input" class="controls" type="text" placeholder="Search Box" style="display:none">
                               <div id="map" class="col-md-12"></div>
                             </div>
                           </div>
