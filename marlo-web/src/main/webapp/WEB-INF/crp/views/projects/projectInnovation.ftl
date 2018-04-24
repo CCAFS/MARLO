@@ -216,7 +216,7 @@
   <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" class="elementRelationID" name="${customName}.relation.id" value="${(element.relation.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.relationship.id" value="${(element.relationship.id)!}" />
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
