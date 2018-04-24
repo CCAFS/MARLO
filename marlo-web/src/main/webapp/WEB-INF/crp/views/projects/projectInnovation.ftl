@@ -72,27 +72,27 @@
           [#-- Phase of research and Stage of innovation --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.phase.id" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndPhaseResearchPartnership.id" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.stage.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
           </div>
         
           [#-- Geographic scope and innovation type --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.geographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.innovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
           </div>
         
           [#-- Region (if scope is Region) --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.region.id" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
+              [@customForm.select name="innovation.repIndRegion.id" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm" editable=editable/]
             </div>
             <div class="col-md-6 ">
             </div>
@@ -121,17 +121,17 @@
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
           <div class="form-group">
-            [@customForm.select name="innovation.outcomeCaseStudy" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+            [@customForm.select name="innovation.projectExpectedStudy.id" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
           </div>
         
           [#-- Novel or adaptative research --] 
           <div class="form-group">
-            [@customForm.textArea name="innovation.novelOrAdaptative" i18nkey="projectInnovations.novelOrAdaptative"  placeholder="" className="limitWords-100" required=true editable=editable /]
+            [@customForm.textArea name="innovation.novel" i18nkey="projectInnovations.novelOrAdaptative"  placeholder="" className="limitWords-100" required=true editable=editable /]
           </div>
         
           [#-- Evidence Link --] 
           <div class="form-group">
-            [@customForm.input name="innovation.link"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=false editable=editable /]
+            [@customForm.input name="innovation.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=false editable=editable /]
           </div>
         
           [#-- Or Deliverable ID (optional) --]
@@ -150,12 +150,12 @@
             <div class="simpleBox">
               <div class="form-group">
                 [#list focusLevelList as level]
-                  <p>[@customForm.radioFlat id="genderLevel-${level.id}" name="innovation.genderLevel" label="${level.name}" value="${level.id}" checked=false cssClass="" cssClassLabel=""/]</p> 
+                  <p>[@customForm.radioFlat id="genderLevel-${level.id}" name="innovation.genderFocusLevel" label="${level.name}" value="${level.id}" checked=false cssClass="" cssClassLabel=""/]</p> 
                 [/#list]
               </div>
               [#-- Brief explanation and evidence --] 
               <div class="form-group">
-                [@customForm.textArea name="innovation.genderLevelComment" i18nkey="projectInnovations.genderRelevance.explanation"  placeholder="" className="" required=true editable=editable /]
+                [@customForm.textArea name="innovation.genderExplaniation" i18nkey="projectInnovations.genderRelevance.explanation"  placeholder="" className="" required=true editable=editable /]
               </div>
             </div>
           </div>
@@ -166,12 +166,12 @@
             <div class="simpleBox">
               <div class="form-group">
                 [#list focusLevelList as level]
-                  <p>[@customForm.radioFlat id="youthLevel-${level.id}" name="innovation.youthLevel" label="${level.name}" value="${level.id}" checked=false cssClass="" cssClassLabel=""/]</p> 
+                  <p>[@customForm.radioFlat id="youthLevel-${level.id}" name="innovation.youthFocusLevel" label="${level.name}" value="${level.id}" checked=false cssClass="" cssClassLabel=""/]</p> 
                 [/#list]
               </div>
               [#-- Brief explanation and evidence --] 
               <div class="form-group">
-                [@customForm.textArea name="innovation.youthLevelComment" i18nkey="projectInnovations.youthRelevance.explanation" placeholder="" className="" required=true editable=editable /]
+                [@customForm.textArea name="innovation.youthExplaniation" i18nkey="projectInnovations.youthRelevance.explanation" placeholder="" className="" required=true editable=editable /]
               </div>
             </div>
           </div>
@@ -216,7 +216,7 @@
   <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" class="elementRelationID" name="${customName}.relationship.id" value="${(element.relationship.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element.relationship.id)!}" />
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
