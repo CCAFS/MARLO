@@ -116,7 +116,7 @@
           
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group">
-            [@elementsListComponent name="innovation.organizationTypes" elementType="organizationType" elementList=keyContributions label="projectInnovations.nextUserOrganizationalType"  listName=" " keyFieldName="id" displayFieldName="composedName"/]
+            [@elementsListComponent name="innovation.organizationTypes" elementType="organizationType" elementList=keyContributions label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]

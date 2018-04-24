@@ -28,6 +28,16 @@ function onSelectElement() {
   if((maxLimit > 0) && (counted >= maxLimit)) {
     return;
   }
+
+  // Verify repeated selection
+  if($list.find('.elementRelationID[value="' + $option.val() + '"]').length) {
+    $select.val('-1').trigger('change.select2');
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'It was already selected';
+    noty(notyOptions);
+    return;
+  }
+
   // Clone the new element
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
   // Set attributes
@@ -67,7 +77,6 @@ function addSelect2() {
 }
 
 function formatList(state) {
-  console.log(state);
   if(!state.id || (state.id == "-1")) {
     return state.text;
   }
