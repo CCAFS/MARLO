@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +93,18 @@ public class BaseValidator {
       return !string.trim().isEmpty();
     }
     return false;
+  }
+
+  /**
+   * Validate a Basic Url Structure (http://, https:// or ftp://)
+   * 
+   * @param url - The Url to Validate
+   * @return true if is a valid Url
+   */
+  protected boolean isValidUrl(String url) {
+    UrlValidator urlValidator = new UrlValidator();
+    boolean bReturn = urlValidator.isValid(url);
+    return bReturn;
   }
 
   /**
@@ -287,6 +300,7 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
+
   /**
    * ******************************************************************************************
    * ************************* CENTER METHOD **************************************************
@@ -318,7 +332,6 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
@@ -349,6 +362,7 @@ public class BaseValidator {
 
 
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.
@@ -410,7 +424,6 @@ public class BaseValidator {
 
 
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
@@ -475,6 +488,7 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
 
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
@@ -626,7 +640,6 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at ImpactPathway.
