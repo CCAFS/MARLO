@@ -455,3 +455,32 @@
   [/#if]
   [#return '']
 [/#function]
+
+[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" required=true ]
+  <div class="panel tertiary" listname="${name}" style="position:relative">
+    <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
+    <div class="panel-body" style="min-height: 30px;">
+      <ul class="list listType-${elementType}">
+        [#if elementList?has_content]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index /][/#list]
+        [/#if]
+      </ul>
+      [#if editable]
+        [@select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
+      [/#if]
+    </div>
+  </div>
+[/#macro]
+
+[#macro listElementMacro element name type index=-1 template=false]
+  [#local customName = "${name}[${index}]"]
+  <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
+    [#-- Hidden Inputs --]
+    <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element.relationship.id)!}" />
+    [#-- Remove button --]
+    [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
+    [#-- Title --]
+    <span class="elementName">${(element.composedName)!(element.name)!'{elementName}'}</span>
+  </li>
+[/#macro]
