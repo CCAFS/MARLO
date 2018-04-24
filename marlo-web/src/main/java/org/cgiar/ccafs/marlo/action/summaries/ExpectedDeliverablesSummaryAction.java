@@ -286,7 +286,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Long.class, String.class, String.class, String.class, String.class, String.class},
       0);
-    Boolean activePPAFilter = showPpaFilter && ppa != null && !ppa.isEmpty() && !ppa.equals("All");
+    Boolean activePPAFilter = showPpaFilter && ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()

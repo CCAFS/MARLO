@@ -299,12 +299,11 @@
       
       [#--  PPA Partners --]
       [#if (report.allowPpaPartners)!false ]
-        <div class="form-group row">
-          ${(action.getPpaPartners()?size)!'null'}
-          <div class="col-md-10">
-            [@customForm.select name="ppaPartnerID" label="" i18nkey="Select a PPA/Managin Partner" listName="ppaPartners" keyFieldName="id" displayFieldName="composedName" className="" /]
-          </div>
+      <div class="form-group row">
+        <div class="col-md-10">
+          [@customForm.select name="ppaPartnerID" label="" i18nkey="summaries.board.report.selectPPA" listName="ppaPartners" placeholder="All Institutions" keyFieldName="id" displayFieldName="institution.composedName" className="" /]
         </div>
+      </div>
       [/#if]
       
       [#-- Generate Button--]
