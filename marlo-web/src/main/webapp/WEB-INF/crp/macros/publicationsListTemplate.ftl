@@ -39,12 +39,12 @@
         <tr>
           [#-- ID --]
           <td class="">
-            <a href="${projectUrl}">${(deliverable.id)!}</a>
+            <a href="${projectUrl}">D${(deliverable.id)!}</a>
           </td>
           [#-- Title / Name --]
           <td class="col-md-4 left">
             <a href="${projectUrl}">
-              [#if deliverable.title?has_content]
+              [#if (deliverable.title?has_content)!false]
                 ${(deliverable.title)!}
               [#else]
                 Not defined

@@ -1,3 +1,6 @@
+/** * Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ** */
+$.widget.bridge('uibutton', $.ui.button);
+$.widget.bridge('uitooltip', $.ui.tooltip);
 
 // Global Vars
 var yesnoEvent;
@@ -237,7 +240,8 @@ $(document).ready(function() {
       track: true,
       content: function() {
         return $(this).attr('title');
-      }
+      },
+      position: { my: "left+15 center", at: "right center" }
   });
 
   /* ADD TITLE TOOLTIP TO ALL REQUIRED SIGN */
@@ -315,7 +319,7 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
-  //Accessible enter click when button is focus
+  // Accessible enter click when button is focus
   $("input[type='submit']").keyup(function(event) {
     if (event.keyCode === 13) {
         $(this).click();
@@ -363,11 +367,10 @@ $('.selectedProgram, selectedProject').on('click', function() {
 });
 
 // event to inputs in login form
-/*$('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) {
-  if(event.keyCode === 10 || event.keyCode === 13) {
-    event.submit();
-  }
-});*/
+/*
+ * $('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) { if(event.keyCode === 10 ||
+ * event.keyCode === 13) { event.submit(); } });
+ */
 
 /* prevent enter key to inputs */
 
