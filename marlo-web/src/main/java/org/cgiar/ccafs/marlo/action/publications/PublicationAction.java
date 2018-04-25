@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -55,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -258,7 +260,7 @@ public class PublicationAction extends BaseAction {
     if (projectFocuses != null) {
       String[] ids = new String[projectFocuses.size()];
       for (int c = 0; c < ids.length; c++) {
-        ids[c] = projectFocuses.get(c).getIpProgram().getId().toString();
+        ids[c] = projectFocuses.get(c).getCrpProgram().getId().toString();
       }
       return ids;
     }
@@ -297,7 +299,7 @@ public class PublicationAction extends BaseAction {
     if (projectFocuses != null) {
       String[] ids = new String[projectFocuses.size()];
       for (int c = 0; c < ids.length; c++) {
-        ids[c] = projectFocuses.get(c).getIpProgram().getId().toString();
+        ids[c] = projectFocuses.get(c).getCrpProgram().getId().toString();
       }
       return ids;
     }
@@ -405,9 +407,9 @@ public class PublicationAction extends BaseAction {
           for (String programID : deliverable.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
             try {
               DeliverableProgram deliverableProgram = new DeliverableProgram();
-              IpProgram program = ipProgramManager.getIpProgramById(Long.parseLong(programID.trim()));
+              CrpProgram program = crpProgramManager.getCrpProgramById(Long.parseLong(programID.trim()));
               deliverableProgram.setDeliverable(deliverable);
-              deliverableProgram.setIpProgram(program);
+              deliverableProgram.setCrpProgram(program);
               programs.add(deliverableProgram);
             } catch (Exception e) {
               LOG.error("unable to add deliverableProgram to programs list", e);
@@ -424,9 +426,9 @@ public class PublicationAction extends BaseAction {
           for (String programID : deliverable.getRegionsValue().trim().replace("[", "").replace("]", "").split(",")) {
             try {
               DeliverableProgram deliverableProgram = new DeliverableProgram();
-              IpProgram program = ipProgramManager.getIpProgramById(Long.parseLong(programID.trim()));
+              CrpProgram program = crpProgramManager.getCrpProgramById(Long.parseLong(programID.trim()));
               deliverableProgram.setDeliverable(deliverable);
-              deliverableProgram.setIpProgram(program);
+              deliverableProgram.setCrpProgram(program);
               regions.add(deliverableProgram);
             } catch (Exception e) {
               LOG.error("unable to add delverable program to regions list", e);
@@ -485,27 +487,29 @@ public class PublicationAction extends BaseAction {
         deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
         deliverable.setLeaders(deliverable.getDeliverableLeaders().stream().collect(Collectors.toList()));
         deliverable.setPrograms(deliverable.getDeliverablePrograms().stream()
-          .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 4).collect(Collectors.toList()));
+          .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
         deliverable.setRegions(deliverable.getDeliverablePrograms().stream()
-          .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 5).collect(Collectors.toList()));
+          .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
         deliverable.setFlagshipValue("");
         deliverable.setRegionsValue("");
 
         for (DeliverableProgram deliverableProgram : deliverable.getPrograms()) {
           if (deliverable.getFlagshipValue().isEmpty()) {
-            deliverable.setFlagshipValue(deliverableProgram.getIpProgram().getId().toString());
+            deliverable.setFlagshipValue(deliverableProgram.getCrpProgram().getId().toString());
           } else {
             deliverable.setFlagshipValue(
-              deliverable.getFlagshipValue() + "," + deliverableProgram.getIpProgram().getId().toString());
+              deliverable.getFlagshipValue() + "," + deliverableProgram.getCrpProgram().getId().toString());
           }
         }
 
         for (DeliverableProgram deliverableProgram : deliverable.getRegions()) {
           if (deliverable.getRegionsValue().isEmpty()) {
-            deliverable.setRegionsValue(deliverableProgram.getIpProgram().getId().toString());
+            deliverable.setRegionsValue(deliverableProgram.getCrpProgram().getId().toString());
           } else {
             deliverable.setRegionsValue(
-              deliverable.getRegionsValue() + "," + deliverableProgram.getIpProgram().getId().toString());
+              deliverable.getRegionsValue() + "," + deliverableProgram.getCrpProgram().getId().toString());
           }
         }
         deliverable.setGenderLevels(
@@ -986,22 +990,22 @@ public class PublicationAction extends BaseAction {
     if (deliverable.getFlagshipValue() != null) {
 
       for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
-        .filter(c -> c.isActive() && c.getIpProgram().getIpProgramType().getId().intValue() == 4)
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList())) {
 
-        if (!deliverable.getFlagshipValue().contains(deliverableProgram.getIpProgram().getId().toString())) {
+        if (!deliverable.getFlagshipValue().contains(deliverableProgram.getCrpProgram().getId().toString())) {
           deliverableProgramManager.deleteDeliverableProgram(deliverableProgram.getId());
 
         }
       }
       for (String programID : deliverable.getFlagshipValue().trim().split(",")) {
         if (programID.length() > 0) {
-          IpProgram program = ipProgramManager.getIpProgramById(Long.parseLong(programID.trim()));
+          CrpProgram program = crpProgramManager.getCrpProgramById(Long.parseLong(programID.trim()));
           DeliverableProgram deliverableProgram = new DeliverableProgram();
-          deliverableProgram.setIpProgram(program);
+          deliverableProgram.setCrpProgram(program);
           deliverableProgram.setDeliverable(deliverable);
           if (deliverableDB.getDeliverablePrograms().stream()
-            .filter(c -> c.isActive() && c.getIpProgram().getId().longValue() == program.getId().longValue())
+            .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
             .collect(Collectors.toList()).isEmpty()) {
 
             deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
@@ -1014,22 +1018,22 @@ public class PublicationAction extends BaseAction {
     if (deliverable.getRegionsValue() != null) {
 
       for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
-        .filter(c -> c.isActive() && c.getIpProgram().getIpProgramType().getId().intValue() == 5)
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList())) {
 
-        if (!deliverable.getRegionsValue().contains(deliverableProgram.getIpProgram().getId().toString())) {
+        if (!deliverable.getRegionsValue().contains(deliverableProgram.getCrpProgram().getId().toString())) {
           deliverableProgramManager.deleteDeliverableProgram(deliverableProgram.getId());
 
         }
       }
       for (String programID : deliverable.getRegionsValue().trim().split(",")) {
         if (programID.length() > 0) {
-          IpProgram program = ipProgramManager.getIpProgramById(Long.parseLong(programID.trim()));
+          CrpProgram program = crpProgramManager.getCrpProgramById(Long.parseLong(programID.trim()));
           DeliverableProgram deliverableProgram = new DeliverableProgram();
-          deliverableProgram.setIpProgram(program);
+          deliverableProgram.setCrpProgram(program);
           deliverableProgram.setDeliverable(deliverable);
           if (deliverableDB.getDeliverablePrograms().stream()
-            .filter(c -> c.isActive() && c.getIpProgram().getId().longValue() == program.getId().longValue())
+            .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
             .collect(Collectors.toList()).isEmpty()) {
 
             deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
