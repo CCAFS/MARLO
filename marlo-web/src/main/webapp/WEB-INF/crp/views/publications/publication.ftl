@@ -95,34 +95,33 @@
       [#-- Flagships & Regions --]
       <div class="form-group row">
         [#-- Flagships --]
-        <div class="col-md-6">
-          <h5>[@s.text name="publication.flagships" /]:[@customForm.req required=editable/] </h5>
-          <div id="" class="dottedBox">
-            [#if editable]
-              [#if flagshipsList??]
+        [#if flagshipsList??]
+          <div class="col-md-6">
+            <h5>[@s.text name="publication.flagships" /]:[@customForm.req required=editable/] </h5>
+            <div id="" class="dottedBox">
+              [#if editable]
                 [#list flagshipsList as element]
                   [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
                 [/#list]
+              [#else]
+                <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
+                [#if deliverable.programs?has_content]
+                  [#list deliverable.programs as element]<p class="checked">${(element.crpProgram.composedName)!'null'}</p>[/#list]
+                [/#if]
               [/#if]
-            [#else]
-              <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
-              [#if deliverable.programs?has_content]
-                [#list deliverable.programs as element]<p class="checked">${(element.crpProgram.composedName)!'null'}</p>[/#list]
-              [/#if]
-            [/#if]
+            </div>
           </div>
-        </div>
+        [/#if]
+        
         [#-- Regions --] 
-        <div class="col-md-6"> 
-          [#if regions?has_content] 
+        [#if regionsList?has_content] 
+          <div class="col-md-6"> 
             <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [#if regionsList??]
-                  [#list regionsList as element]
-                    [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
-                  [/#list]
-                [/#if]
+                [#list regionsList as element]
+                  [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
+                [/#list]
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
                 [#if  deliverable.regions?has_content]
@@ -130,8 +129,8 @@
                 [/#if]
               [/#if]
             </div>
-          [/#if]
-        </div>
+          </div>
+        [/#if]
       </div>
       
       [#--  Cross Cutting --]
