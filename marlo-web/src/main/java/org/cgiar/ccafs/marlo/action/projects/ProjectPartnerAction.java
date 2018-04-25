@@ -1075,8 +1075,8 @@ public class ProjectPartnerAction extends BaseAction {
           List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
 
-          List<ProjectPartnerContribution> partnerContributions =
-            pp.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          List<ProjectPartnerContribution> partnerContributions = pp.getProjectPartnerContributions().stream()
+            .filter(c -> c.isActive() && c.getProjectPartner().isActive()).collect(Collectors.toList());
           for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
             contributors.add(projectPartnerContribution);
           }
