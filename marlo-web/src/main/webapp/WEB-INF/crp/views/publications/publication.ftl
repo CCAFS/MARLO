@@ -21,6 +21,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#assign customName = "deliverable" /]
 
@@ -59,16 +60,16 @@
     <div class="borderBox">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="publication.title" required=true className="" editable=editable /]
+        [@customForm.input name="${customName}.deliverableInfo.title" i18nkey="publication.title" required=true className="" editable=editable /]
       </div>
       
       [#-- Subtype & year of completition --]
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+          [@customForm.select name="${customName}.deliverableInfo.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
         </div>
         <div class="col-md-6">
-          [@customForm.input name="${customName}.year" i18nkey="publication.year" required=true className="" editable=false /]
+          [@customForm.input name="${customName}.deliverableInfo.year" i18nkey="publication.year" required=true className="" editable=false /]
         </div>
       </div>
       
@@ -127,39 +128,9 @@
         </div>
       </div>
       
-      [#-- Cross cutting dimensions--]
-      <div class="form-group">
-        <label for="">[@customForm.text name="${customName}.crossCuttingDimensions" readText=!editable/]:[@customForm.req required=editable/]</label>
-        <div class="col-md-12">
-          [#if editable]
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingNa"       id="na"       value="true" [#if (deliverable.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
-          [#else]
-            [#if (deliverable.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-            [#if (deliverable.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-            [#if (deliverable.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-            [#if (deliverable.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
-          [/#if]
-        </div>
-        <div class="clearfix"></div>
-      </div>
-      [#-- If gender dimension, select with ones --]
-      <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
-       <div class="panel-head"><label for=""> [@customForm.text name="${customName}.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-        <div id="genderLevelsList" class="panel-body"  listname="deliverable.genderLevels" style="position: relative;" > 
-          <ul class="list">
-          [#if deliverable?? && deliverable.genderLevels?has_content]
-            [#list deliverable.genderLevels as element]
-              [@genderLevelMacro element=element name="${customName}.genderLevels" index=element_index /]
-            [/#list]
-          [#else]
-            <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
-          [/#if]  
-          </ul>
-          [#if editable ][@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/][/#if] 
-        </div>
+      [#--  Cross Cutting --]
+      <div class="form-group simpleBox">
+        [@deliverableMacros.deliverableCrossCuttingMacro label="publication.crossCuttingDimensions" /]
       </div>
     </div>
     
@@ -170,6 +141,9 @@
         <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
         [@deliverableMacros.findableOptions /]
       </div>
+      
+      [#--  Intellectual Asset--]
+      [@deliverableMacros.intellectualAsset /]
       
       [#-- Is this deliverable Open Access? --]
       [@deliverableMacros.isOpenaccessMacro /]
