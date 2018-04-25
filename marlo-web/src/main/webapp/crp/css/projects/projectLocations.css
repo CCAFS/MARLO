@@ -232,8 +232,8 @@ span.allCountriesQuestion {
 .centerMarker{
     position:absolute;
     /*url of the marker*/
-    /* background:url('../../../global/images/green-map-marker.png') no-repeat; */
-    background:url('../../../global/images/pointer-hand.png') no-repeat;
+    background:url('../../../global/images/green-map-marker.png') no-repeat;
+    /* background:url('../../../global/images/pointer-hand.png') no-repeat; */
     /*center the marker*/
     top:50%;
     left:50%;
