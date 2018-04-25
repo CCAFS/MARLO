@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -201,19 +202,22 @@ public class PublicationListAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     try {
-
       loggedCrp.setDeliverablesList(loggedCrp.getDeliverables().stream()
-        .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive())
+        .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive()
+          && c.getDeliverableInfo(this.getActualPhase()) != null
+          && c.getDeliverableInfo().getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList()));
       for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
         deliverable.setLeaders(deliverable.getDeliverableLeaders().stream().collect(Collectors.toList()));
         deliverable.setPrograms(deliverable.getDeliverablePrograms().stream()
-          .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 4).collect(Collectors.toList()));
+          .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
         deliverable.setRegions(deliverable.getDeliverablePrograms().stream()
-          .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 5).collect(Collectors.toList()));
+          .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
       }
     } catch (Exception e) {
-      LOG.error("unable to update deliverable", e);
+      LOG.error("unable to update publication", e);
       /**
        * Original code swallows the exception and didn't even log it. Now we at least log it,
        * but we need to revisit to see if we should continue processing or re-throw the exception.
