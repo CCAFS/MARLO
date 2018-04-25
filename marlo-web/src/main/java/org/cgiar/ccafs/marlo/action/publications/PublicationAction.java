@@ -115,7 +115,8 @@ public class PublicationAction extends BaseAction {
   private List<GenderType> genderLevels;
   private IpProgramManager ipProgramManager;
   private Map<String, String> programs;
-
+  private List<CrpProgram> flagshipsList;
+  private List<CrpProgram> regionsList;
   private Map<String, String> regions;
   private Map<String, String> institutions;
   private Map<String, String> channels;
@@ -123,16 +124,13 @@ public class PublicationAction extends BaseAction {
   private PublicationValidator publicationValidator;
   private Deliverable deliverable;
   private DeliverableDisseminationManager deliverableDisseminationManager;
-
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
-
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
-
 
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
 
-
   private DeliverableUserManager deliverableUserManager;
+
 
   private DeliverableLeaderManager deliverableLeaderManager;
 
@@ -140,16 +138,19 @@ public class PublicationAction extends BaseAction {
   private DeliverableProgramManager deliverableProgramManager;
 
   private String transaction;
+
+
   private AuditLogManager auditLogManager;
+
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
   private MetadataElementManager metadataElementManager;
   private HistoryComparator historyComparator;
   private UserManager userManager;
   private InstitutionManager institutionManager;
   private List<DeliverableType> deliverableSubTypes;
-
   private GenderTypeManager genderTypeManager;
   private DeliverableTypeManager deliverableTypeManager;
+
   private RepositoryChannelManager repositoryChannelManager;
   private List<RepositoryChannel> repositoryChannels;
   private CrpProgramManager crpProgramManager;
@@ -193,7 +194,6 @@ public class PublicationAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
   }
 
-
   @Override
   public String cancel() {
 
@@ -218,7 +218,6 @@ public class PublicationAction extends BaseAction {
     return SUCCESS;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -227,9 +226,11 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public Map<String, String> getChannels() {
     return channels;
   }
+
 
   public Map<String, String> getCrps() {
     return crps;
@@ -239,7 +240,6 @@ public class PublicationAction extends BaseAction {
     return deliverable;
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
@@ -248,10 +248,10 @@ public class PublicationAction extends BaseAction {
     return deliverableSubTypes;
   }
 
+
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
   }
-
 
   public String[] getFlagshipIds() {
 
@@ -265,6 +265,13 @@ public class PublicationAction extends BaseAction {
       return ids;
     }
     return null;
+  }
+
+  public List<CrpProgram> getFlagshipsList() {
+    return crpProgramManager.findAll().stream()
+      .filter(
+        c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
   }
 
 
@@ -287,10 +294,10 @@ public class PublicationAction extends BaseAction {
     return programs;
   }
 
+
   public Map<String, String> getRegions() {
     return regions;
   }
-
 
   public String[] getRegionsIds() {
 
@@ -304,6 +311,14 @@ public class PublicationAction extends BaseAction {
       return ids;
     }
     return null;
+  }
+
+
+  public List<CrpProgram> getRegionsList() {
+    return crpProgramManager.findAll().stream()
+      .filter(
+        c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
   }
 
   public List<RepositoryChannel> getRepositoryChannels() {
@@ -420,6 +435,7 @@ public class PublicationAction extends BaseAction {
             }
           }
         }
+
 
         List<DeliverableProgram> regions = new ArrayList<>();
         if (deliverable.getRegionsValue() != null) {
