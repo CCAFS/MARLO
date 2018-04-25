@@ -99,12 +99,15 @@
           <h5>[@s.text name="publication.flagships" /]:[@customForm.req required=editable/] </h5>
           <div id="" class="dottedBox">
             [#if editable]
-              [@s.fielderror cssClass="fieldError" fieldName="${customName}.flagshipValue"/]
-              [@s.checkboxlist name="${customName}.flagshipValue" list="programs" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
+              [#if flagshipsList??]
+                [#list flagshipsList as element]
+                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
+                [/#list]
+              [/#if]
             [#else]
               <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
               [#if deliverable.programs?has_content]
-                [#list deliverable.programs as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
+                [#list deliverable.programs as element]<p class="checked">${(element.crpProgram.composedName)!'null'}</p>[/#list]
               [/#if]
             [/#if]
           </div>
@@ -115,12 +118,15 @@
             <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [@s.fielderror cssClass="fieldError" fieldName="${customName}.regionsValue"/]
-                [@s.checkboxlist name="${customName}.regionsValue" list="regions" cssClass="checkboxInput rpInput" value="regionsIds" /]
+                [#if regionsList??]
+                  [#list regionsList as element]
+                    [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
+                  [/#list]
+                [/#if]
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
                 [#if  deliverable.regions?has_content]
-                  [#list deliverable.regions as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
+                  [#list deliverable.regions as element]<p class="checked">${(element.crpProgram.composedName)!'null'}</p>[/#list]
                 [/#if]
               [/#if]
             </div>
@@ -132,6 +138,7 @@
       <div class="form-group simpleBox">
         [@deliverableMacros.deliverableCrossCuttingMacro label="publication.crossCuttingDimensions" /]
       </div>
+      
     </div>
     
     <h3 class="headTitle"> Publication Dissemination</h3> 
