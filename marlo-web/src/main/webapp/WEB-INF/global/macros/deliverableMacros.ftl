@@ -259,28 +259,30 @@
 [#macro findableOptions ]
   [#local isSynced = (deliverable.dissemination.synced)!false ]
   [#local customName = "deliverable.dissemination" /]
-  <div class="form-group row disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+  <div class="disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
     [#-- Note --]
     <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
-    <div class="col-md-4">
-      [#if editable]
-        [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
-      [#else]
-      <div class="input">
-        <label for="disChannel" style="display:block;">Dissemination channel:</label>
-        <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
+    <div class="form-group row">
+      <div class="col-md-4">
+        [#if editable]
+          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+        [#else]
+        <div class="input">
+          <label for="disChannel" style="display:block;">Dissemination channel:</label>
+          <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
+        </div>
+        [/#if]
       </div>
-      [/#if]
-    </div>
-    <div class="col-md-8">
-      [#if editable]
-        [#list repositoryChannels  as channel]
-          [#if channel.shortName != "other"]
-            [#-- Examples & instructions --]
-            [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
-          [/#if]
-        [/#list]
-      [/#if]
+      <div class="col-md-8">
+        [#if editable]
+          [#list repositoryChannels  as channel]
+            [#if channel.shortName != "other"]
+              [#-- Examples & instructions --]
+              [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
+            [/#if]
+          [/#list]
+        [/#if]
+      </div>
     </div>
   </div>
   
