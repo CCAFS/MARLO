@@ -117,7 +117,7 @@
       "action": "${crpSession}/expectedDeliverablesSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ],
-      "allowPpaPartners": action.hasSpecificities("crp_report_deliverable_ppa_filter") 
+      "allowPpaPartners": true 
     },
     { "active": true,
       "available": false,
@@ -301,7 +301,7 @@
       [#if (report.allowPpaPartners)!false ]
       <div class="form-group row">
         <div class="col-md-10">
-          [@customForm.select name="ppaPartnerID" label="" i18nkey="summaries.board.report.selectPPA" listName="ppaPartners" placeholder="All Institutions" keyFieldName="id" displayFieldName="institution.composedName" className="" /]
+          [@customForm.select name="ppaPartnerID" label="" i18nkey="summaries.board.report.selectPPA" listName="ppaPartners" placeholder="All" keyFieldName="id" displayFieldName="institution.composedName" className="" /]
         </div>
       </div>
       [/#if]

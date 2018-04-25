@@ -2899,6 +2899,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<CrpPpaPartner> crpPpaPartners = phaseManager.getPhaseById(this.getActualPhase().getId()).getCrpPpaPartner()
       .stream().filter(c -> c.isActive() && c.getCrp().equals(this.getCurrentCrp())).collect(Collectors.toList());
     if (crpPpaPartners != null && !crpPpaPartners.isEmpty()) {
+      crpPpaPartners.sort((i1, i2) -> i1.getInstitution().getName().compareTo(i2.getInstitution().getName()));
       return crpPpaPartners;
     } else {
       return new ArrayList<>();
