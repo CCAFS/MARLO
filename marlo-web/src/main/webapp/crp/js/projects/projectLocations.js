@@ -411,13 +411,9 @@ function modalButtonsListeners(){
     }
   });
 
-  $('#addLocationModal').on('hidden.bs.modal', function () {
-    cleanSelected();
-  });
-
 }
 
-//Add Regions
+// Add Regions
 function addRegion(option) {
   var canAdd = true;
   if(option.val() == "-1") {
@@ -473,7 +469,6 @@ function removeRegion() {
 }
 
 function updateRegionList($list) {
-
   $($list).find('.region').each(function(i,e) {
     // Set regions indexes
     $(e).setNameIndexes(1, i);
@@ -617,7 +612,7 @@ function initMap() {
     searchBox.setBounds(map.getBounds());
   });
 
-  //Listen for the event fired when the user selects a prediction and retrieve
+  // Listen for the event fired when the user selects a prediction and retrieve
   // more details for that place.
   searchBox.addListener('places_changed', function() {
     var places = searchBox.getPlaces();
@@ -651,13 +646,14 @@ function initMap() {
     map.fitBounds(bounds);
   });
 
-  //Center marker into map on click
+  // Add country from map, when click on the center marker
   $('<div/>').addClass('centerMarker').css('display','none').appendTo(map.getDiv()).click(function(){
     var option = $("#locLevelSelect").find("option:selected");
     if(option.val().split("-")[0] == "2"){
       addLocationFromMap();
     }
- });
+  });
+
   var centerControlDiv = document.createElement('div');
   if(editable && $("span.has_otherLoc").text() == "true") {
     var centerControl = new CenterControl(centerControlDiv, map);
