@@ -134,11 +134,6 @@ function attachEvents() {
 
   });
 
-  // Commented here
-
-  // Add the modal buttons listeners
-  modalButtonsListeners();
-
   // Clicking recommended location checkbox
   $('.recommendedLocName, .iconSelected').on('click',function() {
     var parent = $(this).parent();
@@ -170,11 +165,15 @@ function attachEvents() {
     // On checkbox change, put value (true or false) in next input
     $(this).next().val($(this).is(":checked"));
 
+    // Extract values from recommended select
+    // TODO: Improve the way in how to get this data
     var locIso = $(this).next().next().text();
     var locName = $(this).parent().find(".lName").children().text();
     var locId = $(this).parent().find(".elementID").val();
 
+    // Country (value=2) Row is the row in the locations table
     var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
+    // Country list is the list in all locations popup
     var countryList = $(".list-container").find(".Country");
 
     // Add the selected country in map, table and list
@@ -197,6 +196,8 @@ function attachEvents() {
         $locationItem.show("slow");
         updateIndex();
 
+
+        // If Country level location doesn't exists, so create level list in all locations popup
         var $locLevelList = $("#itemLoc-template").clone(true).removeAttr("id");
         $locLevelList.find(".loc-level").attr('name',"Country");
         $locLevelList.find(".loc-level").text("Country");
@@ -213,10 +214,12 @@ function attachEvents() {
       // When a suggested location is added, show the suggested row into the country level
       $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
 
+      // Add the suggested country in the map
       countries.push(locIso);
       layer.setMap(null);
       mappingCountries();
     }else{
+      // If the suggested location isn't checked, remove from table and popup list
       removeSuggestedCountry(locIso,locId,countryRow,countryList);
 
       // If there is not suggested countries in list, hide the row in table
@@ -228,6 +231,7 @@ function attachEvents() {
         $(".locationLevel[data-name='Country']").remove();
         $(".list-container").find("h4[name='Country']").parent().remove();
 
+        // Show the no locations added message
         if($(".locationsDataTable").find(".locationLevel").length == 0){
           $("#selectsContent").find("#noLocationsAdded").show();
         }
@@ -236,7 +240,7 @@ function attachEvents() {
         checkItems($('#selectsContent'));
       }
 
-      // Search the unmarked location in countries array and remove it
+      // Search the unmarked location in countries array and remove it (so it remove the country from map too)
       var index = $.inArray(locIso,countries);
       if(index !== -1){
         countries.splice(index,1);
@@ -246,15 +250,17 @@ function attachEvents() {
     }
   });
 
+  // On click put the map in the right view (all locations popup or add new location popup)
   $('.allLocationsButton').on('click',function(){
     changeMapDiv(this);
   });
 
+  // On click put the map in the right view (all locations popup or add new location popup)
   $('#addNewLocation-button').on('click',function(){
     changeMapDiv(this);
   });
 
-  //Map markers list in all locations modal
+  // When click on a location in the all locations popup
   $('.marker-map').on('click',function(){
     var markerId = (this).id;
     var markerName = $(this).attr("name");
@@ -263,6 +269,10 @@ function attachEvents() {
     $(this).addClass('selected');
 
     /* GET COORDINATES */
+    // TODO: Improve this function, because isn't necessary do an ajax call, when this data is in the DOM
+    //       That could be just for countries and CSV, the other locations has latitude and longitude
+    // If is a previous saved location, the latitude and longitude are in database,
+    // so get it and set map position in country or marker
     if(!$(this).hasClass("unsaved-location")){
       var url = baseURL + "/geopositionByElement.do";
       var data = {
@@ -294,6 +304,7 @@ function attachEvents() {
         }
       });
     }else{
+      // If the location isn't saved get the info from data attributes in DOM
       latitude = $(this).find('.coordinates').attr('data-lat');
       longitude = $(this).find('.coordinates').attr('data-lon');
       var latLng = new google.maps.LatLng(latitude, longitude);
@@ -302,6 +313,7 @@ function attachEvents() {
     }
   });
 
+  // When lost focus in coordinates inputs, moves the map to the indicated position
   $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").blur(function() {
     var latitude = $("#inputFormWrapper input.latitude").val();
     var longitude = $("#inputFormWrapper input.longitude").val();
@@ -309,15 +321,21 @@ function attachEvents() {
     map.setCenter(latLng)
   });
 
+  // When click on a coordinate input, select all the text, to make easy clean or change the value
   $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").on('click',function(){
-    //var prevCoordinate = $(this).val();
     $(this).select();
   });
 
+
+  // Load location options for CSV and Countries
   loadLocationElements(10);
   loadLocationElements(2);
+
+  // Add the modal buttons listeners
+  modalButtonsListeners();
 }
 
+// Load locations options depending on the location level id (Countries, CSV, etc.)
 function loadLocationElements(option){
 
   // LocElements options using ajax
@@ -352,9 +370,11 @@ function modalButtonsListeners(){
     //Select input
     var $locationLevelSelect = $("#locLevelSelect");
     var locationId = $locationLevelSelect.val().split("-")[0];
+    // IsList is true, when there are options to load in select (CSV, Countries)
     var locationIsList = $locationLevelSelect.val().split("-")[1];
     var locationName = $locationLevelSelect.val().split("-")[2];
 
+    // Multiple select input
     var $locationSelect = $("#countriesCmvs");
     // checking if is list
     if(locationIsList == "true") {
@@ -365,20 +385,21 @@ function modalButtonsListeners(){
         if($(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").exists()) {
           addCountryIntoLocLevel(locationId, $locationSelect, locationName);
         } else {
+          // LocLevel makes reference to the location elements container (i.e. Country, Province, District, Village, etc.)
           addLocLevel(locationName, locationId, locationIsList, $locationSelect);
         }
       }
     } else {
+      // When name input is void, show a red border
       if($("#inputFormWrapper").find(".name").val().trim() == "") {
         $("#inputFormWrapper").find(".name").addClass("fieldError");
         $("#inputFormWrapper").find(".name").on('change',function(){
           $(this).removeClass('fieldError');
         });
       } else {
+        // On change remove red border
         $("#inputFormWrapper").find(".name").removeClass("fieldError");
-        if($("#inputFormWrapper").find(".fieldError").exists()) {
-
-        } else {
+        if(!$("#inputFormWrapper").find(".fieldError").exists()) {
           // Checking if the location level exist in the bottom wrapper
           if($(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").exists()) {
             addLocByCoordinates(locationId, $locationSelect, locationName)
