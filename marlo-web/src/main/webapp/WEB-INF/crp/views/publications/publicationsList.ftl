@@ -33,7 +33,7 @@
       [#-- Section Buttons --]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewPublication'/]">[@s.text name="publicationsList.addPublication" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewPublication'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="publicationsList.addPublication" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>
