@@ -1018,7 +1018,6 @@ public class DeliverableAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -1059,14 +1058,6 @@ public class DeliverableAction extends BaseAction {
         this.setTransaction("-1");
       }
 
-      if (deliverable.getDeliverableQualityChecks() != null) {
-        List<DeliverableQualityCheck> checks = new ArrayList<>(deliverable.getDeliverableQualityChecks().stream()
-          .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList()));
-        if (!checks.isEmpty()) {
-          deliverable.setQualityCheck(checks.get(0));
-        }
-      }
       if (deliverable.getDeliverableQualityChecks() != null) {
         List<DeliverableQualityCheck> checks = new ArrayList<>(deliverable.getDeliverableQualityChecks().stream()
           .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getActualPhase()))

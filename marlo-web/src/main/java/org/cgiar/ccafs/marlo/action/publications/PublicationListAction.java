@@ -167,6 +167,7 @@ public class PublicationListAction extends BaseAction {
     if (deliverable != null) {
       for (DeliverableInfo deliverableInfo : deliverable.getDeliverableInfos()) {
         deliverableInfo.setModificationJustification(this.getJustification());
+        deliverableInfo.setModifiedBy(this.getCurrentUser());
         deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
       }
       deliverableManager.deleteDeliverable(deliverableID);
