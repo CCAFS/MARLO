@@ -20,8 +20,8 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/publicationsListTemplate.ftl" as publicationsList /]
 
-
 <section class="container">
+  [#if reportingActive]
   <article class="row" id="mainInformation">
     <div class="col-md-12">
     
@@ -48,7 +48,11 @@
     </div>
     
   </article>
+  [#else]
+    <div class="borderBox text-center">[@s.text name="global.availableReporting" /]</div>
+  [/#if]
 </section>
+
 [@customForm.confirmJustification action="deletePublication.do" namespace="/${currentSection}" nameId="deliverableID" title="Remove Publications" /]
 
 
