@@ -84,7 +84,7 @@
         <tr>
           [#-- ID --]
           <td class="">
-            <a href="${elementUrl}">D${(element.id)!}</a>
+            <a href="${elementUrl}">S${(element.id)!}</a>
           </td>
           [#-- Title / Name --]
           <td class="col-md-4 left">
@@ -98,23 +98,11 @@
           </td>
           [#-- Added by --]
           <td >
-              [#if element.createdBy?has_content]
-                ${(element.createdBy.composedName)!}
-              [#else]
-                Not defined
-              [/#if]
+            [#if element.createdBy?has_content]${(element.createdBy.composedName)!}[#else]Not defined[/#if]
           </td>
           [#-- Lead partner(s) --]
           <td class="">
-            [#if element.leaders?has_content]
-              [#list element.leaders as institutionLead]
-                [#if (institutionLead.institution.acronym?has_content)!false]
-                  <p>${(institutionLead.institution.acronym)!}</p>
-                [#else]
-                  <p>${(institutionLead.institution.name)!'undefined'}</p>
-                [/#if]
-              [/#list]
-            [/#if]
+            {Study Type}
           </td>
           [#-- Flagship / Region --]
           <td class=""> 

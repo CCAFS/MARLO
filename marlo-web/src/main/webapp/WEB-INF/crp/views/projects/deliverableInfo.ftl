@@ -23,23 +23,14 @@
     <div id="dialog" title="Deliverable types" style="display: none">
       <table id="deliverableTypes" style="height:700px; width:950px;">
         <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
-        <th> [@s.text name="project.deliverables.dialogMessage.part2" /] </th>
-        <th> [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
+        <th> [@s.text name="project.deliverables.dialogMessage.part2" /] / [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
         [#if deliverableTypeParent?has_content]
         [#list deliverableTypeParent as mt]
           [#list action.getDeliverablesSubTypes(mt.id) as st]
-            [#if st_index == 0]
             <tr>
-              <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
-              <td> ${st.name} </td>
-              <td> ${(st.description)!}</td>
+              [#if st_index == 0]<th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>[/#if]
+              <td> ${st.name} [#if ((st.description?has_content)!false) && (st.description != st.name)]<br /> (<i><small>${st.description}</small></i>)[/#if]</td>
             </tr>
-            [#else]
-            <tr>
-              <td> ${st.name} </td>
-              <td> ${(st.description)!} </td>
-            </tr>
-            [/#if]
           [/#list]
         [/#list]
         [/#if]  
@@ -67,15 +58,11 @@
       [#assign canNotEditYear =!action.candEditYear(deliverable.id)/]
       
       [#if editable ]
-      
-      [#if canNotEditYear]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
-      
-      [#else]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
-      
-      [/#if]
-        
+        [#if canNotEditYear]
+          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
+        [#else]
+          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
+        [/#if]
       [#else]
          <div class="select">
           <label for="">[@s.text name="project.deliverable.generalInformation.year" /]:</label>
