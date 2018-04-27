@@ -6528,3 +6528,8 @@ a.form-button.button-history {
   background-color: #2BA6CB;
   border-bottom: 3px solid #1E94B8;
 }
+
+.font-italic {
+  font-style: italic;
+  font-weight: normal;
+}

@@ -24,7 +24,7 @@
       </div>
       
       [#-- Flagships & Regions --]
-      [#if fromProject]
+      [#if !fromProject]
       <div class="form-group row">
         [#-- Flagships --]
         [#if flagshipsList??]
@@ -33,7 +33,7 @@
             <div id="" class="dottedBox">
               [#if editable]
                 [#list flagshipsList as flagship]
-                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${flagship.composedName}" value="${flagship.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
+                  [@customForm.checkBoxFlat id="flagship-${flagship.id}" name="${customName}.flagshipValue" label="${flagship.composedName}" value="${flagship.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
                 [/#list]
               [#else]
                 <input type="hidden" name="${customName}.flagshipValue" value="${(element.flagshipValue)!}"/>
@@ -52,7 +52,7 @@
             <div id="" class="dottedBox">
               [#if editable]
                 [#list regionsList as region]
-                  [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${region.composedName}" value="${region.id}" editable=editable checked=((regionsIds?seq_contains(region.id))!false) cssClass="checkboxInput rpInput" /]
+                  [@customForm.checkBoxFlat id="region-${region.id}" name="${customName}.regionsValue" label="${region.composedName}" value="${region.id}" editable=editable checked=((regionsIds?seq_contains(region.id))!false) cssClass="checkboxInput rpInput" /]
                 [/#list]
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(element.regionsValue)!}"/>

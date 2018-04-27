@@ -77,7 +77,7 @@
             </div>
           </div> 
           
-           <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
+          <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">
             [#--  Deliverable Menu  --] 
             <ul class="nav nav-tabs" role="tablist"> 
@@ -89,9 +89,12 @@
                 [#assign isRequiredQuality = deliverable.deliverableInfo.requeriedFair() || ((action.hasDeliverableRule(deliverable.deliverableInfo, deliverableComplianceCheck))!false) /]
                 <li role="presentation" class="[#if indexTab==3]active[/#if]" style="display:${isRequiredQuality?string('block','none')};"><a index="3" href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 
+                [#--  
                 [#assign isRequiredDataSharing = (deliverable.dissemination.alreadyDisseminated)!false /]
                 <li role="presentation" class="dataSharing [#if indexTab==4]active[/#if]" style="display:${isRequiredDataSharing?string('none','block')};"><a index="4" href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
+                 --]
                 [/#if]
+               
             </ul>
             <div class="tab-content ">
               [#-- Deliverable Information --] 
@@ -109,6 +112,9 @@
                 
                 [#--  Intellectual Asset--]
                 [@deliverableMacros.intellectualAsset /]
+                
+                [#--  Does this deliverable involve Participants and Trainees? --]
+                [@deliverableMacros.deliverableParticipantsMacro /]
                 
                 [#-- Have you adopted a license?  --]
                 [@deliverableMacros.deliverableLicenseMacro /]
@@ -131,10 +137,11 @@
                   [@deliverableMacros.fairCompliant /]
                 </div>
               </div>
-              [#-- Deliverable dataSharing --] 
+              [#-- Deliverable dataSharing 
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
                 [#include "/WEB-INF/crp/views/projects/deliverableDataSharing.ftl" /]
               </div>
+              --] 
               [/#if]
             </div>
            </div>
