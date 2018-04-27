@@ -1,6 +1,9 @@
 package org.cgiar.ccafs.marlo.data.model;
 // Generated Apr 18, 2018 1:21:50 PM by Hibernate Tools 3.4.0.CR1
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -8,11 +11,24 @@ import com.google.gson.annotations.Expose;
  */
 public class RepIndRegion implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 1986003580452331104L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private String name;
+
+
+  @Expose
+  private RepIndRegion subRegion;
+
+
+  private Set<RepIndRegion> subRegions = new HashSet<RepIndRegion>(0);
+
 
   public RepIndRegion() {
   }
@@ -29,12 +45,30 @@ public class RepIndRegion implements java.io.Serializable {
     return this.name;
   }
 
+  public RepIndRegion getSubRegion() {
+    return subRegion;
+  }
+
+  public Set<RepIndRegion> getSubRegions() {
+    return subRegions;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setSubRegion(RepIndRegion subRegion) {
+    this.subRegion = subRegion;
+  }
+
+
+  public void setSubRegions(Set<RepIndRegion> subRegions) {
+    this.subRegions = subRegions;
   }
 
 
