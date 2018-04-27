@@ -25,13 +25,14 @@ import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -41,15 +42,12 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
-import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
-import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -103,86 +101,59 @@ import org.slf4j.LoggerFactory;
  */
 public class PublicationAction extends BaseAction {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -5176367401132626314L;
-
   private final Logger LOG = LoggerFactory.getLogger(PublicationAction.class);
 
-
-  private GlobalUnit loggedCrp;
-
-  // GlobalUnit Manager
+  // Managers
   private GlobalUnitManager crpManager;
-
-  private long deliverableID;
-
   private DeliverableCrpManager deliverableCrpManager;
-  private Map<String, String> crps;
-  private List<GenderType> genderLevels;
   private IpProgramManager ipProgramManager;
-  private Map<String, String> programs;
-  private List<FundingSource> fundingSources;
-
-  private List<CrpProgram> flagshipsList;
-
-
-  private List<CrpProgram> regionsList;
-
-  private Map<String, String> regions;
-  private Map<String, String> institutions;
-  private Map<String, String> channels;
   private DeliverableManager deliverableManager;
-  private PublicationValidator publicationValidator;
-  private Deliverable deliverable;
   private DeliverableDisseminationManager deliverableDisseminationManager;
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
   private DeliverableUserManager deliverableUserManager;
-
   private DeliverableLeaderManager deliverableLeaderManager;
-
   private DeliverableProgramManager deliverableProgramManager;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-
-
-  private String transaction;
-
-
   private AuditLogManager auditLogManager;
-
-  private DeliverableQualityCheckManager deliverableQualityCheckManager;
-
-
-  private MetadataElementManager metadataElementManager;
-
-  private HistoryComparator historyComparator;
-  private UserManager userManager;
-  private InstitutionManager institutionManager;
-  private List<DeliverableType> deliverableSubTypes;
   private GenderTypeManager genderTypeManager;
   private DeliverableTypeManager deliverableTypeManager;
   private RepositoryChannelManager repositoryChannelManager;
-  private List<RepositoryChannel> repositoryChannels;
-
+  private DeliverableInfoManager deliverableInfoManager;
+  private InstitutionManager institutionManager;
   private CrpProgramManager crpProgramManager;
   private FundingSourceManager fundingSourceManager;
   private CrossCuttingScoringManager crossCuttingManager;
+  private DeliverableFundingSourceManager deliverableFundingSourceManager;
+  private MetadataElementManager metadataElementManager;
 
+  // Variables
+  private GlobalUnit loggedCrp;
+  private long deliverableID;
+  private Map<String, String> crps;
+  private List<GenderType> genderLevels;
+  private Map<String, String> programs;
+  private List<FundingSource> fundingSources;
+  private List<CrpProgram> flagshipsList;
+  private List<CrpProgram> regionsList;
+  private Map<String, String> regions;
+  private Map<String, String> institutions;
+  private Map<String, String> channels;
+  private PublicationValidator publicationValidator;
+  private Deliverable deliverable;
+  private String transaction;
+  private HistoryComparator historyComparator;
+  private List<DeliverableType> deliverableSubTypes;
+  private List<RepositoryChannel> repositoryChannels;
   private List<CrossCuttingScoring> crossCuttingDimensions;
-
   private Map<Long, String> crossCuttingScoresMap;
-
   private List<CrpClusterKeyOutput> keyOutputs;
 
   @Inject
   public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
-    GenderTypeManager genderTypeManager, DeliverableQualityCheckManager deliverableQualityCheckManager,
-    AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
-    MetadataElementManager metadataElementManager, UserManager userManager,
+    GenderTypeManager genderTypeManager, AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
     DeliverableDisseminationManager deliverableDisseminationManager, InstitutionManager institutionManager,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
@@ -192,7 +163,8 @@ public class PublicationAction extends BaseAction {
     DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
     RepositoryChannelManager repositoryChannelManager, CrpProgramManager crpProgramManager,
     FundingSourceManager fundingSourceManager, CrossCuttingScoringManager crossCuttingManager,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverableInfoManager deliverableInfoManager,
+    DeliverableFundingSourceManager deliverableFundingSourceManager, MetadataElementManager metadataElementManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -204,22 +176,22 @@ public class PublicationAction extends BaseAction {
     this.genderTypeManager = genderTypeManager;
     this.auditLogManager = auditLogManager;
     this.deliverableGenderLevelManager = deliverableGenderLevelManager;
-    this.deliverableQualityCheckManager = deliverableQualityCheckManager;
     this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.deliverableUserManager = deliverableUserManager;
     this.institutionManager = institutionManager;
     this.deliverableProgramManager = deliverableProgramManager;
     this.deliverableLeaderManager = deliverableLeaderManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
-    this.metadataElementManager = metadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
-    this.userManager = userManager;
     this.repositoryChannelManager = repositoryChannelManager;
     this.crpProgramManager = crpProgramManager;
     this.fundingSourceManager = fundingSourceManager;
     this.crossCuttingManager = crossCuttingManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
+    this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+    this.metadataElementManager = metadataElementManager;
   }
 
   @Override
@@ -247,6 +219,23 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  /**
+   * Delete Deliverable Gender Levels if there is no cross cutting gender component.
+   * 
+   * @param deliverablePrew
+   */
+  private void deleteDeliverableGenderLevels(Deliverable deliverablePrew) {
+    if (!deliverablePrew.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender().booleanValue()) {
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      List<DeliverableGenderLevel> deliverableGenderLevels =
+        deliverableDB.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (DeliverableGenderLevel genderLevel : deliverableGenderLevels) {
+        deliverableGenderLevelManager.deleteDeliverableGenderLevel(genderLevel.getId());
+      }
+    }
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -254,7 +243,6 @@ public class PublicationAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public Map<String, String> getChannels() {
     return channels;
@@ -268,10 +256,10 @@ public class PublicationAction extends BaseAction {
     return crossCuttingScoresMap;
   }
 
+
   public Map<String, String> getCrps() {
     return crps;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -280,6 +268,7 @@ public class PublicationAction extends BaseAction {
   public long getDeliverableID() {
     return deliverableID;
   }
+
 
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
@@ -318,15 +307,14 @@ public class PublicationAction extends BaseAction {
     return fundingSources;
   }
 
-
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
 
+
   public Map<String, String> getInstitutions() {
     return institutions;
   }
-
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
@@ -336,6 +324,7 @@ public class PublicationAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Map<String, String> getPrograms() {
     return programs;
   }
@@ -344,7 +333,6 @@ public class PublicationAction extends BaseAction {
   public Map<String, String> getRegions() {
     return regions;
   }
-
 
   public String[] getRegionsIds() {
 
@@ -360,6 +348,7 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
+
   public List<CrpProgram> getRegionsList() {
     return crpProgramManager.findAll().stream()
       .filter(
@@ -371,7 +360,6 @@ public class PublicationAction extends BaseAction {
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -559,12 +547,6 @@ public class PublicationAction extends BaseAction {
           }
         }
 
-
-        if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-        }
-
         if (deliverable.getDeliverablePublicationMetadatas() != null) {
           deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
             .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
@@ -582,28 +564,6 @@ public class PublicationAction extends BaseAction {
           .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
           .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-        deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDataSharingFiles()) {
-
-          DeliverableFile deFile = new DeliverableFile();
-          switch (dataSharingFile.getTypeId().toString()) {
-            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getFile().getFileName());
-              break;
-
-            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getExternalFile());
-              break;
-          }
-          deFile.setId(dataSharingFile.getId());
-          deFile.setSize(0);
-          deliverable.getFiles().add(deFile);
-        }
-        if (deliverable.getFiles() != null) {
-          deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        }
 
         if (deliverable.getDeliverableIntellectualAssets() != null) {
           List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
@@ -796,161 +756,70 @@ public class PublicationAction extends BaseAction {
 
   @Override
   public String save() {
-    Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
-    DeliverableInfo deliverableInfoPrew = deliverablePrew.getDeliverableInfo(this.getActualPhase());
-    deliverableInfoPrew.setTitle(deliverable.getDeliverableInfo().getTitle());
+    if (this.hasPermission("canEdit")) {
+      Deliverable deliverablePrew = this.updateDeliverableInfo();
+      this.updateDeliverableFSInPlanningPhase(deliverablePrew);
 
-
-    if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
-      deliverableInfoPrew.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
-      if (deliverable.getDeliverableInfo().getAdoptedLicense().booleanValue()) {
-        deliverableInfoPrew.setLicense(deliverable.getDeliverableInfo().getLicense());
-        if (deliverable.getDeliverableInfo().getLicense() != null) {
-          if (deliverable.getDeliverableInfo().getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-            deliverableInfoPrew.setOtherLicense(deliverable.getDeliverableInfo().getOtherLicense());
-            deliverableInfoPrew.setAllowModifications(deliverable.getDeliverableInfo().getAllowModifications());
-          } else {
-            deliverableInfoPrew.setOtherLicense(null);
-            deliverableInfoPrew.setAllowModifications(null);
-          }
-        }
-        deliverableInfoPrew.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
-      } else {
-
-        deliverableInfoPrew.setLicense(null);
-        deliverableInfoPrew.setOtherLicense(null);
-        deliverableInfoPrew.setAllowModifications(null);
-      }
-    } else {
-      deliverableInfoPrew.setLicense(null);
-      deliverableInfoPrew.setOtherLicense(null);
-      deliverableInfoPrew.setAllowModifications(null);
-    }
-    deliverableInfoPrew.setDeliverableType(deliverable.getDeliverableInfo().getDeliverableType());
-
-    if (deliverablePrew.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().intValue() == -1) {
-      deliverableInfoPrew.setDeliverableType(null);
-    }
-    if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == null) {
-      deliverableInfoPrew.setCrossCuttingCapacity(false);
-    } else {
-      deliverableInfoPrew.setCrossCuttingCapacity(true);
-    }
-    if (deliverable.getDeliverableInfo().getCrossCuttingNa() == null) {
-      deliverableInfoPrew.setCrossCuttingNa(false);
-    } else {
-      deliverableInfoPrew.setCrossCuttingNa(true);
-    }
-    if (deliverable.getDeliverableInfo().getCrossCuttingGender() == null) {
-      deliverableInfoPrew.setCrossCuttingGender(false);
-    } else {
-      deliverableInfoPrew.setCrossCuttingGender(true);
-    }
-    if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == null) {
-      deliverableInfoPrew.setCrossCuttingYouth(false);
-    } else {
-      deliverableInfoPrew.setCrossCuttingYouth(true);
-    }
-    deliverableManager.saveDeliverable(deliverablePrew);
-    List<String> relationsName = new ArrayList<>();
-
-
-    if (deliverable.getGenderLevels() != null) {
-      if (deliverablePrew.getDeliverableGenderLevels() != null
-        && deliverablePrew.getDeliverableGenderLevels().size() > 0) {
-        List<DeliverableGenderLevel> fundingSourcesPrew = deliverablePrew.getDeliverableGenderLevels().stream()
-          .filter(dp -> dp.isActive()).collect(Collectors.toList());
-
-
-        for (DeliverableGenderLevel deliverableFundingSource : fundingSourcesPrew) {
-          if (!deliverable.getGenderLevels().contains(deliverableFundingSource)) {
-            deliverableGenderLevelManager.deleteDeliverableGenderLevel(deliverableFundingSource.getId());
-          }
-        }
+      // Set CrpClusterKeyOutput to null if has an -1 id
+      if (deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput() != null
+        && deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput().getId() != null
+        && deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
+        deliverablePrew.getDeliverableInfo().setCrpClusterKeyOutput(null);
       }
 
-      for (DeliverableGenderLevel deliverableFundingSource : deliverable.getGenderLevels()) {
-        if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
+      this.saveDeliverableGenderLevels(deliverablePrew);
+      this.deleteDeliverableGenderLevels(deliverablePrew);
+      this.saveDissemination();
+      this.saveMetadata();
+      this.saveCrps();
+      this.savePublicationMetadata();
+      this.saveUsers();
+      this.saveLeaders();
+      this.savePrograms();
 
+      deliverableInfoManager.saveDeliverableInfo(deliverablePrew.getDeliverableInfo());
 
-          deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableFundingSource.setActive(true);
-          deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-          deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-          deliverableFundingSource.setModificationJustification("");
-          deliverableFundingSource.setActiveSince(new Date());
-
-          deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableFundingSource);
-
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_INFO);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_PROGRAMS);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_LEADERS);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
+      relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+      deliverablePrew.setActiveSince(new Date());
+      deliverablePrew =
+        deliverableManager.saveDeliverable(deliverablePrew, this.getActionName(), relationsName, this.getActualPhase());
+      Path path = this.getAutoSaveFilePath();
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
 
         } else {
-          DeliverableGenderLevel deliverableGenderLevelDB =
-            deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableFundingSource.getId());
-          deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
-          deliverableGenderLevelDB.setGenderLevel(deliverableFundingSource.getGenderLevel());
-          deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
-
-
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-      }
-    }
-
-    if (!deliverablePrew.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender().booleanValue()) {
-      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-      for (DeliverableGenderLevel genderLevel : deliverableDB.getDeliverableGenderLevels().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        deliverableGenderLevelManager.deleteDeliverableGenderLevel(genderLevel.getId());
-      }
-    }
-
-    this.saveDissemination();
-    this.saveMetadata();
-
-    this.savePublicationMetadata();
-    this.saveUsers();
-    this.saveCrps();
-    this.saveLeaders();
-    this.savePrograms();
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_PROGRAMS);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_LEADERS);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
-
-    deliverable = deliverableManager.getDeliverableById(deliverableID);
-    deliverable.setActiveSince(new Date());
-    // deliverable.setModifiedBy(this.getCurrentUser());
-    // deliverable.setModificationJustification(this.getJustification());
-
-    deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, this.getActualPhase());
-    Path path = this.getAutoSaveFilePath();
-
-    if (path.toFile().exists()) {
-      path.toFile().delete();
-    }
-
-
-    if (this.getUrl() == null || this.getUrl().isEmpty()) {
-      Collection<String> messages = this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-        }
-
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
       }
-      return SUCCESS;
+
     } else {
-      this.addActionMessage("");
-      this.setActionMessages(null);
-      return REDIRECT;
+      return NOT_AUTHORIZED;
     }
   }
 
@@ -973,11 +842,55 @@ public class PublicationAction extends BaseAction {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
         deliverableCrp.setPhase(this.getActualPhase());
+        if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
+          && deliverableCrp.getGlobalUnit().getId() != -1) {
+          deliverableCrp.setCrpProgram(null);
+        } else {
+          deliverableCrp.setGlobalUnit(null);
+        }
         deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }
     }
   }
 
+  private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
+    if (deliverable.getGenderLevels() != null) {
+      if (deliverablePrew.getDeliverableGenderLevels() != null
+        && deliverablePrew.getDeliverableGenderLevels().size() > 0) {
+        List<DeliverableGenderLevel> fundingSourcesPrew = deliverablePrew.getDeliverableGenderLevels().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+        for (DeliverableGenderLevel deliverableFundingSource : fundingSourcesPrew) {
+          if (!deliverable.getGenderLevels().contains(deliverableFundingSource)) {
+            deliverableGenderLevelManager.deleteDeliverableGenderLevel(deliverableFundingSource.getId());
+          }
+        }
+      }
+
+      for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
+        if (deliverableGenderLevel.getId() == null || deliverableGenderLevel.getId() == -1) {
+
+          deliverableGenderLevel.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+          deliverableGenderLevel.setActive(true);
+          deliverableGenderLevel.setCreatedBy(this.getCurrentUser());
+          deliverableGenderLevel.setModifiedBy(this.getCurrentUser());
+          deliverableGenderLevel.setModificationJustification("");
+          deliverableGenderLevel.setActiveSince(new Date());
+          deliverableGenderLevel.setPhase(this.getActualPhase());
+          deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevel);
+
+        } else {
+          DeliverableGenderLevel deliverableGenderLevelDB =
+            deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableGenderLevel.getId());
+          deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
+          deliverableGenderLevelDB.setGenderLevel(deliverableGenderLevel.getGenderLevel());
+          deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
+
+
+        }
+      }
+    }
+  }
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -991,6 +904,7 @@ public class PublicationAction extends BaseAction {
         dissemination.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
 
       }
+
       dissemination.setSynced(deliverable.getDissemination().getSynced());
 
       if (deliverable.getDissemination().getIsOpenAccess() != null) {
@@ -1000,7 +914,7 @@ public class PublicationAction extends BaseAction {
           if (type != null) {
             switch (type) {
               case "intellectualProperty":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(true);
                 dissemination.setLimitedExclusivity(false);
                 dissemination.setRestrictedUseAgreement(false);
@@ -1012,7 +926,7 @@ public class PublicationAction extends BaseAction {
 
                 break;
               case "limitedExclusivity":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(false);
                 dissemination.setLimitedExclusivity(true);
                 dissemination.setRestrictedUseAgreement(false);
@@ -1023,7 +937,7 @@ public class PublicationAction extends BaseAction {
 
                 break;
               case "restrictedUseAgreement":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(false);
                 dissemination.setLimitedExclusivity(false);
                 dissemination.setRestrictedUseAgreement(true);
@@ -1034,7 +948,7 @@ public class PublicationAction extends BaseAction {
 
                 break;
               case "effectiveDateRestriction":
-
+                dissemination.setNotDisseminated(false);
                 dissemination.setIntellectualProperty(false);
                 dissemination.setLimitedExclusivity(false);
                 dissemination.setRestrictedUseAgreement(false);
@@ -1044,14 +958,28 @@ public class PublicationAction extends BaseAction {
                 dissemination.setRestrictedEmbargoed(deliverable.getDissemination().getRestrictedEmbargoed());
 
                 break;
+              case "notDisseminated":
 
+                dissemination.setNotDisseminated(true);
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
               default:
                 break;
             }
           }
         } else {
 
-
+          dissemination.setNotDisseminated(false);
           dissemination.setIntellectualProperty(false);
           dissemination.setLimitedExclusivity(false);
           dissemination.setRestrictedUseAgreement(false);
@@ -1063,7 +991,7 @@ public class PublicationAction extends BaseAction {
       } else {
 
         dissemination.setIsOpenAccess(null);
-
+        dissemination.setNotDisseminated(false);
         dissemination.setIntellectualProperty(false);
         dissemination.setLimitedExclusivity(false);
         dissemination.setRestrictedUseAgreement(false);
@@ -1089,14 +1017,13 @@ public class PublicationAction extends BaseAction {
         dissemination.setDisseminationChannel(null);
       }
 
-
+      dissemination.setPhase(this.getActualPhase());
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 
     }
 
 
   }
-
 
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
@@ -1115,25 +1042,23 @@ public class PublicationAction extends BaseAction {
       if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
         deliverableUser.setId(null);
         deliverableUser.setDeliverable(deliverable);
+        deliverableUser.setPhase(this.getActualPhase());
         deliverableLeaderManager.saveDeliverableLeader(deliverableUser);
       }
     }
   }
 
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
-
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
-
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
-
           deliverableMetadataElement.setDeliverable(deliverable);
+          deliverableMetadataElement.setPhase(this.getActualPhase());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
-
         }
       }
     }
-
   }
 
 
@@ -1163,6 +1088,7 @@ public class PublicationAction extends BaseAction {
           DeliverableProgram deliverableProgram = new DeliverableProgram();
           deliverableProgram.setCrpProgram(program);
           deliverableProgram.setDeliverable(deliverable);
+          deliverableProgram.setPhase(this.getActualPhase());
           if (deliverableDB.getDeliverablePrograms().stream()
             .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
             .collect(Collectors.toList()).isEmpty()) {
@@ -1210,8 +1136,8 @@ public class PublicationAction extends BaseAction {
       if (deliverable.getPublication().getId() != null && deliverable.getPublication().getId().intValue() == -1) {
         deliverable.getPublication().setId(null);
       }
+      deliverable.getPublication().setPhase(this.getActualPhase());
       deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
-
     }
   }
 
@@ -1222,7 +1148,8 @@ public class PublicationAction extends BaseAction {
       deliverable.setUsers(new ArrayList<>());
     }
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-    for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers()) {
+    for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       if (!deliverable.getUsers().contains(deliverableUser)) {
         deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
       }
@@ -1232,12 +1159,12 @@ public class PublicationAction extends BaseAction {
 
       if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
         deliverableUser.setId(null);
+        deliverableUser.setPhase(this.getActualPhase());
         deliverableUser.setDeliverable(deliverable);
         deliverableUserManager.saveDeliverableUser(deliverableUser);
       }
     }
   }
-
 
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
@@ -1253,27 +1180,29 @@ public class PublicationAction extends BaseAction {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
   }
 
+
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
   }
+
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
-
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
+
   public void setDeliverableTypeManager(DeliverableTypeManager deliverableTypeManager) {
     this.deliverableTypeManager = deliverableTypeManager;
   }
+
 
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
@@ -1287,11 +1216,9 @@ public class PublicationAction extends BaseAction {
     this.institutions = institutions;
   }
 
-
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1302,17 +1229,150 @@ public class PublicationAction extends BaseAction {
     this.programs = programs;
   }
 
+
   public void setRegions(Map<String, String> regions) {
     this.regions = regions;
   }
+
 
   public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
     this.repositoryChannels = repositoryChannels;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  /**
+   * This could be merged into a common mapping class.
+   * 
+   * @param deliverablePrew
+   */
+  private void updateDeliverableFSInPlanningPhase(Deliverable deliverablePrew) {
+    if (this.isPlanningActive()) {
+
+      if (deliverable.getFundingSources() != null) {
+        if (deliverablePrew.getDeliverableFundingSources() != null
+          && deliverablePrew.getDeliverableFundingSources().size() > 0) {
+          List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList());
+
+
+          for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
+            if (!deliverable.getFundingSources().contains(deliverableFundingSource)) {
+              deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
+            }
+          }
+        }
+
+        for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+          if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
+
+
+            deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+            deliverableFundingSource.setActive(true);
+            deliverableFundingSource.setCreatedBy(this.getCurrentUser());
+            deliverableFundingSource.setModifiedBy(this.getCurrentUser());
+            deliverableFundingSource.setModificationJustification("");
+            deliverableFundingSource.setActiveSince(new Date());
+            deliverableFundingSource.setPhase(this.getActualPhase());
+            deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+
+
+          }
+        }
+      }
+    }
+  }
+
+
+  private Deliverable updateDeliverableInfo() {
+    // deliverableDb is in a managed state, deliverable is in a detached state.
+    Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
+    DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
+
+    deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(this.getActualPhase()).getTitle());
+    deliverableInfoDb.setDescription(deliverable.getDeliverableInfo().getDescription());
+
+    deliverableInfoDb.setYear(deliverable.getDeliverableInfo().getYear());
+
+    if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
+      deliverableInfoDb.setNewExpectedYear(deliverable.getDeliverableInfo().getNewExpectedYear());
+    }
+
+    if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == null) {
+      deliverableInfoDb.setCrossCuttingCapacity(false);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(APConstants.CROSS_CUTTING_NOT_TARGETED);
+    } else {
+      deliverableInfoDb.setCrossCuttingCapacity(true);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity());
+    }
+    if (deliverable.getDeliverableInfo().getCrossCuttingNa() == null) {
+      deliverableInfoDb.setCrossCuttingNa(false);
+    } else {
+      deliverableInfoDb.setCrossCuttingNa(true);
+    }
+    if (deliverable.getDeliverableInfo().getCrossCuttingGender() == null) {
+      deliverableInfoDb.setCrossCuttingGender(false);
+      deliverableInfoDb.setCrossCuttingScoreGender(APConstants.CROSS_CUTTING_NOT_TARGETED);
+    } else {
+      deliverableInfoDb.setCrossCuttingGender(true);
+      deliverableInfoDb.setCrossCuttingScoreGender(deliverable.getDeliverableInfo().getCrossCuttingScoreGender());
+    }
+    if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == null) {
+      deliverableInfoDb.setCrossCuttingYouth(false);
+      deliverableInfoDb.setCrossCuttingScoreYouth(APConstants.CROSS_CUTTING_NOT_TARGETED);
+    } else {
+      deliverableInfoDb.setCrossCuttingYouth(true);
+      deliverableInfoDb.setCrossCuttingScoreYouth(deliverable.getDeliverableInfo().getCrossCuttingScoreYouth());
+    }
+
+    if (deliverable.getDeliverableInfo().getStatus() != null) {
+      deliverableInfoDb.setStatus(deliverable.getDeliverableInfo().getStatus());
+    }
+
+    if (deliverable.getDeliverableInfo().getDeliverableType() != null
+      && deliverable.getDeliverableInfo().getDeliverableType().getId() != null
+      && deliverable.getDeliverableInfo().getDeliverableType().getId().longValue() != -1) {
+      DeliverableType deliverableType =
+        deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableInfo().getDeliverableType().getId());
+
+      deliverableInfoDb.setDeliverableType(deliverableType);
+    } else {
+      deliverableInfoDb.setDeliverableType(null);
+    }
+
+    if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
+      deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
+      if (deliverable.getDeliverableInfo().getAdoptedLicense().booleanValue()) {
+        deliverableInfoDb.setLicense(deliverable.getDeliverableInfo().getLicense());
+        if (deliverable.getDeliverableInfo().getLicense() != null) {
+          if (deliverable.getDeliverableInfo().getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+            deliverableInfoDb.setOtherLicense(deliverable.getDeliverableInfo().getOtherLicense());
+            deliverableInfoDb.setAllowModifications(deliverable.getDeliverableInfo().getAllowModifications());
+          } else {
+            deliverableInfoDb.setOtherLicense(null);
+            deliverableInfoDb.setAllowModifications(null);
+          }
+        }
+        deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
+      } else {
+
+        deliverableInfoDb.setLicense(null);
+        deliverableInfoDb.setOtherLicense(null);
+        deliverableInfoDb.setAllowModifications(null);
+      }
+    } else {
+      deliverableInfoDb.setLicense(null);
+      deliverableInfoDb.setOtherLicense(null);
+      deliverableInfoDb.setAllowModifications(null);
+    }
+    deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
+    deliverableInfoDb.setModifiedBy(this.getCurrentUser());
+    deliverableInfoDb.setModificationJustification(this.getJustification());
+    deliverableBase.setDeliverableInfo(deliverableInfoDb);
+    return deliverableBase;
   }
 
   @Override
