@@ -36,65 +36,34 @@ function addDisseminationEvents() {
   // YES/NO Event for deliverables
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
+    var type = $(this).parent().parent().classParam('type');
+    var inverted = $(this).parent().parent().classParam('inverted') === "true";
+    if(inverted) {
+      valueSelected = !valueSelected;
+    }
+    // Set value
+    $(this).parent().find('input').val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
-
+    // Show block if exist
+    if(valueSelected) {
+      $('.block-' + type).slideDown();
+    } else {
+      $('.block-' + type).slideUp();
+    }
+    // Check FAIR Principles
     checkFAIRCompliant();
   });
 
-  // Is this deliverable Open Access
-  $(".accessible .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(!valueSelected) {
-      $(".openAccessOptions").show("slow");
-    } else {
-      $(".openAccessOptions").hide("slow");
-    }
-  });
-
   // Is this deliverable already disseminated
-  $(".findable .button-label").on("click", function() {
+  $(".type-findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
-      $(".findableOptions").hide("slow");
       $(".dataSharing").show("slow");
       unSyncDeliverable();
     } else {
-      $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
     }
-  });
-
-  // Has Intellectual Asset
-  $(".intellectualAsset .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(valueSelected) {
-      $(".intellectualAssetOptions").show("slow");
-    } else {
-      $(".intellectualAssetOptions").hide("slow");
-    }
-  });
-
-  // Does the publication acknowledge
-  $(".acknowledge .button-label").on("click", function() {
-    // Do Something
-  });
-
-  // Have you adopted a license
-  $(".license .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(!valueSelected) {
-      $(".licenseOptions-block").hide("slow");
-    } else {
-      $(".licenseOptions-block").show("slow");
-    }
-  });
-
-  // Does this license allow modifications?
-  $(".licenceModifications .button-label").on("click", function() {
-    // Do Something
   });
 
   // Add Author

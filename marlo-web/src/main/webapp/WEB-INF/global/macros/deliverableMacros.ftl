@@ -82,7 +82,7 @@
 <div class="simpleBox">
   <div class="form-group row">
     <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=editable /]</label>
-    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] </div>  
+    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
   </div>
   [#-- Deliverable type computer software --]
   [#local licenceOptions = [
@@ -116,22 +116,14 @@
   
   ] /]
   
-  <div class="radio-block licenseOptions-block" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
+  <div class="block-license" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
     <hr />
     [#list licenceOptions as licenseType]
       <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
         [#list licenseType.options as option]
-          <div class="radio">
-            [#if editable]
-              <input type="radio" name="deliverable.deliverableInfo.license" id="" value="${option.name}" [#if ((deliverable.deliverableInfo.licenseType) == (option.name))!false]checked="checked"[/#if]/> 
-              [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
-              [@s.text name="license.${option.name}" /] [#if licenseDescription?has_content]<small>(${licenseDescription})</small>[/#if]
-            [#else]
-              [#if (deliverable.deliverableInfo.licenseType == (option.name))!false]
-                <p class="checked">[@s.text name="license.${option.name}" /] [#if licenseDescription?has_content]<small>(${licenseDescription})</small>[/#if]</p>
-              [/#if]
-            [/#if]
-          </div>
+          [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
+          [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
+          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="" cssClassLabel="" /]</p>
         [/#list]
       </div>
     [/#list]
@@ -161,11 +153,9 @@
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row ">
       <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
-      <div class="col-md-3">
-        [@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
-      </div>
+      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
     </div> 
-    <div class="openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
+    <div class="block-accessible" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
       <hr />
       [#local oaRestrictions = [
         {"value": "intellectualProperty", "isChecked": (deliverable.dissemination.intellectualProperty)!false },
@@ -201,11 +191,9 @@
     <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
     <div class="row">
       <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
-      <div class="col-md-3">
-        [@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="intellectualAsset text-center" /]  
-      </div>
+      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" /]  </div>
     </div> 
-    <div class="intellectualAssetOptions radio-block" style="display: ${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
+    <div class="block-intellectualAsset" style="display:${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
       <hr />
       [#-- Applicant(s) / owner(s) (Center or partner) --]
       <div class="form-group">
@@ -238,6 +226,92 @@
   </div>
 [/#macro]
 
+[#-- Does this deliverable involve Participants and Trainees? --]
+[#macro deliverableParticipantsMacro]
+[#local customName = "deliverable.deliverableInfo" /]
+<div class="simpleBox">
+  <div class="form-group row">
+    <label class="col-md-9" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
+    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.involveParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" /] </div>  
+  </div>
+  
+  <div class="block-involveParticipants" style="display:${((deliverable.deliverableInfo.involveParticipants)!false)?string('block','none')}">
+    <hr />
+    
+    [#-- Type of activity --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.intellectualAsset.typeActivity" className="setSelect2" i18nkey="intellectualAsset.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Total number of Participants: --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.input name="${customName}.intellectualAsset.participants" i18nkey="intellectualAsset.participants" className="" required=true editable=editable /]
+        [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.intellectualAsset.estimateParticipants" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+      </div>
+    </div>
+    
+    [#-- Type of Participant(s): --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.intellectualAsset.participantsType" className="setSelect2" i18nkey="intellectualAsset.participantsType" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Formal training: (Only if is the activity type) --]
+    [#local isFormalTraining = true]
+    <div class="form-group row" style="display:${isFormalTraining?string('block', 'none')}">
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.intellectualAsset.formalTraining" className="setSelect2" i18nkey="intellectualAsset.formalTraining" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+      </div>
+      [#local isAcademicDegree = true]
+      <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
+        [@customForm.input name="${customName}.intellectualAsset.academicDegree" i18nkey="intellectualAsset.academicDegree" className="" required=true editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Gender Composition --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.input name="${customName}.intellectualAsset.females" i18nkey="intellectualAsset.females" className="" required=true editable=editable /]
+        [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.intellectualAsset.estimateFemales" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.intellectualAsset.dontKnowFemale" label="intellectualAsset.dontKnow" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+      </div>
+    </div>
+    
+    
+    [#-- Scope of the event  --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.eventScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+      </div>
+    </div>
+    
+    [#local isRegional = true ]
+    [#local isMultiNational = true ]
+    [#local isNational = true ]
+    [#local isSubNational = true ]
+    
+    [#-- Region --]
+    <div class="form-group row">
+      <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
+        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.regions" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Countries --]
+    <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+      [#-- Multinational, National and Subnational scope --]
+      [@customForm.select name="${customName}.countriesIds" label="" i18nkey="intellectualAsset.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+    </div>
+
+  </div>
+</div>
+[/#macro]
+
+
 [#macro alreadyDisseminatedMacro ]
 <div class="simpleBox form-group">
   <div class=" row">
@@ -246,10 +320,10 @@
       <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
     </span>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="findable text-center" /] 
+      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="type-findable text-center" /] 
     </div>  
   </div>
-  <div class="findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
+  <div class="block-findable findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
     <hr />
     [@findableOptions /]
   </div>

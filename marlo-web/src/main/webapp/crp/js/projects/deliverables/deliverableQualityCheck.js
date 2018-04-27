@@ -183,6 +183,8 @@ function checkFAIRCompliant() {
   checkInteroperable();
   checkReusable();
 }
+
+/** Quality Check * */
 function checkQualityAssurance() {
   var qualityAssurance = $("input.qualityAssurance:checked");
   var value = qualityAssurance.val();
