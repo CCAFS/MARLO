@@ -63,6 +63,11 @@
         [@customForm.input name="${customName}.deliverableInfo.title" i18nkey="publication.title" required=true className="" editable=editable /]
       </div>
       
+      [#-- Description --] 
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-50" required=true editable=editable /]
+      </div>
+      
       [#-- Subtype & year of completition --]
       <div class="form-group row">
         <div class="col-md-6">
@@ -101,7 +106,7 @@
             <div id="" class="dottedBox">
               [#if editable]
                 [#list flagshipsList as element]
-                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
+                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput fpInput" /]
                 [/#list]
               [#else]
                 <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
@@ -118,9 +123,12 @@
           <div class="col-md-6"> 
             <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
+            
               [#if editable]
+                [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]
+                [@customForm.checkBoxFlat id="noRegional" name="deliverable.deliverableInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((deliverable.deliverableInfo.noRegional)!false) cssClass="" cssClassLabel="font-italic" /]
                 [#list regionsList as element]
-                  [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
+                  [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput rpInput" /]
                 [/#list]
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
@@ -131,6 +139,40 @@
             </div>
           </div>
         [/#if]
+      </div>
+      
+      [#-- Key Outputs select --]
+      <div class="form-group">
+        [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+      </div>
+      
+      [#-- Funding Source --]
+      <div class="panel tertiary">
+       <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+        <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
+          <ul class="list">
+          [#if deliverable.fundingSources?has_content]
+            [#list deliverable.fundingSources as element]
+              <li class="fundingSources clearfix">
+                [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
+                <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
+                <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
+                <span class="name">
+                  <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.fundingSourceInfo.budgetType.name)!} [#if (element.fundingSource.fundingSourceInfo.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
+                  <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
+                </span>
+                <div class="clearfix"></div>
+              </li>
+            [/#list]
+            <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>   
+          [#else]
+            <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+          [/#if]
+          </ul>
+          [#if editable ]
+            [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
+          [/#if] 
+        </div>
       </div>
       
       [#--  Cross Cutting --]
@@ -182,6 +224,17 @@
 
 [#-- Author template --]
 [@deliverableMacros.authorMacro element={} index="-1" name="${customName}.users"  isTemplate=true /]
+
+[#-- Funding Source list template --]
+<ul style="display:none">
+  <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
+    <div class="removeFundingSource removeIcon" title="Remove funding source"></div>
+    <input class="id" type="hidden" name="deliverable.fundingSources[-1].id" value="" />
+    <input class="fId" type="hidden" name="deliverable.fundingSources[-1].fundingSource.id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
