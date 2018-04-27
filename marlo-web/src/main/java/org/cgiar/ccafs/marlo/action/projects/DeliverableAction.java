@@ -1814,7 +1814,6 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
       }
       deliverableManagedState.setActiveSince(new Date());
-      deliverableManagedState.setCreatedBy(this.getCurrentUser());
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
