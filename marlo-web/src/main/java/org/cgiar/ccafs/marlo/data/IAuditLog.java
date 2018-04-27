@@ -43,7 +43,7 @@ public interface IAuditLog {
    * 
    * @return a Object model id
    */
-  public Object getId();
+  public Long getId();
 
   /**
    * This method get a entity information detail to identify in the audit.
