@@ -11,5 +11,14 @@
         <property name="name" type="string">
             <column name="name" length="65535" />
         </property>
+        <many-to-one name="subRegion" class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
+            <column name="sub_region" />
+        </many-to-one>
+        <set name="subRegions" table="rep_ind_regions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="sub_region" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" />
+        </set>
     </class>
 </hibernate-mapping>
