@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -77,9 +78,9 @@ public class PublicationValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
-
-      if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
-        && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 15)) {
+      DeliverableInfo deliverableInfoActualPhase = deliverable.getDeliverableInfo(action.getActualPhase());
+      if (!(this.isValidString(deliverableInfoActualPhase.getTitle())
+        && this.wordCount(deliverableInfoActualPhase.getTitle()) <= 15)) {
         action.addMessage(action.getText("project.deliverable.generalInformation.title"));
         action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
       }

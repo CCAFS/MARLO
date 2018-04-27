@@ -732,7 +732,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     for (UserRole userRole : rolePreview.getUserRoles()) {
       if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
 
-        userRole.setUser(userManager.getUser(userRole.getUser().getId()));
         List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
           .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
             && c.getLiaisonInstitution().getId().longValue() == cuId)
@@ -1076,22 +1075,24 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgram.setCrp(loggedCrp);
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
           LiaisonInstitution liasonInstitution = new LiaisonInstitution();
-          liasonInstitution.setAcronym(crpProgram.getAcronym());
+          liasonInstitution.setAcronym(crpProgramDb.getAcronym());
           liasonInstitution.setCrp(loggedCrp);
-          liasonInstitution.setCrpProgram(crpProgram);
-          liasonInstitution.setName(crpProgram.getName());
+          liasonInstitution.setCrpProgram(crpProgramDb);
+          liasonInstitution.setName(crpProgramDb.getName());
 
 
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
 
         } else {
           crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
-          crpProgram.setCrp(loggedCrp);
-          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
-          for (LiaisonInstitution liasonInstitution : crpProgramDb.getLiaisonInstitutions()) {
-            liasonInstitution.setAcronym(crpProgram.getAcronym());
-            liasonInstitution.setName(crpProgram.getName());
-            liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
+          crpProgramDb.setCrp(loggedCrp);
+          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
+
+          // TODO FIX BUG - need to find out why we are looping through all.
+          for (LiaisonInstitution liasonInstitutionDb : crpProgramDb.getLiaisonInstitutions()) {
+            liasonInstitutionDb.setAcronym(crpProgram.getAcronym());
+            liasonInstitutionDb.setName(crpProgram.getName());
+            liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitutionDb);
 
           }
 

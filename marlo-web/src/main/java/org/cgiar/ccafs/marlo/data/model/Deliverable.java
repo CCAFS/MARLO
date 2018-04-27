@@ -354,7 +354,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public DeliverableMetadataElement getMetadata(int metadataID) {
+  public DeliverableMetadataElement getMetadata(long metadataID) {
     String value = "";
     if (metadataElements != null) {
       for (DeliverableMetadataElement dmetadata : metadataElements) {
@@ -404,7 +404,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public String getMetadataValue(int metadataID) {
+  public String getMetadataValue(long metadataID) {
     String value = "";
     if (metadataElements != null) {
       for (DeliverableMetadataElement dmetadata : metadataElements) {

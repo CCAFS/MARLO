@@ -96,12 +96,15 @@ public class CustomLocationsAdminAction extends BaseAction {
 
             locElementType.setScope(false);
 
-            locElementTypeManager.saveLocElementType(locElementType);
+            locElementType = locElementTypeManager.saveLocElementType(locElementType);
           } else {
             LocElementType locElementTypeDB = locElementTypeManager.getLocElementTypeById(locElementType.getId());
 
-            locElementType.setScope(locElementTypeDB.isScope());
-            locElementTypeManager.saveLocElementType(locElementType);
+
+            locElementTypeDB.setHasCoordinates(locElementType.getHasCoordinates());
+            locElementTypeDB.setLocElementType(locElementType.getLocElementType());
+            locElementTypeDB.setName(locElementType.getName());
+            locElementTypeDB = locElementTypeManager.saveLocElementType(locElementTypeDB);
           }
         }
       }

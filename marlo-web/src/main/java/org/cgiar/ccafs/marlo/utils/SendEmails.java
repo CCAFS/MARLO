@@ -103,8 +103,8 @@ public class SendEmails {
     action.getSession().put(APConstants.CRP_PL_ROLE, "91");
     action.getSession().put(APConstants.CRP_LESSONS_ACTIVE, true);
     action.setPhaseID(new Long(7));
-    List<Phase> phases = globalUnitManager.getGlobalUnitById(21).getPhases().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList());
+    List<Phase> phases = globalUnitManager.getGlobalUnitById(21L).getPhases().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList());
     phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     Map<Long, Phase> allPhasesMap = new HashMap<>();
     for (Phase phase : phases) {
@@ -195,7 +195,7 @@ public class SendEmails {
     action.getSession().put(APConstants.CRP_PL_ROLE, "106");
     action.setPhaseID(new Long(8));
     action.getSession().put(APConstants.CRP_LESSONS_ACTIVE, true);
-    phases = globalUnitManager.getGlobalUnitById(22).getPhases().stream().filter(c -> c.isActive())
+    phases = globalUnitManager.getGlobalUnitById(22L).getPhases().stream().filter(c -> c.isActive())
       .collect(Collectors.toList());
     phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     allPhasesMap = new HashMap<>();
