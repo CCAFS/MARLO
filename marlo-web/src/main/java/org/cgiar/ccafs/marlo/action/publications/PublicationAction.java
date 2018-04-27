@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
@@ -145,6 +146,7 @@ public class PublicationAction extends BaseAction {
   private DeliverableLeaderManager deliverableLeaderManager;
 
   private DeliverableProgramManager deliverableProgramManager;
+  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
 
   private String transaction;
@@ -189,7 +191,8 @@ public class PublicationAction extends BaseAction {
     PublicationValidator publicationValidator, HistoryComparator historyComparator,
     DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
     RepositoryChannelManager repositoryChannelManager, CrpProgramManager crpProgramManager,
-    FundingSourceManager fundingSourceManager, CrossCuttingScoringManager crossCuttingManager) {
+    FundingSourceManager fundingSourceManager, CrossCuttingScoringManager crossCuttingManager,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -216,6 +219,7 @@ public class PublicationAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.fundingSourceManager = fundingSourceManager;
     this.crossCuttingManager = crossCuttingManager;
+    this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
   }
 
   @Override
@@ -732,6 +736,12 @@ public class PublicationAction extends BaseAction {
           this.crossCuttingDimensions.add(score);
         }
       }
+
+
+      this.setKeyOutputs(crpClusterKeyOutputManager.getCrpClusterKeyOutputByGlobalUnitAndPhase(this.loggedCrp.getId(),
+        this.getActualPhase().getId()));
+      this.getKeyOutputs().sort((k1, k2) -> k1.getCrpClusterOfActivity().getIdentifier()
+        .compareTo(k2.getCrpClusterOfActivity().getIdentifier()));
 
       if (this.isHttpPost()) {
 

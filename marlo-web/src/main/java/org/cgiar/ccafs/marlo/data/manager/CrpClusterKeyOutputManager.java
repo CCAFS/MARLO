@@ -52,6 +52,8 @@ public interface CrpClusterKeyOutputManager {
   public List<CrpClusterKeyOutput> findAll();
 
 
+  List<CrpClusterKeyOutput> getCrpClusterKeyOutputByGlobalUnitAndPhase(long globalUnitID, long phaseId);
+
   /**
    * This method gets a crpClusterKeyOutput object by a given crpClusterKeyOutput identifier.
    * 
@@ -59,6 +61,7 @@ public interface CrpClusterKeyOutputManager {
    * @return a CrpClusterKeyOutput object.
    */
   public CrpClusterKeyOutput getCrpClusterKeyOutputById(long crpClusterKeyOutputID);
+
 
   /**
    * This method saves the information of the given crpClusterKeyOutput
