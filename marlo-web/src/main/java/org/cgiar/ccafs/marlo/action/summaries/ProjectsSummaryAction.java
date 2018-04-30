@@ -27,7 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -71,9 +71,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectsSummaryAction extends BaseSummariesAction implements Summary {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1L;
 
   private static Logger LOG = LoggerFactory.getLogger(ProjectsSummaryAction.class);
@@ -311,15 +308,14 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
       String institutionLeader = null;
       String projectLeaderName = null;
-      ProjectPartner projectLeader = globalUnitProject.getProject().getLeader(this.getSelectedPhase());
+
+      ProjectPartnerPerson projectLeader = globalUnitProject.getProject().getLeaderPersonDB(this.getSelectedPhase());
       if (projectLeader != null) {
-        institutionLeader = projectLeader.getInstitution().getComposedName();
-        projectLeaderName =
-          projectLeader.getProjectPartnerPersons().stream().collect(Collectors.toList()).get(0).getComposedName();
+        institutionLeader = projectLeader.getProjectPartner().getInstitution().getComposedName();
+        projectLeaderName = projectLeader.getComposedName();
         projectLeaderName = projectLeaderName.replaceAll("<", "&lt;");
         projectLeaderName = projectLeaderName.replaceAll(">", "&gt;");
       }
-
 
       Set<Activity> activitiesSet = new HashSet();
       for (Activity activity : globalUnitProject.getProject().getActivities().stream()

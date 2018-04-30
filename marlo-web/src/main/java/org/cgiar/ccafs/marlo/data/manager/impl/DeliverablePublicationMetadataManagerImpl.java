@@ -94,7 +94,8 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
     DeliverablePublicationMetadata deliverablePublicationMetadataResult =
       deliverablePublicationMetadataDAO.save(deliverablePublicationMetadata);
     Phase currentPhase = phaseDAO.find(deliverablePublicationMetadataResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)
+      && !deliverablePublicationMetadataResult.getDeliverable().getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadataResult,
           deliverablePublicationMetadata.getDeliverable(), currentPhase.getNext().getId());

@@ -57,7 +57,8 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   public void deleteDeliverableCrp(long deliverableCrpId) {
     DeliverableCrp deliverableCrp = this.getDeliverableCrpById(deliverableCrpId);
     Phase currentPhase = phaseDAO.find(deliverableCrp.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)
+      && !deliverableCrp.getDeliverable().getIsPublication()) {
       if (deliverableCrp.getPhase().getNext() != null) {
         this.deleteDeliverableCrpPhase(deliverableCrp.getPhase().getNext(), deliverableCrp);
       }
@@ -101,7 +102,8 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   public DeliverableCrp saveDeliverableCrp(DeliverableCrp deliverableCrp) {
     DeliverableCrp deliverableCrpResult = deliverableCrpDAO.save(deliverableCrp);
     Phase currentPhase = phaseDAO.find(deliverableCrpResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)
+      && !deliverableCrpResult.getDeliverable().getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverableCrpPhase(deliverableCrpResult, deliverableCrpResult.getDeliverable(),
           currentPhase.getNext().getId());

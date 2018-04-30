@@ -98,7 +98,8 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
     DeliverableDissemination deliverableDisseminationResult =
       deliverableDisseminationDAO.save(deliverableDissemination);
     Phase currentPhase = phaseDAO.find(deliverableDisseminationResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)
+      && !deliverableDisseminationResult.getDeliverable().getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverableDisseminationPhase(deliverableDisseminationResult,
           deliverableDissemination.getDeliverable(), currentPhase.getNext().getId());

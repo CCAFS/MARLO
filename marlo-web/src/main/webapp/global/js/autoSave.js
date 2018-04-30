@@ -41,6 +41,7 @@ function autoSave() {
             phaseID: phaseID
         },
         beforeSend: function(xhr,opts) {
+          console.log("autoSaveActive", autoSaveActive);
           if(autoSaveActive) {
             $draftTag.text('... Saving');
           } else {
