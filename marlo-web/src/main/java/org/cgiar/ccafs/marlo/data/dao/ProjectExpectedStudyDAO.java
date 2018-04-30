@@ -64,4 +64,17 @@ public interface ProjectExpectedStudyDAO {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy);
+
+  /**
+   * This method saves the information of the given projectExpectedStudy
+   * 
+   * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.
+   * @param section - the name of the map section.
+   * @param relationsName - a List of set relations that the object have it.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudy was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
+    List<String> relationsName);
 }

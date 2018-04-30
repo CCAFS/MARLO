@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyInfoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,13 +37,14 @@ public class ProjectExpectedStudyInfoManagerImpl implements ProjectExpectedStudy
 
   private ProjectExpectedStudyInfoDAO projectExpectedStudyInfoDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectExpectedStudyInfoManagerImpl(ProjectExpectedStudyInfoDAO projectExpectedStudyInfoDAO) {
+  public ProjectExpectedStudyInfoManagerImpl(ProjectExpectedStudyInfoDAO projectExpectedStudyInfoDAO,
+    PhaseDAO phaseDAO) {
     this.projectExpectedStudyInfoDAO = projectExpectedStudyInfoDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
@@ -61,16 +66,62 @@ public class ProjectExpectedStudyInfoManagerImpl implements ProjectExpectedStudy
 
   }
 
+
   @Override
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfoById(long projectExpectedStudyInfoID) {
 
     return projectExpectedStudyInfoDAO.find(projectExpectedStudyInfoID);
   }
 
+  /**
+   * Reply the information to the next Phases
+   * 
+   * @param next - The next Phase
+   * @param projectExpectedStudyid - The project expected study number id into the database.
+   * @param projectExpectedStudyInfo - The update project expected study info to the current phase.
+   */
+  public void saveInfoPhase(Phase next, long projectExpectedStudyid,
+    ProjectExpectedStudyInfo projectExpectedStudyInfo) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = phase.getProjectExpectedStudyInfos().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == projectExpectedStudyid)
+      .collect(Collectors.toList());
+    if (!projectExpectedStudyInfos.isEmpty()) {
+      for (ProjectExpectedStudyInfo projectExpectedStudyPhase : projectExpectedStudyInfos) {
+        projectExpectedStudyPhase.updateProjectExpectedStudyInfoInfo(projectExpectedStudyInfo, phase);
+        projectExpectedStudyInfoDAO.save(projectExpectedStudyPhase);
+      }
+    } else {
+      ProjectExpectedStudyInfo projectExpectedStudyInfoAdd = new ProjectExpectedStudyInfo();
+      projectExpectedStudyInfoAdd.setProjectExpectedStudy(projectExpectedStudyInfo.getProjectExpectedStudy());
+      projectExpectedStudyInfoAdd.updateProjectExpectedStudyInfoInfo(projectExpectedStudyInfo, phase);
+      projectExpectedStudyInfoAdd.setPhase(phase);
+      projectExpectedStudyInfoDAO.save(projectExpectedStudyInfoAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveInfoPhase(phase.getNext(), projectExpectedStudyid, projectExpectedStudyInfo);
+    }
+  }
+
   @Override
   public ProjectExpectedStudyInfo saveProjectExpectedStudyInfo(ProjectExpectedStudyInfo projectExpectedStudyInfo) {
 
-    return projectExpectedStudyInfoDAO.save(projectExpectedStudyInfo);
+
+    ProjectExpectedStudyInfo sourceInfo = projectExpectedStudyInfoDAO.save(projectExpectedStudyInfo);
+    Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (projectExpectedStudyInfo.getPhase().getNext() != null) {
+        this.saveInfoPhase(projectExpectedStudyInfo.getPhase().getNext(),
+          projectExpectedStudyInfo.getProjectExpectedStudy().getId(), projectExpectedStudyInfo);
+      }
+    }
+    return sourceInfo;
+
+
   }
 
 
