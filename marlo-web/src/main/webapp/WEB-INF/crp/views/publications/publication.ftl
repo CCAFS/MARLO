@@ -170,7 +170,7 @@
           [/#if]
           </ul>
           [#if editable ]
-            [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
+            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="name"  header=true required=true  className="fundingSource" editable=editable/]
           [/#if] 
         </div>
       </div>
