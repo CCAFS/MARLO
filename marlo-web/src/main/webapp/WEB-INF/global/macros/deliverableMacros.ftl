@@ -241,22 +241,31 @@
     [#-- Type of activity --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.typeActivity" className="setSelect2" i18nkey="intellectualAsset.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.intellectualAsset.typeActivity" className="setSelect2" i18nkey="intellectualAsset.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
     
     [#-- Total number of Participants: --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="${customName}.intellectualAsset.participants" i18nkey="intellectualAsset.participants" className="" required=true editable=editable /]
-        [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.intellectualAsset.estimateParticipants" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        [@customForm.input name="${customName}.intellectualAsset.participants" i18nkey="intellectualAsset.participants" help="intellectualAsset.participants.help" placeholder="global.number" className="" required=editable editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.intellectualAsset.estimateParticipants" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+      <div class="col-md-6">
+        [@customForm.input name="${customName}.intellectualAsset.females" i18nkey="intellectualAsset.females" help="intellectualAsset.females.help" placeholder="global.number" className="" required=true editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.intellectualAsset.estimateFemales" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.intellectualAsset.dontKnowFemale" label="intellectualAsset.dontKnow" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        </div>
       </div>
     </div>
     
     [#-- Type of Participant(s): --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.participantsType" className="setSelect2" i18nkey="intellectualAsset.participantsType" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.intellectualAsset.participantsType" className="setSelect2" i18nkey="intellectualAsset.participantsType" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
     
@@ -264,7 +273,7 @@
     [#local isFormalTraining = true]
     <div class="form-group row" style="display:${isFormalTraining?string('block', 'none')}">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.formalTraining" className="setSelect2" i18nkey="intellectualAsset.formalTraining" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.intellectualAsset.formalTraining" className="setSelect2" i18nkey="intellectualAsset.formalTraining" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
       [#local isAcademicDegree = true]
       <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
@@ -272,20 +281,10 @@
       </div>
     </div>
     
-    [#-- Gender Composition --]
-    <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.input name="${customName}.intellectualAsset.females" i18nkey="intellectualAsset.females" className="" required=true editable=editable /]
-        [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.intellectualAsset.estimateFemales" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
-        [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.intellectualAsset.dontKnowFemale" label="intellectualAsset.dontKnow" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
-      </div>
-    </div>
-    
-    
     [#-- Scope of the event  --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.eventScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.eventScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
       </div>
     </div>
     
@@ -297,14 +296,14 @@
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.regions" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.regions" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
     
     [#-- Countries --]
     <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
       [#-- Multinational, National and Subnational scope --]
-      [@customForm.select name="${customName}.countriesIds" label="" i18nkey="intellectualAsset.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+      [@customForm.select name="${customName}.countriesIds" label="" i18nkey="intellectualAsset.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
     </div>
 
   </div>
