@@ -86,7 +86,8 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
     DeliverableMetadataElement deliverableMetadataResult =
       deliverableMetadataElementDAO.save(deliverableMetadataElement);
     Phase currentPhase = phaseDAO.find(deliverableMetadataResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)
+      && !deliverableMetadataResult.getDeliverable().getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverableMetadataPhase(deliverableMetadataResult, deliverableMetadataResult.getDeliverable(),
           currentPhase.getNext().getId());
