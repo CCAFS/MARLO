@@ -421,10 +421,10 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   /**
    * Add the save/update information to reply the next Phase
    * 
-   * @param projectInnovationInfoUpdate - a ProjectInnovationInfo object.
+   * @param projectExpectedStudyInfoUpdate - a ProjectExpectedStudyInfo object.
    * @param phase - The next Phase
    */
-  public void updateProjectInnovationInfo(ProjectExpectedStudyInfo projectExpectedStudyInfoUpdate, Phase phase) {
+  public void updateProjectExpectedStudyInfoInfo(ProjectExpectedStudyInfo projectExpectedStudyInfoUpdate, Phase phase) {
 
     this.setPhase(phase);
 
