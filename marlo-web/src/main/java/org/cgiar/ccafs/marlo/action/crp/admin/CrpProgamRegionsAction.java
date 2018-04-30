@@ -692,6 +692,8 @@ public class CrpProgamRegionsAction extends BaseAction {
         } else {
           CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
           crpProgramDb.setCrp(loggedCrp);
+          crpProgramDb.setAcronym(crpProgram.getAcronym());
+          crpProgramDb.setName(crpProgram.getName());
           crpProgramDb.setProgramType(ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
           for (LiaisonInstitution liasonInstitution : crpProgram.getLiaisonInstitutions()) {

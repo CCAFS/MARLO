@@ -725,78 +725,6 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
-  private void pmuRoleData() {
-    Role rolePreview = roleManager.getRoleById(pmuRol);
-    // Removing users roles
-    int i = 0;
-    for (UserRole userRole : rolePreview.getUserRoles()) {
-      if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
-
-        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
-          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-            && c.getLiaisonInstitution().getId().longValue() == cuId)
-          .collect(Collectors.toList());
-        if (liaisonUsers.isEmpty()) {
-
-          userRoleManager.deleteUserRole(userRole.getId());
-        }
-        boolean deletePmu = true;
-        for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (liaisonUser.getProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
-              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-            .collect(Collectors.toList()).isEmpty()) {
-            liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-
-          } else {
-            deletePmu = false;
-            HashMap<String, String> error = new HashMap<>();
-            this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
-
-          }
-
-
-        }
-        if (deletePmu) {
-
-          this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
-          userRoleManager.deleteUserRole(userRole.getId());
-
-        }
-        this.checkCrpUserByRole(userRole.getUser());
-      }
-      i++;
-    }
-    // Add new Users roles
-    if ((loggedCrp.getProgramManagmenTeam() != null)) {
-      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-        if (userRole.getId() == null) {
-          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
-            .collect(Collectors.toList()).isEmpty()) {
-            userRoleManager.saveUserRole(userRole);
-            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-
-            this.addCrpUser(userRole.getUser());
-            this.notifyNewUserCreated(userRole.getUser());
-            // Notifiy user been assigned to Program Management
-            this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
-
-            LiaisonInstitution cuLiasonInstitution;
-
-            cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser.setCrp(loggedCrp);
-            liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
-            liaisonUser.setUser(userRole.getUser());
-            liaisonUserManager.saveLiaisonUser(liaisonUser);
-          }
-        }
-      }
-    }
-
-  }
-
   @Override
   public void prepare() throws Exception {
 
@@ -962,7 +890,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   private void programManagerData(CrpProgram crpProgramDb, CrpProgram crpProgram) {
 
     for (CrpProgramLeader leaderPreview : crpProgramLeaderManager.findAll().stream()
@@ -1046,70 +973,14 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-  private void programsData() {
-    List<CrpProgram> fgProgramsRewiev =
-      crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
-    // Removing crp flagship program type
-    if (fgProgramsRewiev != null) {
-      for (CrpProgram crpProgram : fgProgramsRewiev) {
-        if (!flagshipsPrograms.contains(crpProgram)) {
-          CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
-          if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-            .isEmpty()) {
-            for (LiaisonInstitution institution : crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive())
-              .collect(Collectors.toList())) {
-              liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
-            }
-
-            crpProgramManager.deleteCrpProgram(crpProgram.getId());
-          }
-
-        }
-      }
-    }
-    CrpProgram crpProgramDb = null;
-    // Add crp flagship program type
-    if (flagshipsPrograms != null) {
-      for (CrpProgram crpProgram : flagshipsPrograms) {
-        if (crpProgram.getId() == null) {
-          crpProgram.setCrp(loggedCrp);
-          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
-          LiaisonInstitution liasonInstitution = new LiaisonInstitution();
-          liasonInstitution.setAcronym(crpProgramDb.getAcronym());
-          liasonInstitution.setCrp(loggedCrp);
-          liasonInstitution.setCrpProgram(crpProgramDb);
-          liasonInstitution.setName(crpProgramDb.getName());
-
-
-          liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
-
-        } else {
-          crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
-          crpProgramDb.setCrp(loggedCrp);
-          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
-
-          // TODO FIX BUG - need to find out why we are looping through all.
-          for (LiaisonInstitution liasonInstitutionDb : crpProgramDb.getLiaisonInstitutions()) {
-            liasonInstitutionDb.setAcronym(crpProgram.getAcronym());
-            liasonInstitutionDb.setName(crpProgram.getName());
-            liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitutionDb);
-
-          }
-
-        }
-        this.programLeaderData(crpProgramDb, crpProgram);
-        this.programManagerData(crpProgramDb, crpProgram);
-      }
-    }
-  }
 
   @Override
   public String save() {
     if (this.hasPermission("*")) {
       this.setUsersToActive(new ArrayList<>());
 
-      this.pmuRoleData();
-      this.programsData();
+      this.savePmuRoleData();
+      this.saveProgramsData();
 
 
       CustomParameter parameter = null;
@@ -1169,6 +1040,141 @@ public class CrpAdminManagmentAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  private void savePmuRoleData() {
+    Role rolePreview = roleManager.getRoleById(pmuRol);
+    // Removing users roles
+    int i = 0;
+    for (UserRole userRole : rolePreview.getUserRoles()) {
+      if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
+
+        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
+          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+            && c.getLiaisonInstitution().getId().longValue() == cuId)
+          .collect(Collectors.toList());
+        if (liaisonUsers.isEmpty()) {
+
+          userRoleManager.deleteUserRole(userRole.getId());
+        }
+        boolean deletePmu = true;
+        for (LiaisonUser liaisonUser : liaisonUsers) {
+          if (liaisonUser.getProjects().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+            .collect(Collectors.toList()).isEmpty()) {
+            liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+
+          } else {
+            deletePmu = false;
+            HashMap<String, String> error = new HashMap<>();
+            this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
+
+          }
+
+
+        }
+        if (deletePmu) {
+
+          this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+          userRoleManager.deleteUserRole(userRole.getId());
+
+        }
+        this.checkCrpUserByRole(userRole.getUser());
+      }
+      i++;
+    }
+    // Add new Users roles
+    if ((loggedCrp.getProgramManagmenTeam() != null)) {
+      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
+        if (userRole.getId() == null) {
+          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
+            .collect(Collectors.toList()).isEmpty()) {
+            userRoleManager.saveUserRole(userRole);
+            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+
+            this.addCrpUser(userRole.getUser());
+            this.notifyNewUserCreated(userRole.getUser());
+            // Notifiy user been assigned to Program Management
+            this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
+
+            LiaisonInstitution cuLiasonInstitution;
+
+            cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
+            LiaisonUser liaisonUser = new LiaisonUser();
+            liaisonUser.setCrp(loggedCrp);
+            liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
+            liaisonUser.setUser(userRole.getUser());
+            liaisonUserManager.saveLiaisonUser(liaisonUser);
+          }
+        }
+      }
+    }
+
+  }
+
+  private void saveProgramsData() {
+    List<CrpProgram> fgProgramsRewiev =
+      crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    // Removing crp flagship program type
+    if (fgProgramsRewiev != null) {
+      for (CrpProgram crpProgram : fgProgramsRewiev) {
+        if (!flagshipsPrograms.contains(crpProgram)) {
+          CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .isEmpty()) {
+            for (LiaisonInstitution institution : crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
+            }
+
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          }
+
+        }
+      }
+    }
+    CrpProgram crpProgramDb = null;
+    // Add crp flagship program type
+    if (flagshipsPrograms != null) {
+      for (CrpProgram crpProgram : flagshipsPrograms) {
+        if (crpProgram.getId() == null) {
+          crpProgram.setCrp(loggedCrp);
+          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
+          LiaisonInstitution liasonInstitution = new LiaisonInstitution();
+          liasonInstitution.setAcronym(crpProgramDb.getAcronym());
+          liasonInstitution.setCrp(loggedCrp);
+          liasonInstitution.setCrpProgram(crpProgramDb);
+          liasonInstitution.setName(crpProgramDb.getName());
+
+
+          liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
+
+        } else {
+          crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          crpProgramDb.setCrp(loggedCrp);
+          crpProgramDb.setAcronym(crpProgram.getAcronym());
+          crpProgramDb.setName(crpProgram.getName());
+
+          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
+
+          /**
+           * One day I will understand what the need is for having the same data duplicated from the CrpProgram in the
+           * Liasion Institution, but that day is not today.
+           */
+          for (LiaisonInstitution liasonInstitutionDb : crpProgramDb.getLiaisonInstitutions()) {
+            liasonInstitutionDb.setAcronym(crpProgram.getAcronym());
+            liasonInstitutionDb.setName(crpProgram.getName());
+            liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitutionDb);
+
+          }
+
+        }
+        this.programLeaderData(crpProgramDb, crpProgram);
+        this.programManagerData(crpProgramDb, crpProgram);
+      }
+    }
   }
 
 
