@@ -56,18 +56,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     this.expectedStudyProjectDAO = expectedStudyProjectDAO;
   }
 
-  public void cloneExpectedStudyProject(ExpectedStudyProject expectedStudyProjectAdd,
-    ExpectedStudyProject expectedStudyProject, ProjectExpectedStudy projectExpectedStudy,
-    ProjectExpectedStudy projectExpectedStudyAdd, Phase phase) {
-    expectedStudyProjectAdd.setActive(true);
-    expectedStudyProjectAdd.setActiveSince(projectExpectedStudy.getActiveSince());
-    expectedStudyProjectAdd.setProjectExpectedStudy(projectExpectedStudyAdd);
-    expectedStudyProjectAdd.setCreatedBy(projectExpectedStudy.getCreatedBy());
-    expectedStudyProjectAdd.setMyProject(expectedStudyProject.getMyProject());
-    expectedStudyProjectAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
-    expectedStudyProjectAdd.setModifiedBy(projectExpectedStudy.getModifiedBy());
-
-  }
 
   /**
    * clone the activity info
@@ -167,8 +155,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
         for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getProjects()) {
           ExpectedStudyProject expectedStudyProjectAdd = new ExpectedStudyProject();
 
-          this.cloneExpectedStudyProject(expectedStudyProjectAdd, expectedStudyProject, projectExpectedStudy,
-            projectExpectedStudyAdd, phase);
 
           expectedStudyProjectDAO.save(expectedStudyProjectAdd);
         }
@@ -181,26 +167,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
         projectExpectedStudy.setProjects(new ArrayList<>());
       }
 
-      for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getProjects()) {
-        if (projectExpectedStudyAdd.getExpectedStudyProjects().stream()
-          .filter(c -> c.isActive() && c.getMyProject().getId().equals(expectedStudyProject.getMyProject().getId()))
-          .collect(Collectors.toList()).isEmpty()) {
-          ExpectedStudyProject expectedStudyProjectAdd = new ExpectedStudyProject();
-          this.cloneExpectedStudyProject(expectedStudyProjectAdd, expectedStudyProject, projectExpectedStudy,
-            projectExpectedStudyAdd, phase);
-          expectedStudyProjectDAO.save(expectedStudyProjectAdd);
-        }
-      }
-      for (ExpectedStudyProject expectedStudyProject : projectExpectedStudyAdd.getExpectedStudyProjects().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        if (projectExpectedStudy.getProjects().stream()
-          .filter(c -> c.getMyProject().getId().equals(expectedStudyProject.getMyProject().getId()))
-          .collect(Collectors.toList()).isEmpty()) {
-          expectedStudyProject.setActive(false);
-          expectedStudyProjectDAO.save(expectedStudyProject);
-        }
-
-      }
 
     }
 
