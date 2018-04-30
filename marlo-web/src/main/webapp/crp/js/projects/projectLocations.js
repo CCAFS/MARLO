@@ -163,12 +163,11 @@ function attachEvents() {
   //When suggested locations checkbox change do
   $('input.recommendedSelected').on('change', function() {
     // On checkbox change, put value (true or false) in next input
-    $(this).next().val($(this).is(":checked"));
+    $(this).parent().find('.recommended-location').val($(this).is(":checked"));
 
     // Extract values from recommended select
-    // TODO: Improve the way in how to get this data
-    var locIso = $(this).next().next().text();
-    var locName = $(this).parent().find(".lName").children().text();
+    var locIso = $(this).parent().find('.isoAlpha').attr('data-isoAlpha');
+    var locName = $(this).parent().find(".lName").attr('data-name');
     var locId = $(this).parent().find(".elementID").val();
 
     // Country (value=2) Row is the row in the locations table
@@ -196,12 +195,12 @@ function attachEvents() {
         $locationItem.show("slow");
         updateIndex();
 
-
         // If Country level location doesn't exists, so create level list in all locations popup
         var $locLevelList = $("#itemLoc-template").clone(true).removeAttr("id");
         $locLevelList.find(".loc-level").attr('name',"Country");
         $locLevelList.find(".loc-level").text("Country");
         $locLevelList.find("ul").attr("name","Country");
+        $locLevelList.find("ul").attr("id","2");
         $locLevelList.find("#itemList-template").remove();
 
         $(".list-container").append($locLevelList);
@@ -269,11 +268,10 @@ function attachEvents() {
     $(this).addClass('selected');
 
     /* GET COORDINATES */
-    // TODO: Improve this function, because isn't necessary do an ajax call, when this data is in the DOM
-    //       That could be just for countries and CSV, the other locations has latitude and longitude
-    // If is a previous saved location, the latitude and longitude are in database,
-    // so get it and set map position in country or marker
-    if(!$(this).hasClass("unsaved-location")){
+    // If is Climate Smart Village Site, find latitude and longitude in database
+    // If is other location with coordinates find lat and lon in DOM
+    // Else is a Country, so find country with geocoder and center map.
+    if($(this).parent().attr('id') == '10'){
       var url = baseURL + "/geopositionByElement.do";
       var data = {
           "locElementID": markerId,
@@ -285,31 +283,29 @@ function attachEvents() {
         dataType: "json",
         data: data
       }).done(function(m) {
-
         if(m.geopositions.length != 0) {
           latitude = m.geopositions[0].latitude;
           longitude = m.geopositions[0].longitude;
           var latLng = new google.maps.LatLng(latitude, longitude);
           map.setCenter(latLng);
           map.setZoom(15);
-        }else{
-          var geocoder = new google.maps.Geocoder();
-
-          geocoder.geocode( {'address' : markerName}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              map.setCenter(results[0].geometry.location);
-              map.fitBounds(results[0].geometry.viewport);
-            }
-          });
         }
       });
-    }else{
-      // If the location isn't saved get the info from data attributes in DOM
-      latitude = $(this).find('.coordinates').attr('data-lat');
-      longitude = $(this).find('.coordinates').attr('data-lon');
+    }else if($(this).find('.coordinates').exists()){
+      var latitude = $(this).find('.coordinates').attr('data-lat');
+      var longitude = $(this).find('.coordinates').attr('data-lon');
       var latLng = new google.maps.LatLng(latitude, longitude);
       map.setCenter(latLng);
       map.setZoom(15);
+    }else{
+      var geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode( {'address' : markerName}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          map.setCenter(results[0].geometry.location);
+          map.fitBounds(results[0].geometry.viewport);
+        }
+      });
     }
   });
 
@@ -327,9 +323,13 @@ function attachEvents() {
   });
 
 
-  // Load location options for CSV and Countries
-  loadLocationElements(10);
-  loadLocationElements(2);
+  // Load location options for all options when isList = true
+  var locOption = $("#locLevelSelect").find("option");
+  $.each(locOption, function(i,e) {
+    if($(e).val().split("-")[1] == "true"){
+      loadLocationElements($(e).val().split("-")[0]);
+    }
+  });
 
   // Add the modal buttons listeners
   modalButtonsListeners();
@@ -830,6 +830,7 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
   $locLevelList.find(".loc-level").attr('name',locationName);
   $locLevelList.find(".loc-level").text(locationName);
   $locLevelList.find("ul").attr("name",locationName);
+  $locLevelList.find("ul").attr("id",locationId);
   $locLevelList.find("#itemList-template").remove();
 
   $(".list-container").append($locLevelList);
@@ -878,7 +879,6 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         //Add item into locations table
         $item.attr("id", "location-" + (countID));
         $item.attr("data-locId",(countID));
-        //$item.addClass('unsaved-location');
         $item.find('.locationName').html(
             '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
                 + parseFloat(longitude).toFixed(4) + ' )</span> ');
@@ -894,7 +894,6 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
 
         // Add location in all locations list (Modal)
         var $listItem = $('#itemList-template').clone(true).removeAttr("id");
-        $listItem.addClass('unsaved-location');
         $listItem.attr('id',countID);
         $listItem.attr('name',name);
         $listItem.find(".item-name").text(name);
@@ -1016,6 +1015,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       $listItem.attr('id',locId);
       $listItem.attr('name',locName);
       $listItem.find(".item-name").text(locName);
+      $listItem.find(".coordinates").remove();
       locLevelList.append($listItem);
     }
   });

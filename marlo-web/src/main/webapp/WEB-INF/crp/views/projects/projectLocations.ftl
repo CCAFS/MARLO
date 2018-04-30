@@ -321,7 +321,7 @@
 [#macro allLocationsListMacro element list]
 <div>
   <h4 name="${element.name!}" class="loc-level">${element.name!}</h4>
-  <ul name="${element.name!}">
+  <ul id="${element.id}" name="${element.name!}">
     [#if element.locElements?has_content]
       [#list element.locElements as location]
         <li id="${location.id!}" name="${location.name!}" class="marker-map">
@@ -478,7 +478,7 @@
 [#-- list element template (all locations modal) --]
 <div id="itemLoc-template" style="display:none">
   <h4 name="" class="loc-level"></h4>
-  <ul name="">
+  <ul id="" name="">
     <li id="itemList-template" name="" class="marker-map">
       <span class="glyphicon glyphicon-map-marker"></span>
       <span class="item-name"></span>
@@ -500,7 +500,7 @@
         [#if element.locElement??]
           <input type="hidden" class="elementID" name="${customName}.locElement.id" value="${(element.locElement.id)!}"/>
           <input type="hidden" class="locScope" name="${customName}.scope" value="${(element.locElement.locElementType.scope?c)!}"/>
-          <span class="lName">
+          <span class="lName" data-name="${(element.locElement.name)!}">
           [#assign miniName= (element.locElement.name)!""]
           <b title="${(element.locElement.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)} ...[/#if]</b>
           </span> 
@@ -512,7 +512,7 @@
           <b title="${(element.locElementType.name)!}">[#if miniName?length < 23]${miniName}[#else]${miniName?substring(0,22)}...[/#if]</b>
           </span> 
         [/#if]
-      </div>  
+      </div>
        
       [#-- Check Icon --]
       [#if element.locElement??]
@@ -521,9 +521,9 @@
         [#else]
           [#if element.selected]<span class="glyphicon glyphicon-ok text-success pull-right"></span>[/#if]
         [/#if]
-        <input type="hidden" name="${customName}.selected" value="${element.selected?string}" />
+        <input class="recommended-location" type="hidden" name="${customName}.selected" value="${element.selected?string}" />
         [#if element.locElement.locElementType.id==2 ]
-          <span class="hidden isoAlpha">${(element.locElement.isoAlpha2)!}</span>
+          <span class="hidden isoAlpha" data-isoAlpha="${(element.locElement.isoAlpha2)!}">${(element.locElement.isoAlpha2)!}</span>
         [/#if]
       [/#if]
       [#if element.locElementType??]
