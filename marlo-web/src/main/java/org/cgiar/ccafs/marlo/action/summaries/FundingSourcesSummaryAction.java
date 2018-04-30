@@ -612,10 +612,20 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
                   && d.getDeliverableInfo().getYear() == this.getSelectedYear() && d.getDeliverableInfo().getStatus()
                     .intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
             .collect(Collectors.toList())) {
-            if (deliverables.isEmpty()) {
-              deliverables += "D" + deliverable.getId();
-            } else {
-              deliverables += ", D" + deliverable.getId();
+            Set<DeliverableFundingSource> deliverableFundingSources =
+              deliverable.getDeliverableFundingSources().stream()
+                .filter(
+                  dfs -> dfs.isActive() && dfs.getPhase() != null && dfs.getPhase().equals(this.getSelectedPhase())
+                    && dfs.getFundingSource().getId().equals(fundingSource.getId()))
+                .collect(Collectors.toSet());
+            if (deliverableFundingSources != null && !deliverableFundingSources.isEmpty()) {
+              for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
+                if (deliverables.isEmpty()) {
+                  deliverables += "D" + deliverableFundingSource.getDeliverable().getId();
+                } else {
+                  deliverables += ", D" + deliverableFundingSource.getDeliverable().getId();
+                }
+              }
             }
           }
         }
