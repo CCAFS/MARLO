@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/publications/publication.js",
+  "${baseUrlMedia}/js/publications/publication.js?20180430",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js", 
