@@ -237,26 +237,39 @@
   
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableInfo.involveParticipants)!false)?string('block','none')}">
     <hr />
+    [#-- Ttitle Event/Activity --]
+    <div class="form-group">
+      [@customForm.input name="${customName}.involveParticipants.title" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
+    </div>
     
     [#-- Type of activity --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.typeActivity" className="setSelect2" i18nkey="intellectualAsset.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.involveParticipants.typeActivity" className="setSelect2" i18nkey="involveParticipants.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
     
     [#-- Total number of Participants: --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="${customName}.intellectualAsset.participants" i18nkey="intellectualAsset.participants" className="" required=true editable=editable /]
-        [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.intellectualAsset.estimateParticipants" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        [@customForm.input name="${customName}.involveParticipants.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="" required=editable editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.involveParticipants.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+      <div class="col-md-6">
+        [@customForm.input name="${customName}.involveParticipants.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="" required=true editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.involveParticipants.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.involveParticipants.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+        </div>
       </div>
     </div>
     
     [#-- Type of Participant(s): --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.participantsType" className="setSelect2" i18nkey="intellectualAsset.participantsType" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.involveParticipants.participantsType" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
     
@@ -264,28 +277,18 @@
     [#local isFormalTraining = true]
     <div class="form-group row" style="display:${isFormalTraining?string('block', 'none')}">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.formalTraining" className="setSelect2" i18nkey="intellectualAsset.formalTraining" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.involveParticipants.formalTraining" className="setSelect2" i18nkey="involveParticipants.formalTraining" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
       [#local isAcademicDegree = true]
       <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
-        [@customForm.input name="${customName}.intellectualAsset.academicDegree" i18nkey="intellectualAsset.academicDegree" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.involveParticipants.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
       </div>
     </div>
-    
-    [#-- Gender Composition --]
-    <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.input name="${customName}.intellectualAsset.females" i18nkey="intellectualAsset.females" className="" required=true editable=editable /]
-        [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.intellectualAsset.estimateFemales" label="intellectualAsset.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
-        [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.intellectualAsset.dontKnowFemale" label="intellectualAsset.dontKnow" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
-      </div>
-    </div>
-    
     
     [#-- Scope of the event  --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.eventScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.select name="${customName}.involveParticipants.eventScope" className="setSelect2" i18nkey="involveParticipants.eventScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
       </div>
     </div>
     
@@ -294,17 +297,20 @@
     [#local isNational = true ]
     [#local isSubNational = true ]
     
+    
+
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [@customForm.select name="${customName}.intellectualAsset.eventScope" className="setSelect2" i18nkey="intellectualAsset.regions" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+        [@customForm.selectGroup name="${customName}.involveParticipants.region.id" list=(regionList)![] element=(deliverable.deliverableInfo.involveParticipants.region.id)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="involveParticipants.region" required=true className="" editable=editable /]
       </div>
+      
     </div>
     
     [#-- Countries --]
     <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
       [#-- Multinational, National and Subnational scope --]
-      [@customForm.select name="${customName}.countriesIds" label="" i18nkey="intellectualAsset.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+      [@customForm.select name="${customName}.countriesIds" label="" i18nkey="involveParticipants.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
     </div>
 
   </div>

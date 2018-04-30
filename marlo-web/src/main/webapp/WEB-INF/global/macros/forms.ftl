@@ -212,6 +212,33 @@
   </div>
 [/#macro]
 
+[#macro selectGroup name list element  subListName="" keyFieldName="" displayFieldName="" i18nkey="" paramText="" disabled=false required=false className="" help="" helpIcon=true header=true showTitle=true placeholder="form.select.placeholder" editable=true]
+  [#local valueSelected = (element[keyFieldName])!-1 /]
+  [#if showTitle]
+    <label for="">[@s.text name=i18nkey /]:[@req required=required && editable /]
+      [#--  Help Text --]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+    </label>
+  [/#if]
+  [#if editable]
+    <select name="${name}" id="${name}" class="setSelect2 ${className}">
+      [#if header]<option value="-1">[@s.text name=placeholder /]</option>[/#if]
+      [#list list as groupsList]
+        [#if groupsList[subListName]?has_content]
+          <optgroup label="${groupsList[displayFieldName]}">
+            [#list groupsList[subListName] as option]<option value="${option[keyFieldName]}"  [#if option[keyFieldName] == valueSelected]selected[/#if]>${option[displayFieldName]}</option>[/#list]
+          </optgroup>
+        [#else]
+          <option value="${groupsList[keyFieldName]}" [#if groupsList[keyFieldName] == valueSelected]selected[/#if]>${groupsList[displayFieldName]}</option>
+        [/#if]
+      [/#list]
+    </select>
+  [#else]
+    <p>[#if (element[keyFieldName]??)!false]${element[displayFieldName]}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
+    <input type="hidden" name="${name}" value="${valueSelected}" />
+  [/#if]
+[/#macro]
+
 [#macro inputFile name template=false className="" fileUrl="" fileName="" editable=true]
   [#local customId][#if template]${name}-template[#else]${name}[/#if][/#local]
   [#local customFileName][@s.property value="${fileName}"/][/#local]
@@ -401,10 +428,13 @@
   [/#if]
 [/#macro]
 
-[#macro checkBoxFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   <div class="inputsFlat">
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
-    <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] </label>
+    <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
+      [#--  Help Text --]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+    </label>
   </div>
 [/#macro]
 

@@ -364,8 +364,9 @@
             
             <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
               [#-- Regional scope --]
-              [@customForm.select name="${customPartnershipName}.region.id" className="setSelect2" i18nkey="projectPartners.region" listName="allRepIndRegions" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
+              [@customForm.selectGroup name="${customPartnershipName}.region.id" list=allRepIndRegions element=(element.projectPartnerPartnership.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="projectPartners.region" required=true className="" editable=editable /]
             </div>
+            
             <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
               [#-- Multinational, National and Subnational scope --]
               [@customForm.select name="${customPartnershipName}.partnershipLocationsIsos" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIsos" multiple=true required=true className="countriesSelect" disabled=!editable /]
