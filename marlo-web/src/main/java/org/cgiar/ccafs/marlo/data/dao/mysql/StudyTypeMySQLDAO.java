@@ -16,8 +16,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.ExpectedStudyProjectDAO;
-import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.dao.StudyTypeDAO;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 
 import java.util.List;
 
@@ -27,25 +27,24 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudyProject, Long>
-  implements ExpectedStudyProjectDAO {
+public class StudyTypeMySQLDAO extends AbstractMarloDAO<StudyType, Long> implements StudyTypeDAO {
 
 
   @Inject
-  public ExpectedStudyProjectMySQLDAO(SessionFactory sessionFactory) {
+  public StudyTypeMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
   @Override
-  public void deleteExpectedStudyProject(long expectedStudyProjectId) {
-    ExpectedStudyProject expectedStudyProject = this.find(expectedStudyProjectId);
-    this.delete(expectedStudyProject);
+  public void deleteStudyType(long studyTypeId) {
+    StudyType studyType = this.find(studyTypeId);
+    this.delete(studyType);
   }
 
   @Override
-  public boolean existExpectedStudyProject(long expectedStudyProjectID) {
-    ExpectedStudyProject expectedStudyProject = this.find(expectedStudyProjectID);
-    if (expectedStudyProject == null) {
+  public boolean existStudyType(long studyTypeID) {
+    StudyType studyType = this.find(studyTypeID);
+    if (studyType == null) {
       return false;
     }
     return true;
@@ -53,15 +52,15 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
   }
 
   @Override
-  public ExpectedStudyProject find(long id) {
-    return super.find(ExpectedStudyProject.class, id);
+  public StudyType find(long id) {
+    return super.find(StudyType.class, id);
 
   }
 
   @Override
-  public List<ExpectedStudyProject> findAll() {
-    String query = "from " + ExpectedStudyProject.class.getName();
-    List<ExpectedStudyProject> list = super.findAll(query);
+  public List<StudyType> findAll() {
+    String query = "from " + StudyType.class.getName();
+    List<StudyType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,15 +69,15 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
   }
 
   @Override
-  public ExpectedStudyProject save(ExpectedStudyProject expectedStudyProject) {
-    if (expectedStudyProject.getId() == null) {
-      super.saveEntity(expectedStudyProject);
+  public StudyType save(StudyType studyType) {
+    if (studyType.getId() == null) {
+      super.saveEntity(studyType);
     } else {
-      expectedStudyProject = super.update(expectedStudyProject);
+      studyType = super.update(studyType);
     }
 
 
-    return expectedStudyProject;
+    return studyType;
   }
 
 

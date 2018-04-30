@@ -203,12 +203,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               ExpectedStudyProject expectedStudyNew = new ExpectedStudyProject();
 
               expectedStudyNew.setProjectExpectedStudy(projectExpectedStudyNew);
-              expectedStudyNew.setActive(true);
-              expectedStudyNew.setCreatedBy(this.getCurrentUser());
-              expectedStudyNew.setModifiedBy(this.getCurrentUser());
-              expectedStudyNew.setModificationJustification("");
-              expectedStudyNew.setActiveSince(new Date());
-              expectedStudyNew.setMyProject(expectedStudy.getMyProject());
+              expectedStudyNew.setProject(expectedStudy.getProject());
 
 
               expectedStudyProjectManager.saveExpectedStudyProject(expectedStudyNew);
@@ -363,9 +358,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
               for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
                 expectedStudyProject
-                  .setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
-                expectedStudyProject.getMyProject()
-                  .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
+                  .setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
+                expectedStudyProject.getProject()
+                  .setProjectInfo(expectedStudyProject.getProject().getProjecInfoPhase(this.getActualPhase()));
               }
             }
           }
@@ -380,10 +375,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.setProjects(
             expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-            expectedStudyProject
-              .setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
-            expectedStudyProject.getMyProject()
-              .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
+            expectedStudyProject.setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
+            expectedStudyProject.getProject()
+              .setProjectInfo(expectedStudyProject.getProject().getProjecInfoPhase(this.getActualPhase()));
           }
         }
         project.setSharedExpectedStudies(new ArrayList<>());
@@ -397,10 +391,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.setProjects(
             expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-            expectedStudyProject
-              .setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
-            expectedStudyProject.getMyProject()
-              .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
+            expectedStudyProject.setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
+            expectedStudyProject.getProject()
+              .setProjectInfo(expectedStudyProject.getProject().getProjecInfoPhase(this.getActualPhase()));
           }
         }
 
