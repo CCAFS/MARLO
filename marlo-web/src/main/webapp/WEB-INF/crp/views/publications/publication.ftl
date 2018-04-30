@@ -193,6 +193,9 @@
       [#--  Intellectual Asset--]
       [@deliverableMacros.intellectualAsset /]
       
+      [#--  Does this deliverable involve Participants and Trainees? --]
+      [@deliverableMacros.deliverableParticipantsMacro /]
+      
       [#-- Is this deliverable Open Access? --]
       [@deliverableMacros.isOpenaccessMacro /]
       
