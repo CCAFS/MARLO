@@ -758,7 +758,7 @@ public class PublicationAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       Deliverable deliverablePrew = this.updateDeliverableInfo();
-      this.updateDeliverableFSInPlanningPhase(deliverablePrew);
+      this.updateDeliverableFS(deliverablePrew);
 
       // Set CrpClusterKeyOutput to null if has an -1 id
       if (deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput() != null
@@ -885,8 +885,6 @@ public class PublicationAction extends BaseAction {
           deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
           deliverableGenderLevelDB.setGenderLevel(deliverableGenderLevel.getGenderLevel());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
-
-
         }
       }
     }
@@ -1248,39 +1246,36 @@ public class PublicationAction extends BaseAction {
    * 
    * @param deliverablePrew
    */
-  private void updateDeliverableFSInPlanningPhase(Deliverable deliverablePrew) {
-    if (this.isPlanningActive()) {
-
-      if (deliverable.getFundingSources() != null) {
-        if (deliverablePrew.getDeliverableFundingSources() != null
-          && deliverablePrew.getDeliverableFundingSources().size() > 0) {
-          List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList());
+  private void updateDeliverableFS(Deliverable deliverablePrew) {
+    if (deliverable.getFundingSources() != null) {
+      if (deliverablePrew.getDeliverableFundingSources() != null
+        && deliverablePrew.getDeliverableFundingSources().size() > 0) {
+        List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
 
 
-          for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
-            if (!deliverable.getFundingSources().contains(deliverableFundingSource)) {
-              deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
-            }
+        for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
+          if (!deliverable.getFundingSources().contains(deliverableFundingSource)) {
+            deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
           }
         }
+      }
 
-        for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
-          if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
-
-
-            deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-            deliverableFundingSource.setActive(true);
-            deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-            deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-            deliverableFundingSource.setModificationJustification("");
-            deliverableFundingSource.setActiveSince(new Date());
-            deliverableFundingSource.setPhase(this.getActualPhase());
-            deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+      for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+        if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
 
 
-          }
+          deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+          deliverableFundingSource.setActive(true);
+          deliverableFundingSource.setCreatedBy(this.getCurrentUser());
+          deliverableFundingSource.setModifiedBy(this.getCurrentUser());
+          deliverableFundingSource.setModificationJustification("");
+          deliverableFundingSource.setActiveSince(new Date());
+          deliverableFundingSource.setPhase(this.getActualPhase());
+          deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+
+
         }
       }
     }

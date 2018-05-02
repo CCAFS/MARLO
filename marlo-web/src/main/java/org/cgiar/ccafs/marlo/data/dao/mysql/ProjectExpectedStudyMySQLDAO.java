@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudy, Long> implements ProjectExpectedStudyDAO {
+public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpectedStudy, Long>
+  implements ProjectExpectedStudyDAO {
 
 
   @Inject
@@ -77,6 +79,17 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
     }
 
 
+    return projectExpectedStudy;
+  }
+
+  @Override
+  public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
+    List<String> relationsName) {
+    if (projectExpectedStudy.getId() == null) {
+      super.saveEntity(projectExpectedStudy, section, relationsName);
+    } else {
+      projectExpectedStudy = super.update(projectExpectedStudy, section, relationsName);
+    }
     return projectExpectedStudy;
   }
 

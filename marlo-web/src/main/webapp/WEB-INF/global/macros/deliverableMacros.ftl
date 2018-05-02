@@ -298,41 +298,13 @@
     [#local isSubNational = true ]
     
     
-    [#local regions= [
-      { "id": "1", "name": "Region name 1" },
-      { "id": "2", "name": "Region name 3" },
-      { "id": "4", "name": "Region name 4" },
-      { "id": "5", "name": "Region name 5", "subRegions": [
-        { "id": "6", "name": "Sub Region name 6" },
-        { "id": "7", "name": "Sub Region name 7" },
-        { "id": "8", "name": "Sub Region name 8" }
-      ] },
-      { "id": "9", "name": "Region name 9" },
-      { "id": "9", "name": "Region name 9" }
-    ] /]
-    
+
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [#if editable]
-          <label for="">[@s.text name="involveParticipants.regions" /]:[@customForm.req required=editable /]</label>
-          <select name="${customName}.involveParticipants.eventScope" id="">
-            <option value="-1">[@s.text name="form.select.placeholder" /]</option>
-            [#list regions as region]
-              [#if region.subRegions??]
-                <optgroup label="${region.name}">
-                  [#list region.subRegions as subregion]<option value="${subregion.id}">${subregion.name}</option>[/#list]
-                </optgroup>
-              [#else]
-                <option value="${region.id}">${region.name}</option>
-              [/#if]
-            [/#list]
-          </select>
-        [#else]
-          <p>{PENDING}</p>
-        [/#if]
-        
+        [@customForm.selectGroup name="${customName}.involveParticipants.region.id" list=(regionList)![] element=(deliverable.deliverableInfo.involveParticipants.region.id)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="involveParticipants.region" required=true className="" editable=editable /]
       </div>
+      
     </div>
     
     [#-- Countries --]

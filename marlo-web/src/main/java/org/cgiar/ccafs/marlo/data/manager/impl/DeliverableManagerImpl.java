@@ -122,7 +122,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
     // Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
     // if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-    if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
+    if (deliverable.getDeliverableInfo().getPhase().getNext() != null && !resultDeliverable.getIsPublication()) {
       this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
         deliverable);
     }

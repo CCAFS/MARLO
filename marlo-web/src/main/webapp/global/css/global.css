@@ -5415,6 +5415,19 @@ span.select2-selection.select2-selection--multiple {
     border-top: none;
 }
 
+
+.select2-results__option > ul {
+  padding-left: 1em !important;
+}
+
+.select2-results__option > strong {
+  opacity:0.8;
+}
+
+.select2-results__option > ul >li{
+ /* padding-left: 2em !important;*/
+}
+
 .select2-search--dropdown {
     display: block;
     padding: 4px;
