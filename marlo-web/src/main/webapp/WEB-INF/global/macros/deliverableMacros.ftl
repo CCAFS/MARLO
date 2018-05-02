@@ -412,7 +412,7 @@
   </div>
 [/#macro]
 
-[#macro deliverableMetadataMacro ]
+[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps"]
 <div class="form-group ">
   [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
 </div>
@@ -538,10 +538,10 @@
     [#if editable]
       <div class="form-group row">
         <div class="col-md-5">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName="crps" className="crpSelect" editable=editable/]
+          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName=crpsListName keyFieldName="id"  displayFieldName="composedName" className="crpSelect" editable=editable/]
         </div>
         <div class="col-md-7">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName="programs" className="flaghsipSelect" editable=editable/]
+          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName=flagshipslistName keyFieldName="id"  displayFieldName="composedName" className="flaghsipSelect" editable=editable/]
         </div>
       </div>
     [/#if] 
@@ -824,7 +824,7 @@
     <input class="idGlobalUnit" type="hidden" name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!}" />
     <input class="idCRPProgram" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!}" />
     [#-- Title --]
-    <span class="name">${(element.globalUnit.acronym)!}  ${(element.crpProgram.composedName)!}</span>
+    <span class="name">${(element.globalUnit.composedName)!}  ${(element.crpProgram.composedName)!}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
