@@ -1,4 +1,5 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#assign reportingActiveMenu = (reportingActive)!false ]
 [#assign mainMenu= [
   [#-- HOME - Not Logged --]
@@ -31,7 +32,7 @@
   [#-- SYNTHESIS REPORTING - CRP --]
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && action.canAcessPOWB() && reportingActive && !centerGlobalUnit, 'active': true,    
     'subItems' : [
-      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': action.canAcessCrp()},
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': action.canAcessCrp(),  'development':true },
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false }
     ]
   },
@@ -69,6 +70,7 @@
               <a href="${url}" onclick="return ${subItem.active?string}" class="action-${subItem.action}">
                 [#if subItem.icon?has_content]<span class="glyphicon glyphicon-${subItem.icon}"></span> [/#if]
                 [@s.text name=subItem.name ][/@s.text]
+                [#if (subItem.development)!false][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /][/#if]
               </a>
             </li>
             [/#if]
