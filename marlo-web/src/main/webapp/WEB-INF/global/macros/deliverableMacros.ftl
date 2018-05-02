@@ -153,7 +153,7 @@
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row ">
       <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
-      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
+      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-false text-center" /]  </div>
     </div> 
     <div class="block-accessible" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
       <hr />
