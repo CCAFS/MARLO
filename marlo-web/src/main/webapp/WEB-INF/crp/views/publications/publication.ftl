@@ -122,14 +122,12 @@
           <div class="col-md-6"> 
             <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
-            
               [#if editable]
                 [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]                
                 [@customForm.checkBoxFlat id="noRegional" name="deliverable.deliverableInfo.isLocationGlobal" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((deliverable.deliverableInfo.isLocationGlobal)!false) cssClass="" cssClassLabel="font-italic" /]
                 [#list regionsList as element]
                   [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput rpInput" /]
                 [/#list]
-                
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
                 [#if  deliverable.regions?has_content]
@@ -147,6 +145,7 @@
       </div>
       
       [#-- Funding Source --]
+      [#if !phaseOne]
       <div class="panel tertiary">
        <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
         <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
@@ -171,9 +170,21 @@
           </ul>
           [#if editable ]
             [@customForm.select name="" label="" showTitle=false i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
-          [/#if] 
+          [/#if]
         </div>
       </div>
+      [#-- Funding source List --]
+      <div style="display:none">
+        [#if fundingSources?has_content]
+          [#list fundingSources as element]
+            <span id="fundingSource-${(element.id)!}">
+              <strong>FS${(element.id)!} - ${(element.fundingSourceInfo.budgetType.name)!} [#if (element.w1w2)!false] (Co-Financing) [/#if]</strong> <br />
+              <span class="description">${(element.fundingSourceInfo.title)!}</span><br />
+            </span>
+          [/#list]
+        [/#if]
+      </div>
+      [/#if]
       
       [#--  Cross Cutting --]
       <div class="form-group simpleBox">
