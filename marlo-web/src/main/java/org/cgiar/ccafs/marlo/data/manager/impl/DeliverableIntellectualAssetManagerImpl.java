@@ -93,7 +93,8 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
     DeliverableIntellectualAsset deliverableIntellectualAssetResult =
       deliverableIntellectualAssetDAO.save(deliverableIntellectualAsset);
     Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)
+      && !deliverableIntellectualAssetResult.getDeliverable().getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
           deliverableIntellectualAsset.getDeliverable(), currentPhase.getNext().getId());
