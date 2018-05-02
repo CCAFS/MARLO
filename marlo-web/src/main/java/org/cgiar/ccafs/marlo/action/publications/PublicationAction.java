@@ -299,7 +299,7 @@ public class PublicationAction extends BaseAction {
     return crpProgramManager.findAll().stream()
       .filter(
         c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList());
+      .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
 
@@ -353,7 +353,7 @@ public class PublicationAction extends BaseAction {
     return crpProgramManager.findAll().stream()
       .filter(
         c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList());
+      .sorted((r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym())).collect(Collectors.toList());
   }
 
 
@@ -637,6 +637,7 @@ public class PublicationAction extends BaseAction {
         .collect(Collectors.toList()));
       deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(55));
       deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(56));
+      deliverableSubTypes.sort((t1, t2) -> t1.getName().compareTo(t2.getName()));
 
       crps = new HashMap<>();
       for (GlobalUnit crp : crpManager.findAll().stream()
@@ -655,7 +656,7 @@ public class PublicationAction extends BaseAction {
         regions.put(program.getId().toString(), program.getAcronym());
       }
 
-
+      this.fundingSources = new ArrayList<>();
       this.fundingSources = fundingSourceManager.findAll().stream()
         .filter(
           fs -> fs.getCrp().equals(this.getCurrentCrp()) && fs.getFundingSourceInfo(this.getActualPhase()) != null)
@@ -674,7 +675,7 @@ public class PublicationAction extends BaseAction {
       institutions = new HashMap<>();
 
       for (Institution institution : institutionManager.findAll().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList())) {
+        .sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).collect(Collectors.toList())) {
         institutions.put(institution.getId().toString(), institution.getComposedName());
       }
       // Read all the cross cutting scoring from database
@@ -716,6 +717,7 @@ public class PublicationAction extends BaseAction {
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingCapacity(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingNa(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingYouth(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setIsLocationGlobal(null);
         deliverable.setResponsiblePartner(null);
 
         if (deliverable.getCrps() != null) {
@@ -731,6 +733,9 @@ public class PublicationAction extends BaseAction {
         if (deliverable.getPrograms() != null) {
           deliverable.getPrograms().clear();
         }
+        deliverable.setFlagshipValue("");
+        deliverable.setRegionsValue("");
+
         if (deliverable.getRegions() != null) {
           deliverable.getRegions().clear();
         }
@@ -1115,14 +1120,13 @@ public class PublicationAction extends BaseAction {
           DeliverableProgram deliverableProgram = new DeliverableProgram();
           deliverableProgram.setCrpProgram(program);
           deliverableProgram.setDeliverable(deliverable);
+          deliverableProgram.setPhase(this.getActualPhase());
           if (deliverableDB.getDeliverablePrograms().stream()
             .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
             .collect(Collectors.toList()).isEmpty()) {
-
             deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
           }
         }
-
       }
     }
 
@@ -1363,6 +1367,9 @@ public class PublicationAction extends BaseAction {
       deliverableInfoDb.setOtherLicense(null);
       deliverableInfoDb.setAllowModifications(null);
     }
+    deliverableInfoDb.setIsLocationGlobal(deliverable.getDeliverableInfo().getIsLocationGlobal() != null
+      ? deliverable.getDeliverableInfo().getIsLocationGlobal() : false);
+
     deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
     deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());

@@ -125,18 +125,8 @@ public class PublicationListAction extends BaseAction {
 
       Phase phase = this.getActualPhase();
       boolean hasNext = phase.getNext() != null;
-      while (hasNext) {
-        phase = phaseManager.getPhaseById(phase.getId());
-        this.saveDeliverableInfo(deliverable, phase);
-        this.saveDeliverableLeaders(deliverable, institutions, phase);
-
-        if (phase.getNext() != null) {
-          phase = phase.getNext();
-        } else {
-          hasNext = false;
-        }
-      }
-
+      this.saveDeliverableInfo(deliverable, phase);
+      this.saveDeliverableLeaders(deliverable, institutions, phase);
       this.clearPermissionsCache();
 
       if (deliverableID > 0) {
