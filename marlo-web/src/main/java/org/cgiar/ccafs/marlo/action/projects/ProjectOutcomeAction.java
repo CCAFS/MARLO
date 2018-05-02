@@ -114,6 +114,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcome projectOutcome;
   private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;
+  private ProjectOutcome projectOutcomeDB;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -509,6 +510,9 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
       .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));;
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+
+    projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
     if (this.isHttpPost())
 
@@ -549,7 +553,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     if (this.hasPermission("canEdit")) {
 
-      ProjectOutcome projectOutcomeDB = this.saveProjectOutcome();
+
       this.saveMilestones(projectOutcomeDB);
       this.saveCommunications(projectOutcomeDB);
       this.saveNextUsers(projectOutcomeDB);
