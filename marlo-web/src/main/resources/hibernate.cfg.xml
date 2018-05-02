@@ -262,7 +262,16 @@
     <mapping resource="xmls/ProjectInnovationDeliverables.hbm.xml"/>
     <mapping resource="xmls/ProjectInnovationOrganizations.hbm.xml"/>
     <mapping resource="xmls/ProjectInnovationCrps.hbm.xml"/>    
-    <mapping resource="xmls/DeliverableIntellectualAssets.hbm.xml"/>    
-    
+    <mapping resource="xmls/DeliverableIntellectualAssets.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyCountries.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyCrp.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyFlagships.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyInfo.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyInstitutions.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudySrfTargets.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudySubIdo.hbm.xml"/>
+    <mapping resource="xmls/StudyTypes.hbm.xml"/>  
+    <mapping resource="xmls/RepIndStageStudies.hbm.xml"/>  
+    <mapping resource="xmls/RepIndStageProcess.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>

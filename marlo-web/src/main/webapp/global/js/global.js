@@ -89,6 +89,11 @@ $(document).ready(function() {
     turnSavingStateOn(this);
 
   });
+  
+  $('[name=save]').on('click', function(e) {
+    // Cancel Auto Save
+    autoSaveActive = false;
+  });
 
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {

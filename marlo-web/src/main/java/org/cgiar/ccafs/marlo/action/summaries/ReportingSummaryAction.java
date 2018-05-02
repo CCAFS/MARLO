@@ -1819,7 +1819,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
-          && d.getProject().getGlobalUnitProjects().stream()
+          && d.getProject()
+            .getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()) != null
@@ -2714,16 +2715,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           expectedStudiesSRF = projectExpectedStudy.getSrfSloIndicator().getTitle();
         }
         expectedStudiesComments = projectExpectedStudy.getComments();
-        List<ExpectedStudyProject> expectedStudyProjectList =
-          projectExpectedStudy.getExpectedStudyProjects().stream().filter(sp -> sp.isActive())
-            .sorted((s1, s2) -> s1.getMyProject().getId().compareTo(s2.getMyProject().getId()))
-            .collect(Collectors.toList());
+        List<ExpectedStudyProject> expectedStudyProjectList = projectExpectedStudy.getExpectedStudyProjects().stream()
+          .filter(sp -> sp.isActive()).sorted((s1, s2) -> s1.getProject().getId().compareTo(s2.getProject().getId()))
+          .collect(Collectors.toList());
         if (expectedStudyProjectList != null && !expectedStudyProjectList.isEmpty()) {
           for (ExpectedStudyProject expectedStudyProject : expectedStudyProjectList) {
             if (expectedStudiesProjects.isEmpty()) {
-              expectedStudiesProjects = " ● " + expectedStudyProject.getMyProject().getComposedName();
+              expectedStudiesProjects = " ● " + expectedStudyProject.getProject().getComposedName();
             } else {
-              expectedStudiesProjects += "<br> ● " + expectedStudyProject.getMyProject().getComposedName();
+              expectedStudiesProjects += "<br> ● " + expectedStudyProject.getProject().getComposedName();
             }
           }
         } else {
@@ -3074,9 +3074,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;

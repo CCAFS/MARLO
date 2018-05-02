@@ -90,7 +90,7 @@
           [#-- Region (if scope is Region) --] 
           <div class="form-group row regionalBlock" style="display:${isRegional?string('block','none')}">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndRegion.id" label=""  i18nkey="projectInnovations.region" listName="regionList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+              [@customForm.selectGroup name="innovation.projectInnovationInfo.repIndRegion.id" list=regionList element=(innovation.projectInnovationInfo.repIndRegion)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="projectInnovations.region" required=true className="" editable=editable /]
             </div>
             <div class="col-md-6 ">
             </div>
