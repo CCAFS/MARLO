@@ -38,14 +38,14 @@ function addDisseminationEvents() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var type = $(this).parent().parent().classParam('type');
     var inverted = $(this).parent().parent().classParam('inverted') === "true";
-    if(inverted) {
-      valueSelected = !valueSelected;
-    }
     // Set value
     $(this).parent().find('input').val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     // Show block if exist
+    if(inverted) {
+      valueSelected = !valueSelected;
+    }
     if(valueSelected) {
       $('.block-' + type).slideDown();
     } else {
