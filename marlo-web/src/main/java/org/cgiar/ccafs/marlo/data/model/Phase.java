@@ -137,7 +137,8 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
     new HashSet<DeliverableIntellectualAsset>(0);
 
-  private Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagship = new HashSet<ProjectExpectedStudyFlagship>(0);
+  private Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships =
+    new HashSet<ProjectExpectedStudyFlagship>(0);
 
 
   private Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries = new HashSet<ProjectExpectedStudyCountry>(0);
@@ -332,8 +333,9 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectExpectedStudyCrps;
   }
 
-  public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagship() {
-    return projectExpectedStudyFlagship;
+
+  public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
+    return projectExpectedStudyFlagships;
   }
 
   public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
@@ -352,6 +354,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectExpectedStudySubIdos;
   }
 
+
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
@@ -361,15 +364,14 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return projectHighlightCountries;
   }
 
-
   public Set<ProjectHighlightInfo> getProjectHighlightInfos() {
     return projectHighlightInfos;
   }
 
+
   public Set<ProjectHighlightType> getProjectHighligthsTypes() {
     return projectHighligthsTypes;
   }
-
 
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
@@ -382,6 +384,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return projectInnovationCrps;
   }
+
 
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return projectInnovationDeliverables;
@@ -422,7 +425,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return startDate;
   }
 
-
   public Boolean getVisible() {
     return visible;
   }
@@ -444,6 +446,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
     return true;
   }
+
 
   public Boolean isReporting() {
     return description.equals(APConstants.REPORTING);
@@ -514,7 +517,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.fundingSourceInfo = fundingSourceInfo;
   }
 
-
   public void setFundingSourceInstitutions(Set<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
   }
@@ -522,6 +524,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
     this.fundingSourceLocations = fundingSourceLocations;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -532,10 +535,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.next = next;
   }
 
-
   public void setOutcomes(Set<CrpProgramOutcome> otucomes) {
     this.outcomes = otucomes;
   }
+
 
   public void setPartners(Set<ProjectPartner> partners) {
     this.partners = partners;
@@ -546,7 +549,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.powbSynthesis = powbSynthesis;
   }
 
-
   public void setProjectActivites(Set<Activity> projectActivites) {
     this.projectActivites = projectActivites;
   }
@@ -554,6 +556,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
     this.projectBudgets = projectBudgets;
   }
+
 
   public void setProjectBudgetsActivities(Set<ProjectBudgetsCluserActvity> projectBudgetsActivities) {
     this.projectBudgetsActivities = projectBudgetsActivities;
@@ -574,19 +577,20 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.projectExpectedStudies = projectExpectedStudies;
   }
 
-
   public void setProjectExpectedStudyCountries(Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries) {
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
+
 
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
   }
 
 
-  public void setProjectExpectedStudyFlagship(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagship) {
-    this.projectExpectedStudyFlagship = projectExpectedStudyFlagship;
+  public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
+    this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
   }
+
 
   public void setProjectExpectedStudyInfos(Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
     this.projectExpectedStudyInfos = projectExpectedStudyInfos;
