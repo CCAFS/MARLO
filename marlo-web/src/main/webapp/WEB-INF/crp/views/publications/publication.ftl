@@ -22,7 +22,6 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
-
 [#assign customName = "deliverable" /]
 
     
@@ -125,11 +124,12 @@
             <div id="" class="dottedBox">
             
               [#if editable]
-                [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]
-                [@customForm.checkBoxFlat id="noRegional" name="deliverable.deliverableInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((deliverable.deliverableInfo.noRegional)!false) cssClass="" cssClassLabel="font-italic" /]
+                [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]                
+                [@customForm.checkBoxFlat id="noRegional" name="deliverable.deliverableInfo.isLocationGlobal" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((deliverable.deliverableInfo.isLocationGlobal)!false) cssClass="" cssClassLabel="font-italic" /]
                 [#list regionsList as element]
                   [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput rpInput" /]
                 [/#list]
+                
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
                 [#if  deliverable.regions?has_content]
@@ -170,7 +170,7 @@
           [/#if]
           </ul>
           [#if editable ]
-            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="name"  header=true required=true  className="fundingSource" editable=editable/]
+            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
           [/#if] 
         </div>
       </div>
