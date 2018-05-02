@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
@@ -61,7 +62,6 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
@@ -128,17 +128,17 @@ public class PublicationAction extends BaseAction {
   private CrossCuttingScoringManager crossCuttingManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
   private MetadataElementManager metadataElementManager;
+  private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+
 
   // Variables
   private GlobalUnit loggedCrp;
   private long deliverableID;
-  private Map<String, String> crps;
+  private List<GlobalUnit> crps;
   private List<GenderType> genderLevels;
-  private Map<String, String> programs;
   private List<FundingSource> fundingSources;
   private List<CrpProgram> flagshipsList;
   private List<CrpProgram> regionsList;
-  private Map<String, String> regions;
   private Map<String, String> institutions;
   private Map<String, String> channels;
   private PublicationValidator publicationValidator;
@@ -164,7 +164,8 @@ public class PublicationAction extends BaseAction {
     RepositoryChannelManager repositoryChannelManager, CrpProgramManager crpProgramManager,
     FundingSourceManager fundingSourceManager, CrossCuttingScoringManager crossCuttingManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverableInfoManager deliverableInfoManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager, MetadataElementManager metadataElementManager) {
+    DeliverableFundingSourceManager deliverableFundingSourceManager, MetadataElementManager metadataElementManager,
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -192,6 +193,7 @@ public class PublicationAction extends BaseAction {
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.metadataElementManager = metadataElementManager;
+    this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
   }
 
   @Override
@@ -256,14 +258,14 @@ public class PublicationAction extends BaseAction {
     return crossCuttingScoresMap;
   }
 
-
-  public Map<String, String> getCrps() {
+  public List<GlobalUnit> getCrps() {
     return crps;
   }
 
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -302,15 +304,14 @@ public class PublicationAction extends BaseAction {
       .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
-
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
 
+
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
-
 
   public Map<String, String> getInstitutions() {
     return institutions;
@@ -324,15 +325,6 @@ public class PublicationAction extends BaseAction {
     return loggedCrp;
   }
 
-
-  public Map<String, String> getPrograms() {
-    return programs;
-  }
-
-
-  public Map<String, String> getRegions() {
-    return regions;
-  }
 
   public String[] getRegionsIds() {
 
@@ -355,7 +347,6 @@ public class PublicationAction extends BaseAction {
         c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .sorted((r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym())).collect(Collectors.toList());
   }
-
 
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
@@ -639,22 +630,12 @@ public class PublicationAction extends BaseAction {
       deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(56));
       deliverableSubTypes.sort((t1, t2) -> t1.getName().compareTo(t2.getName()));
 
-      crps = new HashMap<>();
+      crps = new ArrayList<GlobalUnit>();
       for (GlobalUnit crp : crpManager.findAll().stream()
         .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()).collect(Collectors.toList())) {
-        crps.put(crp.getId().toString(), crp.getName());
+        crps.add(crp);
       }
-
-      programs = new HashMap<>();
-      for (IpProgram program : ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId() == 4)
-        .collect(Collectors.toList())) {
-        programs.put(program.getId().toString(), program.getAcronym());
-      }
-      regions = new HashMap<>();
-      for (IpProgram program : ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId() == 5)
-        .collect(Collectors.toList())) {
-        regions.put(program.getId().toString(), program.getAcronym());
-      }
+      crps.sort((c1, c2) -> c1.getComposedName().compareTo(c2.getComposedName()));
 
       this.fundingSources = new ArrayList<>();
       this.fundingSources = fundingSourceManager.findAll().stream()
@@ -663,7 +644,6 @@ public class PublicationAction extends BaseAction {
         .collect(Collectors.toList());
 
       fundingSources.sort((f1, f2) -> f1.getId().compareTo(f2.getId()));
-
 
       repositoryChannels = repositoryChannelManager.findAll();
       if (repositoryChannels != null && repositoryChannels.size() > 0) {
@@ -781,6 +761,7 @@ public class PublicationAction extends BaseAction {
       this.saveUsers();
       this.saveLeaders();
       this.savePrograms();
+      this.saveIntellectualAsset();
 
       deliverableInfoManager.saveDeliverableInfo(deliverablePrew.getDeliverableInfo());
 
@@ -1028,6 +1009,45 @@ public class PublicationAction extends BaseAction {
 
   }
 
+  private void saveIntellectualAsset() {
+    if (deliverable.getIntellectualAsset() != null) {
+      DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
+
+      if (deliverable.getIntellectualAsset().getId() != null && deliverable.getIntellectualAsset().getId() != -1) {
+        intellectualAsset = deliverableIntellectualAssetManager
+          .getDeliverableIntellectualAssetById(deliverable.getIntellectualAsset().getId());
+
+      } else {
+        intellectualAsset = new DeliverableIntellectualAsset();
+        intellectualAsset.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+        intellectualAsset.setPhase(this.getActualPhase());
+      }
+
+      intellectualAsset.setHasPatentPvp(deliverable.getIntellectualAsset().getHasPatentPvp());
+      if (intellectualAsset.getHasPatentPvp() != null) {
+
+        if (intellectualAsset.getHasPatentPvp()) {
+          intellectualAsset.setAdditionalInformation(deliverable.getIntellectualAsset().getAdditionalInformation());
+          intellectualAsset.setApplicant(deliverable.getIntellectualAsset().getApplicant());
+          intellectualAsset.setLink(deliverable.getIntellectualAsset().getLink());
+          intellectualAsset.setPublicCommunication(deliverable.getIntellectualAsset().getPublicCommunication());
+          intellectualAsset.setTitle(deliverable.getIntellectualAsset().getTitle());
+          intellectualAsset.setType(deliverable.getIntellectualAsset().getType());
+        } else {
+          intellectualAsset.setAdditionalInformation(null);
+          intellectualAsset.setApplicant(null);
+          intellectualAsset.setLink(null);
+          intellectualAsset.setPublicCommunication(null);
+          intellectualAsset.setTitle(null);
+          intellectualAsset.setType(null);
+        }
+
+        deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAsset);
+      }
+    }
+  }
+
+
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
 
@@ -1063,7 +1083,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void savePrograms() {
 
@@ -1132,6 +1151,7 @@ public class PublicationAction extends BaseAction {
 
   }
 
+
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -1142,7 +1162,6 @@ public class PublicationAction extends BaseAction {
       deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
     }
   }
-
 
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
@@ -1168,6 +1187,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
   }
@@ -1183,10 +1203,9 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public void setCrps(Map<String, String> crps) {
+  public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
-
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -1225,17 +1244,6 @@ public class PublicationAction extends BaseAction {
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
-
-  public void setPrograms(Map<String, String> programs) {
-    this.programs = programs;
-  }
-
-
-  public void setRegions(Map<String, String> regions) {
-    this.regions = regions;
-  }
-
 
   public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
     this.repositoryChannels = repositoryChannels;
