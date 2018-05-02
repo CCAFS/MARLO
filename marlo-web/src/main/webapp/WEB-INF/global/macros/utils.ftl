@@ -58,7 +58,7 @@
 [/#macro]
 
 
-[#macro underConstruction title="" show=true width="" height="" border=true]
+[#macro underConstruction title="" show=true width="" height="" ]
   <span class="under-construction-icon" style="display:${show?string('inline','none')};" title="[@s.text name="${title}" /]">
     <img src="${baseUrl}/global/images/under-construction.png" width="${width!'10px'}" height="${height!'10px'}" />
   </span>
