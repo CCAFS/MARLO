@@ -529,14 +529,14 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
           } else {
-            ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
+            ProjectBudgetsCluserActvity projectBudgetCluserActivityDB = projectBudgetsCluserActvityManager
               .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
-            ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
-            ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
-            projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
-            projectBudgetCluserActivityUI.setProject(project);
-            projectBudgetCluserActivityUI =
-              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
+            projectBudgetCluserActivityDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
+            projectBudgetCluserActivityDB.setAmount(projectBudgetCluserActivityUI.getAmount());
+            projectBudgetCluserActivityDB.setPhase(this.getActualPhase());
+            projectBudgetCluserActivityDB.setProject(project);
+            projectBudgetCluserActivityDB =
+              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityDB);
           }
 
 
