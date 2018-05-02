@@ -116,7 +116,17 @@ public class BoardAction extends BaseAction {
       }
 
       for (SrfTargetUnit srfTargetUnit : targetUnitList) {
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+        if (srfTargetUnit != null) {
+          if (srfTargetUnit.getId() == null || srfTargetUnit.getId() == -1L) {
+            srfTargetUnit = srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+          } else {
+            SrfTargetUnit srfTargetUnitDb = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
+
+            srfTargetUnitDb.setName(srfTargetUnit.getName());
+            srfTargetUnitDb = srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnitDb);
+          }
+
+        }
       }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
