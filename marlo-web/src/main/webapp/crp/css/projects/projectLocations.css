@@ -238,12 +238,12 @@ span.allCountriesQuestion {
     top:50%;
     left:50%;
     z-index:1;
-    /*fix offset when needed (RED MARKER)*/
-    /* margin-left:-17px; */
-    /* margin-top:-35px; */
+    /*fix offset when needed (GREEN MARKER)*/
+    margin-left:-17px;
+    margin-top:-35px;
     /*fix offset when needed (POINTER HAND)*/
-    margin-left:-14px;
-    margin-top:-5px;
+    /* margin-left:-14px;
+    margin-top:-5px; */
     /*size of the image*/
     height:35px;
     width:35px;
