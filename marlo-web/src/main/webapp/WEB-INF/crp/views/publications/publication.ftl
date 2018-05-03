@@ -90,7 +90,7 @@
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="" label=""  showTitle=false listName="institutions"  required=true className="leadPartnersSelect" editable=editable /]
+              [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName"  showTitle=false listName="institutions"  required=true className="leadPartnersSelect" editable=editable /]
             [/#if] 
           </div>
         </div>

@@ -139,7 +139,7 @@ public class PublicationAction extends BaseAction {
   private List<FundingSource> fundingSources;
   private List<CrpProgram> flagshipsList;
   private List<CrpProgram> regionsList;
-  private Map<String, String> institutions;
+  private List<Institution> institutions;
   private Map<String, String> channels;
   private PublicationValidator publicationValidator;
   private Deliverable deliverable;
@@ -313,13 +313,14 @@ public class PublicationAction extends BaseAction {
     return genderLevels;
   }
 
-  public Map<String, String> getInstitutions() {
+  public List<Institution> getInstitutions() {
     return institutions;
   }
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -339,7 +340,6 @@ public class PublicationAction extends BaseAction {
     }
     return null;
   }
-
 
   public List<CrpProgram> getRegionsList() {
     return crpProgramManager.findAll().stream()
@@ -652,12 +652,14 @@ public class PublicationAction extends BaseAction {
         repositoryChannels = new LinkedList<RepositoryChannel>();
       }
 
-      institutions = new HashMap<>();
-
-      for (Institution institution : institutionManager.findAll().stream().filter(c -> c.isActive())
-        .sorted((i1, i2) -> i1.getName().compareTo(i2.getName())).collect(Collectors.toList())) {
-        institutions.put(institution.getId().toString(), institution.getComposedName());
+      institutions = new ArrayList<>();
+      List<Institution> institutionsList =
+        institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      institutionsList.sort((i1, i2) -> i1.getComposedName().compareTo(i2.getComposedName()));
+      for (Institution institution : institutionsList) {
+        institutions.add(institution);
       }
+
       // Read all the cross cutting scoring from database
       this.crossCuttingDimensions = this.crossCuttingManager.findAll();
 
@@ -1009,6 +1011,7 @@ public class PublicationAction extends BaseAction {
 
   }
 
+
   private void saveIntellectualAsset() {
     if (deliverable.getIntellectualAsset() != null) {
       DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
@@ -1071,7 +1074,6 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -1083,6 +1085,7 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
+
 
   public void savePrograms() {
 
@@ -1151,7 +1154,6 @@ public class PublicationAction extends BaseAction {
 
   }
 
-
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -1162,6 +1164,7 @@ public class PublicationAction extends BaseAction {
       deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
     }
   }
+
 
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
@@ -1202,7 +1205,6 @@ public class PublicationAction extends BaseAction {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
   }
 
-
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
@@ -1215,6 +1217,7 @@ public class PublicationAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
+
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
@@ -1224,16 +1227,17 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
-
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
+
 
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
-  public void setInstitutions(Map<String, String> institutions) {
+
+  public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
 
