@@ -254,6 +254,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<ProjectInnovation> innovations;
 
+
   private double coreBudget;
 
   private double w3Budget;

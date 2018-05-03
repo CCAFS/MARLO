@@ -173,6 +173,18 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
+  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year,
+    String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and project_expected_id=" + expectedID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"

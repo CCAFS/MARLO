@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyCountryDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -67,6 +69,29 @@ public class ProjectExpectedStudyCountryMySQLDAO extends AbstractMarloDAO<Projec
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectExpectedStudyCountry> getProjectExpectedStudyCountrybyPhase(long expectedID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT project_expected_study_countries.id as contryId FROM project_expected_studies ");
+    query.append(
+      "INNER JOIN project_expected_study_countries ON project_expected_study_countries.expected_id = project_expected_studies.id ");
+    query.append("INNER JOIN phases ON project_expected_study_countries.id_phase = phases.id ");
+    query.append("WHERE project_expected_studies.id = ");
+    query.append(expectedID);
+    query.append(" AND phases.id = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ProjectExpectedStudyCountry> projectExpectedStudyCountries = new ArrayList<ProjectExpectedStudyCountry>();
+    for (Map<String, Object> map : list) {
+      String contryId = map.get("contryId").toString();
+      long longContryId = Long.parseLong(contryId);
+      ProjectExpectedStudyCountry projectExpectedStudyCountry = this.find(longContryId);
+      projectExpectedStudyCountries.add(projectExpectedStudyCountry);
+    }
+    return projectExpectedStudyCountries;
   }
 
   @Override

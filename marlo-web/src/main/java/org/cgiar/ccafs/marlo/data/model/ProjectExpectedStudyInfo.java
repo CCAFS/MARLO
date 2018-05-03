@@ -110,6 +110,29 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   public ProjectExpectedStudyInfo() {
   }
 
+  public ProjectExpectedStudyInfo(Phase phase, ProjectExpectedStudy projectExpectedStudy, String title,
+    String outcomeImpactStatement, String topLevelComments, String scopeComments,
+    String elaborationOutcomeImpactStatement, String references, String quantification, String describeGender,
+    String describeYouth, String describeCapdev, String otherCrossCuttingDimensions, String comunicationsMaterial,
+    String contacts) {
+    super();
+    this.phase = phase;
+    this.projectExpectedStudy = projectExpectedStudy;
+    this.title = title;
+    this.outcomeImpactStatement = outcomeImpactStatement;
+    this.topLevelComments = topLevelComments;
+    this.scopeComments = scopeComments;
+    this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
+    this.references = references;
+    this.quantification = quantification;
+    this.describeGender = describeGender;
+    this.describeYouth = describeYouth;
+    this.describeCapdev = describeCapdev;
+    this.otherCrossCuttingDimensions = otherCrossCuttingDimensions;
+    this.comunicationsMaterial = comunicationsMaterial;
+    this.contacts = contacts;
+  }
+
   public RepIndGenderYouthFocusLevel getCapdevLevel() {
     return capdevLevel;
   }

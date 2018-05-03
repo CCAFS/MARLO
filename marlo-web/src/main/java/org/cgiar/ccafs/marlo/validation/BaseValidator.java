@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -520,6 +521,35 @@ public class BaseValidator {
 
 
   /**
+   * This method saves the missing fields into the database for a section at project expected study.
+   * 
+   * @param expectedStudy is a Project Expected Study.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectExpectedStudy expectedStudy, String cycle, int year,
+    String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectExpectedStudy(expectedStudy);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+
+  /**
    * This method saves the missing fields into the database for a section at project Case Study level.
    * 
    * @param highlight is a Project Highlight.
@@ -546,7 +576,6 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project Innovation.

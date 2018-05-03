@@ -51,10 +51,10 @@
           [#-- Studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudiestitle" /]</h3>
           <div id="caseStudiesBlock" class="simpleBox">
-            [@tableList list=(project.caseStudies)![]  /]
+            [@tableList list=(project.expectedStudies)![]  /]
           </div>
           [#-- Add a new --]
-          [#if action.canEdit()] 
+          [#if canEdit] 
           <div class="text-right">
             <a class="button-blue" href="[@s.url action='${crpSession}/addNewStudy'] [@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addOutcomeCaseStudy" /]
@@ -115,14 +115,14 @@
               [#if reportingActive && ((item.year == currentCycleYear)!false)]
                 <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
               [/#if]
-              <a href="${dlurl}">[#if item.title?trim?has_content]${item.title}[#else][@s.text name="global.untitled" /][/#if]</a>
+              <a href="${dlurl}">[#if item.projectExpectedStudyInfo.title?trim?has_content]${item.projectExpectedStudyInfo.title}[#else][@s.text name="global.untitled" /][/#if]</a>
             </td>
-            <td class="type">Outcome Case Study</td>
-            <td class="owner">[#if item.owner?trim?has_content]P${item.owner.id}[#else]Not defined[/#if]</td>
+            <td class="type">[#if item.projectExpectedStudyInfo.studyType?has_content]${item.projectExpectedStudyInfo.studyType.name}[#else]Not defined[/#if]</td>
+            <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if item.year?trim?has_content]${item.year}[#else]Not defined[/#if]</td>
             [#if !previousTable]
             <td class="removeHighlight-row text-center">
-              [#if canEdit && action.canDelete(item.owner.id) && (item.year gte  currentCycleYear) && action.canEdit() ]
+              [#if canEdit  && (item.year gte  currentCycleYear) ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>

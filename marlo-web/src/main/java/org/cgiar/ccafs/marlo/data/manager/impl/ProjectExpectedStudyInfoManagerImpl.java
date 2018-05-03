@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyInfoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
@@ -113,12 +112,12 @@ public class ProjectExpectedStudyInfoManagerImpl implements ProjectExpectedStudy
 
     ProjectExpectedStudyInfo sourceInfo = projectExpectedStudyInfoDAO.save(projectExpectedStudyInfo);
     Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (projectExpectedStudyInfo.getPhase().getNext() != null) {
-        this.saveInfoPhase(projectExpectedStudyInfo.getPhase().getNext(),
-          projectExpectedStudyInfo.getProjectExpectedStudy().getId(), projectExpectedStudyInfo);
-      }
+
+    if (projectExpectedStudyInfo.getPhase().getNext() != null) {
+      this.saveInfoPhase(projectExpectedStudyInfo.getPhase().getNext(),
+        projectExpectedStudyInfo.getProjectExpectedStudy().getId(), projectExpectedStudyInfo);
     }
+
     return sourceInfo;
 
 

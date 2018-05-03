@@ -4,10 +4,12 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -21,55 +23,57 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = 8398283484560886533L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private Phase phase;
+
+
   private Project project;
+
+
   @Expose
   private SrfSubIdo srfSubIdo;
+
+
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private User createdBy;
+
+
   @Expose
   private String composedId;
+
+
   @Expose
   private String topicStudy;
+
+
   @Expose
   private Integer scope;
+
+
   @Expose
   private Integer type;
+
+
   @Expose
   private String otherType;
+
+
   @Expose
   private SrfSloIndicator srfSloIndicator;
+
+
   @Expose
   private String comments;
-
-
-  @Expose
-  private String stament;
-  @Expose
-  private Long stage;
-  @Expose
-  private String elaboration;
-  @Expose
-  private String referencesCited;
-  @Expose
-  private String quantification;
-  @Expose
-  private Integer genderRelevance;
-  @Expose
-  private String genderDescribe;
-  @Expose
-  private Integer youthRelevance;
-  @Expose
-  private String youthDescribe;
-  @Expose
-  private Integer capdevRelevance;
-  @Expose
-  private String capdevDescribe;
 
 
   @Expose
@@ -78,6 +82,13 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date activeSince;
+
+
+  @Expose
+  private Integer year;
+
+
+  private CaseStudy casesStudy;
 
 
   @Expose
@@ -90,9 +101,35 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   private List<ExpectedStudyProject> projects;
 
 
+  // New Reporting @HJ
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
+
+  private Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new HashSet<ProjectExpectedStudyInfo>(0);
+
+
+  private Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = new HashSet<ProjectExpectedStudySubIdo>(0);
+  private Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships =
+    new HashSet<ProjectExpectedStudyFlagship>(0);
+  private Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps = new HashSet<ProjectExpectedStudyCrp>(0);
+  private Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions =
+    new HashSet<ProjectExpectedStudyInstitution>(0);
+  private Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries = new HashSet<ProjectExpectedStudyCountry>(0);
+  private Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets =
+    new HashSet<ProjectExpectedStudySrfTarget>(0);
+  private ProjectExpectedStudyInfo projectExpectedStudyInfo;
+
+  private List<ProjectExpectedStudySubIdo> subIdos;
+  private List<ProjectExpectedStudyFlagship> flagships;
+  private List<ProjectExpectedStudyCrp> crps;
+  private List<ProjectExpectedStudyInstitution> institutions;
+  private List<ProjectExpectedStudyCountry> countries;
+  private List<String> countriesIds = new ArrayList<>();
+  private String countriesIdsText;
+  private List<ProjectExpectedStudySrfTarget> srfTargets;
+
   public ProjectExpectedStudy() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -116,62 +153,58 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
-
-  public String getCapdevDescribe() {
-    return capdevDescribe;
+  public CaseStudy getCasesStudy() {
+    return casesStudy;
   }
-
-
-  public Integer getCapdevRelevance() {
-    return capdevRelevance;
-  }
-
 
   public String getComments() {
     return comments;
   }
 
-
   public String getComposedId() {
     return composedId;
   }
 
+  public List<ProjectExpectedStudyCountry> getCountries() {
+    return countries;
+  }
+
+  public List<String> getCountriesIds() {
+    return countriesIds;
+  }
+
+  public String getCountriesIdsText() {
+    return countriesIdsText;
+  }
 
   public User getCreatedBy() {
     return createdBy;
   }
 
-
-  public String getElaboration() {
-    return elaboration;
+  public List<ProjectExpectedStudyCrp> getCrps() {
+    return crps;
   }
-
 
   public Set<ExpectedStudyProject> getExpectedStudyProjects() {
     return expectedStudyProjects;
   }
 
-
-  public String getGenderDescribe() {
-    return genderDescribe;
+  public List<ProjectExpectedStudyFlagship> getFlagships() {
+    return flagships;
   }
-
-
-  public Integer getGenderRelevance() {
-    return genderRelevance;
-  }
-
 
   @Override
   public Long getId() {
     return id;
   }
 
+  public List<ProjectExpectedStudyInstitution> getInstitutions() {
+    return institutions;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -186,12 +219,10 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getOtherType() {
     return otherType;
@@ -206,23 +237,63 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return project;
   }
 
+  public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
+    return projectExpectedStudyCountries;
+  }
+
+  public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
+    return projectExpectedStudyCrps;
+  }
+
+
+  public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
+    return projectExpectedStudyFlagships;
+  }
+
+
+  public ProjectExpectedStudyInfo getProjectExpectedStudyInfo() {
+    return projectExpectedStudyInfo;
+  }
+
+  public ProjectExpectedStudyInfo getProjectExpectedStudyInfo(Phase phase) {
+    if (this.getProjectExpectedStudyInfo() != null) {
+      return this.getProjectExpectedStudyInfo();
+    } else {
+      List<ProjectExpectedStudyInfo> infos =
+        projectExpectedStudyInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
+          && c.getPhase().getId().longValue() == phase.getId()).collect(Collectors.toList());
+      if (!infos.isEmpty()) {
+        this.setProjectExpectedStudyInfo(infos.get(0));
+        return this.getProjectExpectedStudyInfo();
+      } else {
+        return null;
+      }
+    }
+  }
+
+  public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
+    return projectExpectedStudyInfos;
+  }
+
+  public Set<ProjectExpectedStudyInstitution> getProjectExpectedStudyInstitutions() {
+    return projectExpectedStudyInstitutions;
+  }
+
+  public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
+    return projectExpectedStudySrfTargets;
+  }
+
+  public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
+    return projectExpectedStudySubIdos;
+  }
+
   public List<ExpectedStudyProject> getProjects() {
     return projects;
   }
 
-  public String getQuantification() {
-    return quantification;
-  }
-
-  public String getReferencesCited() {
-    return referencesCited;
-  }
-
-
   public Integer getScope() {
     return scope;
   }
-
 
   public String getScopeName() {
     if (scope == null || scope.intValue() == -1) {
@@ -232,6 +303,9 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   }
 
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
 
   public SrfSloIndicator getSrfSloIndicator() {
     return srfSloIndicator;
@@ -243,13 +317,13 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Long getStage() {
-    return stage;
+  public List<ProjectExpectedStudySrfTarget> getSrfTargets() {
+    return srfTargets;
   }
 
 
-  public String getStament() {
-    return stament;
+  public List<ProjectExpectedStudySubIdo> getSubIdos() {
+    return subIdos;
   }
 
 
@@ -272,13 +346,8 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getYouthDescribe() {
-    return youthDescribe;
-  }
-
-
-  public Integer getYouthRelevance() {
-    return youthRelevance;
+  public Integer getYear() {
+    return year;
   }
 
 
@@ -298,13 +367,8 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCapdevDescribe(String capdevDescribe) {
-    this.capdevDescribe = capdevDescribe;
-  }
-
-
-  public void setCapdevRelevance(Integer capdevRelevance) {
-    this.capdevRelevance = capdevRelevance;
+  public void setCasesStudy(CaseStudy casesStudy) {
+    this.casesStudy = casesStudy;
   }
 
 
@@ -318,31 +382,47 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCountries(List<ProjectExpectedStudyCountry> countries) {
+    this.countries = countries;
+  }
+
+  public void setCountriesIds(List<String> countriesIds) {
+    this.countriesIds = countriesIds;
+  }
+
+
+  public void setCountriesIdsText(String countriesIdsText) {
+    this.countriesIdsText = countriesIdsText;
+  }
+
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
 
-  public void setElaboration(String elaboration) {
-    this.elaboration = elaboration;
+  public void setCrps(List<ProjectExpectedStudyCrp> crps) {
+    this.crps = crps;
   }
+
 
   public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
     this.expectedStudyProjects = expectedStudyProjects;
   }
 
-  public void setGenderDescribe(String genderDescribe) {
-    this.genderDescribe = genderDescribe;
-  }
 
-
-  public void setGenderRelevance(Integer genderRelevance) {
-    this.genderRelevance = genderRelevance;
+  public void setFlagships(List<ProjectExpectedStudyFlagship> flagships) {
+    this.flagships = flagships;
   }
 
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setInstitutions(List<ProjectExpectedStudyInstitution> institutions) {
+    this.institutions = institutions;
   }
 
 
@@ -371,23 +451,57 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setProjectExpectedStudyCountries(Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries) {
+    this.projectExpectedStudyCountries = projectExpectedStudyCountries;
+  }
+
+
+  public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
+    this.projectExpectedStudyCrps = projectExpectedStudyCrps;
+  }
+
+
+  public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
+    this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
+  }
+
+  public void setProjectExpectedStudyInfo(ProjectExpectedStudyInfo projectExpectedStudyInfo) {
+    this.projectExpectedStudyInfo = projectExpectedStudyInfo;
+  }
+
+  public void setProjectExpectedStudyInfos(Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
+    this.projectExpectedStudyInfos = projectExpectedStudyInfos;
+  }
+
+
+  public void
+    setProjectExpectedStudyInstitutions(Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions) {
+    this.projectExpectedStudyInstitutions = projectExpectedStudyInstitutions;
+  }
+
+
+  public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
+    this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
+  }
+
+
+  public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
+    this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
+  }
+
+
   public void setProjects(List<ExpectedStudyProject> projects) {
     this.projects = projects;
   }
 
 
-  public void setQuantification(String quantification) {
-    this.quantification = quantification;
-  }
-
-
-  public void setReferencesCited(String referencesCited) {
-    this.referencesCited = referencesCited;
-  }
-
-
   public void setScope(Integer scope) {
     this.scope = scope;
+  }
+
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 
@@ -401,13 +515,13 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setStage(Long stage) {
-    this.stage = stage;
+  public void setSrfTargets(List<ProjectExpectedStudySrfTarget> srfTargets) {
+    this.srfTargets = srfTargets;
   }
 
 
-  public void setStament(String stament) {
-    this.stament = stament;
+  public void setSubIdos(List<ProjectExpectedStudySubIdo> subIdos) {
+    this.subIdos = subIdos;
   }
 
 
@@ -421,13 +535,8 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setYouthDescribe(String youthDescribe) {
-    this.youthDescribe = youthDescribe;
-  }
-
-
-  public void setYouthRelevance(Integer youthRelevance) {
-    this.youthRelevance = youthRelevance;
+  public void setYear(Integer year) {
+    this.year = year;
   }
 
 

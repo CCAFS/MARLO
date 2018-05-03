@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -170,6 +171,11 @@ public class AutoSaveWriterAction extends BaseAction {
 
       if (nameClass.equals(ProjectInnovation.class.getName())) {
         jSon = jSon.replaceAll("innovation\\.", "");
+        jSon = jSon.replaceAll("countriesIds", "countriesIdsText");
+      }
+
+      if (nameClass.equals(ProjectExpectedStudy.class.getName())) {
+        jSon = jSon.replaceAll("expectedStudy\\.", "");
         jSon = jSon.replaceAll("countriesIds", "countriesIdsText");
       }
 

@@ -15,11 +15,14 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyInstitutionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,19 +36,47 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
 
   private ProjectExpectedStudyInstitutionDAO projectExpectedStudyInstitutionDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectExpectedStudyInstitutionManagerImpl(ProjectExpectedStudyInstitutionDAO projectExpectedStudyInstitutionDAO) {
+  public ProjectExpectedStudyInstitutionManagerImpl(
+    ProjectExpectedStudyInstitutionDAO projectExpectedStudyInstitutionDAO, PhaseDAO phaseDAO) {
     this.projectExpectedStudyInstitutionDAO = projectExpectedStudyInstitutionDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
   public void deleteProjectExpectedStudyInstitution(long projectExpectedStudyInstitutionId) {
 
+    ProjectExpectedStudyInstitution projectExpectedStudyInstitution =
+      this.getProjectExpectedStudyInstitutionById(projectExpectedStudyInstitutionId);
+
+    if (projectExpectedStudyInstitution.getPhase().getNext() != null) {
+      this.deleteProjectExpectedStudyInstitutionPhase(projectExpectedStudyInstitution.getPhase().getNext(),
+        projectExpectedStudyInstitution.getProjectExpectedStudy().getId(), projectExpectedStudyInstitution);
+    }
+
     projectExpectedStudyInstitutionDAO.deleteProjectExpectedStudyInstitution(projectExpectedStudyInstitutionId);
+  }
+
+  public void deleteProjectExpectedStudyInstitutionPhase(Phase next, long expectedID,
+    ProjectExpectedStudyInstitution projectExpectedStudyInstitution) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions =
+      phase.getProjectExpectedStudyInstitutions().stream()
+        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+          && c.getInstitution().getId().equals(projectExpectedStudyInstitution.getInstitution().getId()))
+        .collect(Collectors.toList());
+    for (ProjectExpectedStudyInstitution projectExpectedStudyInstitutionDB : projectExpectedStudyInstitutions) {
+      projectExpectedStudyInstitutionDAO
+        .deleteProjectExpectedStudyInstitution(projectExpectedStudyInstitutionDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudyInstitutionPhase(phase.getNext(), expectedID, projectExpectedStudyInstitution);
+    }
   }
 
   @Override
@@ -61,16 +92,52 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
 
   }
 
+
   @Override
-  public ProjectExpectedStudyInstitution getProjectExpectedStudyInstitutionById(long projectExpectedStudyInstitutionID) {
+  public ProjectExpectedStudyInstitution
+    getProjectExpectedStudyInstitutionById(long projectExpectedStudyInstitutionID) {
 
     return projectExpectedStudyInstitutionDAO.find(projectExpectedStudyInstitutionID);
   }
 
-  @Override
-  public ProjectExpectedStudyInstitution saveProjectExpectedStudyInstitution(ProjectExpectedStudyInstitution projectExpectedStudyInstitution) {
+  public void saveExpectedStudyInstitutionPhase(Phase next, long expectedID,
+    ProjectExpectedStudyInstitution projectExpectedStudyInstitution) {
+    Phase phase = phaseDAO.find(next.getId());
 
-    return projectExpectedStudyInstitutionDAO.save(projectExpectedStudyInstitution);
+    List<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions =
+      phase.getProjectExpectedStudyInstitutions().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+          && c.getInstitution().getId().equals(projectExpectedStudyInstitution.getInstitution().getId()))
+        .collect(Collectors.toList());
+
+    if (projectExpectedStudyInstitutions.isEmpty()) {
+      ProjectExpectedStudyInstitution projectExpectedStudyInstitutionAdd = new ProjectExpectedStudyInstitution();
+      projectExpectedStudyInstitutionAdd
+        .setProjectExpectedStudy(projectExpectedStudyInstitution.getProjectExpectedStudy());
+      projectExpectedStudyInstitutionAdd.setPhase(phase);
+      projectExpectedStudyInstitutionAdd.setInstitution(projectExpectedStudyInstitution.getInstitution());
+      projectExpectedStudyInstitutionDAO.save(projectExpectedStudyInstitutionAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveExpectedStudyInstitutionPhase(phase.getNext(), expectedID, projectExpectedStudyInstitution);
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudyInstitution
+    saveProjectExpectedStudyInstitution(ProjectExpectedStudyInstitution projectExpectedStudyInstitution) {
+
+    ProjectExpectedStudyInstitution institution =
+      projectExpectedStudyInstitutionDAO.save(projectExpectedStudyInstitution);
+
+    if (institution.getPhase().getNext() != null) {
+      this.saveExpectedStudyInstitutionPhase(institution.getPhase().getNext(),
+        institution.getProjectExpectedStudy().getId(), projectExpectedStudyInstitution);
+    }
+
+    return institution;
   }
 
 
