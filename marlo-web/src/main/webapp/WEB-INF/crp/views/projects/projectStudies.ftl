@@ -84,7 +84,7 @@
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
 
-[@customForm.confirmJustification action="${crpSession}/deleteStudy.do" namespace="/projects" nameId="caseStudyID" projectID="${projectID}" title="Remove outcomes case study" /]
+[@customForm.confirmJustification action="${crpSession}/deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove outcomes case study" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -108,7 +108,7 @@
     <tbody>
     [#if list?has_content]
         [#list list as item]
-          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='caseStudyID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
+          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='expectedID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
           <tr>
             <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
             <td class="name">
