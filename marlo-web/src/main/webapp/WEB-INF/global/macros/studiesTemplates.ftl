@@ -11,10 +11,10 @@
       
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="${customName}.type" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
         <div class="col-md-6">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
       </div>
     </div>
@@ -89,12 +89,13 @@
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.reportingIndicatorThree.value)!false)?string('block','none')}">
+          [#local isBudgetInvestment = false]
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2 policyInvestimentTypes" i18nkey="study.reportingIndicatorThree.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true /]
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 block-budgetInvestment" style="display:${isBudgetInvestment?string('block', 'none')}">
               [#-- Amount (Only for Budget or Investment) --]
               [@customForm.input name="${customName}.reportingIndicatorThree.amount" i18nkey="study.reportingIndicatorThree.amount" help="study.reportingIndicatorThree.amount.help" className="" required=true editable=editable /]
             </div>
@@ -121,7 +122,7 @@
         </label>
         <div class="form-group">
           [#list stageStudies as stage]
-            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.maturityChange" label="<b>${stage.name}</b>: ${stage.description}" value="${stage.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
+            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.maturityChange" label="${stage.name}: <small>${stage.description}</small>" value="${stage.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
           [/#list]
         </div>
       </div>
@@ -158,11 +159,11 @@
       
       [#-- 6.  Geographic scope - Countries  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
-        [#assign isRegional = true ]
-        [#assign isMultiNational = true ]
-        [#assign isNational = true ]
-        [#assign isSubNational = true ]
+      <div class="form-group geographicScopeBlock">
+        [#assign isRegional = ((element.geographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
+        [#assign isMultiNational = ((element.geographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
+        [#assign isNational = ((element.geographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
+        [#assign isSubNational = ((element.geographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
         
         <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
         <div class="form-group simpleBox">
