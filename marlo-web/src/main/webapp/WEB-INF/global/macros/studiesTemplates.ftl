@@ -139,21 +139,13 @@
         [/#if]
         [#-- Sub IDOs  --]
         <div class="form-group simpleBox">
-          [#-- List --]
-          [#assign keyContributions = [
-            { "name": "Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" }
-          ] /]
-          [@customForm.elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="subIdos" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="subIdos" keyFieldName="id" displayFieldName="description"/]
         </div>
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
           [#-- List --]
-          [#assign keyContributions = [
-            { "name": "1.2. 30 million people, of which 50% are women, assisted to exit poverty" },
-            { "name": "3.1. 5% increase in water and nutrient efficiency in agroecosystems" }
-          ] /]
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
         [#-- Comments  --]
@@ -201,28 +193,13 @@
       <div class="form-group">
         <label for="">[@s.text name="study.keyContributors" /]:</label>
         <div class="form-group simpleBox">
-          [#-- List --]
-          [#assign keyContributions = [
-            { "name": "A4NH - Agriculture for Nutrition and Health" }
-          ] /]
-          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=keyContributions label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="name"/]
-          
+          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [#-- List --]
-          [#assign keyContributions = [
-            { "name": "F1 - Priorities and Policies for CSA" },
-            { "name": "F3 - Low emissions development" }
-          ] /]
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=keyContributions label="study.keyContributors.flagships"  listName="flagships" keyFieldName="id" displayFieldName="name"/]
-          
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagships" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [#-- List --]
-          [#assign keyContributions = [
-            { "name": "Ministries of Agriculture for Bangladesh" }
-          ] /]
-          [@customForm.elementsListComponent name="${customName}.externalPartners" elementType="institution" elementList=keyContributions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.institution" elementType="institution" elementList=element.institution label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
         </div>
       </div>
       [/#if]
@@ -269,24 +246,39 @@
         </label>
         [#-- Gender --]
         <div class="simpleBox">
-          [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
-          [#list focusLevels  as cc]
-            [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="" editable=editable /]
-          [/#list]
+          <label for="">[@s.text name="study.genderRelevance" /]:</label>
+          <div class="form-group">
+            [#list focusLevels  as cc]
+              [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
+            [/#list]
+          </div>
+          <div class="form-group">
+            [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
+          </div>
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
-          [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
-          [#list focusLevels  as cc]
-            [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="" editable=editable /]
-          [/#list]
+          <label for="">[@s.text name="study.youthRelevance" /]:</label>
+          <div class="form-group">
+            [#list focusLevels  as cc]
+              [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
+            [/#list]
+          </div>
+          <div class="form-group">
+            [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
+          </div>
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
-          [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
-          [#list focusLevels  as cc]
-            [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="" editable=editable /]
-          [/#list]
+          <label for="">[@s.text name="study.capDevRelevance" /]:</label>
+          <div class="form-group">
+            [#list focusLevels  as cc]
+              [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
+            [/#list]
+          </div>
+          <div class="form-group">
+            [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
+          </div>
         </div> 
       </div>
       [/#if]
