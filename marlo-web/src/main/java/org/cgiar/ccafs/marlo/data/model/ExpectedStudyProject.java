@@ -13,7 +13,6 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 131925401132219339L;
 
-
   @Expose
   private Long id;
 
@@ -29,7 +28,31 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
   @Expose
   private Project project;
 
+
   public ExpectedStudyProject() {
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ExpectedStudyProject other = (ExpectedStudyProject) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -48,7 +71,6 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -70,6 +92,15 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

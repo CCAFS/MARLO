@@ -13,8 +13,10 @@ public class ProjectExpectedStudySrfTarget implements java.io.Serializable, IAud
 
   private static final long serialVersionUID = 1L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private SrfSloIndicator srfSloIndicator;
@@ -25,8 +27,29 @@ public class ProjectExpectedStudySrfTarget implements java.io.Serializable, IAud
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
 
-
   public ProjectExpectedStudySrfTarget() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectExpectedStudySrfTarget other = (ProjectExpectedStudySrfTarget) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -49,6 +72,7 @@ public class ProjectExpectedStudySrfTarget implements java.io.Serializable, IAud
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -66,6 +90,14 @@ public class ProjectExpectedStudySrfTarget implements java.io.Serializable, IAud
 
   public SrfSloIndicator getSrfSloIndicator() {
     return srfSloIndicator;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

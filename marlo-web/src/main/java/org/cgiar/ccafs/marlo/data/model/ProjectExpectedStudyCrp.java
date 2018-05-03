@@ -13,7 +13,6 @@ public class ProjectExpectedStudyCrp implements java.io.Serializable, IAuditLog 
 
   private static final long serialVersionUID = -275551677544618602L;
 
-
   @Expose
   private Long id;
 
@@ -21,8 +20,10 @@ public class ProjectExpectedStudyCrp implements java.io.Serializable, IAuditLog 
   @Expose
   private Phase phase;
 
+
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
+
 
   @Expose
   private GlobalUnit globalUnit;
@@ -30,10 +31,31 @@ public class ProjectExpectedStudyCrp implements java.io.Serializable, IAuditLog 
   public ProjectExpectedStudyCrp() {
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectExpectedStudyCrp other = (ProjectExpectedStudyCrp) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
   public GlobalUnit getGlobalUnit() {
     return globalUnit;
   }
-
 
   @Override
   public Long getId() {
@@ -62,12 +84,21 @@ public class ProjectExpectedStudyCrp implements java.io.Serializable, IAuditLog 
     return u;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 

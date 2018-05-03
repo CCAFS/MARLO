@@ -12,8 +12,10 @@ public class ProjectExpectedStudyInstitution implements java.io.Serializable, IA
 
   private static final long serialVersionUID = 7717738211831506497L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private Phase phase;
@@ -24,8 +26,29 @@ public class ProjectExpectedStudyInstitution implements java.io.Serializable, IA
   @Expose
   private Institution institution;
 
-
   public ProjectExpectedStudyInstitution() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectExpectedStudyInstitution other = (ProjectExpectedStudyInstitution) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -47,6 +70,7 @@ public class ProjectExpectedStudyInstitution implements java.io.Serializable, IA
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
@@ -65,6 +89,14 @@ public class ProjectExpectedStudyInstitution implements java.io.Serializable, IA
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

@@ -73,15 +73,18 @@ import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectExpectedStudiesValidator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,12 +116,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   private AuditLogManager auditLogManager;
+
+
   private GlobalUnitManager crpManager;
+
+
   private GlobalUnit loggedCrp;
+
+
   private Project project;
+
+
   private long projectID;
+
   private long expectedID;
+
+
   private ProjectExpectedStudy expectedStudy;
+
+
+  private ProjectExpectedStudy expectedStudyDB;
 
 
   private Map<Integer, String> statuses;
@@ -137,6 +154,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> flagships;
   private List<Institution> institutions;
 
+  private File outcomeFile;
+  private String outcomeFilename;
+  private File referencesFile;
+  private String referencesFileName;
+
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
   private SrfSloIndicatorManager srfSloIndicatorManager;
@@ -145,6 +167,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private InstitutionManager institutionManager;
   private LocElementManager locElementManager;
   private StudyTypeManager studyTypeManager;
+
   private FileDBManager fileDBManager;
   private RepIndGeographicScopeManager geographicScopeManager;
   private RepIndRegionManager repIndRegionManager;
@@ -241,6 +264,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return expectedStudy;
   }
 
+  private String getExpectedStudyPath() {
+    return config.getUploadsBaseFolder() + File.separator + this.getExpectedStudyUrlPath() + File.separator;
+  }
+
+  public String getExpectedStudyUrlPath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "ExpectedStudy" + File.separator;
+  }
+
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
@@ -265,6 +297,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return organizationTypes;
   }
 
+  public File getOutcomeFile() {
+    return outcomeFile;
+  }
+
+  public String getOutcomeFilename() {
+    return outcomeFilename;
+  }
+
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
   }
@@ -275,6 +315,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
+  }
+
+  public File getReferencesFile() {
+    return referencesFile;
+  }
+
+  public String getReferencesFileName() {
+    return referencesFileName;
   }
 
   public List<RepIndRegion> getRegions() {
@@ -360,6 +408,26 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         expectedStudy = (ProjectExpectedStudy) autoSaveReader.readFromJson(jReader);
 
+        // Files autosave
+        if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile() != null) {
+          if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).setOutcomeFile(fileDBManager.getFileDBById(
+              expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile().getId()));
+          } else {
+            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).setOutcomeFile(null);
+          }
+        }
+
+        if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile() != null) {
+          if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase())
+              .setReferencesFile(fileDBManager.getFileDBById(
+                expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile().getId()));
+          } else {
+            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).setReferencesFile(null);
+          }
+        }
+
         // Expected Study Countries List AutoSave
         if (expectedStudy.getCountriesIdsText() != null) {
           String[] countriesText = expectedStudy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
@@ -425,6 +493,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         if (expectedStudy.getProjectExpectedStudyInfo() == null) {
           expectedStudy.getProjectExpectedStudyInfo(phase);
+        }
+
+        // Setup Files
+        if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(
+            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId()));
+        }
+
+        if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(
+            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId()));
         }
 
 
@@ -502,17 +581,45 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .collect(Collectors.toList());
 
       flagships = crpProgramManager.findAll().stream()
-        .filter(p -> p.isActive() && p.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .filter(p -> p.isActive() && p.getCrp() != null && p.getCrp().getId() == loggedCrp.getId()
+          && p.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
 
       institutions = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
 
+      expectedStudyDB = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
     if (this.isHttpPost()) {
-      // TODO
+      if (expectedStudy.getProjectExpectedStudyCountries() != null) {
+        expectedStudy.getProjectExpectedStudyCountries().clear();
+      }
+
+      if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
+        expectedStudy.getProjectExpectedStudySubIdos().clear();
+      }
+
+      if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
+        expectedStudy.getProjectExpectedStudyFlagships().clear();
+      }
+
+      if (expectedStudy.getProjectExpectedStudyCrps() != null) {
+        expectedStudy.getProjectExpectedStudyCrps().clear();
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
+        expectedStudy.getProjectExpectedStudyInstitutions().clear();
+      }
+
+      if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
+        expectedStudy.getProjectExpectedStudySrfTargets().clear();
+      }
+
+      if (expectedStudy.getExpectedStudyProjects() != null) {
+        expectedStudy.getExpectedStudyProjects().clear();
+      }
     }
 
 
@@ -521,6 +628,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      Phase phase = this.getActualPhase();
+      Path path = this.getAutoSaveFilePath();
+
+      expectedStudy.setProject(project);
+
+      this.saveCrps(expectedStudyDB, phase);
+      this.saveFlagships(expectedStudyDB, phase);
+      this.saveProjects(expectedStudyDB, phase);
+      this.saveSubIdos(expectedStudyDB, phase);
+      this.saveInstitutions(expectedStudyDB, phase);
+      this.saveSrfTargets(expectedStudyDB, phase);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -532,7 +651,138 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
 
-      Path path = this.getAutoSaveFilePath();
+      expectedStudy.setActiveSince(new Date());
+      expectedStudy.setModifiedBy(this.getCurrentUser());
+      expectedStudy.setModificationJustification(this.getJustification());
+      expectedStudy.setCreatedBy(expectedStudyDB.getCreatedBy());
+      expectedStudy.setActive(true);
+
+      // Save the Countries List (ProjectInnovationcountry)
+      if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {
+
+        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
+          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), this.getActualPhase().getId());
+        List<ProjectExpectedStudyCountry> countriesSave = new ArrayList<>();
+        for (String countryIds : expectedStudy.getCountriesIds()) {
+          ProjectExpectedStudyCountry countryInn = new ProjectExpectedStudyCountry();
+          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+          countryInn.setProjectExpectedStudy(expectedStudy);
+          countryInn.setPhase(this.getActualPhase());
+          countriesSave.add(countryInn);
+          if (!countries.contains(countryInn)) {
+            projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(countryInn);
+          }
+        }
+
+        for (ProjectExpectedStudyCountry projectExpectedStudyCountry : countries) {
+          if (!countriesSave.contains(projectExpectedStudyCountry)) {
+            projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(projectExpectedStudyCountry.getId());
+          }
+        }
+
+      }
+
+
+      expectedStudy.getProjectExpectedStudyInfo().setPhase(this.getActualPhase());
+      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudy);
+
+      // Save Files
+      if (outcomeFile != null) {
+        expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(
+          this.getFileDB(expectedStudyDB.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile(),
+            outcomeFile, outcomeFilename, this.getExpectedStudyPath()));
+        FileManager.copyFile(outcomeFile, this.getExpectedStudyPath() + outcomeFilename);
+      }
+      if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId() == null) {
+          expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(null);
+        }
+      }
+
+      if (referencesFile != null) {
+        expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(
+          this.getFileDB(expectedStudyDB.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile(),
+            referencesFile, referencesFileName, this.getExpectedStudyPath()));
+        FileManager.copyFile(referencesFile, this.getExpectedStudyPath() + referencesFileName);
+      }
+      if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId() == null) {
+          expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(null);
+        }
+      }
+
+      // Setup focusLevel
+      if (expectedStudy.getProjectExpectedStudyInfo().getGenderLevel() != null) {
+        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+          .getRepIndGenderYouthFocusLevelById(expectedStudy.getProjectExpectedStudyInfo().getGenderLevel().getId());
+        expectedStudy.getProjectExpectedStudyInfo().setGenderLevel(focusLevel);
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getCapdevLevel() != null) {
+        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+          .getRepIndGenderYouthFocusLevelById(expectedStudy.getProjectExpectedStudyInfo().getCapdevLevel().getId());
+        expectedStudy.getProjectExpectedStudyInfo().setCapdevLevel(focusLevel);
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getYouthLevel() != null) {
+        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+          .getRepIndGenderYouthFocusLevelById(expectedStudy.getProjectExpectedStudyInfo().getYouthLevel().getId());
+        expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(focusLevel);
+      }
+
+      // Validate negative Values
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndPolicyInvestimentType(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndStageProcess(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getStudyType() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setStudyType(null);
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getStatus() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getStatus() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
+        }
+      }
+      // End
+
+      projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(expectedStudy.getProjectExpectedStudyInfo());
+      projectExpectedStudyManager.save(expectedStudy, this.getActionName(), relationsName);
+
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
@@ -562,6 +812,260 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  /**
+   * Save Expected Studies Crps Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveCrps(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyCrps() != null
+      && projectExpectedStudy.getProjectExpectedStudyCrps().size() > 0) {
+
+      List<ProjectExpectedStudyCrp> crpPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyCrp studyCrp : crpPrev) {
+        if (!expectedStudy.getCrps().contains(studyCrp)) {
+          projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getCrps() != null) {
+      for (ProjectExpectedStudyCrp studyCrp : expectedStudy.getCrps()) {
+        if (studyCrp.getId() == null) {
+          ProjectExpectedStudyCrp studyCrpSave = new ProjectExpectedStudyCrp();
+          studyCrpSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyCrpSave.setPhase(phase);
+
+          GlobalUnit globalUnit = crpManager.getGlobalUnitById(studyCrp.getGlobalUnit().getId());
+
+          studyCrpSave.setGlobalUnit(globalUnit);
+
+          projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(studyCrpSave);
+        }
+      }
+    }
+
+  }
+
+  /**
+   * Save Expected Studies Flagships Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveFlagships(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyFlagships() != null
+      && projectExpectedStudy.getProjectExpectedStudyFlagships().size() > 0) {
+
+      List<ProjectExpectedStudyFlagship> flagshipPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyFlagship studyFlagship : flagshipPrev) {
+        if (!expectedStudy.getFlagships().contains(studyFlagship)) {
+          projectExpectedStudyFlagshipManager.deleteProjectExpectedStudyFlagship(studyFlagship.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getFlagships() != null) {
+      for (ProjectExpectedStudyFlagship studyFlagship : expectedStudy.getFlagships()) {
+        if (studyFlagship.getId() == null) {
+          ProjectExpectedStudyFlagship studyFlagshipSave = new ProjectExpectedStudyFlagship();
+          studyFlagshipSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyFlagshipSave.setPhase(phase);
+
+          CrpProgram crpProgram = crpProgramManager.getCrpProgramById(studyFlagship.getCrpProgram().getId());
+
+          studyFlagshipSave.setCrpProgram(crpProgram);
+
+          projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(studyFlagshipSave);
+        }
+      }
+    }
+
+  }
+
+  /**
+   * Save Expected Studies Institutions Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveInstitutions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyInstitutions() != null
+      && projectExpectedStudy.getProjectExpectedStudyInstitutions().size() > 0) {
+
+      List<ProjectExpectedStudyInstitution> institutionPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyInstitution studyInstitution : institutionPrev) {
+        if (!expectedStudy.getInstitutions().contains(studyInstitution)) {
+          projectExpectedStudyInstitutionManager.deleteProjectExpectedStudyInstitution(studyInstitution.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getInstitutions() != null) {
+      for (ProjectExpectedStudyInstitution studyInstitution : expectedStudy.getInstitutions()) {
+        if (studyInstitution.getId() == null) {
+          ProjectExpectedStudyInstitution studyInstitutionSave = new ProjectExpectedStudyInstitution();
+          studyInstitutionSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyInstitutionSave.setPhase(phase);
+
+          Institution institution = institutionManager.getInstitutionById(studyInstitution.getInstitution().getId());
+
+          studyInstitutionSave.setInstitution(institution);
+
+          projectExpectedStudyInstitutionManager.saveProjectExpectedStudyInstitution(studyInstitutionSave);
+        }
+      }
+    }
+
+  }
+
+
+  /**
+   * Save Expected Studies Projects Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveProjects(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getExpectedStudyProjects() != null
+      && projectExpectedStudy.getExpectedStudyProjects().size() > 0) {
+
+      List<ExpectedStudyProject> projectPrev = new ArrayList<>(projectExpectedStudy.getExpectedStudyProjects().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ExpectedStudyProject studyProject : projectPrev) {
+        if (!expectedStudy.getProjects().contains(studyProject)) {
+          expectedStudyProjectManager.deleteExpectedStudyProject(studyProject.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getProjects() != null) {
+      for (ExpectedStudyProject studyProject : expectedStudy.getProjects()) {
+        if (studyProject.getId() == null) {
+          ExpectedStudyProject studyProjectSave = new ExpectedStudyProject();
+          studyProjectSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyProjectSave.setPhase(phase);
+
+          Project project = projectManager.getProjectById(studyProject.getProject().getId());
+
+          studyProjectSave.setProject(project);
+
+          expectedStudyProjectManager.saveExpectedStudyProject(studyProjectSave);
+        }
+      }
+    }
+
+  }
+
+
+  /**
+   * Save Expected Studies Srf Targets Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveSrfTargets(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
+      && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
+
+      List<ProjectExpectedStudySrfTarget> targetPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
+        if (!expectedStudy.getSrfTargets().contains(studytarget)) {
+          projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getSrfTargets() != null) {
+      for (ProjectExpectedStudySrfTarget studytarget : expectedStudy.getSrfTargets()) {
+        if (studytarget.getId() == null) {
+          ProjectExpectedStudySrfTarget studytargetSave = new ProjectExpectedStudySrfTarget();
+          studytargetSave.setProjectExpectedStudy(projectExpectedStudy);
+          studytargetSave.setPhase(phase);
+
+          SrfSloIndicator sloIndicator =
+            srfSloIndicatorManager.getSrfSloIndicatorById(studytarget.getSrfSloIndicator().getId());
+
+          studytargetSave.setSrfSloIndicator(sloIndicator);
+
+          projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(studytargetSave);
+        }
+      }
+    }
+
+  }
+
+
+  /**
+   * Save Expected Studies SubIdos Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveSubIdos(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
+      && projectExpectedStudy.getProjectExpectedStudySubIdos().size() > 0) {
+
+      List<ProjectExpectedStudySubIdo> subIdoPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudySubIdo studySubIdo : subIdoPrev) {
+        if (!expectedStudy.getSubIdos().contains(studySubIdo)) {
+          projectExpectedStudySubIdoManager.deleteProjectExpectedStudySubIdo(studySubIdo.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getSubIdos() != null) {
+      for (ProjectExpectedStudySubIdo studySubIdo : expectedStudy.getSubIdos()) {
+        if (studySubIdo.getId() == null) {
+          ProjectExpectedStudySubIdo studySubIdoSave = new ProjectExpectedStudySubIdo();
+          studySubIdoSave.setProjectExpectedStudy(projectExpectedStudy);
+          studySubIdoSave.setPhase(phase);
+
+          SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(studySubIdo.getSrfSubIdo().getId());
+
+          studySubIdoSave.setSrfSubIdo(srfSubIdo);
+
+          projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+        }
+      }
+    }
+
   }
 
   public void setCountries(List<LocElement> countries) {
@@ -604,6 +1108,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.organizationTypes = organizationTypes;
   }
 
+  public void setOutcomeFile(File outcomeFile) {
+    this.outcomeFile = outcomeFile;
+  }
+
+  public void setOutcomeFilename(String outcomeFilename) {
+    this.outcomeFilename = outcomeFilename;
+  }
+
 
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
@@ -617,6 +1129,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setReferencesFile(File referencesFile) {
+    this.referencesFile = referencesFile;
+  }
+
+
+  public void setReferencesFileName(String referencesFileName) {
+    this.referencesFileName = referencesFileName;
   }
 
 
@@ -649,16 +1171,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
-
   public void setTargets(List<SrfSloIndicator> targets) {
     this.targets = targets;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   @Override
   public void validate() {
