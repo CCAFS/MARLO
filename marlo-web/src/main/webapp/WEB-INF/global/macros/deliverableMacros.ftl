@@ -168,11 +168,10 @@
       <label for="">Select the Open Access restriction:[@customForm.req required=editable /]</label>
       [#list oaRestrictions as restriction]
         [#if editable]
-          <div class="radio">
-            <label><input type="radio" name="${customName}.type" value="${restriction.value}" [#if restriction.isChecked]checked="checked"[/#if]>[@s.text name="deliverable.oaRestriction.${restriction.value}" /]</label>
-          </div>
+          [#local restrictionLabel][@s.text name="deliverable.oaRestriction.${restriction.value}" /][/#local]
+          <p>[@customForm.radioFlat id="oaRestrictions-${restriction_index}" name="${customName}.type" label="${restrictionLabel}" editable=editable value="${restriction.value}" checked=restriction.isChecked cssClass="" cssClassLabel="" /]</p>
         [#else]
-          <p class="checked">[@s.text name="deliverable.oaRestriction.${restriction.value}" /]</p>
+          <p class="checked">${restrictionLabel}/]</p>
         [/#if]
       [/#list]
 

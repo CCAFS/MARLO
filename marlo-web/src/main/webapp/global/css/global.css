@@ -6401,6 +6401,10 @@ p.dateLabel.fieldError {
   cursor: pointer;
 }
 /* Radio Flat*/
+div.radioFlat{
+  padding-left: 5px;
+}
+
 .radioFlat input[type="radio"] {
   position: absolute;
   opacity: 0;
