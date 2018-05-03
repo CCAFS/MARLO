@@ -18,29 +18,61 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
-import org.cgiar.ccafs.marlo.data.model.GlobalScopeEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
+import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.HistoryComparator;
-import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectExpectedStudiesValidator;
 
 import java.io.BufferedReader;
@@ -50,8 +82,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,47 +110,77 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
-  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
 
   private AuditLogManager auditLogManager;
-
   private GlobalUnitManager crpManager;
-
-
-  private HistoryComparator historyComparator;
-
-
   private GlobalUnit loggedCrp;
-
-
   private Project project;
-
   private long projectID;
+  private long expectedID;
+  private ProjectExpectedStudy expectedStudy;
+
+
+  private Map<Integer, String> statuses;
+  private List<RepIndGeographicScope> geographicScopes;
+  private List<RepIndRegion> regions;
+  private List<RepIndOrganizationType> organizationTypes;
+  private List<RepIndGenderYouthFocusLevel> focusLevels;
+  private List<RepIndPolicyInvestimentType> policyInvestimentTypes;
+  private List<RepIndStageProcess> stageProcesses;
+  private List<RepIndStageStudy> stageStudies;
+  private List<StudyType> studyTypes;
+  private List<LocElement> countries;
+  private List<SrfSubIdo> subIdos;
+  private List<SrfSloIndicator> targets;
+  private List<GlobalUnit> crps;
+  private List<CrpProgram> flagships;
+  private List<Institution> institutions;
 
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
-
   private SrfSloIndicatorManager srfSloIndicatorManager;
   private SrfSubIdoManager srfSubIdoManager;
-
-  private Map<Long, String> subIdos;
-  private Map<Long, String> targets;
-  private Map<Integer, String> types;
-  private Map<Integer, String> scopes;
-  private List<Project> myProjects;
-
-
+  private CrpProgramManager crpProgramManager;
+  private InstitutionManager institutionManager;
+  private LocElementManager locElementManager;
+  private StudyTypeManager studyTypeManager;
+  private FileDBManager fileDBManager;
+  private RepIndGeographicScopeManager geographicScopeManager;
+  private RepIndRegionManager repIndRegionManager;
+  private RepIndOrganizationTypeManager organizationTypeManager;
+  private RepIndGenderYouthFocusLevelManager focusLevelManager;
+  private RepIndPolicyInvestimentTypeManager investimentTypeManager;
+  private RepIndStageProcessManager stageProcessManager;
+  private RepIndStageStudyManager stageStudyManager;
+  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
+  private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
+  private ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager;
+  private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
+  private ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager;
+  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
   private String transaction;
-
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
     SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager,
     ExpectedStudyProjectManager expectedStudyProjectManager,
-    ProjectExpectedStudiesValidator projectExpectedStudiesValidator, HistoryComparator historyComparator,
-    PhaseManager phaseManager) {
+    ProjectExpectedStudiesValidator projectExpectedStudiesValidator, PhaseManager phaseManager,
+    CrpProgramManager crpProgramManager, InstitutionManager institutionManager, LocElementManager locElementManager,
+    StudyTypeManager studyTypeManager, FileDBManager fileDBManager, RepIndGeographicScopeManager geographicScopeManager,
+    RepIndRegionManager repIndRegionManager, RepIndOrganizationTypeManager organizationTypeManager,
+    RepIndGenderYouthFocusLevelManager focusLevelManager, RepIndPolicyInvestimentTypeManager investimentTypeManager,
+    RepIndStageProcessManager stageProcessManager, RepIndStageStudyManager stageStudyManager,
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager,
+    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
+    ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager,
+    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
+    ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
+    ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -130,195 +190,140 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.srfSubIdoManager = srfSubIdoManager;
     this.srfSloIndicatorManager = srfSloIndicatorManager;
     this.expectedStudyProjectManager = expectedStudyProjectManager;
-    this.historyComparator = historyComparator;
     this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
 
-  }
+    this.crpProgramManager = crpProgramManager;
+    this.institutionManager = institutionManager;
+    this.locElementManager = locElementManager;
+    this.studyTypeManager = studyTypeManager;
+    this.fileDBManager = fileDBManager;
+    this.geographicScopeManager = geographicScopeManager;
+    this.repIndRegionManager = repIndRegionManager;
+    this.organizationTypeManager = organizationTypeManager;
+    this.focusLevelManager = focusLevelManager;
+    this.investimentTypeManager = investimentTypeManager;
+    this.stageProcessManager = stageProcessManager;
+    this.stageStudyManager = stageStudyManager;
 
-
-  public void expectedStudiesNewData() {
-
-    for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
-      ProjectExpectedStudy projectExpectedStudyNew = null;
-      if (projectExpectedStudy != null) {
-
-        if (projectExpectedStudy.getProjects() == null) {
-          projectExpectedStudy.setProjects(new ArrayList<>());
-        }
-        if (projectExpectedStudy.getSrfSloIndicator() != null
-          && projectExpectedStudy.getSrfSloIndicator().getId() > 0) {
-          projectExpectedStudy.setSrfSloIndicator(
-            srfSloIndicatorManager.getSrfSloIndicatorById(projectExpectedStudy.getSrfSloIndicator().getId()));
-        }
-        if (projectExpectedStudy.getSrfSubIdo() != null && projectExpectedStudy.getSrfSubIdo().getId() > 0) {
-          projectExpectedStudy
-            .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectExpectedStudy.getSrfSubIdo().getId()));
-        }
-
-        if (projectExpectedStudy.getId() == null) {
-
-          projectExpectedStudyNew = new ProjectExpectedStudy();
-          projectExpectedStudyNew.setActive(true);
-          projectExpectedStudyNew.setCreatedBy(this.getCurrentUser());
-          projectExpectedStudyNew.setModifiedBy(this.getCurrentUser());
-          projectExpectedStudyNew.setModificationJustification("");
-          projectExpectedStudyNew.setActiveSince(new Date());
-          projectExpectedStudyNew.setProject(project);
-          projectExpectedStudyNew.setPhase(this.getActualPhase());
-          projectExpectedStudyNew.setComposedId(projectExpectedStudy.getComposedId());
-        } else {
-
-          projectExpectedStudyNew =
-            projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudy.getId());
-          projectExpectedStudyNew.setModifiedBy(this.getCurrentUser());
-
-
-        }
-        projectExpectedStudyNew.setComments(projectExpectedStudy.getComments());
-        projectExpectedStudyNew.setOtherType(projectExpectedStudy.getOtherType());
-        projectExpectedStudyNew.setScope(projectExpectedStudy.getScope());
-        projectExpectedStudyNew.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
-        projectExpectedStudyNew.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
-        projectExpectedStudyNew.setTopicStudy(projectExpectedStudy.getTopicStudy());
-        projectExpectedStudyNew.setType(projectExpectedStudy.getType());
-        projectExpectedStudyNew.setProjects(projectExpectedStudy.getProjects());
-        projectExpectedStudyNew = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudyNew);
-
-
-        if (projectExpectedStudy.getProjects() != null) {
-
-          List<ExpectedStudyProject> expectedStudyProjectsPrew = projectExpectedStudyNew.getExpectedStudyProjects()
-            .stream().filter(da -> da.isActive()).collect(Collectors.toList());
-
-          for (ExpectedStudyProject expectedStudy : expectedStudyProjectsPrew) {
-            if (!projectExpectedStudy.getProjects().contains(expectedStudy)) {
-
-              expectedStudyProjectManager.deleteExpectedStudyProject(expectedStudy.getId());
-            }
-          }
-
-          for (ExpectedStudyProject expectedStudy : projectExpectedStudy.getProjects()) {
-            if (expectedStudy.getId() == null || expectedStudy.getId() == -1) {
-
-              ExpectedStudyProject expectedStudyNew = new ExpectedStudyProject();
-
-              expectedStudyNew.setProjectExpectedStudy(projectExpectedStudyNew);
-              expectedStudyNew.setProject(expectedStudy.getProject());
-
-
-              expectedStudyProjectManager.saveExpectedStudyProject(expectedStudyNew);
-            }
-          }
-        }
-      }
-
-    }
+    this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
+    this.projectExpectedStudySubIdoManager = projectExpectedStudySubIdoManager;
+    this.projectExpectedStudyFlagshipManager = projectExpectedStudyFlagshipManager;
+    this.projectExpectedStudyCrpManager = projectExpectedStudyCrpManager;
+    this.projectExpectedStudyInstitutionManager = projectExpectedStudyInstitutionManager;
+    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
 
   }
-
-
-  public void expectedStudiesPreviousData(List<ProjectExpectedStudy> expectedStudies) {
-
-    List<ProjectExpectedStudy> expectedStudiesPrev;
-    Project projectBD = projectManager.getProjectById(projectID);
-
-
-    expectedStudiesPrev = projectBD.getProjectExpectedStudies().stream()
-      .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
-
-    for (ProjectExpectedStudy projectExpectedStudy : expectedStudiesPrev) {
-      if (!expectedStudies.contains(projectExpectedStudy)) {
-        for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getExpectedStudyProjects().stream()
-          .filter(da -> da.isActive()).collect(Collectors.toList())) {
-          expectedStudyProjectManager.deleteExpectedStudyProject(expectedStudyProject.getId());
-        }
-        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
-      }
-    }
-
-  }
-
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = project.getClass().getSimpleName();
+    String composedClassName = expectedStudy.getClass().getSimpleName();
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
-      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
-
+    String autoSaveFile = expectedStudy.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
-  public List<Project> getMyProjects() {
-    return myProjects;
+  public List<LocElement> getCountries() {
+    return countries;
   }
 
+  public List<GlobalUnit> getCrps() {
+    return crps;
+  }
+
+  public long getExpectedID() {
+    return expectedID;
+  }
+
+  public ProjectExpectedStudy getExpectedStudy() {
+    return expectedStudy;
+  }
+
+  public List<CrpProgram> getFlagships() {
+    return flagships;
+  }
+
+  public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
+    return focusLevels;
+  }
+
+  public List<RepIndGeographicScope> getGeographicScopes() {
+    return geographicScopes;
+  }
+
+  public List<Institution> getInstitutions() {
+    return institutions;
+  }
+
+  public GlobalUnit getLoggedCrp() {
+    return loggedCrp;
+  }
+
+  public List<RepIndOrganizationType> getOrganizationTypes() {
+    return organizationTypes;
+  }
+
+  public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
+    return policyInvestimentTypes;
+  }
 
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
 
-  public Map<Integer, String> getScopes() {
-    return scopes;
+  public List<RepIndRegion> getRegions() {
+    return regions;
   }
 
+  public List<RepIndStageProcess> getStageProcesses() {
+    return stageProcesses;
+  }
 
-  public Map<Long, String> getSubIdos() {
+  public List<RepIndStageStudy> getStageStudies() {
+    return stageStudies;
+  }
+
+  public Map<Integer, String> getStatuses() {
+    return statuses;
+  }
+
+  public List<StudyType> getStudyTypes() {
+    return studyTypes;
+  }
+
+  public List<SrfSubIdo> getSubIdos() {
     return subIdos;
   }
 
-  public Map<Long, String> getTargets() {
+  public List<SrfSloIndicator> getTargets() {
     return targets;
   }
-
 
   public String getTransaction() {
     return transaction;
   }
 
-
-  public Map<Integer, String> getTypes() {
-    return types;
-  }
-
-
   @Override
   public void prepare() throws Exception {
+
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
-    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    expectedID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID)));
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      Project history = (Project) auditLogManager.getHistory(transaction);
+      ProjectExpectedStudy history = (ProjectExpectedStudy) auditLogManager.getHistory(transaction);
 
       if (history != null) {
-        project = history;
-
-        List<HistoryDifference> differences = new ArrayList<>();
-        Map<String, String> specialList = new HashMap<>();
-        int i = 0;
-        project.setExpectedStudies(
-          project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
-          int[] index = new int[1];
-          index[0] = i;
-          differences.addAll(historyComparator.getDifferencesList(expectedStudy, transaction, specialList,
-            "project.expectedStudy[" + i + "]", "project", 1));
-          i++;
-        }
-
-        this.setDifferences(differences);
+        expectedStudy = history;
       } else {
         this.transaction = null;
 
@@ -326,9 +331,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
     } else {
-      project = projectManager.getProjectById(projectID);
+      expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
     }
-    if (project != null) {
+    if (expectedStudy != null) {
+
+      projectID = expectedStudy.getProject().getId();
+      project = projectManager.getProjectById(projectID);
+
+
+      Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+      project.getProjecInfoPhase(phase);
 
       Path path = this.getAutoSaveFilePath();
 
@@ -346,137 +358,181 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
+        expectedStudy = (ProjectExpectedStudy) autoSaveReader.readFromJson(jReader);
 
-        project = (Project) autoSaveReader.readFromJson(jReader);
-        Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
-        if (project.getExpectedStudies() != null) {
+        // Expected Study Countries List AutoSave
+        if (expectedStudy.getCountriesIdsText() != null) {
+          String[] countriesText = expectedStudy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+          List<String> countries = new ArrayList<>();
+          for (String value : Arrays.asList(countriesText)) {
+            countries.add(value.trim());
+          }
+          expectedStudy.setCountriesIds(countries);
+        }
 
-
-          for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
-            if (expectedStudy.getProjects() != null) {
-
-              for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-                expectedStudyProject
-                  .setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
-                expectedStudyProject.getProject()
-                  .setProjectInfo(expectedStudyProject.getProject().getProjecInfoPhase(this.getActualPhase()));
-              }
-            }
+        // Expected Study SubIdo List Autosave
+        if (expectedStudy.getSubIdos() != null) {
+          for (ProjectExpectedStudySubIdo projectExpectedStudySubIdo : expectedStudy.getSubIdos()) {
+            projectExpectedStudySubIdo
+              .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectExpectedStudySubIdo.getSrfSubIdo().getId()));
           }
         }
+
+        // Expected Study Flagship List Autosave
+        if (expectedStudy.getFlagships() != null) {
+          for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : expectedStudy.getFlagships()) {
+            projectExpectedStudyFlagship
+              .setCrpProgram(crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+          }
+        }
+
+        // Expected Study Crp List Autosave
+        if (expectedStudy.getCrps() != null) {
+          for (ProjectExpectedStudyCrp projectExpectedStudyCrp : expectedStudy.getCrps()) {
+            projectExpectedStudyCrp
+              .setGlobalUnit(crpManager.getGlobalUnitById(projectExpectedStudyCrp.getGlobalUnit().getId()));
+          }
+        }
+
+        // Expected Study Institutions List Autosave
+        if (expectedStudy.getInstitutions() != null) {
+          for (ProjectExpectedStudyInstitution projectExpectedStudyInstitution : expectedStudy.getInstitutions()) {
+            projectExpectedStudyInstitution.setInstitution(
+              institutionManager.getInstitutionById(projectExpectedStudyInstitution.getInstitution().getId()));
+          }
+        }
+
+        // Expected Study Srf Target List Autosave
+        if (expectedStudy.getSrfTargets() != null) {
+          for (ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget : expectedStudy.getSrfTargets()) {
+            projectExpectedStudySrfTarget.setSrfSloIndicator(srfSloIndicatorManager
+              .getSrfSloIndicatorById(projectExpectedStudySrfTarget.getSrfSloIndicator().getId()));
+          }
+        }
+
+        // Expected Study Projects List Autosave
+        if (expectedStudy.getProjects() != null) {
+          for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
+            expectedStudyProject.setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
+          }
+        }
+
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setExpectedStudies(project.getProjectExpectedStudies().stream()
-          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
-        for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
-          expectedStudy.setProjects(
-            expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-          for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-            expectedStudyProject.setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
-            expectedStudyProject.getProject()
-              .setProjectInfo(expectedStudyProject.getProject().getProjecInfoPhase(this.getActualPhase()));
-          }
-        }
-        project.setSharedExpectedStudies(new ArrayList<>());
-        for (ExpectedStudyProject expectedStudyProject : project.getExpectedStudyProjects().stream()
-          .filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())) {
-          project.getSharedExpectedStudies().add(expectedStudyProject.getProjectExpectedStudy());
 
-        }
-        for (ProjectExpectedStudy expectedStudy : project.getSharedExpectedStudies()) {
-          expectedStudy.setProjects(
-            expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-          for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-            expectedStudyProject.setProject(projectManager.getProjectById(expectedStudyProject.getProject().getId()));
-            expectedStudyProject.getProject()
-              .setProjectInfo(expectedStudyProject.getProject().getProjecInfoPhase(this.getActualPhase()));
-          }
+        if (expectedStudy.getProjectExpectedStudyInfo() == null) {
+          expectedStudy.getProjectExpectedStudyInfo(phase);
         }
 
-        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
+        // Expected Study Countries List
+        if (expectedStudy.getProjectExpectedStudyCountries() == null) {
+          expectedStudy.setCountries(new ArrayList<>());
+        } else {
+          List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
+            .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId());
+          expectedStudy.setCountries(countries);
+        }
 
-      }
+        // Expected Study SubIdos List
+        if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
+          expectedStudy.setSubIdos(new ArrayList<>(expectedStudy.getProjectExpectedStudySubIdos().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
 
-      types = new HashMap<>();
-      List<TypeExpectedStudiesEnum> list = Arrays.asList(TypeExpectedStudiesEnum.values());
-      for (TypeExpectedStudiesEnum typeExpectedStudiesEnum : list) {
-        types.put(typeExpectedStudiesEnum.getId(), typeExpectedStudiesEnum.getType());
-      }
-      scopes = new HashMap<>();
-      List<GlobalScopeEnum> listScope = Arrays.asList(GlobalScopeEnum.values());
-      for (GlobalScopeEnum globalScopeEnum : listScope) {
-        scopes.put(globalScopeEnum.getId(), globalScopeEnum.getType());
-      }
-      subIdos = new HashMap<>();
-      for (SrfSubIdo srfSubIdo : srfSubIdoManager.findAll()) {
-        subIdos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
-      }
-      targets = new HashMap<>();
-      for (SrfSloIndicator srfSloIndicator : srfSloIndicatorManager.findAll()) {
-        targets.put(srfSloIndicator.getId(), srfSloIndicator.getTitle());
-      }
-      Phase phase = this.getActualPhase();
-      phase = phaseManager.getPhaseById(phase.getId());
-      myProjects = new ArrayList<>();
-      for (ProjectPhase projectPhase : phase.getProjectPhases().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList())) {
-        if (projectPhase.getProject().isActive()) {
-          projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
-          if (projectPhase.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || projectPhase.getProject().getProjectInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            myProjects.add(projectPhase.getProject());
-          }
+        // Expected Study Flagship List
+        if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
+          expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
 
+        // Expected Study Crp List
+        if (expectedStudy.getProjectExpectedStudyCrps() != null) {
+          expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Expected Study Institutions List
+        if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
+          expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Expected Study Srf Target List
+        if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
+          expectedStudy.setSrfTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudySrfTargets().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Expected Study Proyects List
+        if (expectedStudy.getExpectedStudyProjects() != null) {
+          expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
       }
 
-      Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-      myProjects.remove(project);
+
+      // Getting The list
+      statuses = new HashMap<>();
+      List<ProjectStatusEnum> listStatus = Arrays.asList(ProjectStatusEnum.values());
+      for (ProjectStatusEnum globalStatusEnum : listStatus) {
+        statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
+      }
+
+      countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
+        .collect(Collectors.toList());
+
+      geographicScopes = geographicScopeManager.findAll();
+      regions = repIndRegionManager.findAll();
+      organizationTypes = organizationTypeManager.findAll();
+      focusLevels = focusLevelManager.findAll();
+      policyInvestimentTypes = investimentTypeManager.findAll();
+      stageProcesses = stageProcessManager.findAll();
+      stageStudies = stageStudyManager.findAll();
+      studyTypes = studyTypeManager.findAll();
+      subIdos = srfSubIdoManager.findAll();
+      targets = srfSloIndicatorManager.findAll();
+
+      crps = crpManager.findAll().stream()
+        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+        .collect(Collectors.toList());
+
+      flagships = crpProgramManager.findAll().stream()
+        .filter(p -> p.isActive() && p.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+
+      institutions = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+
+
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
     if (this.isHttpPost()) {
-      if (project.getExpectedStudies() != null) {
-        project.getExpectedStudies().clear();
-        // project.setIndicators(null);
-      }
-
-
+      // TODO
     }
 
 
   }
-
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
 
 
-      if (project.getExpectedStudies() == null) {
-        project.setExpectedStudies(new ArrayList<>());
-      }
-      this.expectedStudiesPreviousData(project.getExpectedStudies());
-      this.expectedStudiesNewData();
       List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_RELATION);
-      relationsName.add(APConstants.PROJECT_INFO_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_PROJECTS_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SUBIDOS_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_FLAGSHIP_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_CRP_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_INSTITUTION_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
 
-
-      Project projectDB = projectManager.getProjectById(projectID);
-      projectDB.setActiveSince(new Date());
-      projectDB.setModifiedBy(this.getCurrentUser());
-      projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
-
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
@@ -508,9 +564,49 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
 
-  public void setMyProjects(List<Project> myProjects) {
-    this.myProjects = myProjects;
+  public void setCrps(List<GlobalUnit> crps) {
+    this.crps = crps;
+  }
+
+  public void setExpectedID(long expectedID) {
+    this.expectedID = expectedID;
+  }
+
+  public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
+    this.expectedStudy = expectedStudy;
+  }
+
+  public void setFlagships(List<CrpProgram> flagships) {
+    this.flagships = flagships;
+  }
+
+  public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
+    this.focusLevels = focusLevels;
+  }
+
+  public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
+    this.geographicScopes = geographicScopes;
+  }
+
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
+  }
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+  public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
+    this.organizationTypes = organizationTypes;
+  }
+
+
+  public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
+    this.policyInvestimentTypes = policyInvestimentTypes;
   }
 
 
@@ -524,17 +620,37 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
-  public void setScopes(Map<Integer, String> scopes) {
-    this.scopes = scopes;
+  public void setRegions(List<RepIndRegion> regions) {
+    this.regions = regions;
   }
 
 
-  public void setSubIdos(Map<Long, String> subIdos) {
+  public void setStageProcesses(List<RepIndStageProcess> stageProcesses) {
+    this.stageProcesses = stageProcesses;
+  }
+
+
+  public void setStageStudies(List<RepIndStageStudy> stageStudies) {
+    this.stageStudies = stageStudies;
+  }
+
+
+  public void setStatuses(Map<Integer, String> statuses) {
+    this.statuses = statuses;
+  }
+
+
+  public void setStudyTypes(List<StudyType> studyTypes) {
+    this.studyTypes = studyTypes;
+  }
+
+
+  public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
   }
 
 
-  public void setTargets(Map<Long, String> targets) {
+  public void setTargets(List<SrfSloIndicator> targets) {
     this.targets = targets;
   }
 
@@ -543,29 +659,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.transaction = transaction;
   }
 
-  public void setTypes(Map<Integer, String> types) {
-    this.types = types;
-  }
-
 
   @Override
   public void validate() {
     if (save) {
-      //
-      if (project.getExpectedStudies() != null) {
-        for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
-          if (projectExpectedStudy.getSrfSloIndicator() != null
-            && projectExpectedStudy.getSrfSloIndicator().getId().longValue() == -1) {
-            projectExpectedStudy.setSrfSloIndicator(null);
-          }
-          if (projectExpectedStudy.getSrfSubIdo() != null
-            && projectExpectedStudy.getSrfSubIdo().getId().longValue() == -1) {
-            projectExpectedStudy.setSrfSubIdo(null);
-          }
-        }
-      }
-      projectExpectedStudiesValidator.validate(this, project, true);
-
+      projectExpectedStudiesValidator.validate(this, project, expectedStudy, true);
     }
   }
 

@@ -3,449 +3,453 @@
   "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
   "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
-  <!-- Add addition packages and configuration here. -->
-  <constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
-  <constant name="struts.objectFactory.spring.autoWire" value="name" />
-  <constant name="struts.enable.SlashesInActionNames" value="true" />
-  <constant name="struts.mapper.alwaysSelectFullNamespace"
-    value="false" />
-  <constant name="struts.patternMatcher" value="regex" />
-  <constant name="struts.multipart.saveDir" value="/tmp" />
+	<!-- Add addition packages and configuration here. -->
+	<constant name="struts.objectFactory"
+		value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+	<constant name="struts.objectFactory.spring.autoWire" value="name" />
+	<constant name="struts.enable.SlashesInActionNames" value="true" />
+	<constant name="struts.mapper.alwaysSelectFullNamespace"
+		value="false" />
+	<constant name="struts.patternMatcher" value="regex" />
+	<constant name="struts.multipart.saveDir" value="/tmp" />
 
-  <!-- Rest api packages -->
-  <constant name="struts.action.extension" value="do,,json" />
-  <constant name="struts.mapper.class"
-    value="org.apache.struts2.dispatcher.mapper.PrefixBasedActionMapper" />
-  <constant name="struts.mapper.prefixMapping" value=":struts" />
-  <constant name="struts.convention.action.suffix" value="Action" />
-  <constant name="struts.convention.action.mapAllMatches" value="true" />
-    
-  <constant name="struts.localizedTextProvider" value="marloLocalizedTextProvider" />
-  
-  <!-- Spring MVC will power the REST services exposed by MARLO not Struts2 -->
-  <constant name="struts.action.excludePattern" value="/api/*"/>
+	<!-- Rest api packages -->
+	<constant name="struts.action.extension" value="do,,json" />
+	<constant name="struts.mapper.class"
+		value="org.apache.struts2.dispatcher.mapper.PrefixBasedActionMapper" />
+	<constant name="struts.mapper.prefixMapping" value=":struts" />
+	<constant name="struts.convention.action.suffix" value="Action" />
+	<constant name="struts.convention.action.mapAllMatches" value="true" />
 
-  <!-- Add addition packages and configuration here. -->
-  <package name="marlo-default" namespace="/" extends="struts-default">
+	<constant name="struts.localizedTextProvider" value="marloLocalizedTextProvider" />
 
-    <result-types>
-      <result-type name="freemarker"
-        class="org.apache.struts2.views.freemarker.FreemarkerResult"
-        default="true" />
-    </result-types>
+	<!-- Spring MVC will power the REST services exposed by MARLO not Struts2 -->
+	<constant name="struts.action.excludePattern" value="/api/*" />
 
-    <interceptors>
-      <!-- Interceptor to able the acces in Admin Sections -->
-      <interceptor name="accessibleAdmin"
-        class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
+	<!-- Add addition packages and configuration here. -->
+	<package name="marlo-default" namespace="/" extends="struts-default">
 
-      <interceptor name="requireUser"
-        class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
+		<result-types>
+			<result-type name="freemarker"
+				class="org.apache.struts2.views.freemarker.FreemarkerResult"
+				default="true" />
+		</result-types>
 
-      <interceptor name="i18nFile"
-        class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
+		<interceptors>
+			<!-- Interceptor to able the acces in Admin Sections -->
+			<interceptor name="accessibleAdmin"
+				class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
 
-      <!-- Custom interceptor to prevent the unauthorized access of a inactive 
-        section -->
-      <interceptor name="accessibleStage"
-        class="org.cgiar.ccafs.marlo.interceptor.AccessibleStageInterceptor" />
+			<interceptor name="requireUser"
+				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
 
-      <!-- custom interceptor to preserve action messages across redirects -->
-      <interceptor name="keepRedirectMessages"
-        class="org.cgiar.ccafs.marlo.interceptor.RedirectMessageInterceptor" />
+			<interceptor name="i18nFile"
+				class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
 
-      <!-- custom interceptor to remove all the whitespace present in the values 
-        received as paramter -->
-      <interceptor name="trimInputs"
-        class="org.cgiar.ccafs.marlo.interceptor.TrimInterceptor" />
+			<!-- Custom interceptor to prevent the unauthorized access of a inactive 
+				section -->
+			<interceptor name="accessibleStage"
+				class="org.cgiar.ccafs.marlo.interceptor.AccessibleStageInterceptor" />
 
-      <!-- validating if the crp entered in the action or url is valid. -->
-      <interceptor name="validCrp"
-        class="org.cgiar.ccafs.marlo.interceptor.ValidCrpActionInterceptor" />
+			<!-- custom interceptor to preserve action messages across redirects -->
+			<interceptor name="keepRedirectMessages"
+				class="org.cgiar.ccafs.marlo.interceptor.RedirectMessageInterceptor" />
 
-      <!-- validating if the url is valid in the open session -->
-      <interceptor name="validSessionCrp"
-        class="org.cgiar.ccafs.marlo.interceptor.ValidSessionCrpInterceptor" />
+			<!-- custom interceptor to remove all the whitespace present in the values 
+				received as paramter -->
+			<interceptor name="trimInputs"
+				class="org.cgiar.ccafs.marlo.interceptor.TrimInterceptor" />
 
-      <!-- Crp Admin interceptors -->
-      <interceptor name="canEditCrpAdmin"
-        class="org.cgiar.ccafs.marlo.interceptor.admin.EditCrpAdminInterceptor" />
+			<!-- validating if the crp entered in the action or url is valid. -->
+			<interceptor name="validCrp"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidCrpActionInterceptor" />
 
-      <!-- ImpactPathway interceptors -->
-      <interceptor name="canEditImpactPathway"
-        class="org.cgiar.ccafs.marlo.interceptor.impactpathway.EditImpactPathwayInterceptor" />
+			<!-- validating if the url is valid in the open session -->
+			<interceptor name="validSessionCrp"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidSessionCrpInterceptor" />
 
-      <!-- Project interceptors -->
-      <interceptor name="editProjectOutcome"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcomeInterceptor" />
+			<!-- Crp Admin interceptors -->
+			<interceptor name="canEditCrpAdmin"
+				class="org.cgiar.ccafs.marlo.interceptor.admin.EditCrpAdminInterceptor" />
 
-      <interceptor name="editDeliverable"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
+			<!-- ImpactPathway interceptors -->
+			<interceptor name="canEditImpactPathway"
+				class="org.cgiar.ccafs.marlo.interceptor.impactpathway.EditImpactPathwayInterceptor" />
 
-      <interceptor name="editHighlight"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
+			<!-- Project interceptors -->
+			<interceptor name="editProjectOutcome"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcomeInterceptor" />
 
-      <interceptor name="editCaseStudy"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditCaseStudyInterceptor" />
+			<interceptor name="editDeliverable"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
+
+			<interceptor name="editHighlight"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
+
+			<interceptor name="editCaseStudy"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditCaseStudyInterceptor" />
 
 
-      <interceptor name="editFunding"
-        class="org.cgiar.ccafs.marlo.interceptor.funding.FundingSourceInterceptor" />
+			<interceptor name="editFunding"
+				class="org.cgiar.ccafs.marlo.interceptor.funding.FundingSourceInterceptor" />
 
-      <interceptor name="canEditProject"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
+			<interceptor name="canEditProject"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
 
-      <interceptor name="canEditPublication"
-        class="org.cgiar.ccafs.marlo.interceptor.publication.PublicationInterceptor" />
+			<interceptor name="canEditPublication"
+				class="org.cgiar.ccafs.marlo.interceptor.publication.PublicationInterceptor" />
 
-      <interceptor name="canEditSynthesis"
-        class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditSynthesisInterceptor" />
+			<interceptor name="canEditSynthesis"
+				class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditSynthesisInterceptor" />
 
-      <interceptor name="canEditCrp"
-        class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditCrpIndicatorsInterceptor" />
-        
-        <interceptor name="editInnovation"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditInnovationInterceptor" />
+			<interceptor name="canEditCrp"
+				class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditCrpIndicatorsInterceptor" />
 
-      <!-- SuperAdmin interceptors -->
-      <interceptor name="superAdminValidation"
-        class="org.cgiar.ccafs.marlo.interceptor.superadmin.SuperAdminInterceptor" />
+			<interceptor name="editInnovation"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditInnovationInterceptor" />
 
-      <!-- Security (Json) interceptors -->
-      <interceptor name="SecurityControl"
-        class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
-        
-      <!-- POWB interceptors -->
-      <interceptor name="canEditPowbSynthesis"
-        class="org.cgiar.ccafs.marlo.interceptor.powb.CanEditPowbSynthesisInterceptor" />
+			<interceptor name="editExpectedStudy"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditExpectedStudyInterceptor" />
 
-      <!-- *********************************** CENTER INTERCEPTORS *********************************** -->
-      <!-- validating if the center is valid in the open session -->
-      <interceptor name="validCenter"
-        class="org.cgiar.ccafs.marlo.interceptor.center.ValidCenterActionInterceptor" />
-      <!-- validating if the url is valid in the open session -->
-      <interceptor name="validCenterSession"
-        class="org.cgiar.ccafs.marlo.interceptor.center.ValidSessionInterceptor" />
-      <!-- validating if the user have edit privileges to impact pathway -->
-      <interceptor name="editCenterImpactPathway"
-        class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditImpactPathwayInterceptor" />
-      <!-- validating if the user have edit privileges to impact pathway - outcomes -->
-      <interceptor name="editCenterOutcome"
-        class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditOutcomeInterceptor" />
-      <!-- validating if the user have edit privileges to impact pathway - outputs -->
-      <interceptor name="editCenterOutput"
-        class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditOutputInterceptor" />
-      <!-- validating if the user have edit privileges to impact pathway -->
-      <interceptor name="editCenterProject"
-        class="org.cgiar.ccafs.marlo.interceptor.center.monitoring.project.EditProjectInterceptor" />
-      <interceptor name="editCenterDeliverable"
-        class="org.cgiar.ccafs.marlo.interceptor.center.monitoring.project.EditDeliverableInterceptor" />
-      <!-- Custom interceptor to prevent the unauthorized access of a inactive 
-        section -->
-      <interceptor name="centerAccessibleStage"
-        class="org.cgiar.ccafs.marlo.interceptor.center.AccessibleCenterStageInterceptor" />
-        
-        
-        <!-- validation if the user can edit the capdev intervention -->
-        <interceptor name="editCapdev"
-        class="org.cgiar.ccafs.marlo.interceptor.center.capdev.EditCapacityDevInterceptor" />
+			<!-- SuperAdmin interceptors -->
+			<interceptor name="superAdminValidation"
+				class="org.cgiar.ccafs.marlo.interceptor.superadmin.SuperAdminInterceptor" />
 
-      <!-- ******************************************************************************************* -->
+			<!-- Security (Json) interceptors -->
+			<interceptor name="SecurityControl"
+				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
 
-      <!-- stack from home packgae -->
-      <interceptor-stack name="homeStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<!-- POWB interceptors -->
+			<interceptor name="canEditPowbSynthesis"
+				class="org.cgiar.ccafs.marlo.interceptor.powb.CanEditPowbSynthesisInterceptor" />
 
-      <interceptor-stack name="crpAdminStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="accessibleAdmin" />
-        <interceptor-ref name="canEditCrpAdmin" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<!-- *********************************** CENTER INTERCEPTORS *********************************** -->
+			<!-- validating if the center is valid in the open session -->
+			<interceptor name="validCenter"
+				class="org.cgiar.ccafs.marlo.interceptor.center.ValidCenterActionInterceptor" />
+			<!-- validating if the url is valid in the open session -->
+			<interceptor name="validCenterSession"
+				class="org.cgiar.ccafs.marlo.interceptor.center.ValidSessionInterceptor" />
+			<!-- validating if the user have edit privileges to impact pathway -->
+			<interceptor name="editCenterImpactPathway"
+				class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditImpactPathwayInterceptor" />
+			<!-- validating if the user have edit privileges to impact pathway - outcomes -->
+			<interceptor name="editCenterOutcome"
+				class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditOutcomeInterceptor" />
+			<!-- validating if the user have edit privileges to impact pathway - outputs -->
+			<interceptor name="editCenterOutput"
+				class="org.cgiar.ccafs.marlo.interceptor.center.impactpathway.EditOutputInterceptor" />
+			<!-- validating if the user have edit privileges to impact pathway -->
+			<interceptor name="editCenterProject"
+				class="org.cgiar.ccafs.marlo.interceptor.center.monitoring.project.EditProjectInterceptor" />
+			<interceptor name="editCenterDeliverable"
+				class="org.cgiar.ccafs.marlo.interceptor.center.monitoring.project.EditDeliverableInterceptor" />
+			<!-- Custom interceptor to prevent the unauthorized access of a inactive 
+				section -->
+			<interceptor name="centerAccessibleStage"
+				class="org.cgiar.ccafs.marlo.interceptor.center.AccessibleCenterStageInterceptor" />
 
-      <interceptor-stack name="impactPathwayStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditImpactPathway" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
 
-      <interceptor-stack name="projectsStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<!-- validation if the user can edit the capdev intervention -->
+			<interceptor name="editCapdev"
+				class="org.cgiar.ccafs.marlo.interceptor.center.capdev.EditCapacityDevInterceptor" />
 
-      <interceptor-stack name="projectListStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="SecurityControl" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<!-- ******************************************************************************************* -->
 
-      <interceptor-stack name="editProjectsStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditProject" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<!-- stack from home packgae -->
+			<interceptor-stack name="homeStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-  <interceptor-stack name="editFSStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="editFunding" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="crpAdminStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="accessibleAdmin" />
+				<interceptor-ref name="canEditCrpAdmin" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="editSynthesisStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditSynthesis" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="impactPathwayStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditImpactPathway" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="editCrpIndicatorsStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-      <interceptor-stack name="editPublicationStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditPublication" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="projectsStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="editProjectListStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-      </interceptor-stack>
+			<interceptor-stack name="projectListStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="SecurityControl" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="superAdminStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="superAdminValidation" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-      
-      <interceptor-stack name="editPowbStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditPowbSynthesis" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="editProjectsStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditProject" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <!-- *********************************** CENTER INTERCEPTORS STACKS *********************************** -->
-      <interceptor-stack name="centerHomeStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="editFSStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="editFunding" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="centerSectionStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="editSynthesisStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditSynthesis" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="centerImpactPathwayStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="editCenterImpactPathway" />
-        <interceptor-ref name="centerAccessibleStage" />        
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="editCrpIndicatorsStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+			<interceptor-stack name="editPublicationStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditPublication" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="centerProjectStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="editCenterProject" />
-        <interceptor-ref name="centerAccessibleStage" />  
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="editProjectListStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+			</interceptor-stack>
 
-      <interceptor-stack name="centerDeliverableStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="editCenterDeliverable" />
-        <interceptor-ref name="centerAccessibleStage" />  
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="superAdminStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="superAdminValidation" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="centerOutcomeStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="editCenterOutcome" />
-        <interceptor-ref name="centerAccessibleStage" />  
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+			<interceptor-stack name="editPowbStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditPowbSynthesis" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-      <interceptor-stack name="centerOutputStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="centerAccessibleStage" />  
-        <interceptor-ref name="editCenterOutput" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-      
-      <interceptor-stack name="centerCapdevStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="editCapdev" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-       <!-- 
-       ******************************************************************************************* -->  
+			<!-- *********************************** CENTER INTERCEPTORS STACKS *********************************** -->
+			<interceptor-stack name="centerHomeStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-    </interceptors>
+			<interceptor-stack name="centerSectionStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-    <default-action-ref name="login" />
+			<interceptor-stack name="centerImpactPathwayStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="editCenterImpactPathway" />
+				<interceptor-ref name="centerAccessibleStage" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-    <global-results>
-      <result name="savedStatus">
-        /WEB-INF/global/pages/saveStatus.ftl
-      </result>
-      <result name="401">
-        /WEB-INF/global/pages/error/401.ftl
-      </result>
-      <result name="403">
-        /WEB-INF/global/pages/error/403.ftl
-      </result>
-      <result name="404">
-        /WEB-INF/global/pages/error/404.ftl
-      </result>
-      <result name="unhandledException" type="chain">
-        <param name="actionName">unhandledExceptionAction</param>
-        <param name="namespace">/</param>
-      </result>
-    </global-results>
+			<interceptor-stack name="centerProjectStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="editCenterProject" />
+				<interceptor-ref name="centerAccessibleStage" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-    <global-exception-mappings>
-      <exception-mapping exception="java.lang.Exception"
-        result="unhandledException" />
-      <exception-mapping exception="org.apache.shiro.authz.AuthorizationException"
-        result="403"/>
-    </global-exception-mappings>
+			<interceptor-stack name="centerDeliverableStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="editCenterDeliverable" />
+				<interceptor-ref name="centerAccessibleStage" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-    <action name="unhandledExceptionAction"
-      class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
-      <result name="input">/WEB-INF/global/pages/error/500.ftl</result>
-      <result name="input">/WEB-INF/global/pages/error/404.ftl</result>
-      <result name="input">/WEB-INF/global/pages/error/500.ftl</result>
-    </action>
+			<interceptor-stack name="centerOutcomeStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="editCenterOutcome" />
+				<interceptor-ref name="centerAccessibleStage" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-    <action name="glossary" class="org.cgiar.ccafs.marlo.action.BaseAction">
-      <result name="input">/WEB-INF/global/pages/glossary.ftl</result>
-    </action>
-    <action name="legalInformation" class="org.cgiar.ccafs.marlo.action.BaseAction">
-      <result name="input">/WEB-INF/global/pages/legalInformation.ftl</result>
-    </action>
-  </package>
+			<interceptor-stack name="centerOutputStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="centerAccessibleStage" />
+				<interceptor-ref name="editCenterOutput" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
-  <include file="struts-json.xml" />
-  <include file="struts-home.xml" />
-  <include file="struts-admin.xml" />
-  <include file="struts-superadmin.xml" />
-  <include file="struts-impactPathway.xml" />
-  <include file="struts-projects.xml" />
-  <include file="struts-fundingSources.xml" />
-  <include file="struts-summaries.xml" />
-  <include file="struts-synthesis.xml" />
-  <include file="struts-powb.xml" />
-  <include file="struts-annualReport.xml" />
-  <include file="struts-publications.xml" />
-  <include file="struts-studies.xml" />
+			<interceptor-stack name="centerCapdevStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="editCapdev" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+			<!-- ******************************************************************************************* -->
 
-  <include file="struts-center-home.xml" />
-  <include file="struts-center-impactPathway.xml" />
-  <include file="struts-center-monitoring.xml" />
-  <include file="struts-center-admin.xml" />
-  <include file="struts-center-summaries.xml" />
-  <include file="struts-center-capDev.xml" />
+		</interceptors>
+
+		<default-action-ref name="login" />
+
+		<global-results>
+			<result name="savedStatus">
+				/WEB-INF/global/pages/saveStatus.ftl
+			</result>
+			<result name="401">
+				/WEB-INF/global/pages/error/401.ftl
+			</result>
+			<result name="403">
+				/WEB-INF/global/pages/error/403.ftl
+			</result>
+			<result name="404">
+				/WEB-INF/global/pages/error/404.ftl
+			</result>
+			<result name="unhandledException" type="chain">
+				<param name="actionName">unhandledExceptionAction</param>
+				<param name="namespace">/</param>
+			</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Exception"
+				result="unhandledException" />
+			<exception-mapping exception="org.apache.shiro.authz.AuthorizationException"
+				result="403" />
+		</global-exception-mappings>
+
+		<action name="unhandledExceptionAction"
+			class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
+			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
+			<result name="input">/WEB-INF/global/pages/error/404.ftl</result>
+			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
+		</action>
+
+		<action name="glossary" class="org.cgiar.ccafs.marlo.action.BaseAction">
+			<result name="input">/WEB-INF/global/pages/glossary.ftl</result>
+		</action>
+		<action name="legalInformation" class="org.cgiar.ccafs.marlo.action.BaseAction">
+			<result name="input">/WEB-INF/global/pages/legalInformation.ftl
+			</result>
+		</action>
+	</package>
+
+	<include file="struts-json.xml" />
+	<include file="struts-home.xml" />
+	<include file="struts-admin.xml" />
+	<include file="struts-superadmin.xml" />
+	<include file="struts-impactPathway.xml" />
+	<include file="struts-projects.xml" />
+	<include file="struts-fundingSources.xml" />
+	<include file="struts-summaries.xml" />
+	<include file="struts-synthesis.xml" />
+	<include file="struts-powb.xml" />
+	<include file="struts-annualReport.xml" />
+	<include file="struts-publications.xml" />
+	<include file="struts-studies.xml" />
+
+	<include file="struts-center-home.xml" />
+	<include file="struts-center-impactPathway.xml" />
+	<include file="struts-center-monitoring.xml" />
+	<include file="struts-center-admin.xml" />
+	<include file="struts-center-summaries.xml" />
+	<include file="struts-center-capDev.xml" />
 
 </struts>

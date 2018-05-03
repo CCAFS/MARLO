@@ -15,11 +15,14 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudySubIdoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,11 +36,14 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
 
   private ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectExpectedStudySubIdoManagerImpl(ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO) {
+  public ProjectExpectedStudySubIdoManagerImpl(ProjectExpectedStudySubIdoDAO projectExpectedStudySubIdoDAO,
+    PhaseDAO phaseDAO) {
     this.projectExpectedStudySubIdoDAO = projectExpectedStudySubIdoDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -45,7 +51,32 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
   @Override
   public void deleteProjectExpectedStudySubIdo(long projectExpectedStudySubIdoId) {
 
+    ProjectExpectedStudySubIdo projectExpectedStudySubIdo =
+      this.getProjectExpectedStudySubIdoById(projectExpectedStudySubIdoId);
+
+    if (projectExpectedStudySubIdo.getPhase().getNext() != null) {
+      this.deleteProjectExpectedStudySubIdoPhase(projectExpectedStudySubIdo.getPhase().getNext(),
+        projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
+    }
+
     projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoId);
+  }
+
+  public void deleteProjectExpectedStudySubIdoPhase(Phase next, long expectedID,
+    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = phase.getProjectExpectedStudySubIdos().stream()
+      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getSrfSubIdo().getId().equals(projectExpectedStudySubIdo.getSrfSubIdo().getId()))
+      .collect(Collectors.toList());
+    for (ProjectExpectedStudySubIdo projectExpectedStudySubIdoDB : projectExpectedStudySubIdos) {
+      projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudySubIdoPhase(phase.getNext(), expectedID, projectExpectedStudySubIdo);
+    }
   }
 
   @Override
@@ -67,10 +98,41 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
     return projectExpectedStudySubIdoDAO.find(projectExpectedStudySubIdoID);
   }
 
-  @Override
-  public ProjectExpectedStudySubIdo saveProjectExpectedStudySubIdo(ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+  public void saveExpectedStudySubIdoPhase(Phase next, long expectedID,
+    ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+    Phase phase = phaseDAO.find(next.getId());
 
-    return projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
+    List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = phase.getProjectExpectedStudySubIdos().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getSrfSubIdo().getId().equals(projectExpectedStudySubIdo.getSrfSubIdo().getId()))
+      .collect(Collectors.toList());
+
+    if (projectExpectedStudySubIdos.isEmpty()) {
+      ProjectExpectedStudySubIdo projectExpectedStudySubIdoAdd = new ProjectExpectedStudySubIdo();
+      projectExpectedStudySubIdoAdd.setProjectExpectedStudy(projectExpectedStudySubIdo.getProjectExpectedStudy());
+      projectExpectedStudySubIdoAdd.setPhase(phase);
+      projectExpectedStudySubIdoAdd.setSrfSubIdo(projectExpectedStudySubIdo.getSrfSubIdo());
+      projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdoAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveExpectedStudySubIdoPhase(phase.getNext(), expectedID, projectExpectedStudySubIdo);
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudySubIdo
+    saveProjectExpectedStudySubIdo(ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
+
+    ProjectExpectedStudySubIdo SubIdo = projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
+
+    if (SubIdo.getPhase().getNext() != null) {
+      this.saveExpectedStudySubIdoPhase(SubIdo.getPhase().getNext(), SubIdo.getProjectExpectedStudy().getId(),
+        projectExpectedStudySubIdo);
+    }
+
+    return SubIdo;
   }
 
 

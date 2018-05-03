@@ -15,11 +15,14 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudySrfTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,11 +36,14 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
 
   private ProjectExpectedStudySrfTargetDAO projectExpectedStudySrfTargetDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectExpectedStudySrfTargetManagerImpl(ProjectExpectedStudySrfTargetDAO projectExpectedStudySrfTargetDAO) {
+  public ProjectExpectedStudySrfTargetManagerImpl(ProjectExpectedStudySrfTargetDAO projectExpectedStudySrfTargetDAO,
+    PhaseDAO phaseDAO) {
     this.projectExpectedStudySrfTargetDAO = projectExpectedStudySrfTargetDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -45,7 +51,33 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
   @Override
   public void deleteProjectExpectedStudySrfTarget(long projectExpectedStudySrfTargetId) {
 
+    ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget =
+      this.getProjectExpectedStudySrfTargetById(projectExpectedStudySrfTargetId);
+
+    if (projectExpectedStudySrfTarget.getPhase().getNext() != null) {
+      this.deleteProjectExpectedStudySrfTargetPhase(projectExpectedStudySrfTarget.getPhase().getNext(),
+        projectExpectedStudySrfTarget.getProjectExpectedStudy().getId(), projectExpectedStudySrfTarget);
+    }
+
     projectExpectedStudySrfTargetDAO.deleteProjectExpectedStudySrfTarget(projectExpectedStudySrfTargetId);
+  }
+
+  public void deleteProjectExpectedStudySrfTargetPhase(Phase next, long expectedID,
+    ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets =
+      phase.getProjectExpectedStudySrfTargets().stream()
+        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+          && c.getSrfSloIndicator().getId().equals(projectExpectedStudySrfTarget.getSrfSloIndicator().getId()))
+        .collect(Collectors.toList());
+    for (ProjectExpectedStudySrfTarget projectExpectedStudySrfTargetDB : projectExpectedStudySrfTargets) {
+      projectExpectedStudySrfTargetDAO.deleteProjectExpectedStudySrfTarget(projectExpectedStudySrfTargetDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudySrfTargetPhase(phase.getNext(), expectedID, projectExpectedStudySrfTarget);
+    }
   }
 
   @Override
@@ -67,10 +99,43 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
     return projectExpectedStudySrfTargetDAO.find(projectExpectedStudySrfTargetID);
   }
 
-  @Override
-  public ProjectExpectedStudySrfTarget saveProjectExpectedStudySrfTarget(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget) {
+  public void saveExpectedStudySrfTargetPhase(Phase next, long expectedID,
+    ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget) {
+    Phase phase = phaseDAO.find(next.getId());
 
-    return projectExpectedStudySrfTargetDAO.save(projectExpectedStudySrfTarget);
+    List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets =
+      phase.getProjectExpectedStudySrfTargets().stream()
+        .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+          && c.getSrfSloIndicator().getId().equals(projectExpectedStudySrfTarget.getSrfSloIndicator().getId()))
+        .collect(Collectors.toList());
+
+    if (projectExpectedStudySrfTargets.isEmpty()) {
+      ProjectExpectedStudySrfTarget projectExpectedStudySrfTargetAdd = new ProjectExpectedStudySrfTarget();
+      projectExpectedStudySrfTargetAdd.setProjectExpectedStudy(projectExpectedStudySrfTarget.getProjectExpectedStudy());
+      projectExpectedStudySrfTargetAdd.setPhase(phase);
+      projectExpectedStudySrfTargetAdd.setSrfSloIndicator(projectExpectedStudySrfTarget.getSrfSloIndicator());
+      projectExpectedStudySrfTargetDAO.save(projectExpectedStudySrfTargetAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveExpectedStudySrfTargetPhase(phase.getNext(), expectedID, projectExpectedStudySrfTarget);
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudySrfTarget
+    saveProjectExpectedStudySrfTarget(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget) {
+
+
+    ProjectExpectedStudySrfTarget srfTarget = projectExpectedStudySrfTargetDAO.save(projectExpectedStudySrfTarget);
+
+    if (srfTarget.getPhase().getNext() != null) {
+      this.saveExpectedStudySrfTargetPhase(srfTarget.getPhase().getNext(), srfTarget.getProjectExpectedStudy().getId(),
+        projectExpectedStudySrfTarget);
+    }
+
+    return srfTarget;
   }
 
 

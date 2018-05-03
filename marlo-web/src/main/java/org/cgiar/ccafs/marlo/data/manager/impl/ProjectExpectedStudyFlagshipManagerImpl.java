@@ -15,11 +15,14 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyFlagshipDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,11 +36,13 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
 
   private ProjectExpectedStudyFlagshipDAO projectExpectedStudyFlagshipDAO;
   // Managers
-
+  private PhaseDAO phaseDAO;
 
   @Inject
-  public ProjectExpectedStudyFlagshipManagerImpl(ProjectExpectedStudyFlagshipDAO projectExpectedStudyFlagshipDAO) {
+  public ProjectExpectedStudyFlagshipManagerImpl(ProjectExpectedStudyFlagshipDAO projectExpectedStudyFlagshipDAO,
+    PhaseDAO phaseDAO) {
     this.projectExpectedStudyFlagshipDAO = projectExpectedStudyFlagshipDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -45,7 +50,32 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
   @Override
   public void deleteProjectExpectedStudyFlagship(long projectExpectedStudyFlagshipId) {
 
+    ProjectExpectedStudyFlagship projectExpectedStudyFlagship =
+      this.getProjectExpectedStudyFlagshipById(projectExpectedStudyFlagshipId);
+
+    if (projectExpectedStudyFlagship.getPhase().getNext() != null) {
+      this.deleteProjectExpectedStudyFlagshipPhase(projectExpectedStudyFlagship.getPhase().getNext(),
+        projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
+    }
+
     projectExpectedStudyFlagshipDAO.deleteProjectExpectedStudyFlagship(projectExpectedStudyFlagshipId);
+  }
+
+  public void deleteProjectExpectedStudyFlagshipPhase(Phase next, long expectedID,
+    ProjectExpectedStudyFlagship projectExpectedStudyFlagship) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships = phase.getProjectExpectedStudyFlagships().stream()
+      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getCrpProgram().getId().equals(projectExpectedStudyFlagship.getCrpProgram().getId()))
+      .collect(Collectors.toList());
+    for (ProjectExpectedStudyFlagship projectExpectedStudyFlagshipDB : projectExpectedStudyFlagships) {
+      projectExpectedStudyFlagshipDAO.deleteProjectExpectedStudyFlagship(projectExpectedStudyFlagshipDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudyFlagshipPhase(phase.getNext(), expectedID, projectExpectedStudyFlagship);
+    }
   }
 
   @Override
@@ -67,10 +97,41 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
     return projectExpectedStudyFlagshipDAO.find(projectExpectedStudyFlagshipID);
   }
 
-  @Override
-  public ProjectExpectedStudyFlagship saveProjectExpectedStudyFlagship(ProjectExpectedStudyFlagship projectExpectedStudyFlagship) {
+  public void saveExpectedStudyFlagshipPhase(Phase next, long expectedID,
+    ProjectExpectedStudyFlagship projectExpectedStudyFlagship) {
+    Phase phase = phaseDAO.find(next.getId());
 
-    return projectExpectedStudyFlagshipDAO.save(projectExpectedStudyFlagship);
+    List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships = phase.getProjectExpectedStudyFlagships().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getCrpProgram().getId().equals(projectExpectedStudyFlagship.getCrpProgram().getId()))
+      .collect(Collectors.toList());
+
+    if (projectExpectedStudyFlagships.isEmpty()) {
+      ProjectExpectedStudyFlagship projectExpectedStudyFlagshipAdd = new ProjectExpectedStudyFlagship();
+      projectExpectedStudyFlagshipAdd.setProjectExpectedStudy(projectExpectedStudyFlagship.getProjectExpectedStudy());
+      projectExpectedStudyFlagshipAdd.setPhase(phase);
+      projectExpectedStudyFlagshipAdd.setCrpProgram(projectExpectedStudyFlagship.getCrpProgram());
+      projectExpectedStudyFlagshipDAO.save(projectExpectedStudyFlagshipAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveExpectedStudyFlagshipPhase(phase.getNext(), expectedID, projectExpectedStudyFlagship);
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudyFlagship
+    saveProjectExpectedStudyFlagship(ProjectExpectedStudyFlagship projectExpectedStudyFlagship) {
+
+    ProjectExpectedStudyFlagship flagship = projectExpectedStudyFlagshipDAO.save(projectExpectedStudyFlagship);
+
+    if (flagship.getPhase().getNext() != null) {
+      this.saveExpectedStudyFlagshipPhase(flagship.getPhase().getNext(), flagship.getProjectExpectedStudy().getId(),
+        projectExpectedStudyFlagship);
+    }
+
+    return flagship;
   }
 
 

@@ -29,7 +29,7 @@ public enum ProjectSectionStatusEnum {
   CASESTUDIES("caseStudies"), HIGHLIGHTS("highlights"), LEVERAGES("leverages"), DELIVERABLE("deliverable"),
   SYNTHESISMOG("synthesisByMog"), SYNTHESISOUTCOME("outcomeSynthesisPandR"), FUNDINGSOURCE("fundingSource"),
   CRP_INDICATORS("crpIndicators"), EXPECTEDSTUDIES("expectedStudies"), INNOVATIONS("innovationsList"),
-  INNOVATION("innovation"), HIGHLIGHT("highlight");
+  INNOVATION("innovation"), HIGHLIGHT("highlight"), EXPECTEDSTUDY("expectedStudy");
 
   public static ProjectSectionStatusEnum value(String status) {
     ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();

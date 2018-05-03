@@ -21,14 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,85 +52,30 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction action, Project project, boolean saving) {
+  public void validate(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy, boolean saving) {
     action.setInvalidFields(new HashMap<>());
+
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
-
       if (path.toFile().exists()) {
         action.addMissingField("draft");
       }
     }
 
 
-    if (project.getExpectedStudies() == null) {
-      project.setExpectedStudies(new ArrayList<>());
-    }
-
-    /*
-     * if (project.getExpectedStudies().isEmpty()) {
-     * action.addMessage(action.getText("empty expected"));
-     * }
-     */
-    int i = 0;
-    for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
-
-      this.validateProjectExpectedStudy(projectExpectedStudy, i, "expectedStudies", action);
-      i++;
-
-    }
-
-
-    if (!action.getFieldErrors().isEmpty())
-
-    {
+    if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (action.getValidationMessage().length() > 0)
-
-    {
+    } else if (action.getValidationMessage().length() > 0) {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
-    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
+    this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
+      action.getActualPhase().getYear(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
 
   }
 
   public void validateProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy, int index, String listName,
     BaseAction action) {
-
-    List<String> params = new ArrayList<>();
-    params.add(String.valueOf(projectExpectedStudy.getId()));
-
-    if (!(this.isValidString(projectExpectedStudy.getTopicStudy())
-      && this.wordCount(projectExpectedStudy.getTopicStudy()) <= 100)) {
-      action.addMessage(action.getText("projectExpectedStudy.topic", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].topicStudy",
-        InvalidFieldsMessages.EMPTYFIELD);
-
-    }
-
-    if (!(this.isValidString(projectExpectedStudy.getComments())
-      && this.wordCount(projectExpectedStudy.getComments()) <= 100)) {
-      action.addMessage(action.getText("projectExpectedStudy.comments", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].comments",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if (projectExpectedStudy.getType().intValue() <= 0) {
-      action.addMessage(action.getText("projectExpectedStudy.type", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].type",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if (projectExpectedStudy.getScope().intValue() <= 0) {
-      action.addMessage(action.getText("projectExpectedStudy.scope", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].scope",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if (projectExpectedStudy.getSrfSubIdo() == null) {
-      action.addMessage(action.getText("projectExpectedStudy.srfSubIdo", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].srfSubIdo.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
   }
 }

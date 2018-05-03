@@ -30,6 +30,7 @@ public final class APConstants {
   public static final String CRP_PARTNERS_OFFICE = "crp_partners_office";
   public static final String PARTNER_ID = "partnerId";
 
+  public static final String EXPECTED_REQUEST_ID = "expectedID";
   public static final String INNOVATION_REQUEST_ID = "innovationID";
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
@@ -234,8 +235,26 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
 
-  public static final String PROJECT_EXPECTED_STUDIES_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectExpectedStudies)";
+  public static final String PROJECT_EXPECTED_STUDIES_PROJECTS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.expectedStudyProjects)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_SUBIDOS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudySubIdos)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_FLAGSHIP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyFlagships)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyCrps)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_INSTITUTION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyInstitutions)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyCountries)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudySrfTargets)";
 
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";

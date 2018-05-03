@@ -15,11 +15,14 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyCountryDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,19 +36,48 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
 
   private ProjectExpectedStudyCountryDAO projectExpectedStudyCountryDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectExpectedStudyCountryManagerImpl(ProjectExpectedStudyCountryDAO projectExpectedStudyCountryDAO) {
+  public ProjectExpectedStudyCountryManagerImpl(ProjectExpectedStudyCountryDAO projectExpectedStudyCountryDAO,
+    PhaseDAO phaseDAO) {
     this.projectExpectedStudyCountryDAO = projectExpectedStudyCountryDAO;
-
+    this.phaseDAO = phaseDAO;
 
   }
 
   @Override
   public void deleteProjectExpectedStudyCountry(long projectExpectedStudyCountryId) {
 
+
+    ProjectExpectedStudyCountry projectExpectedStudyCountry =
+      this.getProjectExpectedStudyCountryById(projectExpectedStudyCountryId);
+
+    if (projectExpectedStudyCountry.getPhase().getNext() != null) {
+      this.deleteProjectExpectedStudyCountryPhase(projectExpectedStudyCountry.getPhase().getNext(),
+        projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
+    }
+
     projectExpectedStudyCountryDAO.deleteProjectExpectedStudyCountry(projectExpectedStudyCountryId);
+
+  }
+
+  public void deleteProjectExpectedStudyCountryPhase(Phase next, long expectedID,
+    ProjectExpectedStudyCountry projectExpectedStudyCountry) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyCountry> projectExpectedStudyCountries = phase.getProjectExpectedStudyCountries().stream()
+      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getLocElement().getId().equals(projectExpectedStudyCountry.getLocElement().getId()))
+      .collect(Collectors.toList());
+    for (ProjectExpectedStudyCountry projectExpectedStudyCountryDB : projectExpectedStudyCountries) {
+      projectExpectedStudyCountryDAO.deleteProjectExpectedStudyCountry(projectExpectedStudyCountryDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectExpectedStudyCountryPhase(phase.getNext(), expectedID, projectExpectedStudyCountry);
+    }
   }
 
   @Override
@@ -53,6 +85,7 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
 
     return projectExpectedStudyCountryDAO.existProjectExpectedStudyCountry(projectExpectedStudyCountryID);
   }
+
 
   @Override
   public List<ProjectExpectedStudyCountry> findAll() {
@@ -68,9 +101,47 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
   }
 
   @Override
-  public ProjectExpectedStudyCountry saveProjectExpectedStudyCountry(ProjectExpectedStudyCountry projectExpectedStudyCountry) {
+  public List<ProjectExpectedStudyCountry> getProjectExpectedStudyCountrybyPhase(long expectedID, long phaseID) {
+    return projectExpectedStudyCountryDAO.getProjectExpectedStudyCountrybyPhase(expectedID, phaseID);
+  }
 
-    return projectExpectedStudyCountryDAO.save(projectExpectedStudyCountry);
+  public void saveExpectedStudyCountryPhase(Phase next, long expectedID,
+    ProjectExpectedStudyCountry projectExpectedStudyCountry) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudyCountry> projectExpectedStudyCountries = phase.getProjectExpectedStudyCountries().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getLocElement().getId().equals(projectExpectedStudyCountry.getLocElement().getId()))
+      .collect(Collectors.toList());
+
+    if (projectExpectedStudyCountries.isEmpty()) {
+      ProjectExpectedStudyCountry projectExpectedStudyCountriesAdd = new ProjectExpectedStudyCountry();
+      projectExpectedStudyCountriesAdd.setProjectExpectedStudy(projectExpectedStudyCountry.getProjectExpectedStudy());
+      projectExpectedStudyCountriesAdd.setPhase(phase);
+      projectExpectedStudyCountriesAdd.setLocElement(projectExpectedStudyCountry.getLocElement());
+      projectExpectedStudyCountryDAO.save(projectExpectedStudyCountriesAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveExpectedStudyCountryPhase(phase.getNext(), expectedID, projectExpectedStudyCountry);
+    }
+  }
+
+  @Override
+  public ProjectExpectedStudyCountry
+    saveProjectExpectedStudyCountry(ProjectExpectedStudyCountry projectExpectedStudyCountry) {
+
+    ProjectExpectedStudyCountry country = projectExpectedStudyCountryDAO.save(projectExpectedStudyCountry);
+
+    Phase phase = phaseDAO.find(country.getPhase().getId());
+
+    if (country.getPhase().getNext() != null) {
+      this.saveExpectedStudyCountryPhase(country.getPhase().getNext(), country.getProjectExpectedStudy().getId(),
+        projectExpectedStudyCountry);
+    }
+
+    return country;
   }
 
 

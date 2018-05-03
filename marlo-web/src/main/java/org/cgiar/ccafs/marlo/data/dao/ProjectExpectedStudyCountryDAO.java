@@ -54,12 +54,23 @@ public interface ProjectExpectedStudyCountryDAO {
    */
   public List<ProjectExpectedStudyCountry> findAll();
 
+  /**
+   * This method gets a projectExpectedStudyCountry object list by a given expected Study and phase identifier.
+   * 
+   * @param expectedID is the expected Study identifier.
+   * @param phaseID is the phase identifier.
+   * @return a projectExpectedStudyCountry object list.
+   */
+  public List<ProjectExpectedStudyCountry> getProjectExpectedStudyCountrybyPhase(long expectedID, long phaseID);
+
 
   /**
    * This method saves the information of the given projectExpectedStudyCountry
    * 
-   * @param projectExpectedStudyCountry - is the projectExpectedStudyCountry object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyCountry was
+   * @param projectExpectedStudyCountry - is the projectExpectedStudyCountry object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyCountry was
    *         updated
    *         or -1 is some error occurred.
    */

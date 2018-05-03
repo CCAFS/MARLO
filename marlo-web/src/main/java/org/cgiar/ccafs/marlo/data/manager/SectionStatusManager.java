@@ -123,12 +123,21 @@ public interface SectionStatusManager {
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
+   * @param expectedID is the expectedID identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year,
+    String sectionName);
+
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
    * @param projectID is the project outcome identifier.
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     String sectionName);
-
 
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
     String sectionName);

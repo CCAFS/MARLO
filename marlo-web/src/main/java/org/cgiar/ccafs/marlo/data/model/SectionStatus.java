@@ -59,13 +59,15 @@ public class SectionStatus implements java.io.Serializable {
 
   private IpProgram ipProgram;
 
-
   private IpLiaisonInstitution ipLiaisonInstitution;
+
 
   private PowbSynthesis powbSynthesis;
 
 
   private ProjectInnovation projectInnovation;
+
+  private ProjectExpectedStudy projectExpectedStudy;
 
 
   public SectionStatus() {
@@ -93,14 +95,15 @@ public class SectionStatus implements java.io.Serializable {
     return this.crpProgram;
   }
 
-
   public String getCycle() {
     return this.cycle;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -130,6 +133,10 @@ public class SectionStatus implements java.io.Serializable {
     return project;
   }
 
+  public ProjectExpectedStudy getProjectExpectedStudy() {
+    return projectExpectedStudy;
+  }
+
   public ProjectHighlight getProjectHighlight() {
     return projectHighlight;
   }
@@ -154,7 +161,6 @@ public class SectionStatus implements java.io.Serializable {
     this.caseStudy = caseStudy;
   }
 
-
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
@@ -164,14 +170,15 @@ public class SectionStatus implements java.io.Serializable {
     this.cycle = cycle;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -180,7 +187,6 @@ public class SectionStatus implements java.io.Serializable {
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
-
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
@@ -196,8 +202,13 @@ public class SectionStatus implements java.io.Serializable {
     this.powbSynthesis = powbSynthesis;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
+    this.projectExpectedStudy = projectExpectedStudy;
   }
 
 
