@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeRuleManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -98,6 +99,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -370,6 +372,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ProjectFocusManager projectFocusManager;
+
+  @Inject
+  private DeliverableTypeManager deliverableTypeManager;
 
   private boolean reportingActive;
 
@@ -2884,8 +2889,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    List<Submission> submissions = powbSynthesis.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = powbSynthesis
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -2991,8 +2996,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       if (clazz == CrpMilestone.class) {
         CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-        List<ProjectMilestone> projectMilestones = crpMilestone.getProjectMilestones()
-          .stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
+        List<ProjectMilestone> projectMilestones = crpMilestone
+          .getProjectMilestones().stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
             && c.getProjectOutcome().isActive() && c.getProjectOutcome().getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
         Set<Project> projectsSet = new HashSet<>();
@@ -3338,8 +3343,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -3563,12 +3568,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
     if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null) {
-      List<DeliverableTypeRule> deliverableTypeRules = deliverableInfo.getDeliverableType().getDeliverableTypeRules()
-        .stream().filter(dtr -> dtr.getDeliverableRule().getName().equals(rule)).collect(Collectors.toList());
-      if (deliverableInfo.getDeliverableType().getDeliverableCategory() != null) {
-        deliverableTypeRules
-          .addAll(deliverableInfo.getDeliverableType().getDeliverableCategory().getDeliverableTypeRules().stream()
-            .filter(dtr -> dtr.getDeliverableRule().getName().equals(rule)).collect(Collectors.toList()));
+      DeliverableType deliverableType =
+        deliverableTypeManager.getDeliverableTypeById(deliverableInfo.getDeliverableType().getId());
+      List<DeliverableTypeRule> deliverableTypeRules = deliverableType.getDeliverableTypeRules().stream()
+        .filter(dtr -> dtr.getDeliverableRule().getName().equals(rule)).collect(Collectors.toList());
+      if (deliverableType.getDeliverableCategory() != null) {
+        deliverableTypeRules.addAll(deliverableType.getDeliverableCategory().getDeliverableTypeRules().stream()
+          .filter(dtr -> dtr.getDeliverableRule().getName().equals(rule)).collect(Collectors.toList()));
       }
       if (deliverableTypeRules != null && !deliverableTypeRules.isEmpty()) {
         return true;
@@ -4813,8 +4819,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPowbSynthesisSubmitted(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    List<Submission> submissions = powbSynthesis.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = powbSynthesis
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -4889,8 +4895,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isProjectSubmitted(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
