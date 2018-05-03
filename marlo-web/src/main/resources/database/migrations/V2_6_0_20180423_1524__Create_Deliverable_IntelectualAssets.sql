@@ -19,6 +19,6 @@ CREATE TABLE `deliverable_intellectual_assets` (
   INDEX `idx_intellectual_assets_id`(`id`) USING BTREE,
   INDEX `idx_intellectual_assets_deliverable`(`deliverable`) USING BTREE,
   INDEX `idx_intellectual_assets_phase`(`phase`) USING BTREE,
-  CONSTRAINT `intellectual_assets_ibfk_1` FOREIGN KEY (`deliverable`) REFERENCES `marlodb_reporting`.`deliverables` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `intellectual_assets_ibfk_2` FOREIGN KEY (`phase`) REFERENCES `marlodb_reporting`.`phases` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `intellectual_assets_ibfk_1` FOREIGN KEY (`deliverable`) REFERENCES `deliverables` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `intellectual_assets_ibfk_2` FOREIGN KEY (`phase`) REFERENCES `phases` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
