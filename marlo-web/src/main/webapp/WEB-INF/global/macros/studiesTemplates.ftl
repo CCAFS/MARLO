@@ -6,7 +6,7 @@
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
       [#-- Hidden ID --]
-      <input type="hidden" name="${customName}.id" class="caseStudyID" value="${(element.id)!}"/>
+      <input type="hidden" name="${customName}.id" class="expectedID" value="${(element.id)!}"/>
       
       <div class="form-group row">
         <div class="col-md-6">
@@ -245,7 +245,7 @@
             name="${customName}.referencesCitedAttach.file.id" 
             label="study.referencesCitedAttach" 
             dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
-            path="${(action.getPath(caseStudyID))!}"
+            path="${(action.getPath(expectedID))!}"
             isEditable=editable
             labelClass="label-min-width"
           /]
@@ -315,7 +315,7 @@
             name="${customName}.communicationMaterialsAttach.file.id" 
             label="study.communicationMaterialsAttach" 
             dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
-            path="${(action.getPath(caseStudyID))!}"
+            path="${(action.getPath(expectedID))!}"
             isEditable=editable
             labelClass="label-min-width"
           /]

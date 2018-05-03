@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]

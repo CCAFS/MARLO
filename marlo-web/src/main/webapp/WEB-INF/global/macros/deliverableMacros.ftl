@@ -242,6 +242,10 @@
       <div class="col-md-6">
         [@customForm.select name="${customName}.involveParticipants.typeActivity" className="setSelect2" i18nkey="involveParticipants.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
+      [#local isAcademicDegree = true]
+      <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
+        [@customForm.input name="${customName}.involveParticipants.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
+      </div>
     </div>
     
     [#-- Total number of Participants: --]
@@ -268,18 +272,6 @@
       </div>
     </div>
     
-    [#-- Formal training: (Only if is the activity type) --]
-    [#local isFormalTraining = true]
-    <div class="form-group row" style="display:${isFormalTraining?string('block', 'none')}">
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.involveParticipants.formalTraining" className="setSelect2" i18nkey="involveParticipants.formalTraining" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
-      </div>
-      [#local isAcademicDegree = true]
-      <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
-        [@customForm.input name="${customName}.involveParticipants.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
-      </div>
-    </div>
-    
     [#-- Scope of the event  --]
     <div class="form-group row">
       <div class="col-md-6">
@@ -293,7 +285,6 @@
     [#local isSubNational = true ]
     
     
-
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">

@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Outcome Case Studies" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js",
@@ -63,7 +63,7 @@
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
           <div id="caseStudiesBlock" class="">
-            [@studies.studyMacro element=caseStudy name="caseStudy" index=0 isOutcomeCaseStudy=true /]
+            [@studies.studyMacro element=(expectedStudy)!{} name="caseStudy" index=0 isOutcomeCaseStudy=true /]
           </div> 
           
           [#-- Section Buttons & hidden inputs--]

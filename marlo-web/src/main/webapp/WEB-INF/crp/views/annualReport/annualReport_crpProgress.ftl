@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
@@ -37,6 +37,21 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
         <div class="borderBox">
+          [#-- Overall CRP progress towards SLOs --]
+          <div class="form-group">
+            [@customForm.textArea name="annualReport.crpProgress.overallProgress" help="annualReport.crpProgress.overallProgress.help" className="" helpIcon=false required=true editable=editable /]
+          </div>
+          
+          [#-- Summaries of outcome case studies --]
+          <div class="form-group">
+            [@customForm.textArea name="annualReport.crpProgress.summariesOutcomes" help="annualReport.crpProgress.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
+          </div>
+        
+          [#if PMU]
+            TABLE
+          [/#if]
+          
+          
         
         </div>
         [#-- Section Buttons & hidden inputs--]
