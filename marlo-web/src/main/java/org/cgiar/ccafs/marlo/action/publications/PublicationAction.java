@@ -241,7 +241,8 @@ public class PublicationAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -394,7 +395,7 @@ public class PublicationAction extends BaseAction {
 
       Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && !this.isHttpPost()) {
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
         BufferedReader reader = null;
         reader = new BufferedReader(new FileReader(path.toFile()));
@@ -482,6 +483,28 @@ public class PublicationAction extends BaseAction {
         }
         deliverable.setPrograms(programs);
         deliverable.setRegions(regions);
+
+        String type = deliverable.getDissemination().getType();
+        if (type != null) {
+          switch (type) {
+            case "intellectualProperty":
+              deliverable.getDissemination().setIntellectualProperty(true);
+              break;
+            case "limitedExclusivity":
+              deliverable.getDissemination().setLimitedExclusivity(true);
+              break;
+            case "restrictedUseAgreement":
+              deliverable.getDissemination().setRestrictedUseAgreement(true);
+              break;
+            case "effectiveDateRestriction":
+              deliverable.getDissemination().setEffectiveDateRestriction(true);
+              break;
+            case "notDisseminated":
+              deliverable.getDissemination().setNotDisseminated(true);
+            default:
+              break;
+          }
+        }
 
         this.setDraft(true);
       } else {
@@ -746,13 +769,6 @@ public class PublicationAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
       Deliverable deliverablePrew = this.updateDeliverableInfo();
       this.updateDeliverableFS(deliverablePrew);
-
-      // Set CrpClusterKeyOutput to null if has an -1 id
-      if (deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput() != null
-        && deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput().getId() != null
-        && deliverablePrew.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
-        deliverablePrew.getDeliverableInfo().setCrpClusterKeyOutput(null);
-      }
 
       this.saveDeliverableGenderLevels(deliverablePrew);
       this.deleteDeliverableGenderLevels(deliverablePrew);
@@ -1381,6 +1397,17 @@ public class PublicationAction extends BaseAction {
     }
     deliverableInfoDb.setIsLocationGlobal(deliverable.getDeliverableInfo().getIsLocationGlobal() != null
       ? deliverable.getDeliverableInfo().getIsLocationGlobal() : false);
+
+    // Set CrpClusterKeyOutput to null if has an -1 id
+    if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() != null
+      && deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId() != null
+      && deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
+      deliverableInfoDb.setCrpClusterKeyOutput(null);
+    } else {
+      deliverableInfoDb.setCrpClusterKeyOutput(deliverable.getDeliverableInfo().getCrpClusterKeyOutput());
+
+    }
+
 
     deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
     deliverableInfoDb.setModifiedBy(this.getCurrentUser());
