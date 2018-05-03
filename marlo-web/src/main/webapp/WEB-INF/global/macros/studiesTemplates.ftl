@@ -1,7 +1,8 @@
 [#ftl]
 [#macro studyMacro element name index=-1 template=false isOutcomeCaseStudy=true fromProject=true ]
 [#local customName = "${name}"/]
-  [#local customId = "caseStudy-${template?string('template',index)}" /]
+  [#local customId = "study-${template?string('template',index)}" /]
+  
   
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
@@ -10,7 +11,7 @@
       
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="" className="setSelect2" i18nkey="study.type" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
         <div class="col-md-6">
           [@customForm.select name="" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
@@ -20,7 +21,7 @@
     <div class="borderBox">
       [#-- 1. Title (up to 20 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=false required=true editable=editable /]
+        [@customForm.input name="${customName}.topicStudy" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=false required=true editable=editable /]
       </div>
       
       [#-- Flagships & Regions --]
@@ -91,7 +92,7 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.policyType" listName="" keyFieldName="id"  displayFieldName="name" required=true /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.policyType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true /]
             </div>
             <div class="col-md-6">
               [#-- Amount (Only for Budget or Investment) --]
@@ -101,11 +102,11 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Implementing Organization Type --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.organizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="" keyFieldName="id"  displayFieldName="name" required=true /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.organizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true /]
             </div>
             <div class="col-md-6">
               [#-- Stage in Process --]
-              [@customForm.select name="${customName}.reportingIndicatorThree.stage.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.stage" listName="" keyFieldName="id"  displayFieldName="name"required=true  /]
+              [@customForm.select name="${customName}.reportingIndicatorThree.stage.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.stage" listName="stageProcesses" keyFieldName="id"  displayFieldName="name"required=true  /]
             </div>
           </div>
         </div>
@@ -119,9 +120,9 @@
           [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
         </label>
         <div class="form-group">
-          <p>[@customForm.radioFlat id="maturityChange-1" name="${customName}.maturityChange" label="Stage 1" value="1" checked=false cssClass="" cssClassLabel="" editable=editable/]</p> 
-          <p>[@customForm.radioFlat id="maturityChange-2" name="${customName}.maturityChange" label="Stage 2" value="2" checked=false cssClass="" cssClassLabel="" editable=editable/]</p>
-          <p>[@customForm.radioFlat id="maturityChange-3" name="${customName}.maturityChange" label="Stage 3" value="3" checked=false cssClass="" cssClassLabel="" editable=editable/]</p>
+          [#list stageStudies as stage]
+            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.maturityChange" label="<b>${stage.name}</b>: ${stage.description}" value="${stage.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
+          [/#list]
         </div>
       </div>
       [/#if]
@@ -142,7 +143,7 @@
           [#assign keyContributions = [
             { "name": "Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" }
           ] /]
-          [@customForm.elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="subIdos" keyFieldName="id" displayFieldName="name"/]
         </div>
         
         [#-- SRF Targets  --]
@@ -152,7 +153,7 @@
             { "name": "1.2. 30 million people, of which 50% are women, assisted to exit poverty" },
             { "name": "3.1. 5% increase in water and nutrient efficiency in agroecosystems" }
           ] /]
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="name"/]
         </div>
         
         [#-- Comments  --]
@@ -176,12 +177,12 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Geographic Scope --]
-              [@customForm.select name="${customName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="study.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
+              [@customForm.select name="${customName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="study.geographicScope" listName="geographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
             </div>
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
             [#-- Regional scope --]
-            [@customForm.selectGroup name="${customName}.region.id" list=(allRepIndRegions)![] element=(element.region.id)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="study.region" required=true className="" editable=editable /]
+            [@customForm.selectGroup name="${customName}.region.id" list=(regions)![] element=(element.region.id)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="study.region" required=true className="" editable=editable /]
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]
@@ -204,7 +205,7 @@
           [#assign keyContributions = [
             { "name": "A4NH - Agriculture for Nutrition and Health" }
           ] /]
-          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=keyContributions label="study.keyContributors.crps"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=keyContributions label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="name"/]
           
         </div>
         <div class="form-group simpleBox">
@@ -213,7 +214,7 @@
             { "name": "F1 - Priorities and Policies for CSA" },
             { "name": "F3 - Low emissions development" }
           ] /]
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=keyContributions label="study.keyContributors.flagships"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=keyContributions label="study.keyContributors.flagships"  listName="flagships" keyFieldName="id" displayFieldName="name"/]
           
         </div>
         <div class="form-group simpleBox">
@@ -221,7 +222,7 @@
           [#assign keyContributions = [
             { "name": "Ministries of Agriculture for Bangladesh" }
           ] /]
-          [@customForm.elementsListComponent name="${customName}.externalPartners" elementType="institution" elementList=keyContributions label="study.keyContributors.externalPartners"  listName="" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.externalPartners" elementType="institution" elementList=keyContributions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="name"/]
         </div>
       </div>
       [/#if]
@@ -263,33 +264,28 @@
       [#-- 11. Gender, Youth, and Capacity Development  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [#local ccDimensions = [
-          { "name": "0 - Not Targeted" },
-          { "name": "1 - Significant" },
-          { "name": "2 - Principal" }
-        ] /]
         <label for="">[@s.text name="study.crossCuttingRelevance" /]:
           [@customForm.helpLabel name="study.crossCuttingRelevance.help" showIcon=false editable=editable/]
         </label>
         [#-- Gender --]
         <div class="simpleBox">
           [@customForm.textArea name="${customName}.achievementsGenderRelevance" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
-          [#list ccDimensions as cc]
-            [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" editable=editable /]
+          [#list focusLevels  as cc]
+            [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.genderRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="" editable=editable /]
           [/#list]
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
           [@customForm.textArea name="${customName}.achievementsYouthRelevance" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
-          [#list ccDimensions as cc]
-            [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" editable=editable /]
+          [#list focusLevels  as cc]
+            [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.youthRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="" editable=editable /]
           [/#list]
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
           [@customForm.textArea name="${customName}.achievementsCapDevRelevance" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
-          [#list ccDimensions as cc]
-            [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="1" checked=false cssClass="" cssClassLabel="" editable=editable /]
+          [#list focusLevels  as cc]
+            [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.capDevRelevance" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="" editable=editable /]
           [/#list]
         </div> 
       </div>

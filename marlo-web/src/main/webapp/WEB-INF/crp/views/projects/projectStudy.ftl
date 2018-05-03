@@ -63,7 +63,7 @@
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectStudies.caseStudyInformation" /]</h3>
           <div id="caseStudiesBlock" class="">
-            [@studies.studyMacro element=(expectedStudy)!{} name="caseStudy" index=0 isOutcomeCaseStudy=true /]
+            [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0 isOutcomeCaseStudy=true /]
           </div> 
           
           [#-- Section Buttons & hidden inputs--]
