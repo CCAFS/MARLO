@@ -13,8 +13,10 @@ public class ProjectExpectedStudyFlagship implements java.io.Serializable, IAudi
 
   private static final long serialVersionUID = 8307296688987293109L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private Phase phase;
@@ -25,8 +27,29 @@ public class ProjectExpectedStudyFlagship implements java.io.Serializable, IAudi
   @Expose
   private CrpProgram crpProgram;
 
-
   public ProjectExpectedStudyFlagship() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectExpectedStudyFlagship other = (ProjectExpectedStudyFlagship) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -48,6 +71,7 @@ public class ProjectExpectedStudyFlagship implements java.io.Serializable, IAudi
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
@@ -66,6 +90,14 @@ public class ProjectExpectedStudyFlagship implements java.io.Serializable, IAudi
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

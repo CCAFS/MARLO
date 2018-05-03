@@ -13,7 +13,6 @@ public class ProjectExpectedStudyCountry implements java.io.Serializable, IAudit
 
   private static final long serialVersionUID = 1559872817675516595L;
 
-
   @Expose
   private Long id;
 
@@ -21,8 +20,10 @@ public class ProjectExpectedStudyCountry implements java.io.Serializable, IAudit
   @Expose
   private LocElement locElement;
 
+
   @Expose
   private Phase phase;
+
 
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
@@ -31,10 +32,31 @@ public class ProjectExpectedStudyCountry implements java.io.Serializable, IAudit
   }
 
   @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectExpectedStudyCountry other = (ProjectExpectedStudyCountry) obj;
+    if (locElement == null) {
+      if (other.locElement != null) {
+        return false;
+      }
+    } else if (!locElement.getId().equals(other.locElement.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
   public Long getId() {
     return id;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -62,12 +84,21 @@ public class ProjectExpectedStudyCountry implements java.io.Serializable, IAudit
     return u;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((locElement == null) ? 0 : locElement.hashCode());
+    return result;
   }
 
 
