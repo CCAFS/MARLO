@@ -45,9 +45,14 @@ public class RepIndRegion implements java.io.Serializable {
     return this.name;
   }
 
+  public RepIndRegion getParent() {
+    return subRegion;
+  }
+
   public RepIndRegion getSubRegion() {
     return subRegion;
   }
+
 
   public Set<RepIndRegion> getSubRegions() {
     return subRegions;
