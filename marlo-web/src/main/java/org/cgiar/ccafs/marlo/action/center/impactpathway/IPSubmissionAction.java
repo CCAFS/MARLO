@@ -93,45 +93,42 @@ public class IPSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.hasPermissionCenter("*")) {
-      if (this.isCompleteIP(crpProgramID)) {
-        if (submissionService.findAll() != null) {
-          CrpProgram program = programService.getCrpProgramById(crpProgramID);
 
-          List<CenterSubmission> submissions = new ArrayList<>(program.getCenterSubmissions().stream()
+    if (this.isCompleteIP(crpProgramID)) {
+      if (submissionService.findAll() != null) {
+        CrpProgram program = programService.getCrpProgramById(crpProgramID);
+
+        List<CenterSubmission> submissions =
+          new ArrayList<>(program.getCenterSubmissions().stream()
             .filter(
               s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList()));
 
-          if (submissions != null && submissions.size() > 0) {
-            this.setCenterSubmission(submissions.get(0));
-            isSubmited = true;
-          }
-        }
-
-        if (!isSubmited) {
-
-          CenterSubmission submission = new CenterSubmission();
-          submission.setResearchProgram(program);
-          submission.setDateTime(new Date());
-          submission.setUser(this.getCurrentUser());
-          submission.setYear((short) this.getActualPhase().getYear());
-          submission.setResearchCycle(cycle);
-
-          submission = submissionService.saveSubmission(submission);
-
-          if (submission.getId() > 0) {
-            this.setCenterSubmission(submission);
-            // this.sendNotficationEmail();
-          }
-
+        if (submissions != null && submissions.size() > 0) {
+          this.setCenterSubmission(submissions.get(0));
+          isSubmited = true;
         }
       }
-      return SUCCESS;
-    } else {
-      return NOT_AUTHORIZED;
-    }
 
+      if (!isSubmited) {
+
+        CenterSubmission submission = new CenterSubmission();
+        submission.setResearchProgram(program);
+        submission.setDateTime(new Date());
+        submission.setUser(this.getCurrentUser());
+        submission.setYear((short) this.getActualPhase().getYear());
+        submission.setResearchCycle(cycle);
+
+        submission = submissionService.saveSubmission(submission);
+
+        if (submission.getId() > 0) {
+          this.setCenterSubmission(submission);
+          // this.sendNotficationEmail();
+        }
+
+      }
+    }
+    return SUCCESS;
   }
 
   public long getCrpProgramID() {
