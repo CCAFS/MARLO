@@ -6551,6 +6551,10 @@ a.form-button.button-history {
   font-weight: normal;
 }
 
+.font-normal {
+  font-weight: normal !important;
+}
+
 .under-construction-icon{
   margin-left: 5px;
 }

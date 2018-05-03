@@ -123,7 +123,7 @@
         [#list licenseType.options as option]
           [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
           [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
-          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="" cssClassLabel="" /]</p>
+          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="" cssClassLabel="font-normal" /]</p>
         [/#list]
       </div>
     [/#list]
@@ -167,12 +167,8 @@
       
       <label for="">Select the Open Access restriction:[@customForm.req required=editable /]</label>
       [#list oaRestrictions as restriction]
-        [#if editable]
-          [#local restrictionLabel][@s.text name="deliverable.oaRestriction.${restriction.value}" /][/#local]
-          <p>[@customForm.radioFlat id="oaRestrictions-${restriction_index}" name="${customName}.type" label="${restrictionLabel}" editable=editable value="${restriction.value}" checked=restriction.isChecked cssClass="" cssClassLabel="" /]</p>
-        [#else]
-          <p class="checked">${restrictionLabel}/]</p>
-        [/#if]
+        [#local restrictionLabel][@s.text name="deliverable.oaRestriction.${restriction.value}" /][/#local]
+        <p>[@customForm.radioFlat id="oaRestrictions-${restriction_index}" name="${customName}.type" label="${restrictionLabel}" editable=editable value="${restriction.value}" checked=restriction.isChecked cssClass="" cssClassLabel="font-normal" /]</p>
       [/#list]
 
       <div class="row restrictionDate-block" style="display:[#if ((deliverable.dissemination.restrictedUseAgreement)!false) || ((deliverable.dissemination.effectiveDateRestriction)!false) ]block[#else]none [/#if];">
@@ -201,8 +197,8 @@
       [#-- Type --]
       <div class="form-group">
         <label for="">[@s.text name="deliverable.intellectualAsset.type" /]:[@customForm.req required=editable /] </label><br />
-        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=((deliverable.intellectualAsset.type == 1)!false) cssClass="" cssClassLabel="" editable=editable /]
-        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"     checked=((deliverable.intellectualAsset.type == 2)!false) cssClass="" cssClassLabel="" editable=editable /]
+        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=((deliverable.intellectualAsset.type == 1)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"     checked=((deliverable.intellectualAsset.type == 2)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
       </div>
       [#-- Title --]
       <div class="form-group">
