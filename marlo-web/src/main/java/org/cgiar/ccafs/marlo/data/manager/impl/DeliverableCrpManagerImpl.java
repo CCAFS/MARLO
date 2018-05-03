@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableCrpDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -37,13 +38,16 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
 
   private DeliverableCrpDAO deliverableCrpDAO;
   private PhaseDAO phaseDAO;
+  private DeliverableManager deliverableManager;
   // Managers
 
 
   @Inject
-  public DeliverableCrpManagerImpl(DeliverableCrpDAO deliverableCrpDAO, PhaseDAO phaseDAO) {
+  public DeliverableCrpManagerImpl(DeliverableCrpDAO deliverableCrpDAO, PhaseDAO phaseDAO,
+    DeliverableManager deliverableManager) {
     this.deliverableCrpDAO = deliverableCrpDAO;
     this.phaseDAO = phaseDAO;
+    this.deliverableManager = deliverableManager;
   }
 
   private void cloneDeliverableCrp(DeliverableCrp deliverableCrp, DeliverableCrp newdeliverableCrp, Phase phase) {
@@ -102,8 +106,9 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   public DeliverableCrp saveDeliverableCrp(DeliverableCrp deliverableCrp) {
     DeliverableCrp deliverableCrpResult = deliverableCrpDAO.save(deliverableCrp);
     Phase currentPhase = phaseDAO.find(deliverableCrpResult.getPhase().getId());
+
     if (currentPhase.getDescription().equals(APConstants.REPORTING)
-      && !deliverableCrpResult.getDeliverable().getIsPublication()) {
+      && !deliverableManager.getDeliverableById(deliverableCrpResult.getDeliverable().getId()).getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverableCrpPhase(deliverableCrpResult, deliverableCrpResult.getDeliverable(),
           currentPhase.getNext().getId());

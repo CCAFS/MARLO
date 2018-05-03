@@ -817,14 +817,17 @@
 
 [#macro flagshipMacro element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
-  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox"  style="display:${isTemplate?string('none','block')}">
+  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if]
     [#-- Hidden Inputs --]
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
     <input class="idGlobalUnit" type="hidden" name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!}" />
     <input class="idCRPProgram" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!}" />
     [#-- Title --]
-    <span class="name">${(element.globalUnit.composedName)!}  ${(element.crpProgram.composedName)!}</span>
+    <span class="name">
+      [#if (element.globalUnit.id??)!false]${(element.globalUnit.composedName)!}[/#if]
+      [#if (element.crpProgram.id??)!false]${(element.crpProgram.composedName)!}[/#if]
+    </span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
