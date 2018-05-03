@@ -265,6 +265,7 @@ function openAccessRestriction() {
     $(".restrictionDate-block").show("slow");
   } else {
     $(".restrictionDate-block").hide("slow");
+    $(".restrictionDate-block input.restrictionDate").val("");
   }
 }
 
