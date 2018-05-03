@@ -81,7 +81,7 @@ public class PublicationValidator extends BaseValidator {
         }
       }
 
-      this.validateDeliverableInfo(deliverable.getDeliverableInfo(), action);
+      this.validateDeliverableInfo(deliverable.getDeliverableInfo(), deliverable, action);
 
       // Validate Leaders
       if (deliverable.getLeaders() == null || deliverable.getLeaders().size() == 0) {
@@ -132,7 +132,7 @@ public class PublicationValidator extends BaseValidator {
       }
 
       // Validate Publication Meta-data
-      this.validatePublicationMetadata(deliverable.getPublication(), action);
+      this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
 
     }
     if (!action.getFieldErrors().isEmpty()) {
@@ -150,7 +150,7 @@ public class PublicationValidator extends BaseValidator {
     }
   }
 
-  private void validateDeliverableInfo(DeliverableInfo deliverableInfo, BaseAction action) {
+  private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, BaseAction action) {
     if (!this.isValidString(deliverableInfo.getTitle())) {
       action.addMessage(action.getText("project.deliverable.generalInformation.title"));
       action.getInvalidFields().put("input-deliverable.deliverableInfo.title", InvalidFieldsMessages.EMPTYFIELD);
@@ -170,8 +170,7 @@ public class PublicationValidator extends BaseValidator {
 
     if (deliverableInfo.getIsLocationGlobal() == null
       || deliverableInfo.getIsLocationGlobal().booleanValue() == false) {
-      if (deliverableInfo.getDeliverable().getRegionsValue() == null
-        || deliverableInfo.getDeliverable().getRegionsValue().length() == 0) {
+      if (deliverable.getRegionsValue() == null || deliverable.getRegionsValue().length() == 0) {
         action.addMessage(action.getText("projectDescription.regions"));
         action.getInvalidFields().put("input-deliverable.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -338,11 +337,10 @@ public class PublicationValidator extends BaseValidator {
   }
 
   public void validatePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,
-    BaseAction action) {
+    DeliverableInfo deliverableInfo, BaseAction action) {
     if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
       && deliverablePublicationMetadata.getId().intValue() != -1) {
-      if (action.hasDeliverableRule(deliverablePublicationMetadata.getDeliverable().getDeliverableInfo(),
-        APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+      if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
         if (!this.isValidString(deliverablePublicationMetadata.getVolume())
           && !this.isValidString(deliverablePublicationMetadata.getIssue())
           && !this.isValidString(deliverablePublicationMetadata.getPages())) {
