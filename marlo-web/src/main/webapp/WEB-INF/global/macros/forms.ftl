@@ -229,7 +229,9 @@
             [#list groupsList[subListName] as option]<option value="${option[keyFieldName]}"  [#if option[keyFieldName] == valueSelected]selected[/#if]>${option[displayFieldName]}</option>[/#list]
           </optgroup>
         [#else]
-          <option value="${groupsList[keyFieldName]}" [#if groupsList[keyFieldName] == valueSelected]selected[/#if]>${groupsList[displayFieldName]}</option>
+          [#if !(groupsList['parent']?has_content)]
+            <option value="${groupsList[keyFieldName]}" [#if groupsList[keyFieldName] == valueSelected]selected[/#if]>${groupsList[displayFieldName]}</option>
+          [/#if]
         [/#if]
       [/#list]
     </select>
