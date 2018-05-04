@@ -515,6 +515,8 @@ public final class APConstants {
 
   // POWB Synthesis
   public static final String POWB_FOLDER = "powbSynthesis";
+  // Studies
+  public static final String STUDIES_FOLDER = "studies";
 
 
   // Relations Name

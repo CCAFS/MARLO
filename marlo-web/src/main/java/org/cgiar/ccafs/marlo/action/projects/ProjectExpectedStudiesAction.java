@@ -73,11 +73,9 @@ import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectExpectedStudiesValidator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -154,10 +152,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> flagships;
   private List<Institution> institutions;
 
-  private File outcomeFile;
-  private String outcomeFilename;
-  private File referencesFile;
-  private String referencesFileName;
 
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
@@ -264,15 +258,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return expectedStudy;
   }
 
-  private String getExpectedStudyPath() {
-    return config.getUploadsBaseFolder() + File.separator + this.getExpectedStudyUrlPath() + File.separator;
-  }
-
-  public String getExpectedStudyUrlPath() {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
-      + "ExpectedStudy" + File.separator;
-  }
-
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
@@ -297,13 +282,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return organizationTypes;
   }
 
-  public File getOutcomeFile() {
-    return outcomeFile;
-  }
-
-  public String getOutcomeFilename() {
-    return outcomeFilename;
-  }
 
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
@@ -317,13 +295,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
-  public File getReferencesFile() {
-    return referencesFile;
-  }
-
-  public String getReferencesFileName() {
-    return referencesFileName;
-  }
 
   public List<RepIndRegion> getRegions() {
     return regions;
@@ -408,25 +379,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         expectedStudy = (ProjectExpectedStudy) autoSaveReader.readFromJson(jReader);
 
-        // Files autosave
-        if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile() != null) {
-          if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).setOutcomeFile(fileDBManager.getFileDBById(
-              expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile().getId()));
-          } else {
-            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).setOutcomeFile(null);
-          }
-        }
-
-        if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile() != null) {
-          if (expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase())
-              .setReferencesFile(fileDBManager.getFileDBById(
-                expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile().getId()));
-          } else {
-            expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).setReferencesFile(null);
-          }
-        }
 
         // Expected Study Countries List AutoSave
         if (expectedStudy.getCountriesIdsText() != null) {
@@ -495,18 +447,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.getProjectExpectedStudyInfo(phase);
         }
 
-        // Setup Files
-        if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
-          expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(
-            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId()));
-        }
-
-        if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile() != null) {
-          expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(
-            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId()));
-        }
-
-
         // Expected Study Countries List
         if (expectedStudy.getProjectExpectedStudyCountries() == null) {
           expectedStudy.setCountries(new ArrayList<>());
@@ -552,6 +492,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
+      }
+
+      // Setup Files
+      if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(
+            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId()));
+        }
+      }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(
+            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId()));
+        }
       }
 
 
@@ -633,6 +588,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       Path path = this.getAutoSaveFilePath();
 
       expectedStudy.setProject(project);
+      // expectedStudy.setSrfSubIdo(expectedStudyDB.getSrfSubIdo());
+      // expectedStudy.setSrfSloIndicator(expectedStudyDB.getSrfSloIndicator());
+      // expectedStudy.setPhase(expectedStudyDB.getPhase());
 
       this.saveCrps(expectedStudyDB, phase);
       this.saveFlagships(expectedStudyDB, phase);
@@ -687,28 +645,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudy);
 
       // Save Files
-      if (outcomeFile != null) {
-        expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(
-          this.getFileDB(expectedStudyDB.getProjectExpectedStudyInfo(this.getActualPhase()).getOutcomeFile(),
-            outcomeFile, outcomeFilename, this.getExpectedStudyPath()));
-        FileManager.copyFile(outcomeFile, this.getExpectedStudyPath() + outcomeFilename);
-      }
       if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
         if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId() == null) {
           expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(null);
         }
+      } else {
+        expectedStudy.getProjectExpectedStudyInfo()
+          .setOutcomeFile(expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile());
       }
 
-      if (referencesFile != null) {
-        expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(
-          this.getFileDB(expectedStudyDB.getProjectExpectedStudyInfo(this.getActualPhase()).getReferencesFile(),
-            referencesFile, referencesFileName, this.getExpectedStudyPath()));
-        FileManager.copyFile(referencesFile, this.getExpectedStudyPath() + referencesFileName);
-      }
       if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile() != null) {
         if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId() == null) {
           expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(null);
         }
+      } else {
+        expectedStudy.getProjectExpectedStudyInfo()
+          .setReferencesFile(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile());
       }
 
       // Setup focusLevel
@@ -1108,14 +1060,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.organizationTypes = organizationTypes;
   }
 
-  public void setOutcomeFile(File outcomeFile) {
-    this.outcomeFile = outcomeFile;
-  }
-
-  public void setOutcomeFilename(String outcomeFilename) {
-    this.outcomeFilename = outcomeFilename;
-  }
-
 
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
@@ -1129,16 +1073,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
-  }
-
-
-  public void setReferencesFile(File referencesFile) {
-    this.referencesFile = referencesFile;
-  }
-
-
-  public void setReferencesFileName(String referencesFileName) {
-    this.referencesFileName = referencesFileName;
   }
 
 
