@@ -21,12 +21,6 @@ function attachEvents() {
   // On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
-  // On select element
-  $('select[class*="elementType-"]').on('change', onSelectElement);
-
-  // On click remove button
-  $('[class*="removeElementType-"]').on('click', onClickRemoveElement);
-
   // On change policyInvestimentTypes
   $('select.policyInvestimentTypes').on('change', function() {
     console.log(this.value);
@@ -92,65 +86,6 @@ function onChangeRadioButton() {
   } else {
     $('.block-' + radioType).slideUp();
   }
-}
-
-function onSelectElement() {
-  var $select = $(this);
-  var $option = $select.find('option:selected');
-  var elementType = $(this).classParam('elementType');
-  var maxLimit = $(this).classParam('maxLimit');
-  var $list = $('.listType-' + elementType);
-  var counted = $list.find('li').length;
-
-  // Verify limit if applicable
-  if((maxLimit > 0) && (counted >= maxLimit)) {
-    $select.val('-1').trigger('change.select2');
-    $select.parent().animateCss('shake');
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Only ' + maxLimit + ' can be selected';
-    noty(notyOptions);
-    return;
-  }
-
-  // Verify repeated selection
-  var $repeatedElement = $list.find('.elementRelationID[value="' + $option.val() + '"]');
-  if($repeatedElement.length) {
-    $select.val('-1').trigger('change.select2');
-    $repeatedElement.parent().animateCss('shake');
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'It was already selected';
-    noty(notyOptions);
-    return;
-  }
-
-  // Clone the new element
-  var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
-  // Set attributes
-  $element.find('.elementRelationID').val($option.val());
-  $element.find('.elementName').html($option.text());
-  // Show the element
-  $element.appendTo($list).hide().show('slow', function() {
-    $select.val('-1').trigger('change.select2');
-  });
-
-  // Update indexes
-  $list.find('li.relationElement').each(function(i,element) {
-    $(element).setNameIndexes(1, i);
-  });
-}
-
-function onClickRemoveElement() {
-  var removeElementType = $(this).classParam('removeElementType');
-  var $parent = $(this).parent();
-  var $list = $('.listType-' + removeElementType);
-  $parent.slideUp(function() {
-    $parent.remove();
-
-    // Update indexes
-    $list.find('li.relationElement').each(function(i,element) {
-      $(element).setNameIndexes(1, i);
-    });
-  });
 }
 
 function addSelect2() {

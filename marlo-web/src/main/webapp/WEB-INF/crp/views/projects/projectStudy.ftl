@@ -85,8 +85,7 @@
   [@customForm.listElementMacro name="expectedStudy.crps" element={} type="globalUnit" index=-1 template=true /]
   [@customForm.listElementMacro name="expectedStudy.flagships" element={} type="crpProgram" index=-1 template=true /]
   [@customForm.listElementMacro name="expectedStudy.institutions" element={} type="institution" index=-1 template=true /]
+  [@customForm.listElementMacro name="expectedStudy.projects" element={} type="project" index=-1 template=true /]
 </ul>
-
-[@studies.shareStudyMacro element={} name="expectedStudy.projects" index=-1 template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
