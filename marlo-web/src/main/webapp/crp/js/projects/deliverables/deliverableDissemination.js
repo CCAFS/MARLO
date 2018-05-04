@@ -172,6 +172,74 @@ function addDisseminationEvents() {
       }
     });
   }
+
+  // Does this deliverable involve Participants and Trainees?
+  $('#estimateFemales').on('change', function() {
+    $('#dontKnowFemale').prop('checked', false);
+    $(this).parents('.femaleNumbers').find('input[type="text"]').prop('disabled', false);
+  });
+  $('#dontKnowFemale').on('change', function() {
+    $('#estimateFemales').prop('checked', false);
+    $(this).parents('.femaleNumbers').find('input[type="text"]').prop('disabled', $(this).is(':checked'));
+  });
+
+  $('.trainingType').on('change', function() {
+    console.log(this.value);
+    if(this.value == 1) {
+      $('.block-academicDegree').show();
+    } else {
+      $('.block-academicDegree').hide();
+    }
+  });
+
+  // Setting Numeric Inputs
+  $('form input.currencyInput').numericInput();
+
+// Partnership Geographic Scope
+  $(".geographicScopeSelect").on('change', function() {
+    var $partner = $(this).parents('.block-involveParticipants');
+    var $regionalBlock = $partner.find('.regionalBlock');
+    var $nationalBlock = $partner.find('.nationalBlock');
+
+    var isRegional = this.value == 2;
+    var isMultiNational = this.value == 3;
+    var isNational = this.value == 4;
+    var isSubNational = this.value == 5;
+
+    // Regions
+    if(isRegional) {
+      $regionalBlock.show();
+    } else {
+      $regionalBlock.hide();
+    }
+
+    // Countries
+    $nationalBlock.find("select").val(null).trigger('change');
+    if(isMultiNational || isNational || isSubNational) {
+      if(isMultiNational) {
+        $nationalBlock.find("select").select2({
+            maximumSelectionLength: 0,
+            placeholder: "Select a country(ies)",
+            templateResult: formatStateCountries,
+            templateSelection: formatStateCountries,
+            width: '100%'
+        });
+      } else {
+        $nationalBlock.find("select").select2({
+            maximumSelectionLength: 1,
+            placeholder: "Select a country(ies)",
+            templateResult: formatStateCountries,
+            templateSelection: formatStateCountries,
+            width: '100%'
+        });
+      }
+      $nationalBlock.show();
+    } else {
+      $nationalBlock.hide();
+    }
+
+  });
+
 }
 
 function addFlagship(idCRPProgram,text) {
@@ -562,3 +630,23 @@ function validateAuthors(lastName,firstName) {
     return false;
   }
 }
+
+/**
+ * Format select2: Add Countries flags
+ * 
+ * @param state
+ * @returns
+ */
+function formatStateCountries(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var $state;
+  if(state.id != -1) {
+    $state = $('<span>' + flag + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
+  }
+  return $state;
+};
