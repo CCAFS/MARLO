@@ -79,6 +79,11 @@ function onSelectElement() {
 
   // Verify limit if applicable
   if((maxLimit > 0) && (counted >= maxLimit)) {
+    $select.val('-1').trigger('change.select2');
+    $select.parent().animateCss('shake');
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'Only ' + maxLimit + ' can be selected';
+    noty(notyOptions);
     return;
   }
 
