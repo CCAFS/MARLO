@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePublicationMetadataDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
@@ -35,16 +36,18 @@ import javax.inject.Named;
 public class DeliverablePublicationMetadataManagerImpl implements DeliverablePublicationMetadataManager {
 
 
+  // Managers
   private DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO;
   private PhaseDAO phaseDAO;
-  // Managers
+  private DeliverableManager deliverableManager;
 
 
   @Inject
   public DeliverablePublicationMetadataManagerImpl(DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO,
-    PhaseDAO phaseDAO) {
+    PhaseDAO phaseDAO, DeliverableManager deliverableManager) {
     this.deliverablePublicationMetadataDAO = deliverablePublicationMetadataDAO;
     this.phaseDAO = phaseDAO;
+    this.deliverableManager = deliverableManager;
   }
 
   private void cloneDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,
@@ -94,8 +97,8 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
     DeliverablePublicationMetadata deliverablePublicationMetadataResult =
       deliverablePublicationMetadataDAO.save(deliverablePublicationMetadata);
     Phase currentPhase = phaseDAO.find(deliverablePublicationMetadataResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)
-      && !deliverablePublicationMetadataResult.getDeliverable().getIsPublication()) {
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !deliverableManager
+      .getDeliverableById(deliverablePublicationMetadataResult.getDeliverable().getId()).getIsPublication()) {
       if (currentPhase.getNext() != null) {
         this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadataResult,
           deliverablePublicationMetadata.getDeliverable(), currentPhase.getNext().getId());

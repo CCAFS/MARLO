@@ -615,6 +615,7 @@ public final class APConstants {
   public static final long PROJECT_PARTNER_PARTNERSHIP_NATIONAL = 4;
   public static final long PROJECT_PARTNER_PARTNERSHIP_SUB_NATIONAL = 5;
 
+  public static final long REPORTING_INDICATOR_TYPE_ACTIVITY_ACADEMIC_DEGREE = 1;
 
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
   public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
