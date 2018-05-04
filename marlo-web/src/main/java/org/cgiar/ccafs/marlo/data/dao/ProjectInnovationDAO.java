@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
 import java.util.List;
@@ -75,5 +76,6 @@ public interface ProjectInnovationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovation save(ProjectInnovation projectInnovation, String section, List<String> relationsName);
+  public ProjectInnovation save(ProjectInnovation projectInnovation, String section, List<String> relationsName,
+    Phase phase);
 }

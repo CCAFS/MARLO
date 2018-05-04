@@ -864,7 +864,7 @@
       <result name="input">/WEB-INF/crp/views/projects/projectStudy.ftl
       </result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/expectedStudy</param>
+        <param name="actionName">${crpSession}/study</param>
         <param name="edit">true</param>
         <param name="expectedID">${expectedStudy.id}</param>
         <param name="phaseID">${phaseID}</param>

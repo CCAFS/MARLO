@@ -20,6 +20,7 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   @Expose
   private RepIndGeographicScope repIndGeographicScope;
 
+
   @Expose
   private RepIndRegion repIndRegion;
 
@@ -84,7 +85,7 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   private String elaborationOutcomeImpactStatement;
 
   @Expose
-  private String references;
+  private String referencesText;
 
   @Expose
   private String quantification;
@@ -123,7 +124,7 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
     this.topLevelComments = topLevelComments;
     this.scopeComments = scopeComments;
     this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
-    this.references = references;
+    this.referencesText = referencesText;
     this.quantification = quantification;
     this.describeGender = describeGender;
     this.describeYouth = describeYouth;
@@ -137,11 +138,9 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
     return capdevLevel;
   }
 
-
   public String getComunicationsMaterial() {
     return comunicationsMaterial;
   }
-
 
   public String getContacts() {
     return contacts;
@@ -241,13 +240,13 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   }
 
 
-  public String getReferences() {
-    return references;
+  public FileDB getReferencesFile() {
+    return referencesFile;
   }
 
 
-  public FileDB getReferencesFile() {
-    return referencesFile;
+  public String getReferencesText() {
+    return referencesText;
   }
 
 
@@ -294,6 +293,7 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   public StudyType getStudyType() {
     return studyType;
   }
+
 
   public String getTitle() {
     return title;
@@ -344,10 +344,10 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
     this.genderLevel = genderLevel;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setIsContribution(Boolean isContribution) {
     this.isContribution = isContribution;
@@ -381,12 +381,13 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
     this.quantification = quantification;
   }
 
-  public void setReferences(String references) {
-    this.references = references;
-  }
-
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
+  }
+
+
+  public void setReferencesText(String referencesText) {
+    this.referencesText = referencesText;
   }
 
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
@@ -472,7 +473,7 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
     this.setTopLevelComments(projectExpectedStudyInfoUpdate.getTopLevelComments());
     this.setScopeComments(projectExpectedStudyInfoUpdate.getScopeComments());
     this.setElaborationOutcomeImpactStatement(projectExpectedStudyInfoUpdate.getElaborationOutcomeImpactStatement());
-    this.setReferences(projectExpectedStudyInfoUpdate.getReferences());
+    this.setReferencesText(projectExpectedStudyInfoUpdate.getReferencesText());
     this.setQuantification(projectExpectedStudyInfoUpdate.getQuantification());
     this.setDescribeGender(projectExpectedStudyInfoUpdate.getDescribeGender());
     this.setDescribeYouth(projectExpectedStudyInfoUpdate.getDescribeYouth());

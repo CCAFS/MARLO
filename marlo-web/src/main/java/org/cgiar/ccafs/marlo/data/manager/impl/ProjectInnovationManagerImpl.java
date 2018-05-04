@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
 import java.util.List;
@@ -74,8 +75,8 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
 
   @Override
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation, String section,
-    List<String> relationsName) {
-    return projectInnovationDAO.save(projectInnovation, section, relationsName);
+    List<String> relationsName, Phase phase) {
+    return projectInnovationDAO.save(projectInnovation, section, relationsName, phase);
   }
 
 

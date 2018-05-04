@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
@@ -84,11 +85,11 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
 
   @Override
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
-    List<String> relationsName) {
+    List<String> relationsName, Phase phase) {
     if (projectExpectedStudy.getId() == null) {
-      super.saveEntity(projectExpectedStudy, section, relationsName);
+      super.saveEntity(projectExpectedStudy, section, relationsName, phase);
     } else {
-      projectExpectedStudy = super.update(projectExpectedStudy, section, relationsName);
+      projectExpectedStudy = super.update(projectExpectedStudy, section, relationsName, phase);
     }
     return projectExpectedStudy;
   }

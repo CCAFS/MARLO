@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
 import java.util.List;
@@ -83,11 +84,12 @@ public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovatio
   }
 
   @Override
-  public ProjectInnovation save(ProjectInnovation projectInnovation, String section, List<String> relationsName) {
+  public ProjectInnovation save(ProjectInnovation projectInnovation, String section, List<String> relationsName,
+    Phase phase) {
     if (projectInnovation.getId() == null) {
-      super.saveEntity(projectInnovation, section, relationsName);
+      super.saveEntity(projectInnovation, section, relationsName, phase);
     } else {
-      projectInnovation = super.update(projectInnovation, section, relationsName);
+      projectInnovation = super.update(projectInnovation, section, relationsName, phase);
     }
     return projectInnovation;
   }
