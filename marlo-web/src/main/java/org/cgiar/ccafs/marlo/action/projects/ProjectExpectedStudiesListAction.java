@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
 
+  private StudyTypeManager studyTypeManager;
+
 
   // Parameters or Variables
   private Project project;
@@ -72,12 +76,13 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   @Inject
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager) {
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
+    this.studyTypeManager = studyTypeManager;
   }
 
   @Override
@@ -96,6 +101,16 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
     ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo(this.getActualPhase(),
       projectExpectedStudy, "", "", "", "", "", "", "", "", "", "", "", "", "");
+
+    long studyTypeID = -1;
+    try {
+      studyTypeID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.STUDY_REQUEST_ID)));
+      StudyType studyType = studyTypeManager.getStudyTypeById(studyTypeID);
+      projectExpectedStudyInfo.setStudyType(studyType);
+    } catch (Exception e) {
+      studyTypeID = -1;
+    }
+
 
     projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo);
 

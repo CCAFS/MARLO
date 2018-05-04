@@ -30,6 +30,7 @@ public final class APConstants {
   public static final String CRP_PARTNERS_OFFICE = "crp_partners_office";
   public static final String PARTNER_ID = "partnerId";
 
+  public static final String STUDY_TYPE_REQUEST_ID = "studyTypeID";
   public static final String EXPECTED_REQUEST_ID = "expectedID";
   public static final String INNOVATION_REQUEST_ID = "innovationID";
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
