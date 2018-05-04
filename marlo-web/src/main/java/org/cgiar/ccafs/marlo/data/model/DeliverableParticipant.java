@@ -3,7 +3,11 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -52,6 +56,12 @@ public class DeliverableParticipant implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private Set<DeliverableParticipantLocation> deliverableParticipantLocations =
+    new HashSet<DeliverableParticipantLocation>(0);
+  private List<DeliverableParticipantLocation> participantLocations = new ArrayList<>();
+  private List<String> participantLocationsIsos = new ArrayList<>();
+  private String participantLocationsIsosText;
+
 
   public DeliverableParticipant() {
   }
@@ -97,6 +107,11 @@ public class DeliverableParticipant implements java.io.Serializable, IAuditLog {
 
   public Deliverable getDeliverable() {
     return deliverable;
+  }
+
+
+  public Set<DeliverableParticipantLocation> getDeliverableParticipantLocations() {
+    return deliverableParticipantLocations;
   }
 
 
@@ -153,6 +168,21 @@ public class DeliverableParticipant implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public List<DeliverableParticipantLocation> getParticipantLocations() {
+    return participantLocations;
+  }
+
+
+  public List<String> getParticipantLocationsIsos() {
+    return participantLocationsIsos;
+  }
+
+
+  public String getParticipantLocationsIsosText() {
+    return participantLocationsIsosText;
   }
 
 
@@ -225,13 +255,21 @@ public class DeliverableParticipant implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
   }
 
+
+  public void setDeliverableParticipantLocations(Set<DeliverableParticipantLocation> deliverableParticipantLocations) {
+    this.deliverableParticipantLocations = deliverableParticipantLocations;
+  }
+
+
   public void setDontKnowFemale(Boolean dontKnowFemale) {
     this.dontKnowFemale = dontKnowFemale;
   }
 
+
   public void setEstimateFemales(Boolean estimateFemales) {
     this.estimateFemales = estimateFemales;
   }
+
 
   public void setEstimateParticipants(Boolean estimateParticipants) {
     this.estimateParticipants = estimateParticipants;
@@ -245,16 +283,13 @@ public class DeliverableParticipant implements java.io.Serializable, IAuditLog {
     this.females = females;
   }
 
-
   public void setHasParticipants(Boolean hasParticipants) {
     this.hasParticipants = hasParticipants;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -263,6 +298,21 @@ public class DeliverableParticipant implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setParticipantLocations(List<DeliverableParticipantLocation> participantLocations) {
+    this.participantLocations = participantLocations;
+  }
+
+
+  public void setParticipantLocationsIsos(List<String> participantLocationsIsos) {
+    this.participantLocationsIsos = participantLocationsIsos;
+  }
+
+
+  public void setParticipantLocationsIsosText(String participantLocationsIsosText) {
+    this.participantLocationsIsosText = participantLocationsIsosText;
   }
 
 

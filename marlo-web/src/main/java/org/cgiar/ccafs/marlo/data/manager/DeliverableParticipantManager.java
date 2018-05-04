@@ -51,6 +51,13 @@ public interface DeliverableParticipantManager {
    */
   public List<DeliverableParticipant> findAll();
 
+  /**
+   * This method gets a list of DeliverableParticipant that are active with the given deliverable and phase id exists in
+   * the system
+   * 
+   * @return a list from DeliverableParticipant null if no exist records
+   */
+  public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID, Long phaseID);
 
   /**
    * This method gets a deliverableParticipant object by a given deliverableParticipant identifier.
@@ -60,11 +67,13 @@ public interface DeliverableParticipantManager {
    */
   public DeliverableParticipant getDeliverableParticipantById(long deliverableParticipantID);
 
+
   /**
    * This method saves the information of the given deliverableParticipant
    * 
    * @param deliverableParticipant - is the deliverableParticipant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableParticipant was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableParticipant
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
