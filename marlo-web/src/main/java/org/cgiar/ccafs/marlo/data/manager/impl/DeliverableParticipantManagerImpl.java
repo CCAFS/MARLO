@@ -62,6 +62,12 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
   }
 
   @Override
+  public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID,
+    Long phaseID) {
+    return deliverableParticipantDAO.findDeliverableParticipantByDeliverableAndPhase(deliverableID, phaseID);
+  }
+
+  @Override
   public DeliverableParticipant getDeliverableParticipantById(long deliverableParticipantID) {
 
     return deliverableParticipantDAO.find(deliverableParticipantID);

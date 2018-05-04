@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<DeliverableParticipant, Long> implements DeliverableParticipantDAO {
+public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<DeliverableParticipant, Long>
+  implements DeliverableParticipantDAO {
 
 
   @Inject
@@ -67,6 +68,18 @@ public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<Deliverable
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID,
+    Long phaseID) {
+    String query = "from " + DeliverableParticipant.class.getName() + " where deliverable_id =" + deliverableID
+      + " and phase_id = " + phaseID + " and is_active=1";
+    List<DeliverableParticipant> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
