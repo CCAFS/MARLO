@@ -566,9 +566,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         project = projectManager.getProjectById(projectID);
       }
 
-
-      String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-      this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
+      if (project != null) {
+        String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+        this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
+      } else {
+        String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+        this.setBasePermission(this.getText(Permission.STUDIES_BASE_PERMISSION, params));
+      }
     }
     if (this.isHttpPost()) {
       if (expectedStudy.getProjectExpectedStudyCountries() != null) {

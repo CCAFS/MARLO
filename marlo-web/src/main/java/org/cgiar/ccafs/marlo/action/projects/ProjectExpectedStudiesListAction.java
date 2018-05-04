@@ -50,25 +50,27 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   // Managers
   private SectionStatusManager sectionStatusManager;
 
-
   private ProjectManager projectManager;
 
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
+
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
+
 
   private StudyTypeManager studyTypeManager;
 
+  private List<ProjectExpectedStudy> nonProjectStudies;
 
   // Parameters or Variables
   private Project project;
-
 
   private List<Integer> allYears;
 
 
   private long projectID;
+
 
   private long expectedID;
 
@@ -144,8 +146,13 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return allYears;
   }
 
+
   public long getExpectedID() {
     return expectedID;
+  }
+
+  public List<ProjectExpectedStudy> getNonProjectStudies() {
+    return nonProjectStudies;
   }
 
   public Project getProject() {
@@ -158,19 +165,27 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    try {
+      projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+      project = projectManager.getProjectById(projectID);
+      allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
+    } catch (Exception e) {
+      project = null;
+    }
 
-    project = projectManager.getProjectById(projectID);
 
-    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
-
-    List<ProjectExpectedStudy> studies =
-      project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
-    for (ProjectExpectedStudy projectExpectedStudy : studies) {
-      if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-        project.getExpectedStudies().add(projectExpectedStudy);
+    if (project != null) {
+      List<ProjectExpectedStudy> studies =
+        project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
+      for (ProjectExpectedStudy projectExpectedStudy : studies) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+          project.getExpectedStudies().add(projectExpectedStudy);
+        }
       }
+    } else {
+      nonProjectStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(s -> s.isActive() && s.getProject() == null).collect(Collectors.toList()));
     }
   }
 
@@ -180,6 +195,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
+  }
+
+  public void setNonProjectStudies(List<ProjectExpectedStudy> nonProjectStudies) {
+    this.nonProjectStudies = nonProjectStudies;
   }
 
   public void setProject(Project project) {

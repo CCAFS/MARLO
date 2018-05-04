@@ -113,7 +113,7 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
 
   public ProjectExpectedStudyInfo(Phase phase, ProjectExpectedStudy projectExpectedStudy, String title,
     String outcomeImpactStatement, String topLevelComments, String scopeComments,
-    String elaborationOutcomeImpactStatement, String references, String quantification, String describeGender,
+    String elaborationOutcomeImpactStatement, String referencesText, String quantification, String describeGender,
     String describeYouth, String describeCapdev, String otherCrossCuttingDimensions, String comunicationsMaterial,
     String contacts) {
     super();

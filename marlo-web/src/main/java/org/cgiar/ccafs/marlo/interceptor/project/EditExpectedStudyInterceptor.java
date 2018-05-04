@@ -93,7 +93,9 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
 
     if (projectExpectedStudy != null && projectExpectedStudy.isActive()) {
 
+
       String params[] = {crp.getAcronym(), projectExpectedStudy.getProject().getId() + ""};
+
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
 
@@ -101,14 +103,22 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
         canSwitchProject = true;
 
       } else {
-        List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(projectExpectedStudy.getProject()) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params))) {
-          canEdit = true;
+
+        if (projectExpectedStudy.getProject() != null) {
+          List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
+          if (projects.contains(projectExpectedStudy.getProject()) && baseAction.hasPermission(
+            baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params))) {
+            canEdit = true;
+          }
+          if (baseAction.isSubmit(projectExpectedStudy.getProject().getId())) {
+            canEdit = false;
+          }
+        } else {
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params))) {
+            canEdit = true;
+          }
         }
-        if (baseAction.isSubmit(projectExpectedStudy.getProject().getId())) {
-          canEdit = false;
-        }
+
         if (baseAction.isCrpClosed()) {
           if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
             canEdit = false;
@@ -126,9 +136,16 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params));
+      if (projectExpectedStudy.getProject() != null) {
+        if (editParameter || parameters.get("save") != null) {
+          hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
+            .hasPermission(baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params));
+        }
+      } else {
+        if (editParameter || parameters.get("save") != null) {
+          hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
+            : baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params));
+        }
       }
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
