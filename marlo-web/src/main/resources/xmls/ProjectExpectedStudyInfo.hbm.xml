@@ -74,8 +74,8 @@
         <property name="elaborationOutcomeImpactStatement" type="string">
             <column name="elaboration_outcome_impact_statement" length="65535" />
         </property>
-        <property name="references" type="string">
-            <column name="references" length="65535" />
+        <property name="referencesText" type="string">
+            <column name="references_text" length="65535" />
         </property>
         <property name="quantification" type="string">
             <column name="quantification" length="65535" />

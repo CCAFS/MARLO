@@ -566,7 +566,8 @@ public class ProjectInnovationAction extends BaseAction {
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
-      projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName);
+      projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName,
+        this.getActualPhase());
 
       if (path.toFile().exists()) {
         path.toFile().delete();

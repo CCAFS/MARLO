@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
@@ -68,8 +69,8 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
   @Override
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
-    List<String> relationsName) {
-    return projectExpectedStudyDAO.save(projectExpectedStudy, section, relationsName);
+    List<String> relationsName, Phase phase) {
+    return projectExpectedStudyDAO.save(projectExpectedStudy, section, relationsName, phase);
   }
 
 

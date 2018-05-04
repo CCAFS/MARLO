@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
@@ -76,5 +77,5 @@ public interface ProjectExpectedStudyDAO {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
-    List<String> relationsName);
+    List<String> relationsName, Phase phase);
 }

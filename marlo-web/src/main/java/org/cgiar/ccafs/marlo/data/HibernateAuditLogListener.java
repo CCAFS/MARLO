@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
@@ -518,11 +520,16 @@ public class HibernateAuditLogListener
 
         }
       }
+      // TODO delete this when the entity has not have phase relation into the database
+      if (entity instanceof ProjectExpectedStudy) {
+        hasPhase = false;
+      }
       /*
        * if have phase and the phase is the current we are checking , we load the info
        */
       if (hasPhase || entity instanceof Project || entity instanceof FundingSource || entity instanceof Deliverable
-        || entity instanceof ProjectOutcome || entity instanceof CrpProgram) {
+        || entity instanceof ProjectOutcome || entity instanceof CrpProgram || entity instanceof ProjectExpectedStudy
+        || entity instanceof ProjectInnovation) {
         if (hasPhase && (entity instanceof Deliverable == false)) {
           if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
             updateRecord.put(IAuditLog.ENTITY, entity);

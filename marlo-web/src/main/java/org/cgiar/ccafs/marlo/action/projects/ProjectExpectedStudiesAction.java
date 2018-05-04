@@ -59,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -109,7 +110,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
 
-
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
 
@@ -127,17 +127,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   private long projectID;
 
+
   private long expectedID;
 
 
   private ProjectExpectedStudy expectedStudy;
 
-
   private ProjectExpectedStudy expectedStudyDB;
 
 
   private Map<Integer, String> statuses;
+
+
   private List<RepIndGeographicScope> geographicScopes;
+
+
   private List<RepIndRegion> regions;
   private List<RepIndOrganizationType> organizationTypes;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
@@ -151,19 +155,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<GlobalUnit> crps;
   private List<CrpProgram> flagships;
   private List<Institution> institutions;
-
-
+  private List<Project> myProjects;
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
+
+
   private SrfSloIndicatorManager srfSloIndicatorManager;
   private SrfSubIdoManager srfSubIdoManager;
   private CrpProgramManager crpProgramManager;
   private InstitutionManager institutionManager;
   private LocElementManager locElementManager;
   private StudyTypeManager studyTypeManager;
-
   private FileDBManager fileDBManager;
   private RepIndGeographicScopeManager geographicScopeManager;
+
   private RepIndRegionManager repIndRegionManager;
   private RepIndOrganizationTypeManager organizationTypeManager;
   private RepIndGenderYouthFocusLevelManager focusLevelManager;
@@ -278,14 +283,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<Project> getMyProjects() {
+    return myProjects;
+  }
+
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return organizationTypes;
   }
 
-
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
   }
+
 
   public Project getProject() {
     return project;
@@ -295,10 +304,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
-
   public List<RepIndRegion> getRegions() {
     return regions;
   }
+
 
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
@@ -353,9 +362,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
     }
     if (expectedStudy != null) {
-
-      projectID = expectedStudy.getProject().getId();
-      project = projectManager.getProjectById(projectID);
 
 
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
@@ -531,6 +537,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       subIdos = srfSubIdoManager.findAll();
       targets = srfSloIndicatorManager.findAll();
 
+      myProjects = new ArrayList<>();
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          myProjects.add(projectPhase.getProject());
+        }
+
+        if (project != null) {
+          myProjects.remove(project);
+        }
+      }
+
       crps = crpManager.findAll().stream()
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
         .collect(Collectors.toList());
@@ -543,6 +560,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       institutions = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
 
       expectedStudyDB = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+
+      if (expectedStudyDB.getProject() != null) {
+        projectID = expectedStudyDB.getProject().getId();
+        project = projectManager.getProjectById(projectID);
+      }
+
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
@@ -733,7 +756,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // End
 
       projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(expectedStudy.getProjectExpectedStudyInfo());
-      projectExpectedStudyManager.save(expectedStudy, this.getActionName(), relationsName);
+      projectExpectedStudyManager.save(expectedStudy, this.getActionName(), relationsName, this.getActualPhase());
 
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -891,7 +914,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Projects Information
    * 
@@ -1020,6 +1042,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
@@ -1054,6 +1077,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setMyProjects(List<Project> myProjects) {
+    this.myProjects = myProjects;
   }
 
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {

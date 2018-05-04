@@ -630,7 +630,8 @@ public class ProjectHighlightAction extends BaseAction {
 
       projectHighlightInfoManager.saveProjectHighlightInfo(highlight.getProjectHighlightInfo());
 
-      projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName);
+      projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName,
+        this.getActualPhase());
 
       // Get the validation messages and append them to the save message
 
