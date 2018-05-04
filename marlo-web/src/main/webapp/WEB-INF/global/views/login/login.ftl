@@ -8,11 +8,11 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section> 
-  <div class="loginPage">
+  <div class="container loginPage">
     <div class="form-group row">
       <div class="col-md-10 col-center">
         <h3 class="">[@s.text name="login.marloTitle" /]</h3>
-        <p class="text-justify login-description">[@s.text name="login.marloDescription" /]  </p>
+        <p class="text-justify login-description">[@s.text name="login.marloDescription" /]</p>
         [#if !config.production]
           <br />
           <div class="note alert alert-warning" role="alert">
