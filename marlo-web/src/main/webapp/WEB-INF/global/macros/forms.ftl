@@ -488,7 +488,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" required=true ]
+[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 required=true ]
   <div class="panel tertiary" listname="${name}" style="position:relative">
     <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
@@ -498,7 +498,7 @@
         [/#if]
       </ul>
       [#if editable]
-        [@select name="" className="setSelect2 elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
+        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
       [/#if]
     </div>
   </div>

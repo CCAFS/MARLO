@@ -84,9 +84,7 @@
       <div class="form-group">
         [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
         <div class="form-group">
-          <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /]
-            [@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]
-          </label>
+          <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
           [#assign studyIndicatorThree = "studyIndicatorThree"]
           [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.${studyIndicatorThree}.value" label="Yes" value="true" checked=((element.reportingIndicatorThree.value)!false) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
           [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.${studyIndicatorThree}.value" label="No" value="false" checked=!((element.reportingIndicatorThree.value)!true) cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
@@ -127,7 +125,7 @@
         </label>
         <div class="form-group">
           [#list stageStudies as stage]
-            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.maturityChange" label="${stage.name}: <small>${stage.description}</small>" value="${stage.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
+            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.maturityChange" label="<small><b>${stage.name}:</b> ${stage.description}</small>" value="${stage.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
           [/#list]
         </div>
       </div>
@@ -143,9 +141,9 @@
           <label for="">[@s.text name="study.relevantTo" /]:[@customForm.req required=editable /]
           </label> 
         [/#if]
-        [#-- Sub IDOs  --]
+        [#-- Sub IDOs (maxLimit=2) --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" keyFieldName="id" displayFieldName="description"/]
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
         </div>
         
         [#-- SRF Targets  --]
