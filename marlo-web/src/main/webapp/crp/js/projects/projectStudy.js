@@ -32,6 +32,13 @@ function attachEvents() {
   });
 
   // Partnership Geographic Scope
+  $('.nationalBlock').find("select").select2({
+      placeholder: "Select a country(ies)",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
+      width: '100%'
+  });
+
   $(".geographicScopeSelect").on('change', function() {
     var $partner = $(this).parents('.geographicScopeBlock');
     var $regionalBlock = $partner.find('.regionalBlock');
