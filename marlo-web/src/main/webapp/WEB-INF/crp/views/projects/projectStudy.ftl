@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Outcome Case Studies" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [ "select2", "blueimp-file-upload" ] /]
+[#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js",
   "${baseUrl}/global/js/autoSave.js",
@@ -80,13 +80,13 @@
 
 [#-- Element Macro Template --]
 <ul style="display:none">
-  [@customForm.listElementMacro name="caseStudy.subIDOs" element={} type="subIDO" index=-1 template=true /]
-  [@customForm.listElementMacro name="caseStudy.srfTargets" element={} type="srfTarget" index=-1 template=true /]
-  [@customForm.listElementMacro name="caseStudy.crps" element={} type="globalUnit" index=-1 template=true /]
-  [@customForm.listElementMacro name="caseStudy.flagships" element={} type="crpProgram" index=-1 template=true /]
-  [@customForm.listElementMacro name="caseStudy.externalPartners" element={} type="institution" index=-1 template=true /]
+  [@customForm.listElementMacro name="expectedStudy.subIDOs" element={} type="srfSubIdo" index=-1 template=true /]
+  [@customForm.listElementMacro name="expectedStudy.srfTargets" element={} type="srfSloIndicator" index=-1 template=true /]
+  [@customForm.listElementMacro name="expectedStudy.crps" element={} type="globalUnit" index=-1 template=true /]
+  [@customForm.listElementMacro name="expectedStudy.flagships" element={} type="crpProgram" index=-1 template=true /]
+  [@customForm.listElementMacro name="expectedStudy.institutions" element={} type="institution" index=-1 template=true /]
 </ul>
 
-[@studies.shareStudyMacro element={} name="caseStudy.projects" index=-1 template=true /]
+[@studies.shareStudyMacro element={} name="expectedStudy.projects" index=-1 template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
