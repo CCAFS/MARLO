@@ -21,17 +21,18 @@
           </div>
         [/#if]
       </div>
+      [#-- Login Form --]
       <div class="row">
         <div class=" col-md-offset-3 col-xs-11 col-sm-7 col-md-5 col-center">
           [#include "/WEB-INF/global/pages/loginForm.ftl" /]
         </div>
       </div>
     </div>
-    [#-- CRPS --]
+    [#-- Participating CRPS --]
     <br>
     <div class="row left-margin">
       <div class="col-md-12 col-center">
-        <label>Participating CRPs:</label>
+        <label>[@s.text name="login.participating.crps"/]:</label>
         <div class="login-logos-container">
           <ul>
           [#attempt] 
@@ -44,7 +45,7 @@
               [@crpItem element=crp /]
             [/#list]
           [#else]
-            <p>Not CRPs loaded</p>
+            <p>[@s.text name="login.participating.void.crps" /]</p>
           [/#if]
           </ul>
         </div>
@@ -54,7 +55,7 @@
     <br>
     <div class="row left-margin">
       <div class="col-md-offset-3 col-md-2">
-        <label>Centers:</label>
+        <label>[@s.text name="login.participating.centers"/]:</label>
         <div class="login-logos-container">
           <ul>
           [#attempt] 
@@ -67,14 +68,14 @@
               [@crpItem element=center /]
             [/#list]
           [#else]
-            <p>Not Centers loaded</p>
+            <p>[@s.text name="login.participating.void.centers" /]</p>
           [/#if]
           </ul>
         </div>
       </div>
-      [#-- PLATFORMS --]
+      [#-- and PLATFORMS --]
       <div class="col-md-4">
-        <label>Platforms:</label>
+        <label>[@s.text name="login.participating.platforms"/]:</label>
         <div class="login-logos-container">
           <ul>
             [#attempt] 
@@ -87,7 +88,7 @@
                 [@crpItem element=platform /]
               [/#list]
             [#else]
-              <p>Not Platforms loaded</p>
+              <p>[@s.text name="login.participating.void.platforms" /]</p>
             [/#if]
           </ul>
         </div>
