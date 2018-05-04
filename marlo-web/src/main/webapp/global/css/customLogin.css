@@ -533,4 +533,8 @@ p.login-description{
   opacity: 0.5;
 }
 
+.loginPage {
+  position: relative;
+}
+
 /*end input animation*/

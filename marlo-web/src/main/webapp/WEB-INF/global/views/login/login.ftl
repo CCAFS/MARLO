@@ -8,7 +8,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section> 
-  <div class="container loginPage">
+  <div class="loginPage">
     <div class="form-group row">
       <div class="col-md-10 col-center">
         <h3 class="">[@s.text name="login.marloTitle" /]</h3>
