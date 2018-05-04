@@ -36,7 +36,8 @@ public class DeliverableParticipantLocationManagerImpl implements DeliverablePar
 
 
   @Inject
-  public DeliverableParticipantLocationManagerImpl(DeliverableParticipantLocationDAO deliverableParticipantLocationDAO) {
+  public DeliverableParticipantLocationManagerImpl(
+    DeliverableParticipantLocationDAO deliverableParticipantLocationDAO) {
     this.deliverableParticipantLocationDAO = deliverableParticipantLocationDAO;
 
 
@@ -62,16 +63,21 @@ public class DeliverableParticipantLocationManagerImpl implements DeliverablePar
   }
 
   @Override
+  public List<DeliverableParticipantLocation> findParticipantLocationsByParticipant(long deliverableParticipantId) {
+    return deliverableParticipantLocationDAO.findParticipantLocationsByParticipant(deliverableParticipantId);
+  }
+
+  @Override
   public DeliverableParticipantLocation getDeliverableParticipantLocationById(long deliverableParticipantLocationID) {
 
     return deliverableParticipantLocationDAO.find(deliverableParticipantLocationID);
   }
 
   @Override
-  public DeliverableParticipantLocation saveDeliverableParticipantLocation(DeliverableParticipantLocation deliverableParticipantLocation) {
+  public DeliverableParticipantLocation
+    saveDeliverableParticipantLocation(DeliverableParticipantLocation deliverableParticipantLocation) {
 
     return deliverableParticipantLocationDAO.save(deliverableParticipantLocation);
   }
-
 
 }

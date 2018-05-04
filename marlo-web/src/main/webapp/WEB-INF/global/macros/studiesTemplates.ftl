@@ -335,38 +335,8 @@
     <h3 class="headTitle"> Share Study </h3>
     <div class="borderBox">
       [#-- Projects shared --]
-      <div id="gender-levels" class="panel tertiary col-md-12">
-       <div class="panel-head"><label for=""> This outcome study is done jointly with the following project(s), please select below: </label></div>
-        <div id="myProjectsList" class="panel-body" listname="deliverable.genderLevels"> 
-          <ul class="list">
-          [#if element.projects?has_content ]
-            [#list element.projects as projectLink]
-              [@shareStudyMacro element=projectLink name="caseStudy.projects" index=projectLink_index template=false /]
-            [/#list]
-          [#else]
-            <p class="emptyText"> [@s.text name="caseStudy.projects.empty" /]</p> 
-          [/#if]  
-          </ul>
-          [#if editable ]
-            [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName" showTitle=false i18nkey="" listName="myProjects"   required=true  className="projects" editable=editable/]
-          [/#if] 
-        </div>
-      </div>
+      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName"/]
     </div>
     [/#if]
   </div>
-[/#macro]
-
-[#macro shareStudyMacro element name index=-1 template=false]
-  [#local own = (!template) && (element.project.id == projectID) /]
-  <li id="sharedProject-${template?string('template', index)}" class="sharedProject ${own?string('hide','')} clearfix" style="display:${template?string('none','block')}">
-    [#-- Remove button --]
-    [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
-    [#-- Hidden inputs --]
-    <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
-    <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
-    [#-- title --]
-    <span title="${(element.project.projectInfo.title)!'undefined'}" class="name">${(element.project.projectInfo.composedName)!'undefined'}</span>
-    <div class="clearfix"></div>
-  </li>
 [/#macro]

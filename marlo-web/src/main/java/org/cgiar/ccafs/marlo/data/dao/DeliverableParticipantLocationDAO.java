@@ -55,11 +55,15 @@ public interface DeliverableParticipantLocationDAO {
   public List<DeliverableParticipantLocation> findAll();
 
 
+  public List<DeliverableParticipantLocation> findParticipantLocationsByParticipant(long deliverableParticipantId);
+
   /**
    * This method saves the information of the given deliverableParticipantLocation
    * 
-   * @param deliverableParticipantLocation - is the deliverableParticipantLocation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableParticipantLocation was
+   * @param deliverableParticipantLocation - is the deliverableParticipantLocation object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableParticipantLocation was
    *         updated
    *         or -1 is some error occurred.
    */
