@@ -513,6 +513,6 @@
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="elementName">${(element[displayFieldName])!(element.name)!'{elementNameUndefined}'}</span>
+    <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
 [/#macro]
