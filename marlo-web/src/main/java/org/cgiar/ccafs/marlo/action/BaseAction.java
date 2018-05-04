@@ -1930,9 +1930,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * (TODO change the method Name after test the functionality)
    */
   public List<GlobalUnit> getCrpCategoryList(String category) {
-    return crpManager.findAll().stream()
+    List<GlobalUnit> globalUnits = crpManager.findAll().stream()
       .filter(c -> c.isMarlo() && c.getGlobalUnitType().getId().intValue() == Integer.parseInt(category))
       .collect(Collectors.toList());
+    globalUnits.sort((gu1, gu2) -> gu1.getAcronym().compareTo(gu2.getAcronym()));
+    return globalUnits;
   }
 
   /**
@@ -2526,6 +2528,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
       globalUnitType.setGlobalUnitsList(
         globalUnitType.getGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      globalUnitType.getGlobalUnitsList().sort((i1, i2) -> i1.getAcronym().compareTo(i2.getAcronym()));
     }
 
     return globalUnitTypes;
