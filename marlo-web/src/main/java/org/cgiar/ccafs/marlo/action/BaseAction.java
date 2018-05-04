@@ -3405,6 +3405,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.PROJECT_PARTNER_PARTNERSHIP_SUB_NATIONAL;
   }
 
+  public long getReportingIndTypeActivityAcademicDegree() {
+    return APConstants.REPORTING_INDICATOR_TYPE_ACTIVITY_ACADEMIC_DEGREE;
+  }
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -3567,7 +3571,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
-    if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null) {
+    if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
+      && deliverableInfo.getDeliverableType().getId() != null && deliverableInfo.getDeliverableType().getId() != -1) {
       DeliverableType deliverableType =
         deliverableTypeManager.getDeliverableTypeById(deliverableInfo.getDeliverableType().getId());
       List<DeliverableTypeRule> deliverableTypeRules = deliverableType.getDeliverableTypeRules().stream()

@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -128,6 +129,16 @@ public class PublicationValidator extends BaseValidator {
       } else {
         action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate Deliverable Participant
+      if (deliverable.getDeliverableParticipant() != null
+        && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
+        this.validategetDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+      } else {
+        action.addMessage("hasParticipants");
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
@@ -252,6 +263,82 @@ public class PublicationValidator extends BaseValidator {
     } else {
       action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
       action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+  private void validategetDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
+    if (deliverableParticipant.getHasParticipants()) {
+      if (!this.isValidString(deliverableParticipant.getEventActivityName())) {
+        action.addMessage(action.getText("involveParticipants.title"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.eventActivityName",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getRepIndTypeActivity() == null
+        || deliverableParticipant.getRepIndTypeActivity().getId() == -1) {
+        action.addMessage(action.getText("involveParticipants.typeActivity"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (deliverableParticipant.getRepIndTypeActivity().getId()
+          .equals(action.getReportingIndTypeActivityAcademicDegree())) {
+          if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
+            action.addMessage(action.getText("involveParticipants.academicDegree"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+      if (deliverableParticipant.getParticipants() == null
+        || !this.isValidNumber(deliverableParticipant.getParticipants().toString())
+        || deliverableParticipant.getParticipants() < 0) {
+        action.addMessage(action.getText("involveParticipants.participants"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.participants",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getDontKnowFemale() == null || !deliverableParticipant.getDontKnowFemale()) {
+        if (deliverableParticipant.getFemales() == null
+          || !this.isValidNumber(deliverableParticipant.getFemales().toString())
+          || deliverableParticipant.getFemales() < 0) {
+          action.addMessage(action.getText("involveParticipants.females"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.females",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+      if (deliverableParticipant.getRepIndTypeParticipant() == null
+        || deliverableParticipant.getRepIndTypeParticipant().getId() == -1) {
+        action.addMessage(action.getText("involveParticipants.participantsType"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeParticipant.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getRepIndGeographicScope() == null
+        || deliverableParticipant.getRepIndGeographicScope().getId() == -1) {
+        action.addMessage(action.getText("involveParticipants.eventScope"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndGeographicScope.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (deliverableParticipant.getRepIndGeographicScope().getId()
+          .equals(action.getReportingIndGeographicScopeRegional())) {
+          if (deliverableParticipant.getRepIndRegion() == null
+            || deliverableParticipant.getRepIndRegion().getId() == -1) {
+            action.addMessage(action.getText("involveParticipants.region"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndRegion.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (deliverableParticipant.getRepIndGeographicScope().getId()
+          .equals(action.getReportingIndGeographicScopeMultiNational())
+          || deliverableParticipant.getRepIndGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeNational())
+          || deliverableParticipant.getRepIndGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeSubNational())) {
+          if (deliverableParticipant.getParticipantLocationsIsos() == null
+            || deliverableParticipant.getParticipantLocationsIsos().isEmpty()) {
+            action.addMessage(action.getText("involveParticipants.countries"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.participantLocationsIsos",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
     }
   }
 
