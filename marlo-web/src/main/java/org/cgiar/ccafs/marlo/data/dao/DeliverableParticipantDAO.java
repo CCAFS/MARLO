@@ -55,11 +55,14 @@ public interface DeliverableParticipantDAO {
   public List<DeliverableParticipant> findAll();
 
 
+  public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID, Long phaseID);
+
   /**
    * This method saves the information of the given deliverableParticipant
    * 
    * @param deliverableParticipant - is the deliverableParticipant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableParticipant was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableParticipant
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

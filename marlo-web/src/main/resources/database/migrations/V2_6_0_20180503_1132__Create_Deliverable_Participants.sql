@@ -12,9 +12,9 @@ CREATE TABLE `deliverable_participants` (
   `event_activity_name` text NULL,
   `rep_ind_type_activity_id` bigint(20) NULL,
   `academic_degree` text NULL,
-  `participants` double NOT NULL ,
+  `participants` double NULL DEFAULT NULL,
   `estimate_participants` tinyint(1) NULL DEFAULT NULL ,
-  `females` double NOT NULL ,
+  `females` double NULL DEFAULT NULL ,
   `estimate_females` tinyint(1) NULL DEFAULT NULL ,
   `dont_know_female` tinyint(1) NULL DEFAULT NULL,
   `rep_ind_type_participant_id` bigint(20) NULL,
@@ -43,7 +43,7 @@ CREATE TABLE `deliverable_participants` (
   CONSTRAINT `deliverable_participants_ibfk_6` FOREIGN KEY (`rep_ind_region_id`) REFERENCES `rep_ind_regions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `deliverable_participants_ibfk_7` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `deliverable_participants_ibfk_8` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+)ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for deliverable_participant_locations
@@ -68,4 +68,4 @@ CREATE TABLE `deliverable_participant_locations` (
   CONSTRAINT `deliverable_participant_locations_ibfk_2` FOREIGN KEY (`loc_element_id`) REFERENCES `loc_elements` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `deliverable_participant_locations_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `deliverable_participant_locations_ibfk_4` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+)ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;

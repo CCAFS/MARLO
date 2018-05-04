@@ -222,45 +222,45 @@
 [/#macro]
 
 [#-- Does this deliverable involve Participants and Trainees? --]
-[#macro deliverableParticipantsMacro]
-[#local customName = "deliverable.deliverableInfo" /]
+[#macro deliverableParticipantsMacro ]
+[#local customName = "deliverable.deliverableParticipant" /]
 <div class="simpleBox">
   <div class="form-group row">
     <label class="col-md-9" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
-    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.involveParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" /] </div>  
+    <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" /] </div>  
   </div>
   
-  <div class="block-involveParticipants" style="display:${((deliverable.deliverableInfo.involveParticipants)!false)?string('block','none')}">
+  <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
     <hr />
     [#-- Ttitle Event/Activity --]
     <div class="form-group">
-      [@customForm.input name="${customName}.involveParticipants.title" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
+      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
     </div>
     
     [#-- Type of activity --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.involveParticipants.typeActivity" className="setSelect2" i18nkey="involveParticipants.typeActivity" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+        [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
       [#local isAcademicDegree = true]
       <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
-        [@customForm.input name="${customName}.involveParticipants.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
       </div>
     </div>
     
     [#-- Total number of Participants: --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="${customName}.involveParticipants.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="" required=editable editable=editable /]
+        [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="" required=editable editable=editable /]
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.involveParticipants.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-6">
-        [@customForm.input name="${customName}.involveParticipants.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="" required=true editable=editable /]
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.involveParticipants.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
-          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.involveParticipants.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=false cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
     </div>
@@ -268,14 +268,14 @@
     [#-- Type of Participant(s): --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.involveParticipants.participantsType" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
     
     [#-- Scope of the event  --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.involveParticipants.eventScope" className="setSelect2" i18nkey="involveParticipants.eventScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
+        [@customForm.select name="${customName}.repIndGeographicScope.id" className="setSelect2" i18nkey="involveParticipants.eventScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
       </div>
     </div>
     
@@ -288,7 +288,7 @@
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [@customForm.selectGroup name="${customName}.involveParticipants.region.id" list=(regionList)![] element=(deliverable.deliverableInfo.involveParticipants.region.id)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="involveParticipants.region" required=true className="" editable=editable /]
+        [@customForm.selectGroup name="${customName}.repIndRegion.id" list=(repIndRegions)![] element=(deliverable.deliverableParticipant.repIndRegion)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="involveParticipants.region" required=true className="" editable=editable /]
       </div>
       
     </div>
@@ -296,7 +296,7 @@
     [#-- Countries --]
     <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
       [#-- Multinational, National and Subnational scope --]
-      [@customForm.select name="${customName}.countriesIds" label="" i18nkey="involveParticipants.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
+      [@customForm.select name="${customName}.participantLocationsIsos" label="" i18nkey="involveParticipants.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.participantLocationsIsos" multiple=true required=editable className="countriesSelect" disabled=!editable/]
     </div>
 
   </div>

@@ -186,6 +186,10 @@ public class AutoSaveWriterAction extends BaseAction {
       if (nameClass.equals(PowbSynthesis.class.getName())) {
         jSon = jSon.replaceAll("powbSynthesis\\.", "");
       }
+      if (nameClass.equals(Deliverable.class.getName())) {
+        jSon = jSon.replaceAll("deliverable\\.", "");
+        jSon = jSon.replaceAll("participantLocationsIsos", "participantLocationsIsosText");
+      }
 
       /****************************************************
        ******************** CENTER SECTIONS*****************

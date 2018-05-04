@@ -45,11 +45,11 @@ public class DeliverableParticipantLocation implements java.io.Serializable, IAu
       return false;
     }
     DeliverableParticipantLocation other = (DeliverableParticipantLocation) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (locElement == null) {
+      if (other.locElement != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!locElement.getId().equals(other.locElement.getId())) {
       return false;
     }
     return true;
