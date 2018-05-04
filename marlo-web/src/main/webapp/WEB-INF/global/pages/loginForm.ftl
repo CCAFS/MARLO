@@ -7,6 +7,7 @@
   [/#if]
   [#-- Form --]
   [@s.form method="POST" namespace="/" action="login"]
+     [#-- Login CRPs select bar --]
      <div class="crps-select hidden">
       [#if listGlobalUnitTypes??]
         [#list listGlobalUnitTypes as globalUnitType]
@@ -26,21 +27,22 @@
       [/#if]
      </div>
      [#-- End crps select --]
-     [#-- Check if the inputs can be replaced with the macro from forms.ftl --]
-     [#-- Trick for IE z-index --]
+     
+     [#-- Trick to fix z-index bug in IE --]
      <div style="position:relative;">
      <div class="loginForm" style="z-index: 1000">
-        [#-- Email --]
+        [#-- Row for Email, CRP Session (hide input), CRP Image and Welcome info --]
         <div class="row">
           <div class="col-sm-12">
+            [#-- Email input --]
             <div class="login-input-container" id="login-email">
               <input id="user.email" class="login-input user-email form-control" type="text" name="user.email" value="" required/>
               <label for="user.email">[@s.text name="login.email"/]</label>
             </div>
-            [#-- CRP Session --]
+            [#-- CRP Session (hidden input) --]
             <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
             
-            [#-- Image --]
+            [#-- CRP Image --]
             <div class="form-group text-center hidden" >
               <img id="crpSelectedImage" width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
             </div>
@@ -54,13 +56,14 @@
             </div>
           </div>
         </div>
-        [#-- Password --]
         <div class="row" >
           <div class="col-sm-12">
+            [#-- Password input --]
             <div class="login-input-container hidden" id="login-password" >
               <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=1 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
+            [#-- Error messages --]
             <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
             <p class="invalidField emailNotFound hidden">[@s.text name="login.error.invalidField.emailNotFound"/]</p>
             <p class="invalidField deniedAccess hidden">[@s.text name="login.error.invalidField.deniedAccess"/]</p>
@@ -68,11 +71,11 @@
             <p class="invalidField incorrectPassword hidden">[@s.text name="login.error.invalidField.incorrectPassword"/]</p>
           </div>
         </div>
-        [#-- Terms and conditions checkbox --]
         <div class="row">
           <div class="col-xs-12">
+            [#-- Terms and conditions checkbox --]
             <div class="terms-container hidden">
-              <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> I agree to the <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a>
+              <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
             </div>
           </div>
         </div>
@@ -80,7 +83,9 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="login-button-container">
+              [#-- This one to jump to second form and validate user data --]
               [@s.submit key="Next" name="next" cssClass="login-form-button" role="button" disabled=false /]
+              [#-- and This one to send login form --]
               [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
             </div>
           </div>
@@ -99,7 +104,7 @@
       <div class="login-disclaimer text-justify">[@s.text name="login.disclaimer"/]</div>
     </div>
   </div>
-</div><!-- End loginFormContainer -->
+</div>
 
 [#macro availableItems element]
   <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="">
