@@ -584,7 +584,7 @@ function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $list = $('.listType-' + removeElementType);
-  $parent.slideUp(function() {
+  $parent.slideUp(100, function() {
     $parent.remove();
 
     // Update indexes

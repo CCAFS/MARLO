@@ -232,7 +232,7 @@
   
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
     <hr />
-    [#-- Ttitle Event/Activity --]
+    [#-- Title Event/Activity --]
     <div class="form-group">
       [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
     </div>
@@ -240,10 +240,10 @@
     [#-- Type of activity --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+        [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
-      [#local isAcademicDegree = true]
-      <div class="col-md-6" style="display:${isAcademicDegree?string('block', 'none')}">
+      [#-- Formal training: Academic Degree --]
+      <div class="col-md-6 block-academicDegree" style="display:${((deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false)?string('block','none')}">
         [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
       </div>
     </div>
@@ -251,13 +251,13 @@
     [#-- Total number of Participants: --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="" required=editable editable=editable /]
+        [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="currencyInput" required=editable editable=editable /]
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
-      <div class="col-md-6">
-        [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="" required=true editable=editable /]
+      <div class="col-md-6 femaleNumbers">
+        [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="currencyInput" required=true editable=editable /]
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
           [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
@@ -275,22 +275,21 @@
     [#-- Scope of the event  --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.repIndGeographicScope.id" className="setSelect2" i18nkey="involveParticipants.eventScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
+        [@customForm.select name="${customName}.repIndGeographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="involveParticipants.eventScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
       </div>
     </div>
     
-    [#local isRegional = true ]
-    [#local isMultiNational = true ]
-    [#local isNational = true ]
-    [#local isSubNational = true ]
-    
+    [#local scopeID = (deliverable.deliverableParticipant.repIndGeographicScope.id)!-1 ]  
+    [#local isRegional = ((scopeID == action.reportingIndGeographicScopeRegional)) ]
+    [#local isMultiNational = ((scopeID == action.reportingIndGeographicScopeMultiNational)) ]
+    [#local isNational = ((scopeID == action.reportingIndGeographicScopeNational)) ]
+    [#local isSubNational = ((scopeID == action.reportingIndGeographicScopeSubNational)) ]
     
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
         [@customForm.selectGroup name="${customName}.repIndRegion.id" list=(repIndRegions)![] element=(deliverable.deliverableParticipant.repIndRegion)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="involveParticipants.region" required=true className="" editable=editable /]
       </div>
-      
     </div>
     
     [#-- Countries --]
