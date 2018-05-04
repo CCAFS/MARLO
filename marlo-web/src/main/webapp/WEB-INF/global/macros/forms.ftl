@@ -494,7 +494,7 @@
     <div class="panel-body" style="min-height: 30px;">
       <ul class="list listType-${elementType}">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index /][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName /][/#list]
         [/#if]
       </ul>
       [#if editable]
@@ -504,15 +504,15 @@
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type index=-1 template=false]
+[#macro listElementMacro element name type index=-1 keyFieldName="id" displayFieldName="composedName" template=false]
   [#local customName = "${name}[${index}]"]
   <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element.relationship.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
     [#-- Title --]
-    <span class="elementName">${(element.composedName)!(element.name)!'{elementName}'}</span>
+    <span class="elementName">${(element[displayFieldName])!(element.name)!'{elementNameUndefined}'}</span>
   </li>
 [/#macro]

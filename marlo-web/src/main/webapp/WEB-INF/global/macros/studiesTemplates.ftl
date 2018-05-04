@@ -11,14 +11,19 @@
       
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.type" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="${customName}.type" value="${(element.type)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
         <div class="col-md-6">
-          [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="study.status" listName="" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="study.status" listName="status" keyFieldName="id"  displayFieldName="name" editable=editable /]
         </div>
       </div>
     </div>
     <div class="borderBox">
+    
+      [#if (element.caseStudy??)]
+       CaseStudy -> ${(element.caseStudy.title)!}
+      [/#if]
+
       [#-- 1. Title (up to 20 words) --]
       <div class="form-group">
         [@customForm.input name="${customName}.topicStudy" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=false required=true editable=editable /]
@@ -140,13 +145,13 @@
         [/#if]
         [#-- Sub IDOs  --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.subIDOs" elementType="subIDO" elementList=keyContributions label="study.stratgicResultsLink.subIDOs"  listName="subIdos" keyFieldName="id" displayFieldName="description"/]
+          [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" keyFieldName="id" displayFieldName="description"/]
         </div>
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
           [#-- List --]
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfTarget" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
+          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
         [#-- Comments  --]
@@ -200,7 +205,7 @@
           [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagships" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.institution" elementType="institution" elementList=element.institution label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
         </div>
       </div>
       [/#if]
