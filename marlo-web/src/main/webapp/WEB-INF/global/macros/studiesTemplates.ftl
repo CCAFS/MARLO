@@ -11,14 +11,14 @@
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" disabled=isOutcomeCaseStudy editable=editable/]
         </div>
         <div class="col-md-6">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="status" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="statuses"  editable=editable /]
         </div>
       </div>
     </div>
     <div class="borderBox">
     
       [#if (element.caseStudy??)]
-       CaseStudy -> ${(element.caseStudy.title)!}
+       CaseStudy -> ${(element.caseStudy)!}
       [/#if]
 
       [#-- 1. Title (up to 20 words) --]

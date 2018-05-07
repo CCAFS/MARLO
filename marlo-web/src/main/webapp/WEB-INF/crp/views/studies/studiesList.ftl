@@ -88,7 +88,6 @@
           </td>
           [#-- Title / Name --]
           <td class="col-md-4 left">
-            
             <a href="${elementUrl}">
               [#if (element.projectExpectedStudyInfo.title?has_content)!false]${(element.projectExpectedStudyInfo.title)!}[#else]Not defined[/#if]
             </a>
@@ -97,9 +96,9 @@
           <td >
             [#if element.createdBy?has_content]${(element.createdBy.composedName)!}[#else]Not defined[/#if]
           </td>
-          [#-- Lead partner(s) --]
+          [#-- Type--]
           <td class="">
-            ${(element.projectExpectedStudyInfo.studyType.name)!}
+            ${(element.projectExpectedStudyInfo.studyType.name)!'Not defined'}
           </td>
           [#-- Flagship / Region --]
           <td class=""> 
@@ -114,11 +113,11 @@
           </td>
           [#-- Delivery year --]
           <td class=""> 
-           ${(element.year)!'{year}'}
+           ${(element.year)!'Not defined'}
           </td>
           [#--Status --]
           <td class=""> 
-           ${(element.status)!'{status}'}
+           ${(element.projectExpectedStudyInfo.status)!'Not defined'}
           </td>
           [#-- Fields check --]
           <td class=""> 

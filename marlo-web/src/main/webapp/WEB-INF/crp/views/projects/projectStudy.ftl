@@ -14,7 +14,7 @@
 /]
 
 [#assign currentSection = "projects" /]
-[#assign currentStage = "caseStudies" /]
+[#assign currentStage = "studies" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
