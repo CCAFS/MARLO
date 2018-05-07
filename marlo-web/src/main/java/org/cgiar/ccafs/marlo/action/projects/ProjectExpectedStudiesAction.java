@@ -709,6 +709,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(focusLevel);
       }
 
+      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null) {
+        RepIndStageStudy stageStudy = stageStudyManager
+          .getRepIndStageStudyById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId());
+        expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(stageStudy);
+      }
+
       // Validate negative Values
       if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
         if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() == -1) {

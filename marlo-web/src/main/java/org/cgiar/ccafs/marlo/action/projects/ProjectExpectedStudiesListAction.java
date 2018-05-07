@@ -95,7 +95,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudy.setActiveSince(new Date());
     projectExpectedStudy.setCreatedBy(this.getCurrentUser());
     projectExpectedStudy.setActive(true);
-    projectExpectedStudy.setProject(project);
+
+    if (project != null) {
+      projectExpectedStudy.setProject(project);
+    }
+
     projectExpectedStudy.setModificationJustification("");
     projectExpectedStudy.setYear(this.getActualPhase().getYear());
 
@@ -184,8 +188,15 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         }
       }
     } else {
-      nonProjectStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+      nonProjectStudies = new ArrayList<>();
+
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(s -> s.isActive() && s.getProject() == null).collect(Collectors.toList()));
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+        projectExpectedStudy
+          .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
+        nonProjectStudies.add(projectExpectedStudy);
+      }
     }
   }
 

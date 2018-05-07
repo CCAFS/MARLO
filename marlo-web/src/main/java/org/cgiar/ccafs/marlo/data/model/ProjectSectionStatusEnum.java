@@ -28,8 +28,8 @@ public enum ProjectSectionStatusEnum {
   BUDGETBYFLAGSHIP("budgetByFlagship"), NEXTUSERS("nextUsers"), CCAFSOUTCOMES("ccafsOutcomes"),
   CASESTUDIES("caseStudies"), HIGHLIGHTS("highlights"), LEVERAGES("leverages"), DELIVERABLE("deliverable"),
   SYNTHESISMOG("synthesisByMog"), SYNTHESISOUTCOME("outcomeSynthesisPandR"), FUNDINGSOURCE("fundingSource"),
-  CRP_INDICATORS("crpIndicators"), EXPECTEDSTUDIES("expectedStudies"), INNOVATIONS("innovationsList"),
-  INNOVATION("innovation"), HIGHLIGHT("highlight"), EXPECTEDSTUDY("expectedStudy");
+  CRP_INDICATORS("crpIndicators"), EXPECTEDSTUDIES("studies"), INNOVATIONS("innovationsList"), INNOVATION("innovation"),
+  HIGHLIGHT("highlight"), EXPECTEDSTUDY("study");
 
   public static ProjectSectionStatusEnum value(String status) {
     ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();
