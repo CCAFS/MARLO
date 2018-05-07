@@ -1,8 +1,8 @@
 [#ftl]
-[#macro studyMacro element name index=-1 template=false isOutcomeCaseStudy=true fromProject=true ]
-[#local customName = "${name}"/]
+[#macro studyMacro element name index=-1 template=false fromProject=true ]
+  [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
-  
+  [#local isOutcomeCaseStudy = (element.type == 1)!false /]
   
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
