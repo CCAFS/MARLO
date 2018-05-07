@@ -149,7 +149,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CASE_STUDY_EDIT_PERMISSION, params));
       }

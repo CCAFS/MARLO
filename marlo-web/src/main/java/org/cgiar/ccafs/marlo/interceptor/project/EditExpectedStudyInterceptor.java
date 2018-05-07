@@ -137,12 +137,12 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
 
       // Check the permission if user want to edit or save the form
       if (projectExpectedStudy.getProject() != null) {
-        if (editParameter || parameters.get("save") != null) {
+        if (editParameter || parameters.get("save").isDefined()) {
           hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params));
         }
       } else {
-        if (editParameter || parameters.get("save") != null) {
+        if (editParameter || parameters.get("save").isDefined()) {
           hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
             : baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params));
         }
