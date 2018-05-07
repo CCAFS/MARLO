@@ -463,7 +463,6 @@ public class PublicationAction extends BaseAction {
 
     if (deliverable != null) {
 
-      deliverable.setPhase(deliverableManager.getDeliverableById(deliverable.getId()).getPhase());
 
       Path path = this.getAutoSaveFilePath();
 
@@ -477,6 +476,8 @@ public class PublicationAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
+        deliverable.setPhase(deliverableManager.getDeliverableById(deliverable.getId()).getPhase());
+
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
         }
