@@ -333,6 +333,7 @@ function secondForm(data){
   }
 }
 
+// Validate login success
 function checkPassword(email,password){
   $.ajax({
     url: baseUrl+"/validateUser.do",
@@ -401,13 +402,6 @@ function cleanWrongData() {
   $('.loginForm p.invalidField').addClass("hidden");
 }
 
-function setCookie(cname,cvalue,mins) {
-  var d = new Date();
-  d.setTime(d.getTime() + (mins * 60 * 1000));
-  var expires = "expires=" + d.toUTCString();
-  document.cookie = cname + "=" + cvalue + "; " + expires;
-}
-
 // Show terms and conditions checkbox
 function showTermsCheckbox(){
   $('.terms-container').removeClass("hidden");
@@ -417,6 +411,13 @@ function showTermsCheckbox(){
 // Show the image of the selected crp (big image)
 function loadSelectedImage(selectedImageAcronym){
   $("#crpSelectedImage").attr("src", baseUrl + "/global/images/crps/" + selectedImageAcronym + ".png");
+}
+
+function setCookie(cname,cvalue,mins) {
+  var d = new Date();
+  d.setTime(d.getTime() + (mins * 60 * 1000));
+  var expires = "expires=" + d.toUTCString();
+  document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
 function initJreject() {
