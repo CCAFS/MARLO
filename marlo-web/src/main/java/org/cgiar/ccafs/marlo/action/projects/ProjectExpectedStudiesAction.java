@@ -110,17 +110,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
 
+
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
 
   private AuditLogManager auditLogManager;
 
-
   private GlobalUnitManager crpManager;
 
 
   private GlobalUnit loggedCrp;
-
 
   private Project project;
 
@@ -133,6 +132,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   private ProjectExpectedStudy expectedStudy;
 
+
   private ProjectExpectedStudy expectedStudyDB;
 
 
@@ -143,9 +143,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   private List<RepIndRegion> regions;
+
   private List<RepIndOrganizationType> organizationTypes;
+
+
   private List<RepIndGenderYouthFocusLevel> focusLevels;
+
+
   private List<RepIndPolicyInvestimentType> policyInvestimentTypes;
+
+
   private List<RepIndStageProcess> stageProcesses;
   private List<RepIndStageStudy> stageStudies;
   private List<StudyType> studyTypes;
@@ -153,26 +160,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<SrfSubIdo> subIdos;
   private List<SrfSloIndicator> targets;
   private List<GlobalUnit> crps;
-  private List<CrpProgram> flagships;
+  private List<CrpProgram> flagshipList;
+  private List<CrpProgram> regionList;
   private List<Institution> institutions;
   private List<Project> myProjects;
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
-
-
   private SrfSloIndicatorManager srfSloIndicatorManager;
   private SrfSubIdoManager srfSubIdoManager;
   private CrpProgramManager crpProgramManager;
   private InstitutionManager institutionManager;
+
+
   private LocElementManager locElementManager;
   private StudyTypeManager studyTypeManager;
   private FileDBManager fileDBManager;
   private RepIndGeographicScopeManager geographicScopeManager;
-
   private RepIndRegionManager repIndRegionManager;
   private RepIndOrganizationTypeManager organizationTypeManager;
   private RepIndGenderYouthFocusLevelManager focusLevelManager;
   private RepIndPolicyInvestimentTypeManager investimentTypeManager;
+
   private RepIndStageProcessManager stageProcessManager;
   private RepIndStageStudyManager stageStudyManager;
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
@@ -263,8 +271,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return expectedStudy;
   }
 
-  public List<CrpProgram> getFlagships() {
-    return flagships;
+  public List<CrpProgram> getFlagshipList() {
+    return flagshipList;
   }
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
@@ -278,6 +286,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<Institution> getInstitutions() {
     return institutions;
   }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -295,7 +304,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return policyInvestimentTypes;
   }
 
-
   public Project getProject() {
     return project;
   }
@@ -304,10 +312,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
+  public List<CrpProgram> getRegionList() {
+    return regionList;
+  }
+
+
   public List<RepIndRegion> getRegions() {
     return regions;
   }
-
 
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
@@ -316,6 +328,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<RepIndStageStudy> getStageStudies() {
     return stageStudies;
   }
+
 
   public Map<Integer, String> getStatuses() {
     return statuses;
@@ -552,9 +565,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
         .collect(Collectors.toList());
 
-      flagships = crpProgramManager.findAll().stream()
+      flagshipList = crpProgramManager.findAll().stream()
         .filter(p -> p.isActive() && p.getCrp() != null && p.getCrp().getId() == loggedCrp.getId()
           && p.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+
+      regionList = crpProgramManager.findAll().stream()
+        .filter(p -> p.isActive() && p.getCrp() != null && p.getCrp().getId() == loggedCrp.getId()
+          && p.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
 
       institutions = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
@@ -855,7 +873,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudyFlagship> flagshipPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()
+            && nu.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
 
       for (ProjectExpectedStudyFlagship studyFlagship : flagshipPrev) {
         if (!expectedStudy.getFlagships().contains(studyFlagship)) {
@@ -966,6 +986,49 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+  /**
+   * Save Expected Studies Regions Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveRegions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyFlagships() != null
+      && projectExpectedStudy.getProjectExpectedStudyFlagships().size() > 0) {
+
+      List<ProjectExpectedStudyFlagship> flagshipPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()
+            && nu.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyFlagship studyFlagship : flagshipPrev) {
+        if (!expectedStudy.getFlagships().contains(studyFlagship)) {
+          projectExpectedStudyFlagshipManager.deleteProjectExpectedStudyFlagship(studyFlagship.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getFlagships() != null) {
+      for (ProjectExpectedStudyFlagship studyFlagship : expectedStudy.getFlagships()) {
+        if (studyFlagship.getId() == null) {
+          ProjectExpectedStudyFlagship studyFlagshipSave = new ProjectExpectedStudyFlagship();
+          studyFlagshipSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyFlagshipSave.setPhase(phase);
+
+          CrpProgram crpProgram = crpProgramManager.getCrpProgramById(studyFlagship.getCrpProgram().getId());
+
+          studyFlagshipSave.setCrpProgram(crpProgram);
+
+          projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(studyFlagshipSave);
+        }
+      }
+    }
+
+  }
 
   /**
    * Save Expected Studies Srf Targets Information
@@ -1009,7 +1072,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies SubIdos Information
@@ -1058,9 +1120,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.countries = countries;
   }
 
+
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
+
 
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
@@ -1070,13 +1134,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.expectedStudy = expectedStudy;
   }
 
-  public void setFlagships(List<CrpProgram> flagships) {
-    this.flagships = flagships;
+  public void setFlagshipList(List<CrpProgram> flagshipList) {
+    this.flagshipList = flagshipList;
   }
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
+
 
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
@@ -1098,7 +1163,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.organizationTypes = organizationTypes;
   }
 
-
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
@@ -1111,6 +1175,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setRegionList(List<CrpProgram> regionList) {
+    this.regionList = regionList;
   }
 
 
