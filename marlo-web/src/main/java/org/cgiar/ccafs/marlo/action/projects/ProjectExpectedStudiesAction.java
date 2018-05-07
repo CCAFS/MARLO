@@ -365,7 +365,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
-      project.getProjecInfoPhase(phase);
+
 
       Path path = this.getAutoSaveFilePath();
 
@@ -564,13 +564,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (expectedStudyDB.getProject() != null) {
         projectID = expectedStudyDB.getProject().getId();
         project = projectManager.getProjectById(projectID);
+        project.getProjecInfoPhase(phase);
       }
 
       if (project != null) {
         String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
         this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
       } else {
-        String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+        String params[] = {loggedCrp.getAcronym(), expectedStudy.getId() + ""};
         this.setBasePermission(this.getText(Permission.STUDIES_BASE_PERMISSION, params));
       }
     }
