@@ -117,7 +117,7 @@
           </td>
           [#--Status --]
           <td class=""> 
-           ${(element.projectExpectedStudyInfo.status)!'Not defined'}
+           ${(element.projectExpectedStudyInfo.statusName)!'Not defined'}
           </td>
           [#-- Fields check --]
           <td class=""> 
