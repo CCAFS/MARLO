@@ -89,8 +89,6 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params));
       boolean hasPublicationInstitutionPermission =
         baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
-      System.out.println(deliverable.getPhase().getId());
-      System.out.println(baseAction.getActualPhase().getId());
       boolean isInDeliverablePhase = deliverable.getPhase().getId() == baseAction.getActualPhase().getId();
 
       if (!isInDeliverablePhase) {
