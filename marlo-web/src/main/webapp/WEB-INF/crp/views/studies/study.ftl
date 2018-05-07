@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Study" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${(expectedStudy.id)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2" ,"blueimp-file-upload" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/studies/study.js",
