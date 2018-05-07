@@ -265,7 +265,7 @@ public class PublicationAction extends BaseAction {
    * @param deliverablePrew
    */
   private void deleteDeliverableGenderLevels(Deliverable deliverablePrew) {
-    if (!deliverablePrew.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender().booleanValue()) {
+    if (!deliverablePrew.getDeliverableInfo(deliverable.getPhase()).getCrossCuttingGender().booleanValue()) {
       Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
       List<DeliverableGenderLevel> deliverableGenderLevels =
         deliverableDB.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -290,8 +290,8 @@ public class PublicationAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + deliverable.getPhase().getDescription()
+      + "_" + deliverable.getPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -479,13 +479,13 @@ public class PublicationAction extends BaseAction {
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
         }
-        deliverable.getDeliverableInfo(this.getActualPhase());
+        deliverable.getDeliverableInfo(deliverable.getPhase());
         if (deliverable.getFundingSources() != null) {
           for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
             if (fundingSource != null && fundingSource.getFundingSource() != null) {
               fundingSource
                 .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
-              fundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase());
+              fundingSource.getFundingSource().getFundingSourceInfo(deliverable.getPhase());
             }
           }
         }
@@ -591,32 +591,32 @@ public class PublicationAction extends BaseAction {
         this.setDraft(true);
 
       } else {
-        deliverable.getDeliverableInfo(this.getActualPhase());
+        deliverable.getDeliverableInfo(deliverable.getPhase());
 
         deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(deliverable.getPhase()))
           .collect(Collectors.toList()));
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 
           deliverableFundingSource.setFundingSource(
             fundingSourceManager.getFundingSourceById(deliverableFundingSource.getFundingSource().getId()));
           deliverableFundingSource.getFundingSource().setFundingSourceInfo(
-            deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+            deliverableFundingSource.getFundingSource().getFundingSourceInfo(deliverable.getPhase()));
           if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
             deliverableFundingSource.getFundingSource().setFundingSourceInfo(
-              deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(this.getActualPhase()));
+              deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(deliverable.getPhase()));
           }
         }
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+          .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
 
 
         deliverable.setLeaders(
-          deliverable.getDeliverableLeaders().stream().filter(dl -> dl.getPhase().equals(this.getActualPhase()))
+          deliverable.getDeliverableLeaders().stream().filter(dl -> dl.getPhase().equals(deliverable.getPhase()))
             .sorted((l1, l2) -> l1.getInstitution().getName().compareTo(l2.getInstitution().getName()))
             .collect(Collectors.toList()));
         List<DeliverableProgram> deliverablePrograms = deliverable.getDeliverablePrograms().stream()
-          .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
         deliverable.setPrograms(deliverablePrograms.stream()
           .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -630,13 +630,13 @@ public class PublicationAction extends BaseAction {
 
         if (deliverable.getDeliverableMetadataElements() != null) {
           deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
         }
 
 
         if (deliverable.getDeliverableDisseminations() != null) {
           deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
           if (deliverable.getDisseminations().size() > 0) {
             deliverable.setDissemination(deliverable.getDisseminations().get(0));
           } else {
@@ -646,7 +646,7 @@ public class PublicationAction extends BaseAction {
 
         if (deliverable.getDeliverablePublicationMetadatas() != null) {
           deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
         }
         if (!deliverable.getPublicationMetadatas().isEmpty()) {
           deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
@@ -654,17 +654,17 @@ public class PublicationAction extends BaseAction {
 
         if (deliverable.getDeliverableDataSharings() != null) {
           deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
         }
 
         deliverable.setUsers(deliverable.getDeliverableUsers().stream()
-          .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+          .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-          .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+          .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
 
         if (deliverable.getDeliverableIntellectualAssets() != null) {
           List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-            .stream().filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+            .stream().filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
           if (intellectualAssets.size() > 0) {
             deliverable.setIntellectualAsset(intellectualAssets.get(0));
@@ -674,7 +674,7 @@ public class PublicationAction extends BaseAction {
         }
         if (deliverable.getDeliverableParticipants() != null) {
           List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
           if (deliverableParticipants.size() > 0) {
             deliverable.setDeliverableParticipant(deliverableParticipants.get(0));
@@ -756,7 +756,7 @@ public class PublicationAction extends BaseAction {
       this.fundingSources = new ArrayList<>();
       this.fundingSources = fundingSourceManager.findAll().stream()
         .filter(
-          fs -> fs.getCrp().equals(this.getCurrentCrp()) && fs.getFundingSourceInfo(this.getActualPhase()) != null)
+          fs -> fs.getCrp().equals(this.getCurrentCrp()) && fs.getFundingSourceInfo(deliverable.getPhase()) != null)
         .collect(Collectors.toList());
 
       fundingSources.sort((f1, f2) -> f1.getId().compareTo(f2.getId()));
@@ -798,7 +798,7 @@ public class PublicationAction extends BaseAction {
 
 
       this.setKeyOutputs(crpClusterKeyOutputManager.getCrpClusterKeyOutputByGlobalUnitAndPhase(this.loggedCrp.getId(),
-        this.getActualPhase().getId()));
+        deliverable.getPhase().getId()));
       this.getKeyOutputs().sort((k1, k2) -> k1.getCrpClusterOfActivity().getIdentifier()
         .compareTo(k2.getCrpClusterOfActivity().getIdentifier()));
 
@@ -838,12 +838,12 @@ public class PublicationAction extends BaseAction {
           deliverable.getPublication().setNasr(null);
         }
 
-        deliverable.getDeliverableInfo(this.getActualPhase()).setDeliverableType(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingGender(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingCapacity(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingNa(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingYouth(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setIsLocationGlobal(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setDeliverableType(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingGender(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingCapacity(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingNa(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingYouth(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setIsLocationGlobal(null);
         deliverable.setResponsiblePartner(null);
 
         if (deliverable.getCrps() != null) {
@@ -869,7 +869,7 @@ public class PublicationAction extends BaseAction {
           deliverable.getUsers().clear();
         }
 
-        deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrpClusterKeyOutput(null);
 
         if (deliverable.getFundingSources() != null) {
           deliverable.getFundingSources().clear();
@@ -923,7 +923,7 @@ public class PublicationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
       deliverablePrew.setActiveSince(new Date());
-      deliverableManager.saveDeliverable(deliverablePrew, this.getActionName(), relationsName, this.getActualPhase());
+      deliverableManager.saveDeliverable(deliverablePrew, this.getActionName(), relationsName, deliverable.getPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -961,7 +961,7 @@ public class PublicationAction extends BaseAction {
     /* Delete */
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
     for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())) {
       if (!deliverable.getCrps().contains(deliverableCrp)) {
         deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
       }
@@ -972,7 +972,7 @@ public class PublicationAction extends BaseAction {
       if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
-        deliverableCrp.setPhase(this.getActualPhase());
+        deliverableCrp.setPhase(deliverable.getPhase());
         if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null
           && deliverableCrp.getGlobalUnit().getId() != -1) {
           deliverableCrp.setCrpProgram(null);
@@ -990,7 +990,7 @@ public class PublicationAction extends BaseAction {
       if (deliverablePrew.getDeliverableGenderLevels() != null
         && deliverablePrew.getDeliverableGenderLevels().size() > 0) {
         List<DeliverableGenderLevel> fundingSourcesPrew = deliverablePrew.getDeliverableGenderLevels().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          .filter(dp -> dp.isActive() && dp.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
         for (DeliverableGenderLevel deliverableFundingSource : fundingSourcesPrew) {
           if (!deliverable.getGenderLevels().contains(deliverableFundingSource)) {
@@ -1008,7 +1008,7 @@ public class PublicationAction extends BaseAction {
           deliverableGenderLevel.setModifiedBy(this.getCurrentUser());
           deliverableGenderLevel.setModificationJustification("");
           deliverableGenderLevel.setActiveSince(new Date());
-          deliverableGenderLevel.setPhase(this.getActualPhase());
+          deliverableGenderLevel.setPhase(deliverable.getPhase());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevel);
 
         } else {
@@ -1148,7 +1148,7 @@ public class PublicationAction extends BaseAction {
         dissemination.setDisseminationChannel(null);
       }
 
-      dissemination.setPhase(this.getActualPhase());
+      dissemination.setPhase(deliverable.getPhase());
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 
     }
@@ -1168,7 +1168,7 @@ public class PublicationAction extends BaseAction {
       } else {
         intellectualAsset = new DeliverableIntellectualAsset();
         intellectualAsset.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-        intellectualAsset.setPhase(this.getActualPhase());
+        intellectualAsset.setPhase(deliverable.getPhase());
       }
 
       intellectualAsset.setHasPatentPvp(deliverable.getIntellectualAsset().getHasPatentPvp());
@@ -1212,7 +1212,7 @@ public class PublicationAction extends BaseAction {
       if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
         deliverableUser.setId(null);
         deliverableUser.setDeliverable(deliverable);
-        deliverableUser.setPhase(this.getActualPhase());
+        deliverableUser.setPhase(deliverable.getPhase());
         deliverableLeaderManager.saveDeliverableLeader(deliverableUser);
       }
     }
@@ -1223,7 +1223,7 @@ public class PublicationAction extends BaseAction {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
           deliverableMetadataElement.setDeliverable(deliverable);
-          deliverableMetadataElement.setPhase(this.getActualPhase());
+          deliverableMetadataElement.setPhase(deliverable.getPhase());
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
         }
       }
@@ -1235,12 +1235,12 @@ public class PublicationAction extends BaseAction {
       DeliverableParticipant participant = new DeliverableParticipant();
       DeliverableParticipant deliverableParticipantDB = new DeliverableParticipant();
       List<DeliverableParticipant> deliverableParticipants = deliverableParticipantManager
-        .findDeliverableParticipantByDeliverableAndPhase(deliverable.getId(), this.getActualPhase().getId());
+        .findDeliverableParticipantByDeliverableAndPhase(deliverable.getId(), deliverable.getPhase().getId());
       if (deliverableParticipants != null && deliverableParticipants.size() > 0) {
         deliverableParticipantDB = deliverableParticipants.get(0);
         if (deliverableParticipants.size() > 1) {
           LOG.warn("There is more than one deliverableParticipant in database for deliverable: " + deliverable.getId()
-            + ", phase: " + this.getActualPhase().getComposedName());
+            + ", phase: " + deliverable.getPhase().getComposedName());
         }
       }
       if (deliverableParticipantDB != null && deliverableParticipantDB.getId() != null
@@ -1249,7 +1249,7 @@ public class PublicationAction extends BaseAction {
       } else {
         participant.setId(null);
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-        participant.setPhase(this.getActualPhase());
+        participant.setPhase(deliverable.getPhase());
         participant.setCreatedBy(this.getCurrentUser());
       }
       List<DeliverableParticipantLocation> locationsDB = new ArrayList<>();
@@ -1419,7 +1419,7 @@ public class PublicationAction extends BaseAction {
           DeliverableProgram deliverableProgram = new DeliverableProgram();
           deliverableProgram.setCrpProgram(program);
           deliverableProgram.setDeliverable(deliverable);
-          deliverableProgram.setPhase(this.getActualPhase());
+          deliverableProgram.setPhase(deliverable.getPhase());
           if (deliverableDB.getDeliverablePrograms().stream()
             .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
             .collect(Collectors.toList()).isEmpty()) {
@@ -1448,7 +1448,7 @@ public class PublicationAction extends BaseAction {
           DeliverableProgram deliverableProgram = new DeliverableProgram();
           deliverableProgram.setCrpProgram(program);
           deliverableProgram.setDeliverable(deliverable);
-          deliverableProgram.setPhase(this.getActualPhase());
+          deliverableProgram.setPhase(deliverable.getPhase());
           if (deliverableDB.getDeliverablePrograms().stream()
             .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
             .collect(Collectors.toList()).isEmpty()) {
@@ -1466,7 +1466,7 @@ public class PublicationAction extends BaseAction {
       if (deliverable.getPublication().getId() == null || deliverable.getPublication().getId().intValue() == -1) {
         deliverable.getPublication().setId(null);
       }
-      deliverable.getPublication().setPhase(this.getActualPhase());
+      deliverable.getPublication().setPhase(deliverable.getPhase());
       deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
     }
   }
@@ -1479,7 +1479,7 @@ public class PublicationAction extends BaseAction {
     }
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
     for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())) {
       if (!deliverable.getUsers().contains(deliverableUser)) {
         deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
       }
@@ -1489,7 +1489,7 @@ public class PublicationAction extends BaseAction {
 
       if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
         deliverableUser.setId(null);
-        deliverableUser.setPhase(this.getActualPhase());
+        deliverableUser.setPhase(deliverable.getPhase());
         deliverableUser.setDeliverable(deliverable);
         deliverableUserManager.saveDeliverableUser(deliverableUser);
       }
@@ -1596,7 +1596,7 @@ public class PublicationAction extends BaseAction {
       if (deliverablePrew.getDeliverableFundingSources() != null
         && deliverablePrew.getDeliverableFundingSources().size() > 0) {
         List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(deliverable.getPhase()))
           .collect(Collectors.toList());
 
 
@@ -1617,7 +1617,7 @@ public class PublicationAction extends BaseAction {
           deliverableFundingSource.setModifiedBy(this.getCurrentUser());
           deliverableFundingSource.setModificationJustification("");
           deliverableFundingSource.setActiveSince(new Date());
-          deliverableFundingSource.setPhase(this.getActualPhase());
+          deliverableFundingSource.setPhase(deliverable.getPhase());
           deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
 
 
@@ -1630,9 +1630,9 @@ public class PublicationAction extends BaseAction {
   private Deliverable updateDeliverableInfo() {
     // deliverableDb is in a managed state, deliverable is in a detached state.
     Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
-    DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(this.getActualPhase());
+    DeliverableInfo deliverableInfoDb = deliverableBase.getDeliverableInfo(deliverable.getPhase());
 
-    deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(this.getActualPhase()).getTitle());
+    deliverableInfoDb.setTitle(deliverable.getDeliverableInfo(deliverable.getPhase()).getTitle());
     deliverableInfoDb.setDescription(deliverable.getDeliverableInfo().getDescription());
 
     deliverableInfoDb.setYear(deliverable.getDeliverableInfo().getYear());

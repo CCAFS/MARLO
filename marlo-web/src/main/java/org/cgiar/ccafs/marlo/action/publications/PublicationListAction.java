@@ -186,6 +186,7 @@ public class PublicationListAction extends BaseAction {
 
     for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
       if (this.canEdit(deliverable.getId().longValue()) == permission) {
+        deliverable.getDeliverableInfo(deliverable.getPhase());
         deliverables.add(deliverable);
       }
     }
@@ -199,9 +200,7 @@ public class PublicationListAction extends BaseAction {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     try {
       loggedCrp.setDeliverablesList(loggedCrp.getDeliverables().stream()
-        .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive()
-          && c.getDeliverableInfo(this.getActualPhase()) != null
-          && c.getDeliverableInfo().getPhase().equals(this.getActualPhase()))
+        .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive())
         .collect(Collectors.toList()));
       for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
         deliverable.setLeaders(deliverable.getDeliverableLeaders().stream()
