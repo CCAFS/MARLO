@@ -109,8 +109,12 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = new HashSet<ProjectExpectedStudySubIdo>(0);
+
+
   private Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships =
     new HashSet<ProjectExpectedStudyFlagship>(0);
+
+
   private Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps = new HashSet<ProjectExpectedStudyCrp>(0);
   private Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions =
     new HashSet<ProjectExpectedStudyInstitution>(0);
@@ -118,15 +122,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   private Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets =
     new HashSet<ProjectExpectedStudySrfTarget>(0);
   private ProjectExpectedStudyInfo projectExpectedStudyInfo;
-
   private List<ProjectExpectedStudySubIdo> subIdos;
   private List<ProjectExpectedStudyFlagship> flagships;
+
   private List<ProjectExpectedStudyCrp> crps;
   private List<ProjectExpectedStudyInstitution> institutions;
   private List<ProjectExpectedStudyCountry> countries;
   private List<String> countriesIds = new ArrayList<>();
   private String countriesIdsText;
   private List<ProjectExpectedStudySrfTarget> srfTargets;
+  private List<ProjectExpectedStudyFlagship> regions;
 
   public ProjectExpectedStudy() {
   }
@@ -213,7 +218,6 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -224,10 +228,10 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public String getOtherType() {
     return otherType;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -237,6 +241,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return project;
   }
 
+
   public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
     return projectExpectedStudyCountries;
   }
@@ -245,15 +250,14 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return projectExpectedStudyCrps;
   }
 
-
   public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
     return projectExpectedStudyFlagships;
   }
 
-
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo() {
     return projectExpectedStudyInfo;
   }
+
 
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo(Phase phase) {
     if (this.getProjectExpectedStudyInfo() != null) {
@@ -270,6 +274,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
       }
     }
   }
+
 
   public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
     return projectExpectedStudyInfos;
@@ -291,6 +296,10 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return projects;
   }
 
+  public List<ProjectExpectedStudyFlagship> getRegions() {
+    return regions;
+  }
+
   public Integer getScope() {
     return scope;
   }
@@ -310,7 +319,6 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   public SrfSloIndicator getSrfSloIndicator() {
     return srfSloIndicator;
   }
-
 
   public SrfSubIdo getSrfSubIdo() {
     return srfSubIdo;
@@ -386,10 +394,10 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     this.countries = countries;
   }
 
+
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
-
 
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
@@ -465,6 +473,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
   }
 
+
   public void setProjectExpectedStudyInfo(ProjectExpectedStudyInfo projectExpectedStudyInfo) {
     this.projectExpectedStudyInfo = projectExpectedStudyInfo;
   }
@@ -472,7 +481,6 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   public void setProjectExpectedStudyInfos(Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
     this.projectExpectedStudyInfos = projectExpectedStudyInfos;
   }
-
 
   public void
     setProjectExpectedStudyInstitutions(Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions) {
@@ -492,6 +500,11 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   public void setProjects(List<ExpectedStudyProject> projects) {
     this.projects = projects;
+  }
+
+
+  public void setRegions(List<ProjectExpectedStudyFlagship> regions) {
+    this.regions = regions;
   }
 
 
