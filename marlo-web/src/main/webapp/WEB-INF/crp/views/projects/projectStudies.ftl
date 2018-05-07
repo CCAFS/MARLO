@@ -119,10 +119,10 @@
             </td>
             <td class="type">[#if item.projectExpectedStudyInfo.studyType?has_content]${item.projectExpectedStudyInfo.studyType.name}[#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
-            <td class="year">[#if item.year?trim?has_content]${item.year}[#else]Not defined[/#if]</td>
+            <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
             [#if !previousTable]
             <td class="removeHighlight-row text-center">
-              [#if canEdit  && (item.year gte  currentCycleYear) ]
+              [#if canEdit  && ((item.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>
