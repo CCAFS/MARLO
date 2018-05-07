@@ -117,7 +117,8 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
             baseAction.setEditableParameter(false);
           }
         }
-        if (editParameter || parameters.get("save") != null) {
+
+        if (editParameter || parameters.get("save").isDefined()) {
           hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
             : hasPublicationFullPermission || hasPublicationInstitutionPermission;
         }
