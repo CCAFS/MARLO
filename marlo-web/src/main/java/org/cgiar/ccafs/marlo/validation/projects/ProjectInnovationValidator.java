@@ -236,7 +236,7 @@ public class ProjectInnovationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      action.addMessage(action.getText("Phase of Research"));
+      action.addMessage(action.getText("Innovation Type"));
       action.addMissingField("projectInnovations.innovationType");
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndInnovationType.id",
         InvalidFieldsMessages.EMPTYFIELD);
