@@ -41,7 +41,7 @@
       [#-- Studies List (Other Studies) --]
       <h3 class="headTitle text-center">[@s.text name="studiesList.otherStudies" /] </h3>
       <div class="loadingBlock"></div>
-      <div style="display:none">[@studiesList elements=action.getPublications(false) canValidate=true canEdit=false namespace="/studies" defaultAction="${(crpSession)!}/study"/]</div>
+      <div style="display:none">[@studiesList elements=nonProjectStudies canValidate=true canEdit=false namespace="/studies" defaultAction="${(crpSession)!}/study"/]</div>
     </div>
     
   </article>
