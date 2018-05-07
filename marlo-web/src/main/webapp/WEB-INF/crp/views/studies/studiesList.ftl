@@ -30,8 +30,8 @@
       [#-- Section Buttons --]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'/]">[@s.text name="studiesList.addStudy" /]</a>
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'/]">[@s.text name="studiesList.addOutcomeCaseStudy" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="studiesList.addStudy" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][@s.param name="studyTypeID" value="1"/][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="studiesList.addOutcomeCaseStudy" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>
@@ -46,7 +46,7 @@
     
   </article>
 </section>
-[@customForm.confirmJustification action="deleteStudy.do" namespace="/${currentSection}" nameId="studyID" title="Remove" /]
+[@customForm.confirmJustification action="deleteStudy.do" namespace="/${currentSection}" nameId="expectedID" title="Remove" /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -80,20 +80,16 @@
     [#if elements?has_content]
       [#list elements as element]
 
-        [#local elementUrl][@s.url namespace=namespace action=defaultAction][@s.param name='studyID']${element.id?c}[/@s.param][@s.param name='deliverableID']${element.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#local elementUrl][@s.url namespace=namespace action=defaultAction][@s.param name='expectedID']${element.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
           <td class="">
-            <a href="${elementUrl}">S${(element.id)!}</a>
+            <a href="${elementUrl}">${(element.id)!}</a>
           </td>
           [#-- Title / Name --]
           <td class="col-md-4 left">
             <a href="${elementUrl}">
-              [#if (element.studyInfo.title?has_content)!false]
-                ${(element.studyInfo.title)!}
-              [#else]
-                Not defined
-              [/#if]
+              [#if (element.projectExpectedStudyInfo.title?has_content)!false]${(element.projectExpectedStudyInfo.title)!}[#else]Not defined[/#if]
             </a>
           </td>
           [#-- Added by --]
@@ -102,7 +98,7 @@
           </td>
           [#-- Lead partner(s) --]
           <td class="">
-            {Study Type}
+            ${(element.projectExpectedStudyInfo.studyType.name)!}
           </td>
           [#-- Flagship / Region --]
           <td class=""> 
@@ -138,7 +134,7 @@
           [#-- Delete --]
           <td class="">
             [#if canEdit]
-              <a id="removeRow-${element.id}" class="removeRow" href="${baseUrl}/studies/${crpSession}/deleteStudy.do?studyID=${element.id}" title="">
+              <a id="removeRow-${element.id}" class="removeRow" href="${baseUrl}/studies/${crpSession}/deleteStudy.do?expectedID=${element.id}" title="">
                 <img src="${baseUrl}/global/images/trash.png" title="Remove" /> 
               </a>
             [#else]
