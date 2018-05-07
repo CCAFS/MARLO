@@ -2,16 +2,13 @@
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
-  [#local isOutcomeCaseStudy = (element.type == 1)!false /]
+  [#local isOutcomeCaseStudy = (element.projectExpectedStudyInfo.studyType.id == 1)!false /]
   
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
-      [#-- Hidden ID --]
-      <input type="hidden" name="${customName}.id" class="expectedID" value="${(element.id)!}"/>
-      
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.type)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" disabled=isOutcomeCaseStudy editable=editable/]
         </div>
         <div class="col-md-6">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="status" keyFieldName="id"  displayFieldName="name" editable=editable /]
@@ -26,7 +23,7 @@
 
       [#-- 1. Title (up to 20 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=false required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
       [#-- Flagships & Regions --]
