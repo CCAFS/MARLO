@@ -157,7 +157,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
           : (baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
