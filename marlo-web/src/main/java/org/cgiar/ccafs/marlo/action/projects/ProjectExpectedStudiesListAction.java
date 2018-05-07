@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -107,6 +108,15 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo(this.getActualPhase(),
       projectExpectedStudy, "", "", "", "", "", "", "", "", "", "", "", "", "");
 
+    long studyTypeID = -1;
+    try {
+      studyTypeID =
+        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.STUDY_TYPE_REQUEST_ID)));
+      StudyType studyType = studyTypeManager.getStudyTypeById(studyTypeID);
+      projectExpectedStudyInfo.setStudyType(studyType);
+    } catch (Exception e) {
+      studyTypeID = -1;
+    }
 
     projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(projectExpectedStudyInfo);
 

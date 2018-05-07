@@ -17,12 +17,13 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   @Expose
   private Long id;
 
+
   @Expose
   private RepIndGeographicScope repIndGeographicScope;
 
-
   @Expose
   private RepIndRegion repIndRegion;
+
 
   @Expose
   private RepIndOrganizationType repIndOrganizationType;
@@ -145,7 +146,6 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
   public String getContacts() {
     return contacts;
   }
-
 
   public String getDescribeCapdev() {
     return describeCapdev;
@@ -287,6 +287,14 @@ public class ProjectExpectedStudyInfo implements java.io.Serializable, IAuditLog
 
   public Integer getStatus() {
     return status;
+  }
+
+
+  public String getStatusName() {
+    if (this.getStatus() != null) {
+      return ProjectStatusEnum.getValue(this.getStatus()).getStatus();
+    }
+    return null;
   }
 
 

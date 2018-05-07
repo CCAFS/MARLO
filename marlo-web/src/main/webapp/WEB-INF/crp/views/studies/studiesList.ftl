@@ -118,7 +118,7 @@
           </td>
           [#--Status --]
           <td class=""> 
-           ${(element.status)!'{status}'}
+           ${(element.projectExpectedStudyInfo.statusName)!'{status}'}
           </td>
           [#-- Fields check --]
           <td class=""> 
