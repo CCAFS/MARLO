@@ -1,23 +1,25 @@
 [#ftl]
-
-[#--Identifier --]
-<input name="deliverableID" type="hidden" value="${(deliverable.id)!}" />
-<input type="hidden"  name="className" value="${(deliverable.class.name)!}"/>
-<input type="hidden"  name="id" value="${(deliverable.id)!}"/>
+[#-- Hidden Inputs --]
+<input type="hidden"  name="expectedID" value="${expectedID}"/>
+<input type="hidden"  name="projectID" value="${(project.id)!}" />
+<input type="hidden"  name="className" value="${(expectedStudy.class.name)!}"/>
+<input type="hidden"  name="id" value="${(expectedStudy.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
-
+<input type="hidden"  name="expectedStudy.projectExpectedStudyInfo.id" value="${(expectedStudy.projectExpectedStudyInfo.id)!}"/>
 <input id="redirectionUrl" type="hidden" name="url" value="" />
+
 
 <div class="buttons">
   <div class="buttons-content">
     [#-- History Log --]
-    [#if action.getListLog(deliverable)?has_content]
+    [#if action.getListLog(expectedStudy)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=action.getListLog(deliverable) itemName="deliverableID" itemId=(deliverable.id)! /]
+      [@logHistory.logList list=action.getListLog(expectedStudy) itemName="expectedID" itemId=(expectedStudy.id)! /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
+    
     [#if editable]
       [#-- Back Button 
       <a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
