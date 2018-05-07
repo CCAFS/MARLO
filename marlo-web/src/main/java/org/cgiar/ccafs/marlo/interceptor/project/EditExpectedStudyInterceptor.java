@@ -93,9 +93,14 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
 
     if (projectExpectedStudy != null && projectExpectedStudy.isActive()) {
 
+      String params[] = new String[2];
+      params[0] = crp.getAcronym();
 
-      String params[] = {crp.getAcronym(), projectExpectedStudy.getProject().getId() + ""};
-
+      if (projectExpectedStudy.getProject() != null) {
+        params[1] = projectExpectedStudy.getProject().getId() + "";
+      } else {
+        params[1] = projectExpectedStudy.getId() + "";
+      }
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
 
@@ -105,6 +110,7 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
       } else {
 
         if (projectExpectedStudy.getProject() != null) {
+
           List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
           if (projects.contains(projectExpectedStudy.getProject()) && baseAction.hasPermission(
             baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params))) {
