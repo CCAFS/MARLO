@@ -88,6 +88,7 @@
           </td>
           [#-- Title / Name --]
           <td class="col-md-4 left">
+            
             <a href="${elementUrl}">
               [#if (element.projectExpectedStudyInfo.title?has_content)!false]${(element.projectExpectedStudyInfo.title)!}[#else]Not defined[/#if]
             </a>
@@ -113,11 +114,11 @@
           </td>
           [#-- Delivery year --]
           <td class=""> 
-           ${(element.studyInfo.year)!'{year}'}
+           ${(element.year)!'{year}'}
           </td>
           [#--Status --]
           <td class=""> 
-           ${(element.studyInfo.status)!'{status}'}
+           ${(element.status)!'{status}'}
           </td>
           [#-- Fields check --]
           <td class=""> 

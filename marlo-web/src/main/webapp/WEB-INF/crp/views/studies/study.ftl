@@ -45,7 +45,7 @@
     
     <h3 class="headTitle"> Study Information</h3> 
     <div class="">
-      [@studies.studyMacro element=deliverable name="caseStudy" index=0 isOutcomeCaseStudy=true fromProject=false/]
+      [@studies.studyMacro element=expectedStudy name="expectedStudy" index=0 isOutcomeCaseStudy=true fromProject=false/]
     </div>
  
     [#-- Section Buttons & hidden inputs--]
