@@ -453,7 +453,6 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
-        Map<String, String> specialList = new HashMap<>();
       } else {
         this.transaction = null;
         this.setTransaction("-1");
@@ -463,6 +462,8 @@ public class PublicationAction extends BaseAction {
     }
 
     if (deliverable != null) {
+
+      deliverable.setPhase(deliverableManager.getDeliverableById(deliverable.getId()).getPhase());
 
       Path path = this.getAutoSaveFilePath();
 
