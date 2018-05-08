@@ -46,10 +46,13 @@ IF (SELECT EXISTS (
 SELECT * FROM information_schema.COLUMNS WHERE column_name='id' AND table_name='ip_program_element_relation_types' 
 AND data_type = 'int' AND table_schema = DATABASE())) = 1
 THEN
+  ALTER TABLE `ip_program_elements` DROP FOREIGN KEY `ip_program_elements_ibfk_2`; 
   ALTER TABLE `ip_program_element_relation_types` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
   ALTER TABLE `other_contributions` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
   ALTER TABLE `project_highlights_country` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
   ALTER TABLE `project_highlights_types` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  ALTER TABLE `ip_program_elements` MODIFY `relation_type_id` bigint(20);
+  ALTER TABLE `ip_program_elements` ADD CONSTRAINT `FK_ip_program_elements_ip_program_element_relation_types` FOREIGN KEY (`relation_type_id`) REFERENCES `ip_program_element_relation_types`(`id`);
 
 END IF; 
 END ;;
