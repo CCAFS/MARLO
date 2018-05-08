@@ -30,12 +30,12 @@
       [#if !fromProject]
       <div class="form-group row">
         [#-- Flagships --]
-        [#if flagshipsList??]
+        [#if flagshipList??]
           <div class="col-md-6">
             <h5>[@s.text name="study.flagships" /]:[@customForm.req required=editable/] </h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [#list flagshipsList as flagship]
+                [#list flagshipList as flagship]
                   [@customForm.checkBoxFlat id="flagship-${flagship.id}" name="${customName}.flagshipValue" label="${flagship.composedName}" value="${flagship.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
                 [/#list]
               [#else]
@@ -49,12 +49,12 @@
         [/#if]
         
         [#-- Regions --] 
-        [#if regionsList?has_content] 
+        [#if regionList?has_content] 
           <div class="col-md-6"> 
             <h5>[@s.text name="study.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [#list regionsList as region]
+                [#list regionList as region]
                   [@customForm.checkBoxFlat id="region-${region.id}" name="${customName}.regionsValue" label="${region.composedName}" value="${region.id}" editable=editable checked=((regionsIds?seq_contains(region.id))!false) cssClass="checkboxInput rpInput" /]
                 [/#list]
               [#else] 
@@ -197,7 +197,7 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipsList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
