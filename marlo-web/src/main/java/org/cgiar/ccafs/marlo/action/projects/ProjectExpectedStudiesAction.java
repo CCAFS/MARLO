@@ -596,6 +596,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
     if (this.isHttpPost()) {
 
+      // HTTP Post List
       if (expectedStudy.getCrps() != null) {
         expectedStudy.getCrps().clear();
       }
@@ -627,6 +628,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if (expectedStudy.getProjects() != null) {
         expectedStudy.getProjects().clear();
       }
+
+      // HTTP Post info Values
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndPolicyInvestimentType(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndStageProcess(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
+      expectedStudy.getProjectExpectedStudyInfo().setStudyType(null);
+      expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
+
+
+      expectedStudy.getProjectExpectedStudyInfo().setGenderLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setCapdevLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
+
+      expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(null);
+      expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(null);
 
     }
 
@@ -695,7 +715,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       expectedStudy.getProjectExpectedStudyInfo().setPhase(this.getActualPhase());
-      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudy);
+      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudyDB);
 
       // Save Files
       if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
