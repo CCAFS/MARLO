@@ -197,7 +197,7 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagships" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipsList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]

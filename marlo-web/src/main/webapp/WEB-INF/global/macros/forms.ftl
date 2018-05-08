@@ -502,13 +502,13 @@
       [/#if]
     </div>
     <ul style="display:none">
-      [@customForm.listElementMacro name="_TEMPLATE_${name}" element={} type=elementType index=-1 template=true /]
+      [@listElementMacro name="${name}" element={} type=elementType index=-1 template=true /]
     </ul>
   </div>
 [/#macro]
 
 [#macro listElementMacro element name type index=-1 keyFieldName="id" displayFieldName="composedName" template=false]
-  [#local customName = "${name}[${index}]"]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
