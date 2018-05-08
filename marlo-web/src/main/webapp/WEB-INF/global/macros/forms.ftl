@@ -501,6 +501,9 @@
         [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
       [/#if]
     </div>
+    <ul style="display:none">
+      [@customForm.listElementMacro name="_TEMPLATE_${name}" element={} type=elementType index=-1 template=true /]
+    </ul>
   </div>
 [/#macro]
 
