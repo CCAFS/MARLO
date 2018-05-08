@@ -73,7 +73,7 @@
 		<!--  2.3 Key External Partnerships  -->
 		<action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_externalPartnerships.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/externalPartnerships</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
