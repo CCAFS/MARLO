@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableQualityCheckDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
@@ -99,13 +98,13 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
   @Override
   public DeliverableQualityCheck saveDeliverableQualityCheck(DeliverableQualityCheck deliverableQualityCheck) {
     DeliverableQualityCheck deliverableQualityCheckResult = deliverableQualityCheckDAO.save(deliverableQualityCheck);
-    Phase currentPhase = phaseDAO.find(deliverableQualityCheckResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveDeliverableQualityCheckPhase(deliverableQualityCheckResult, deliverableQualityCheck.getDeliverable(),
-          currentPhase.getNext().getId());
-      }
-    }
+    // Phase currentPhase = phaseDAO.find(deliverableQualityCheckResult.getPhase().getId());
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null) {
+    // this.saveDeliverableQualityCheckPhase(deliverableQualityCheckResult, deliverableQualityCheck.getDeliverable(),
+    // currentPhase.getNext().getId());
+    // }
+    // }
     return deliverableQualityCheckResult;
   }
 

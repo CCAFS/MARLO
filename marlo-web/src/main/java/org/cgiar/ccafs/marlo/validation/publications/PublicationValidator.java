@@ -135,7 +135,7 @@ public class PublicationValidator extends BaseValidator {
       // Validate Deliverable Participant
       if (deliverable.getDeliverableParticipant() != null
         && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
-        this.validategetDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+        this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
       } else {
         action.addMessage("hasParticipants");
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
@@ -266,7 +266,7 @@ public class PublicationValidator extends BaseValidator {
     }
   }
 
-  private void validategetDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
+  private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
     if (deliverableParticipant.getHasParticipants()) {
       if (!this.isValidString(deliverableParticipant.getEventActivityName())) {
         action.addMessage(action.getText("involveParticipants.title"));
