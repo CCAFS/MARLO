@@ -108,8 +108,10 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
     deliverableFundingSource.setActive(false);
     this.saveDeliverableFundingSource(deliverableFundingSource);
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)
-      && !deliverableFundingSource.getDeliverable().getIsPublication()) {
+    boolean isPublication = deliverableFundingSource.getDeliverable().getIsPublication() != null
+      && deliverableFundingSource.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
         this.deleteDeliverableFundingSource(deliverableFundingSource.getPhase().getNext(),
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
@@ -165,8 +167,10 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
 
     DeliverableFundingSource deliverableFundingSourceDB = deliverableFundingSourceDAO.save(deliverableFundingSource);
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)
-      && !deliverableFundingSourceDB.getDeliverable().getIsPublication()) {
+    boolean isPublication = deliverableFundingSourceDB.getDeliverable().getIsPublication() != null
+      && deliverableFundingSourceDB.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
         this.addDeliverableFundingSourcePhase(deliverableFundingSource.getPhase().getNext(),
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
