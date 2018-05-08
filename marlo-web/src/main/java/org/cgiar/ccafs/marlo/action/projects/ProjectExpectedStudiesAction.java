@@ -542,7 +542,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       geographicScopes = geographicScopeManager.findAll();
       regions = repIndRegionManager.findAll();
       organizationTypes = organizationTypeManager.findAll();
-      focusLevels = focusLevelManager.findAll();
+      // Focus levels and Too early to tell was removed
+      focusLevels = focusLevelManager.findAll().stream().filter(f -> f.getId() != 4).collect(Collectors.toList());
       policyInvestimentTypes = investimentTypeManager.findAll();
       stageProcesses = stageProcessManager.findAll();
       stageStudies = stageStudyManager.findAll();
