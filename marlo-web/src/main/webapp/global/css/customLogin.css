@@ -454,10 +454,6 @@ p.login-description{
 }
 
 #loginFormContainer .loginForm.max-size{
-  height: 400px;
-}
-
-#loginFormContainer .loginForm.max-size.terms-check{
   height: 410px;
 }
 
