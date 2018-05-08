@@ -145,7 +145,6 @@
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
-          [#-- List --]
           [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
@@ -247,7 +246,7 @@
         </label>
         [#-- Gender --]
         <div class="simpleBox">
-          <label for="">[@s.text name="study.genderRelevance" /]:</label>
+          <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
@@ -259,7 +258,7 @@
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
-          <label for="">[@s.text name="study.youthRelevance" /]:</label>
+          <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
@@ -271,7 +270,7 @@
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
-          <label for="">[@s.text name="study.capDevRelevance" /]:</label>
+          <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
