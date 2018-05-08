@@ -566,6 +566,11 @@ function onSelectElement() {
 
   // Clone the new element
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
+  // Remove template tag
+  $element.find('input').each(function(i, e){
+    e.name = (e.name).replace("_TEMPLATE_", "");
+    e.id = (e.id).replace("_TEMPLATE_", "");
+  });
   // Set attributes
   $element.find('.elementRelationID').val($option.val());
   $element.find('.elementName').html($option.text());

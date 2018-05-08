@@ -183,16 +183,4 @@
   </div>  
 </section>
 
-
-[#-- Element Macro Template --]
-<ul style="display:none">
-  [@customForm.listElementMacro name="innovation.organizations" element={} type="repIndOrganizationType" index=-1 template=true /]
-  [@customForm.listElementMacro name="innovation.crps" element={} type="globalUnit" index=-1 template=true /]
-  [@customForm.listElementMacro name="innovation.deliverables" element={} type="deliverable" index=-1 template=true /]
-</ul>
-
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-
-[#-- MACROS --]
-

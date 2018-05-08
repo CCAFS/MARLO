@@ -78,14 +78,4 @@
 [#-- Internal parameters --]
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
-[#-- Element Macro Template --]
-<ul style="display:none">
-  [@customForm.listElementMacro name="expectedStudy.subIDOs" element={} type="srfSubIdo" index=-1 template=true /]
-  [@customForm.listElementMacro name="expectedStudy.srfTargets" element={} type="srfSloIndicator" index=-1 template=true /]
-  [@customForm.listElementMacro name="expectedStudy.crps" element={} type="globalUnit" index=-1 template=true /]
-  [@customForm.listElementMacro name="expectedStudy.flagships" element={} type="crpProgram" index=-1 template=true /]
-  [@customForm.listElementMacro name="expectedStudy.institutions" element={} type="institution" index=-1 template=true /]
-  [@customForm.listElementMacro name="expectedStudy.projects" element={} type="project" index=-1 template=true /]
-</ul>
-
 [#include "/WEB-INF/global/pages/footer.ftl"]
