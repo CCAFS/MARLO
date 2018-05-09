@@ -1606,6 +1606,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingCapacity(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingNa(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingYouth(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setLicense(null);
         deliverable.setResponsiblePartner(null);
         if (deliverable.getCrps() != null) {
           deliverable.getCrps().clear();
