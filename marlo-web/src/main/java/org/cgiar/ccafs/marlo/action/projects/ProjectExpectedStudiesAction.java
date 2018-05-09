@@ -542,7 +542,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       geographicScopes = geographicScopeManager.findAll();
       regions = repIndRegionManager.findAll();
       organizationTypes = organizationTypeManager.findAll();
-      focusLevels = focusLevelManager.findAll();
+      // Focus levels and Too early to tell was removed
+      focusLevels = focusLevelManager.findAll().stream().filter(f -> f.getId() != 4).collect(Collectors.toList());
       policyInvestimentTypes = investimentTypeManager.findAll();
       stageProcesses = stageProcessManager.findAll();
       stageStudies = stageStudyManager.findAll();
@@ -594,33 +595,59 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
     if (this.isHttpPost()) {
-      if (expectedStudy.getProjectExpectedStudyCountries() != null) {
-        expectedStudy.getProjectExpectedStudyCountries().clear();
+
+      // HTTP Post List
+      if (expectedStudy.getCrps() != null) {
+        expectedStudy.getCrps().clear();
       }
 
-      if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
-        expectedStudy.getProjectExpectedStudySubIdos().clear();
+      if (expectedStudy.getCountries() != null) {
+        expectedStudy.getCountries().clear();
       }
 
-      if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
-        expectedStudy.getProjectExpectedStudyFlagships().clear();
+      if (expectedStudy.getSubIdos() != null) {
+        expectedStudy.getSubIdos().clear();
       }
 
-      if (expectedStudy.getProjectExpectedStudyCrps() != null) {
-        expectedStudy.getProjectExpectedStudyCrps().clear();
+      if (expectedStudy.getFlagships() != null) {
+        expectedStudy.getFlagships().clear();
       }
 
-      if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
-        expectedStudy.getProjectExpectedStudyInstitutions().clear();
+      if (expectedStudy.getRegions() != null) {
+        expectedStudy.getRegions().clear();
       }
 
-      if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
-        expectedStudy.getProjectExpectedStudySrfTargets().clear();
+      if (expectedStudy.getInstitutions() != null) {
+        expectedStudy.getInstitutions().clear();
       }
 
-      if (expectedStudy.getExpectedStudyProjects() != null) {
-        expectedStudy.getExpectedStudyProjects().clear();
+      if (expectedStudy.getSrfTargets() != null) {
+        expectedStudy.getSrfTargets().clear();
       }
+
+      if (expectedStudy.getProjects() != null) {
+        expectedStudy.getProjects().clear();
+      }
+
+      // HTTP Post info Values
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndPolicyInvestimentType(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndStageProcess(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
+      expectedStudy.getProjectExpectedStudyInfo().setStudyType(null);
+      expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
+
+
+      expectedStudy.getProjectExpectedStudyInfo().setGenderLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setCapdevLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
+
+      expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(null);
+      expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(null);
+
     }
 
 
@@ -634,12 +661,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       Path path = this.getAutoSaveFilePath();
 
       expectedStudy.setProject(project);
-      // expectedStudy.setSrfSubIdo(expectedStudyDB.getSrfSubIdo());
-      // expectedStudy.setSrfSloIndicator(expectedStudyDB.getSrfSloIndicator());
-      // expectedStudy.setPhase(expectedStudyDB.getPhase());
 
       this.saveCrps(expectedStudyDB, phase);
       this.saveFlagships(expectedStudyDB, phase);
+      if (project == null) {
+        this.saveRegions(expectedStudyDB, phase);
+      }
       this.saveProjects(expectedStudyDB, phase);
       this.saveSubIdos(expectedStudyDB, phase);
       this.saveInstitutions(expectedStudyDB, phase);
@@ -688,7 +715,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       expectedStudy.getProjectExpectedStudyInfo().setPhase(this.getActualPhase());
-      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudy);
+      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudyDB);
 
       // Save Files
       if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
@@ -829,13 +856,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudyCrps() != null
       && projectExpectedStudy.getProjectExpectedStudyCrps().size() > 0) {
+      if (expectedStudy.getCrps() != null) {
+        List<ProjectExpectedStudyCrp> crpPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-      List<ProjectExpectedStudyCrp> crpPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
-
-      for (ProjectExpectedStudyCrp studyCrp : crpPrev) {
-        if (!expectedStudy.getCrps().contains(studyCrp)) {
-          projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
+        for (ProjectExpectedStudyCrp studyCrp : crpPrev) {
+          if (!expectedStudy.getCrps().contains(studyCrp)) {
+            projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
+          }
         }
       }
     }

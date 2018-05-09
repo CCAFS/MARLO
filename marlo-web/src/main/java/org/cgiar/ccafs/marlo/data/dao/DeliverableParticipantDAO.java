@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -56,6 +58,8 @@ public interface DeliverableParticipantDAO {
 
 
   public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID, Long phaseID);
+
+  public DeliverableParticipant findDeliverableParticipantByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
 
   /**
    * This method saves the information of the given deliverableParticipant
