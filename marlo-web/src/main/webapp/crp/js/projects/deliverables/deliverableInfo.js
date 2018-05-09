@@ -263,6 +263,8 @@ function init() {
       $(".dataLicense").show("slow");
     } else {
       $(".dataLicense").hide("slow");
+      // Clear data licenses
+      $('.computerLicense input').prop("checked", false);
     }
     // Computer software
     if(hasDeliverableRule('computerLicense', [
@@ -271,7 +273,10 @@ function init() {
       $(".computerLicense").show("slow");
     } else {
       $(".computerLicense").hide("slow");
+      // Clear computer licenses
+      $('.computerLicense input').prop("checked", false);
     }
+
   });
 }
 

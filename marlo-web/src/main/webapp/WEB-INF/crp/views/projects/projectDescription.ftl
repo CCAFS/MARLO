@@ -148,7 +148,7 @@
                           </p>
                         [#else]
                           <p class=""> 
-                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" /]
+                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
                           </p>
                         [/#if]
                       [/#list]
@@ -172,7 +172,7 @@
                       [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
                       [#if regionFlagships??]
                         [#list regionFlagships as element]
-                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
+                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
                         [/#list]
                       [/#if]
                        
