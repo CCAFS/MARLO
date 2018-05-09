@@ -81,13 +81,13 @@ form .form-group.margin-panel {
   margin-bottom: 40px;
 }
 
-.table-border-powb {
+.table-border {
   border-collapse: collapse;
 }
-.table-border-powb td {
+.table-border td {
   border: 1px solid rgb(224, 224, 224);
 }
-.table-border-powb tr:nth-child(even) {
+.table-border tr:nth-child(even) {
   background-color: #fcfcfc;
 }
 
