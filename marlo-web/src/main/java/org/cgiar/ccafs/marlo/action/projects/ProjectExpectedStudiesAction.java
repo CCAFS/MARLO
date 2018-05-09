@@ -505,7 +505,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
-        // Expected Study Proyects List
+        // Expected Study Projects List
         if (expectedStudy.getExpectedStudyProjects() != null) {
           expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));

@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -40,10 +41,13 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -118,6 +122,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final ProjectOutputsValidator projectOutputsValidator;
   private final ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
 
+  private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -131,7 +137,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectOutcomesPandRValidator projectOutcomesPandRValidator,
     ProjectOtherContributionsValidator projectOtherContributionsValidator,
     ProjectOutputsValidator projectOutputsValidator, ProjectExpectedStudiesValidator projectExpectedStudiesValidator,
-    ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator) {
+    ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -153,6 +160,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectOutputsValidator = projectOutputsValidator;
     this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
     this.projectBudgetsFlagshipValidator = projectBudgetsFlagshipValidator;
+    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
   }
 
 
@@ -758,9 +766,70 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    project.setExpectedStudies(project.getProjectExpectedStudies().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-    // projectExpectedStudiesValidator.validate(action, project, false);
+    List<ProjectExpectedStudy> studies =
+      project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
+    for (ProjectExpectedStudy projectExpectedStudy : studies) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(action.getActualPhase()) != null) {
+        project.getExpectedStudies().add(projectExpectedStudy);
+      }
+    }
+
+    for (ProjectExpectedStudy expectedStudy : studies) {
+
+      Phase phase = action.getActualPhase();
+
+      if (expectedStudy.getProjectExpectedStudyInfo() == null) {
+        expectedStudy.getProjectExpectedStudyInfo(phase);
+      }
+
+      // Expected Study Countries List
+      if (expectedStudy.getProjectExpectedStudyCountries() == null) {
+        expectedStudy.setCountries(new ArrayList<>());
+      } else {
+        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
+          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId());
+        expectedStudy.setCountries(countries);
+      }
+
+      // Expected Study SubIdos List
+      if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
+        expectedStudy.setSubIdos(new ArrayList<>(expectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Flagship List
+      if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
+        expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Crp List
+      if (expectedStudy.getProjectExpectedStudyCrps() != null) {
+        expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Institutions List
+      if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
+        expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Srf Target List
+      if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
+        expectedStudy.setSrfTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudySrfTargets().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Projects List
+      if (expectedStudy.getExpectedStudyProjects() != null) {
+        expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
+    }
 
 
   }
