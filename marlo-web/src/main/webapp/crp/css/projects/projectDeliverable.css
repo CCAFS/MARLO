@@ -48,6 +48,10 @@
   /* background-color: #f5f5f5; */
 }
 
+.nav-tabs>li>a.fieldError{
+  color: #ff4444 !important;
+}
+
 .nav-tabs>li>a {
   color: #6f6f6f;
   border-radius: 0 0 0;

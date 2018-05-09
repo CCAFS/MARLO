@@ -20,11 +20,13 @@ function init() {
 
   $(".fundingSource").select2({
       templateResult: formatState,
-      templateSelection: formatState
+      templateSelection: formatState,
+      width: "100%"
   });
 
   $(".genderLevelsSelect").select2({
-    templateResult: formatStateGenderType
+      templateResult: formatStateGenderType,
+      width: "100%"
   });
 
   $('.helpMessage3').on("click", openDialog);
@@ -195,7 +197,8 @@ function init() {
     if($(this).is(':checked')) {
       $('#gender-levels').slideDown();
       $(".genderLevelsSelect").select2({
-        templateResult: formatStateGenderType
+          templateResult: formatStateGenderType,
+          width: "100%"
       });
     } else {
       $('#gender-levels').slideUp();
