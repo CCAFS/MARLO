@@ -210,62 +210,6 @@ public class PublicationValidator extends BaseValidator {
     }
   }
 
-  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
-
-    if (!this.isValidString(dissemination.getDisseminationChannel())
-      || dissemination.getDisseminationChannel().equals("-1")) {
-      action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
-      action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
-        InvalidFieldsMessages.EMPTYFIELD);
-    } else {
-      if (!this.isValidString(dissemination.getDisseminationUrl())) {
-        action.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
-        action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
-    if (dissemination.getIsOpenAccess() != null) {
-      if (!dissemination.getIsOpenAccess().booleanValue()) {
-
-        Boolean hasIntellectualProperty =
-          dissemination.getIntellectualProperty() != null && dissemination.getIntellectualProperty().booleanValue();
-        Boolean hasLimitedExclusivity =
-          dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue();
-        Boolean hasRestrictedUse =
-          dissemination.getRestrictedUseAgreement() != null && dissemination.getRestrictedUseAgreement().booleanValue();
-        Boolean hasEffectiveDate = dissemination.getEffectiveDateRestriction() != null
-          && dissemination.getEffectiveDateRestriction().booleanValue();
-        Boolean hasNotDisseminated =
-          dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue();
-
-        if (hasIntellectualProperty || hasLimitedExclusivity || hasRestrictedUse || hasEffectiveDate
-          || hasNotDisseminated
-          || (dissemination.getType() != null && (dissemination.getType().equals("effectiveDateRestriction")
-            || dissemination.getType().equals("restrictedUseAgreement")))) {
-          if ((hasRestrictedUse || dissemination.getType().equals("effectiveDateRestriction"))
-            && dissemination.getRestrictedAccessUntil() == null) {
-            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-            action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          if ((hasEffectiveDate || dissemination.getType().equals("restrictedUseAgreement"))
-            && dissemination.getRestrictedEmbargoed() == null) {
-            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
-            action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-    } else {
-      action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
-      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
-    }
-  }
-
   private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
     if (deliverableParticipant.getHasParticipants()) {
       if (!this.isValidString(deliverableParticipant.getEventActivityName())) {
@@ -339,6 +283,63 @@ public class PublicationValidator extends BaseValidator {
           }
         }
       }
+    }
+  }
+
+  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
+
+    if (!this.isValidString(dissemination.getDisseminationChannel())
+      || dissemination.getDisseminationChannel().equals("-1")) {
+      action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+      action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+        InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (!this.isValidString(dissemination.getDisseminationUrl())) {
+        action.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
+        action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+    if (dissemination.getIsOpenAccess() != null) {
+      if (!dissemination.getIsOpenAccess().booleanValue()) {
+
+        Boolean hasIntellectualProperty =
+          (dissemination.getIntellectualProperty() != null && dissemination.getIntellectualProperty().booleanValue())
+            || (dissemination.getType() != null && dissemination.getType().equals("intellectualProperty"));
+        Boolean hasLimitedExclusivity =
+          (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue())
+            || (dissemination.getType() != null && dissemination.getType().equals("limitedExclusivity"));
+        Boolean hasRestrictedUse = (dissemination.getRestrictedUseAgreement() != null
+          && dissemination.getRestrictedUseAgreement().booleanValue())
+          || (dissemination.getType() != null && dissemination.getType().equals("restrictedUseAgreement"));
+        Boolean hasEffectiveDate = (dissemination.getEffectiveDateRestriction() != null
+          && dissemination.getEffectiveDateRestriction().booleanValue())
+          || (dissemination.getType() != null && dissemination.getType().equals("effectiveDateRestriction"));
+        Boolean hasNotDisseminated =
+          (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue())
+            || (dissemination.getType() != null && dissemination.getType().equals("notDisseminated"));
+
+        if (hasIntellectualProperty || hasLimitedExclusivity || hasRestrictedUse || hasEffectiveDate
+          || hasNotDisseminated) {
+          if (hasRestrictedUse && dissemination.getRestrictedAccessUntil() == null) {
+            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
+            action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (hasEffectiveDate && dissemination.getRestrictedEmbargoed() == null) {
+            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
+            action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    } else {
+      action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
+      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
