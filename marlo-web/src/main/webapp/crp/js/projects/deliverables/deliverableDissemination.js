@@ -173,6 +173,27 @@ function addDisseminationEvents() {
     });
   }
 
+  // 
+  $('input.iaType').on('change', function() {
+    if(this.value == 1) {
+      // Patent
+      $('.block-patent').slideDown();
+      $('.block-pvp').slideUp();
+    } else {
+      // PVP
+      $('.block-pvp').slideDown();
+      $('.block-patent').slideUp();
+    }
+  });
+
+  $('.block-intellectualAsset .datePicker').pickadate({
+      format: "mmm d, yyyy",
+      formatSubmit: "yyyy-mm-dd",
+      hiddenName: true,
+      selectYears: true,
+      selectMonths: true
+  });
+
   // Does this deliverable involve Participants and Trainees?
   $('#estimateFemales').on('change', function() {
     $('#dontKnowFemale').prop('checked', false);
