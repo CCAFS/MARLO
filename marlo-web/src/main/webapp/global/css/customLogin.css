@@ -435,7 +435,7 @@ p.login-description{
   color: red;
 }
 
-.loginForm.terms-check p.invalidField{
+.loginForm p.invalidField{
   position: relative !important;
 }
 
