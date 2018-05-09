@@ -559,13 +559,13 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveNextUsers(projectOutcomeDB);
       this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
-        this.saveLessonsOutcome(loggedCrp, projectOutcome);
+        this.saveLessonsOutcome(loggedCrp, projectOutcomeDB);
       }
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
-      projectOutcomeDB.setActiveSince(new Date());
-      projectOutcomeDB.setPhase(this.getActualPhase());
-      projectOutcomeDB.setModificationJustification(this.getJustification());
+      projectOutcome.setModifiedBy(this.getCurrentUser());
+      projectOutcome.setActiveSince(new Date());
+      projectOutcome.setPhase(this.getActualPhase());
+      projectOutcome.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_INDICATORS_RELATION);
@@ -573,7 +573,7 @@ public class ProjectOutcomeAction extends BaseAction {
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
-      projectOutcomeManager.saveProjectOutcome(projectOutcomeDB, this.getActionName(), relationsName,
+      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
         this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
