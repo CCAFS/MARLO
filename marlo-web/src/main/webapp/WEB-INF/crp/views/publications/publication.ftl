@@ -105,7 +105,7 @@
             <div id="" class="dottedBox">
               [#if editable]
                 [#list flagshipsList as element]
-                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput fpInput" /]
+                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput fpInput" cssClassLabel="font-normal" /]
                 [/#list]
               [#else]
                 <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
