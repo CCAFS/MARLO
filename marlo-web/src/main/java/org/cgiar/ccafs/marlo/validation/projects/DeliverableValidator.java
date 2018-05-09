@@ -165,13 +165,8 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Deliverable Publication Meta-data
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
-          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
-            .getId() == 49) {
-            this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
-          }
-        }
+        // Validate Publication Meta-data
+        this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
 
         // Deliverable Licenses
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
@@ -428,83 +423,44 @@ public class DeliverableValidator extends BaseValidator {
   public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
 
     if (dissemination.getIsOpenAccess() != null) {
-
       if (!dissemination.getIsOpenAccess().booleanValue()) {
 
+        Boolean hasIntellectualProperty =
+          (dissemination.getIntellectualProperty() != null && dissemination.getIntellectualProperty().booleanValue())
+            || (dissemination.getType() != null && dissemination.getType().equals("intellectualProperty"));
+        Boolean hasLimitedExclusivity =
+          (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue())
+            || (dissemination.getType() != null && dissemination.getType().equals("limitedExclusivity"));
+        Boolean hasRestrictedUse = (dissemination.getRestrictedUseAgreement() != null
+          && dissemination.getRestrictedUseAgreement().booleanValue())
+          || (dissemination.getType() != null && dissemination.getType().equals("restrictedUseAgreement"));
+        Boolean hasEffectiveDate = (dissemination.getEffectiveDateRestriction() != null
+          && dissemination.getEffectiveDateRestriction().booleanValue())
+          || (dissemination.getType() != null && dissemination.getType().equals("effectiveDateRestriction"));
+        Boolean hasNotDisseminated =
+          (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue())
+            || (dissemination.getType() != null && dissemination.getType().equals("notDisseminated"));
 
-        if (saving) {
-          if (dissemination.getType() == null) {
-
-
-            action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.type",
+        if (hasIntellectualProperty || hasLimitedExclusivity || hasRestrictedUse || hasEffectiveDate
+          || hasNotDisseminated) {
+          if (hasRestrictedUse && dissemination.getRestrictedAccessUntil() == null) {
+            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
+            action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
               InvalidFieldsMessages.EMPTYFIELD);
-          } else {
-            if (dissemination.getType().equals("restrictedUseAgreement")) {
-
-              if (dissemination.getRestrictedAccessUntil() == null) {
-                action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedAccessUntil",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-
-            }
-
-            if (dissemination.getType().equals("effectiveDateRestriction")) {
-
-              if (dissemination.getRestrictedEmbargoed() == null) {
-                action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedEmbargoed",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-
-            }
+          }
+          if (hasEffectiveDate && dissemination.getRestrictedEmbargoed() == null) {
+            action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
+            action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         } else {
-          boolean hasOne = false;
-          if (dissemination.getIntellectualProperty() != null
-            && dissemination.getIntellectualProperty().booleanValue()) {
-            hasOne = true;
-          }
-          if (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue()) {
-            hasOne = true;
-          }
-          if (dissemination.getNotDisseminated() != null && dissemination.getNotDisseminated().booleanValue()) {
-            hasOne = true;
-          }
-          if (dissemination.getRestrictedUseAgreement() != null
-            && dissemination.getRestrictedUseAgreement().booleanValue()) {
-            hasOne = true;
-            if (dissemination.getRestrictedAccessUntil() == null) {
-              action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedAccessUntil",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-          if (dissemination.getEffectiveDateRestriction() != null
-            && dissemination.getEffectiveDateRestriction().booleanValue()) {
-            hasOne = true;
-            if (dissemination.getRestrictedEmbargoed() == null) {
-              action.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedEmbargoed",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-
-          if (!hasOne) {
-            action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.type",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+          action.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
         }
-
-
       }
-
     } else {
       action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
-        InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
@@ -805,50 +761,52 @@ public class DeliverableValidator extends BaseValidator {
 
   public void validatePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,
     DeliverableInfo deliverableInfo, BaseAction action) {
-    if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
-      && deliverablePublicationMetadata.getId().intValue() != -1) {
-      if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
-        if (!this.isValidString(deliverablePublicationMetadata.getVolume())
-          && !this.isValidString(deliverablePublicationMetadata.getIssue())
-          && !this.isValidString(deliverablePublicationMetadata.getPages())) {
-          action.addMessage(action.getText("project.deliverable.publication.v.volume"));
-          action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
-          action.addMessage(action.getText("project.deliverable.publication.v.issue"));
-          action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
-          action.addMessage(action.getText("project.deliverable.publication.v.pages"));
-          action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
+    if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_PUBLICATION_METADATA)) {
+      if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
+        && deliverablePublicationMetadata.getId().intValue() != -1) {
+        if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+          if (!this.isValidString(deliverablePublicationMetadata.getVolume())
+            && !this.isValidString(deliverablePublicationMetadata.getIssue())
+            && !this.isValidString(deliverablePublicationMetadata.getPages())) {
+            action.addMessage(action.getText("project.deliverable.publication.v.volume"));
+            action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+            action.addMessage(action.getText("project.deliverable.publication.v.issue"));
+            action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+            action.addMessage(action.getText("project.deliverable.publication.v.pages"));
+            action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
-      }
 
-      if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
-        && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
-        action.addMessage(action.getText("project.deliverable.publication.v.journal"));
-        action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      boolean indicators = false;
-
-      if (deliverablePublicationMetadata.getIsiPublication() != null) {
-        if (deliverablePublicationMetadata.getIsiPublication().booleanValue()) {
-          indicators = true;
+        if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
+          && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
+          action.addMessage(action.getText("project.deliverable.publication.v.journal"));
+          action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
         }
-      }
 
-      if (deliverablePublicationMetadata.getNasr() != null) {
-        if (deliverablePublicationMetadata.getNasr().booleanValue()) {
-          indicators = true;
+        boolean indicators = false;
+
+        if (deliverablePublicationMetadata.getIsiPublication() != null) {
+          if (deliverablePublicationMetadata.getIsiPublication().booleanValue()) {
+            indicators = true;
+          }
         }
-      }
 
-      if (deliverablePublicationMetadata.getCoAuthor() != null) {
-        if (deliverablePublicationMetadata.getCoAuthor().booleanValue()) {
-          indicators = true;
+        if (deliverablePublicationMetadata.getNasr() != null) {
+          if (deliverablePublicationMetadata.getNasr().booleanValue()) {
+            indicators = true;
+          }
         }
-      }
 
-      if (!indicators) {
-        action.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-        action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
+        if (deliverablePublicationMetadata.getCoAuthor() != null) {
+          if (deliverablePublicationMetadata.getCoAuthor().booleanValue()) {
+            indicators = true;
+          }
+        }
+
+        if (!indicators) {
+          action.addMessage(action.getText("project.deliverable.publication.v.indicators"));
+          action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
     }
   }
