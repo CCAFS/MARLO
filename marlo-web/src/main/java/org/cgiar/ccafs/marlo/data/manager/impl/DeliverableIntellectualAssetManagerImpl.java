@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableIntellectualAssetDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
@@ -92,14 +91,15 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
     saveDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
     DeliverableIntellectualAsset deliverableIntellectualAssetResult =
       deliverableIntellectualAssetDAO.save(deliverableIntellectualAsset);
-    Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)
-      && !deliverableIntellectualAssetResult.getDeliverable().getIsPublication()) {
-      if (currentPhase.getNext() != null) {
-        this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
-          deliverableIntellectualAsset.getDeliverable(), currentPhase.getNext().getId());
-      }
-    }
+    // Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
+    // boolean isPublication = deliverableIntellectualAssetResult.getDeliverable().getIsPublication() != null
+    // && deliverableIntellectualAssetResult.getDeliverable().getIsPublication();
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+    // if (currentPhase.getNext() != null) {
+    // this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
+    // deliverableIntellectualAsset.getDeliverable(), currentPhase.getNext().getId());
+    // }
+    // }
     return deliverableIntellectualAssetResult;
   }
 

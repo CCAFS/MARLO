@@ -17,13 +17,16 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableParticipantDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -80,6 +83,21 @@ public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<Deliverable
       return list;
     }
     return null;
+  }
+
+  @Override
+  public DeliverableParticipant findDeliverableParticipantByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    String query = "select distinct dp from DeliverableParticipant dp "
+      + " where phase.id = :phaseId and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+
+    Object findSingleResult = super.findSingleResult(DeliverableParticipant.class, createQuery);
+
+    DeliverableParticipant deliverableParticipantResult = (DeliverableParticipant) findSingleResult;
+
+    return deliverableParticipantResult;
   }
 
   @Override

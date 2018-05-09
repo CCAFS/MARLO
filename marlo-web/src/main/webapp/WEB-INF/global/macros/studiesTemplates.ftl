@@ -8,7 +8,7 @@
     <div class="borderBox">
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" disabled=isOutcomeCaseStudy editable=editable/]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable/]
         </div>
         <div class="col-md-6">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="statuses"  editable=editable /]
@@ -30,12 +30,12 @@
       [#if !fromProject]
       <div class="form-group row">
         [#-- Flagships --]
-        [#if flagshipsList??]
+        [#if flagshipList??]
           <div class="col-md-6">
             <h5>[@s.text name="study.flagships" /]:[@customForm.req required=editable/] </h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [#list flagshipsList as flagship]
+                [#list flagshipList as flagship]
                   [@customForm.checkBoxFlat id="flagship-${flagship.id}" name="${customName}.flagshipValue" label="${flagship.composedName}" value="${flagship.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
                 [/#list]
               [#else]
@@ -49,12 +49,12 @@
         [/#if]
         
         [#-- Regions --] 
-        [#if regionsList?has_content] 
+        [#if regionList?has_content] 
           <div class="col-md-6"> 
             <h5>[@s.text name="study.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [#list regionsList as region]
+                [#list regionList as region]
                   [@customForm.checkBoxFlat id="region-${region.id}" name="${customName}.regionsValue" label="${region.composedName}" value="${region.id}" editable=editable checked=((regionsIds?seq_contains(region.id))!false) cssClass="checkboxInput rpInput" /]
                 [/#list]
               [#else] 
@@ -145,7 +145,6 @@
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
-          [#-- List --]
           [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
@@ -197,7 +196,7 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipsList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
@@ -247,7 +246,7 @@
         </label>
         [#-- Gender --]
         <div class="simpleBox">
-          <label for="">[@s.text name="study.genderRelevance" /]:</label>
+          <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
@@ -259,7 +258,7 @@
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
-          <label for="">[@s.text name="study.youthRelevance" /]:</label>
+          <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
@@ -271,7 +270,7 @@
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
-          <label for="">[@s.text name="study.capDevRelevance" /]:</label>
+          <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]

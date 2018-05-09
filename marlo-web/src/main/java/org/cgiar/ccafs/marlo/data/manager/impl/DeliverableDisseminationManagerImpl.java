@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDisseminationDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
@@ -97,14 +96,15 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
   public DeliverableDissemination saveDeliverableDissemination(DeliverableDissemination deliverableDissemination) {
     DeliverableDissemination deliverableDisseminationResult =
       deliverableDisseminationDAO.save(deliverableDissemination);
-    Phase currentPhase = phaseDAO.find(deliverableDisseminationResult.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)
-      && !deliverableDisseminationResult.getDeliverable().getIsPublication()) {
-      if (currentPhase.getNext() != null) {
-        this.saveDeliverableDisseminationPhase(deliverableDisseminationResult,
-          deliverableDissemination.getDeliverable(), currentPhase.getNext().getId());
-      }
-    }
+    // Phase currentPhase = phaseDAO.find(deliverableDisseminationResult.getPhase().getId());
+    // boolean isPublication = deliverableDisseminationResult.getDeliverable().getIsPublication() != null
+    // && deliverableDisseminationResult.getDeliverable().getIsPublication();
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+    // if (currentPhase.getNext() != null) {
+    // this.saveDeliverableDisseminationPhase(deliverableDisseminationResult,
+    // deliverableDissemination.getDeliverable(), currentPhase.getNext().getId());
+    // }
+    // }
     return deliverableDisseminationResult;
   }
 

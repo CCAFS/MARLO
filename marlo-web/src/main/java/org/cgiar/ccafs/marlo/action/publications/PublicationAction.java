@@ -1154,8 +1154,6 @@ public class PublicationAction extends BaseAction {
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 
     }
-
-
   }
 
 
@@ -1465,11 +1463,12 @@ public class PublicationAction extends BaseAction {
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
-      if (deliverable.getPublication().getId() == null || deliverable.getPublication().getId().intValue() == -1) {
+      if (deliverable.getPublication().getId() != null && deliverable.getPublication().getId().intValue() == -1) {
         deliverable.getPublication().setId(null);
       }
       deliverable.getPublication().setPhase(deliverable.getPhase());
       deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
+
     }
   }
 
@@ -1720,7 +1719,6 @@ public class PublicationAction extends BaseAction {
       deliverableInfoDb.setCrpClusterKeyOutput(null);
     } else {
       deliverableInfoDb.setCrpClusterKeyOutput(deliverable.getDeliverableInfo().getCrpClusterKeyOutput());
-
     }
 
     deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());

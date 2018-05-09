@@ -22,8 +22,10 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -78,7 +80,6 @@ public class DeliverableValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
     action.setInvalidFields(new HashMap<>());
 
@@ -115,106 +116,8 @@ public class DeliverableValidator extends BaseValidator {
       if (!(deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
         && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
-        if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
-          && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 25)) {
-          action.addMessage(action.getText("project.deliverable.generalInformation.title"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.title", InvalidFieldsMessages.EMPTYFIELD);
-        }
-        // test
-        // Add description validator
-        if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription())
-          && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription()) <= 50)) {
-          action.addMessage(action.getText("project.deliverable.generalInformation.description"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.description",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-        /*
-         * if (!(this.isValidString(deliverable.getStatusDescription())
-         * && this.wordCount(deliverable.getStatusDescription()) <= 15)) {
-         * action.addMessage(action.getText("project.deliverable.generalInformation.description"));
-         * action.getInvalidFields().put("input-deliverable.deliverableInfo.description",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         */
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == null
-            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
-            action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-            deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
 
-          } else {
-            if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
-              .getDeliverableCategory() != null) {
-              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
-                .getId() == -1) {
-                action.addMessage(action.getText("project.deliverable.generalInformation.type"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
-                  InvalidFieldsMessages.EMPTYFIELD);
-                deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
-
-              }
-            } else {
-              action.addMessage(action.getText("project.deliverable.generalInformation.type"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-              deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
-            }
-          }
-        } else {
-          action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
-            InvalidFieldsMessages.EMPTYFIELD);
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == -1) {
-            action.addMessage(action.getText("project.deliverable.generalInformation.status"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("project.deliverable.generalInformation.status"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() == -1) {
-          action.addMessage(action.getText("project.deliverable.generalInformation.year"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.year", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() == null) {
-          action.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.newExpectedYear",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-        if (!action.isReportingActive()) {
-          if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
-            && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
-            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
-              && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
-              if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
-                action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-                action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
-                  InvalidFieldsMessages.EMPTYFIELD);
-
-                deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
-
-              }
-            } else {
-              action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-              deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
-            }
-          }
-        }
+        this.validateDeliverableInfo(deliverable.getDeliverableInfo(), deliverable, project, action);
 
         Boolean isManagingPartnerPersonRequerid =
           action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
@@ -225,32 +128,15 @@ public class DeliverableValidator extends BaseValidator {
           this.validatePartnershipResponsibleNoPersonRequired(deliverable, action);
           this.validatePartnershipOthersNoPersonRequired(deliverable, action);
         }
-
-        if (!action.isReportingActive()) {
-          if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
-            action.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
-            action.getInvalidFields().put("list-deliverable.fundingSources",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
-          }
+        if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
+          action.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
+          action.getInvalidFields().put("list-deliverable.fundingSources",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
         }
-
-
-        /*
-         * if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
-         * && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
-         * if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
-         * action.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
-         * action.getInvalidFields().put("list-deliverable.genderLevels",
-         * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Gender Levels"}));
-         * }
-         * }
-         */
       }
 
 
       if (action.isReportingActive()) {
-
-
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
@@ -283,7 +169,7 @@ public class DeliverableValidator extends BaseValidator {
           .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory() != null) {
           if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
             .getId() == 49) {
-            this.validatePublicationMetadata(deliverable, action);
+            this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
           }
         }
 
@@ -321,12 +207,23 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
 
+        // Validate Intellectual Asset
         if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getId() != null
           && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
           this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
         } else {
           action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
           action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validate Deliverable Participant
+        if (deliverable.getDeliverableParticipant() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
+          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+        } else {
+          action.addMessage("hasParticipants");
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
@@ -344,51 +241,187 @@ public class DeliverableValidator extends BaseValidator {
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
-
-    // cross cutting missing fields validation
-
-    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null) {
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender()) {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreGender() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreGender() == -1) {
-            action.addMessage(action.getText("saving.fields.required"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreGender",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-      }
-    }
-
-
-    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingYouth() != null) {
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingYouth()) {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreYouth() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreYouth() == -1)
-
-          {
-            action.addMessage(action.getText("saving.fields.required"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreYouth",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-      }
-    }
-
-    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingCapacity() != null) {
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingCapacity()) {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreCapacity() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreCapacity() == -1) {
-            action.addMessage(action.getText("saving.fields.required"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreCapacity",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-      }
-    }
-
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
 
+  }
+
+  private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, Project project,
+    BaseAction action) {
+    if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
+      && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 25)) {
+      action.addMessage(action.getText("project.deliverable.generalInformation.title"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.title", InvalidFieldsMessages.EMPTYFIELD);
+    }
+    // Add description validator
+    if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription())
+      && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription()) <= 50)) {
+      action.addMessage(action.getText("project.deliverable.generalInformation.description"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.description", InvalidFieldsMessages.EMPTYFIELD);
+    }
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == null
+        || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
+        action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
+      } else {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
+          .getDeliverableCategory() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
+            .getId() == -1) {
+            action.addMessage(action.getText("project.deliverable.generalInformation.type"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+            deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
+          }
+        } else {
+          action.addMessage(action.getText("project.deliverable.generalInformation.type"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+          deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+        }
+      }
+    } else {
+      action.addMessage(action.getText("project.deliverable.generalInformation.subType"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == -1) {
+        action.addMessage(action.getText("project.deliverable.generalInformation.status"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("project.deliverable.generalInformation.status"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() == -1) {
+      action.addMessage(action.getText("project.deliverable.generalInformation.year"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.year", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+      && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      && deliverable.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() == null) {
+      action.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.newExpectedYear",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (deliverableInfo.getCrossCuttingGender() == null && deliverableInfo.getCrossCuttingYouth() == null
+      && deliverableInfo.getCrossCuttingCapacity() == null && deliverableInfo.getCrossCuttingNa() == null) {
+      action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingNa",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cross Cutting"}));
+    }
+
+    if (!action.isReportingActive()) {
+      if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
+            action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+
+            deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
+
+          }
+        } else {
+          action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+          deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
+        }
+      }
+    }
+  }
+
+  private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {
+    if (deliverableParticipant.getHasParticipants()) {
+      if (!this.isValidString(deliverableParticipant.getEventActivityName())) {
+        action.addMessage(action.getText("involveParticipants.title"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.eventActivityName",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getRepIndTypeActivity() == null
+        || deliverableParticipant.getRepIndTypeActivity().getId() == -1) {
+        action.addMessage(action.getText("involveParticipants.typeActivity"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (deliverableParticipant.getRepIndTypeActivity().getId()
+          .equals(action.getReportingIndTypeActivityAcademicDegree())) {
+          if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
+            action.addMessage(action.getText("involveParticipants.academicDegree"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+      if (deliverableParticipant.getParticipants() == null
+        || !this.isValidNumber(deliverableParticipant.getParticipants().toString())
+        || deliverableParticipant.getParticipants() < 0) {
+        action.addMessage(action.getText("involveParticipants.participants"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.participants",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getDontKnowFemale() == null || !deliverableParticipant.getDontKnowFemale()) {
+        if (deliverableParticipant.getFemales() == null
+          || !this.isValidNumber(deliverableParticipant.getFemales().toString())
+          || deliverableParticipant.getFemales() < 0) {
+          action.addMessage(action.getText("involveParticipants.females"));
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.females",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+      if (deliverableParticipant.getRepIndTypeParticipant() == null
+        || deliverableParticipant.getRepIndTypeParticipant().getId() == -1) {
+        action.addMessage(action.getText("involveParticipants.participantsType"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeParticipant.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (deliverableParticipant.getRepIndGeographicScope() == null
+        || deliverableParticipant.getRepIndGeographicScope().getId() == -1) {
+        action.addMessage(action.getText("involveParticipants.eventScope"));
+        action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndGeographicScope.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (deliverableParticipant.getRepIndGeographicScope().getId()
+          .equals(action.getReportingIndGeographicScopeRegional())) {
+          if (deliverableParticipant.getRepIndRegion() == null
+            || deliverableParticipant.getRepIndRegion().getId() == -1) {
+            action.addMessage(action.getText("involveParticipants.region"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndRegion.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (deliverableParticipant.getRepIndGeographicScope().getId()
+          .equals(action.getReportingIndGeographicScopeMultiNational())
+          || deliverableParticipant.getRepIndGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeNational())
+          || deliverableParticipant.getRepIndGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeSubNational())) {
+          if (deliverableParticipant.getParticipantLocationsIsos() == null
+            || deliverableParticipant.getParticipantLocationsIsos().isEmpty()) {
+            action.addMessage(action.getText("involveParticipants.countries"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.participantLocationsIsos",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+    }
   }
 
 
@@ -770,67 +803,53 @@ public class DeliverableValidator extends BaseValidator {
     }
   }
 
-  public void validatePublicationMetadata(Deliverable deliverable, BaseAction action) {
-
-    if (deliverable.getPublication() != null && deliverable.getPublication().getId() != null
-      && deliverable.getPublication().getId().intValue() != -1) {
-
-      DeliverablePublicationMetadata metadata = deliverable.getPublication();
-
-      if (!(this.isValidString(metadata.getVolume()) && this.wordCount(metadata.getVolume()) <= 100)) {
-        // action.addMessage(action.getText("project.deliverable.publication.v.volume"));
-        // action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.volume",
-        // InvalidFieldsMessages.EMPTYFIELD);
+  public void validatePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,
+    DeliverableInfo deliverableInfo, BaseAction action) {
+    if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
+      && deliverablePublicationMetadata.getId().intValue() != -1) {
+      if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+        if (!this.isValidString(deliverablePublicationMetadata.getVolume())
+          && !this.isValidString(deliverablePublicationMetadata.getIssue())
+          && !this.isValidString(deliverablePublicationMetadata.getPages())) {
+          action.addMessage(action.getText("project.deliverable.publication.v.volume"));
+          action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+          action.addMessage(action.getText("project.deliverable.publication.v.issue"));
+          action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+          action.addMessage(action.getText("project.deliverable.publication.v.pages"));
+          action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
-      if (!(this.isValidString(metadata.getJournal()) && this.wordCount(metadata.getJournal()) <= 100)) {
+      if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
+        && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
         action.addMessage(action.getText("project.deliverable.publication.v.journal"));
-        action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.journal",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       boolean indicators = false;
 
-      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != 63
-        || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != 79) {
-        indicators = true;
-      }
-
-      if (metadata.getIsiPublication() != null) {
-        if (metadata.getIsiPublication().booleanValue()) {
+      if (deliverablePublicationMetadata.getIsiPublication() != null) {
+        if (deliverablePublicationMetadata.getIsiPublication().booleanValue()) {
           indicators = true;
         }
       }
 
-      if (metadata.getNasr() != null) {
-        if (metadata.getNasr().booleanValue()) {
+      if (deliverablePublicationMetadata.getNasr() != null) {
+        if (deliverablePublicationMetadata.getNasr().booleanValue()) {
           indicators = true;
         }
       }
 
-      if (metadata.getCoAuthor() != null) {
-        if (metadata.getCoAuthor().booleanValue()) {
+      if (deliverablePublicationMetadata.getCoAuthor() != null) {
+        if (deliverablePublicationMetadata.getCoAuthor().booleanValue()) {
           indicators = true;
         }
       }
 
       if (!indicators) {
         action.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-        action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.nasr",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
       }
-
-      if (metadata.getPublicationAcknowledge() == null) {
-        action.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
-        action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.publicationAcknowledge",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // else {
-      // action.addMessage(action.getText("project.deliverable.v.publication"));
-      // action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.nasr",
-      // InvalidFieldsMessages.EMPTYFIELD);
-      // }
     }
   }
 }
