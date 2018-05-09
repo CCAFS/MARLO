@@ -196,16 +196,18 @@
       </div>
       [#-- Type --]
       <div class="form-group">
-        <label for="">[@s.text name="intellectualAsset.type" /]:[@customForm.req required=editable /] </label><br />
-        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=((deliverable.intellectualAsset.type == 1)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
-        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"     checked=((deliverable.intellectualAsset.type == 2)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+        <label for="">[@s.text name="intellectualAsset.type" /]:[@customForm.req required=editable /] </label> <br />
+        [#local isPatent = ((deliverable.intellectualAsset.type == 1)!false) /]
+        [#local isPVP = ((deliverable.intellectualAsset.type == 2)!false) /]
+        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=isPatent cssClass="iaType" cssClassLabel="font-normal" editable=editable /]
+        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"  checked=isPVP cssClass="iaType" cssClassLabel="font-normal" editable=editable /]
       </div>
       [#-- Title --]
       <div class="form-group">
         [@customForm.input name="${customName}.title" i18nkey="intellectualAsset.title" className="" required=true editable=editable /]
       </div>
       
-      <div class="form-group row">
+      <div class="form-group row block-patent" style="display:${isPatent?string('block', 'none')}">
         [#-- Type of filling --]
         <div class="col-md-6">
           [@customForm.select name="${customName}.fillingType" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
@@ -216,12 +218,12 @@
         </div>
       </div>
       [#-- Patent Type --]
-      <div class="form-group">
+      <div class="form-group block-patent" style="display:${isPatent?string('block', 'none')}">
         <label for="">[@s.text name="intellectualAsset.patentType" /]:[@customForm.req required=editable /] </label><br />
         [@customForm.radioFlat id="iaPatentType-application" name="${customName}.patentType" label="Application"      value="1"   checked=((deliverable.intellectualAsset.patentType == 1)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
         [@customForm.radioFlat id="iaPatentType-registration"  name="${customName}.patentType" label="Registration"   value="2"   checked=((deliverable.intellectualAsset.patentType == 2)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
       </div>
-      <div class="form-group row">
+      <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
         [#-- Variety name --]
         <div class="col-md-6">
           [@customForm.input name="${customName}.varietyName" i18nkey="intellectualAsset.varietyName" className="" required=true editable=editable /]
@@ -231,7 +233,7 @@
            [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="intellectualAsset.status" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
       </div>
-      <div class="form-group row">
+      <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
         [#-- Country --]
         <div class="col-md-6">
           [@customForm.select name="${customName}.country" className="setSelect2" i18nkey="intellectualAsset.country" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
@@ -241,7 +243,7 @@
           [@customForm.input name="${customName}.appRegNumber" i18nkey="intellectualAsset.appRegNumber" className="" required=true editable=editable /]
         </div>
       </div>
-      <div class="form-group row">
+      <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
         [#-- Breeder and crop --]
         <div class="col-md-6">
           [@customForm.input name="${customName}.breederCrop" i18nkey="intellectualAsset.breederCrop" className="" required=true editable=editable /]
@@ -250,15 +252,15 @@
       <div class="form-group row">
         [#-- Date of filling --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateFilling" i18nkey="intellectualAsset.dateFilling" className="" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateFilling" i18nkey="intellectualAsset.dateFilling" className="datePicker" required=true editable=editable /]
         </div>
         [#-- Date of registration/Grant --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateRegistration" i18nkey="intellectualAsset.dateRegistration" className="" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateRegistration" i18nkey="intellectualAsset.dateRegistration" className="datePicker" required=true editable=editable /]
         </div>
         [#-- Date of Expiry / renewal --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateExpiry" i18nkey="intellectualAsset.dateExpiry" className="" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateExpiry" i18nkey="intellectualAsset.dateExpiry" className="datePicker" required=true editable=editable /]
         </div>
       </div>
       
