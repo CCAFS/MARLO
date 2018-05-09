@@ -75,7 +75,6 @@
                   [#list selectedSLOs as slo][@sloTargetMacro name="${customName}.selectedSLOs" element=slo index=slo_index /][/#list]
                 [/#if]
               </div>
-              <hr />
               <div class="dottedBox">
                 [@customForm.select name="" className="setSelect2" i18nkey="${customLabel}.selectSLOTarget" listName="selectSLOTarget" keyFieldName="id"  displayFieldName="name" required=true /]
               </div>
@@ -92,6 +91,8 @@
           </div>
           [/#if]
           
+          <hr />
+          
           [#-- Table A-2: List of New Outcome Case Studies from This Reporting Year (Sphere of Influence)  --]
           <div class="form-group">
             <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOutcomes" /]</h4>
@@ -99,7 +100,6 @@
             [@tableOutcomesCaseStudiesMacro name="${customName}.selectedStudies" list=[{},{},{},{}] /]
           </div>
           
-          <hr />
           
         
         </div>
@@ -121,9 +121,9 @@
           <th class="col-md-1"> [@s.text name="${customLabel}.table.projectId" /] </th>
           <th> [@s.text name="${customLabel}.table.outcomeCaseStudy" /] </th>
           <th> [@s.text name="${customLabel}.table.subIDO" /] </th>
-          <th> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
-          <th> [@s.text name="${customLabel}.table.evidenceLink" /] </th>
-          <th> [@s.text name="${customLabel}.table.includeAR" /] </th>
+          <th class="col-md-4"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
+          <th class="col-md-1"> [@s.text name="${customLabel}.table.evidenceLink" /] </th>
+          <th class="col-md-1"> [@s.text name="${customLabel}.table.includeAR" /] </th>
         </tr>
       </thead>
       <tbody>
@@ -135,8 +135,10 @@
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td><i class="fas fa-link"></i></td>
-              <td>[@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}.value" label="" value="true" editable=editable checked=true cssClass="" /]</td>
+              <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td>
+              <td class="text-center">
+                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}.value" label="" value="true" editable=editable checked=true cssClass="" /]
+              </td>
             </tr>
           [/#list]
         [#else]
