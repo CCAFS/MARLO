@@ -62,7 +62,7 @@ table ul {
   padding-left: 15px;
 }
 
-/** MARLO Responsibe Tables */
+/** MARLO Responsibe Tables **/
 .table-responsive table {
   min-width: 1500px;
   margin-bottom: 0;
@@ -131,7 +131,7 @@ form .form-group.margin-panel {
   max-width: 85% !important;
 }
 
-#table-plannedStudies .subHeader th {
+.annual-report-table .subHeader th {
   text-align: center;
 }
 
