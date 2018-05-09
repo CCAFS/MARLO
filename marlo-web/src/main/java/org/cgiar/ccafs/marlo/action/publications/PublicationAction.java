@@ -846,6 +846,7 @@ public class PublicationAction extends BaseAction {
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingNa(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingYouth(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setIsLocationGlobal(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setLicense(null);
         deliverable.setResponsiblePartner(null);
 
         if (deliverable.getCrps() != null) {
