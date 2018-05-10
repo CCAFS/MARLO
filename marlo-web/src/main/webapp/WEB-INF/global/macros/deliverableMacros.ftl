@@ -210,11 +210,11 @@
       <div class="form-group row block-patent" style="display:${isPatent?string('block', 'none')}">
         [#-- Type of filling --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.fillingType" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.fillingType" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="repIndFillingTypes" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
         [#-- Patent status --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.patentStatus" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.patentStatus" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="repIndPatentStatuses" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
       </div>
       [#-- Patent Type --]
@@ -230,7 +230,7 @@
         </div>
         [#-- Status --]
         <div class="col-md-6">
-           [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="intellectualAsset.status" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+           [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="intellectualAsset.status" listName="statuses" editable=editable required=editable /]
         </div>
       </div>
       <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
