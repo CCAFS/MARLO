@@ -930,6 +930,9 @@ public class PublicationAction extends BaseAction {
         if (deliverable.getDeliverableParticipant() != null) {
           deliverable.setDeliverableParticipant(null);
         }
+        if (deliverable.getIntellectualAsset() != null) {
+          deliverable.setIntellectualAsset(null);
+        }
 
       }
     }
@@ -1230,16 +1233,50 @@ public class PublicationAction extends BaseAction {
           if (intellectualAsset.getType() != null) {
             if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
               .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
-              intellectualAsset.setFillingType(deliverable.getIntellectualAsset().getFillingType());
-              intellectualAsset.setPatentStatus(deliverable.getIntellectualAsset().getPatentStatus());
+              if (deliverable.getIntellectualAsset().getFillingType() != null
+                && deliverable.getIntellectualAsset().getFillingType().getId() != -1) {
+                intellectualAsset.setFillingType(deliverable.getIntellectualAsset().getFillingType());
+              } else {
+                intellectualAsset.setFillingType(null);
+              }
+              if (deliverable.getIntellectualAsset().getPatentStatus() != null
+                && deliverable.getIntellectualAsset().getPatentStatus().getId() != -1) {
+                intellectualAsset.setPatentStatus(deliverable.getIntellectualAsset().getPatentStatus());
+              } else {
+                intellectualAsset.setPatentStatus(null);
+              }
               intellectualAsset.setPatentType(deliverable.getIntellectualAsset().getPatentType());
+              intellectualAsset.setVarietyName(null);
+              intellectualAsset.setStatus(null);
+              intellectualAsset.setCountry(null);
+              intellectualAsset.setAppRegNumber(null);
+              intellectualAsset.setBreederCrop(null);
             } else if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
               .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
               intellectualAsset.setVarietyName(deliverable.getIntellectualAsset().getVarietyName());
-              intellectualAsset.setStatus(deliverable.getIntellectualAsset().getStatus());
-              intellectualAsset.setCountry(deliverable.getIntellectualAsset().getCountry());
+              if (deliverable.getIntellectualAsset().getStatus() != null
+                && deliverable.getIntellectualAsset().getStatus() != -1) {
+                intellectualAsset.setStatus(deliverable.getIntellectualAsset().getStatus());
+              } else {
+                intellectualAsset.setStatus(null);
+              }
+              if (deliverable.getIntellectualAsset().getCountry() != null
+                && !deliverable.getIntellectualAsset().getCountry().getIsoAlpha2().equals("-1")) {
+                LocElement locElement = locElementManager
+                  .getLocElementByISOCode(deliverable.getIntellectualAsset().getCountry().getIsoAlpha2());
+                if (locElement != null) {
+                  intellectualAsset.setCountry(locElement);
+                } else {
+                  intellectualAsset.setCountry(null);
+                }
+              } else {
+                intellectualAsset.setCountry(null);
+              }
               intellectualAsset.setAppRegNumber(deliverable.getIntellectualAsset().getAppRegNumber());
               intellectualAsset.setBreederCrop(deliverable.getIntellectualAsset().getBreederCrop());
+              intellectualAsset.setFillingType(null);
+              intellectualAsset.setPatentStatus(null);
+              intellectualAsset.setPatentType(null);
             }
           } else {
             intellectualAsset.setFillingType(null);
