@@ -41,16 +41,15 @@
         <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
         <div class="borderBox">
           [#-- Flagship summary of major results achieved in the past reporting period --]
-          <div class="form-group">
-            [@customForm.textArea name="${customName}.flagshipSummary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
-          </div>
-          
-          <hr />
+          [#if flagship]
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.flagshipSummary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
+            </div>
+            <hr />
+          [/#if]
           
           [#-- Table B: Status of Planned Milestones --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
-            
             [#if PMU]
               [#-- Modal Large --]
               <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
@@ -66,10 +65,13 @@
                   </div>
                 </div>
               </div>
-            
+              [#-- Table --]
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
               [@tablePlannedMilestonesMacro allowPopups=true/]
             [/#if]
             [#if flagship]
+              [#-- Milestones per Flagships --]
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
               [#list outcomes as outcome]
                 [@annualReportOutcomeMacro element=outcome name="${customName}" index=outcome_index /]
               [/#list]
@@ -93,11 +95,11 @@
       <thead>
         <tr>
           <th>[@s.text name="${customLabel}.tableB.fp" /]</th>
-          [#if !allowPopups]<th class="col-md-3">[@s.text name="${customLabel}.tableB.subIDO" /]</th>[/#if]
-          [#if !allowPopups]<th class="col-md-3">[@s.text name="${customLabel}.tableB.outcomes" /]</th>[/#if]
-          <th class="col-md-4">[@s.text name="${customLabel}.tableB.milestone" /]</th>
-          <th class="col-md-1">[@customForm.text name="${customLabel}.tableB.explanation" param="${actualPhase.year}" /]</th>
-          <th class="col-md-4">[@s.text name="${customLabel}.tableB.status" /]</th>
+          [#if !allowPopups]<th class="">[@s.text name="${customLabel}.tableB.subIDO" /]</th>[/#if]
+          [#if !allowPopups]<th class="">[@s.text name="${customLabel}.tableB.outcomes" /]</th>[/#if]
+          <th class="">[@s.text name="${customLabel}.tableB.milestone" /]</th>
+          <th class="">[@customForm.text name="${customLabel}.tableB.explanation" param="${actualPhase.year}" /]</th>
+          <th class="">[@s.text name="${customLabel}.tableB.status" /]</th>
         </tr>
       </thead>
       <tbody>
@@ -121,10 +123,10 @@
                 [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
-                [#-- Explanation --]
-                <td class="col-md-4">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Milestone status --]
-                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td>[#if (milestoneProgress.status?has_content)!false]${milestoneProgress.statusName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                [#-- Explanation --]
+                <td>[#if (milestoneProgress.explanation?has_content)!false]${milestoneProgress.explanation}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]
@@ -215,10 +217,11 @@
             <thead>
               <tr>
                 <th class="col-md-1"> Project ID </th>
-                <th class="col-md-4"> Project Title </th>
+                <th class=""> Project Title </th>
+                [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Expected</th>[/#if]
                 [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Achieved</th>[/#if]
-                <th class="col-md-6"> [@s.text name="${customLabel}.contributionMilestone.target" /]  </th>
-                <th class="col-md-6"> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
+                <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.target" /]  </th>
+                <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
                 <th> </th>
               </tr>
             </thead>
@@ -230,9 +233,8 @@
                   <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
                   <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
                   [#if hasTarget]
-                  <td class="text-center">
-                    [#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]
-                  </td>
+                  <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]</td>
+                  <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]</td>
                   [/#if]
                   <td>${(contribution.narrativeTarget?replace('\n', '<br>'))!} </td>
                   <td>${(contribution.narrativeAchieved?replace('\n', '<br>'))!} </td>                  
