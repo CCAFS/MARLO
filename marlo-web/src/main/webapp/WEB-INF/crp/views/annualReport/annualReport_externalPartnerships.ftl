@@ -39,7 +39,7 @@
         [#assign customLabel= "annualReport.${currentStage}" /]
         
         [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
+        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
         <div class="borderBox">
         
           [#-- Summarize highlights, value added and points to improve/learning points from this year on external partnerships --]

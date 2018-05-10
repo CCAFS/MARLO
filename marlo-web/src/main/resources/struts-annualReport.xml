@@ -60,7 +60,7 @@
 		<!--  2.2 Use of W1-2 Funding  -->
 		<action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_fundingUse.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingUse</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -86,7 +86,7 @@
 		<!--  2.4 Cross-CGIAR Partnerships (other CRPs and Platforms)  -->
 		<action name="{crp}/crossPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_crossPartnerships.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crossPartnerships</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
