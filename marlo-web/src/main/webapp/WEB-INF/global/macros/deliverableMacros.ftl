@@ -210,11 +210,11 @@
       <div class="form-group row block-patent" style="display:${isPatent?string('block', 'none')}">
         [#-- Type of filling --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.fillingType" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="repIndFillingTypes" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.fillingType.id" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="repIndFillingTypes" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
         [#-- Patent status --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.patentStatus" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="repIndPatentStatuses" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.patentStatus.id" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="repIndPatentStatuses" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
       </div>
       [#-- Patent Type --]
@@ -236,7 +236,7 @@
       <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
         [#-- Country --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.country" className="setSelect2" i18nkey="intellectualAsset.country" listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.country.id" className="setSelect2" i18nkey="intellectualAsset.country" listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" editable=editable required=editable /]
         </div>
         [#-- Application/registration number --]
         <div class="col-md-6">
@@ -249,6 +249,7 @@
           [@customForm.input name="${customName}.breederCrop" i18nkey="intellectualAsset.breederCrop" className="" required=true editable=editable /]
         </div>
       </div>
+      
       <div class="form-group row">
         [#-- Date of filling --]
         <div class="col-md-4">
