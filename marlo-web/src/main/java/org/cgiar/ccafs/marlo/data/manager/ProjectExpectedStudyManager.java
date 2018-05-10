@@ -62,6 +62,15 @@ public interface ProjectExpectedStudyManager {
   public ProjectExpectedStudy getProjectExpectedStudyById(long projectExpectedStudyID);
 
   /**
+   * This method search the expected Studies that the user can be edit.
+   * 
+   * @param userId the user id
+   * @param crp the crp acronym
+   * @return The expected Studies that can edit the user
+   */
+  public List<ProjectExpectedStudy> getUserStudies(long userId, String crp);
+
+  /**
    * This method saves the information of the given projectExpectedStudy
    * 
    * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.

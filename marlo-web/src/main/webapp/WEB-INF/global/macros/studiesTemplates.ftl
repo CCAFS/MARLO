@@ -41,7 +41,7 @@
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.projectExpectedStudyInfo.isContribution)!false)?string('block','none')}">
-          [#local isBudgetInvestment = (element.projectExpectedStudyInfo.repIndPolicyInvestimentType.id == 3)]
+          [#local isBudgetInvestment = ((element.projectExpectedStudyInfo.repIndPolicyInvestimentType.id == 3))!false]
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
@@ -97,7 +97,7 @@
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=keyContributions label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
+          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
         [#-- Comments  --]
