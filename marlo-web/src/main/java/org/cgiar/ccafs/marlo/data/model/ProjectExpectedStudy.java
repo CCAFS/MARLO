@@ -152,7 +152,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -228,10 +228,10 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getOtherType() {
     return otherType;
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -241,10 +241,10 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
     return projectExpectedStudyCountries;
   }
+
 
   public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
     return projectExpectedStudyCrps;
@@ -257,7 +257,6 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo() {
     return projectExpectedStudyInfo;
   }
-
 
   public ProjectExpectedStudyInfo getProjectExpectedStudyInfo(Phase phase) {
     if (this.getProjectExpectedStudyInfo() != null) {
@@ -279,6 +278,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
     return projectExpectedStudyInfos;
   }
+
 
   public Set<ProjectExpectedStudyInstitution> getProjectExpectedStudyInstitutions() {
     return projectExpectedStudyInstitutions;
@@ -324,7 +324,6 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return srfSubIdo;
   }
 
-
   public List<ProjectExpectedStudySrfTarget> getSrfTargets() {
     return srfTargets;
   }
@@ -356,6 +355,15 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   public Integer getYear() {
     return year;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
