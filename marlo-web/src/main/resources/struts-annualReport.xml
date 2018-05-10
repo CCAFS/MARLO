@@ -19,9 +19,9 @@
     </action>
 
 		<!--  1.2 Progress by CRP Flagships  -->
-		<action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_flagshipProgress.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/flagshipProgress</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>

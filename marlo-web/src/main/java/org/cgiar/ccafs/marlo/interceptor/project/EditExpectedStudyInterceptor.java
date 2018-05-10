@@ -120,8 +120,12 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
             canEdit = false;
           }
         } else {
-          if (baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params))) {
+          if (user.getId() == projectExpectedStudy.getCreatedBy().getId()) {
             canEdit = true;
+          } else {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params))) {
+              canEdit = true;
+            }
           }
         }
 
@@ -151,6 +155,27 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
         if (editParameter || parameters.get("save").isDefined()) {
           hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
             : baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params));
+          // Change to Studies Without projects
+          if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+            hasPermissionToEdit = true;
+          } else {
+            if (projectExpectedStudy.getProject() != null) {
+              if (baseAction.hasPermission(
+                baseAction.generatePermission(Permission.PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION, params))) {
+                hasPermissionToEdit = true;
+              }
+
+            } else {
+              if (user.getId() == projectExpectedStudy.getCreatedBy().getId()) {
+                hasPermissionToEdit = true;
+              } else {
+                if (baseAction
+                  .hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params))) {
+                  hasPermissionToEdit = true;
+                }
+              }
+            }
+          }
         }
       }
 
