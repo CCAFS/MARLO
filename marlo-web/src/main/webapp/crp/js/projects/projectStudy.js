@@ -17,6 +17,9 @@ function init() {
   // This function enables launch the pop up window
   popups();
 
+  // Add amount format
+  $('input.currencyInput').currencyInput();
+
 }
 
 function attachEvents() {

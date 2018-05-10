@@ -500,6 +500,8 @@
       </ul>
       [#if editable]
         [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
+      [#else]
+        [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
       [/#if]
     </div>
     <ul style="display:none">
