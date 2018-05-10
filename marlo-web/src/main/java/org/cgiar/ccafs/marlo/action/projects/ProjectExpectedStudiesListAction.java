@@ -17,11 +17,13 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
@@ -55,37 +57,43 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
-
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
 
 
   private StudyTypeManager studyTypeManager;
 
+
   private List<ProjectExpectedStudy> nonProjectStudies;
+
+
+  private List<ProjectExpectedStudy> myNonProjectStudies;
+
+  private GlobalUnitManager crpManager;
 
   // Parameters or Variables
   private Project project;
-
   private List<Integer> allYears;
-
 
   private long projectID;
 
-
   private long expectedID;
 
+  private GlobalUnit loggedCrp;
 
   @Inject
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager) {
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
+    GlobalUnitManager crpManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.studyTypeManager = studyTypeManager;
+    this.crpManager = crpManager;
   }
+
 
   @Override
   public String add() {
@@ -155,6 +163,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return expectedID;
   }
 
+  public List<ProjectExpectedStudy> getMyNonProjectStudies() {
+    return myNonProjectStudies;
+  }
+
+
   public List<ProjectExpectedStudy> getNonProjectStudies() {
     return nonProjectStudies;
   }
@@ -169,6 +182,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
       project = projectManager.getProjectById(projectID);
@@ -189,7 +206,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       }
     } else {
       nonProjectStudies = new ArrayList<>();
-
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(s -> s.isActive() && s.getProject() == null).collect(Collectors.toList()));
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
@@ -197,6 +213,20 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
           .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
         nonProjectStudies.add(projectExpectedStudy);
       }
+
+      myNonProjectStudies = new ArrayList<>();
+      expectedStudies = new ArrayList<>(
+        projectExpectedStudyManager.getUserStudies(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+          .filter(e -> e.isActive()).collect(Collectors.toList()));
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+        if (nonProjectStudies.contains(projectExpectedStudy)) {
+          nonProjectStudies.remove(projectExpectedStudy);
+          myNonProjectStudies.add(projectExpectedStudy);
+        }
+
+      }
+
+
     }
   }
 
@@ -206,6 +236,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
+  }
+
+  public void setMyNonProjectStudies(List<ProjectExpectedStudy> myNonProjectStudies) {
+    this.myNonProjectStudies = myNonProjectStudies;
   }
 
   public void setNonProjectStudies(List<ProjectExpectedStudy> nonProjectStudies) {

@@ -114,8 +114,8 @@ public class Permission {
   public static final String PROJECT_EXPECTED_STUDIES_BASE_PERMISSION = "crp:{0}:project:{1}:expectedStudies";
   public static final String PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION = "crp:{0}:project:{1}:expectedStudies:canEdit";
 
-  public static final String STUDIES_BASE_PERMISSION = "crp:{0}:studies{1}";
-  public static final String STUDIES_EDIT_PERMISSION = "crp:{0}:studies{1}:canEdit";
+  public static final String STUDIES_BASE_PERMISSION = "crp:{0}:studies:{1}";
+  public static final String STUDIES_EDIT_PERMISSION = "crp:{0}:studies:{1}:canEdit";
 
   public static final String PROJECT_INNOVATIONS_BASE_PERMISSION = "crp:{0}:project:{1}:innovations";
   public static final String PROJECT_INNOVATIONS_EDIT_PERMISSION = "crp:{0}:project:{1}:innovations:canEdit";
