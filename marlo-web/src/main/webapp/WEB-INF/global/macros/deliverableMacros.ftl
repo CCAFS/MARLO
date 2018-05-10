@@ -240,7 +240,7 @@
         </div>
         [#-- Application/registration number --]
         <div class="col-md-6">
-          [@customForm.input name="${customName}.appRegNumber" i18nkey="intellectualAsset.appRegNumber" className="" required=true editable=editable /]
+          [@customForm.input name="${customName}.appRegNumber" i18nkey="intellectualAsset.appRegNumber" className="numericInput" required=true editable=editable /]
         </div>
       </div>
       <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
@@ -253,15 +253,15 @@
       <div class="form-group row">
         [#-- Date of filling --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateFilling" value="${(deliverable.intellectualAsset.dateFilling?date?string.medium)!}" i18nkey="intellectualAsset.dateFilling" className="datePicker" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateFilling" value="${(deliverable.intellectualAsset.dateFilling?date?string.medium)!}" i18nkey="intellectualAsset.dateFilling" className="datePicker dateLabel" required=true editable=editable /]
         </div>
         [#-- Date of registration/Grant --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateRegistration" value="${(deliverable.intellectualAsset.dateRegistration?date?string.medium)!}" i18nkey="intellectualAsset.dateRegistration" className="datePicker" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateRegistration" value="${(deliverable.intellectualAsset.dateRegistration?date?string.medium)!}" i18nkey="intellectualAsset.dateRegistration" className="datePicker dateLabel" required=true editable=editable /]
         </div>
         [#-- Date of Expiry / renewal --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateExpiry" value="${(deliverable.intellectualAsset.dateExpiry?date?string.medium)!}" i18nkey="intellectualAsset.dateExpiry" className="datePicker" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateExpiry" value="${(deliverable.intellectualAsset.dateExpiry?date?string.medium)!}" i18nkey="intellectualAsset.dateExpiry" className="datePicker dateLabel" required=true editable=editable /]
         </div>
       </div>
       
