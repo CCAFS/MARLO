@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,11 +70,29 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
 
   @Override
+  public List<ProjectExpectedStudy> getUserStudies(long userId, String crp) {
+
+    List<ProjectExpectedStudy> projects = new ArrayList<>();
+
+    List<Map<String, Object>> view = projectExpectedStudyDAO.getUserStudies(userId, crp);
+
+    if (view != null) {
+      for (Map<String, Object> map : view) {
+        projects.add(this.getProjectExpectedStudyById((Long.parseLong(map.get("project_id").toString()))));
+
+      }
+    }
+
+
+    return projects;
+  }
+
+
+  @Override
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
     List<String> relationsName, Phase phase) {
     return projectExpectedStudyDAO.save(projectExpectedStudy, section, relationsName, phase);
   }
-
 
   @Override
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {

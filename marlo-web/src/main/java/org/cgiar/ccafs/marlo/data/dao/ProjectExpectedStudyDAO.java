@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface ProjectExpectedStudyDAO {
@@ -55,6 +56,15 @@ public interface ProjectExpectedStudyDAO {
    */
   public List<ProjectExpectedStudy> findAll();
 
+
+  /**
+   * This method search the expected Studies that the user can be edit.
+   * 
+   * @param userId the user id
+   * @param crp the crp acronym
+   * @return The expected Studies that can edit the user
+   */
+  public List<Map<String, Object>> getUserStudies(long userId, String crp);
 
   /**
    * This method saves the information of the given projectExpectedStudy
