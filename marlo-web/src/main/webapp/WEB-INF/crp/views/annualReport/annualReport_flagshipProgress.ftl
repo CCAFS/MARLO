@@ -50,11 +50,7 @@
           [#-- Table B: Status of Planned Milestones --]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
-            [#if flagship]
-              [#list outcomes as outcome]
-                [@annualReportOutcomeMacro element=outcome name="${customName}" index=outcome_index /]
-              [/#list]
-            [/#if]
+            
             [#if PMU]
               [#-- Modal Large --]
               <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
@@ -72,6 +68,11 @@
               </div>
             
               [@tablePlannedMilestonesMacro allowPopups=true/]
+            [/#if]
+            [#if flagship]
+              [#list outcomes as outcome]
+                [@annualReportOutcomeMacro element=outcome name="${customName}" index=outcome_index /]
+              [/#list]
             [/#if]
           </div>
           
