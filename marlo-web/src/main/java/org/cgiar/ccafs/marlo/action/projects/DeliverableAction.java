@@ -1329,10 +1329,11 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Extended.getStatusId());
 
           }
-
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+            if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+            }
           }
         }
       } else {
@@ -2296,6 +2297,7 @@ public class DeliverableAction extends BaseAction {
   private void saveUpdateDeliverablePartnershipResponsible(DeliverablePartnership partnershipResponsibleDB,
     DeliverablePartnership partnershipResponsibleManaged) {
     if (partnershipResponsibleManaged.getProjectPartner() != null
+      && partnershipResponsibleManaged.getProjectPartner().getId() != null
       && partnershipResponsibleManaged.getProjectPartner().getId() != -1) {
       partnershipResponsibleManaged.setProjectPartner(
         projectPartnerManager.getProjectPartnerById(partnershipResponsibleManaged.getProjectPartner().getId()));
