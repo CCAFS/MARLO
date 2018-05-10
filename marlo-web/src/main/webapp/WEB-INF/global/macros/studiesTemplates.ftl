@@ -26,49 +26,6 @@
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
-      [#-- Flagships & Regions --]
-      [#if !fromProject]
-      <div class="form-group row">
-        [#-- Flagships --]
-        [#if flagshipList??]
-          <div class="col-md-6">
-            <h5>[@s.text name="study.flagships" /]:[@customForm.req required=editable/] </h5>
-            <div id="" class="dottedBox">
-              [#if editable]
-                [#list flagshipList as flagship]
-                  [@customForm.checkBoxFlat id="flagship-${flagship.id}" name="${customName}.flagshipValue" label="${flagship.composedName}" value="${flagship.id}" editable=editable checked=((flagshipIds?seq_contains(element.id))!false) cssClass="checkboxInput fpInput" /]
-                [/#list]
-              [#else]
-                <input type="hidden" name="${customName}.flagshipValue" value="${(element.flagshipValue)!}"/>
-                [#if element.programs?has_content]
-                  [#list element.programs as flagship]<p class="checked">${(flagship.crpProgram.composedName)!'null'}</p>[/#list]
-                [/#if]
-              [/#if]
-            </div>
-          </div>
-        [/#if]
-        
-        [#-- Regions --] 
-        [#if regionList?has_content] 
-          <div class="col-md-6"> 
-            <h5>[@s.text name="study.regions" /]:[@customForm.req required=editable /]</h5>
-            <div id="" class="dottedBox">
-              [#if editable]
-                [#list regionList as region]
-                  [@customForm.checkBoxFlat id="region-${region.id}" name="${customName}.regionsValue" label="${region.composedName}" value="${region.id}" editable=editable checked=((regionsIds?seq_contains(region.id))!false) cssClass="checkboxInput rpInput" /]
-                [/#list]
-              [#else] 
-                <input type="hidden" name="${customName}.regionsValue" value="${(element.regionsValue)!}"/>
-                [#if  element.regions?has_content]
-                  [#list element.regions as region]<p class="checked">${(region.crpProgram.composedName)!'null'}</p>[/#list]
-                [/#if]
-              [/#if]
-            </div>
-          </div>
-        [/#if]
-      </div>
-      [/#if]
-      
       [#-- 2. Short outcome/impact statement (up to 80 words) --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
@@ -196,8 +153,15 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
+          <p class="note">To Flagships selected, the system grants permission to edit to their Flagship leaders and Managers</p>
           [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
+        [#if regionList?has_content]
+          <div class="form-group simpleBox">
+            <p class="note">To Regions selected, the system grants permission to edit to their Region leaders and Managers</p>
+            [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName"/]
+          </div>
+        [/#if]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
         </div>
