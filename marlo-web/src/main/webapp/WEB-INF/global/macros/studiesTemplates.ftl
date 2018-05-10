@@ -154,12 +154,12 @@
         </div>
         <div class="form-group simpleBox">
           [#if !fromProject]<p class="note">To Flagships selected, the system grants permission to edit to their Flagship leaders and Managers</p>[/#if]
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         [#if regionList?has_content]
           <div class="form-group simpleBox">
             [#if !fromProject]<p class="note">To Regions selected, the system grants permission to edit to their Region leaders and Managers</p>[/#if]
-            [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName"/]
+            [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" id="RP" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
         [/#if]
         <div class="form-group simpleBox">
