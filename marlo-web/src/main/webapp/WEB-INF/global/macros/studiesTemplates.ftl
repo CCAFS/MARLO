@@ -177,7 +177,7 @@
           [#if editable]
           <p id="addPartnerText" class="helpMessage">
             [@s.text name="projectPartners.addPartnerMessage.first" /]
-            <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">
+            <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url]">
               [@s.text name="projectPartners.addPartnerMessage.second" /]
             </a>
           </p> 
