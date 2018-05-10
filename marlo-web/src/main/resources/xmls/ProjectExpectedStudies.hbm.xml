@@ -9,10 +9,9 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
-			fetch="select">
+		<property name="phase" type="java.lang.Long">
 			<column name="id_phase" />
-		</many-to-one>
+		</property>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id" not-null="true" />

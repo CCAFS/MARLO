@@ -652,9 +652,10 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream().filter(
-            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+        .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin()
+              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -838,11 +839,13 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   }
 
   private TypedTableModel getTableAContentTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"FP", "subIDO", "outcomes", "milestone", "w1w2", "w3Bilateral", "assessment", "meansVerifications"},
-      new Class[] {String.class, String.class, String.class, String.class, Double.class, Double.class, String.class,
-        String.class},
-      0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"FP", "subIDO", "outcomes", "milestone", "w1w2", "w3Bilateral", "assessment",
+          "meansVerifications"},
+        new Class[] {String.class, String.class, String.class, String.class, Double.class, Double.class, String.class,
+          String.class},
+        0);
     this.loadTablePMU();
     String FP, subIDO = "", outcomes, milestone, assessment, meansVerifications;
     Double w1w2, w3Bilateral;
@@ -1264,8 +1267,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
 
-    for (GlobalUnitProject globalUnitProject : this
-      .getLoggedCrp().getGlobalUnitProjects().stream().filter(p -> p.isActive() && p.getProject() != null
+    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
+      .filter(p -> p.isActive() && p.getProject() != null
         && p.getProject().isActive() && p.getProject().getProjecInfoPhase(phase) != null && p.getProject()
           .getProjectInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
       .collect(Collectors.toList())) {

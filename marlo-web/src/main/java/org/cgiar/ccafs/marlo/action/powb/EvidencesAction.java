@@ -317,7 +317,7 @@ public class EvidencesAction extends BaseAction {
       List<ProjectExpectedStudy> expectedStudies =
         new ArrayList<>(
           projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+            .filter(ps -> ps.isActive() && ps.getPhase() == phaseID
               && ps.getProject().getGlobalUnitProjects().stream()
                 .filter(
                   gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
@@ -517,7 +517,8 @@ public class EvidencesAction extends BaseAction {
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          .filter(es -> es.isActive() && es.getPhase() != null && es.getPhase() == phaseID)
+          .collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           popUpProjects.add(projectExpectedStudy);
         }

@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -68,7 +67,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   private List<ProjectExpectedStudy> myNonProjectStudies;
 
-  private GlobalUnitManager crpManager;
 
   // Parameters or Variables
   private Project project;
@@ -83,15 +81,14 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   @Inject
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
     ProjectManager projectManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager,
-    GlobalUnitManager crpManager) {
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, StudyTypeManager studyTypeManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.studyTypeManager = studyTypeManager;
-    this.crpManager = crpManager;
+
   }
 
 
@@ -184,7 +181,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public void prepare() throws Exception {
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
 
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
