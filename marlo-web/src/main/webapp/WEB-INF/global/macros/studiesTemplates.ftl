@@ -183,8 +183,8 @@
         </div>
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 
-            fileDB=(element.referencesFile)!{} 
-            name="${customName}.referencesFile.id" 
+            fileDB=(element.projectExpectedStudyInfo.referencesFile)!{} 
+            name="${customName}.projectExpectedStudyInfo.referencesFile.id" 
             label="study.communicationMaterialsAttach" 
             dataUrl="${baseUrl}/uploadStudies.do" 
             path="${(action.getPath(expectedID))!}"
@@ -263,8 +263,8 @@
         
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 
-            fileDB=(element.outcomeFile)!{} 
-            name="${customName}.outcomeFile.id" 
+            fileDB=(element.projectExpectedStudyInfo.outcomeFile)!{} 
+            name="${customName}.projectExpectedStudyInfo.outcomeFile.id" 
             label="study.referencesCitedAttach" 
             dataUrl="${baseUrl}/uploadStudies.do" 
             path="${(action.getPath(expectedID))!}"

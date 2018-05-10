@@ -71,6 +71,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -425,6 +426,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+        // Expected Study Regions List Autosave
+        if (expectedStudy.getRegions() != null) {
+          for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : expectedStudy.getRegions()) {
+            projectExpectedStudyFlagship
+              .setCrpProgram(crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+          }
+        }
+
         // Expected Study Crp List Autosave
         if (expectedStudy.getCrps() != null) {
           for (ProjectExpectedStudyCrp projectExpectedStudyCrp : expectedStudy.getCrps()) {
@@ -484,7 +493,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         // Expected Study Flagship List
         if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
           expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+              && o.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())));
+        }
+
+        // Expected Study Regions List
+        if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
+          expectedStudy.setRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+              && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())));
         }
 
         // Expected Study Crp List
@@ -655,7 +674,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("canEdit")) {
+
+    User user = this.getCurrentUser();
+
+    if (this.hasPermission("canEdit") || user.getId() == expectedStudyDB.getCreatedBy().getId()) {
 
       Phase phase = this.getActualPhase();
       Path path = this.getAutoSaveFilePath();
@@ -736,6 +758,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .setReferencesFile(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile());
       }
 
+      System.out.println("");
       // Setup focusLevel
       if (expectedStudy.getProjectExpectedStudyInfo().getGenderLevel() != null) {
         RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
@@ -1033,15 +1056,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .collect(Collectors.toList()));
 
       for (ProjectExpectedStudyFlagship studyFlagship : flagshipPrev) {
-        if (!expectedStudy.getFlagships().contains(studyFlagship)) {
+        if (!expectedStudy.getRegions().contains(studyFlagship)) {
           projectExpectedStudyFlagshipManager.deleteProjectExpectedStudyFlagship(studyFlagship.getId());
         }
       }
     }
 
     // Save form Information
-    if (expectedStudy.getFlagships() != null) {
-      for (ProjectExpectedStudyFlagship studyFlagship : expectedStudy.getFlagships()) {
+    if (expectedStudy.getRegions() != null) {
+      for (ProjectExpectedStudyFlagship studyFlagship : expectedStudy.getRegions()) {
         if (studyFlagship.getId() == null) {
           ProjectExpectedStudyFlagship studyFlagshipSave = new ProjectExpectedStudyFlagship();
           studyFlagshipSave.setProjectExpectedStudy(projectExpectedStudy);
