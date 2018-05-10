@@ -44,7 +44,7 @@
         
           [#-- Summarize highlights, value added and points to improve/learning points from this year on external partnerships --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.summarizeHighlights" i18nkey="${customLabel}.summarizeHighlights" className="" helpIcon=false required=true editable=editable /]
+            [@customForm.textArea name="${customName}.summarizeHighlights" i18nkey="${customLabel}.summarizeHighlights" help="${customLabel}.summarizeHighlights.help" className="" helpIcon=false required=true editable=editable /]
           </div>
           
           [#-- Flagships - External Partnerships Synthesis --]
