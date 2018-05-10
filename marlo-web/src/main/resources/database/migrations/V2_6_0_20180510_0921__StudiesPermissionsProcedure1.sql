@@ -3042,74 +3042,7 @@ UNION
                                                                               `cp`.`global_unit_type_id` = 4
                                                                             )
                                                                           )
-                                                                        AND u.id = v_user_id
-                                                                        UNION
-                                                                          SELECT
-                                                                            `u`.`id` AS `id`,
-                                                                            `r`.`acronym` AS `ro_acronym`,
-                                                                            `r`.`id` AS `role_id`,
-                                                                            REPLACE (
-                                                                              `p`.`permission`,
-                                                                              '{0}',
-                                                                              CONCAT(
-                                                                                `cp`.`acronym`,
-                                                                                ':',
-                                                                                ph.description,
-                                                                                ':',
-                                                                                ph.`year`
-                                                                              )
-                                                                            ) AS `permission`,
-                                                                            NULL AS `project_id`,
-                                                                            `cp`.`acronym` AS `crp_acronym`,
-                                                                            `p`.`id` AS `permission_id`
-                                                                          FROM
-                                                                            (
-                                                                              (
-                                                                                (
-                                                                                  (
-                                                                                    (
-                                                                                      (
-                                                                                        `users` `u`
-                                                                                        LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
-                                                                                      )
-                                                                                      JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
-                                                                                    )
-                                                                                    JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
-                                                                                  )
-                                                                                  JOIN `permissions` `p` ON (
-                                                                                    (
-                                                                                      `p`.`id` = `rp`.`permission_id`
-                                                                                    )
-                                                                                  )
-                                                                                )
-                                                                                JOIN `crp_users` `crp` ON (
-                                                                                  (
-                                                                                    (`u`.`id` = `crp`.`user_id`)
-                                                                                    AND (
-                                                                                      `crp`.`global_unit_id` = `r`.`global_unit_id`
-                                                                                    )
-                                                                                  )
-                                                                                )
-                                                                              )
-                                                                              JOIN `global_units` `cp` ON (
-                                                                                (
-                                                                                  `cp`.`id` = `crp`.`global_unit_id`
-                                                                                )
-                                                                              )
-                                                                              JOIN phases ph ON cp.id = ph.global_unit_id
-                                                                              AND ph.editable = 1
-                                                                            )
-                                                                          WHERE
-                                                                            (
-                                                                              (`p`.`type` = 3)
-                                                                              AND (
-                                                                                `cp`.`global_unit_type_id` = 1
-                                                                                OR `cp`.`global_unit_type_id` = 3
-                                                                                OR `cp`.`global_unit_type_id` = 4
-                                                                              )
-                                                                              AND p.permission IN ('crp:{0}:studies:add')
-                                                                            )
-                                                                          AND u.id = v_user_id
+                                                                        AND u.id = v_user_id                                                                        
                                                                           UNION
                                                                             SELECT
                                                                               `u`.`id` AS `id`,
@@ -3220,7 +3153,7 @@ UNION
                                                                                   OR `cp`.`global_unit_type_id` = 4
                                                                                 )
                                                                                 AND p.permission IN (
-                                                                                  'crp:{0}:studies{1}:canEdit'
+                                                                                  'crp:{0}:studies:{1}:canEdit'
                                                                                 )
                                                                               )
                                                                             AND u.id = v_user_id ;
