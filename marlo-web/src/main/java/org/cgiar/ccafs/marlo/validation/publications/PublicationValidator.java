@@ -358,6 +358,21 @@ public class PublicationValidator extends BaseValidator {
         action.addMessage(action.getText("deliverable.intellectualAsset.title"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.title", InvalidFieldsMessages.EMPTYFIELD);
       }
+      if (intellectualAsset.getDateFilling() == null) {
+        action.addMessage(action.getText("intellectualAsset.dateFilling"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.dateFilling",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (intellectualAsset.getDateRegistration() == null) {
+        action.addMessage(action.getText("intellectualAsset.dateRegistration"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.dateRegistration",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (intellectualAsset.getDateExpiry() == null) {
+        action.addMessage(action.getText("intellectualAsset.dateExpiry"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.dateExpiry",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
       if (!this.isValidString(intellectualAsset.getAdditionalInformation())) {
         action.addMessage(action.getText("deliverable.intellectualAsset.additionalInformation"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.additionalInformation",
