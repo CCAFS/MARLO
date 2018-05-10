@@ -45,7 +45,9 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndFillingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPatentStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
@@ -60,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
@@ -74,7 +77,10 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndPatentStatus;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
@@ -151,6 +157,8 @@ public class PublicationAction extends BaseAction {
   private RepIndRegionManager repIndRegionManager;
   private LocElementManager locElementManager;
   private DeliverableParticipantLocationManager deliverableParticipantLocationManager;
+  private RepIndFillingTypeManager repIndFillingTypeManager;
+  private RepIndPatentStatusManager repIndPatentStatusManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -176,6 +184,9 @@ public class PublicationAction extends BaseAction {
   private List<RepIndGeographicScope> repIndGeographicScopes;
   private List<RepIndRegion> repIndRegions;
   private List<LocElement> countries;
+  private List<RepIndFillingType> repIndFillingTypes;
+  private List<RepIndPatentStatus> repIndPatentStatuses;
+  private Map<String, String> statuses;
 
 
   @Inject
@@ -196,7 +207,8 @@ public class PublicationAction extends BaseAction {
     DeliverableParticipantManager deliverableParticipantManager, RepIndTypeActivityManager repIndTypeActivityManager,
     RepIndTypeParticipantManager repIndTypeParticipantManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
-    LocElementManager locElementManager, DeliverableParticipantLocationManager deliverableParticipantLocationManager) {
+    LocElementManager locElementManager, DeliverableParticipantLocationManager deliverableParticipantLocationManager,
+    RepIndFillingTypeManager repIndFillingTypeManager, RepIndPatentStatusManager repIndPatentStatusManager) {
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.historyComparator = historyComparator;
@@ -231,6 +243,8 @@ public class PublicationAction extends BaseAction {
     this.repIndRegionManager = repIndRegionManager;
     this.locElementManager = locElementManager;
     this.deliverableParticipantLocationManager = deliverableParticipantLocationManager;
+    this.repIndFillingTypeManager = repIndFillingTypeManager;
+    this.repIndPatentStatusManager = repIndPatentStatusManager;
   }
 
 
@@ -243,6 +257,8 @@ public class PublicationAction extends BaseAction {
 
       boolean fileDeleted = path.toFile().delete();
     }
+
+    deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
 
     this.setDraft(false);
     Collection<String> messages = this.getActionMessages();
@@ -301,9 +317,11 @@ public class PublicationAction extends BaseAction {
     return channels;
   }
 
+
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   public List<CrossCuttingScoring> getCrossCuttingDimensions() {
     return crossCuttingDimensions;
@@ -319,9 +337,11 @@ public class PublicationAction extends BaseAction {
     return crps;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -334,6 +354,7 @@ public class PublicationAction extends BaseAction {
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
   }
+
 
   public String[] getFlagshipIds() {
 
@@ -357,21 +378,17 @@ public class PublicationAction extends BaseAction {
       .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
-
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
-
 
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
@@ -396,6 +413,7 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
+
   public List<CrpProgram> getRegionsList() {
     return crpProgramManager.findAll().stream()
       .filter(
@@ -403,10 +421,20 @@ public class PublicationAction extends BaseAction {
       .sorted((r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym())).collect(Collectors.toList());
   }
 
+
+  public List<RepIndFillingType> getRepIndFillingTypes() {
+    return repIndFillingTypes;
+  }
+
+
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
   }
 
+
+  public List<RepIndPatentStatus> getRepIndPatentStatuses() {
+    return repIndPatentStatuses;
+  }
 
   public List<RepIndRegion> getRepIndRegions() {
     return repIndRegions;
@@ -424,6 +452,12 @@ public class PublicationAction extends BaseAction {
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
+
+
+  public Map<String, String> getStatuses() {
+    return statuses;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -814,6 +848,17 @@ public class PublicationAction extends BaseAction {
         .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
       this.setCountries(locElementManager.findAll().stream()
         .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+      this.setRepIndFillingTypes(repIndFillingTypeManager.findAll().stream()
+        .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
+      this.setRepIndPatentStatuses(repIndPatentStatusManager.findAll().stream()
+        .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
+      // Statuses
+      statuses = new HashMap<>();
+      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      for (ProjectStatusEnum projectStatusEnum : list) {
+        statuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      }
+
 
       // Participants Locations
       if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
@@ -847,6 +892,7 @@ public class PublicationAction extends BaseAction {
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingYouth(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setIsLocationGlobal(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setLicense(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
         deliverable.setResponsiblePartner(null);
 
         if (deliverable.getCrps() != null) {
@@ -872,8 +918,6 @@ public class PublicationAction extends BaseAction {
           deliverable.getUsers().clear();
         }
 
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrpClusterKeyOutput(null);
-
         if (deliverable.getFundingSources() != null) {
           deliverable.getFundingSources().clear();
         }
@@ -890,7 +934,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -956,7 +999,6 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
       deliverable.setCrps(new ArrayList<>());
@@ -986,7 +1028,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
     if (deliverable.getGenderLevels() != null) {
@@ -1181,7 +1222,35 @@ public class PublicationAction extends BaseAction {
           intellectualAsset.setLink(deliverable.getIntellectualAsset().getLink());
           intellectualAsset.setPublicCommunication(deliverable.getIntellectualAsset().getPublicCommunication());
           intellectualAsset.setTitle(deliverable.getIntellectualAsset().getTitle());
+          intellectualAsset.setDateFilling(deliverable.getIntellectualAsset().getDateFilling());
+          intellectualAsset.setDateRegistration(deliverable.getIntellectualAsset().getDateRegistration());
+          intellectualAsset.setDateExpiry(deliverable.getIntellectualAsset().getDateExpiry());
           intellectualAsset.setType(deliverable.getIntellectualAsset().getType());
+
+          if (intellectualAsset.getType() != null) {
+            if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
+              .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
+              intellectualAsset.setFillingType(deliverable.getIntellectualAsset().getFillingType());
+              intellectualAsset.setPatentStatus(deliverable.getIntellectualAsset().getPatentStatus());
+              intellectualAsset.setPatentType(deliverable.getIntellectualAsset().getPatentType());
+            } else if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
+              .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
+              intellectualAsset.setVarietyName(deliverable.getIntellectualAsset().getVarietyName());
+              intellectualAsset.setStatus(deliverable.getIntellectualAsset().getStatus());
+              intellectualAsset.setCountry(deliverable.getIntellectualAsset().getCountry());
+              intellectualAsset.setAppRegNumber(deliverable.getIntellectualAsset().getAppRegNumber());
+              intellectualAsset.setBreederCrop(deliverable.getIntellectualAsset().getBreederCrop());
+            }
+          } else {
+            intellectualAsset.setFillingType(null);
+            intellectualAsset.setPatentStatus(null);
+            intellectualAsset.setPatentType(null);
+            intellectualAsset.setVarietyName(null);
+            intellectualAsset.setStatus(null);
+            intellectualAsset.setCountry(null);
+            intellectualAsset.setAppRegNumber(null);
+            intellectualAsset.setBreederCrop(null);
+          }
         } else {
           intellectualAsset.setAdditionalInformation(null);
           intellectualAsset.setApplicant(null);
@@ -1189,12 +1258,24 @@ public class PublicationAction extends BaseAction {
           intellectualAsset.setPublicCommunication(null);
           intellectualAsset.setTitle(null);
           intellectualAsset.setType(null);
+          intellectualAsset.setFillingType(null);
+          intellectualAsset.setPatentStatus(null);
+          intellectualAsset.setPatentType(null);
+          intellectualAsset.setVarietyName(null);
+          intellectualAsset.setStatus(null);
+          intellectualAsset.setCountry(null);
+          intellectualAsset.setAppRegNumber(null);
+          intellectualAsset.setBreederCrop(null);
+          intellectualAsset.setDateFilling(null);
+          intellectualAsset.setDateRegistration(null);
+          intellectualAsset.setDateExpiry(null);
         }
 
         deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAsset);
       }
     }
   }
+
 
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
@@ -1219,6 +1300,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -1230,6 +1312,7 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
+
 
   private void saveParticipant() {
     if (deliverable.getDeliverableParticipant() != null) {
@@ -1393,7 +1476,6 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   public void savePrograms() {
 
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
@@ -1473,7 +1555,6 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
 
@@ -1512,10 +1593,10 @@ public class PublicationAction extends BaseAction {
     this.crossCuttingDimensions = crossCuttingDimensions;
   }
 
+
   public void setCrossCuttingScoresMap(Map<Long, String> crossCuttingScoresMap) {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
   }
-
 
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
@@ -1526,7 +1607,6 @@ public class PublicationAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
@@ -1536,23 +1616,24 @@ public class PublicationAction extends BaseAction {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
+
   public void setDeliverableTypeManager(DeliverableTypeManager deliverableTypeManager) {
     this.deliverableTypeManager = deliverableTypeManager;
   }
+
 
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
 
+
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
-
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
-
 
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
@@ -1563,14 +1644,24 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  public void setRepIndFillingTypes(List<RepIndFillingType> repIndFillingTypes) {
+    this.repIndFillingTypes = repIndFillingTypes;
+  }
+
+
   public void setRepIndGeographicScopes(List<RepIndGeographicScope> repIndGeographicScopes) {
     this.repIndGeographicScopes = repIndGeographicScopes;
+  }
+
+  public void setRepIndPatentStatuses(List<RepIndPatentStatus> repIndPatentStatuses) {
+    this.repIndPatentStatuses = repIndPatentStatuses;
   }
 
 
   public void setRepIndRegions(List<RepIndRegion> repIndRegions) {
     this.repIndRegions = repIndRegions;
   }
+
 
   public void setRepIndTypeActivities(List<RepIndTypeActivity> repIndTypeActivities) {
     this.repIndTypeActivities = repIndTypeActivities;
@@ -1582,6 +1673,10 @@ public class PublicationAction extends BaseAction {
 
   public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
     this.repositoryChannels = repositoryChannels;
+  }
+
+  public void setStatuses(Map<String, String> statuses) {
+    this.statuses = statuses;
   }
 
   public void setTransaction(String transaction) {
