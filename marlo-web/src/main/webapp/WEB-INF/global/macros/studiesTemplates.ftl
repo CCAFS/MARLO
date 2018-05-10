@@ -8,19 +8,14 @@
     <div class="borderBox">
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" editable=editable/]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
         </div>
         <div class="col-md-6">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="statuses"  editable=editable /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="statuses" required=true editable=editable /]
         </div>
       </div>
     </div>
     <div class="borderBox">
-    
-      [#if (element.caseStudy??)]
-       CaseStudy -> ${(element.caseStudy)!}
-      [/#if]
-
       [#-- 1. Title (up to 20 words) --]
       <div class="form-group">
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
@@ -46,7 +41,7 @@
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.projectExpectedStudyInfo.isContribution)!false)?string('block','none')}">
-          [#local isBudgetInvestment = false]
+          [#local isBudgetInvestment = (element.projectExpectedStudyInfo.repIndPolicyInvestimentType.id == 3)]
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
@@ -54,7 +49,7 @@
             </div>
             <div class="col-md-6 block-budgetInvestment" style="display:${isBudgetInvestment?string('block', 'none')}">
               [#-- Amount (Only for Budget or Investment) --]
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.policyAmount" i18nkey="study.reportingIndicatorThree.amount" help="study.reportingIndicatorThree.amount.help" className="" required=true editable=editable /]
+              [@customForm.input name="${customName}.projectExpectedStudyInfo.policyAmount" i18nkey="study.reportingIndicatorThree.amount" help="study.reportingIndicatorThree.amount.help" className="currencyInput" required=true editable=editable /]
             </div>
           </div>
           <div class="form-group row">
@@ -79,7 +74,7 @@
         </label>
         <div class="form-group">
           [#list stageStudies as stage]
-            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" label="<small><b>${stage.name}:</b> ${stage.description}</small>" value="${stage.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
+            <p>[@customForm.radioFlat id="maturityChange-${stage.id}" name="${customName}.projectExpectedStudyInfo.repIndStageStudy.id" label="<small><b>${stage.name}:</b> ${stage.description}</small>" value="${stage.id}" checked=(element.projectExpectedStudyInfo.repIndStageStudy.id == stage.id)!false cssClass="" cssClassLabel="font-normal" editable=editable/]</p> 
           [/#list]
         </div>
       </div>
@@ -146,19 +141,27 @@
       [/#if]
 
       [#-- 7. Key Contributors  --]
-      [#if isOutcomeCaseStudy]
       <div class="form-group">
-        <label for="">[@s.text name="study.keyContributors" /]:</label>
+        [#if isOutcomeCaseStudy || !fromProject]
+          <label for="">[@s.text name="study.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]:</label>
+        [/#if]
+        [#-- CRPs --]
+        [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
+        [/#if]
+        [#-- Flagships --]
+        [#if isOutcomeCaseStudy || !fromProject]
         <div class="form-group simpleBox">
           [#if !fromProject && editable]
             <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
           [/#if]
           [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
-        [#if regionList?has_content]
+        [/#if]
+        [#-- Regions --]
+        [#if (isOutcomeCaseStudy || !fromProject) && regionList?has_content]
           <div class="form-group simpleBox">
             [#if !fromProject && editable]
               <p class="note">To the Region(s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="regionalMapping.CrpProgram.leaders"/] and [@s.text name="regionalMapping.CrpProgram.managers"/]</p>
@@ -166,6 +169,8 @@
             [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" id="RP" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
         [/#if]
+        [#-- External Partners --]
+        [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
           [#-- Request partner adition --]
@@ -178,9 +183,9 @@
           </p> 
           [/#if]
         </div>
+        [/#if]
       </div>
-      [/#if]
-
+      
       [#-- 8. Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
@@ -298,7 +303,7 @@
       [#-- Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group"> 
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=true editable=editable /]
       </div>
       [/#if]
       
