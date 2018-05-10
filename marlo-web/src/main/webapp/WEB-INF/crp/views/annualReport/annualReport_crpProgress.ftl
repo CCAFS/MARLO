@@ -25,7 +25,7 @@
   [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
   
   <div class="row">
-    [#-- POWB Menu --]
+    [#-- Menu --]
     <div class="col-md-3">
       [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
     </div> 
@@ -101,7 +101,6 @@
           </div>
           
           
-        
         </div>
         [#-- Section Buttons & hidden inputs--]
         [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]

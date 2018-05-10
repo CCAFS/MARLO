@@ -236,7 +236,7 @@
       <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
         [#-- Country --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.country" className="setSelect2" i18nkey="intellectualAsset.country" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.country" className="setSelect2" i18nkey="intellectualAsset.country" listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" editable=editable required=editable /]
         </div>
         [#-- Application/registration number --]
         <div class="col-md-6">
