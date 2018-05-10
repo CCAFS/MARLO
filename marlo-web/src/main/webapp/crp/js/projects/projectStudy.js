@@ -14,6 +14,9 @@ function init() {
   // Add file uploads
   setFileUploads();
 
+  // This function enables launch the pop up window
+  popups();
+
 }
 
 function attachEvents() {

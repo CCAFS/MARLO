@@ -153,17 +153,30 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         <div class="form-group simpleBox">
-          [#if !fromProject]<p class="note">To Flagships selected, the system grants permission to edit to their Flagship leaders and Managers</p>[/#if]
+          [#if !fromProject && editable]
+            <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
+          [/#if]
           [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
         </div>
         [#if regionList?has_content]
           <div class="form-group simpleBox">
-            [#if !fromProject]<p class="note">To Regions selected, the system grants permission to edit to their Region leaders and Managers</p>[/#if]
+            [#if !fromProject && editable]
+              <p class="note">To the Region(s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="regionalMapping.CrpProgram.leaders"/] and [@s.text name="regionalMapping.CrpProgram.managers"/]</p>
+            [/#if]
             [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" id="RP" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
         [/#if]
         <div class="form-group simpleBox">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
+          [#-- Request partner adition --]
+          [#if editable]
+          <p id="addPartnerText" class="helpMessage">
+            [@s.text name="projectPartners.addPartnerMessage.first" /]
+            <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">
+              [@s.text name="projectPartners.addPartnerMessage.second" /]
+            </a>
+          </p> 
+          [/#if]
         </div>
       </div>
       [/#if]
