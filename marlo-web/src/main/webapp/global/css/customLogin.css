@@ -435,7 +435,7 @@ p.login-description{
   color: red;
 }
 
-.loginForm.terms-check p.invalidField{
+.loginForm p.invalidField{
   position: relative !important;
 }
 
@@ -454,10 +454,6 @@ p.login-description{
 }
 
 #loginFormContainer .loginForm.max-size{
-  height: 400px;
-}
-
-#loginFormContainer .loginForm.max-size.terms-check{
   height: 410px;
 }
 
