@@ -353,12 +353,12 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
       Set<ProjectExpectedStudy> projectExpectedStudySet = new HashSet();
       for (ProjectExpectedStudy projectExpectedStudy : globalUnitProject.getProject().getProjectExpectedStudies()
-        .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase() == this.getActualPhase().getId())
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(projectExpectedStudy);
       }
       for (ExpectedStudyProject expectedStudyProject : globalUnitProject.getProject().getExpectedStudyProjects()
-        .stream().filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase().equals(this.getActualPhase()))
+        .stream().filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase() == this.getActualPhase().getId())
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(expectedStudyProject.getProjectExpectedStudy());
       }

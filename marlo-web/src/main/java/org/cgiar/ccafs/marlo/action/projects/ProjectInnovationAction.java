@@ -412,7 +412,8 @@ public class ProjectInnovationAction extends BaseAction {
 
       expectedStudyList = projectExpectedStudyManager.findAll().stream()
         .filter(ex -> ex.isActive() && ex.getType() != null
-          && ex.getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId() && ex.getPhase().getId() == phase.getId())
+          && ex.getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId() && ex.getPhase() != null
+          && ex.getPhase() == phase.getId())
         .collect(Collectors.toList());
 
       List<DeliverableInfo> infos = phase
