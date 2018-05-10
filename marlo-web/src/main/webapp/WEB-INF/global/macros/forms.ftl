@@ -488,33 +488,35 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 required=true ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 required=true ]
+  [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary" listname="${name}" style="position:relative">
     <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
-      <ul class="list listType-${elementType}">
+      <ul class="list listType-${composedID}">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName /][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName /][/#list]
         [/#if]
       </ul>
       [#if editable]
-        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${elementType}" showTitle=false listName=listName keyFieldName=keyFieldName  displayFieldName=displayFieldName /]
+        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
       [/#if]
     </div>
     <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType index=-1 template=true /]
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 template=true /]
     </ul>
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type index=-1 keyFieldName="id" displayFieldName="composedName" template=false]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" template=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
-  <li id="relationElement-${type}-${template?string('template', index)}" class="relationElement">
+  [#local composedID = "${type}${id}" /]
+  <li id="relationElement-${composedID}-${template?string('template', index)}" class="relationElement">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if editable]<div class="removeElement sm removeIcon removeElementType-${type}" title="Remove"></div>[/#if] 
+    [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
