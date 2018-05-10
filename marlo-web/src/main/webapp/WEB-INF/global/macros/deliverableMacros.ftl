@@ -210,11 +210,11 @@
       <div class="form-group row block-patent" style="display:${isPatent?string('block', 'none')}">
         [#-- Type of filling --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.fillingType" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.fillingType.id" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="repIndFillingTypes" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
         [#-- Patent status --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.patentStatus" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.patentStatus.id" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="repIndPatentStatuses" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
         </div>
       </div>
       [#-- Patent Type --]
@@ -230,13 +230,13 @@
         </div>
         [#-- Status --]
         <div class="col-md-6">
-           [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="intellectualAsset.status" listName="" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+           [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="intellectualAsset.status" listName="statuses" editable=editable required=editable /]
         </div>
       </div>
       <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
         [#-- Country --]
         <div class="col-md-6">
-          [@customForm.select name="${customName}.country" className="setSelect2" i18nkey="intellectualAsset.country" listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" editable=editable required=editable /]
+          [@customForm.select name="${customName}.country.id" className="setSelect2" i18nkey="intellectualAsset.country" listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" editable=editable required=editable /]
         </div>
         [#-- Application/registration number --]
         <div class="col-md-6">
@@ -249,18 +249,19 @@
           [@customForm.input name="${customName}.breederCrop" i18nkey="intellectualAsset.breederCrop" className="" required=true editable=editable /]
         </div>
       </div>
+      
       <div class="form-group row">
         [#-- Date of filling --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateFilling" i18nkey="intellectualAsset.dateFilling" className="datePicker" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateFilling" value="${(deliverable.intellectualAsset.dateFilling?date?string.medium)!}" i18nkey="intellectualAsset.dateFilling" className="datePicker" required=true editable=editable /]
         </div>
         [#-- Date of registration/Grant --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateRegistration" i18nkey="intellectualAsset.dateRegistration" className="datePicker" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateRegistration" value="${(deliverable.intellectualAsset.dateRegistration?date?string.medium)!}" i18nkey="intellectualAsset.dateRegistration" className="datePicker" required=true editable=editable /]
         </div>
         [#-- Date of Expiry / renewal --]
         <div class="col-md-4">
-          [@customForm.input name="${customName}.dateExpiry" i18nkey="intellectualAsset.dateExpiry" className="datePicker" required=true editable=editable /]
+          [@customForm.input name="${customName}.dateExpiry" value="${(deliverable.intellectualAsset.dateExpiry?date?string.medium)!}" i18nkey="intellectualAsset.dateExpiry" className="datePicker" required=true editable=editable /]
         </div>
       </div>
       

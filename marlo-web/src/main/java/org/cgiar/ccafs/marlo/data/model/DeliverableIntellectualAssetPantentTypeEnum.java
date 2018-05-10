@@ -18,21 +18,21 @@ package org.cgiar.ccafs.marlo.data.model;
 /**
  * @author Andres Valencia - CIAT/CCAFS
  */
-public enum DeliverableIntellectualAssetTypeEnum {
+public enum DeliverableIntellectualAssetPantentTypeEnum {
 
-  Patent("1", "Patent"), PVP("2", "PVP");
+  Application("1", "Application"), Registration("2", "Registration");
 
   /**
-   * Look for the DeliverableIntellectualAssetTypeEnum with id
+   * Look for the DeliverableIntellectualAssetPantentTypeEnum with id
    * 
    * @param id the id to search
-   * @return Object DeliverableIntellectualAssetTypeEnum if no exist null
+   * @return Object DeliverableIntellectualAssetPantentTypeEnum if no exist null
    */
-  public static DeliverableIntellectualAssetTypeEnum getValue(int id) {
-    DeliverableIntellectualAssetTypeEnum[] lst = DeliverableIntellectualAssetTypeEnum.values();
-    for (DeliverableIntellectualAssetTypeEnum deliverableIntellectualAssetTypeEnum : lst) {
-      if (deliverableIntellectualAssetTypeEnum.getTypeId().equals(String.valueOf(id))) {
-        return deliverableIntellectualAssetTypeEnum;
+  public static DeliverableIntellectualAssetPantentTypeEnum getValue(int id) {
+    DeliverableIntellectualAssetPantentTypeEnum[] lst = DeliverableIntellectualAssetPantentTypeEnum.values();
+    for (DeliverableIntellectualAssetPantentTypeEnum DeliverableIntellectualAssetPantentTypeEnum : lst) {
+      if (DeliverableIntellectualAssetPantentTypeEnum.getTypeId().equals(String.valueOf(id))) {
+        return DeliverableIntellectualAssetPantentTypeEnum;
       }
     }
     return null;
@@ -43,7 +43,7 @@ public enum DeliverableIntellectualAssetTypeEnum {
 
   private String typeId;
 
-  private DeliverableIntellectualAssetTypeEnum(String typeId, String type) {
+  private DeliverableIntellectualAssetPantentTypeEnum(String typeId, String type) {
     this.typeId = typeId;
     this.type = type;
   }
