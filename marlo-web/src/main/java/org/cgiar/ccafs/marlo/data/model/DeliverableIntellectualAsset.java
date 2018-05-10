@@ -4,6 +4,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
+
 import com.google.gson.annotations.Expose;
 
 public class DeliverableIntellectualAsset implements java.io.Serializable, IAuditLog {
@@ -24,6 +26,28 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
   private Integer type;
   @Expose
   private String title;
+  @Expose
+  private RepIndFillingType fillingType;
+  @Expose
+  private RepIndPatentStatus patentStatus;
+  @Expose
+  private Integer patentType;
+  @Expose
+  private String varietyName;
+  @Expose
+  private Integer status;
+  @Expose
+  private LocElement country;
+  @Expose
+  private Double appRegNumber;
+  @Expose
+  private String breederCrop;
+  @Expose
+  private Date dateFilling;
+  @Expose
+  private Date dateRegistration;
+  @Expose
+  private Date dateExpiry;
   @Expose
   private String additionalInformation;
   @Expose
@@ -69,26 +93,56 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
   }
 
 
+  public Double getAppRegNumber() {
+    return appRegNumber;
+  }
+
+
+  public String getBreederCrop() {
+    return breederCrop;
+  }
+
+
+  public LocElement getCountry() {
+    return country;
+  }
+
+
+  public Date getDateExpiry() {
+    return dateExpiry;
+  }
+
+
+  public Date getDateFilling() {
+    return dateFilling;
+  }
+
+
+  public Date getDateRegistration() {
+    return dateRegistration;
+  }
+
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
+  public RepIndFillingType getFillingType() {
+    return fillingType;
+  }
 
   public Boolean getHasPatentPvp() {
     return hasPatentPvp;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
 
-
   public String getLink() {
     return link;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -97,19 +151,38 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public RepIndPatentStatus getPatentStatus() {
+    return patentStatus;
+  }
+
+  public Integer getPatentType() {
+    return patentType;
+  }
+
+  public String getPatentTypeName() {
+    try {
+      if (this.patentType != null) {
+        return DeliverableIntellectualAssetPantentTypeEnum.getValue(this.patentType).getType() != null
+          ? DeliverableIntellectualAssetPantentTypeEnum.getValue(this.patentType).getType() : "";
+      } else {
+        return "";
+      }
+    } catch (Exception e) {
+      return "";
+    }
   }
 
   public Phase getPhase() {
@@ -120,13 +193,34 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     return publicCommunication;
   }
 
+
+  public Integer getStatus() {
+    return status;
+  }
+
+  public String getStatusName(Phase phase) {
+    try {
+      if (this.status != null) {
+        return ProjectStatusEnum.getValue(this.status).getStatus() != null
+          ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
+      } else {
+        return "";
+      }
+    } catch (Exception e) {
+      return "";
+    }
+  }
+
+
   public String getTitle() {
     return title;
   }
 
+
   public Integer getType() {
     return type;
   }
+
 
   public String getTypeName() {
     try {
@@ -139,6 +233,11 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     } catch (Exception e) {
       return "";
     }
+  }
+
+
+  public String getVarietyName() {
+    return varietyName;
   }
 
 
@@ -156,6 +255,7 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     return true;
   }
 
+
   public void setAdditionalInformation(String additionalInformation) {
     this.additionalInformation = additionalInformation;
   }
@@ -165,15 +265,45 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     this.applicant = applicant;
   }
 
+
+  public void setAppRegNumber(Double appRegNumber) {
+    this.appRegNumber = appRegNumber;
+  }
+
+
+  public void setBreederCrop(String breederCrop) {
+    this.breederCrop = breederCrop;
+  }
+
+  public void setCountry(LocElement country) {
+    this.country = country;
+  }
+
+  public void setDateExpiry(Date dateExpiry) {
+    this.dateExpiry = dateExpiry;
+  }
+
+  public void setDateFilling(Date dateFilling) {
+    this.dateFilling = dateFilling;
+  }
+
+  public void setDateRegistration(Date dateRegistration) {
+    this.dateRegistration = dateRegistration;
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+
+  public void setFillingType(RepIndFillingType fillingType) {
+    this.fillingType = fillingType;
   }
 
 
   public void setHasPatentPvp(Boolean hasPatentPvp) {
     this.hasPatentPvp = hasPatentPvp;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -182,6 +312,15 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
 
   public void setLink(String link) {
     this.link = link;
+  }
+
+  public void setPatentStatus(RepIndPatentStatus patentStatus) {
+    this.patentStatus = patentStatus;
+  }
+
+
+  public void setPatentType(Integer patentType) {
+    this.patentType = patentType;
   }
 
 
@@ -195,6 +334,11 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
   }
 
 
+  public void setStatus(Integer status) {
+    this.status = status;
+  }
+
+
   public void setTitle(String title) {
     this.title = title;
   }
@@ -202,6 +346,11 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
 
   public void setType(Integer type) {
     this.type = type;
+  }
+
+
+  public void setVarietyName(String varietyName) {
+    this.varietyName = varietyName;
   }
 
 
