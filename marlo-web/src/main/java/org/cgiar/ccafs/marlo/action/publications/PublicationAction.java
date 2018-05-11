@@ -704,6 +704,23 @@ public class PublicationAction extends BaseAction {
 
           if (intellectualAssets.size() > 0) {
             deliverable.setIntellectualAsset(intellectualAssets.get(0));
+            if (this.transaction != null && !this.transaction.equals("-1")) {
+              if (deliverable.getIntellectualAsset().getFillingType() != null
+                && deliverable.getIntellectualAsset().getFillingType().getId() != null) {
+                deliverable.getIntellectualAsset().setFillingType(repIndFillingTypeManager
+                  .getRepIndFillingTypeById(deliverable.getIntellectualAsset().getFillingType().getId()));
+              }
+              if (deliverable.getIntellectualAsset().getPatentStatus() != null
+                && deliverable.getIntellectualAsset().getPatentStatus().getId() != null) {
+                deliverable.getIntellectualAsset().setPatentStatus(repIndPatentStatusManager
+                  .getRepIndPatentStatusById(deliverable.getIntellectualAsset().getPatentStatus().getId()));
+              }
+              if (deliverable.getIntellectualAsset().getCountry() != null
+                && deliverable.getIntellectualAsset().getCountry().getId() != null) {
+                deliverable.getIntellectualAsset().setCountry(
+                  locElementManager.getLocElementById(deliverable.getIntellectualAsset().getCountry().getId()));
+              }
+            }
           } else {
             deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
           }
@@ -714,6 +731,26 @@ public class PublicationAction extends BaseAction {
 
           if (deliverableParticipants.size() > 0) {
             deliverable.setDeliverableParticipant(deliverableParticipants.get(0));
+
+            if (this.transaction != null && !this.transaction.equals("-1")) {
+              if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
+                && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId() != null) {
+                deliverable.getDeliverableParticipant().setRepIndTypeActivity(repIndTypeActivityManager
+                  .getRepIndTypeActivityById(deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId()));
+              }
+              if (deliverable.getDeliverableParticipant().getRepIndTypeParticipant() != null
+                && deliverable.getDeliverableParticipant().getRepIndTypeParticipant().getId() != null) {
+                deliverable.getDeliverableParticipant()
+                  .setRepIndTypeParticipant(repIndTypeParticipantManager.getRepIndTypeParticipantById(
+                    deliverable.getDeliverableParticipant().getRepIndTypeParticipant().getId()));
+              }
+              if (deliverable.getDeliverableParticipant().getRepIndGeographicScope() != null
+                && deliverable.getDeliverableParticipant().getRepIndGeographicScope().getId() != null) {
+                deliverable.getDeliverableParticipant()
+                  .setRepIndGeographicScope(repIndGeographicScopeManager.getRepIndGeographicScopeById(
+                    deliverable.getDeliverableParticipant().getRepIndGeographicScope().getId()));
+              }
+            }
           } else {
             deliverable.setDeliverableParticipant(new DeliverableParticipant());
           }
@@ -858,8 +895,6 @@ public class PublicationAction extends BaseAction {
       for (ProjectStatusEnum projectStatusEnum : list) {
         statuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
-
-
       // Participants Locations
       if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
         deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
