@@ -74,7 +74,6 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setSession(session);
     boolean canEdit = false;
-    boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
     String deliverableParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
@@ -90,6 +89,8 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
       boolean hasPublicationInstitutionPermission =
         baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
       boolean isInDeliverablePhase = deliverable.getPhase().getId() == baseAction.getActualPhase().getId();
+      boolean isTransaction = parameters.get(APConstants.TRANSACTION_ID).isDefined();
+      boolean isSaving = parameters.get("save").isDefined();
 
       if (!isInDeliverablePhase) {
         canEdit = false;
@@ -106,31 +107,17 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         }
       }
 
-
       if (canEdit) {
         if (editableDefined) {
           String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
-          editParameter = stringEditable.equals("true");
-          if (!editParameter) {
-            baseAction.setEditableParameter(false);
-          }
+          editParameter = stringEditable.equals("true") && canEdit;
         }
-
-        if (editParameter || parameters.get("save").isDefined()) {
-          hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
-            : hasPublicationFullPermission || hasPublicationInstitutionPermission;
-        }
-
-        if (editableDefined) {
-          String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
-          editParameter = stringEditable.equals("true");
-          if (!editParameter) {
-            baseAction.setEditableParameter(hasPermissionToEdit);
-          }
+        if (isSaving) {
+          editParameter = true;
         }
         // Set the variable that indicates if the user can edit the section
         baseAction.setCanEdit(canEdit);
-        baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+        baseAction.setEditableParameter(editParameter && canEdit && !isTransaction);
       } else {
         baseAction.setCanEdit(false);
         baseAction.setEditableParameter(false);
