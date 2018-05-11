@@ -97,13 +97,13 @@
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets"  listName="targets" keyFieldName="id" displayFieldName="title"/]
+          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
         [#-- Comments  --]
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" className="" editable=editable /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" helpIcon=false className="" editable=editable /]
         </div>
         [/#if]
       </div>
@@ -111,10 +111,12 @@
       [#-- 6.  Geographic scope - Countries  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group geographicScopeBlock">
-        [#assign isRegional = ((element.geographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
-        [#assign isMultiNational = ((element.geographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
-        [#assign isNational = ((element.geographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
-        [#assign isSubNational = ((element.geographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
+        [#local geographicScope = ((element.projectExpectedStudyInfo.repIndGeographicScope.id)!-1) ]
+        
+        [#local isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
+        [#local isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
+        [#local isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
+        [#local isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
         
         <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
         <div class="form-group simpleBox">
@@ -130,7 +132,7 @@
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]
-            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
           </div>
           <div class="form-group">
             [#-- Comment box --]
