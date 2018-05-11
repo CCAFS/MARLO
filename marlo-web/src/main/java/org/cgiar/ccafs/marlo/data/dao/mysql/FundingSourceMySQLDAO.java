@@ -20,12 +20,15 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,6 +94,35 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   }
 
   @Override
+  public List<FundingSource> getFundingSourceSummaries(GlobalUnit globalUnit, Phase phase, Set<Integer> statusTypes) {
+
+    /**
+     * Ideally it would be great if we could just fetch the required properties rather than the entity graph,
+     * but because we need to show multiple fundingSourceInstitutions we would need to detect and then
+     * remove duplicate fundingSources from the resultSet in the cases where there is more than one leadPartner.
+     * Therefore I have opted to do a HQL query instead.
+     */
+    String queryString = "SELECT DISTINCT f FROM FundingSource f " + "inner join fetch f.fundingSourceInfos fis "
+      + "left join fetch fis.budgetType " + "left join fetch f.fundingSourceInstitutions fsi "
+      + "left join fetch fsi.institution " + "left join fetch fis.directDonor " + "left join fetch fis.originalDonor "
+      + "left join fetch f.sectionStatuses ss " + "left join fetch f.fundingSourceBudgets fsb "
+      + "WHERE f.active = TRUE " + "AND f.crp = :globalUnit " + "AND fis.phase = :phase "
+      + "AND (fsi IS NULL OR fsi.phase = :phase) " /** I think SectionStatus should be updated to use a phase **/
+      + "AND ss.cycle = :phaseDescription " + "AND ss.year = :phaseYear " + "AND fsb.phase = :phase "
+      + "AND fsb.year = :phaseYear " + "AND fis.status IN ( "
+      + statusTypes.stream().map(i -> i.toString()).collect(Collectors.joining(",")) + ") "
+      + "ORDER BY fis.endDate NULLS FIRST";
+
+    @SuppressWarnings("unchecked")
+    List<FundingSource> fundingSources = this.getSessionFactory().getCurrentSession().createQuery(queryString)
+      .setParameter("globalUnit", globalUnit).setParameter("phase", phase)
+      .setParameter("phaseDescription", phase.getDescription()).setParameter("phaseYear", phase.getYear()).list();
+
+    return fundingSources;
+
+  }
+
+  @Override
   public FundingSource save(FundingSource fundingSource) {
     if (fundingSource.getId() == null) {
       super.saveEntity(fundingSource);
@@ -148,6 +180,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     return fundingSources;
   }
 
+
   @Override
   public List<FundingSource> searchFundingSourcesByFinanceCode(String ocsCode) {
     StringBuilder q = new StringBuilder();
@@ -158,7 +191,6 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     List<FundingSource> fundingSources = super.findAll(q.toString());
     return fundingSources;
   }
-
 
   @Override
   public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
@@ -177,7 +209,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
     q.append("AND fsi.id_phase = " + phaseID);
     q.append(" AND fsi.end_date IS NOT NULL ");
-      q.append(" AND (" + year + " <= YEAR(fsi.end_date) or " + year + " <= YEAR(fsi.extended_date)  )");
+    q.append(" AND (" + year + " <= YEAR(fsi.end_date) or " + year + " <= YEAR(fsi.extended_date)  )");
 
     List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
 

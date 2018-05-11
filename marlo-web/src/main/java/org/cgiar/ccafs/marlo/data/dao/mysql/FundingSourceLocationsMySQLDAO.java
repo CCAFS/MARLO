@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +70,17 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
     return null;
 
   }
+
+  @Override
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId) {
+    String queryString = "SELECT fsl FROM FundingSourceLocation fsl " + "WHERE fsl.active = TRUE "
+      + "AND fsl.fundingSource.id = :fundingSourceId";
+    List<FundingSourceLocation> fundingSourceLocations = this.getSessionFactory().getCurrentSession()
+      .createQuery(queryString).setParameter("fundingSourceId", fundingSourceId).list();
+
+    return fundingSourceLocations;
+  }
+
 
   @Override
   public FundingSourceLocation save(FundingSourceLocation fundingSourceLocations) {
