@@ -112,7 +112,7 @@
 		<!--  2.6 Improving Efficiency  -->
 		<action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_efficiency.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/efficiency</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
