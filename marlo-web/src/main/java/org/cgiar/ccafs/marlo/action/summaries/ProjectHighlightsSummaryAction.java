@@ -46,7 +46,6 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -69,7 +68,8 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsSummaryAction.class);
   // Managers
-  private ProjectHighligthManager projectHighLightManager;
+  private final ProjectHighligthManager projectHighLightManager;
+  private final ResourceManager resourceManager;
   // Parameters
   private long startTime;
   private String selectedFormat;
@@ -86,9 +86,10 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
 
   @Inject
   public ProjectHighlightsSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
+    ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -127,18 +128,15 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsExcel.prpt"),
-          MasterReport.class);
+        reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsExcel.prpt"), MasterReport.class);
       } else {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsPDF.prpt"),
-          MasterReport.class);
+        reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsPDF.prpt"), MasterReport.class);
       }
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();

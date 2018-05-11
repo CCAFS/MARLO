@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -57,7 +56,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(LeveragesReportingSummaryAction.class);
   // Managers
-  private ProjectLeverageManager projectLeverageManager;
+  private final ProjectLeverageManager projectLeverageManager;
+  private final ResourceManager resourceManager;
+
   // Parameters
   private long startTime;
   // XLSX bytes
@@ -67,9 +68,10 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Inject
   public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager) {
+    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.projectLeverageManager = projectLeverageManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -98,12 +100,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/LeveragesReportingExcel.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
