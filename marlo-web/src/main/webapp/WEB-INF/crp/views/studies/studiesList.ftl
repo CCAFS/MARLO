@@ -102,8 +102,8 @@
           </td>
           [#-- Flagship / Region --]
           <td class=""> 
-            [#if element.programs?has_content || element.regions?has_content]
-              [#if element.programs?has_content][#list element.programs as element]
+            [#if element.flagships?has_content || element.regions?has_content]
+              [#if element.flagships?has_content][#list element.flagships as element]
               <span class="programTag" style="border-color:${(element.crpProgram.color)!'#fff'}">${(element.crpProgram.acronym)!}</span>[/#list]
               [/#if][#if element.regions?has_content][#list element.regions as element]
               <span class="programTag" style="border-color:${(element.crpProgram.color)!'#fff'}">${(element.crpProgram.acronym)!}</span>[/#list][/#if]
