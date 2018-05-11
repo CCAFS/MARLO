@@ -51,7 +51,9 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndFillingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPatentStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
@@ -69,6 +71,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation;
@@ -94,7 +97,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndPatentStatus;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
@@ -185,6 +190,8 @@ public class DeliverableAction extends BaseAction {
   private RepIndRegionManager repIndRegionManager;
   private LocElementManager locElementManager;
   private DeliverableParticipantLocationManager deliverableParticipantLocationManager;
+  private RepIndFillingTypeManager repIndFillingTypeManager;
+  private RepIndPatentStatusManager repIndPatentStatusManager;
 
   // Parameters
   private List<DeliverableQualityAnswer> answers;
@@ -216,17 +223,13 @@ public class DeliverableAction extends BaseAction {
   private List<CrossCuttingScoring> crossCuttingDimensions;
   private Map<Long, String> crossCuttingScoresMap;
   private List<RepIndTypeActivity> repIndTypeActivities;
-
   private List<RepIndTypeParticipant> repIndTypeParticipants;
-
-
   private List<RepIndGeographicScope> repIndGeographicScopes;
-
-
   private List<RepIndRegion> repIndRegions;
-
-
   private List<LocElement> countries;
+  private List<RepIndFillingType> repIndFillingTypes;
+  private List<RepIndPatentStatus> repIndPatentStatuses;
+  private Map<String, String> statuses;
 
 
   @Inject
@@ -252,7 +255,8 @@ public class DeliverableAction extends BaseAction {
     RepIndTypeActivityManager repIndTypeActivityManager, RepIndTypeParticipantManager repIndTypeParticipantManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
     LocElementManager locElementManager, DeliverableParticipantLocationManager deliverableParticipantLocationManager,
-    DeliverableParticipantManager deliverableParticipantManager) {
+    DeliverableParticipantManager deliverableParticipantManager, RepIndFillingTypeManager repIndFillingTypeManager,
+    RepIndPatentStatusManager repIndPatentStatusManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -295,6 +299,8 @@ public class DeliverableAction extends BaseAction {
     this.repIndRegionManager = repIndRegionManager;
     this.locElementManager = locElementManager;
     this.deliverableParticipantLocationManager = deliverableParticipantLocationManager;
+    this.repIndFillingTypeManager = repIndFillingTypeManager;
+    this.repIndPatentStatusManager = repIndPatentStatusManager;
   }
 
 
@@ -445,12 +451,14 @@ public class DeliverableAction extends BaseAction {
     return deliverablePartnership;
   }
 
+
   private void createAndSaveNewDeliverablePartnership(DeliverablePartnership partnershipResponsibleManaged,
     String partnershipType) {
     DeliverablePartnership newDelivetablePartnership =
       this.createNewDeliverablePartnership(partnershipResponsibleManaged, partnershipType);
     deliverablePartnershipManager.saveDeliverablePartnership(newDelivetablePartnership);
   }
+
 
   private DeliverablePartnership createNewDeliverablePartnership(DeliverablePartnership partnershipResponsibleManaged,
     String value) {
@@ -475,6 +483,7 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
+
   /**
    * Delete Deliverable Gender Levels if there is no cross cutting gender component.
    * 
@@ -490,6 +499,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   private void deleteParticipantLocations(List<DeliverableParticipantLocation> locationsDB) {
     if (locationsDB != null) {
@@ -526,7 +536,6 @@ public class DeliverableAction extends BaseAction {
     return countries;
   }
 
-
   public List<CrossCuttingScoring> getCrossCuttingDimensions() {
     return crossCuttingDimensions;
   }
@@ -534,7 +543,6 @@ public class DeliverableAction extends BaseAction {
   public Map<Long, String> getCrossCuttingScoresMap() {
     return crossCuttingScoresMap;
   }
-
 
   public ArrayList<GlobalUnit> getCrps() {
     return crps;
@@ -544,6 +552,7 @@ public class DeliverableAction extends BaseAction {
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -567,6 +576,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   private DeliverablePartnership getDeliverablePartnershipDB(Deliverable deliverableDB) {
     DeliverablePartnership partnershipResponsible = null;
 
@@ -587,7 +597,6 @@ public class DeliverableAction extends BaseAction {
     }
     return partnershipResponsible;
   }
-
 
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
     List<Map<String, Object>> subTypes = new ArrayList<>();
@@ -620,17 +629,14 @@ public class DeliverableAction extends BaseAction {
     return deliverableTypeParent;
   }
 
-
   public String getDeliverableUrl(String fileType) {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
   }
-
 
   public String getDeliverableUrlPath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
-
 
   public List<PartnerDivision> getDivisions() {
     return divisions;
@@ -641,13 +647,16 @@ public class DeliverableAction extends BaseAction {
     return fundingSources;
   }
 
+
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
 
+
   public int getIndexTab() {
     return indexTab;
   }
+
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
@@ -657,6 +666,7 @@ public class DeliverableAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   /**
    * Get the ProjectPartnerPerson from the submitted form.
@@ -675,6 +685,7 @@ public class DeliverableAction extends BaseAction {
     }
     return partnerPerson;
   }
+
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
@@ -696,7 +707,6 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
-
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     List<ProjectPartnerPerson> projectPartnerPersons =
       projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
@@ -712,7 +722,6 @@ public class DeliverableAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -726,9 +735,19 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public List<RepIndFillingType> getRepIndFillingTypes() {
+    return repIndFillingTypes;
+  }
+
+
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
   }
+
+  public List<RepIndPatentStatus> getRepIndPatentStatuses() {
+    return repIndPatentStatuses;
+  }
+
 
   public List<RepIndRegion> getRepIndRegions() {
     return repIndRegions;
@@ -738,7 +757,6 @@ public class DeliverableAction extends BaseAction {
     return repIndTypeActivities;
   }
 
-
   public List<RepIndTypeParticipant> getRepIndTypeParticipants() {
     return repIndTypeParticipants;
   }
@@ -747,7 +765,6 @@ public class DeliverableAction extends BaseAction {
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public List<ProjectPartner> getSelectedPartners() {
 
@@ -769,7 +786,6 @@ public class DeliverableAction extends BaseAction {
     return deliverablePartnerPersons;
 
   }
-
 
   public List<Long> getSelectedPersons(long partnerID) {
 
@@ -797,6 +813,12 @@ public class DeliverableAction extends BaseAction {
     return status;
   }
 
+
+  public Map<String, String> getStatuses() {
+    return statuses;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -823,6 +845,7 @@ public class DeliverableAction extends BaseAction {
     return false;
   }
 
+
   public boolean isSelectedPerson(long projectPartnerPersonId, long projectPartner) {
     return this.getSelectedPersons(projectPartner).contains(new Long(projectPartnerPersonId));
   }
@@ -845,6 +868,7 @@ public class DeliverableAction extends BaseAction {
 
 
   }
+
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -1020,7 +1044,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
 
@@ -1193,7 +1216,6 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
-
         this.setDraft(true);
       } else {
         deliverable.getDeliverableInfo(this.getActualPhase());
@@ -1290,10 +1312,26 @@ public class DeliverableAction extends BaseAction {
 
             if (intellectualAssets.size() > 0) {
               deliverable.setIntellectualAsset(intellectualAssets.get(0));
+              if (this.transaction != null && !this.transaction.equals("-1")) {
+                if (deliverable.getIntellectualAsset().getFillingType() != null
+                  && deliverable.getIntellectualAsset().getFillingType().getId() != null) {
+                  deliverable.getIntellectualAsset().setFillingType(repIndFillingTypeManager
+                    .getRepIndFillingTypeById(deliverable.getIntellectualAsset().getFillingType().getId()));
+                }
+                if (deliverable.getIntellectualAsset().getPatentStatus() != null
+                  && deliverable.getIntellectualAsset().getPatentStatus().getId() != null) {
+                  deliverable.getIntellectualAsset().setPatentStatus(repIndPatentStatusManager
+                    .getRepIndPatentStatusById(deliverable.getIntellectualAsset().getPatentStatus().getId()));
+                }
+                if (deliverable.getIntellectualAsset().getCountry() != null
+                  && deliverable.getIntellectualAsset().getCountry().getId() != null) {
+                  deliverable.getIntellectualAsset().setCountry(
+                    locElementManager.getLocElementById(deliverable.getIntellectualAsset().getCountry().getId()));
+                }
+              }
             } else {
               deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
             }
-
           }
           if (deliverable.getDeliverableParticipants() != null) {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
@@ -1301,24 +1339,45 @@ public class DeliverableAction extends BaseAction {
 
             if (deliverableParticipants.size() > 0) {
               deliverable.setDeliverableParticipant(deliverableParticipants.get(0));
+              // Participants Locations
+              if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
+                deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
+              } else {
+                List<DeliverableParticipantLocation> locations =
+                  deliverable.getDeliverableParticipant().getDeliverableParticipantLocations().stream()
+                    .filter(pl -> pl.isActive()).collect(Collectors.toList());
+                deliverable.getDeliverableParticipant().setParticipantLocations(locations);
+
+              }
+              if (deliverable.getDeliverableParticipant().getParticipantLocations() != null) {
+                for (DeliverableParticipantLocation location : deliverable.getDeliverableParticipant()
+                  .getParticipantLocations()) {
+                  deliverable.getDeliverableParticipant().getParticipantLocationsIsos()
+                    .add(location.getLocElement().getIsoAlpha2());
+                }
+              }
+              if (this.transaction != null && !this.transaction.equals("-1")) {
+                if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
+                  && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId() != null) {
+                  deliverable.getDeliverableParticipant()
+                    .setRepIndTypeActivity(repIndTypeActivityManager.getRepIndTypeActivityById(
+                      deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId()));
+                }
+                if (deliverable.getDeliverableParticipant().getRepIndTypeParticipant() != null
+                  && deliverable.getDeliverableParticipant().getRepIndTypeParticipant().getId() != null) {
+                  deliverable.getDeliverableParticipant()
+                    .setRepIndTypeParticipant(repIndTypeParticipantManager.getRepIndTypeParticipantById(
+                      deliverable.getDeliverableParticipant().getRepIndTypeParticipant().getId()));
+                }
+                if (deliverable.getDeliverableParticipant().getRepIndGeographicScope() != null
+                  && deliverable.getDeliverableParticipant().getRepIndGeographicScope().getId() != null) {
+                  deliverable.getDeliverableParticipant()
+                    .setRepIndGeographicScope(repIndGeographicScopeManager.getRepIndGeographicScopeById(
+                      deliverable.getDeliverableParticipant().getRepIndGeographicScope().getId()));
+                }
+              }
             } else {
               deliverable.setDeliverableParticipant(new DeliverableParticipant());
-            }
-            // Participants Locations
-            if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
-              deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
-            } else {
-              List<DeliverableParticipantLocation> locations = deliverable.getDeliverableParticipant()
-                .getDeliverableParticipantLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList());
-              deliverable.getDeliverableParticipant().setParticipantLocations(locations);
-
-            }
-            if (deliverable.getDeliverableParticipant().getParticipantLocations() != null) {
-              for (DeliverableParticipantLocation location : deliverable.getDeliverableParticipant()
-                .getParticipantLocations()) {
-                deliverable.getDeliverableParticipant().getParticipantLocationsIsos()
-                  .add(location.getLocElement().getIsoAlpha2());
-              }
             }
           }
 
@@ -1341,9 +1400,6 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      if (metadataElementManager.findAll() != null) {
-        deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
-      }
       genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;
       if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
@@ -1357,9 +1413,6 @@ public class DeliverableAction extends BaseAction {
       for (GenderType projectStatusEnum : genderTypes) {
         genderLevels.add(projectStatusEnum);
       }
-      answers = new ArrayList<>(
-        deliverableQualityAnswerManager.findAll().stream().filter(qa -> qa.isActive()).collect(Collectors.toList()));
-
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
@@ -1547,16 +1600,7 @@ public class DeliverableAction extends BaseAction {
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);
       fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-      repositoryChannels = repositoryChannelManager.findAll();
-      if (repositoryChannels != null && repositoryChannels.size() > 0) {
-        repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
-      } else {
-        repositoryChannels = new LinkedList<RepositoryChannel>();
-      }
 
-      if (deliverable.getFiles() != null) {
-        deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-      }
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
@@ -1580,16 +1624,44 @@ public class DeliverableAction extends BaseAction {
           this.crossCuttingDimensions.add(score);
         }
       }
-      this.setRepIndTypeActivities(repIndTypeActivityManager.findAll().stream()
-        .sorted((t1, t2) -> t1.getName().compareTo(t2.getName())).collect(Collectors.toList()));
-      this.setRepIndTypeParticipants(repIndTypeParticipantManager.findAll().stream()
-        .sorted((t1, t2) -> t1.getName().compareTo(t2.getName())).collect(Collectors.toList()));
-      this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
-        .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
-      this.setRepIndRegions(repIndRegionManager.findAll().stream()
-        .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
-      this.setCountries(locElementManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+      if (this.isReportingActive()) {
+        if (metadataElementManager.findAll() != null) {
+          deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+        }
+        answers = new ArrayList<>(
+          deliverableQualityAnswerManager.findAll().stream().filter(qa -> qa.isActive()).collect(Collectors.toList()));
+        repositoryChannels = repositoryChannelManager.findAll();
+        if (repositoryChannels != null && repositoryChannels.size() > 0) {
+          repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
+        } else {
+          repositoryChannels = new LinkedList<RepositoryChannel>();
+        }
+
+        if (deliverable.getFiles() != null) {
+          deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        }
+
+        this.setRepIndTypeActivities(repIndTypeActivityManager.findAll().stream()
+          .sorted((t1, t2) -> t1.getName().compareTo(t2.getName())).collect(Collectors.toList()));
+        this.setRepIndTypeParticipants(repIndTypeParticipantManager.findAll().stream()
+          .sorted((t1, t2) -> t1.getName().compareTo(t2.getName())).collect(Collectors.toList()));
+        this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
+          .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
+        this.setRepIndRegions(repIndRegionManager.findAll().stream()
+          .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
+        this.setCountries(locElementManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+        this.setRepIndFillingTypes(repIndFillingTypeManager.findAll().stream()
+          .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
+        this.setRepIndPatentStatuses(repIndPatentStatusManager.findAll().stream()
+          .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
+        // Statuses
+        statuses = new HashMap<>();
+        List<ProjectStatusEnum> statusEnumList = Arrays.asList(ProjectStatusEnum.values());
+        for (ProjectStatusEnum projectStatusEnum : statusEnumList) {
+          statuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+        }
+      }
 
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
@@ -1648,6 +1720,9 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDeliverableParticipant() != null) {
           deliverable.setDeliverableParticipant(null);
         }
+        if (deliverable.getIntellectualAsset() != null) {
+          deliverable.setIntellectualAsset(null);
+        }
 
       }
 
@@ -1660,7 +1735,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void removeOthersDeliverablePartnerships(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
@@ -1695,7 +1769,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private DeliverablePartnership responsiblePartner() {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -1707,6 +1780,7 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
+
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -1751,6 +1825,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -1846,6 +1921,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
       deliverable.setCrps(new ArrayList<>());
@@ -1875,7 +1951,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {
@@ -1929,7 +2004,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
     if (deliverable.getGenderLevels() != null) {
       if (deliverablePrew.getDeliverableGenderLevels() != null
@@ -1966,7 +2040,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -2099,6 +2172,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   private void saveIntellectualAsset() {
     if (deliverable.getIntellectualAsset() != null) {
       DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
@@ -2122,7 +2196,69 @@ public class DeliverableAction extends BaseAction {
           intellectualAsset.setLink(deliverable.getIntellectualAsset().getLink());
           intellectualAsset.setPublicCommunication(deliverable.getIntellectualAsset().getPublicCommunication());
           intellectualAsset.setTitle(deliverable.getIntellectualAsset().getTitle());
+          intellectualAsset.setDateFilling(deliverable.getIntellectualAsset().getDateFilling());
+          intellectualAsset.setDateRegistration(deliverable.getIntellectualAsset().getDateRegistration());
+          intellectualAsset.setDateExpiry(deliverable.getIntellectualAsset().getDateExpiry());
           intellectualAsset.setType(deliverable.getIntellectualAsset().getType());
+
+          if (intellectualAsset.getType() != null) {
+            if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
+              .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
+              if (deliverable.getIntellectualAsset().getFillingType() != null
+                && deliverable.getIntellectualAsset().getFillingType().getId() != -1) {
+                intellectualAsset.setFillingType(deliverable.getIntellectualAsset().getFillingType());
+              } else {
+                intellectualAsset.setFillingType(null);
+              }
+              if (deliverable.getIntellectualAsset().getPatentStatus() != null
+                && deliverable.getIntellectualAsset().getPatentStatus().getId() != -1) {
+                intellectualAsset.setPatentStatus(deliverable.getIntellectualAsset().getPatentStatus());
+              } else {
+                intellectualAsset.setPatentStatus(null);
+              }
+              intellectualAsset.setPatentType(deliverable.getIntellectualAsset().getPatentType());
+              intellectualAsset.setVarietyName(null);
+              intellectualAsset.setStatus(null);
+              intellectualAsset.setCountry(null);
+              intellectualAsset.setAppRegNumber(null);
+              intellectualAsset.setBreederCrop(null);
+            } else if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
+              .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
+              intellectualAsset.setVarietyName(deliverable.getIntellectualAsset().getVarietyName());
+              if (deliverable.getIntellectualAsset().getStatus() != null
+                && deliverable.getIntellectualAsset().getStatus() != -1) {
+                intellectualAsset.setStatus(deliverable.getIntellectualAsset().getStatus());
+              } else {
+                intellectualAsset.setStatus(null);
+              }
+              if (deliverable.getIntellectualAsset().getCountry() != null
+                && !deliverable.getIntellectualAsset().getCountry().getIsoAlpha2().equals("-1")) {
+                LocElement locElement = locElementManager
+                  .getLocElementByISOCode(deliverable.getIntellectualAsset().getCountry().getIsoAlpha2());
+                if (locElement != null) {
+                  intellectualAsset.setCountry(locElement);
+                } else {
+                  intellectualAsset.setCountry(null);
+                }
+              } else {
+                intellectualAsset.setCountry(null);
+              }
+              intellectualAsset.setAppRegNumber(deliverable.getIntellectualAsset().getAppRegNumber());
+              intellectualAsset.setBreederCrop(deliverable.getIntellectualAsset().getBreederCrop());
+              intellectualAsset.setFillingType(null);
+              intellectualAsset.setPatentStatus(null);
+              intellectualAsset.setPatentType(null);
+            }
+          } else {
+            intellectualAsset.setFillingType(null);
+            intellectualAsset.setPatentStatus(null);
+            intellectualAsset.setPatentType(null);
+            intellectualAsset.setVarietyName(null);
+            intellectualAsset.setStatus(null);
+            intellectualAsset.setCountry(null);
+            intellectualAsset.setAppRegNumber(null);
+            intellectualAsset.setBreederCrop(null);
+          }
         } else {
           intellectualAsset.setAdditionalInformation(null);
           intellectualAsset.setApplicant(null);
@@ -2130,12 +2266,24 @@ public class DeliverableAction extends BaseAction {
           intellectualAsset.setPublicCommunication(null);
           intellectualAsset.setTitle(null);
           intellectualAsset.setType(null);
+          intellectualAsset.setFillingType(null);
+          intellectualAsset.setPatentStatus(null);
+          intellectualAsset.setPatentType(null);
+          intellectualAsset.setVarietyName(null);
+          intellectualAsset.setStatus(null);
+          intellectualAsset.setCountry(null);
+          intellectualAsset.setAppRegNumber(null);
+          intellectualAsset.setBreederCrop(null);
+          intellectualAsset.setDateFilling(null);
+          intellectualAsset.setDateRegistration(null);
+          intellectualAsset.setDateExpiry(null);
         }
 
         deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAsset);
       }
     }
   }
+
 
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
@@ -2148,6 +2296,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   private void saveParticipant() {
     if (deliverable.getDeliverableParticipant() != null) {
@@ -2323,7 +2472,6 @@ public class DeliverableAction extends BaseAction {
     // No need to call save as hibernate will detect the changes and auto flush.
   }
 
-
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -2335,7 +2483,6 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
-
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
@@ -2458,7 +2605,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   private DeliverablePartnership saveUpdateDeliverablePartnershipDivision(DeliverablePartnership partnership,
     DeliverablePartnership partnershipResponsibleManaged) {
     if (partnershipResponsibleManaged.getPartnerDivision() != null
@@ -2482,6 +2628,7 @@ public class DeliverableAction extends BaseAction {
     }
     return partnership;
   }
+
 
   /**
    * Save, update or delete partnership's responsible
@@ -2521,6 +2668,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
 
@@ -2550,15 +2698,14 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
 
-
   public void setcrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingScores) {
     this.crossCuttingDimensions = crossCuttingScores;
   }
+
 
   public void setCrossCuttingScoresMap(Map<Long, String> crossCuttingScoresMap) {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
@@ -2583,10 +2730,10 @@ public class DeliverableAction extends BaseAction {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
+
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
   }
-
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
@@ -2601,9 +2748,11 @@ public class DeliverableAction extends BaseAction {
     this.genderLevels = genderLevels;
   }
 
+
   public void setIndexTab(int indexTab) {
     this.indexTab = indexTab;
   }
+
 
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
@@ -2641,8 +2790,16 @@ public class DeliverableAction extends BaseAction {
     this.projectPrograms = projectPrograms;
   }
 
+  public void setRepIndFillingTypes(List<RepIndFillingType> repIndFillingTypes) {
+    this.repIndFillingTypes = repIndFillingTypes;
+  }
+
   public void setRepIndGeographicScopes(List<RepIndGeographicScope> repIndGeographicScopes) {
     this.repIndGeographicScopes = repIndGeographicScopes;
+  }
+
+  public void setRepIndPatentStatuses(List<RepIndPatentStatus> repIndPatentStatuses) {
+    this.repIndPatentStatuses = repIndPatentStatuses;
   }
 
   public void setRepIndRegions(List<RepIndRegion> repIndRegions) {
@@ -2652,7 +2809,6 @@ public class DeliverableAction extends BaseAction {
   public void setRepIndTypeActivities(List<RepIndTypeActivity> repIndTypeActivities) {
     this.repIndTypeActivities = repIndTypeActivities;
   }
-
 
   public void setRepIndTypeParticipants(List<RepIndTypeParticipant> repIndTypeParticipants) {
     this.repIndTypeParticipants = repIndTypeParticipants;
@@ -2666,6 +2822,11 @@ public class DeliverableAction extends BaseAction {
 
   public void setStatus(Map<String, String> status) {
     this.status = status;
+  }
+
+
+  public void setStatuses(Map<String, String> statuses) {
+    this.statuses = statuses;
   }
 
 
