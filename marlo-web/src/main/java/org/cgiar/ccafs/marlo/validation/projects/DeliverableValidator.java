@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
@@ -503,10 +504,72 @@ public class DeliverableValidator extends BaseValidator {
       if (intellectualAsset.getType() == null) {
         action.addMessage(action.getText("deliverable.intellectualAsset.type"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.type", InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
+          .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
+          if (intellectualAsset.getFillingType() == null || intellectualAsset.getFillingType().getId() == -1) {
+            action.addMessage(action.getText("deliverable.intellectualAsset.fillingType"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.fillingType.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (intellectualAsset.getPatentStatus() == null || intellectualAsset.getPatentStatus().getId() == -1) {
+            action.addMessage(action.getText("deliverable.intellectualAsset.patentStatus"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.patentStatus.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (intellectualAsset.getPatentType() == null) {
+            action.addMessage(action.getText("intellectualAsset.patentType"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.patentType",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
+          .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
+          if (!this.isValidString(intellectualAsset.getVarietyName())) {
+            action.addMessage(action.getText("intellectualAsset.varietyName"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.varietyName",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (intellectualAsset.getStatus() == null || intellectualAsset.getStatus() == -1) {
+            action.addMessage(action.getText("intellectualAsset.status"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.status",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (intellectualAsset.getCountry() == null || intellectualAsset.getCountry().getIsoAlpha2() == null
+            || intellectualAsset.getCountry().getIsoAlpha2().equals("-1")) {
+            action.addMessage(action.getText("intellectualAsset.country"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.country.isoAlpha2",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (intellectualAsset.getAppRegNumber() == null) {
+            action.addMessage(action.getText("intellectualAsset.appRegNumber"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.appRegNumber",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          if (!this.isValidString(intellectualAsset.getBreederCrop())) {
+            action.addMessage(action.getText("intellectualAsset.breederCrop"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.breederCrop",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
       }
       if (!this.isValidString(intellectualAsset.getTitle())) {
         action.addMessage(action.getText("deliverable.intellectualAsset.title"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.title", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (intellectualAsset.getDateFilling() == null) {
+        action.addMessage(action.getText("intellectualAsset.dateFilling"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.dateFilling",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (intellectualAsset.getDateRegistration() == null) {
+        action.addMessage(action.getText("intellectualAsset.dateRegistration"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.dateRegistration",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (intellectualAsset.getDateExpiry() == null) {
+        action.addMessage(action.getText("intellectualAsset.dateExpiry"));
+        action.getInvalidFields().put("input-deliverable.intellectualAsset.dateExpiry",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getAdditionalInformation())) {
         action.addMessage(action.getText("deliverable.intellectualAsset.additionalInformation"));
