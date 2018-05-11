@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -78,18 +77,21 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   private long startTime;
 
   // Managers
-  private CrpProgramManager crpProgramManager;
+  private final CrpProgramManager crpProgramManager;
+  private final ResourceManager resourceManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
   Set<Long> projectsList = new HashSet<Long>();
 
+
   @Inject
   public ProjectsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager) {
+    CrpProgramManager crpProgramManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.crpProgramManager = crpProgramManager;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -118,14 +120,10 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
+        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query

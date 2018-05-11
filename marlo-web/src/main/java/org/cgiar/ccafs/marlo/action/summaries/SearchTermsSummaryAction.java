@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -92,8 +91,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
 
   // Managers
-  private CrpProgramManager programManager;
-  private CrossCuttingScoringManager crossCuttingScoringManager;
+  private final CrpProgramManager programManager;
+  private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -101,10 +101,11 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   @Inject
   public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager) {
+    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -161,13 +162,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/SearchTerms.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/SearchTerms.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime

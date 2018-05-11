@@ -17,10 +17,6 @@
       org.cgiar.ccafs.marlo.security.SessionCounter
     </listener-class>
   </listener>
-  
-  <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
-  </listener>
 
   <session-config>  
     <session-timeout> 21600 </session-timeout>  
