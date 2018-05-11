@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -47,12 +48,9 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbEvidenceManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -91,6 +89,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -143,7 +142,6 @@ import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
-import org.cgiar.ccafs.marlo.validation.fundingSource.FundingSourceValidator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -290,10 +288,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
 
   @Inject
-  private PowbEvidenceManager powbEvidenceManager;
-
-  @Inject
-  private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
+  private CustomParameterManager customParameterManager;
 
   // Variables
   private String crpSession;
@@ -331,8 +326,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private FundingSourceManager fundingSourceManager;
 
-  @Inject
-  private FundingSourceValidator fundingSourceValidator;
   private HashMap<String, String> invalidFields;
 
   // User actions
@@ -363,8 +356,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
-  @Inject
-  private ProjectFocusManager projectFocusManager;
 
   private boolean reportingActive;
 
@@ -2420,39 +2411,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  private boolean getFundingSourceStatus(FundingSource fundingSource) {
-    fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-    if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
-      List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
-        .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-          && c.getYear() == this.getActualPhase().getYear())
-
-        .collect(Collectors.toList());
-
-      if (!sectionStatuses.isEmpty()) {
-        SectionStatus sectionStatus = sectionStatuses.get(0);
-        return sectionStatus.getMissingFields().length() == 0
-          && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
-            ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
-
-      } else {
-
-        fundingSourceValidator.validate(this, fundingSource, false);
-        return this.getFundingSourceStatus(fundingSource);
-      }
-    } else {
-      return false;
-    }
-
-  }
-
-
-  public boolean getFundingSourceStatus(long fundingSourceID) {
-    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-    return this.getFundingSourceStatus(fundingSource);
-  }
-
-
   /**
    * Get the Global Unit Type
    * 
@@ -4449,9 +4407,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCrpClosed() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Boolean.parseBoolean(crpManager.getGlobalUnitById(this.getCrpID()).getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_CLOSED)).collect(Collectors.toList()).get(0)
-        .getValue());
+      CustomParameter crpClosed =
+        customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CLOSED, this.getCrpID());
+
+      return Boolean.parseBoolean(crpClosed.getValue());
     } catch (Exception e) {
       return false;
     }
@@ -4460,9 +4419,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCrpRefresh() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Boolean.parseBoolean(crpManager.getGlobalUnitById(this.getCrpID()).getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
-        .getValue());
+      CustomParameter crpRefresh = customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_REFRESH, this.getCrpID());
+      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
+      return Boolean.parseBoolean(crpRefresh.getValue());
+
     } catch (Exception e) {
       return false;
     }
