@@ -55,6 +55,8 @@ public interface FundingSourceLocationsDAO {
   public List<FundingSourceLocation> findAll();
 
 
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId);
+
   /**
    * This method saves the information of the given fundingSourceLocations
    * 

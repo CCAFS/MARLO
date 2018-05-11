@@ -46,7 +46,7 @@
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
     </set>    
     <set name="fundingSourceInstitutions" table="funding_source_institutions"
-      inverse="true" lazy="false" fetch="select" >
+      inverse="true" lazy="true" fetch="select" >
       <key>
         <column name="funding_source_id" not-null="true" />
       </key>
@@ -54,7 +54,7 @@
         class="org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution" />
     </set>
     <set name="fundingSourceLocations" table="funding_source_locations"
-      inverse="true" lazy="false" fetch="select">
+      inverse="true" lazy="true" fetch="select">
       <key>
         <column name="funding_source_id" not-null="true" />
       </key>
@@ -72,7 +72,7 @@
     </set>
 
     <set name="fundingSourceInfos" table="funding_sources_info" inverse="true"
-      lazy="false" fetch="select">
+      lazy="true" fetch="select">
       <key>
         <column name="funding_source_id" />
       </key>

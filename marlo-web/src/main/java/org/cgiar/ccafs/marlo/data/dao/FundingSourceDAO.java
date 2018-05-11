@@ -17,10 +17,12 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public interface FundingSourceDAO {
@@ -61,6 +63,9 @@ public interface FundingSourceDAO {
   public List<Map<String, Object>> getFundingSource(long userId, String crp);
 
 
+  public List<FundingSource> getFundingSourceSummaries(GlobalUnit globalUnit, Phase phaseId, Set<Integer> statusTypes);
+
+
   /**
    * This method saves the information of the given fundingSource
    * 
@@ -70,7 +75,6 @@ public interface FundingSourceDAO {
    *         or -1 is some error occurred.
    */
   public FundingSource save(FundingSource fundingSource);
-
 
   public FundingSource save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase);
 
