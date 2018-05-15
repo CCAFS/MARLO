@@ -7,7 +7,7 @@
   "${baseUrl}/global/js/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css"] /]
 [#assign currentSection = "projects" /]
-[#assign currentStage = "studies" /]
+[#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]
 
 
