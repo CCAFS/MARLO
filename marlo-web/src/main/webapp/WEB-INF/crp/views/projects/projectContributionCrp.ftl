@@ -213,26 +213,16 @@
           [#if reportingActive]  
           <div class="">
             <h4 class="headTitle">Communications </h4>
-            <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
-              [#list startYear .. endYear as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
-              [/#list]
-            </ul> 
-            
-            <div class="tab-content projectOutcomeYear-content">
-              [#list startYear .. endYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-                    [#assign comunication = action.loadProjectCommunication(year) /]
-                    [#assign comunicationIndex = action.getIndexCommunication(year) /]
-                    <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
-                    <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
-                    <div class="communicationsBlock form-group">
-                      <div class="form-group">
-                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=isYearRequired(year) className="limitWords-100 fieldFocus" editable=editable /]
-                      </div>
-                    </div>
+            <div class="borderBox" id="communicationsYear-${currentCycleYear}">
+              [#assign comunication = action.loadProjectCommunication(currentCycleYear) /]
+              [#assign comunicationIndex = action.getIndexCommunication(currentCycleYear) /]
+              <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
+              <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${currentCycleYear}"/>
+              <div class="communicationsBlock form-group">
+                <div class="form-group">
+                  [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=isYearRequired(currentCycleYear) className="limitWords-100 fieldFocus" editable=editable /]
                 </div>
-              [/#list]
+              </div>
             </div>
           </div>
           [/#if]
@@ -414,26 +404,15 @@
     [#-- Reporting --]
     [#if reportingActive]
       <br /> 
-      [#-- Tabs --]
-      <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
-        [#list startYear .. endYear as year]
-          <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
-        [/#list]
-      </ul> 
-      [#-- Tabs Content --]
-      <div class="tab-content projectOutcomeYear-content">
-        [#list startYear .. endYear as year]
-          <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-            <div class="form-group">
-              [@customForm.textArea name="${customName}.reportOnProgress" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
-            </div>
-            <div class="form-group">
-              [@customForm.textArea name="${customName}.strategiesEncourage" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
-            </div> 
-            <div class="clearfix"></div>
-          </div>
-        [/#list]
-      </div>
+      <div class="" id="nextUserYear-${currentCycleYear}">
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.reportOnProgress" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
+        </div>
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.strategiesEncourage" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
+        </div> 
+        <div class="clearfix"></div>
+      </div> 
     [/#if]
   </div>
 [/#macro]
