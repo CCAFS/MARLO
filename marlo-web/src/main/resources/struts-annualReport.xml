@@ -125,7 +125,7 @@
 		<!--  3.1 CRP Management and Governance  -->
 		<action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_governance.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/governance</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
