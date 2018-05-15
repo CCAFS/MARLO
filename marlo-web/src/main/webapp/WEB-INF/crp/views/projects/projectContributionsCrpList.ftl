@@ -44,10 +44,8 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-      [#-- Section Messages --]
+        [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-      
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>  
           <div id="projectContributionsCrpList" class="borderBox">
@@ -100,53 +98,7 @@
               [/#if]
             [/#if] 
           </div> 
-           
-          [#-- Further Flagship Contributions  --]
-          [#if reportingActive]
-            <br />
-            <h3 class="headTitle">[@customForm.text name="projectContributionsCrpList.flagshipContribution" /] </h3>
-            [#-- Tabs --]
-            <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
-              [#list startYear .. endYear as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
-              [/#list]
-            </ul> 
-            [#-- Tabs Content --]
-            <div class="tab-content projectOutcomeYear-content">
-              [#list startYear .. endYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-                  [#-- Contribution(s) to other flagships outcomes --]
-                  [@customForm.text name="projectContributionsCrpList.projectContributedOtherFlagships" readText=!editable /]
-                  [#-- Others impact pathways contributions --]
-                  <div class="otherContributionsBlock">
-                    [#if project.otherContributions?has_content]
-                      [#list project.otherContributions as element]
-                        [@otherContributionMacro element=element name="" index=element_index /] 
-                      [/#list]
-                    [#else]
-                      [@otherContributionMacro element={} name="" index=0 /] 
-                      [#-- <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div> --]
-                    [/#if]
-                  </div>
-                  [#-- Add contribution button --]
-                  [#if editable] 
-                    <div class="addOtherContribution bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="projectOtherContributions.addOtherContribution"/]</div>
-                  [/#if]
-                  <div class="clearfix"></div> 
-                </div>
-              [/#list]
-            </div>
-          [/#if]
-          
-          [#if reportingActive]  
-            [#-- Section Buttons & hidden inputs--]
-            [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-          [#else]
-            [#-- Hidden parameters --]
-            <input type="hidden" name="projectID" value="${projectID}"/>
-          [/#if]
-          
-        [/@s.form] 
+      
       </div>
     </div>  
 </section>

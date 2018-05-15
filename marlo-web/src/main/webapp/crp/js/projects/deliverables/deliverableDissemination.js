@@ -214,7 +214,7 @@ function addDisseminationEvents() {
   });
 
   // Setting Numeric Inputs
-  $('form input.currencyInput').numericInput();
+  $('form input.numericInput').numericInput();
 
   // Set countries flag
   $('.nationalBlock').find("select").select2({

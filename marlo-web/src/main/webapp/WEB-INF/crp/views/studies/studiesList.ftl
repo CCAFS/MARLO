@@ -30,11 +30,13 @@
       [#-- Section Buttons --]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="studiesList.addStudy" /]</a>
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][@s.param name="studyTypeID" value="1"/][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="studiesList.addOutcomeCaseStudy" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][@s.param name="studyTypeID" value="1"/][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="studiesList.addOutcomeCaseStudy" /] </span></a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="studiesList.addStudy" /] </span></a>
           <div class="clearfix"></div>
         </div>
       </div>
+      
+      
       <div class="clearfix"></div>
       <hr/>
       
@@ -70,10 +72,12 @@
         <th>[@s.text name="studiesList.column.year" /]</th>
         [#-- Status --]
         <th>[@s.text name="studiesList.column.status" /]</th>
-        [#-- Fields check --]
-        <th>[@s.text name="studiesList.column.fieldsCheck" /]</th>
-        [#-- Delete --]
-        <th></th>
+        [#if canEdit]
+          [#-- Fields check --]
+          <th>[@s.text name="studiesList.column.fieldsCheck" /]</th>
+          [#-- Delete --]
+          <th></th>
+        [/#if]
       </tr>
     </thead>
     <tbody>
@@ -119,28 +123,30 @@
           <td class=""> 
            ${(element.projectExpectedStudyInfo.statusName)!'Not defined'}
           </td>
-          [#-- Fields check --]
-          <td class=""> 
-           [#if (action.getStudyStatus(element.id)??)!false]
-              [#if !((action.getStudyStatus(element.id)).missingFields)?has_content]
-                <span class="icon-20 icon-check" title="Complete"></span>
+          [#if canEdit]
+            [#-- Fields check --]
+            <td class=""> 
+             [#if (action.getStudyStatus(element.id)??)!false]
+                [#if !((action.getStudyStatus(element.id)).missingFields)?has_content]
+                  <span class="icon-20 icon-check" title="Complete"></span>
+                [#else]
+                  <span class="icon-20 icon-uncheck" title=""></span> 
+                [/#if]
               [#else]
-                <span class="icon-20 icon-uncheck" title=""></span> 
+                  <span class="icon-20 icon-uncheck" title=""></span>
               [/#if]
-            [#else]
-                <span class="icon-20 icon-uncheck" title=""></span>
-            [/#if]
+            </td>
+            [#-- Delete --]
+            <td class="">
+              [#if canEdit]
+                <a id="removeRow-${element.id}" class="removeRow" href="${baseUrl}/studies/${crpSession}/deleteStudy.do?expectedID=${element.id}" title="">
+                  <img src="${baseUrl}/global/images/trash.png" title="Remove" /> 
+                </a>
+              [#else]
+                <img src="${baseUrl}/global/images/trash_disable.png" title="" />
+              [/#if]
           </td>
-          [#-- Delete --]
-          <td class="">
-            [#if canEdit]
-              <a id="removeRow-${element.id}" class="removeRow" href="${baseUrl}/studies/${crpSession}/deleteStudy.do?expectedID=${element.id}" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="Remove" /> 
-              </a>
-            [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="" />
-            [/#if]
-          </td>
+          [/#if]
         </tr>  
       [/#list]
     [/#if]

@@ -315,7 +315,7 @@
     <h3 class="headTitle"> Share Study </h3>
     <div class="borderBox">
       [#-- Projects shared --]
-      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName"/]
+      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     </div>
     [/#if]
   </div>
