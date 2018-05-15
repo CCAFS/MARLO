@@ -205,7 +205,7 @@
           [@customForm.fileUploadAjax 
             fileDB=(element.projectExpectedStudyInfo.referencesFile)!{} 
             name="${customName}.projectExpectedStudyInfo.referencesFile.id" 
-            label="study.communicationMaterialsAttach" 
+            label="study.referencesCitedAttach" 
             dataUrl="${baseUrl}/uploadStudies.do" 
             path="${(action.getPath(expectedID))!}"
             isEditable=editable
@@ -285,7 +285,7 @@
           [@customForm.fileUploadAjax 
             fileDB=(element.projectExpectedStudyInfo.outcomeFile)!{} 
             name="${customName}.projectExpectedStudyInfo.outcomeFile.id" 
-            label="study.referencesCitedAttach" 
+            label="study.communicationMaterialsAttach" 
             dataUrl="${baseUrl}/uploadStudies.do" 
             path="${(action.getPath(expectedID))!}"
             isEditable=editable
@@ -315,7 +315,7 @@
     <h3 class="headTitle"> Share Study </h3>
     <div class="borderBox">
       [#-- Projects shared --]
-      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName"/]
+      [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     </div>
     [/#if]
   </div>
