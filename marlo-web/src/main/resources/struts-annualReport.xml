@@ -138,7 +138,7 @@
 		<!--  3.2 Management of Risks to Your CRP  -->
 		<action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_risks.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/risks</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
