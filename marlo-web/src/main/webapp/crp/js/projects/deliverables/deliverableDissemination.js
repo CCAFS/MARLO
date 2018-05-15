@@ -216,7 +216,16 @@ function addDisseminationEvents() {
   // Setting Numeric Inputs
   $('form input.currencyInput').numericInput();
 
-// Partnership Geographic Scope
+  // Set countries flag
+  $('.nationalBlock').find("select").select2({
+      maximumSelectionLength: 0,
+      placeholder: "Select a country(ies)",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
+      width: '100%'
+  });
+
+  // Partnership Geographic Scope
   $(".geographicScopeSelect").on('change', function() {
     var $partner = $(this).parents('.block-involveParticipants');
     var $regionalBlock = $partner.find('.regionalBlock');
