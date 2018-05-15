@@ -77,6 +77,14 @@ $(document).ready(function() {
 
   $('.loadingBlock').hide().next().fadeIn(500);
 
+  // Add Button click (Adding state)
+  $('a.addButton').on('click', function(e) {
+    // Turn add button in adding button
+    $(this).addClass('disabled animated flipInY');
+    $(this).find('.glyphicon').hide();
+    $(this).find('.saveText').html('Adding ... <img src="' + baseUrl + '/global/images/loading_3.gif" />&nbsp;');
+  });
+
   addJustificationPopUp();
 });
 
