@@ -49,7 +49,7 @@
           
           [#-- Table F: Main Areas of W1/2 Expenditure --]
           <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header">
+            <div class="">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             </div>
             <hr />
