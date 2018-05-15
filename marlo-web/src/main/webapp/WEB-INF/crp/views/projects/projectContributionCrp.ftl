@@ -230,19 +230,6 @@
                       <div class="form-group">
                         [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=isYearRequired(year) className="limitWords-100 fieldFocus" editable=editable /]
                       </div>
-                      <div class="form-group">
-                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
-                      </div>
-                    </div>
-                    <br />
-                    <div class="form-group">
-                      <div class="fileUpload col-md-6 ${reportingActive?string('fieldFocus','')}">
-                        <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
-                        <div class="uploadContainer">
-                          [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
-                        </div>  
-                      </div>
-                      <div class="clearfix"></div>
                     </div>
                 </div>
               [/#list]
