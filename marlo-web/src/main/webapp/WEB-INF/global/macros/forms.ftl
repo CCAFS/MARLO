@@ -491,7 +491,7 @@
 [#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 required=true ]
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary" listname="${name}" style="position:relative">
-    <div class="panel-head"><label for="">[@s.text name=label /]:[@customForm.req required=required && editable /]</label></div>
+    <div class="panel-head"><label for="">[@s.text name=label /]:[@req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
       <ul class="list listType-${composedID}">
         [#if elementList?has_content]
