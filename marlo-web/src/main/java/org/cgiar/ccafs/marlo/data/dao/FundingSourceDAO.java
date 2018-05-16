@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -83,9 +84,9 @@ public interface FundingSourceDAO {
    * 
    * @param query - word parameter
    * @param year - the year
-   * @return the list of FundingSource
+   * @return the list of FundingSourceSearchSummary
    */
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSources(String query, int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that use the specific finance code
@@ -98,13 +99,13 @@ public interface FundingSourceDAO {
   /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
-   * @param query - word parameter
+   * @param userInput - word parameter
    * @param institutionID - the institution ID
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
-    long phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
+    int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

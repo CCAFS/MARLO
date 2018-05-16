@@ -37,12 +37,9 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.fundingSource.FundingSourceValidator;
 
 import java.util.Date;
 import java.util.List;
@@ -73,8 +70,6 @@ public class FundingSourceListAction extends BaseAction {
 
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
 
-  private final FundingSourceValidator fundingSourceValidator;
-
   private GlobalUnitManager crpManager;
 
 
@@ -95,7 +90,7 @@ public class FundingSourceListAction extends BaseAction {
   public FundingSourceListAction(APConfig config, RoleManager roleManager, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
     InstitutionManager institutionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
-    FundingSourceInfoManager fundingSourceInfoManager, FundingSourceValidator fundingSourceValidator) {
+    FundingSourceInfoManager fundingSourceInfoManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
@@ -104,7 +99,6 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.institutionManager = institutionManager;
     this.fundingSourceInfoManager = fundingSourceInfoManager;
-    this.fundingSourceValidator = fundingSourceValidator;
   }
 
   @Override
@@ -232,40 +226,41 @@ public class FundingSourceListAction extends BaseAction {
   public long getFundingSourceID() {
     return fundingSourceID;
   }
-/**
- * Migrated from the BaseAction.  Leaving this in here as the call to the fundingSourceValidator
- * may be required in a situation that I am not aware of.
- */
-//  private boolean getFundingSourceStatus(FundingSource fundingSource) {
-//    fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-//    if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
-//      List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
-//        .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-//          && c.getYear() == this.getActualPhase().getYear())
-//
-//        .collect(Collectors.toList());
-//
-//      if (!sectionStatuses.isEmpty()) {
-//        SectionStatus sectionStatus = sectionStatuses.get(0);
-//        return sectionStatus.getMissingFields().length() == 0
-//          && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
-//            ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
-//
-//      } else {
-//
-//        fundingSourceValidator.validate(this, fundingSource, false);
-//        return this.getFundingSourceStatus(fundingSource);
-//      }
-//    } else {
-//      return false;
-//    }
-//
-//  }
-//
-//  public boolean getFundingSourceStatus(long fundingSourceID) {
-//    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-//    return this.getFundingSourceStatus(fundingSource);
-//  }
+  
+  /**
+   * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
+   * may be required in a situation that I am not aware of.
+   */
+  // private boolean getFundingSourceStatus(FundingSource fundingSource) {
+  // fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
+  // if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
+  // List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
+  // .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
+  // && c.getYear() == this.getActualPhase().getYear())
+  //
+  // .collect(Collectors.toList());
+  //
+  // if (!sectionStatuses.isEmpty()) {
+  // SectionStatus sectionStatus = sectionStatuses.get(0);
+  // return sectionStatus.getMissingFields().length() == 0
+  // && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
+  // ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
+  //
+  // } else {
+  //
+  // fundingSourceValidator.validate(this, fundingSource, false);
+  // return this.getFundingSourceStatus(fundingSource);
+  // }
+  // } else {
+  // return false;
+  // }
+  //
+  // }
+  //
+  // public boolean getFundingSourceStatus(long fundingSourceID) {
+  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+  // return this.getFundingSourceStatus(fundingSource);
+  // }
 
   @Override
   public String getJustification() {

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
 import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSummary;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -47,7 +48,8 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
 
 
   @Inject
-  public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO, FundingSourceSummaryMapper fundingSourceSummaryMapper) {
+  public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO,
+    FundingSourceSummaryMapper fundingSourceSummaryMapper) {
     this.fundingSourceDAO = fundingSourceDAO;
     this.fundingSourceSummaryMapper = fundingSourceSummaryMapper;
 
@@ -144,7 +146,7 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID) {
+  public List<FundingSourceSearchSummary> searchFundingSources(String query, int year, long crpID, long phaseID) {
     return fundingSourceDAO.searchFundingSources(query, year, crpID, phaseID);
   }
 
@@ -154,9 +156,9 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
-    long phaseID) {
-    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year, crpID, phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
+    int year, long crpID, long phaseID) {
+    return fundingSourceDAO.searchFundingSourcesByInstitution(userInput, institutionID, year, crpID, phaseID);
   }
 
   @Override
