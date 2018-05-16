@@ -137,7 +137,7 @@
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
-        [#if action.getProjectOutcomeStatus(projectOutcome.id)??]
+        [#if action.getProjectOutcomeStatus(projectOutcome.id)?? ]
           [#if !((action.getProjectOutcomeStatus(projectOutcome.id)).missingFields)?has_content]
             <span class="icon-20 icon-check" title="Complete"></span>
           [#else]

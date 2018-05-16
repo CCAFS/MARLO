@@ -4,11 +4,14 @@
   [#local customId = "study-${template?string('template',index)}" /]
   [#local isOutcomeCaseStudy = (element.projectExpectedStudyInfo.studyType.id == 1)!false /]
   
+  [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
+  [#local stageProcessOne = ((element.projectExpectedStudyInfo.repIndStageProcess.id == 1))!false ]
+  
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
         </div>
         <div class="col-md-6">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="statuses" required=true editable=editable /]
@@ -59,7 +62,7 @@
             </div>
             <div class="col-md-6">
               [#-- Stage in Process --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageProcess.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.stage" listName="stageProcesses" keyFieldName="id"  displayFieldName="name"required=true  /]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageProcess.id" className="setSelect2 stageProcess" i18nkey="study.reportingIndicatorThree.stage" listName="stageProcesses" keyFieldName="id"  displayFieldName="composedName" required=true  /]
             </div>
           </div>
         </div>
@@ -68,7 +71,7 @@
       
       [#-- 4.  Maturity of change reported (tick-box)  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         <label for="">[@s.text name="study.maturityChange" /]:[@customForm.req required=editable /]
           [@customForm.helpLabel name="study.maturityChange.help" showIcon=false editable=editable/][@customForm.helpLabel name="study.maturityChange.help2" showIcon=true editable=editable/]
         </label>
@@ -96,13 +99,13 @@
         </div>
         
         [#-- SRF Targets  --]
-        <div class="form-group simpleBox">
+        <div class="form-group simpleBox stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
           [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" keyFieldName="id" displayFieldName="title"/]
         </div>
         
         [#-- Comments  --]
         [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox">
+        <div class="form-group simpleBox stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.stratgicResultsLink.comments" help="study.stratgicResultsLink.comments.help" helpIcon=false className="" editable=editable /]
         </div>
         [/#if]
@@ -134,7 +137,7 @@
             [#-- Multinational, National and Subnational scope --]
             [@customForm.select name="${customName}.countriesIds" label="" i18nkey="study.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
           </div>
-          <div class="form-group">
+          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
             [#-- Comment box --]
             [@customForm.textArea name="${customName}.projectExpectedStudyInfo.scopeComments" className="limitWords-30" i18nkey="study.geographicScopeComments" help="study.geographicScopeComments.help" editable=editable required=true/]
           </div>
@@ -155,7 +158,7 @@
         [/#if]
         [#-- Flagships --]
         [#if isOutcomeCaseStudy || !fromProject]
-        <div class="form-group simpleBox">
+        <div class="form-group simpleBox stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
           [#if !fromProject && editable]
             <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
           [/#if]
@@ -164,7 +167,7 @@
         [/#if]
         [#-- Regions --]
         [#if (isOutcomeCaseStudy || !fromProject) && regionList?has_content]
-          <div class="form-group simpleBox">
+          <div class="form-group simpleBox stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
             [#if !fromProject && editable]
               <p class="note">To the Region(s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="regionalMapping.CrpProgram.leaders"/] and [@s.text name="regionalMapping.CrpProgram.managers"/]</p>
             [/#if]
@@ -173,7 +176,7 @@
         [/#if]
         [#-- External Partners --]
         [#if isOutcomeCaseStudy]
-        <div class="form-group simpleBox">
+        <div class="form-group simpleBox stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
           [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
           [#-- Request partner adition --]
           [#if editable]
@@ -190,14 +193,14 @@
       
       [#-- 8. Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=true editable=editable /]
       </div>
       [/#if]
       
       [#-- 9. References cited  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         <div class="form-group">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.references" i18nkey="study.referencesCited" help="study.referencesCited.help" helpIcon=false className="" required=true editable=editable /]
         </div>
@@ -217,7 +220,7 @@
       
       [#-- 10. Quantification (where data is available)  --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=true editable=editable /]
       </div>
       [/#if]
@@ -233,10 +236,10 @@
           <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
-              [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
+              [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=(element.projectExpectedStudyInfo.genderLevel.id == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
           </div>
-          <div class="form-group">
+          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
             [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
           </div>
         </div>
@@ -245,10 +248,10 @@
           <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
-              [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
+              [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=(element.projectExpectedStudyInfo.youthLevel.id == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
           </div>
-          <div class="form-group">
+          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
             [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeYouth" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
           </div>
         </div>
@@ -257,10 +260,10 @@
           <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
             [#list focusLevels  as cc]
-              [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=false cssClass="" cssClassLabel="font-normal" editable=editable /]
+              [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=(element.projectExpectedStudyInfo.capdevLevel.id == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
           </div>
-          <div class="form-group">
+          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
             [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
           </div>
         </div> 
@@ -269,18 +272,17 @@
       
       [#-- 12. Other cross-cutting dimensions   --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=true editable=editable /]
       </div>
       [/#if]
       
       [#-- 13. Communications materials    --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         <div class="form-group">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=true editable=editable /]
         </div>
-        
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 
             fileDB=(element.projectExpectedStudyInfo.outcomeFile)!{} 
@@ -297,14 +299,14 @@
 
       [#-- 14. Contact person    --]
       [#if isOutcomeCaseStudy]
-      <div class="form-group">
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=true editable=editable /]
       </div>
       [/#if]
       
       [#-- Comments for other studies--]
       [#if !isOutcomeCaseStudy]
-      <div class="form-group"> 
+      <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=true editable=editable /]
       </div>
       [/#if]

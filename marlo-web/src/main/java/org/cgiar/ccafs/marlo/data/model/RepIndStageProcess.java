@@ -25,6 +25,10 @@ public class RepIndStageProcess implements java.io.Serializable {
   }
 
 
+  public String getComposedName() {
+    return this.name + ": " + this.description;
+  }
+
   public String getDescription() {
     return description;
   }
