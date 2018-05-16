@@ -24,6 +24,13 @@ function init() {
 
 function attachEvents() {
 
+  // On change studyType
+  $('select.studyType').on('change', function() {
+
+    // Clean indicator #3 option
+    $('input.radioType-studyIndicatorThree:checked').prop('checked', false).trigger('change');
+  });
+
   // On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
@@ -34,6 +41,18 @@ function attachEvents() {
       $('.block-budgetInvestment').slideDown();
     } else {
       $('.block-budgetInvestment').slideUp();
+    }
+  });
+
+  // On change stage of process
+  $('select.stageProcess, input.radioType-studyIndicatorThree').on('change', function() {
+    var isPolicy = $('input.radioType-studyIndicatorThree:checked').val() == "true";
+    var stageProcessOne = ($('select.stageProcess').val() == 1);
+
+    if(isPolicy && stageProcessOne) {
+      $('.stageProcessOne').slideUp();
+    } else {
+      $('.stageProcessOne').slideDown();
     }
   });
 
