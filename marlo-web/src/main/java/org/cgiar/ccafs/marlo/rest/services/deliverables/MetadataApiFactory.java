@@ -33,17 +33,17 @@ public class MetadataApiFactory {
     if (clientType.equalsIgnoreCase("cgspace")) {
       return new CGSpaceClientAPI();
     }
-    if (clientType.equalsIgnoreCase("dataverse")) {
-      return new DataverseClientApi();
+    if (clientType.equalsIgnoreCase("harvardDataverse")) {
+      return new HarvardDataverseClientApi();
     }
-    if (clientType.equalsIgnoreCase("ifpri")) {
-      return new IFPRIClientAPI();
+    if (clientType.equalsIgnoreCase("ifpriEbrary")) {
+      return new IFPRIEBraryClientAPI();
     }
-    if (clientType.equalsIgnoreCase("ilri")) {
-      return new ILRIClientAPI();
+    if (clientType.equalsIgnoreCase("ilriDatasets")) {
+      return new ILRIDatasetsClientAPI();
     }
-    if (clientType.equalsIgnoreCase("cimmyt")) {
-      return new CIMMYTClientAPI();
+    if (clientType.equalsIgnoreCase("cimmytDataverse")) {
+      return new CIMMYTDataverseClientAPI();
     }
     if (clientType.equalsIgnoreCase("cimmytDspace")) {
       return new CIMMYTDspaceClientAPI();
