@@ -465,6 +465,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+        // Study Type Autosave
+        if (expectedStudy.getProjectExpectedStudyInfo().getStudyType() != null) {
+          if (expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() != -1) {
+            StudyType studyType =
+              studyTypeManager.getStudyTypeById(expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId());
+            expectedStudy.getProjectExpectedStudyInfo().setStudyType(studyType);
+          }
+        }
+
 
         this.setDraft(true);
       } else {
