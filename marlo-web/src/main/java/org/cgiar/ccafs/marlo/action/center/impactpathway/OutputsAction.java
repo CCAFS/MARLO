@@ -427,49 +427,45 @@ public class OutputsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermissionCenter("*")) {
 
-      outputDb.setTitle(output.getTitle());
-      outputDb.setShortName(output.getShortName());
 
-      this.saveNextUser(outputDb);
-      this.saveOutcomes(outputDb);
+    outputDb.setTitle(output.getTitle());
+    outputDb.setShortName(output.getShortName());
+
+    this.saveNextUser(outputDb);
+    this.saveOutcomes(outputDb);
 
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);
       outputService.saveResearchOutput(outputDb, this.getActionName(), relationsName);
 
-      Path path = this.getAutoSaveFilePath();
+    Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
 
-      // check if there is a url to redirect
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        // check if there are missing field
-        if (!this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-        } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
-        }
-        return SUCCESS;
-      } else {
-        // No messages to next page
-        this.addActionMessage("");
+    // check if there is a url to redirect
+    if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      // check if there are missing field
+      if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        // redirect the url select by user
-        return REDIRECT;
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
-
+      return SUCCESS;
     } else {
-      return NOT_AUTHORIZED;
+      // No messages to next page
+      this.addActionMessage("");
+      this.setActionMessages(null);
+      // redirect the url select by user
+      return REDIRECT;
     }
 
   }

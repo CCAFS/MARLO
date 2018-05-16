@@ -286,10 +286,11 @@ public class ProgramImpactsAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
           // TODO crpProgram
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -551,170 +552,166 @@ public class ProgramImpactsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermissionCenter("*")) {
 
 
-      for (CenterImpact researchImpact : programDb.getResearchImpacts().stream().filter(ri -> ri.isActive())
-        .collect(Collectors.toList())) {
-        if (!impacts.contains(researchImpact)) {
+    for (CenterImpact researchImpact : programDb.getResearchImpacts().stream().filter(ri -> ri.isActive())
+      .collect(Collectors.toList())) {
+      if (!impacts.contains(researchImpact)) {
 
-          if (impactObjectiveService.findAll() != null) {
-            for (CenterImpactObjective impactObjective : impactObjectiveService.findAll().stream()
-              .filter(io -> io.isActive() && io.getResearchImpact().getId() == researchImpact.getId())
-              .collect(Collectors.toList())) {
+        if (impactObjectiveService.findAll() != null) {
+          for (CenterImpactObjective impactObjective : impactObjectiveService.findAll().stream()
+            .filter(io -> io.isActive() && io.getResearchImpact().getId() == researchImpact.getId())
+            .collect(Collectors.toList())) {
+            impactObjectiveService.deleteResearchImpactObjective(impactObjective.getId());
+          }
+        }
+
+        impactService.deleteResearchImpact(researchImpact.getId());
+      }
+    }
+
+    for (CenterImpact researchImpact : impacts) {
+      if (researchImpact.getId() == null || researchImpact.getId() == -1) {
+        CenterImpact researchImpactNew = new CenterImpact();
+
+        researchImpactNew.setResearchProgram(programDb);
+        researchImpactNew.setColor(null);
+        researchImpactNew.setShortName(researchImpact.getShortName().trim());
+
+
+        CenterImpactStatement impactStatement = null;
+        if (researchImpact.getResearchImpactStatement().getId() != -1) {
+          impactStatement =
+            statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
+        }
+
+
+        if (impactStatement != null) {
+          researchImpactNew.setResearchImpactStatement(impactStatement);
+          researchImpactNew.setDescription(impactStatement.getName());
+
+          SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
+          researchImpactNew.setSrfSubIdo(srfSubIdo);
+
+        } else {
+          researchImpactNew.setResearchImpactStatement(null);
+          researchImpactNew.setSrfSubIdo(null);
+          researchImpactNew.setDescription(researchImpact.getDescription().trim());
+        }
+
+        researchImpactNew = impactService.saveResearchImpact(researchImpactNew);
+
+
+        if (researchImpact.getObjectiveValue() != null && researchImpact.getObjectiveValue().length() > 0) {
+          for (String objectiveId : researchImpact.getObjectiveValue().trim().split(",")) {
+            CenterObjective researchObjective =
+              objectiveService.getResearchObjectiveById(Long.parseLong(objectiveId.trim()));
+            CenterImpactObjective impactObjectiveNew = new CenterImpactObjective();
+            impactObjectiveNew.setResearchObjective(researchObjective);
+            impactObjectiveNew.setResearchImpact(researchImpactNew);
+
+            impactObjectiveService.saveResearchImpactObjective(impactObjectiveNew);
+          }
+        }
+
+        this.saveBeneficiary(researchImpact, researchImpactNew);
+
+      } else {
+        boolean hasChanges = false;
+        CenterImpact researchImpactRew = impactService.getResearchImpactById(researchImpact.getId());
+
+
+        CenterImpactStatement impactStatement = null;
+        if (researchImpact.getResearchImpactStatement().getId() != -1) {
+          impactStatement =
+            statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
+        }
+
+
+        if (impactStatement != null) {
+          if (researchImpactRew.getResearchImpactStatement() == null
+            || !researchImpactRew.getResearchImpactStatement().equals(impactStatement)) {
+            hasChanges = true;
+            researchImpactRew.setResearchImpactStatement(impactStatement);
+            researchImpactRew.setDescription(impactStatement.getName());
+
+
+          }
+
+          SrfSubIdo srfSubIdo;
+          try {
+            srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
+          } catch (Exception e) {
+            srfSubIdo = null;
+          }
+
+          if (srfSubIdo != null) {
+            if (researchImpactRew.getSrfSubIdo() == null || !researchImpactRew.getSrfSubIdo().equals(srfSubIdo)) {
+              hasChanges = true;
+              researchImpactRew.setSrfSubIdo(srfSubIdo);
+            }
+          } else {
+            researchImpactRew.setSrfSubIdo(null);
+          }
+
+        } else {
+          hasChanges = true;
+          researchImpactRew.setResearchImpactStatement(null);
+          researchImpactRew.setSrfSubIdo(null);
+
+          if (researchImpactRew.getDescription() == null
+            || !researchImpactRew.getDescription().equals(researchImpact.getDescription().trim())) {
+            hasChanges = true;
+            researchImpactRew.setDescription(researchImpact.getDescription().trim());
+          }
+        }
+
+        if (researchImpactRew.getShortName() == null
+          || !researchImpactRew.getShortName().equals(researchImpact.getShortName().trim())) {
+          hasChanges = true;
+          researchImpactRew.setShortName(researchImpact.getShortName().trim());
+        }
+
+        if (hasChanges) {
+          researchImpactRew = impactService.saveResearchImpact(researchImpactRew);
+
+        }
+
+        if (researchImpact.getObjectiveValue() != null && researchImpact.getObjectiveValue().length() > 0) {
+          for (CenterImpactObjective impactObjective : researchImpactRew.getResearchImpactObjectives().stream()
+            .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
+            if (!researchImpact.getObjectiveValue()
+              .contains(impactObjective.getResearchObjective().getId().toString())) {
               impactObjectiveService.deleteResearchImpactObjective(impactObjective.getId());
             }
           }
 
-          impactService.deleteResearchImpact(researchImpact.getId());
-        }
-      }
+          for (String objectiveId : researchImpact.getObjectiveValue().trim().split(",")) {
+            CenterObjective researchObjective =
+              objectiveService.getResearchObjectiveById(Long.parseLong(objectiveId.trim()));
+            CenterImpactObjective impactObjectiveNew = new CenterImpactObjective();
+            impactObjectiveNew.setResearchObjective(researchObjective);
+            impactObjectiveNew.setResearchImpact(researchImpactRew);
 
-      for (CenterImpact researchImpact : impacts) {
-        if (researchImpact.getId() == null || researchImpact.getId() == -1) {
-          CenterImpact researchImpactNew = new CenterImpact();
+            List<CenterImpactObjective> impactObjectives = researchImpactRew.getResearchImpactObjectives().stream()
+              .filter(rio -> rio.isActive()).collect(Collectors.toList());
 
-          researchImpactNew.setResearchProgram(programDb);
-          researchImpactNew.setColor(null);
-          researchImpactNew.setShortName(researchImpact.getShortName().trim());
-
-
-          CenterImpactStatement impactStatement = null;
-          if (researchImpact.getResearchImpactStatement().getId() != -1) {
-            impactStatement =
-              statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
-          }
-
-
-          if (impactStatement != null) {
-            researchImpactNew.setResearchImpactStatement(impactStatement);
-            researchImpactNew.setDescription(impactStatement.getName());
-
-            SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
-            researchImpactNew.setSrfSubIdo(srfSubIdo);
-
-          } else {
-            researchImpactNew.setResearchImpactStatement(null);
-            researchImpactNew.setSrfSubIdo(null);
-            researchImpactNew.setDescription(researchImpact.getDescription().trim());
-          }
-
-          researchImpactNew = impactService.saveResearchImpact(researchImpactNew);
-
-
-          if (researchImpact.getObjectiveValue() != null && researchImpact.getObjectiveValue().length() > 0) {
-            for (String objectiveId : researchImpact.getObjectiveValue().trim().split(",")) {
-              CenterObjective researchObjective =
-                objectiveService.getResearchObjectiveById(Long.parseLong(objectiveId.trim()));
-              CenterImpactObjective impactObjectiveNew = new CenterImpactObjective();
-              impactObjectiveNew.setResearchObjective(researchObjective);
-              impactObjectiveNew.setResearchImpact(researchImpactNew);
-
+            if (!impactObjectives.contains(impactObjectiveNew)) {
               impactObjectiveService.saveResearchImpactObjective(impactObjectiveNew);
             }
+
           }
-
-          this.saveBeneficiary(researchImpact, researchImpactNew);
-
         } else {
-          boolean hasChanges = false;
-          CenterImpact researchImpactRew = impactService.getResearchImpactById(researchImpact.getId());
-
-
-          CenterImpactStatement impactStatement = null;
-          if (researchImpact.getResearchImpactStatement().getId() != -1) {
-            impactStatement =
-              statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
-          }
-
-
-          if (impactStatement != null) {
-            if (researchImpactRew.getResearchImpactStatement() == null
-              || !researchImpactRew.getResearchImpactStatement().equals(impactStatement)) {
-              hasChanges = true;
-              researchImpactRew.setResearchImpactStatement(impactStatement);
-              researchImpactRew.setDescription(impactStatement.getName());
-
-
-            }
-
-            SrfSubIdo srfSubIdo;
-            try {
-              srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
-            } catch (Exception e) {
-              srfSubIdo = null;
-            }
-
-            if (srfSubIdo != null) {
-              if (researchImpactRew.getSrfSubIdo() == null || !researchImpactRew.getSrfSubIdo().equals(srfSubIdo)) {
-                hasChanges = true;
-                researchImpactRew.setSrfSubIdo(srfSubIdo);
-              }
-            } else {
-              researchImpactRew.setSrfSubIdo(null);
-            }
-
-          } else {
-            hasChanges = true;
-            researchImpactRew.setResearchImpactStatement(null);
-            researchImpactRew.setSrfSubIdo(null);
-
-            if (researchImpactRew.getDescription() == null
-              || !researchImpactRew.getDescription().equals(researchImpact.getDescription().trim())) {
-              hasChanges = true;
-              researchImpactRew.setDescription(researchImpact.getDescription().trim());
+          for (CenterImpactObjective impactObjective : researchImpactRew.getResearchImpactObjectives().stream()
+            .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
+            if (!researchImpact.getObjectiveValue()
+              .contains(impactObjective.getResearchObjective().getId().toString())) {
+              impactObjectiveService.deleteResearchImpactObjective(impactObjective.getId());
             }
           }
-
-          if (researchImpactRew.getShortName() == null
-            || !researchImpactRew.getShortName().equals(researchImpact.getShortName().trim())) {
-            hasChanges = true;
-            researchImpactRew.setShortName(researchImpact.getShortName().trim());
-          }
-
-          if (hasChanges) {
-            researchImpactRew = impactService.saveResearchImpact(researchImpactRew);
-
-          }
-
-          if (researchImpact.getObjectiveValue() != null && researchImpact.getObjectiveValue().length() > 0) {
-            for (CenterImpactObjective impactObjective : researchImpactRew.getResearchImpactObjectives().stream()
-              .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
-              if (!researchImpact.getObjectiveValue()
-                .contains(impactObjective.getResearchObjective().getId().toString())) {
-                impactObjectiveService.deleteResearchImpactObjective(impactObjective.getId());
-              }
-            }
-
-            for (String objectiveId : researchImpact.getObjectiveValue().trim().split(",")) {
-              CenterObjective researchObjective =
-                objectiveService.getResearchObjectiveById(Long.parseLong(objectiveId.trim()));
-              CenterImpactObjective impactObjectiveNew = new CenterImpactObjective();
-              impactObjectiveNew.setResearchObjective(researchObjective);
-              impactObjectiveNew.setResearchImpact(researchImpactRew);
-
-              List<CenterImpactObjective> impactObjectives = researchImpactRew.getResearchImpactObjectives().stream()
-                .filter(rio -> rio.isActive()).collect(Collectors.toList());
-
-              if (!impactObjectives.contains(impactObjectiveNew)) {
-                impactObjectiveService.saveResearchImpactObjective(impactObjectiveNew);
-              }
-
-            }
-          } else {
-            for (CenterImpactObjective impactObjective : researchImpactRew.getResearchImpactObjectives().stream()
-              .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
-              if (!researchImpact.getObjectiveValue()
-                .contains(impactObjective.getResearchObjective().getId().toString())) {
-                impactObjectiveService.deleteResearchImpactObjective(impactObjective.getId());
-              }
-            }
-          }
-
-          this.saveBeneficiary(researchImpact, researchImpactRew);
-
         }
 
+        this.saveBeneficiary(researchImpact, researchImpactRew);
 
       }
 
@@ -723,40 +720,44 @@ public class ProgramImpactsAction extends BaseAction {
       selectedProgram = programService.getCrpProgramById(crpProgramID);
       programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
-      Path path = this.getAutoSaveFilePath();
-
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
-
-      // check if there is a url to redirect
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        // check if there are missing field
-        if (!this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-
-        } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
-        }
-        return SUCCESS;
-      } else {
-        // No messages to next page
-
-        this.addActionMessage("");
-        this.setActionMessages(null);
-        // redirect the url select by user
-        return REDIRECT;
-      }
-
-    } else {
-      this.setActionMessages(null);
-      return NOT_AUTHORIZED;
     }
+
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.RESEARCH_PROGRAM_IMPACT_RELATION);
+    selectedProgram = programService.getCrpProgramById(crpProgramID);
+    selectedProgram.setModifiedBy(this.getCurrentUser());
+    programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    // check if there is a url to redirect
+    if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      // check if there are missing field
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else {
+      // No messages to next page
+
+      this.addActionMessage("");
+      this.setActionMessages(null);
+      // redirect the url select by user
+      return REDIRECT;
+    }
+
 
   }
 

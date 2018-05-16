@@ -206,10 +206,11 @@ public class ResearchTopicsAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -370,99 +371,102 @@ public class ResearchTopicsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermissionCenter("*")) {
 
-      List<CenterTopic> researchTopicsPrew;
 
-      selectedProgram = programService.getCrpProgramById(crpProgramID);
+    List<CenterTopic> researchTopicsPrew;
 
-      if (selectedProgram.getResearchTopics() != null) {
-        researchTopicsPrew =
-          selectedProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList());
+    selectedProgram = programService.getCrpProgramById(crpProgramID);
 
-        for (CenterTopic researchTopic : researchTopicsPrew) {
-          if (!topics.contains(researchTopic)) {
-            researchTopicService.deleteResearchTopic(researchTopic.getId());
-          }
+    if (selectedProgram.getResearchTopics() != null) {
+      researchTopicsPrew =
+        selectedProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList());
+
+      for (CenterTopic researchTopic : researchTopicsPrew) {
+        if (!topics.contains(researchTopic)) {
+          researchTopicService.deleteResearchTopic(researchTopic.getId());
         }
       }
-
-
-      for (CenterTopic researchTopic : topics) {
-        if (researchTopic.getId() == null || researchTopic.getId() == -1) {
-          CenterTopic newResearchTopic = new CenterTopic();
-          newResearchTopic.setResearchTopic(researchTopic.getResearchTopic().trim());
-          newResearchTopic.setColor("#ecf0f1");
-          newResearchTopic.setResearchProgram(selectedProgram);
-          newResearchTopic.setShortName(researchTopic.getShortName().trim());
-          newResearchTopic.setOrder(researchTopic.getOrder());
-
-          researchTopicService.saveResearchTopic(newResearchTopic);
-        } else {
-          boolean hasChanges = false;
-
-          CenterTopic researchTopicPrew = researchTopicService.getResearchTopicById(researchTopic.getId());
-
-          if (!researchTopicPrew.getResearchTopic().equals(researchTopic.getResearchTopic().trim())) {
-            hasChanges = true;
-            researchTopicPrew.setResearchTopic(researchTopic.getResearchTopic().trim());
-          }
-
-          if (researchTopicPrew.getShortName() == null
-            || !researchTopicPrew.getShortName().equals(researchTopic.getShortName().trim())) {
-            hasChanges = true;
-            researchTopicPrew.setShortName(researchTopic.getShortName().trim());
-          }
-
-          if (researchTopicPrew.getOrder() == null || researchTopicPrew.getOrder() != researchTopic.getOrder()) {
-            hasChanges = true;
-            researchTopicPrew.setOrder(researchTopic.getOrder());
-          }
-
-          if (hasChanges) {
-            researchTopicPrew.setModificationJustification("Modified on " + new Date().toString());
-            researchTopicService.saveResearchTopic(researchTopicPrew);
-          }
-        }
-
-      }
-
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.RESEARCH_PROGRAM_TOPIC_RELATION);
-      selectedProgram = programService.getCrpProgramById(crpProgramID);
-      programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
-
-      Path path = this.getAutoSaveFilePath();
-
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
-
-      // check if there is a url to redirect
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        // check if there are missing field
-        if (!this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-        } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
-        }
-        return SUCCESS;
-      } else {
-        // No messages to next page
-        this.addActionMessage("");
-        this.setActionMessages(null);
-        // redirect the url select by user
-        return REDIRECT;
-      }
-    } else {
-      this.setActionMessages(null);
-      return NOT_AUTHORIZED;
     }
+
+
+    for (CenterTopic researchTopic : topics) {
+      if (researchTopic.getId() == null || researchTopic.getId() == -1) {
+        CenterTopic newResearchTopic = new CenterTopic();
+        newResearchTopic.setActive(true);
+        newResearchTopic.setActiveSince(new Date());
+        newResearchTopic.setCreatedBy(this.getCurrentUser());
+        newResearchTopic.setModifiedBy(this.getCurrentUser());
+        newResearchTopic.setResearchTopic(researchTopic.getResearchTopic().trim());
+        newResearchTopic.setColor("#ecf0f1");
+        newResearchTopic.setResearchProgram(selectedProgram);
+        newResearchTopic.setShortName(researchTopic.getShortName().trim());
+        newResearchTopic.setOrder(researchTopic.getOrder());
+
+        researchTopicService.saveResearchTopic(newResearchTopic);
+      } else {
+        boolean hasChanges = false;
+
+        CenterTopic researchTopicPrew = researchTopicService.getResearchTopicById(researchTopic.getId());
+
+        if (!researchTopicPrew.getResearchTopic().equals(researchTopic.getResearchTopic().trim())) {
+          hasChanges = true;
+          researchTopicPrew.setResearchTopic(researchTopic.getResearchTopic().trim());
+        }
+
+        if (researchTopicPrew.getShortName() == null
+          || !researchTopicPrew.getShortName().equals(researchTopic.getShortName().trim())) {
+          hasChanges = true;
+          researchTopicPrew.setShortName(researchTopic.getShortName().trim());
+        }
+
+        if (researchTopicPrew.getOrder() == null || researchTopicPrew.getOrder() != researchTopic.getOrder()) {
+          hasChanges = true;
+          researchTopicPrew.setOrder(researchTopic.getOrder());
+        }
+
+        if (hasChanges) {
+          researchTopicPrew.setModifiedBy(this.getCurrentUser());
+          researchTopicPrew.setModificationJustification("Modified on " + new Date().toString());
+          researchTopicService.saveResearchTopic(researchTopicPrew);
+        }
+      }
+
+    }
+
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.RESEARCH_PROGRAM_TOPIC_RELATION);
+    selectedProgram = programService.getCrpProgramById(crpProgramID);
+    selectedProgram.setModifiedBy(this.getCurrentUser());
+    programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    // check if there is a url to redirect
+    if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      // check if there are missing field
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else {
+      // No messages to next page
+      this.addActionMessage("");
+      this.setActionMessages(null);
+      // redirect the url select by user
+      return REDIRECT;
+    }
+
 
   }
 

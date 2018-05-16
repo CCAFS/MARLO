@@ -536,9 +536,7 @@ public class ProjectOutcomeAction extends BaseAction {
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
-      projectOutcome.getCrpProgramOutcome().setSrfTargetUnit(null);
       projectOutcome.setAchievedUnit(null);
-      crpProgramOutcome.setSrfTargetUnit(null);
       projectOutcome.setExpectedUnit(null);
     }
 
@@ -557,7 +555,7 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveNextUsers(projectOutcomeDB);
       this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
-        this.saveLessonsOutcome(loggedCrp, projectOutcome);
+        this.saveLessonsOutcome(loggedCrp, projectOutcomeDB);
       }
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcomeDB.setPhase(this.getActualPhase());
@@ -569,7 +567,7 @@ public class ProjectOutcomeAction extends BaseAction {
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
-      projectOutcomeManager.saveProjectOutcome(projectOutcomeDB, this.getActionName(), relationsName,
+      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
         this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
