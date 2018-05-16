@@ -366,69 +366,66 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermissionCenter("*")) {
 
-      CenterImpact impact = null;
-      if (outcome.getResearchImpact() != null) {
-        if (outcome.getResearchImpact().getId() != -1) {
-          impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
-        }
+
+    CenterImpact impact = null;
+    if (outcome.getResearchImpact() != null) {
+      if (outcome.getResearchImpact().getId() != -1) {
+        impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
       }
+    }
 
 
-      SrfTargetUnit targetUnit = srfTargetUnitManager.getSrfTargetUnitById(outcome.getSrfTargetUnit().getId());
+    SrfTargetUnit targetUnit = srfTargetUnitManager.getSrfTargetUnitById(outcome.getSrfTargetUnit().getId());
 
-      outcomeDb.setDescription(outcome.getDescription());
-      outcomeDb.setShortName(outcome.getShortName());
-      outcomeDb.setTargetYear(outcome.getTargetYear());
+    outcomeDb.setDescription(outcome.getDescription());
+    outcomeDb.setShortName(outcome.getShortName());
+    outcomeDb.setTargetYear(outcome.getTargetYear());
 
-      outcomeDb.setSrfTargetUnit(targetUnit);
-      if (targetUnit.getId() != -1) {
-        outcomeDb.setValue(outcome.getValue());
-      } else {
-        outcomeDb.setValue(null);
-      }
+    outcomeDb.setSrfTargetUnit(targetUnit);
+    if (targetUnit.getId() != -1) {
+      outcomeDb.setValue(outcome.getValue());
+    } else {
+      outcomeDb.setValue(null);
+    }
 
-      outcomeDb.setResearchImpact(impact);
+    outcomeDb.setResearchImpact(impact);
 
-      this.saveMilestones(outcomeDb);
+    this.saveMilestones(outcomeDb);
 
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
 
       outcomeDb = outcomeService.saveResearchOutcome(outcomeDb, this.getActionName(), relationsName);
 
-      Path path = this.getAutoSaveFilePath();
+    Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
-
-      // check if there is a url to redirect
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        // check if there are missing field
-        if (!this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-        } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
-        }
-        return SUCCESS;
-      } else {
-        // No messages to next page
-        this.addActionMessage("");
-        this.setActionMessages(null);
-        // redirect the url select by user
-        return REDIRECT;
-      }
-
-    } else {
-      return NOT_AUTHORIZED;
+    if (path.toFile().exists()) {
+      path.toFile().delete();
     }
+
+    // check if there is a url to redirect
+    if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      // check if there are missing field
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else {
+      // No messages to next page
+      this.addActionMessage("");
+      this.setActionMessages(null);
+      // redirect the url select by user
+      return REDIRECT;
+    }
+
   }
 
 
@@ -473,7 +470,8 @@ public class OutcomesAction extends BaseAction {
           }
 
           SrfTargetUnit targetUnit =
-            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getTargetUnit().getId());
+            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getSrfTargetUnit().getId());
+
           if (!milestonePrew.getSrfTargetUnit().equals(targetUnit)) {
             hasChanges = true;
             milestonePrew.setSrfTargetUnit(targetUnit);
@@ -493,6 +491,7 @@ public class OutcomesAction extends BaseAction {
               milestonePrew.setValue(researchMilestone.getValue());
             }
           }
+
 
           if (milestonePrew.getTargetYear() != null) {
             if (!milestonePrew.getTargetYear().equals(researchMilestone.getTargetYear())) {
