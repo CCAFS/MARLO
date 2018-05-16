@@ -204,7 +204,7 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Validate Intellectual Asset
-        if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getId() != null
+        if (deliverable.getIntellectualAsset() != null
           && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
           this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
         } else {
