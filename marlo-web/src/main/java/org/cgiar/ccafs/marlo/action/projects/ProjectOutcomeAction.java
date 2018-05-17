@@ -643,7 +643,8 @@ public class ProjectOutcomeAction extends BaseAction {
                 this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
             }
 
-            if (projectCommunication.getSummary().getFileName().isEmpty()) {
+            if (projectCommunication.getSummary() != null && projectCommunication.getSummary().getFileName() != null
+              && projectCommunication.getSummary().getFileName().isEmpty()) {
               projectCommunication.setSummary(null);
             }
 
