@@ -455,6 +455,16 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getDeliverables() != null) {
         innovation.getDeliverables().clear();
       }
+
+      // HTTP Post info Values
+      innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
+      innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
+      innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
+      innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
+      innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
+      innovation.getProjectInnovationInfo().setRepIndGeographicScope(null);
+      innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
+      innovation.getProjectInnovationInfo().setRepIndRegion(null);
     }
   }
 

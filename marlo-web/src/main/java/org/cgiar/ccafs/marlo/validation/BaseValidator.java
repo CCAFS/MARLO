@@ -775,7 +775,11 @@ public class BaseValidator {
    * @return the number of words.
    */
   protected int wordCount(String text) {
-    text = text.trim();
-    return text.isEmpty() ? 0 : text.split("\\s+").length;
+    if (text != null) {
+      text = text.trim();
+      return text.isEmpty() ? 0 : text.split("\\s+").length;
+    } else {
+      return 0;
+    }
   }
 }

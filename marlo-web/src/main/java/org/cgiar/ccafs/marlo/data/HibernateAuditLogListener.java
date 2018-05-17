@@ -509,20 +509,19 @@ public class HibernateAuditLogListener
       boolean hasPhase = false;
       for (String nameAtrribute : propertyNamesRelation) {
         if (nameAtrribute.equals("phase")) {
-          phaseObject = (Phase) classMetadata.getPropertyValue(entity, nameAtrribute);
+          try {
+            phaseObject = (Phase) classMetadata.getPropertyValue(entity, nameAtrribute);
+          } catch (Exception e) {
+            // The attribute is not a Phase Model Class
+            phaseObject = null;
+          }
           if (phaseObject != null) {
             phaseObject = (Phase) postUpdateEvent.getSession().get(Phase.class, phaseObject.getId());
             if (phaseObject != null) {
               hasPhase = true;
             }
           }
-
-
         }
-      }
-      // TODO delete this when the entity has not have phase relation into the database
-      if (entity instanceof ProjectExpectedStudy) {
-        hasPhase = false;
       }
       /*
        * if have phase and the phase is the current we are checking , we load the info

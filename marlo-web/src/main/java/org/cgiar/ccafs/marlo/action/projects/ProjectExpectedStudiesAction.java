@@ -768,7 +768,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .setReferencesFile(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile());
       }
 
-      System.out.println("");
       // Setup focusLevel
       if (expectedStudy.getProjectExpectedStudyInfo().getGenderLevel() != null) {
         RepIndGenderYouthFocusLevel focusLevel = focusLevelManager

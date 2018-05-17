@@ -17,12 +17,14 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -57,6 +59,8 @@ public class ProjectInnovationListAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+  private ProjectInnovationCrpManager projectInnovationCrpManager;
+
 
   // Model for the back-end
   private Project project;
@@ -73,12 +77,13 @@ public class ProjectInnovationListAction extends BaseAction {
   @Inject
   public ProjectInnovationListAction(APConfig config, ProjectInnovationManager projectInnovationManager,
     ProjectInnovationInfoManager projectInnovationInfoManager, SectionStatusManager sectionStatusManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, ProjectInnovationCrpManager projectInnovationCrpManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.projectInnovationInfoManager = projectInnovationInfoManager;
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
+    this.projectInnovationCrpManager = projectInnovationCrpManager;
   }
 
   @Override
@@ -102,6 +107,15 @@ public class ProjectInnovationListAction extends BaseAction {
     innovationID = projectInnovation.getId();
 
     if (innovationID > 0) {
+
+      ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
+
+      projectInnovationCrp.setGlobalUnit(this.getCurrentCrp());
+      projectInnovationCrp.setPhase(this.getActualPhase());
+      projectInnovationCrp.setProjectInnovation(projectInnovation);
+
+      projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
+
       return SUCCESS;
     }
 
