@@ -69,7 +69,7 @@
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <div class="form-group">
-                [@customForm.textArea name="project.projectInfo.partnerOverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.partnerOverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=true editable=editable /]
               </div>
               [/#if]
               
@@ -79,17 +79,17 @@
                   [#-- Lessons learnt from last planning/reporting cycle --]
                   [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
-                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
+                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:[@customForm.req required=false /]</label>
                     <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]
                   [#-- Planning/Reporting lessons --]
-                   [#if reportingActive]
+                  [#if reportingActive]
                   <div class="fullBlock">
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable required=true /]
                   [/#if]
                   </div>
                 </div>
