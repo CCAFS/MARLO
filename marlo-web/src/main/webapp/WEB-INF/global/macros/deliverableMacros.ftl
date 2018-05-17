@@ -186,7 +186,7 @@
     <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
     <div class="row">
       <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
-      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" /]  </div>
+      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" neutral=true /]  </div>
     </div> 
     <div class="block-intellectualAsset" style="display:${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
       <hr />
@@ -289,7 +289,7 @@
 <div class="simpleBox">
   <div class="form-group row">
     <label class="col-md-9" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
-    <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" /] </div>  
+    <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
   
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
