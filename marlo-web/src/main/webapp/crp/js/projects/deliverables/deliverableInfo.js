@@ -130,8 +130,8 @@ function init() {
 
   // New Expected year should be greater than current reporting cycle year
   if(reportingActive) {
-    $('#newExpectedYear select option[value=' + currentCycleYear + ']').attr('disabled', 'disabled')
-    $('#newExpectedYear select').trigger("change.select2");
+    // $('#newExpectedYear select option[value=' + currentCycleYear - 1 + ']').attr('disabled', 'disabled')
+    // $('#newExpectedYear select').trigger("change.select2");
   }
 
   /** Funding source * */
@@ -464,7 +464,8 @@ function justificationByStatus(statusId) {
     $statusDescription.show().hide(400);
   }
 
-  var isCompletedWithoutExpectedYear = (!reportingActive && isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""));
+  var isCompletedWithoutExpectedYear =
+      (!reportingActive && isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""));
 
   if(isStatusExtended(statusId) || isCompletedWithoutExpectedYear) {
     $('#newExpectedYear').show();
