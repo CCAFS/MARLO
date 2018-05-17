@@ -1670,6 +1670,18 @@ public class ProjectPartnerAction extends BaseAction {
       } else {
         partnershipUpdate.setResearchPhase(null);
       }
+
+      partnershipUpdate.setActive(true);
+      partnershipUpdate.setActiveSince(new Date());
+      partnershipUpdate.setModifiedBy(this.getCurrentUser());
+      partnershipUpdate.setModificationJustification("");
+      // Save to avoid null exception in relation with partnership_locations
+      if (partnershipUpdate.getId() == null || partnershipUpdate.getId() == -1) {
+        projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+      }
+
+
+      // Partnership Locations
       List<ProjectPartnerPartnershipLocation> locationsDB = new ArrayList<>();
       if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
         locationsDB =
@@ -1711,7 +1723,7 @@ public class ProjectPartnerAction extends BaseAction {
             for (String locationIsoAlpha2 : partnershipClient.getPartnershipLocationsIsos()) {
               ProjectPartnerPartnershipLocation locationPartnership = new ProjectPartnerPartnershipLocation();
               locationPartnership.setLocation(locationManager.getLocElementByISOCode(locationIsoAlpha2));
-              locationPartnership.setProjectPartnerPartnership(partnershipClient);
+              locationPartnership.setProjectPartnerPartnership(partnershipUpdate);
               locationsSave.add(locationPartnership);
               if (!locationsDB.contains(locationPartnership)) {
                 locationPartnership.setActive(true);
@@ -1739,14 +1751,8 @@ public class ProjectPartnerAction extends BaseAction {
         this.deletePartnershipLocations(locationsDB);
       }
 
-
-      partnershipUpdate.setActive(true);
-      partnershipUpdate.setActiveSince(new Date());
-      partnershipUpdate.setModifiedBy(this.getCurrentUser());
-      partnershipUpdate.setModificationJustification("");
-
-
       projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+
     }
 
   }
