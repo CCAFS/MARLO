@@ -83,7 +83,6 @@
             
             [#-- Add a new Outcomes --]
             [#if canEdit]
-              [#if !reportingActive]
               <div class="addNewOutcome">
                 <div class="outcomesListBlock">
                   <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
@@ -95,7 +94,6 @@
                   </a>
                 </div>
               </div>
-              [/#if]
             [/#if] 
           </div> 
       

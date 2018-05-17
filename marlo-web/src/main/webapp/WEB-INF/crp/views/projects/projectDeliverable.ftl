@@ -110,14 +110,14 @@
                 [#-- Is this deliverable Open Access? --]
                 [@deliverableMacros.isOpenaccessMacro /]
                 
+                [#-- Have you adopted a license?  --]
+                [@deliverableMacros.deliverableLicenseMacro /]
+                
                 [#--  Intellectual Asset--]
                 [@deliverableMacros.intellectualAsset /]
                 
                 [#--  Does this deliverable involve Participants and Trainees? --]
                 [@deliverableMacros.deliverableParticipantsMacro /]
-                
-                [#-- Have you adopted a license?  --]
-                [@deliverableMacros.deliverableLicenseMacro /]
                 
                 [#-- Metadata (included publications) --]
                 <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
