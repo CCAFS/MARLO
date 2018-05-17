@@ -5346,22 +5346,24 @@ table.evaluationRank thead th{
   }
 }
 
-.yes-button-label.radio-checked {
+.yes-button-label.radio-checked, 
+.yes-button-label:hover  {
   background: #2ECC71;
-  color: #efefef;
-}
-.yes-button-label:hover {
-  background: #29b765;
-  color: #e2e2e2;
+  color: #ffffff;
 }
 
-.no-button-label.radio-checked {
+.no-button-label.radio-checked, 
+.no-button-label:hover  {
   background: #D91E18;
-  color: #efefef;
+  color: #ffffff;
 }
-.no-button-label:hover {
-  background: #c21b15;
-  color: #e2e2e2;
+
+.no-button-label.neutral:hover,
+.no-button-label.neutral.radio-checked,
+.yes-button-label.neutral:hover,
+.yes-button-label.neutral.radio-checked {
+  background: #68b3f3 !important;
+  color: #ffffff;
 }
 
 .hidden {
