@@ -394,7 +394,7 @@
   </div>
 [/#macro]
 
-[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass=""]
+[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
@@ -407,9 +407,10 @@
     [#if editable]
       <div class="button-wrap">
         [#-- Yes Button --]
-        <label for="yes-button-${name}" class="yes-button-label button-label [#if customValue == "true"]radio-checked[/#if]">${yesLabel}</label>
+        <label for="yes-button-${name}" class="yes-button-label button-label [#if neutral]neutral[/#if] [#if customValue == "true"]radio-checked[/#if]">${yesLabel}</label>
         [#-- No Button --]
-        <label for="no-button-${name}" class="no-button-label button-label [#if customValue == "false" || !(customValue?has_content)]radio-checked[/#if]">${noLabel}</label>
+        <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if customValue == "false" || !(customValue?has_content)]radio-checked[/#if]">${noLabel}</label>
+        [#-- Hidden Input --]
         <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  [#if !(customValue?has_content)]value="false"[/#if] [#if customValue == "false"]value="false"[#elseif customValue == "true"]value="true"[/#if] />
       </div>
       [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 
