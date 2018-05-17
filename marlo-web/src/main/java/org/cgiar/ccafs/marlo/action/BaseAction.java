@@ -128,6 +128,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -3307,19 +3308,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       case EXPECTEDSTUDIES:
 
-
         project = projectManager.getProjectById(projectID);
         List<ProjectExpectedStudy> studies =
           project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
         for (ProjectExpectedStudy projectExpectedStudy : studies) {
-          if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-            project.getExpectedStudies().add(projectExpectedStudy);
-          }
-        }
-
-        for (ProjectExpectedStudy expectedStudy : studies) {
-          sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(),
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
           if (sectionStatus != null) {
             if (sectionStatus.getMissingFields().length() == 0) {
@@ -3329,10 +3323,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return true;
           }
         }
-
-
         returnValue = false;
         break;
+
+
+      case INNOVATIONS:
+        project = projectManager.getProjectById(projectID);
+        List<ProjectInnovation> innovations =
+          project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        for (ProjectInnovation projectInnovation : innovations) {
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
+            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() == 0) {
+              return true;
+            }
+          } else {
+            return true;
+          }
+        }
+        break;
+
       case LEVERAGES:
 
 
@@ -4211,8 +4222,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       int budgetFlagshipSection = 0;
       int expecetedSection = 0;
       int outcomeSection = 0;
-      int caseStudySection = 0;
       int highlightSection = 0;
+      int studiesSection = 0;
+      int innotavionSection = 0;
 
       List<Deliverable> deliverables = project.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null).collect(Collectors.toList());
@@ -4429,18 +4441,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (sectionStatus.getCycle().equals(this.getCurrentCycle())
             && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
             switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-
               case DESCRIPTION:
               case PARTNERS:
               case LOCATIONS:
-              case OUTCOMES_PANDR:
-              case CCAFSOUTCOMES:
-              case OUTPUTS:
               case BUDGET:
               case LEVERAGES:
-              case OTHERCONTRIBUTIONS:
-              case ACTIVITIES:
                 totalSections++;
+                break;
+              case ACTIVITIES:
+                if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+                  totalSections++;
+                }
                 break;
               case DELIVERABLES:
                 if (deliverableSection == 0) {
@@ -4448,19 +4459,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   totalSections++;
                 }
                 break;
-
+              case OUTCOMES:
+                if (outcomeSection == 0) {
+                  outcomeSection = 1;
+                  totalSections++;
+                }
+                break;
               case HIGHLIGHTS:
                 if (highlightSection == 0) {
                   highlightSection = 1;
                   totalSections++;
                 }
                 break;
-              case CASESTUDIES:
-                if (caseStudySection == 0) {
-                  caseStudySection = 1;
+              case EXPECTEDSTUDIES:
+                if (studiesSection == 0) {
+                  studiesSection = 1;
                   totalSections++;
                 }
-
+                break;
+              case INNOVATIONS:
+                if (innotavionSection == 0) {
+                  innotavionSection = 1;
+                  totalSections++;
+                }
                 break;
             }
 
@@ -4481,17 +4502,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           totalSections++;
         }
 
-        List<CaseStudyProject> caseStudyProjects =
-          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<CaseStudy> caseStudies = new ArrayList<>();
-        for (CaseStudyProject caseStudyProject : caseStudyProjects) {
-          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
-            caseStudies.add(caseStudyProject.getCaseStudy());
-          }
 
+        List<ProjectInnovation> innovations =
+          project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        project.setInnovations(new ArrayList<ProjectInnovation>());
 
+        if (innovations.isEmpty() && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
+          totalSections++;
         }
-        if (caseStudies.isEmpty() && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
+
+        List<ProjectExpectedStudy> studies =
+          project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
+
+        if (studies.isEmpty() && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
           totalSections++;
         }
 
@@ -4504,15 +4528,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
         } else {
-          if (add) {
-
-          }
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-            return totalSections == 12;
-          } else {
             return totalSections == 11;
+          } else {
+            return totalSections == 10;
           }
-
         }
 
       }

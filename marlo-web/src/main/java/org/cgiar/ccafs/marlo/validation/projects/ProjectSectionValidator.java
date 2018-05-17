@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -53,6 +54,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -124,6 +127,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
 
+  private final ProjectInnovationValidator projectInnovationValidator;
+
+  private final ProjectInnovationCountryManager projectInnovationCountryManager;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -138,7 +145,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectOtherContributionsValidator projectOtherContributionsValidator,
     ProjectOutputsValidator projectOutputsValidator, ProjectExpectedStudiesValidator projectExpectedStudiesValidator,
     ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    ProjectInnovationValidator projectInnovationValidator,
+    ProjectInnovationCountryManager projectInnovationCountryManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -161,6 +170,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
     this.projectBudgetsFlagshipValidator = projectBudgetsFlagshipValidator;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.projectInnovationValidator = projectInnovationValidator;
   }
 
 
@@ -460,6 +471,59 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   }
 
 
+  public void validateInnovations(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    Phase phase = action.getActualPhase();
+
+    List<ProjectInnovation> innovations =
+      project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setInnovations(new ArrayList<ProjectInnovation>());
+    for (ProjectInnovation projectInnovation : innovations) {
+      if (projectInnovation.getProjectInnovationInfo(phase) != null) {
+        project.getInnovations().add(projectInnovation);
+      }
+    }
+
+    for (ProjectInnovation innovation : project.getInnovations()) {
+
+      if (innovation.getProjectInnovationInfo() == null) {
+        innovation.getProjectInnovationInfo(phase);
+      }
+
+      // Innovation Countries List
+      if (innovation.getProjectInnovationCountries() == null) {
+        innovation.setCountries(new ArrayList<>());
+      } else {
+        List<ProjectInnovationCountry> countries =
+          projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+        innovation.setCountries(countries);
+      }
+
+      // Innovation Organization Type List
+      if (innovation.getProjectInnovationOrganizations() != null) {
+        innovation.setOrganizations(new ArrayList<>(innovation.getProjectInnovationOrganizations().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovation Deliverable List
+      if (innovation.getProjectInnovationDeliverables() != null) {
+        innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
+          .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovation Crp list
+      if (innovation.getProjectInnovationCrps() != null) {
+        innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      projectInnovationValidator.validate(action, project, innovation, false);
+    }
+
+  }
+
   public void validateLeverage(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -473,6 +537,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
   }
+
 
   public void validateOtherContributions(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -490,7 +555,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
   }
-
 
   public void validateOutcomesPandR(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -774,10 +838,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         project.getExpectedStudies().add(projectExpectedStudy);
       }
     }
+    Phase phase = action.getActualPhase();
+    for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
 
-    for (ProjectExpectedStudy expectedStudy : studies) {
-
-      Phase phase = action.getActualPhase();
 
       if (expectedStudy.getProjectExpectedStudyInfo() == null) {
         expectedStudy.getProjectExpectedStudyInfo(phase);
