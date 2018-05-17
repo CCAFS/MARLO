@@ -228,6 +228,7 @@
       [#-- 11. Gender, Youth, and Capacity Development  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
+        [@tag name="Indicator #3" /]
         <label for="">[@s.text name="study.crossCuttingRelevance" /]:
           [@customForm.helpLabel name="study.crossCuttingRelevance.help" showIcon=false editable=editable/]
         </label>
@@ -321,4 +322,8 @@
     </div>
     [/#if]
   </div>
+[/#macro]
+
+[#macro tag name=""]
+  [#-- <span class="label label-info pull-right"> <i class="fas fa-tag"></i> ${name} </span> --]
 [/#macro]

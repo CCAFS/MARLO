@@ -250,9 +250,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
         && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
           && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))
       .sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList())) {
       Long projectId = globalUnitProject.getProject().getId();
       String projectTitle = globalUnitProject.getProject().getProjectInfo().getTitle();
@@ -328,14 +328,14 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Set<Deliverable> deliverablesSet = new HashSet();
       for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
             || (d.getDeliverableInfo().getStatus() != null
               && d.getDeliverableInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())
               && d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              && d.getDeliverableInfo().getNewExpectedYear() == 2017)
+            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
               && d.getDeliverableInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {

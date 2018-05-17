@@ -5,6 +5,7 @@ $(document).ready(init);
 function init() {
 
   $statuses = $('select.status');
+  console.log($statuses);
   $statusDescription = $('#statusDescription');
 
   // Take out the 0 - Not Targeted Dimension
@@ -122,7 +123,7 @@ function init() {
 
   // CHANGE STATUS
   $statuses.on("change", function() {
-    justificationByStatus($(this).val());
+    justificationByStatus(this.value);
   });
 
   $(".yearExpected").on("change", validateCurrentDate);
@@ -463,12 +464,12 @@ function justificationByStatus(statusId) {
     $statusDescription.show().hide(400);
   }
 
-  console.log($('#newExpectedYear select').val());
+  var isCompletedWithoutExpectedYear = (!reportingActive && isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""));
 
-  if(isStatusExtended(statusId) || (isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""))) {
+  if(isStatusExtended(statusId) || isCompletedWithoutExpectedYear) {
     $('#newExpectedYear').show();
     $('#newExpectedYear select').attr('disabled', false);
-    if(isStatusComplete(statusId) && ($('#newExpectedYear select').val() != "")) {
+    if(isCompletedWithoutExpectedYear) {
       $('#newExpectedYear select').attr('disabled', true);
     } else {
       $('#newExpectedYear select').attr('disabled', false);
@@ -539,7 +540,6 @@ function updateProjectPartnersSelects() {
   });
 
   $("select.partner.id").each(function(i,select) {
-    console.log("-- Select #" + i);
     $(select).find('option').attr('disabled', false).prop('disabled', false);
     $.each(selectedValues, function(i,optionValue) {
       if(optionValue != -1) {
