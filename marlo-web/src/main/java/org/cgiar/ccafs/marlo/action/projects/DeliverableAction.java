@@ -852,12 +852,11 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list =
-        deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+        .collect(Collectors.toList());
 
 
       return list;
@@ -1311,7 +1310,11 @@ public class DeliverableAction extends BaseAction {
               .stream().filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
             if (intellectualAssets.size() > 0) {
-              deliverable.setIntellectualAsset(intellectualAssets.get(0));
+              DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
+                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
+              System.out.println(asset.getHasPatentPvp());
+              deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
               if (this.transaction != null && !this.transaction.equals("-1")) {
                 if (deliverable.getIntellectualAsset().getFillingType() != null
                   && deliverable.getIntellectualAsset().getFillingType().getId() != null) {
@@ -1338,7 +1341,10 @@ public class DeliverableAction extends BaseAction {
               .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
             if (deliverableParticipants.size() > 0) {
-              deliverable.setDeliverableParticipant(deliverableParticipants.get(0));
+              DeliverableParticipant pasdl =
+                deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId());
+              deliverable.setDeliverableParticipant(
+                deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
               // Participants Locations
               if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
                 deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
@@ -1492,8 +1498,8 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager
-            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 
@@ -1717,12 +1723,12 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDisseminations().clear();
         }
 
-        if (deliverable.getDeliverableParticipant() != null) {
-          deliverable.setDeliverableParticipant(null);
-        }
-        if (deliverable.getIntellectualAsset() != null) {
-          deliverable.setIntellectualAsset(null);
-        }
+        // if (deliverable.getDeliverableParticipant() != null) {
+        // deliverable.setDeliverableParticipant(null);
+        // }
+        // if (deliverable.getIntellectualAsset() != null) {
+        // deliverable.setIntellectualAsset(null);
+        // }
 
       }
 
@@ -2319,6 +2325,9 @@ public class DeliverableAction extends BaseAction {
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
         participant.setPhase(this.getActualPhase());
         participant.setCreatedBy(this.getCurrentUser());
+        participant.setModificationJustification("");
+        participant.setModifiedBy(this.getCurrentUser());
+        participant = deliverableParticipantManager.saveDeliverableParticipant(participant);
       }
       List<DeliverableParticipantLocation> locationsDB = new ArrayList<>();
       if (participant.getId() != null && participant.getId() != -1) {

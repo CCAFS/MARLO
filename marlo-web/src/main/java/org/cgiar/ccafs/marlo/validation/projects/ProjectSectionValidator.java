@@ -17,7 +17,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
@@ -33,7 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -131,6 +137,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectInnovationCountryManager projectInnovationCountryManager;
 
+  private final FundingSourceManager fundingSourceManager;
+
+  private final DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+
+  private final DeliverableParticipantManager deliverableParticipantManager;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -147,7 +159,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     ProjectInnovationValidator projectInnovationValidator,
-    ProjectInnovationCountryManager projectInnovationCountryManager) {
+    ProjectInnovationCountryManager projectInnovationCountryManager, FundingSourceManager fundingSourceManager,
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
+    DeliverableParticipantManager deliverableParticipantManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -172,6 +186,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.projectInnovationValidator = projectInnovationValidator;
+    this.fundingSourceManager = fundingSourceManager;
+    this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
+    this.deliverableParticipantManager = deliverableParticipantManager;
   }
 
 
@@ -392,10 +409,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-  public DeliverablePartnership responsiblePartner(Deliverable deliverable, BaseAction action) {
+
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable, BaseAction baseAction) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.getPhase() != null && dp.getPhase().equals(action.getActualPhase()) && dp.isActive()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(baseAction.getActualPhase())
           && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).get(0);
       return partnership;
@@ -403,7 +421,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       return null;
     }
   }
-
 
   public void validateCaseStduies(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -442,6 +459,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateHighlight(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -469,7 +487,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
-
 
   public void validateInnovations(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -524,6 +541,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateLeverage(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -537,7 +555,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
   }
-
 
   public void validateOtherContributions(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -635,6 +652,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateProjectBudgetsFlagship(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -645,7 +663,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
-
 
   public void validateProjectDeliverables(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -683,13 +700,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     for (Deliverable deliverable : openA) {
 
-      deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(action.getActualPhase()));
+      deliverable.getDeliverableInfo(action.getActualPhase());
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, action));
       deliverable.setOtherPartners(this.otherPartners(deliverable, action));
-      deliverable.setGenderLevels(
-        deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      deliverable.setFundingSources(
-        deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+        .collect(Collectors.toList()));
+
+      for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+
+        deliverableFundingSource.setFundingSource(
+          fundingSourceManager.getFundingSourceById(deliverableFundingSource.getFundingSource().getId()));
+        deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+          deliverableFundingSource.getFundingSource().getFundingSourceInfo(action.getActualPhase()));
+        if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
+          deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+            deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(action.getActualPhase()));
+        }
+      }
+      deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
 
 
       if (action.isReportingActive()) {
@@ -699,52 +730,46 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverable.setQualityCheck(deliverableQualityCheck);
 
         if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
         if (deliverable.getDeliverableDisseminations() != null) {
-          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
-          if (deliverable.getDeliverableDisseminations().size() > 0) {
+          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+          if (deliverable.getDisseminations().size() > 0) {
             deliverable.setDissemination(deliverable.getDisseminations().get(0));
           } else {
             deliverable.setDissemination(new DeliverableDissemination());
           }
         }
 
-        if (deliverable.getDeliverableIntellectualAssets() != null) {
-          List<DeliverableIntellectualAsset> intellectualAssets =
-            new ArrayList<>(deliverable.getDeliverableIntellectualAssets());
-          if (deliverable.getDeliverableIntellectualAssets().size() > 0) {
-            deliverable.setIntellectualAsset(intellectualAssets.get(0));
-          } else {
-            deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
-          }
-        }
-
         if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
         if (deliverable.getDeliverablePublicationMetadatas() != null) {
-          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
         if (!deliverable.getPublicationMetadatas().isEmpty()) {
           deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
         }
 
         if (deliverable.getDeliverableDataSharings() != null) {
-          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
+          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
 
         deliverable.setUsers(deliverable.getDeliverableUsers().stream()
-          .filter(c -> c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
-          .collect(Collectors.toList()));
+          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-          .filter(c -> c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
-          .collect(Collectors.toList()));
+          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
         deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles().stream()
+          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())) {
 
           DeliverableFile deFile = new DeliverableFile();
           switch (dataSharingFile.getTypeId().toString()) {
@@ -762,6 +787,46 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           deFile.setSize(0);
           deliverable.getFiles().add(deFile);
         }
+
+        if (deliverable.getDeliverableIntellectualAssets() != null) {
+          List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+            .stream().filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+          if (intellectualAssets.size() > 0) {
+            deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+              .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
+          } else {
+            deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+          }
+        }
+        if (deliverable.getDeliverableParticipants() != null) {
+          List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+          if (deliverableParticipants.size() > 0) {
+            deliverable.setDeliverableParticipant(
+              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
+            // Participants Locations
+            if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
+              deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
+            } else {
+              List<DeliverableParticipantLocation> locations = deliverable.getDeliverableParticipant()
+                .getDeliverableParticipantLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList());
+              deliverable.getDeliverableParticipant().setParticipantLocations(locations);
+
+            }
+            if (deliverable.getDeliverableParticipant().getParticipantLocations() != null) {
+              for (DeliverableParticipantLocation location : deliverable.getDeliverableParticipant()
+                .getParticipantLocations()) {
+                deliverable.getDeliverableParticipant().getParticipantLocationsIsos()
+                  .add(location.getLocElement().getIsoAlpha2());
+              }
+            }
+          } else {
+            deliverable.setDeliverableParticipant(new DeliverableParticipant());
+          }
+        }
+
       }
 
       deliverableValidator.validate(action, deliverable, false);
