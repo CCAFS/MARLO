@@ -241,7 +241,7 @@
                 [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
               [/#if]
             </div>
-            [#if editable]
+            [#if editable && !reportingActive]
               <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
             [/#if]
           </div>

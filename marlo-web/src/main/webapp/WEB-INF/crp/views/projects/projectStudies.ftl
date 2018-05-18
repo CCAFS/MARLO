@@ -49,7 +49,9 @@
         [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
           
           [#-- Studies list --]
-          <h3 class="headTitle">[@s.text name="projectStudies.caseStudiestitle" /]</h3>
+          <h3 class="headTitle">
+            [@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small>
+          </h3>
           <div id="caseStudiesBlock" class="simpleBox">
             [@tableList list=(project.expectedStudies)![]  /]
           </div>
