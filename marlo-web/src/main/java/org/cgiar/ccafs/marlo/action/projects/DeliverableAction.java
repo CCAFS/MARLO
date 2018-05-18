@@ -342,6 +342,15 @@ public class DeliverableAction extends BaseAction {
       return true;
     }
 
+    if (this.isReportingActive()) {
+      if ((deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+        || deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != -1)
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        return true;
+      }
+    }
+
     return false;
 
   }
@@ -2900,12 +2909,27 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
       deliverableInfoDb.setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
     }
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-      .parseInt(ProjectStatusEnum.Extended.getStatusId())
-      && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
-      deliverableInfoDb.setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+
+    if (this.isPlanningActive()) {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
+        deliverableInfoDb
+          .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+      } else {
+        deliverableInfoDb.setNewExpectedYear(null);
+      }
     } else {
-      deliverableInfoDb.setNewExpectedYear(null);
+      if ((deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+        || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
+        deliverableInfoDb
+          .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+      } else {
+        deliverableInfoDb.setNewExpectedYear(null);
+      }
     }
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == null) {
