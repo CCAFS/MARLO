@@ -79,7 +79,7 @@
         [#if reportingActive]
           [#assign startExpectedYear = currentCycleYear-1]
         [#else]
-          [#assign startExpectedYear = (deliverable.deliverableInfo.year)!currentCycleYear ]
+          [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear) +1 ]
         [/#if]
         [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
       [#else]
