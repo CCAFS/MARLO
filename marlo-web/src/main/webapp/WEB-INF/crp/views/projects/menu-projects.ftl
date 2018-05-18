@@ -60,7 +60,7 @@
 
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
-[#assign completed = (action.isCompleteProject(projectID))!false /]
+[#-- assign completed = (action.isCompleteProject(projectID))!false /--]
 [#assign canUnSubmit = ((action.hasPersmissionUnSubmit(projectID))!false)/]
 
 [#assign sectionsForChecking = [] /]
@@ -100,7 +100,9 @@
                   --]
                 </a>
               </li>
+              [#assign sectionsChecked = 0 /]
               [#if item.active]
+                [#if submitStatus][#assign sectionsChecked = sectionsChecked+1 /][/#if]
                 [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
               [/#if]
             [/#if]
@@ -113,6 +115,9 @@
 </nav>
 
 <div class="clearfix"></div>
+
+[#assign completed = sectionsChecked == sectionsForChecking?size /]
+<strong> ${completed?string('Is Complete', '')}</strong>
 
 [#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
@@ -152,7 +157,7 @@
 [/#if]
 
 [#-- Unsubmit button --]
-[#if (canUnSubmit && submission) && canEditPhase && !crpClosed && !reportingActive]
+[#if (canUnSubmit && submission) && canEditPhase && !crpClosed ]
   <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
