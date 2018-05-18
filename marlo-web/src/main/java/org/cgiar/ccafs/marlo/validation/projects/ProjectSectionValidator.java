@@ -688,8 +688,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
+      // openA.addAll(deliverables.stream()
+      // .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+      // && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
+      // .getCurrentCycleYear()
+      // && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+      // && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      // .collect(Collectors.toList()));
+
       openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+        .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()) != null
+          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
           && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
             .getCurrentCycleYear()
           && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
@@ -828,7 +838,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
 
       }
-
+      System.out.println(deliverable.getId());
       deliverableValidator.validate(action, deliverable, false);
     }
 
