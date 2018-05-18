@@ -241,7 +241,7 @@
                 [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
               [/#if]
             </div>
-            [#if editable]
+            [#if editable && !reportingActive]
               <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
             [/#if]
           </div>
@@ -363,7 +363,7 @@
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${(reportingActive)?string('fieldFocus','')}" editable=editable &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
         </div>
         [/#if]
       </div>
@@ -376,7 +376,7 @@
   <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
-    [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
+    [#if editable && !reportingActive]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="projectOutcomeNextUser.projectNextUser" /]</span>
@@ -387,17 +387,16 @@
     <div class="form-group">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-20" editable=editable && !reportingActive /]
+        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-20" editable=editable && (!reportingActive || (!element.nextUser?has_content)!true) /]
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable && (!reportingActive || (!element.knowledge?has_content)!true) /]
       </div>
       [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable && !reportingActive /]
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable && (!reportingActive || (!element.strategies?has_content)!true) /]
       </div>
-      [#-- Status (Active, Inactive) --]
      
     </div>
     
