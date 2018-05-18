@@ -405,10 +405,10 @@
       <br /> 
       <div class="" id="nextUserYear-${currentCycleYear}">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.reportOnProgress" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
+          [@customForm.textArea name="${customName}.knowledgeReport" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
         </div>
         <div class="form-group">
-          [@customForm.textArea name="${customName}.strategiesEncourage" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
+          [@customForm.textArea name="${customName}.strategiesReport" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
         </div> 
         <div class="clearfix"></div>
       </div> 
