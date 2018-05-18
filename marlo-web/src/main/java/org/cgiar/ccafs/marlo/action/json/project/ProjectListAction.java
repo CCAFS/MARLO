@@ -78,7 +78,6 @@ public class ProjectListAction extends BaseSummariesAction {
         projects.add(projectInfo);
       }
     }
-    System.out.println(projects.size());
     return SUCCESS;
 
   }

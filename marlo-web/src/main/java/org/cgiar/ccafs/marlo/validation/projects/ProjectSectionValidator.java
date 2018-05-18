@@ -837,7 +837,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
 
       }
-      System.out.println(deliverable.getId());
       deliverableValidator.validate(action, deliverable, false);
     }
 
