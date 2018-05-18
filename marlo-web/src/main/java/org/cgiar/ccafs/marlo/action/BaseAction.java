@@ -2905,8 +2905,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    List<Submission> submissions = powbSynthesis.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = powbSynthesis
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -3012,8 +3012,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       if (clazz == CrpMilestone.class) {
         CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
-        List<ProjectMilestone> projectMilestones = crpMilestone.getProjectMilestones()
-          .stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
+        List<ProjectMilestone> projectMilestones = crpMilestone
+          .getProjectMilestones().stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
             && c.getProjectOutcome().isActive() && c.getProjectOutcome().getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
         Set<Project> projectsSet = new HashSet<>();
@@ -3389,8 +3389,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -4909,8 +4909,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPowbSynthesisSubmitted(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    List<Submission> submissions = powbSynthesis.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = powbSynthesis
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -4985,8 +4985,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isProjectSubmitted(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -5486,8 +5486,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
-
+  public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcomeDB, ProjectOutcome projectOutcome) {
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
     if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
       && !this.isProjectNew(project.getId())) {
@@ -5510,7 +5509,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         projectComponenetLesson.setCreatedBy(this.getCurrentUser());
         projectComponenetLesson.setModifiedBy(this.getCurrentUser());
         projectComponenetLesson.setModificationJustification("");
-        projectComponenetLesson.setProjectOutcome(projectOutcome);
+        projectComponenetLesson.setProjectOutcome(projectOutcomeDB);
         projectComponenetLesson.setPhase(this.getActualPhase());
         projectComponenetLesson.setCycle(this.getActualPhase().getDescription());
         projectComponenetLesson.setYear(this.getActualPhase().getYear());
@@ -5519,22 +5518,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       } else {
 
         ProjectComponentLesson projectComponenetLesson = projectOutcome.getProjectComponentLesson();
-
         ProjectComponentLesson projectComponentDB =
-          projectComponentLessonManager.getProjectComponentLessonById(projectComponenetLesson.getId());;
+          projectComponentLessonManager.getProjectComponentLessonById(projectComponenetLesson.getId());
 
         projectComponentDB.setActive(true);
+        projectComponentDB.setActiveSince(new Date());
         projectComponentDB.setComponentName(actionName);
         projectComponentDB.setModifiedBy(this.getCurrentUser());
         projectComponentDB.setModificationJustification("");
-
-        projectOutcome.getProjectComponentLesson().setPhase(this.getActualPhase());
-        projectOutcome.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
-        projectOutcome.getProjectComponentLesson().setYear(this.getActualPhase().getYear());
-
-        projectComponentDB.setLessons(projectComponenetLesson.getLessons());
-        // project
-        // projectComponenetLesson.setComponentName(projectOutcome.getP);
+        projectComponentDB.setLessons(projectOutcome.getProjectComponentLesson().getLessons());
+        projectComponentDB.setPhase(this.getActualPhase());
+        projectComponentDB.setCycle(this.getActualPhase().getDescription());
+        projectComponentDB.setYear(this.getActualPhase().getYear());
+        projectComponentDB.setProjectOutcome(projectOutcomeDB);
 
         projectComponentDB = projectComponentLessonManager.saveProjectComponentLesson(projectComponentDB);
 

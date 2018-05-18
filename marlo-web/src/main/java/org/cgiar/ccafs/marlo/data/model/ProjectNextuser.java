@@ -42,15 +42,20 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
   private String strategies;
 
   @Expose
+  private String knowledgeReport;
+
+  @Expose
+  private String strategiesReport;
+
+  @Expose
   private String composeID;
+
 
   @Expose
   private boolean active;
 
-
   @Expose
   private Date activeSince;
-
   @Expose
   private String modificationJustification;
 
@@ -65,6 +70,7 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public ProjectNextuser(ProjectOutcome projectOutcome, User usersByCreatedBy, User usersByModifiedBy, String nextUser,
     String knowledge, String strategies, boolean isActive, Date activeSince, String modificationJustification) {
@@ -101,7 +107,6 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -114,7 +119,6 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   @Override
   public Long getId() {
     return id;
@@ -125,6 +129,9 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     return knowledge;
   }
 
+  public String getKnowledgeReport() {
+    return knowledgeReport;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -161,6 +168,11 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
 
   public String getStrategies() {
     return strategies;
+  }
+
+
+  public String getStrategiesReport() {
+    return strategiesReport;
   }
 
 
@@ -209,6 +221,11 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setKnowledgeReport(String knowledgeReport) {
+    this.knowledgeReport = knowledgeReport;
+  }
+
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -233,10 +250,16 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     this.strategies = strategies;
   }
 
+
+  public void setStrategiesReport(String strategiesReport) {
+    this.strategiesReport = strategiesReport;
+  }
+
   @Override
   public String toString() {
     return "ProjectNextuser [id=" + id + ", projectOutcome=" + projectOutcome + ", nextUser=" + nextUser
-      + ", knowledge=" + knowledge + ", strategies=" + strategies + "]";
+      + ", knowledge=" + knowledge + ", strategies=" + strategies + ", knowledgeReport=" + knowledgeReport
+      + ", strategiesReport=" + strategiesReport + ", active=" + active + "]";
   }
 
 
