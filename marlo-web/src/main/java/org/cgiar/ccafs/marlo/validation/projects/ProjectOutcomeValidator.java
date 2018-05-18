@@ -311,21 +311,26 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
       }
+      if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() != null) {
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
 
+        if (action.getCurrentCycleYear() == calendarEnd.get(Calendar.YEAR)) {
+          if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+            || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
 
-      if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
-        || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+            if (projectOutcome.getAchievedValue() == null || projectOutcome.getAchievedValue().longValue() < 0) {
+              action.addMessage(action.getText("projectOutcome.achievedValue"));
+              action.getInvalidFields().put("input-projectOutcome.achievedValue", InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
 
-        if (projectOutcome.getAchievedValue() == null || projectOutcome.getAchievedValue().longValue() < 0) {
-          action.addMessage(action.getText("projectOutcome.achievedValue"));
-          action.getInvalidFields().put("input-projectOutcome.achievedValue", InvalidFieldsMessages.EMPTYFIELD);
+          if (!(this.isValidString(projectOutcome.getNarrativeAchieved())
+            && this.wordCount(projectOutcome.getNarrativeAchieved()) <= 100)) {
+            action.addMessage(action.getText("projectOutcome.narrativeAchieved"));
+            action.getInvalidFields().put("input-projectOutcome.narrativeAchieved", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
-      }
-
-      if (!(this.isValidString(projectOutcome.getNarrativeAchieved())
-        && this.wordCount(projectOutcome.getNarrativeAchieved()) <= 100)) {
-        action.addMessage(action.getText("projectOutcome.narrativeAchieved"));
-        action.getInvalidFields().put("input-projectOutcome.narrativeAchieved", InvalidFieldsMessages.EMPTYFIELD);
       }
 
 
