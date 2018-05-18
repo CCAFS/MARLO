@@ -131,7 +131,7 @@
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
             [#-- Regional scope --]
-            [@customForm.selectGroup name="${customName}.projectExpectedStudyInfo.repIndRegion.id" list=(regions)![] element=(element.region.id)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="study.region" required=true className="" editable=editable /]
+            [@customForm.selectGroup name="${customName}.projectExpectedStudyInfo.repIndRegion.id" list=(regions)![] element=(element.projectExpectedStudyInfo.repIndRegion)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="study.region" required=true className="" editable=editable /]
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]

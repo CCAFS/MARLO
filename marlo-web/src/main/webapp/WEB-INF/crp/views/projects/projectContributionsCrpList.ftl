@@ -58,12 +58,15 @@
               </p>
             </div>
             
+            [#if reportingActive && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
+            
             [#-- Project Outcomes List --]
             <table id="projectOutcomesList" class="table table-striped table-hover ">
               <thead>
                 <tr>
                   <th>Flagship</th>
                   <th>Outcome 2022</th>
+                  <th></th>
                   <th>Status</th>
                   <th>Remove</th>
                 </tr>
@@ -119,19 +122,36 @@
       <td class="text-center">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</td>
       [#-- Title --]
       <td>
+        [#-- isThisComplete --]
+        [#local objectStatus = (action.getProjectOutcomeStatus(projectOutcome.id))!{}]
+        [#if objectStatus?has_content]
+          [#if !(objectStatus.missingFields)?has_content]
+            [#assign isThisComplete = true /]
+          [#else]
+            [#assign isThisComplete = false /]
+          [/#if]
+        [#else]
+            [#assign isThisComplete = false /]
+        [/#if]
+      
         [#-- Draft Tag --]
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+        
+        [#-- Report --]
+        [#if reportingActive && !isThisComplete]
+          <span class="label label-primary" title="Required for reporting"><span class="glyphicon glyphicon-flash" ></span> Report</span>
+        [/#if]
+        
         <a href="${projectOutcomeUrl}">
           ${projectOutcome.crpProgramOutcome.description}
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
             [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
         </a>
-       [#if !isTemplate]
-        <div class="pull-right">
-          [@popUps.relationsMacro element=projectOutcome /]
-        </div>
-      [/#if]
+        
+      </td>
+      <td>
+        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=false /]</div>[/#if]
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
