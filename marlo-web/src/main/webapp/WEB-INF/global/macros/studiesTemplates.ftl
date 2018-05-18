@@ -2,7 +2,7 @@
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
-  [#local isOutcomeCaseStudy = (element.projectExpectedStudyInfo.studyType.id == 1)!false /]
+  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
   
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
   [#local stageProcessOne = ((element.projectExpectedStudyInfo.repIndStageProcess.id == 1))!false ]
@@ -213,6 +213,7 @@
             path="${(action.getPath(expectedID))!}"
             isEditable=editable
             labelClass="label-min-width"
+            required=true
           /]          
         </div>
       </div>

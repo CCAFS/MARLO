@@ -818,6 +818,15 @@
       </result>
     </action>
 
+    <!-- Planning -->
+    <action name="{crp}/expectedStudies"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectExpectedStudies.ftl
+      </result>
+    </action>
+     
+    <!-- Reporting -->
     <action name="{crp}/studies"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
       <interceptor-ref name="editProjectsStack" />
