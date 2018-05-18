@@ -235,7 +235,9 @@
 [#-- Deliverable person template --]
 [@deliverableList.deliverablePerson element={} projectPartner={} name="deliverable.responsiblePartner" index=-1 isResponsable=true checked=false isTemplate=true/]
 
-[@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
-[@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
+[#if reportingActive]
+  [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
+  [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
+[/#if]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
