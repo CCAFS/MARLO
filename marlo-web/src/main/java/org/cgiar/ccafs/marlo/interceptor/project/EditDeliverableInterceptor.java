@@ -225,9 +225,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
       }
-      if (!this.canEditDeliverable(deliverable, phase)) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
+
+      if (baseAction.isPlanningActive()) {
+        if (!this.canEditDeliverable(deliverable, phase)) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
 
       if (phase.getProjectPhases().stream()

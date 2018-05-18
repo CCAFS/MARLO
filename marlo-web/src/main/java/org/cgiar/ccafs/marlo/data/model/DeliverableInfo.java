@@ -351,6 +351,11 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
       return true;
     }
 
+    if (status != null && newExpectedYear != null && this.newExpectedYear <= year
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      return true;
+    }
+
     return false;
   }
 

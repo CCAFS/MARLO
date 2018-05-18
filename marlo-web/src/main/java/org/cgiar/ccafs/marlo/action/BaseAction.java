@@ -2372,7 +2372,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return a SectionStatus object with the information requested.
    */
   public SectionStatus getDeliverableStatus(long deliverableID) {
+
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
     if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
       if (deliverableInfo.getStatus() != null
