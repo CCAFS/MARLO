@@ -61,19 +61,21 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   private StudyTypeManager studyTypeManager;
 
-
   private List<ProjectExpectedStudy> nonProjectStudies;
 
 
   private List<ProjectExpectedStudy> myNonProjectStudies;
 
 
+  private List<ProjectExpectedStudy> projectStudies;
+
+
   // Parameters or Variables
   private Project project;
+
   private List<Integer> allYears;
 
   private long projectID;
-
   private long expectedID;
 
   private GlobalUnit loggedCrp;
@@ -90,7 +92,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.studyTypeManager = studyTypeManager;
 
   }
-
 
   @Override
   public String add() {
@@ -134,7 +135,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return INPUT;
   }
 
-
   @Override
   public String delete() {
     for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
@@ -149,6 +149,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     }
     return SUCCESS;
   }
+
 
   @Override
   public List<Integer> getAllYears() {
@@ -173,8 +174,13 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
+  }
+
+  public List<ProjectExpectedStudy> getProjectStudies() {
+    return projectStudies;
   }
 
   @Override
@@ -195,10 +201,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     if (project != null) {
       List<ProjectExpectedStudy> studies =
         project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
+      projectStudies = new ArrayList<ProjectExpectedStudy>();
       for (ProjectExpectedStudy projectExpectedStudy : studies) {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-          project.getExpectedStudies().add(projectExpectedStudy);
+          projectStudies.add(projectExpectedStudy);
         }
       }
     } else {
@@ -210,20 +216,26 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
           .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
         nonProjectStudies.add(projectExpectedStudy);
       }
-
       myNonProjectStudies = new ArrayList<>();
-      expectedStudies = new ArrayList<>(
-        projectExpectedStudyManager.getUserStudies(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-          .filter(e -> e.isActive()).collect(Collectors.toList()));
-      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-        if (nonProjectStudies.contains(projectExpectedStudy)) {
+
+      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           nonProjectStudies.remove(projectExpectedStudy);
           myNonProjectStudies.add(projectExpectedStudy);
         }
+      } else {
+        expectedStudies = new ArrayList<>(
+          projectExpectedStudyManager.getUserStudies(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+            .filter(e -> e.isActive()).collect(Collectors.toList()));
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+          if (nonProjectStudies.contains(projectExpectedStudy)) {
+            nonProjectStudies.remove(projectExpectedStudy);
+            myNonProjectStudies.add(projectExpectedStudy);
+          }
 
+        }
       }
-
-
     }
   }
 
@@ -249,6 +261,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectStudies(List<ProjectExpectedStudy> projectStudies) {
+    this.projectStudies = projectStudies;
   }
 
 

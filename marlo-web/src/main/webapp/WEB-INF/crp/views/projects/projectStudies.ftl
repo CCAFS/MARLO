@@ -53,7 +53,9 @@
             [@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small>
           </h3>
           <div id="caseStudiesBlock" class="simpleBox">
-            [@tableList list=(project.expectedStudies)![]  /]
+          ${project.id}
+            ${projectStudies}
+            [@tableList list=(projectStudies)![]  /]
           </div>
           [#-- Add a new --]
           [#if canEdit] 

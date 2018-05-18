@@ -138,7 +138,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID());
           break;
         case DELIVERABLES:
-          // this.projectSectionValidator.validateProjectDeliverables(this, this.getProjectID());
+          this.projectSectionValidator.validateProjectDeliverables(this, this.getProjectID());
           break;
         case OUTCOMES:
           this.projectSectionValidator.validateProjectOutcomes(this, this.getProjectID());
