@@ -415,7 +415,6 @@ public class ProjectCaseStudyAction extends BaseAction {
 
         FileManager.copyFile(file, this.getCaseStudyPath() + fileFileName);
         LOG.info("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
-        System.out.println("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
 
       }
 

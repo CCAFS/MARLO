@@ -52,7 +52,6 @@ public class ILRIDatasetsClientAPI extends MetadataClientApi {
       String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
       jo = jo.getJSONObject("result");
-      System.out.println(jo);
       JSONArray titleJsonArray = jo.getJSONArray("resources");
       metadataModel.setDescription(jo.getString("ILRI_prjabstract"));
       metadataModel.setKeywords(jo.getString("ILRI_prjspecies"));

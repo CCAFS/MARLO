@@ -216,7 +216,6 @@ public class DeliverableValidator extends BaseValidator {
         // Validate Deliverable Participant
         if (deliverable.getDeliverableParticipant() != null
           && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
-          System.out.println(deliverable.getDeliverableParticipant().getHasParticipants());
           this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
         } else {
           action.addMessage("hasParticipants");
@@ -231,7 +230,6 @@ public class DeliverableValidator extends BaseValidator {
 
 
     if (!action.getFieldErrors().isEmpty()) {
-      System.out.println(action.getFieldErrors());
       action.addActionError(action.getText("saving.fields.required"));
     } else if (action.getValidationMessage().length() > 0) {
       action.addActionMessage(

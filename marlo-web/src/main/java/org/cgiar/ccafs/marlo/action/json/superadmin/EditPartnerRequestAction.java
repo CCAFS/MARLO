@@ -99,7 +99,6 @@ public class EditPartnerRequestAction extends BaseAction {
         partnerRequestManager.savePartnerRequest(partnerRequest);
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       success = false;
     }
     return SUCCESS;
@@ -160,7 +159,6 @@ public class EditPartnerRequestAction extends BaseAction {
       modificationJustification =
         StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       success = false;
     }
   }
