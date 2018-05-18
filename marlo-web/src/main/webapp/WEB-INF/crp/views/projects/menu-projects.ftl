@@ -26,8 +26,8 @@
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative },
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative },
       [#-- { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': phaseOne, 'show': reportingActive && !project.projectInfo.administrative,  'development': true },--]
-      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',  'action': 'studies',  'active': true, 'show': reportingActive && !project.projectInfo.administrative },
-      { 'slug': 'expectedStudies',  'name': 'projects.menu.expectedStudies',  'action': 'expectedStudies',  'active': true, 'show': !reportingActive }
+      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive && !project.projectInfo.administrative },
+      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !reportingActive && !project.projectInfo.administrative }
       ]
     },
     { 'title': 'Outputs', 'show': true,
