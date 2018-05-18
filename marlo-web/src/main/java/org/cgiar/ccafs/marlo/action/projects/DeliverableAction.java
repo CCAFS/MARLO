@@ -332,21 +332,27 @@ public class DeliverableAction extends BaseAction {
 
   public Boolean candEditExpectedYear(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == null) {
       return false;
     }
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-      .parseInt(ProjectStatusEnum.Extended.getStatusId())
-      || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-      return true;
-    }
 
     if (this.isReportingActive()) {
-      if ((deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-        || deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != -1)
+      if (((deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != -1)
         && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        return true;
+      }
+
+
+    } else {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+        || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
         return true;
       }
     }
@@ -861,11 +867,12 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list =
+        deliverable.getDeliverablePartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+          .collect(Collectors.toList());
 
 
       return list;
@@ -1321,7 +1328,6 @@ public class DeliverableAction extends BaseAction {
             if (intellectualAssets.size() > 0) {
               DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
                 .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
-              System.out.println(asset.getHasPatentPvp());
               deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
                 .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
               if (this.transaction != null && !this.transaction.equals("-1")) {
@@ -1507,8 +1513,8 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager.findAll()
-            .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager
+            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 
@@ -2333,6 +2339,7 @@ public class DeliverableAction extends BaseAction {
         participant.setId(null);
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
         participant.setPhase(this.getActualPhase());
+        participant.setActiveSince(new Date());
         participant.setCreatedBy(this.getCurrentUser());
         participant.setModificationJustification("");
         participant.setModifiedBy(this.getCurrentUser());

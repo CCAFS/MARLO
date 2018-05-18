@@ -77,9 +77,9 @@
     <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
       [#if editable || editStatus]
         [#if reportingActive]
-          [#assign startExpectedYear = currentCycleYear-1]
+          [#assign startExpectedYear = (deliverable.deliverableInfo.year)!currentCycleYear ]
         [#else]
-          [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear) +1 ]
+          [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [/#if]
         [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
       [#else]

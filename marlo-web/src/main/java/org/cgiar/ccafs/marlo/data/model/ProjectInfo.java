@@ -371,7 +371,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     if (startDate != null && endDate != null) {
 
       Calendar calendarEnd = Calendar.getInstance();
-      calendarEnd.setTime(endDate);
+      calendarEnd.set(Calendar.YEAR, 2050);
 
       while (year < calendarEnd.get(Calendar.YEAR)) {
         year++;
