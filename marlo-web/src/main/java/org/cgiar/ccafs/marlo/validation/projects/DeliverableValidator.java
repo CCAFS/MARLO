@@ -185,19 +185,19 @@ public class DeliverableValidator extends BaseValidator {
           if (deliverable.getQualityCheck() != null) {
             if (deliverable.getQualityCheck().getQualityAssurance() == null) {
               action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.qualityCheck.qualityAssurance.id",
+              action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getQualityCheck().getDataDictionary() == null) {
               action.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.qualityCheck.dataDictionary.id",
+              action.getInvalidFields().put("input-deliverable.qualityCheck.dataDictionary.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getQualityCheck().getDataTools() == null) {
               action.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.qualityCheck.dataTools.id",
+              action.getInvalidFields().put("input-deliverable.qualityCheck.dataTools.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
