@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -101,6 +102,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudy.setActiveSince(new Date());
     projectExpectedStudy.setCreatedBy(this.getCurrentUser());
     projectExpectedStudy.setActive(true);
+    projectExpectedStudy.setYear(this.getActualPhase().getYear());
 
     if (project != null) {
       projectExpectedStudy.setProject(project);
@@ -207,6 +209,17 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
           projectStudies.add(projectExpectedStudy);
         }
       }
+
+
+      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
+        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId())
+        .collect(Collectors.toList()));
+      for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+        if (!projectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+          projectStudies.add(expectedStudy.getProjectExpectedStudy());
+        }
+      }
+
     } else {
       nonProjectStudies = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()

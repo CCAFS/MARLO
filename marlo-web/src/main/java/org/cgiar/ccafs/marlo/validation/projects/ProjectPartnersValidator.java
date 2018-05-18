@@ -361,12 +361,20 @@ public class ProjectPartnersValidator extends BaseValidator {
   private void validateReportingLessons(BaseAction action, Project project) {
     if (project.getPartners() != null && !project.getPartners().isEmpty()) {
       if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-        if (!this.isValidString(project.getProjectComponentLesson().getLessons())) {
+        if (project.getProjectComponentLesson() != null) {
+          if (!this.isValidString(project.getProjectComponentLesson().getLessons())) {
+            action.addMessage(action.getText("projectPartners.lessons.reporting"));
+            action.addMissingField("projectPartners.lessons.reporting");
+            action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           action.addMessage(action.getText("projectPartners.lessons.reporting"));
           action.addMissingField("projectPartners.lessons.reporting");
           action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+
       }
     }
   }

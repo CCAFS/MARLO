@@ -241,7 +241,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
-
                 // Validate Srf Targets
                 if (projectExpectedStudy.getSrfTargets() == null || projectExpectedStudy.getSrfTargets().isEmpty()) {
                   action.addMessage(action.getText("targets"));
@@ -249,7 +248,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("list-expectedStudy.srfTargets",
                     action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
                 }
-
                 // Validate Comments (TopLevel)
                 if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
                   .getTopLevelComments())) {
@@ -258,7 +256,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.topLevelComments",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
-
                 // Validate Flagships
                 if (projectExpectedStudy.getFlagships() == null || projectExpectedStudy.getFlagships().isEmpty()) {
                   action.addMessage(action.getText("flagshipList"));
@@ -266,7 +263,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("list-expectedStudy.flagships",
                     action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"flagshipList"}));
                 }
-
                 // Validate Institutions
                 if (projectExpectedStudy.getInstitutions() == null
                   || projectExpectedStudy.getInstitutions().isEmpty()) {
@@ -275,7 +271,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("list-expectedStudy.institutions",
                     action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Institutions"}));
                 }
-
                 // Validate Elaboration Outcomes
                 if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
                   .getElaborationOutcomeImpactStatement())
@@ -288,7 +283,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
 
-
                 // Validate References Cited
                 if (!this.isValidString(
                   projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
@@ -298,16 +292,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
 
-                // Validate References File
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                  .getReferencesFile() == null
-                  || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesFile()
-                    .getId() == null) {
-                  action.addMessage(action.getText("References File"));
-                  action.addMissingField("study.referencesCitedAttach");
-                  action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.referencesFile.id",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                }
 
                 // Validate Describe Gender
                 if (!this.isValidString(
@@ -352,19 +336,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                   action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.comunicationsMaterial",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
-
-
-                // Validate Outcome File
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                  .getOutcomeFile() == null
-                  || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getOutcomeFile()
-                    .getId() == null) {
-                  action.addMessage(action.getText("Outcome File"));
-                  action.addMissingField("study.communicationMaterialsAttach");
-                  action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.outcomeFile.id",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                }
-
 
                 // Validate Contacts
                 if (!this.isValidString(
@@ -412,6 +383,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.addMissingField("study.countries");
               action.getInvalidFields().put("list-expectedStudy.countriesIds",
                 action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+            } else {
+              if (projectExpectedStudy.getCountriesIds() == null || projectExpectedStudy.getCountriesIds().isEmpty()) {
+                action.addMessage(action.getText("countries"));
+                action.addMissingField("study.countries");
+                action.getInvalidFields().put("list-expectedStudy.countriesIds",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+              }
             }
           }
 

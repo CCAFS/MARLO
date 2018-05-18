@@ -410,8 +410,10 @@ public class ProjectInnovationAction extends BaseAction {
       organizationTypeList = repIndOrganizationTypeManager.findAll();
 
       expectedStudyList = new ArrayList<>();
-      List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream().filter(
-        ex -> ex.isActive() && ex.getType() != null && ex.getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId())
+      List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
+        .filter(ex -> ex.isActive() && ex.getType() != null
+          && ex.getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId() && ex.getProject() != null
+          && ex.getProject().getId() == project.getId())
         .collect(Collectors.toList());
       for (ProjectExpectedStudy study : expectedStudies) {
         if (study.getProjectExpectedStudyInfo(phase) != null) {
