@@ -470,7 +470,7 @@
         [#list element.fundingSources as fs]
           [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fs.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
           <a target="_blank" href="[@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"] [@s.param name='fundingSourceID']${fs.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-            <span style="font-size:0.7em;">${fs.composedName}</span>
+            <span style="font-size:0.7em;">${(fs.fundingSourceInfo.composedName)!'null'}</span>
           </a>
           <br />
         [/#list]

@@ -64,15 +64,25 @@ function addDataTable() {
       "bAutoWidth": false, // This option enables the auto adjust columns width
       "iDisplayLength": 50,// Number of rows to show on the table
       "language": {
-        "emptyTable": "No outcome case studies entered into the system yet."
+        "emptyTable": "No studies entered into the system yet."
       },
+      "order": [
+        [
+            4, 'desc'
+        ]
+      ],
       aoColumnDefs: [
-        {
-            bSortable: false,
-            aTargets: [
-              -1
-            ]
-        }
+          {
+              bSortable: true,
+              aTargets: [
+                -1
+              ]
+          }, {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
       ]
   });
   $('table#projectHighlights').on('draw.dt', function() {

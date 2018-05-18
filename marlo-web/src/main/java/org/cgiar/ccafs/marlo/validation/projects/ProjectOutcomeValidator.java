@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -142,20 +144,26 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-
-        if (!(this.isValidString(projectMilestone.getNarrativeTarget())
-          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
-          action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
-          action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (!action.isReportingActive()) {
+          if (!(this.isValidString(projectMilestone.getNarrativeTarget())
+            && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
+        if (action.isReportingActive()) {
+          if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
+            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
 
       }
-
-
     }
-
 
   }
 
@@ -182,6 +190,20 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategies",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+    if (action.isReportingActive()) {
+      if (!(this.isValidString(projectNextuser.getKnowledgeReport())
+        && this.wordCount(projectNextuser.getKnowledgeReport()) <= 100)) {
+        action.addMessage(action.getText("projectOutcomeNextUser.reportOnProgress.readText"));
+        action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].knowledgeReport",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (!(this.isValidString(projectNextuser.getStrategiesReport())
+        && this.wordCount(projectNextuser.getStrategiesReport()) <= 100)) {
+        action.addMessage(action.getText("projectOutcomeNextUser.strategiesEncourage.readText"));
+        action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategiesReport",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
 
   }
 
@@ -198,62 +220,48 @@ public class ProjectOutcomeValidator extends BaseValidator {
     endDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
-    if (!action.isProjectNew(project.getId()) && action.isReportingActive()) {
-      this.validateLessonsLearnOutcome(action, projectOutcome);
-      if (action.getValidationMessage().toString().contains("Lessons")) {
-        this.replaceAll(action.getValidationMessage(), "Lessons",
-          "Lessons regarding partnerships and possible implications for the coming planning cycle");
-        action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
-          InvalidFieldsMessages.EMPTYFIELD);
+    projectOutcome.setCrpProgramOutcome(
+      crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+    if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+      || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+
+      if (projectOutcome.getExpectedValue() == null || projectOutcome.getExpectedValue().longValue() < 0) {
+        action.addMessage(action.getText("projectOutcome.expectedValue"));
+        action.getInvalidFields().put("input-projectOutcome.expectedValue", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-    if (action.isPlanningActive()) {
-      projectOutcome.setCrpProgramOutcome(
-        crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
-      if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
-        || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
-
-        if (projectOutcome.getExpectedValue() == null || projectOutcome.getExpectedValue().longValue() < 0) {
-          action.addMessage(action.getText("projectOutcome.expectedValue"));
-          action.getInvalidFields().put("input-projectOutcome.expectedValue", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
 
 
-      if (!(this.isValidString(projectOutcome.getNarrativeTarget())
-        && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
-        action.addMessage(action.getText("projectOutcome.narrativeTarget"));
-        action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // TODO: Validate outcome gender here
-
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
-
-        if (!(this.isValidString(projectOutcome.getGenderDimenssion())
-          && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
-          action.addMessage(action.getText("projectOutcome.genderDimenssion"));
-          action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-
-
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
-
-        if (!(this.isValidString(projectOutcome.getYouthComponent())
-          && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
-          action.addMessage(action.getText("projectOutcome.youthComponent"));
-          action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-
-
+    if (!(this.isValidString(projectOutcome.getNarrativeTarget())
+      && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
+      action.addMessage(action.getText("projectOutcome.narrativeTarget"));
+      action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
-    if (projectOutcome.getMilestones() != null || projectOutcome.getMilestones().size() > 0) {
+    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
+
+      if (!(this.isValidString(projectOutcome.getGenderDimenssion())
+        && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
+        action.addMessage(action.getText("projectOutcome.genderDimenssion"));
+        action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
+    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
+
+      if (!(this.isValidString(projectOutcome.getYouthComponent())
+        && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
+        action.addMessage(action.getText("projectOutcome.youthComponent"));
+        action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
+    if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
         List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
           .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
@@ -266,20 +274,16 @@ public class ProjectOutcomeValidator extends BaseValidator {
         }
       }
 
-    } else {
-      action.addMessage(action.getText("projectOutcome.milestones"));
-      action.getInvalidFields().put("list-projectOutcome.milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
     }
 
 
     if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
+      // TODO: check validation for reporting 2018
       if (projectOutcome.getIndicators() != null) {
         for (int i = 0; i < projectOutcome.getIndicators().size(); i++) {
           this.validateProjectOutcomeIndicator(action, projectOutcome.getIndicators().get(i), i);
         }
       }
-
     }
 
 
@@ -293,6 +297,59 @@ public class ProjectOutcomeValidator extends BaseValidator {
         action.getInvalidFields().put("input-projectOutcome.nextUsers",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Next User"}));
       }
+    }
+
+    if (action.isReportingActive()) {
+      if (!action.isProjectNew(project.getId())) {
+
+        if (projectOutcome.getProjectComponentLesson() != null) {
+          ProjectComponentLesson lesson = projectOutcome.getProjectComponentLesson();
+          if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
+            action.addMessage(action.getText("projectOutcome.lessons.reporting.readText"));
+            action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
+              action.getText(InvalidFieldsMessages.EMPTYLIST));
+          }
+        }
+      }
+      if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() != null) {
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
+
+        if (action.getCurrentCycleYear() == calendarEnd.get(Calendar.YEAR)) {
+          if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+            || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+
+            if (projectOutcome.getAchievedValue() == null || projectOutcome.getAchievedValue().longValue() < 0) {
+              action.addMessage(action.getText("projectOutcome.achievedValue"));
+              action.getInvalidFields().put("input-projectOutcome.achievedValue", InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+          if (!(this.isValidString(projectOutcome.getNarrativeAchieved())
+            && this.wordCount(projectOutcome.getNarrativeAchieved()) <= 100)) {
+            action.addMessage(action.getText("projectOutcome.narrativeAchieved"));
+            action.getInvalidFields().put("input-projectOutcome.narrativeAchieved", InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+
+
+      if (projectOutcome.getCommunications() != null && projectOutcome.getCommunications().size() > 0) {
+        int i = 0;
+        for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+          if (projectCommunication.getYear() == action.getCurrentCycleYear()) {
+            if (!(this.isValidString(projectCommunication.getCommunication())
+              && this.wordCount(projectCommunication.getCommunication()) <= 100)) {
+              action.addMessage(action.getText("projectOutcome.communicationEngagement"));
+              action.getInvalidFields().put("input-projectOutcome.communications[" + i + "].communication",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+          i++;
+        }
+      }
+
+
     }
 
 

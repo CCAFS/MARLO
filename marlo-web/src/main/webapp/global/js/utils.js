@@ -314,7 +314,7 @@ function getParameterByName(name,url) {
 /**
  * Get Parameter from a class, example:
  * <p class="parameter-100">, the function will return 100
- *
+ * 
  * @param selector
  *          <p class="parameter-100">
  *          </p>
@@ -341,9 +341,9 @@ function getSerializeForm() {
   $("form").each(function(indexForm,form) {
     result += "<strong> Form #" + indexForm + "</strong></br>";
     $.each($(form).serializeArray(), function(i,a) {
-      if(a.value) {
-        result += '<p>' + a.name + ' : <span>' + a.value + '</span></p>';
-      }
+      // if(a.value) {
+      result += '<p>' + a.name + ' : <span>' + a.value + '</span></p>';
+      // }
     });
   });
   return result;
@@ -562,7 +562,7 @@ function validateField($input) {
 }
 
 // Validate Email
-function isEmail(email){
+function isEmail(email) {
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
   if(!emailReg.test(email)) {
     return false;

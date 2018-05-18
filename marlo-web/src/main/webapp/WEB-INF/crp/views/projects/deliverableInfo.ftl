@@ -1,4 +1,3 @@
-
 [#ftl]
 <div class="simpleBox">
   [#-- Title input --] 
@@ -24,23 +23,14 @@
     <div id="dialog" title="Deliverable types" style="display: none">
       <table id="deliverableTypes" style="height:700px; width:950px;">
         <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
-        <th> [@s.text name="project.deliverables.dialogMessage.part2" /] </th>
-        <th> [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
+        <th> [@s.text name="project.deliverables.dialogMessage.part2" /] / [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
         [#if deliverableTypeParent?has_content]
         [#list deliverableTypeParent as mt]
           [#list action.getDeliverablesSubTypes(mt.id) as st]
-            [#if st_index == 0]
             <tr>
-              <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
-              <td> ${st.name} </td>
-              <td> ${(st.description)!}</td>
+              [#if st_index == 0]<th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>[/#if]
+              <td> ${st.name} [#if ((st.description?has_content)!false) && (st.description != st.name)]<br /> (<i><small>${st.description}</small></i>)[/#if]</td>
             </tr>
-            [#else]
-            <tr>
-              <td> ${st.name} </td>
-              <td> ${(st.description)!} </td>
-            </tr>
-            [/#if]
           [/#list]
         [/#list]
         [/#if]  
@@ -68,15 +58,11 @@
       [#assign canNotEditYear =!action.candEditYear(deliverable.id)/]
       
       [#if editable ]
-      
-      [#if canNotEditYear]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
-      
-      [#else]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
-      
-      [/#if]
-        
+        [#if canNotEditYear]
+          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false required=true className="yearExpected" disabled=canNotEditYear /]
+        [#else]
+          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false required=true className="yearExpected" disabled=canNotEditYear /]
+        [/#if]
       [#else]
          <div class="select">
           <label for="">[@s.text name="project.deliverable.generalInformation.year" /]:</label>
@@ -91,9 +77,9 @@
     <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
       [#if editable || editStatus]
         [#if reportingActive]
-          [#assign startExpectedYear = currentCycleYear-1]
-        [#else]
           [#assign startExpectedYear = (deliverable.deliverableInfo.year)!currentCycleYear ]
+        [#else]
+          [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [/#if]
         [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
       [#else]
@@ -182,81 +168,7 @@
 
 <h3 class="headTitle">[@s.text name="deliverable.crossCuttingDimensionsTitle" /] </h3>
 <div class="simpleBox">
-  [#-- Does this deliverable have a cross-cutting dimension --]
-  <div class="form-group">
-    <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
-    <div class="row">
-      <div class="col-md-12">
-        [#if editable]
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   class="crosscutingDimension"  id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    class="crosscutingDimension"  id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" class="crosscutingDimension"  id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       class=""                      id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
-        [#else]
-          [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p> <input type="hidden" name="deliverable.deliverableInfo.crossCuttingGender" value="true">[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingYouth" value="true">[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingCapacity" value="true">[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingNa" value="true">[/#if]
-          
-          [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-          [#if (!deliverable.deliverableInfo.crossCuttingGender?has_content) && (!deliverable.deliverableInfo.crossCuttingYouth?has_content) && (!deliverable.deliverableInfo.crossCuttingCapacity?has_content) && (!deliverable.deliverableInfo.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
-        [/#if]
-      </div>
-    </div>
-  </div>
-  
-  [#-- If gender dimension, select with ones --]
-  <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
-  [#if !action.hasSpecificities('crp_one_gender')]
-    [#if deliverable.genderLevels?has_content]
-      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label></div>
-      <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
-        <ul class="list">
-          [#list deliverable.genderLevels as element]
-            <li class="genderLevel clearfix">
-              <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
-              <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
-              <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
-              <div class="clearfix"></div>
-            </li>
-          [/#list]
-        </ul>
-      </div>
-    [/#if]  
-  [#else]
-    [#if ((deliverable.genderLevels[0])?? && deliverable.genderLevels[0].descriptionGenderLevel??)]
-    <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
-    <div class="input"> 
-      <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
-      <input type="hidden" name="deliverable.genderLevels[0].genderLevel" value="${(deliverable.genderLevels[0].genderLevel)!}" />
-    </div>
-    [/#if]
-  [/#if]
-  </div>
-  
-  [#-- Cross-cutting dimensions blocks --]
-  <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" help="deliverable.ccDimension.gender.help" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
-  </div>
-  <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" help="deliverable.ccDimension.youth.help" listName="crossCuttingScoresMap"  required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
-  </div>
-  <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
-  </div>
-  
-  [#-- Gender Types List --]
-  <div style="display:none">
-    [#if genderLevels?has_content]
-      [#list genderLevels as element]
-        <span id="genderLevel-${(element.id)!}">
-          <span class="description">${(element.description)!}</span><br />
-          <i><span class="completeDescription">${(element.completeDescription)!}</span></i>
-        </span>
-      [/#list]
-    [/#if]
-  </div>
-  
+  [@deliverableMacros.deliverableCrossCuttingMacro /]
 </div>
 
 

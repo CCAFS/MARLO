@@ -17,16 +17,21 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDisseminationDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<DeliverableDissemination, Long> implements DeliverableDisseminationDAO {
+public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<DeliverableDissemination, Long>
+  implements DeliverableDisseminationDAO {
 
 
   @Inject
@@ -65,6 +70,21 @@ public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<Deliverab
     }
     return null;
 
+  }
+
+  @Override
+  public DeliverableDissemination findDisseminationByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    String query = "select distinct dd from DeliverableDissemination dd "
+      + " where phase.id = :phaseId and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+
+    Object findSingleResult = super.findSingleResult(DeliverableDissemination.class, createQuery);
+    DeliverableDissemination deliverableDisseminationResult = (DeliverableDissemination) findSingleResult;
+
+
+    return deliverableDisseminationResult;
   }
 
   @Override

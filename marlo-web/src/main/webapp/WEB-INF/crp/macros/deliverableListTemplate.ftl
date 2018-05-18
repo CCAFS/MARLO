@@ -49,10 +49,12 @@
             
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
-
+            
+            [#-- Report --]
             [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
+            
             [#if deliverable.deliverableInfo.title?has_content]
                 <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${deliverable.deliverableInfo.title}">
                 [#if deliverable.deliverableInfo.title?length < 120] 
@@ -81,7 +83,7 @@
             None
           [#else]
             ${(deliverable.deliverableInfo.year)!'None'}
-            [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
+            [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3) && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1) ]
               Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
           [/#if]
@@ -212,7 +214,7 @@
           None
           [#else]
           ${(deliverable.deliverableInfo.year)!'None'}
-            [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
+            [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3)  && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1)]
               Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
           [/#if]

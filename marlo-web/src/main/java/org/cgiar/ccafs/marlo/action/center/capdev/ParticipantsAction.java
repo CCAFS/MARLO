@@ -127,8 +127,6 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       String real_path = path + "/src/main/resources/template/participants-template.xlsm";
       String path_ = config.getUploadsBaseFolder() + "/participants-template.xlsm";
 
-      System.out.println(real_path);
-
       FileInputStream fileInput = new FileInputStream(path_);
       XSSFWorkbook wb = new XSSFWorkbook(fileInput);
 
