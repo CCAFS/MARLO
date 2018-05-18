@@ -53,8 +53,6 @@
             [@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small>
           </h3>
           <div id="caseStudiesBlock" class="simpleBox">
-          ${project.id}
-            ${projectStudies}
             [@tableList list=(projectStudies)![]  /]
           </div>
           [#-- Add a new --]
@@ -104,6 +102,7 @@
         <th class="type">Type</th>
         <th class="owner">Owner</th>
         <th class="year">Year</th>
+        <th></th>
         [#if !previousTable]
         <th class="removeHighlight"></th> 
         [/#if]
@@ -116,14 +115,24 @@
           <tr>
             <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
             <td class="name">
-              [#if reportingActive && ((item.year == currentCycleYear)!false)]
-                <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
-              [/#if]
+              [#-- Is this complete --]
+              [#local objectStatus = (action.getProjectOutcomeStatus(item.id))!{}]
+              [#local isThisComplete = !(objectStatus.missingFields)?has_content /]
+            
+              [#-- Report Tag --]
+              [#if reportingActive && ((item.year == currentCycleYear)!false)]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
               <a href="${dlurl}">[#if item.projectExpectedStudyInfo.title?trim?has_content]${item.projectExpectedStudyInfo.title}[#else][@s.text name="global.untitled" /][/#if]</a>
             </td>
             <td class="type">[#if item.projectExpectedStudyInfo.studyType?has_content]${item.projectExpectedStudyInfo.studyType.name}[#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
+            <td>
+              [#if isThisComplete]
+                <span class="icon-20 icon-check" title="Complete"></span> 
+              [#else]
+                <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if]
+            </td>
             [#if !previousTable]
             <td class="removeHighlight-row text-center">
               [#if canEdit  && ((item.year gte  currentCycleYear)!true) ]
