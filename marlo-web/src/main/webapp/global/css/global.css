@@ -1825,6 +1825,11 @@ a.currentReportingSection li, a.currentSection li {
   font-size: 0.95em !important;
 }
 
+#secondaryMenu ul li ul li.draft{
+  font-style: italic;
+}
+
+
 #secondaryMenu ul li ul li.currentSection{
   font-weight: bold;
 }
