@@ -80,9 +80,6 @@ public class ProjectSubmissionAction extends BaseAction {
   private PhaseManager phaseManager;
 
 
-  private boolean complete;
-
-
   private long projectID;
 
   private Project project;
@@ -106,25 +103,21 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    complete = false;
     if (this.hasPermission("submitProject")) {
-      if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions().stream()
-          .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-            && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-          .collect(Collectors.toList());
+      List<Submission> submissions = project.getSubmissions().stream()
+        .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
+          && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        .collect(Collectors.toList());
 
-        if (submissions.isEmpty()) {
-          this.submitProject();
-          complete = true;
-        } else {
-          long submissionId = submissions.get(0).getId();
-          Submission submission = submissionManager.getSubmissionById(submissionId);
-          submission.setUser(userManager.getUser(submission.getUser().getId()));
-          this.setSubmission(submission);
-          complete = true;
-        }
+      if (submissions.isEmpty()) {
+        this.submitProject();
+      } else {
+        long submissionId = submissions.get(0).getId();
+        Submission submission = submissionManager.getSubmissionById(submissionId);
+        submission.setUser(userManager.getUser(submission.getUser().getId()));
+        this.setSubmission(submission);
       }
+
 
       return INPUT;
     } else {
@@ -158,11 +151,6 @@ public class ProjectSubmissionAction extends BaseAction {
   }
 
 
-  public boolean isComplete() {
-    return complete;
-  }
-
-
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -183,6 +171,7 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project != null) {
       String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_MANAGE_BASE_PERMISSION, params));
+      project.getProjecInfoPhase(this.getActualPhase());
       // Initializing Section Statuses:
       // this.initializeProjectSectionStatuses(project, String.valueOf(this.getActualPhase().getYear()));
     }
@@ -362,11 +351,6 @@ public class ProjectSubmissionAction extends BaseAction {
     } else {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
-  }
-
-
-  public void setComplete(boolean complete) {
-    this.complete = complete;
   }
 
   public void setCycleName(String cycleName) {

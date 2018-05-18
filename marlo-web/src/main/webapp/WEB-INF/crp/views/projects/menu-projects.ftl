@@ -82,6 +82,7 @@
     </small> 
   </p> 
   <ul>
+    [#assign sectionsChecked = 0 /]
     [#list menus as menu]
       [#if menu.show]
       <li>
@@ -100,9 +101,8 @@
                   --]
                 </a>
               </li>
-              [#assign sectionsChecked = 0 /]
               [#if item.active]
-                [#if submitStatus][#assign sectionsChecked = sectionsChecked+1 /][/#if]
+                [#if submitStatus][#assign sectionsChecked = sectionsChecked + 1 /][/#if]
                 [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
               [/#if]
             [/#if]
@@ -117,7 +117,6 @@
 <div class="clearfix"></div>
 
 [#assign completed = sectionsChecked == sectionsForChecking?size /]
-<strong> ${completed?string('Is Complete', '')}</strong>
 
 [#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
