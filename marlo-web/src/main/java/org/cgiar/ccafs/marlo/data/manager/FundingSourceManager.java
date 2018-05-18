@@ -73,7 +73,8 @@ public interface FundingSourceManager {
    */
   public FundingSource saveFundingSource(FundingSource fundingSource);
 
-  public FundingSource saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName, Phase phase);
+  public FundingSource saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName,
+    Phase phase);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -112,7 +113,8 @@ public interface FundingSourceManager {
    * @return the list of FundingSource
    */
 
-  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID);
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
+    long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

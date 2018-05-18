@@ -211,7 +211,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID) {
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
+    long phaseID) {
 
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");
@@ -223,8 +224,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.global_unit_id="
       + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
-    query.append("project_budgets.is_active = 1   ");
-    // query.append("project_budgets.`year` =" + year);
+    query.append("project_budgets.is_active = 1 AND ");
+    query.append("funding_source_locations.`id_phase` =" + phaseID);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
