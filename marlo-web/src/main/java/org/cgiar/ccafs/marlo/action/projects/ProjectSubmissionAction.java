@@ -308,8 +308,12 @@ public class ProjectSubmissionAction extends BaseAction {
      * + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
      * + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
      */
+    if (this.isPlanningActive()) {
+      message.append(this.getText("submit.email.message", values));
+    } else {
+      message.append(this.getText("submit.email.message.noPDF", values));
+    }
 
-    message.append(this.getText("submit.email.message", values));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     // message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -319,36 +323,38 @@ public class ProjectSubmissionAction extends BaseAction {
     ByteBuffer buffer = null;
     String fileName = null;
     String contentType = null;
-    try {
-      // Set the parameters that are assigned in the prepare by reportingSummaryAction
-      reportingSummaryAction.setSession(this.getSession());
-      reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
-      reportingSummaryAction.setLoggedCrp(loggedCrp);
-      reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
-      reportingSummaryAction.setProjectID(projectID);
-      Project project = projectManager.getProjectById(projectID);
-      Set<Submission> submissions = new HashSet<>();
-      submissions.add(this.getSubmission());
-      project.setSubmissions(submissions);
-      reportingSummaryAction.setProject(project);
-      reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
-      reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
-        reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
-      reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
-      reportingSummaryAction.loadProvider(this.getSession());
-      reportingSummaryAction.execute();
-      // Getting the file data.
-      //
-      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
-      fileName = this.getFileName();
-      contentType = "application/pdf";
-      //
-    } catch (Exception e) {
-      e.printStackTrace();
-      // // Do nothing.
-      LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+    // Allow for Reporting when Reporting-PDF is completed
+    if (this.isPlanningActive()) {
+      try {
+        // Set the parameters that are assigned in the prepare by reportingSummaryAction
+        reportingSummaryAction.setSession(this.getSession());
+        reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
+        reportingSummaryAction.setLoggedCrp(loggedCrp);
+        reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
+        reportingSummaryAction.setProjectID(projectID);
+        Project project = projectManager.getProjectById(projectID);
+        Set<Submission> submissions = new HashSet<>();
+        submissions.add(this.getSubmission());
+        project.setSubmissions(submissions);
+        reportingSummaryAction.setProject(project);
+        reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
+        reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
+          reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
+        reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
+        reportingSummaryAction.loadProvider(this.getSession());
+        reportingSummaryAction.execute();
+        // Getting the file data.
+        //
+        buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
+        fileName = this.getFileName();
+        contentType = "application/pdf";
+        //
+      } catch (Exception e) {
+        e.printStackTrace();
+        // // Do nothing.
+        LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+      }
     }
-
 
     if (buffer != null && fileName != null && contentType != null) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
