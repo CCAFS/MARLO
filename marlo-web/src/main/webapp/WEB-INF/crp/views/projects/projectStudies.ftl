@@ -116,9 +116,7 @@
             <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
             <td class="name">
               [#-- Is this complete --]
-              [#local objectStatus = (action.getProjectOutcomeStatus(item.id))!{}]
-              [#local isThisComplete = !(objectStatus.missingFields)?has_content /]
-            
+              [#local isThisComplete = (action.hasMissingFields(item.class.name,item.id))!{}]            
               [#-- Report Tag --]
               [#if reportingActive && ((item.year == currentCycleYear)!false)]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
               <a href="${dlurl}">[#if item.projectExpectedStudyInfo.title?trim?has_content]${item.projectExpectedStudyInfo.title}[#else][@s.text name="global.untitled" /][/#if]</a>

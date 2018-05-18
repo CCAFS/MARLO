@@ -542,6 +542,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
+
+      if (!this.isDraft()) {
+        if (expectedStudy.getCountries() != null) {
+          for (ProjectExpectedStudyCountry country : expectedStudy.getCountries()) {
+            expectedStudy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+          }
+        }
+      }
+
       // Setup Files
       if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
         if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId() != null) {
@@ -630,10 +639,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         expectedStudy.getCrps().clear();
       }
 
-      if (expectedStudy.getCountries() != null) {
-        expectedStudy.getCountries().clear();
-      }
-
       if (expectedStudy.getSubIdos() != null) {
         expectedStudy.getSubIdos().clear();
       }
@@ -696,9 +701,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       this.saveCrps(expectedStudyDB, phase);
       this.saveFlagships(expectedStudyDB, phase);
-      if (project == null) {
-        this.saveRegions(expectedStudyDB, phase);
-      }
+      this.saveRegions(expectedStudyDB, phase);
       this.saveProjects(expectedStudyDB, phase);
       this.saveSubIdos(expectedStudyDB, phase);
       this.saveInstitutions(expectedStudyDB, phase);
@@ -720,7 +723,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       expectedStudy.setCreatedBy(expectedStudyDB.getCreatedBy());
       expectedStudy.setActive(true);
 
-      // Save the Countries List (ProjectInnovationcountry)
+      // Save the Countries List (ProjectExpectedStudyCountry)
       if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {
 
         List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
