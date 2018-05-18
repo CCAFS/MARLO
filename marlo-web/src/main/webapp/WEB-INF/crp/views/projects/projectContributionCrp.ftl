@@ -376,7 +376,7 @@
   <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
-    [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
+    [#if editable && !reportingActive]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="projectOutcomeNextUser.projectNextUser" /]</span>
