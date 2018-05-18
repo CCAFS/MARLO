@@ -1,0 +1,1 @@
+UPDATE `global_units` SET `is_active` = 0 WHERE `id` = 23;

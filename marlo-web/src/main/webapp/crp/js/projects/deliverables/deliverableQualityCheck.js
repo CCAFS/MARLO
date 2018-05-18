@@ -99,7 +99,7 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
   // If the deliverables is disseminated
-  if($('.findable input').val() == "true") {
+  if($('.type-findable input').val() == "true") {
     $fairCompliant.addClass('achieved');
   } else {
     $fairCompliant.addClass('not-achieved');
@@ -109,7 +109,7 @@ function checkFiandable() {
 function checkAccessible() {
   var $fairCompliant = $('.fairCompliant.accessible');
   // Is this deliverable Open Access?
-  if($('.accessible input').val() == "true") {
+  if($('.type-accessible input').val() == "true") {
     $fairCompliant.addClass('achieved');
   } else {
     $fairCompliant.addClass('not-achieved');
@@ -119,7 +119,7 @@ function checkAccessible() {
 function checkInteroperable() {
   var $fairCompliant = $('.fairCompliant.interoperable');
   // If the deliverables is disseminated
-  if($('.findable input').val() == "true") {
+  if($('.type-findable input').val() == "true") {
     var channelSelected = $('select.disseminationChannel').val();
     // If is disseminated in CGSpace or Dataverse
     if((channelSelected == "cgspace") || (channelSelected == "dataverse")) {
@@ -155,11 +155,10 @@ function checkInteroperable() {
 function checkReusable() {
   var $fairCompliant = $('.fairCompliant.reusable');
   // If has the deliverable adopted a license
-  if($('.license input').val() == "true") {
+  if($('.type-license input').val() == "true") {
     // If is different to "Other"
-    var inputChecked = $('input[name="deliverable.license"]:checked').val();
-    if(!(typeof inputChecked === "undefined")
-        && !((inputChecked == "OTHER") || (inputChecked == "CC_BY_ND") || (inputChecked == "CC_BY_NC_ND"))) {
+    var inputChecked = $('input[name="deliverable.deliverableInfo.license"]:checked').val();
+    if(!(typeof inputChecked === "undefined") && !((inputChecked == "OTHER") )) {
       $fairCompliant.addClass('achieved');
     } else {
       // Does this license allow modifications?
@@ -183,6 +182,8 @@ function checkFAIRCompliant() {
   checkInteroperable();
   checkReusable();
 }
+
+/** Quality Check * */
 function checkQualityAssurance() {
   var qualityAssurance = $("input.qualityAssurance:checked");
   var value = qualityAssurance.val();

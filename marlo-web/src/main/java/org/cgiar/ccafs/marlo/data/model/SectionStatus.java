@@ -54,16 +54,20 @@ public class SectionStatus implements java.io.Serializable {
 
   private CaseStudy caseStudy;
 
-
   private ProjectHighlight projectHighlight;
 
-  private IpProgram ipProgram;
 
+  private IpProgram ipProgram;
 
   private IpLiaisonInstitution ipLiaisonInstitution;
 
 
   private PowbSynthesis powbSynthesis;
+
+
+  private ProjectInnovation projectInnovation;
+
+  private ProjectExpectedStudy projectExpectedStudy;
 
 
   public SectionStatus() {
@@ -82,10 +86,10 @@ public class SectionStatus implements java.io.Serializable {
     this.sectionName = sectionName;
   }
 
-
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
+
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -95,9 +99,11 @@ public class SectionStatus implements java.io.Serializable {
     return this.cycle;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -127,8 +133,16 @@ public class SectionStatus implements java.io.Serializable {
     return project;
   }
 
+  public ProjectExpectedStudy getProjectExpectedStudy() {
+    return projectExpectedStudy;
+  }
+
   public ProjectHighlight getProjectHighlight() {
     return projectHighlight;
+  }
+
+  public ProjectInnovation getProjectInnovation() {
+    return projectInnovation;
   }
 
   public ProjectOutcome getProjectOutcome() {
@@ -143,15 +157,14 @@ public class SectionStatus implements java.io.Serializable {
     return this.year;
   }
 
-
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
   }
 
-
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
+
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
@@ -166,15 +179,14 @@ public class SectionStatus implements java.io.Serializable {
     this.fundingSource = fundingSource;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
-
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
@@ -185,6 +197,7 @@ public class SectionStatus implements java.io.Serializable {
     this.missingFields = missingFields;
   }
 
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
@@ -194,8 +207,17 @@ public class SectionStatus implements java.io.Serializable {
     this.project = project;
   }
 
+  public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
+    this.projectExpectedStudy = projectExpectedStudy;
+  }
+
+
   public void setProjectHighlight(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
+  }
+
+  public void setProjectInnovation(ProjectInnovation projectInnovation) {
+    this.projectInnovation = projectInnovation;
   }
 
 

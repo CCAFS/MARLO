@@ -1,4 +1,5 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#assign reportingActiveMenu = (reportingActive)!false ]
 [#assign mainMenu= [
   [#-- HOME - Not Logged --]
@@ -15,24 +16,23 @@
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- FUNDING SOURCES - ALL --]
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged && !centerGlobalUnit, 'active': true },
-  [#-- PUBLICATIONS REPORTING - ALL --]
-  { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive && !centerGlobalUnit, 'active': action.canAcessPublications() , 'help': true },
+  [#-- ADDITIONAL REPORTING - CRP --]
+  { 'slug': 'additionalReporting', 'name': 'menu.additionalReporting',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',  'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,  'help': true,  
+    'subItems' : [
+      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  action.canAcessPublications() },
+      { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studiesList',  'visible': logged, 'active':  true }
+    ]
+  },
   [#-- SYNTHESIS PLANNING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActive?string("synthesis","powb")}',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && action.canAcessPOWB() && !reportingActive && !centerGlobalUnit, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && action.canAcessPOWB() && !reportingActive && !centerGlobalUnit, 'active': true,    
     'subItems' : [
       { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged, 'active':  action.canAcessPOWB() }
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActive?string("synthesis","powb")}',       'action': '${(crpSession)!}/crpIndicators',    'visible': logged && action.canAcessPOWB() && reportingActive && !centerGlobalUnit, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && action.canAcessPOWB() && reportingActive && !centerGlobalUnit, 'active': true,    
     'subItems' : [
-      { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrp()},
-      [#-- Phase 1 --]
-      { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesisPandR',  'visible': logged && phaseOne, 'active': action.canAcessSynthesisMog() },
-      { 'slug': 'synthesisByMog', 'name': 'menu.synthesis.synthesisByMog', 'namespace': '/synthesis',  'action': '${(crpSession)!}/synthesisByMog',  'visible': logged && phaseOne, 'active': action.canAcessSynthesisMog() },
-      [#-- Phase 2 --]
-      { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesis',  'visible': logged && (!phaseOne), 'active': action.canAcessCrpAdmin() },
-      { 'slug': 'coasSynthesis', 'name': 'menu.synthesis.coasSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/coasSynthesis',  'visible': logged && (!phaseOne), 'active': action.canAcessCrpAdmin() },
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': action.canAcessCrp(),  'development':true },
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false }
     ]
   },
@@ -70,6 +70,7 @@
               <a href="${url}" onclick="return ${subItem.active?string}" class="action-${subItem.action}">
                 [#if subItem.icon?has_content]<span class="glyphicon glyphicon-${subItem.icon}"></span> [/#if]
                 [@s.text name=subItem.name ][/@s.text]
+                [#if (subItem.development)!false][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /][/#if]
               </a>
             </li>
             [/#if]

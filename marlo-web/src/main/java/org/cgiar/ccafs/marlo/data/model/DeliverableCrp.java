@@ -16,17 +16,16 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+  @Expose
+  private CrpProgram crpProgram;
 
   @Expose
-  private CrpPandr crpPandr;
-
-
-  @Expose
-  private IpProgram ipProgram;
+  private GlobalUnit globalUnit;
 
 
   @Expose
   private Deliverable deliverable;
+
 
   @Expose
   private Phase phase;
@@ -40,6 +39,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
     this.deliverable = deliverable;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -63,8 +63,8 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public CrpPandr getCrpPandr() {
-    return crpPandr;
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
   }
 
 
@@ -72,14 +72,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return deliverable;
   }
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
 
   @Override
   public Long getId() {
     return id;
-  }
-
-  public IpProgram getIpProgram() {
-    return ipProgram;
   }
 
   @Override
@@ -89,13 +88,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -104,9 +101,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return u;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
+
 
   @Override
   public int hashCode() {
@@ -122,9 +121,8 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
-  public void setCrpPandr(CrpPandr crpPandr) {
-    this.crpPandr = crpPandr;
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
 
@@ -133,13 +131,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 
-  public void setIpProgram(IpProgram ipProgram) {
-    this.ipProgram = ipProgram;
+  public void setId(Long id) {
+    this.id = id;
   }
 
 
@@ -150,10 +148,9 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "DeliverableCrp [id=" + id + ", crpPandr=" + crpPandr + ", ipProgram=" + ipProgram + ", deliverable="
-      + deliverable + "]";
+    return "DeliverableCrp [id=" + id + ", deliverable=" + deliverable + ", phase=" + phase + ", crpProgram="
+      + crpProgram + ", globalUnit=" + globalUnit + "]";
   }
-
 
 }
 

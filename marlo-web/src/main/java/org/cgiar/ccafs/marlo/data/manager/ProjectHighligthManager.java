@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
@@ -71,6 +72,6 @@ public interface ProjectHighligthManager {
   public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight);
 
   public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section,
-    List<String> relationsName);
+    List<String> relationsName, Phase phase);
 
 }

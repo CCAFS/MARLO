@@ -80,7 +80,6 @@ public class ProgramCoordinatorAction extends BaseAction {
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    System.out.println("ROLE ----------- " + this.getSession().get(APConstants.CENTER_COORD_ROLE).toString());
     long coorRoleId = Long.parseLong(this.getSession().get(APConstants.CENTER_COORD_ROLE).toString());
 
     Role role = roleService.getRoleById(coorRoleId);

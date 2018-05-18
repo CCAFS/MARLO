@@ -25,16 +25,17 @@
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne && !project.projectInfo.administrative },
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative },
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative },
-      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': phaseOne, 'show': reportingActive && !project.projectInfo.administrative },
-      { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': false, 'show': reportingActive && !project.projectInfo.administrative },
-      { 'slug': 'expectedStudies',  'name': 'projects.menu.expectedStudies',  'action': 'expectedStudies',  'active': true, 'show': !reportingActive }
+      [#-- { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': phaseOne, 'show': reportingActive && !project.projectInfo.administrative,  'development': true },--]
+      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive && !project.projectInfo.administrative },
+      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !reportingActive && !project.projectInfo.administrative }
       ]
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
       { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne },
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
-      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': false ,'show': reportingActive }
+      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': true,'show': reportingActive  },
+      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
     },
     { 'title': 'Activities', 'show': action.hasSpecificities(action.crpActivitesModule()),
@@ -48,7 +49,7 @@
 
       { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.projectInfo.administrative && !reportingActive && !phaseOne, 'active': true  },
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive},
-      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': false, 'show': reportingActive && action.hasSpecificities("crp_leverages_module")}
+      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module")}
 
       ]
     }
@@ -59,7 +60,7 @@
 
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
-[#assign completed = (action.isCompleteProject(projectID))!false /]
+[#-- assign completed = (action.isCompleteProject(projectID))!false /--]
 [#assign canUnSubmit = ((action.hasPersmissionUnSubmit(projectID))!false)/]
 
 [#assign sectionsForChecking = [] /]
@@ -81,6 +82,7 @@
     </small> 
   </p> 
   <ul>
+    [#assign sectionsChecked = 0 /]
     [#list menus as menu]
       [#if menu.show]
       <li>
@@ -89,16 +91,18 @@
             [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
             [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${submitStatus?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
+              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] ${submitStatus?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
                   [@s.text name=item.name/]
+                  [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /][/#if]
                   [#-- Draft Tag 
                   [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
                   --]
                 </a>
               </li>
               [#if item.active]
+                [#if submitStatus][#assign sectionsChecked = sectionsChecked + 1 /][/#if]
                 [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
               [/#if]
             [/#if]
@@ -111,6 +115,8 @@
 </nav>
 
 <div class="clearfix"></div>
+
+[#assign completed = sectionsChecked == sectionsForChecking?size /]
 
 [#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
@@ -150,7 +156,7 @@
 [/#if]
 
 [#-- Unsubmit button --]
-[#if (canUnSubmit && submission) && canEditPhase && !crpClosed && !reportingActive]
+[#if (canUnSubmit && submission) && canEditPhase && !crpClosed ]
   <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>

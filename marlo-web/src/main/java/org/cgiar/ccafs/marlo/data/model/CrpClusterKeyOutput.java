@@ -237,6 +237,12 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.modifiedBy = usersByModifiedBy;
   }
 
+  @Override
+  public String toString() {
+    return "CrpClusterKeyOutput [id=" + id + ", keyOutput=" + keyOutput + ", crpClusterOfActivity="
+      + crpClusterOfActivity + ", composeID=" + composeID + ", active=" + active + "]";
+  }
+
 
 }
 

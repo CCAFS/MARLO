@@ -317,15 +317,12 @@ public class EvidencesAction extends BaseAction {
       List<ProjectExpectedStudy> expectedStudies =
         new ArrayList<>(
           projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-              && ps.getProject().getGlobalUnitProjects().stream()
-                .filter(
-                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).size() > 0)
+            .filter(ps -> ps.isActive() && ps.getPhase() == phaseID && ps.getProject().getGlobalUnitProjects().stream()
+              .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+              .collect(Collectors.toList()).size() > 0)
             .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-        System.out.println(projectExpectedStudy.getId());
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
         projectExpectedStudy.getProject()
           .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
@@ -517,7 +514,8 @@ public class EvidencesAction extends BaseAction {
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          .filter(es -> es.isActive() && es.getPhase() != null && es.getPhase() == phaseID)
+          .collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           popUpProjects.add(projectExpectedStudy);
         }

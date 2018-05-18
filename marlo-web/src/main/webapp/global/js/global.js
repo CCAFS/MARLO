@@ -1,3 +1,6 @@
+/** * Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ** */
+$.widget.bridge('uibutton', $.ui.button);
+$.widget.bridge('uitooltip', $.ui.tooltip);
 
 // Global Vars
 var yesnoEvent;
@@ -24,6 +27,8 @@ $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
 
+  // Set elementsListComponent
+  setElementsListComponent();
 
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);
@@ -85,6 +90,11 @@ $(document).ready(function() {
     // Turn save button in saving button
     turnSavingStateOn(this);
 
+  });
+  
+  $('[name=save]').on('click', function(e) {
+    // Cancel Auto Save
+    autoSaveActive = false;
   });
 
   // Yes / No Event
@@ -237,7 +247,8 @@ $(document).ready(function() {
       track: true,
       content: function() {
         return $(this).attr('title');
-      }
+      },
+      position: { my: "left+15 center", at: "right center" }
   });
 
   /* ADD TITLE TOOLTIP TO ALL REQUIRED SIGN */
@@ -315,7 +326,7 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
-  //Accessible enter click when button is focus
+  // Accessible enter click when button is focus
   $("input[type='submit']").keyup(function(event) {
     if (event.keyCode === 13) {
         $(this).click();
@@ -363,11 +374,10 @@ $('.selectedProgram, selectedProject').on('click', function() {
 });
 
 // event to inputs in login form
-/*$('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) {
-  if(event.keyCode === 10 || event.keyCode === 13) {
-    event.submit();
-  }
-});*/
+/*
+ * $('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) { if(event.keyCode === 10 ||
+ * event.keyCode === 13) { event.submit(); } });
+ */
 
 /* prevent enter key to inputs */
 
@@ -513,4 +523,78 @@ function notificationError(message) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);
   notyOptions.text = message;
   noty(notyOptions);
+}
+
+
+/* Set elementsListComponent function to the functioning of the customForm macro */
+function setElementsListComponent(){
+  // On select element
+  $('select[class*="elementType-"]').on('change', onSelectElement);
+
+  // On click remove button
+  $('[class*="removeElementType-"]').on('click', onClickRemoveElement);
+}
+
+function onSelectElement() {
+  var $select = $(this);
+  var $option = $select.find('option:selected');
+  var elementType = $(this).classParam('elementType');
+  var maxLimit = $(this).classParam('maxLimit');
+  var $list = $('.listType-' + elementType);
+  var counted = $list.find('li').length;
+
+  // Verify limit if applicable
+  if((maxLimit > 0) && (counted >= maxLimit)) {
+    $select.val('-1').trigger('change.select2');
+    $select.parent().animateCss('shake');
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'Only ' + maxLimit + ' can be selected';
+    noty(notyOptions);
+    return;
+  }
+
+  // Verify repeated selection
+  var $repeatedElement = $list.find('.elementRelationID[value="' + $option.val() + '"]');
+  if($repeatedElement.length) {
+    $select.val('-1').trigger('change.select2');
+    $repeatedElement.parent().animateCss('shake');
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'It was already selected';
+    noty(notyOptions);
+    return;
+  }
+
+  // Clone the new element
+  var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
+  // Remove template tag
+  $element.find('input').each(function(i, e){
+    e.name = (e.name).replace("_TEMPLATE_", "");
+    e.id = (e.id).replace("_TEMPLATE_", "");
+  });
+  // Set attributes
+  $element.find('.elementRelationID').val($option.val());
+  $element.find('.elementName').html($option.text());
+  // Show the element
+  $element.appendTo($list).hide().show('slow', function() {
+    $select.val('-1').trigger('change.select2');
+  });
+
+  // Update indexes
+  $list.find('li.relationElement').each(function(i,element) {
+    $(element).setNameIndexes(1, i);
+  });
+}
+
+function onClickRemoveElement() {
+  var removeElementType = $(this).classParam('removeElementType');
+  var $parent = $(this).parent();
+  var $list = $('.listType-' + removeElementType);
+  $parent.slideUp(100, function() {
+    $parent.remove();
+
+    // Update indexes
+    $list.find('li.relationElement').each(function(i,element) {
+      $(element).setNameIndexes(1, i);
+    });
+  });
 }

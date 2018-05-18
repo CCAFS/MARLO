@@ -29,7 +29,9 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -137,6 +139,7 @@ public class AutoSaveWriterAction extends BaseAction {
       String jSon = gson.toJson(result);
       if (nameClass.equals(Project.class.getName())) {
         jSon = jSon.replaceAll("project\\.", "");
+        jSon = jSon.replaceAll("partnershipLocationsIsos", "partnershipLocationsIsosText");
       }
       /*
        * if (nameClass.equals(ProjectBilateralCofinancing.class.getName())) {
@@ -164,7 +167,16 @@ public class AutoSaveWriterAction extends BaseAction {
         jSon = jSon.replaceAll("highlight\\.", "");
         jSon = jSon.replaceAll("typesids", "typesidsText");
         jSon = jSon.replaceAll("countriesIds", "countriesIdsText");
+      }
 
+      if (nameClass.equals(ProjectInnovation.class.getName())) {
+        jSon = jSon.replaceAll("innovation\\.", "");
+        jSon = jSon.replaceAll("countriesIds", "countriesIdsText");
+      }
+
+      if (nameClass.equals(ProjectExpectedStudy.class.getName())) {
+        jSon = jSon.replaceAll("expectedStudy\\.", "");
+        jSon = jSon.replaceAll("countriesIds", "countriesIdsText");
       }
 
       if (nameClass.equals(FundingSource.class.getName())) {
@@ -173,6 +185,10 @@ public class AutoSaveWriterAction extends BaseAction {
 
       if (nameClass.equals(PowbSynthesis.class.getName())) {
         jSon = jSon.replaceAll("powbSynthesis\\.", "");
+      }
+      if (nameClass.equals(Deliverable.class.getName())) {
+        jSon = jSon.replaceAll("deliverable\\.", "");
+        jSon = jSon.replaceAll("participantLocationsIsos", "participantLocationsIsosText");
       }
 
       /****************************************************

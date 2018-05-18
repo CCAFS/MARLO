@@ -39,6 +39,23 @@ function attachEvents() {
     });
   });
 
+  // No regional programmatic focus
+  $('#noRegional').on('change', function() {
+    if(this.checked) {
+      $('input.rpInput').attr("onclick", "return false");
+      $('input.rpInput').prop("checked", false);
+      $('input.rpInput').parent().addClass('disabled disable');
+    } else {
+      $('input.rpInput').attr("onclick", "");
+      $('input.rpInput').parent().removeClass('disabled disable');
+    }
+  }).trigger('change');
+  $('input.rpInput').on('click', function() {
+    if($('#noRegional').is(':checked')) {
+      $(this).prop("checked", false);
+    }
+  });
+
 }
 
 function addItem(option) {

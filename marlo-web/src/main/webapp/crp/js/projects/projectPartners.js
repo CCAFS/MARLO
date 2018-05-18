@@ -30,9 +30,9 @@ function init() {
     // Update initial project CCAFS partners list for each partner
     updateProjectPPAPartnersLists();
 
-    // Activate the chosen to the existing partners
-    addSelect2();
   }
+  // Activate the chosen to the existing partners
+  addSelect2();
 
   addUser = function(composedName,userId) {
     var $contact = $elementSelected.parents('.contactsPerson ').find('input[value="' + userId + '"]');
@@ -169,6 +169,50 @@ function attachEvents() {
 
     // Update PPA Partners List
     updateProjectPPAPartnersLists(e);
+  });
+  // Partnership Geographic Scope
+  $(".geographicScopeSelect").on('change', function(){
+    var $partner = $(this).parents('.projectPartner');
+    var $regionalBlock = $partner.find('.regionalBlock');
+    var $nationalBlock = $partner.find('.nationalBlock');
+    
+    var isRegional = this.value == 2;
+    var isMultiNational = this.value == 3;
+    var isNational = this.value == 4;
+    var isSubNational = this.value == 5;
+    
+    // Regions
+    if(isRegional){
+      $regionalBlock.show();
+    }else{
+      $regionalBlock.hide();
+    }
+    
+    // Countries
+    $nationalBlock.find("select").val(null).trigger('change');
+    if(isMultiNational || isNational || isSubNational){
+      if (isMultiNational){
+        $nationalBlock.find("select").select2({
+          maximumSelectionLength: 0,
+          placeholder: "Select a country(ies)",
+          templateResult: formatStateCountries,
+          templateSelection: formatStateCountries,
+          width: '100%'
+        });
+      }else{
+        $nationalBlock.find("select").select2({
+          maximumSelectionLength: 1,
+          placeholder: "Select a country(ies)",
+          templateResult: formatStateCountries,
+          templateSelection: formatStateCountries,
+          width: '100%'
+        });
+      }
+      $nationalBlock.show();
+    }else{
+      $nationalBlock.hide();
+    }
+    
   });
   // Partners filters
   $(".filters-link span").on("click", filterInstitutions);
@@ -623,10 +667,16 @@ function addPartnerEvent(e) {
       width: '100%'
   });
 
-  $newElement.find('select.countriesList').select2({
-      placeholder: "Select a country office",
+  // Countries
+  $newElement.find('select.countriesList, select.countriesSelect').select2({
+      placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
+      width: '100%'
+  });
+  
+  // Other Selects
+  $newElement.find('select.setSelect2').select2({
       width: '100%'
   });
 
@@ -777,10 +827,15 @@ function addSelect2() {
       placeholder: "Select the branches where the project is working on...",
       width: '100%'
   });
-  $('form select.countriesList, select.countriesRequest').select2({
-      placeholder: "Select a country office",
+  $('form select.countriesList, select.countriesRequest, form select.countriesSelect').select2({
+      placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
+      width: '100%'
+  });
+  
+  // Other selects
+  $("form select.setSelect2 ").select2({
       width: '100%'
   });
 
@@ -814,6 +869,11 @@ function PartnerObject(partner) {
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
       $(li).setNameIndexes(2, li_index);
     });
+    
+    // Update radio buttons labels and for
+    $(partner).find('input.hasPartnerships-yes').attr('id', "hasPartnerships-yes-"+ index).next().attr('for',"hasPartnerships-yes-"+ index);
+    $(partner).find('input.hasPartnerships-no').attr('id', "hasPartnerships-no-"+ index).next().attr('for',"hasPartnerships-no-"+ index);
+    
     // Update index for partner persons
     $(partner).find('.contactPerson').each(function(person_index,partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));

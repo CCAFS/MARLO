@@ -107,7 +107,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || (parameters.get("save") != null)) {
+      if (editParameter || (parameters.get("save").isDefined())) {
         hasPermissionToEdit =
           (baseAction.canAccessSuperAdmin()) ? true : capdev.getCreatedBy().getId().equals(currentUser.getId());
 

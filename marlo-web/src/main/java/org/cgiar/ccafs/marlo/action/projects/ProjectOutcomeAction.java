@@ -434,7 +434,6 @@ public class ProjectOutcomeAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         List<ProjectMilestone> milestones = new ArrayList<>();
-
         if (projectOutcome.getMilestones() != null) {
           for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
             if (crpMilestone.getCrpMilestone() != null) {
@@ -557,13 +556,15 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveNextUsers(projectOutcomeDB);
       this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
-        this.saveLessonsOutcome(loggedCrp, projectOutcomeDB);
+        this.saveLessonsOutcome(loggedCrp, projectOutcomeDB, projectOutcome);
       }
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
+      projectOutcome.setCreatedBy(projectOutcomeDB.getCreatedBy());
+      projectOutcome.setActive(true);
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_INDICATORS_RELATION);
@@ -643,7 +644,8 @@ public class ProjectOutcomeAction extends BaseAction {
                 this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
             }
 
-            if (projectCommunication.getSummary().getFileName().isEmpty()) {
+            if (projectCommunication.getSummary() != null && projectCommunication.getSummary().getFileName() != null
+              && projectCommunication.getSummary().getFileName().isEmpty()) {
               projectCommunication.setSummary(null);
             }
 
@@ -859,6 +861,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectNextuserDB.setKnowledge(projectNextuser.getKnowledge());
             projectNextuserDB.setNextUser(projectNextuser.getNextUser());
             projectNextuserDB.setStrategies(projectNextuser.getStrategies());
+            projectNextuserDB.setStrategiesReport(projectNextuser.getStrategiesReport());
+            projectNextuserDB.setKnowledgeReport(projectNextuser.getKnowledgeReport());
 
             projectNextuserDB = projectNextuserManager.saveProjectNextuser(projectNextuserDB);
           }
