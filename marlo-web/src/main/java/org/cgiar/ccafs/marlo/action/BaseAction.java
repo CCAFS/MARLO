@@ -3079,7 +3079,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
+  /**
+   * Green checks in Projects Menu
+   */
   public boolean getProjectSectionStatus(String section, long projectID) {
     boolean returnValue = false;
     SectionStatus sectionStatus;
@@ -4241,7 +4243,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
+  /**
+   * This function is now handled from Front-End and is not used anymore. It was a decision of Andres valencia and
+   * Sebastian Amariles the 2018/5/18 17:12
+   * 
+   * @return
+   */
   public boolean isCompleteProject(long projectID) {
 
     try {
