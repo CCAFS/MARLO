@@ -754,19 +754,6 @@ public class BaseValidator {
 
   }
 
-  protected void validateLessonsLearnOutcome(BaseAction action, ProjectOutcome project) {
-    if (project.getProjectComponentLesson() != null) {
-      ProjectComponentLesson lesson = project.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
-        // Let them save.
-        action.addMessage("Lessons");
-
-        action.addMissingField("projectLessons.lessons");
-
-      }
-    }
-
-  }
 
   /**
    * This method counts the number of words in a given text.

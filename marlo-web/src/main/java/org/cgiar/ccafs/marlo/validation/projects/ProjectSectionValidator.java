@@ -53,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -310,8 +311,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locElements = projectDB.getProjectLocations()
-      .stream().filter(c -> c.isActive() && c.getLocElement() != null
+    List<ProjectLocation> locElements = projectDB
+      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
         && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
@@ -464,11 +465,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectHighlight> highlights =
-      project.getProjectHighligths().stream()
-        .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive() && d
-          .getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
-        .collect(Collectors.toList());
+    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+      .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive()
+        && d.getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
+      .collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
       projectHighlight.setTypes(
@@ -697,14 +697,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // .parseInt(ProjectStatusEnum.Complete.getStatusId()))
       // .collect(Collectors.toList()));
 
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()) != null
-          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
-            .getCurrentCycleYear()
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      openA.addAll(deliverables.stream().filter(d -> d.isActive()
+        && d.getDeliverableInfo(action.getActualPhase()) != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
     }
 
@@ -1032,6 +1031,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectOutcome.setIndicators(
         projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      List<ProjectComponentLesson> projectComponentLessons = projectOutcome.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()
+          && c.getCycle().equals(action.getCurrentCycle()))
+        .collect(Collectors.toList());
+      if (projectComponentLessons != null && projectComponentLessons.size() > 0) {
+        projectOutcome.setProjectComponentLesson(projectComponentLessons.get(0));
+      }
+
       projectOutcomeValidator.validate(action, projectOutcome, false);
 
     }
