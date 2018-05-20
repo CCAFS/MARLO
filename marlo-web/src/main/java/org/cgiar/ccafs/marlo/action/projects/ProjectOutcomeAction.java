@@ -765,6 +765,7 @@ public class ProjectOutcomeAction extends BaseAction {
           if (projectMilestone.getId() == null) {
             projectMilestone.setCreatedBy(this.getCurrentUser());
 
+
             projectMilestone.setActiveSince(new Date());
             projectMilestone.setActive(true);
             projectMilestone.setProjectOutcome(projectOutcomeDB);
@@ -913,6 +914,15 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setModificationJustification("");
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
+    } else {
+      if (projectOutcome.getExpectedUnit() != null) {
+        if (projectOutcome.getExpectedUnit().getId() == null
+          || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+          projectOutcome.setExpectedUnit(null);
+        } else {
+          projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+        }
+      }
     }
     projectOutcome.setMilestones(milestones);
     projectOutcome.setNextUsers(nextusers);
