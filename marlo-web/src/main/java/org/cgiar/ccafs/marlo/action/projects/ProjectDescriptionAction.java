@@ -708,13 +708,6 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null
-      && project.getProjecInfoPhase(this.getActualPhase()).getStatus() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-      projectStatuses.remove(ProjectStatusEnum.Ongoing.getStatusId());
-    }
-
-
     // add project scales
 
     projectScales = new HashMap<>();
@@ -898,61 +891,59 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      // if the planning cycle is active
-      if (this.isPlanningActive()) {
 
-        // Removing Project Cluster Activities
-        for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())) {
+      // Removing Project Cluster Activities
+      for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
 
-          if (project.getClusterActivities() == null) {
-            project.setClusterActivities(new ArrayList<>());
-          }
-          if (!project.getClusterActivities().contains(projectClusterActivity)) {
-            projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
+        if (project.getClusterActivities() == null) {
+          project.setClusterActivities(new ArrayList<>());
+        }
+        if (!project.getClusterActivities().contains(projectClusterActivity)) {
+          projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
-            // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
+          // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
 
-            for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
-              .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
-              .collect(Collectors.toList())) {
-              projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
-            }
+          for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
+            .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList())) {
+            projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
           }
         }
-        // Add Project Cluster Activities
-
-        if (project.getClusterActivities() != null) {
-          for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
-            if (projectClusterActivity.getId() == null) {
-              projectClusterActivity.setCreatedBy(this.getCurrentUser());
-
-              projectClusterActivity.setActiveSince(new Date());
-              projectClusterActivity.setActive(true);
-              projectClusterActivity.setProject(project);
-              projectClusterActivity.setModifiedBy(this.getCurrentUser());
-              projectClusterActivity.setModificationJustification("");
-              projectClusterActivity.setPhase(this.getActualPhase());
-              projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
-            }
-
-          }
-        }
-
-        // delete the section stust for budgets by coA when there is one Coa selectd to the project
-        Project projectCluster = projectManager.getProjectById(projectID);
-        List<ProjectClusterActivity> currentClusters =
-          projectCluster.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        if (currentClusters.isEmpty() || currentClusters.size() == 1) {
-          SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID,
-            this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
-          if (sectionStatus != null) {
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-          }
-        }
-
       }
+      // Add Project Cluster Activities
+
+      if (project.getClusterActivities() != null) {
+        for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
+          if (projectClusterActivity.getId() == null) {
+            projectClusterActivity.setCreatedBy(this.getCurrentUser());
+
+            projectClusterActivity.setActiveSince(new Date());
+            projectClusterActivity.setActive(true);
+            projectClusterActivity.setProject(project);
+            projectClusterActivity.setModifiedBy(this.getCurrentUser());
+            projectClusterActivity.setModificationJustification("");
+            projectClusterActivity.setPhase(this.getActualPhase());
+            projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+          }
+
+        }
+      }
+
+      // delete the section stust for budgets by coA when there is one Coa selectd to the project
+      Project project = projectManager.getProjectById(projectID);
+      List<ProjectClusterActivity> currentClusters =
+        project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (currentClusters.isEmpty() || currentClusters.size() == 1) {
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+        if (sectionStatus != null) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
+
+
       // Removing Project Scopes
 
       for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
