@@ -232,20 +232,21 @@ public class ProjectPartnersValidator extends BaseValidator {
     if (action.isReportingActive()) {
       try {
         ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
-        if (partner.getHasPartnerships() == null) {
+
+        if (projectPartnerPartnership == null || partner.getHasPartnerships() == null) {
           action.addMessage(action.getText("Please provide partnership formal partner"));
           action.addMissingField("project.partners[" + c + "].hasPartnerships");
           action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (projectPartnerPartnership.getResearchPhase() == null
+        if (projectPartnerPartnership == null || projectPartnerPartnership.getResearchPhase() == null
           || projectPartnerPartnership.getResearchPhase().getId() == -1) {
           action.addMessage(action.getText("Please provide partnership research phase"));
           action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.researchPhase.id");
           action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.researchPhase.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (projectPartnerPartnership.getGeographicScope() == null
+        if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope() == null
           || projectPartnerPartnership.getGeographicScope().getId() == -1) {
           action.addMessage(action.getText("Please provide partnership geographic scope"));
           action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.geographicScope.id");
@@ -253,7 +254,7 @@ public class ProjectPartnersValidator extends BaseValidator {
             "input-project.partners[" + c + "].projectPartnerPartnership.geographicScope.id",
             InvalidFieldsMessages.EMPTYFIELD);
         } else {
-          if (projectPartnerPartnership.getGeographicScope().getId()
+          if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope().getId()
             .equals(action.getReportingIndGeographicScopeRegional())) {
             if (projectPartnerPartnership.getRegion() == null || projectPartnerPartnership.getRegion().getId() == -1) {
               action.addMessage(action.getText("Please provide partnership region"));
@@ -263,8 +264,9 @@ public class ProjectPartnersValidator extends BaseValidator {
             }
           }
 
-          if (projectPartnerPartnership.getGeographicScope().getId()
-            .equals(action.getReportingIndGeographicScopeMultiNational())
+          if (projectPartnerPartnership == null
+            || projectPartnerPartnership.getGeographicScope().getId()
+              .equals(action.getReportingIndGeographicScopeMultiNational())
             || projectPartnerPartnership.getGeographicScope().getId()
               .equals(action.getReportingIndGeographicScopeNational())
             || projectPartnerPartnership.getGeographicScope().getId()
@@ -281,16 +283,14 @@ public class ProjectPartnersValidator extends BaseValidator {
 
         }
 
-        if (!this.isValidString(projectPartnerPartnership.getMainArea())) {
+        if (projectPartnerPartnership == null || !this.isValidString(projectPartnerPartnership.getMainArea())) {
           action.addMessage(action.getText("Please provide partnership main area"));
           action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.mainArea");
           action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.mainArea",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-      } catch (
-
-      Exception e) {
+      } catch (Exception e) {
         LOG.error("Unable to validate partner partnership for Project: " + project + " - Partner: " + partner, e);
       }
     }
