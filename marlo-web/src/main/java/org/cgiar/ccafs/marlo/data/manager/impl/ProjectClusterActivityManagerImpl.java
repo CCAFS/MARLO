@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectClusterActivityDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
@@ -54,7 +55,7 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectCluster
         .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
       .collect(Collectors.toList());
-    if ( clusters.isEmpty()) {
+    if (clusters.isEmpty()) {
 
       ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
       projectClusterAdd.setActive(true);
@@ -79,13 +80,16 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   public void deleteProjectClusterActivity(long projectClusterActivityId) {
 
     ProjectClusterActivity projectClusterActivity = this.getProjectClusterActivityById(projectClusterActivityId);
+    Phase phase = projectClusterActivity.getPhase();
     projectClusterActivity.setActive(false);
     this.saveProjectClusterActivity(projectClusterActivity);
-
-    if (projectClusterActivity.getPhase().getNext() != null) {
-      this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
-        projectClusterActivity.getProject().getId(), projectClusterActivity);
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
+      if (phase.getNext() != null) {
+        this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
+          projectClusterActivity.getProject().getId(), projectClusterActivity);
+      }
     }
+
   }
 
   public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {
@@ -127,12 +131,15 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
 
   @Override
   public ProjectClusterActivity saveProjectClusterActivity(ProjectClusterActivity projectClusterActivity) {
-
+    Phase phase = projectClusterActivity.getPhase();
     ProjectClusterActivity projectClusterActivityDB = projectClusterActivityDAO.save(projectClusterActivity);
-    if (projectClusterActivity.getPhase().getNext() != null) {
-      this.addProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
-        projectClusterActivity.getProject().getId(), projectClusterActivity);
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
+      if (phase.getNext() != null) {
+        this.addProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
+          projectClusterActivity.getProject().getId(), projectClusterActivity);
+      }
     }
+
     return projectClusterActivityDB;
   }
 
