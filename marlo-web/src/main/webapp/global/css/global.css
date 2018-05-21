@@ -1826,7 +1826,8 @@ a.currentReportingSection li, a.currentSection li {
 }
 
 #secondaryMenu ul li ul li.draft{
-  font-style: italic;
+  
+font-style: italic;
 }
 
 
@@ -6564,4 +6565,13 @@ a.form-button.button-history {
 
 .under-construction-icon{
   margin-left: 5px;
+}
+
+.overlay {
+  position:absolute;
+  background-color:#fff;
+  height: 100%;
+  width: 100%;
+  z-index: 99;
+  opacity: 0.4;
 }
