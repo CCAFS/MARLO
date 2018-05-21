@@ -133,9 +133,8 @@ public class Clone {
      */
 
 
-    String[] model = {"ProjectExpectedStudyCountry", "ProjectExpectedStudyCrp", "ProjectExpectedStudyFlagship",
-      "ProjectExpectedStudyInfo", "ProjectExpectedStudyInstitution", "ProjectExpectedStudySrfTarget",
-      "ProjectExpectedStudySubIdo", "StudyType", "RepIndStageProcess", "RepIndStageStudy"};
+    String[] model = {"ReportSynthesis", "ReportSynthesisCrpProgress", "ReportSynthesisCrpProgressStudy",
+      "ReportSynthesisCrpProgressTarget"};
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
       generateMysqlDao(model[i]);

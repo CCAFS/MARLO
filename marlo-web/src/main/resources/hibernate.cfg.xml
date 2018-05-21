@@ -277,5 +277,9 @@
     <mapping resource="xmls/DeliverableParticipantLocations.hbm.xml"/>
     <mapping resource="xmls/RepIndFillingTypes.hbm.xml"/>
     <mapping resource="xmls/RepIndPatentStatuses.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesis.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgress.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressStudies.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressTargets.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
