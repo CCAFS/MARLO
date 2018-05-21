@@ -23,15 +23,9 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#if action.getDeliverableStatus(deliverable.id)??]
-          [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
-            [#assign isDeliverableComplete = true /]
-          [#else]
-            [#assign isDeliverableComplete = false /]
-          [/#if]
-        [#else]
-            [#assign isDeliverableComplete = false /]
-        [/#if]
+        [#assign deliverableStatus = (action.getDeliverableStatus(deliverable.id))!{} /]
+        [#assign isDeliverableComplete = (!(deliverableStatus.missingFields)?has_content)!false /]
+        
         
         <tr>
           [#-- ID --]
@@ -158,15 +152,8 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#if action.getDeliverableStatus(deliverable.id)??]
-          [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
-            [#assign isDeliverableComplete = true /]
-          [#else]
-            [#assign isDeliverableComplete = false /]
-          [/#if]
-        [#else]
-            [#assign isDeliverableComplete = false /]
-        [/#if]
+        [#assign deliverableStatus = (action.getDeliverableStatus(deliverable.id))!{} /]
+        [#assign isDeliverableComplete = (!(deliverableStatus.missingFields)?has_content)!false /]
         
         <tr>
           [#-- ID --]

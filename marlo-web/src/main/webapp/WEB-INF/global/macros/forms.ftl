@@ -411,7 +411,7 @@
         [#-- No Button --]
         <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
         [#-- Hidden Input --]
-        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="[#if customValue=="true"]true[#elseif customValue == "false"]false[#else][/#if]" />
+        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="${(customValue)!}" />
       </div>
       [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 
     [#else]

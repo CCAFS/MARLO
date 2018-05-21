@@ -479,15 +479,12 @@ function justificationByStatus(statusId) {
     $('#newExpectedYear').hide();
   }
 
-  var $expectedYearSelect = $('select.yearExpected');
+  var $yearOverlay = $('#deliverableYear .overlay');
   if(isStatusExtended(statusId)) {
-    console.log("extended", true);
-    $expectedYearSelect.prop('disabled', false);
+    $yearOverlay.show();
   } else {
-    console.log("extended", false);
-    $expectedYearSelect.prop('disabled', true);
+    $yearOverlay.hide();
   }
-  $expectedYearSelect.trigger("change.select2");
 
   $statusDescription.find('textarea').val('');
 }
