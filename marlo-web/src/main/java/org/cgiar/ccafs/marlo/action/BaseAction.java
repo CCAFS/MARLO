@@ -3182,8 +3182,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case DELIVERABLES:
         project = projectManager.getProjectById(projectID);
 
-        List<Deliverable> deliverables =
-          project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<Deliverable> deliverables = project.getDeliverables().stream()
+          .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList());
         List<Deliverable> openA = new ArrayList<>();
 
 
@@ -3228,8 +3229,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
-
         }
+
         if (openA.isEmpty()) {
           if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
