@@ -23,9 +23,7 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#assign deliverableStatus = (action.getDeliverableStatus(deliverable.id))!{} /]
-        [#assign isDeliverableComplete = (!(deliverableStatus.missingFields)?has_content)!false /]
-        
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
         
         <tr>
           [#-- ID --]
@@ -109,6 +107,7 @@
           </td>
           [#-- Deliverable required fields --]
           <td class="text-center">
+            
             [#if isDeliverableComplete]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
@@ -152,8 +151,7 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#assign deliverableStatus = (action.getDeliverableStatus(deliverable.id))!{} /]
-        [#assign isDeliverableComplete = (!(deliverableStatus.missingFields)?has_content)!false /]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
         
         <tr>
           [#-- ID --]

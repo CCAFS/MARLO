@@ -23,8 +23,6 @@ import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.CaseStudy;
-import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -222,37 +220,50 @@ public class ValidateProjectSectionAction extends BaseAction {
         List<Deliverable> deliverables = project.getDeliverables().stream()
           .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
           .collect(Collectors.toList());
-        List<Deliverable> openA = deliverables.stream()
-          .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-            || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
-            || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
-          .collect(Collectors.toList());
-        if (this.isReportingActive()) {
+        List<Deliverable> openA = new ArrayList<>();
+        if (this.isPlanningActive()) {
+          openA = deliverables.stream().filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
+
+            && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
+              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+            .collect(Collectors.toList());
+        } else {
+          openA = deliverables.stream()
+            .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
+              && a.getDeliverableInfo(this.getActualPhase()) != null
+              && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
+                || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+            .collect(Collectors.toList());
+
           openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive()
-              && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getActualPhase().getYear()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
               && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
               && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
+
+          openA.addAll(deliverables.stream().filter(d -> d.isActive()
+            && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
         }
 
-        for (Deliverable deliverable : openA) {
-          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
-            this.getActualPhase().getYear(), sectionName);
-          if (sectionStatus == null) {
-
-            sectionStatus = new SectionStatus();
-            sectionStatus.setMissingFields("No section");
-          }
-          if (sectionStatus.getMissingFields().length() > 0) {
-            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-          }
-        }
         if (openA.isEmpty()) {
           if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
@@ -260,13 +271,24 @@ public class ValidateProjectSectionAction extends BaseAction {
             sectionStatus.setMissingFields("");
             section.put("missingFields", "");
           } else {
-            if (openA.isEmpty()) {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("");
-              section.put("missingFields", "Empty Deliverables");
-            }
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("");
+            section.put("missingFields", "Empty Deliverables");
           }
         }
+
+        for (Deliverable deliverable : openA) {
+          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
+            this.getActualPhase().getYear(), sectionName);
+          if (sectionStatus == null) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+          }
+        }
+
         break;
 
 
@@ -280,6 +302,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
       case EXPECTEDSTUDIES:
+        section = new HashMap<String, Object>();
+        section.put("sectionName", sectionName);
+        section.put("missingFields", "");
         List<ProjectExpectedStudy> studies =
           project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         for (ProjectExpectedStudy projectExpectedStudy : studies) {
@@ -297,6 +322,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         break;
 
       case INNOVATIONS:
+        section = new HashMap<String, Object>();
+        section.put("sectionName", sectionName);
+        section.put("missingFields", "");
         List<ProjectInnovation> innovations =
           project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         for (ProjectInnovation projectInnovation : innovations) {
@@ -313,51 +341,17 @@ public class ValidateProjectSectionAction extends BaseAction {
         }
 
         break;
-
-      case CASESTUDIES:
-        List<CaseStudyProject> caseStudies =
-          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<CaseStudy> projectCaseStudies = new ArrayList<>();
-        section = new HashMap<String, Object>();
-        section.put("sectionName", ProjectSectionStatusEnum.CASESTUDIES);
-        section.put("missingFields", "");
-
-
-        for (CaseStudyProject caseStudyProject : caseStudies) {
-          if (caseStudyProject.isCreated()
-            && caseStudyProject.getCaseStudy().getYear() == this.getActualPhase().getYear()) {
-            projectCaseStudies.add(caseStudyProject.getCaseStudy());
-            sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
-              cycle, this.getActualPhase().getYear(), sectionName);
-            if (sectionStatus == null) {
-
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("No section");
-            }
-            if (sectionStatus.getMissingFields().length() > 0) {
-              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-
-            }
-          }
-        }
-
-
-        break;
-
       case HIGHLIGHTS:
-        List<ProjectHighlight> highlights =
-          project
-            .getProjectHighligths().stream().filter(d -> d.isActive() && d
-              .getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
-            .collect(Collectors.toList());
-
         section = new HashMap<String, Object>();
         section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHTS);
         section.put("missingFields", "");
 
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive()
+            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList());
 
         for (ProjectHighlight highlight : highlights) {
-
           sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle,
             this.getActualPhase().getYear(), sectionName);
           if (sectionStatus == null) {
@@ -367,11 +361,8 @@ public class ValidateProjectSectionAction extends BaseAction {
           }
           if (sectionStatus.getMissingFields().length() > 0) {
             section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-
           }
-
         }
-
 
         break;
 
