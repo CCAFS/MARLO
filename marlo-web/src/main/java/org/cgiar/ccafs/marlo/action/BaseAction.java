@@ -2369,51 +2369,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  /**
-   * This method gets the specific section status from the sectionStatuses array for a Deliverable.
-   * 
-   * @param deliverableID is the deliverable ID to be identified.
-   * @param section is the name of some section.
-   * @return a SectionStatus object with the information requested.
-   */
-  public SectionStatus getDeliverableStatus(long deliverableID) {
-
-    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-
-    if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
-      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
-      if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-        if (deliverableInfo.getYear() < this.getActualPhase().getYear()) {
-          return new SectionStatus();
-        }
-      }
-
-      if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        if (deliverableInfo.getNewExpectedYear() != null) {
-          if (deliverableInfo.getNewExpectedYear() < this.getActualPhase().getYear()) {
-            return new SectionStatus();
-          }
-        } else {
-          return new SectionStatus();
-        }
-
-      }
-
-
-    }
-    List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
-      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
-      .collect(Collectors.toList());
-
-    if (!sectionStatuses.isEmpty()) {
-      return sectionStatuses.get(0);
-    }
-    return null;
-  }
-
-
   public List<String> getDeliverableTypesByRule(String rule) {
     List<String> rules = new ArrayList<>();
     List<DeliverableTypeRule> deliverableTypeRules = deliverableTypeRuleManager.findDeliverableTypeRuleByRule(rule);
@@ -2423,6 +2378,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return rules;
   }
+
 
   public List<HistoryDifference> getDifferences() {
     return differences;
@@ -2496,7 +2452,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean getFundingSourceStatus(long fundingSourceID) {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
     return this.getFundingSourceStatus(fundingSource);
@@ -2515,6 +2470,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return re;
 
   }
+
 
   /**
    * Get the folder path according if the user navigate in center,crp or platform sections.
@@ -2574,7 +2530,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return liasonsUsers;
   }
 
-
   public List<GlobalUnitType> getListGlobalUnitTypes() {
 
     List<GlobalUnitType> globalUnitTypes = globalUnitTypeManager.findAll();
@@ -2587,6 +2542,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return globalUnitTypes;
 
   }
+
 
   public List<GlobalUnitType> getListGlobalUnitTypesUser() {
     if (this.getSession().containsKey(APConstants.AVAILABLES_GLOBAL_TYPES)) {
@@ -2647,7 +2603,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return missingFields;
   }
 
-
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
@@ -2664,6 +2619,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return 0;
   }
+
 
   public List<Deliverable> getOpenDeliverables(List<Deliverable> deliverables) {
 
@@ -2707,7 +2663,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -2720,6 +2675,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Long getPhaseID() {
     return phaseID;
   }
+
 
   /**
    * validate if the list of phases are on session if not, will be find on bd
@@ -2792,7 +2748,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return gson.toJson(phases);
   }
 
-
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
@@ -2819,6 +2774,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList());
     }
   }
+
 
   /**
    * Check the powb Synthesis Section Status
@@ -2900,7 +2856,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return returnValue;
   }
 
-
   public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     List<Submission> submissions = powbSynthesis
@@ -2938,6 +2893,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   public List<Project> getProjectRelationsImpact(Long id, String className) {
     Class<?> clazz;
@@ -3458,7 +3414,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
-
   public String getRoles() {
     String roles = "";
     User u = userManager.getUser(this.getCurrentUser().getId());
@@ -3474,6 +3429,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return roles;
   }
 
+
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
@@ -3481,7 +3437,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Map<String, Object> getSession() {
     return session;
   }
-
 
   public Submission getSubmission() {
     return submission;
@@ -3494,6 +3449,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return display;
   }
 
+
   public String getUrl() {
     return url;
   }
@@ -3501,7 +3457,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
-
 
   public List<Map<String, Object>> getUsersToActive() {
     return usersToActive;
@@ -3511,6 +3466,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public StringBuilder getValidationMessage() {
     return validationMessage;
   }
+
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -3610,7 +3566,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return total;
   }
 
-
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
     if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
       && deliverableInfo.getDeliverableType().getId() != null && deliverableInfo.getDeliverableType().getId() != -1) {
@@ -3631,6 +3586,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   /**
    * Validate Missing fields in the tables.
@@ -3707,7 +3663,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean hasPermissionSynthesis(long program) {
     String params[] = {this.getCrpSession(), program + "",};
     boolean permission =
@@ -3715,13 +3670,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
   }
 
+
   public boolean hasPersmissionSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
-
 
   /**
    * TODO
@@ -3735,6 +3690,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
     return true;
   }
+
 
   public boolean hasPersmissionSubmitImpact() {
 
@@ -3780,13 +3736,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
-
   public boolean hasPersmissionUnSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
+
 
   public boolean hasPersmissionUnSubmitImpact(long programID) {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
@@ -3803,7 +3759,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasSpecificities(String specificity) {
     try {
       boolean param = Boolean.parseBoolean(this.getSession().get(specificity).toString());
@@ -3813,6 +3768,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public <T> List<T> intersection(List<T> list1, List<T> list2) {
     List<T> list = new ArrayList<T>();
@@ -3845,7 +3801,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * @param role
    * @return true if is the user role
@@ -3859,6 +3814,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return availabePhase;
   }
 
+
   public boolean isCanEdit() {
     return canEdit;
   }
@@ -3867,10 +3823,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canEditPhase;
   }
 
-
   public boolean isCanSwitchProject() {
     return canSwitchProject;
   }
+
 
   public boolean isCenterGlobalUnit() {
     if (this.getCurrentCrp() != null) {
@@ -3922,7 +3878,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * verify if the project is complete
@@ -3959,6 +3914,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
@@ -4185,7 +4141,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isCompletePreProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -4243,6 +4198,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * This function is now handled from Front-End and is not used anymore. It was a decision of Andres valencia and
@@ -4580,7 +4536,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isCompleteSynthesys(long program, int type) {
 
     List<SectionStatus> sectionStatus = null;
@@ -4631,6 +4586,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean isCrpRefresh() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
@@ -4644,6 +4600,59 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isDataSaved() {
     return dataSaved;
+  }
+
+  /**
+   * This method get the status of an specific deliverable from the sectionStatuses array.
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @return Booleal object with the status of the deliverable
+   */
+  public Boolean isDeliverableComplete(long deliverableID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
+      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+      if (deliverableInfo.getStatus() != null
+        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        if (deliverableInfo.getNewExpectedYear() != null) {
+          if (deliverableInfo.getNewExpectedYear() > this.getActualPhase().getYear()) {
+            return true;
+          }
+        } else {
+          return false;
+        }
+      }
+
+      if (deliverableInfo.getStatus() != null
+        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (deliverableInfo.getYear() > this.getActualPhase().getYear()) {
+          return true;
+        }
+      }
+    }
+
+    List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
+      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
+      .collect(Collectors.toList());
+
+    if (sectionStatuses == null || sectionStatuses.isEmpty()) {
+      return false;
+    } else {
+      if (sectionStatuses.size() > 1) {
+        LOG.warn("There is more than one section status for D" + deliverableID);
+      }
+      SectionStatus sectionStatus = sectionStatuses.get(0);
+      if (sectionStatus.getMissingFields() != null) {
+        if (sectionStatus.getMissingFields().isEmpty()) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
   }
 
   public Boolean isDeliverableNew(long deliverableID) {
