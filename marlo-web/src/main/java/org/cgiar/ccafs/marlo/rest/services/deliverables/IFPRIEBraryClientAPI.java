@@ -37,12 +37,11 @@ import org.slf4j.LoggerFactory;
 public class IFPRIEBraryClientAPI extends MetadataClientApi {
 
   private static final Logger LOG = LoggerFactory.getLogger(IFPRIEBraryClientAPI.class);
-  private final String IFPRI_URL = "http://ebrary.ifpri.org/cdm/singleitem/collection/";
-  private final String ID_URL = "/id/";
-  private final String REC_RUL = "/rec/1";
+  private final String ID_URL = "id";
+  private final String COLLECTION_RUL = "collection";
 
   private final String REST_URL =
-    "https://server15738.contentdm.oclc.org/dmwebservices/index.php?q=dmGetItemInfo/{0}/json";
+    "https://server15738.contentdm.oclc.org/dmwebservices/index.php?q=dmGetItemInfo/{0}/{1}/json";
   private RestConnectionUtil xmlReaderConnectionUtil;
   private Map<String, String> coverterAtrributes;
 
@@ -54,7 +53,6 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
     coverterAtrributes.put("loc", "keywords");
     coverterAtrributes.put("full", "citation");
     coverterAtrributes.put("rights", "rights.desc");
-
   }
 
   @Override
@@ -98,6 +96,8 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       for (String key : coverterAtrributes.keySet()) {
         data = data.replace(key, coverterAtrributes.get(key));
       }
+      // Remove empty doi to avoid Json exception
+      data = data.replace("\"doi\":{}", "\"doi\":\"\"");
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
@@ -118,22 +118,29 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
    */
   @Override
   public String parseLink(String link) {
-    // if the link contains https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi: we remove it from the link
-    if (link.contains(IFPRI_URL)) {
-      link = link.replace(IFPRI_URL, "");
+    String linkRest = "", id = "", collection = "";
+
+    String[] linkSplits = link.split("/");
+    int i = 0;
+    for (String linkSplit : linkSplits) {
+      if (linkSplit.contains(ID_URL)) {
+        id = linkSplits[i + 1];
+      }
+      if (linkSplit.contains(COLLECTION_RUL)) {
+        collection = linkSplits[i + 1];
+      }
+      i++;
     }
 
-    if (link.contains(ID_URL)) {
-      link = (link.replace(ID_URL, "/"));
+    if (id.isEmpty() || collection.isEmpty()) {
+      LOG.error(
+        "Missing id or collection for IFPRIEBrary link.There was an error collecting data from the url: " + link);
+    } else {
+      linkRest = (REST_URL.replace("{0}", collection));
+      linkRest = (linkRest.replace("{1}", id));
+      this.setId(id);
     }
 
-    if (link.contains(REC_RUL)) {
-      link = (link.replace(REC_RUL, ""));
-    }
-    this.setId(link);
-    // if the link http://dx.doi.org/ we remove it from the link
-
-    String linkRest = (REST_URL.replace("{0}", this.getId()));
     return linkRest;
   }
 
