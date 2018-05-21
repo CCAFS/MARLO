@@ -479,6 +479,13 @@ function justificationByStatus(statusId) {
     $('#newExpectedYear').hide();
   }
 
+  var $yearOverlay = $('#deliverableYear .overlay');
+  if(isStatusExtended(statusId)) {
+    $yearOverlay.show();
+  } else {
+    $yearOverlay.hide();
+  }
+
   $statusDescription.find('textarea').val('');
 }
 

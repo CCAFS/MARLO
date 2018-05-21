@@ -161,7 +161,8 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
 
   /**
-   * This method calculates all the years between the start date and the end date.
+   * This method calculates all the years between the start date and the end date. (Only for year greater or equal to
+   * phase year)
    * 
    * @return a List of numbers representing all the years, or an empty list if nothing found.
    */
