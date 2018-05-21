@@ -127,6 +127,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
         .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(projectMilestone.getCrpMilestone().getId()));
       if (projectMilestone.getCrpMilestone().getYear() == action.getCurrentCycleYear()) {
 
+
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {
           // action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));

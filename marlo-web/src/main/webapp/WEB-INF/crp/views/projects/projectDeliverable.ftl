@@ -75,7 +75,13 @@
                 <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">R</div></div> 
               </div>
             </div>
-          </div> 
+            
+          </div>
+          [#-- Is deliverable complete --]
+          [#assign deliverableStatus = (action.getDeliverableStatus(deliverable.id))!{} /]
+          [#assign isDeliverableComplete = (!(deliverableStatus.missingFields)?has_content)!false /]
+          [#-- Is deliverable new --]
+          [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
           
           <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">
