@@ -1470,19 +1470,13 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
-      } else {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() <= this.getReportingYear()) {
-
-          status.remove(ProjectStatusEnum.Cancelled.getStatusId());
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            status.remove(ProjectStatusEnum.Complete.getStatusId());
+          }
         }
       }
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-          status.remove(ProjectStatusEnum.Complete.getStatusId());
-        }
-      }
-
 
       crps = new ArrayList<GlobalUnit>();
       for (GlobalUnit crp : crpManager.findAll().stream()
