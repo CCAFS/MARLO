@@ -1470,19 +1470,13 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
-      } else {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() <= this.getReportingYear()) {
-
-          status.remove(ProjectStatusEnum.Cancelled.getStatusId());
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            status.remove(ProjectStatusEnum.Complete.getStatusId());
+          }
         }
       }
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-          status.remove(ProjectStatusEnum.Complete.getStatusId());
-        }
-      }
-
 
       crps = new ArrayList<GlobalUnit>();
       for (GlobalUnit crp : crpManager.findAll().stream()
@@ -2568,8 +2562,8 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileDictionary() != null) {
       if (deliverable.getQualityCheck().getFileDictionary().getId() != null
-        && deliverable.getQualityCheck().getFileDictionary() != null
-        && Integer.valueOf(deliverable.getQualityCheck().getFileDictionary().getId().intValue())
+        && deliverable.getQualityCheck().getDataDictionary() != null
+        && Integer.valueOf(deliverable.getQualityCheck().getDataDictionary().getId().intValue())
           .equals(APConstants.DELIVERABLE_QUALITY_ANSWER_YES)) {
         FileDB fileDb;
         // Set FileDB to null if an exception occurs (-1 id)

@@ -346,7 +346,9 @@
           <input type="hidden" name="${name}.projectPartnerPartnership.id" value="${(element.projectPartnerPartnership.id)!}"/>
           <div class="form-group">
             [#-- Is This partner a formal partner --]
-            <label for="">[@s.text name="projectPartners.hasPartnerships" /][@customForm.req required=editable /]</label>
+            <label for="">[@s.text name="projectPartners.hasPartnerships" /][@customForm.req required=editable /]
+              [@customForm.helpLabel name="projectPartners.hasPartnerships.help" showIcon=false editable=editable/]
+            </label>
             [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.hasPartnerships" label="Yes" value="true" checked=(element.hasPartnerships)!false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes" editable=editable /]
             [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no" editable=editable /]
           </div>

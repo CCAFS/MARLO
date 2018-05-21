@@ -2904,20 +2904,24 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           expUnit = outUnit;
           ach_unit = outUnit;
         }
+        ach_narrative = projectOutcome.getNarrativeAchieved();
+
         if (projectOutcome.getGenderDimenssion() != null && !projectOutcome.getGenderDimenssion().isEmpty()) {
           crossCutting +=
             "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
-              + projectOutcome.getGenderDimenssion() + "<br><br>";
+              + projectOutcome.getGenderDimenssion();
         }
         if (projectOutcome.getYouthComponent() != null && !projectOutcome.getYouthComponent().isEmpty()) {
-          crossCutting +=
-            "<b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
-              + projectOutcome.getYouthComponent();
+          if (crossCutting.isEmpty()) {
+            crossCutting +=
+              "<br><br><b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
+                + projectOutcome.getYouthComponent();
+          }
         }
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }
-        ach_narrative = projectOutcome.getNarrativeAchieved();
+
         List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
           .filter(pc -> pc.isActive() && pc.getYear() == this.getSelectedYear()).collect(Collectors.toList());
         if (projectCommunications != null && projectCommunications.size() > 0) {
@@ -2927,6 +2931,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               + projectOutcome.getId());
           }
         }
+
         model.addRow(
           new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl, outYear, outValue,
             outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative, communications});
