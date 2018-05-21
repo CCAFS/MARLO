@@ -2568,8 +2568,8 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileDictionary() != null) {
       if (deliverable.getQualityCheck().getFileDictionary().getId() != null
-        && deliverable.getQualityCheck().getFileDictionary() != null
-        && Integer.valueOf(deliverable.getQualityCheck().getFileDictionary().getId().intValue())
+        && deliverable.getQualityCheck().getDataDictionary() != null
+        && Integer.valueOf(deliverable.getQualityCheck().getDataDictionary().getId().intValue())
           .equals(APConstants.DELIVERABLE_QUALITY_ANSWER_YES)) {
         FileDB fileDb;
         // Set FileDB to null if an exception occurs (-1 id)
