@@ -86,11 +86,15 @@ function attachEvents() {
     } else {
       $(this).removeClass('opened').addClass('closed');
     }
-    $(this).next().slideToggle('slow', function() {
+    
+    $(this).next().slideToggle(500, function() {
       $(this).find('textarea').autoGrow();
       $(this).find(".errorTag").hide();
       $(this).find(".errorTag").css("left", $(this).outerWidth());
       $(this).find(".errorTag").fadeIn(1000);
+      
+      // Scroll to selected partner
+      $('html, body').animate({scrollTop: $(this).offset().top - 100}, 500);
     });
   });
   
