@@ -78,8 +78,8 @@
             
           </div>
           [#-- Is deliverable complete --]
-          [#assign deliverableStatus = (action.getDeliverableStatus(deliverable.id))!{} /]
-          [#assign isDeliverableComplete = (!(deliverableStatus.missingFields)?has_content)!false /]
+          [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+          
           [#-- Is deliverable new --]
           [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
           

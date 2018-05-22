@@ -454,9 +454,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
         projectOutcome.setMilestones(
           projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-        projectOutcome.setCommunications(
-          projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+          projectOutcome.setCommunications(
+            projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
         projectOutcome.setNextUsers(
           projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
@@ -552,7 +553,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
       this.saveMilestones(projectOutcomeDB);
-      this.saveCommunications(projectOutcomeDB);
+      if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+        this.saveCommunications(projectOutcomeDB);
+      }
       this.saveNextUsers(projectOutcomeDB);
       this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
