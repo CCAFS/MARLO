@@ -210,7 +210,7 @@
           
           
           [#-- Communications --]
-          [#if reportingActive]  
+          [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
           <div class="">
             <h4 class="headTitle">Communications </h4>
             <div class="borderBox" id="communicationsYear-${currentCycleYear}">
