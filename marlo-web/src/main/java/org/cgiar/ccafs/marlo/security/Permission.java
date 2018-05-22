@@ -78,6 +78,11 @@ public class Permission {
   public static final String POWB_SYNTHESIS_MANAGE_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage";
   public static final String POWB_SYNTHESIS_SUBMISSION_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage:canSubmmit";
 
+  // Report Synthesis
+  public static final String REPORT_SYNTHESIS_PERMISSION = "crp:{0}:reportSynthesis:{1}:canEdit";
+  public static final String REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:crpProgress";
+
+
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
 

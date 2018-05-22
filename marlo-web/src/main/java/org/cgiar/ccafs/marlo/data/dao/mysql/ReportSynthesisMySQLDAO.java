@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 
 import java.util.List;
@@ -70,6 +71,18 @@ public class ReportSynthesisMySQLDAO extends AbstractMarloDAO<ReportSynthesis, L
   }
 
   @Override
+  public ReportSynthesis findSynthesis(long phaseID, long liaisonInstitutionID) {
+    String query = "from " + ReportSynthesis.class.getName() + " where is_active=1 and id_phase= " + phaseID
+      + " and liaison_institution_id= " + liaisonInstitutionID;
+    List<ReportSynthesis> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public ReportSynthesis save(ReportSynthesis reportSynthesis) {
     if (reportSynthesis.getId() == null) {
       super.saveEntity(reportSynthesis);
@@ -78,6 +91,17 @@ public class ReportSynthesisMySQLDAO extends AbstractMarloDAO<ReportSynthesis, L
     }
 
 
+    return reportSynthesis;
+  }
+
+  @Override
+  public ReportSynthesis save(ReportSynthesis reportSynthesis, String sectionName, List<String> relationsName,
+    Phase phase) {
+    if (reportSynthesis.getId() == null) {
+      super.saveEntity(reportSynthesis, sectionName, relationsName, phase);
+    } else {
+      reportSynthesis = super.update(reportSynthesis, sectionName, relationsName, phase);
+    }
     return reportSynthesis;
   }
 

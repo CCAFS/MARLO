@@ -150,6 +150,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     return null;
   }
 
+
   @Override
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
@@ -160,6 +161,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
     }
     return null;
   }
+
 
   @Override
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName) {
@@ -212,6 +214,17 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and project_outcome_id=" + projectID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByReportSynthesis(long synthesisID, String cycle, int year, String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and report_synthesis_id=" + synthesisID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

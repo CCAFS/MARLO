@@ -122,6 +122,10 @@
 			<!-- POWB interceptors -->
 			<interceptor name="canEditPowbSynthesis"
 				class="org.cgiar.ccafs.marlo.interceptor.powb.CanEditPowbSynthesisInterceptor" />
+				
+				<!-- POWB interceptors -->
+      <interceptor name="canEditReportSynthesis"
+        class="org.cgiar.ccafs.marlo.interceptor.annualReport.CanEditReportSynthesisInterceptor" />
 
 			<!-- *********************************** CENTER INTERCEPTORS *********************************** -->
 			<!-- validating if the center is valid in the open session -->
@@ -314,6 +318,18 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<interceptor-stack name="editReportSynthesisStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="canEditReportSynthesis" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="accessibleStage" />
+        <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 
 			<!-- *********************************** CENTER INTERCEPTORS STACKS *********************************** -->
 			<interceptor-stack name="centerHomeStack">

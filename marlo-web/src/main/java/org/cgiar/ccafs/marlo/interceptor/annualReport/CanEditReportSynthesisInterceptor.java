@@ -13,21 +13,20 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.interceptor.powb;
+package org.cgiar.ccafs.marlo.interceptor.annualReport;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -47,26 +46,26 @@ import org.apache.struts2.dispatcher.Parameter;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor implements Serializable {
+public class CanEditReportSynthesisInterceptor extends AbstractInterceptor implements Serializable {
 
-  private static final long serialVersionUID = 3991605046733049951L;
+  private static final long serialVersionUID = -7018609701246586417L;
 
   Map<String, Parameter> parameters;
   Map<String, Object> session;
   GlobalUnit crp;
 
   private UserManager userManager;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private PowbSynthesisManager powbSynthesisManager;
+  private ReportSynthesisManager reportSynthesisManager;
   private GlobalUnitManager crpManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
   @Inject
-  public CanEditPowbSynthesisInterceptor(UserManager userManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    PowbSynthesisManager powbSynthesisManager, GlobalUnitManager crpManager) {
+  public CanEditReportSynthesisInterceptor(UserManager userManager, ReportSynthesisManager reportSynthesisManager,
+    GlobalUnitManager crpManager, LiaisonInstitutionManager liaisonInstitutionManager) {
     this.userManager = userManager;
-    this.powbSynthesisManager = powbSynthesisManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.reportSynthesisManager = reportSynthesisManager;
     this.crpManager = crpManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   public Long firstFlagship() {
@@ -102,7 +101,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
     baseAction.setSession(session);
-    PowbSynthesis powbSynthesis;
+    ReportSynthesis reportSynthesis;
 
     long liaisonInstitutionID;
     user = userManager.getUser(baseAction.getCurrentUser().getId());
@@ -130,11 +129,11 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
       }
     }
 
-    // Get the PWOB Synthesis section
-    long powbSynthesisID;
+    // Get the Report Synthesis section
+    long synthesisID;
     try {
-      powbSynthesisID = Long.parseLong(parameters.get(APConstants.POWB_SYNTHESIS_ID).getMultipleValues()[0]);
-      powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+      synthesisID = Long.parseLong(parameters.get(APConstants.REPORT_SYNTHESIS_ID).getMultipleValues()[0]);
+      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
     } catch (Exception e) {
       LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
       // If the LiaisonInstitution is not a PMU or Flagship.
@@ -142,40 +141,29 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
         throw new NullPointerException();
       }
       Phase phase = baseAction.getActualPhase();
-      powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
-      if (powbSynthesis == null) {
-        powbSynthesis = baseAction.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+      reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+      if (reportSynthesis == null) {
+        reportSynthesis = baseAction.createReportSynthesis(phase.getId(), liaisonInstitutionID);
       }
-      powbSynthesisID = powbSynthesis.getId();
+      synthesisID = reportSynthesis.getId();
     }
 
     // Check if the user have permissions
-    String params[] = {crp.getAcronym(), powbSynthesis.getId() + "",};
+    String params[] = {crp.getAcronym(), reportSynthesis.getId() + "",};
     if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
       canEdit = true;
     } else {
-      if (baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params))) {
+      if (baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params))) {
         if (baseAction.isPlanningActive()) {
           canEdit = true;
         }
       }
     }
 
-
     // Check the permission if user want to edit or save the form
     if (editParameter || parameters.get("save").isDefined()) {
       hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
-        : baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params));
-    }
-    String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
-    if (actionName.equals(PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus())) {
-      String permission =
-        baseAction.generatePermission(Permission.POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION, params);
-      if (baseAction.hasPermissionNoBase(permission)) {
-
-        hasPermissionToEdit = true;
-        canEdit = true;
-      }
+        : baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params));
     }
 
     if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {

@@ -34,5 +34,12 @@
 		<one-to-one name="reportSynthesisCrpProgress"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress"
 			cascade="save-update"></one-to-one>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="report_synthesis_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
 	</class>
 </hibernate-mapping>

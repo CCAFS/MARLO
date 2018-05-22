@@ -64,11 +64,13 @@ public class SectionStatus implements java.io.Serializable {
 
   private PowbSynthesis powbSynthesis;
 
-
   private ProjectInnovation projectInnovation;
+
 
   private ProjectExpectedStudy projectExpectedStudy;
 
+
+  private ReportSynthesis reportSynthesis;
 
   public SectionStatus() {
   }
@@ -104,14 +106,15 @@ public class SectionStatus implements java.io.Serializable {
     return deliverable;
   }
 
-
   public FundingSource getFundingSource() {
     return fundingSource;
   }
 
+
   public Long getId() {
     return this.id;
   }
+
 
   public IpLiaisonInstitution getIpLiaisonInstitution() {
     return ipLiaisonInstitution;
@@ -149,6 +152,10 @@ public class SectionStatus implements java.io.Serializable {
     return projectOutcome;
   }
 
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
+  }
+
   public String getSectionName() {
     return this.sectionName;
   }
@@ -165,7 +172,6 @@ public class SectionStatus implements java.io.Serializable {
     this.crpProgram = crpProgram;
   }
 
-
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
@@ -175,14 +181,15 @@ public class SectionStatus implements java.io.Serializable {
     this.deliverable = deliverable;
   }
 
+
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
@@ -191,7 +198,6 @@ public class SectionStatus implements java.io.Serializable {
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
   }
-
 
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
@@ -207,22 +213,27 @@ public class SectionStatus implements java.io.Serializable {
     this.project = project;
   }
 
+
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setProjectHighlight(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
   }
 
+
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+
+  public void setReportSynthesis(ReportSynthesis reportSynthesis) {
+    this.reportSynthesis = reportSynthesis;
   }
 
   public void setSectionName(String sectionName) {

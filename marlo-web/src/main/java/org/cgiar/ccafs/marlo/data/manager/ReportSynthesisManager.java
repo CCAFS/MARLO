@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 
 import java.util.List;
@@ -53,12 +54,22 @@ public interface ReportSynthesisManager {
 
 
   /**
+   * This method gets a reportSynthesis by phase and liaison Institution
+   * 
+   * @return a ReportSynthesis object or null if no exist records
+   */
+  public ReportSynthesis findSynthesis(long phaseID, long liaisonInstitutionID);
+
+  /**
    * This method gets a reportSynthesis object by a given reportSynthesis identifier.
    * 
    * @param reportSynthesisID is the reportSynthesis identifier.
    * @return a ReportSynthesis object.
    */
   public ReportSynthesis getReportSynthesisById(long reportSynthesisID);
+
+  public ReportSynthesis save(ReportSynthesis reportSynthesis, String sectionName, List<String> relationsName,
+    Phase phase);
 
   /**
    * This method saves the information of the given reportSynthesis

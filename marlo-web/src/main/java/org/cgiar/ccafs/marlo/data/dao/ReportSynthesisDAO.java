@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 
 import java.util.List;
@@ -56,6 +57,14 @@ public interface ReportSynthesisDAO {
 
 
   /**
+   * This method gets a reportSynthesis by phase and liaison Institution
+   * 
+   * @return a ReportSynthesis object or null if no exist records
+   */
+  public ReportSynthesis findSynthesis(long phaseID, long liaisonInstitutionID);
+
+
+  /**
    * This method saves the information of the given reportSynthesis
    * 
    * @param reportSynthesis - is the reportSynthesis object with the new information to be added/updated.
@@ -64,4 +73,7 @@ public interface ReportSynthesisDAO {
    *         or -1 is some error occurred.
    */
   public ReportSynthesis save(ReportSynthesis reportSynthesis);
+
+  public ReportSynthesis save(ReportSynthesis reportSynthesis, String sectionName, List<String> relationsName,
+    Phase phase);
 }

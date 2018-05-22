@@ -7,12 +7,12 @@
     
     <!--  1.1 CRP Progress Towards Intermediate Outcomes and SLOs -->
     <action name="{crp}/crpProgress" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
-      <interceptor-ref name="editPowbStack" />
+      <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_crpProgress.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpProgress</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>

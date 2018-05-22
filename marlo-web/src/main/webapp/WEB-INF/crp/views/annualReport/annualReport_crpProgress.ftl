@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "components-font-awesome" ] /]
@@ -35,7 +35,7 @@
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       
-        [#assign customName= "annualReport.${currentStage}" /]
+        [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
         [#assign customLabel= "annualReport.${currentStage}" /]
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
@@ -47,14 +47,14 @@
           
           [#-- Summaries of outcome case studies --]
           <div class="form-group">
-            [@customForm.textArea name="${customName}.summariesOutcomes" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
+            [@customForm.textArea name="${customName}.summaries" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
           </div>
         
           [#-- Flagships - Synthesis  --]
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
-            [@tableCRPProgressMacro list=[{},{},{},{}] /]
+            [@tableCRPProgressMacro list=fpSynthesisTable /]
           </div>
           [/#if]
           
@@ -67,16 +67,13 @@
             [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
             
             <div class="block-selectedSLOs">
-              <div class="form-group">
-                [#assign selectedSLOs = [
-                  { "name": "SLO Target title #1"} 
-                ] /]
-                [#if selectedSLOs?has_content]
-                  [#list selectedSLOs as slo][@sloTargetMacro name="${customName}.selectedSLOs" element=slo index=slo_index /][/#list]
+              <div class="form-group">              
+                [#if reportSynthesis.reportSynthesisCrpProgress.targets?has_content]
+                  [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo][@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /][/#list]
                 [/#if]
               </div>
               <div class="dottedBox">
-                [@customForm.select name="" className="setSelect2" i18nkey="${customLabel}.selectSLOTarget" listName="selectSLOTarget" keyFieldName="id"  displayFieldName="name" required=true /]
+                [@customForm.select name="" className="setSelect2" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="name" required=true /]
               </div>
             </div>
             
@@ -87,7 +84,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-            [@tableSLOSynthesisProgressMacro list=[{},{},{},{}] /]
+            [@tableSLOSynthesisProgressMacro list=flagshipPlannedList /]
           </div>
           [/#if]
           
@@ -97,7 +94,7 @@
           <div class="form-group">
             <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOutcomes" /]</h4>
             [@customForm.helpLabel name="${customLabel}.listOutcomes.help" showIcon=false editable=editable/]
-            [@tableOutcomesCaseStudiesMacro name="${customName}.selectedStudies" list=[{},{},{},{}] /]
+            [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=studiesList /]
           </div>
           
           
@@ -128,7 +125,7 @@
       <tbody>
         [#if list??]
           [#list list as item]
-            [#local customName = "${name}[${item_index}]" /]
+            [#local customName = "${name}" /]
             <tr>
               <td>P${item_index+10}</td>
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
@@ -136,7 +133,7 @@
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td>
               <td class="text-center">
-                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}.value" label="" value="true" editable=editable checked=true cssClass="" /]
+                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}" label="" value="${item.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(item.id))!false cssClass="" /]
               </td>
             </tr>
           [/#list]

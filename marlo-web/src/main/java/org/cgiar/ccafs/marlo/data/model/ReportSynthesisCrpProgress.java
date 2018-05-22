@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -26,7 +27,9 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
   @Expose
   private User modifiedBy;
 
+
   private ReportSynthesis reportSynthesis;
+
 
   @Expose
   private User createdBy;
@@ -34,17 +37,23 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
 
   @Expose
   private String overallProgress;
+
+
   @Expose
   private String summaries;
+
 
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
+
   @Expose
   private String modificationJustification;
+
 
   private Set<ReportSynthesisCrpProgressStudy> reportSynthesisCrpProgressStudies =
     new HashSet<ReportSynthesisCrpProgressStudy>(0);
@@ -52,10 +61,16 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
   private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets =
     new HashSet<ReportSynthesisCrpProgressTarget>(0);
 
+  private List<ReportSynthesisCrpProgressTarget> targets;
+
+
+  private List<ReportSynthesisCrpProgressStudy> plannedStudies;
+  private String plannedStudiesValue;
+
+  private List<ProjectExpectedStudy> expectedStudies;
 
   public ReportSynthesisCrpProgress() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -79,22 +94,22 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+  public List<ProjectExpectedStudy> getExpectedStudies() {
+    return expectedStudies;
+  }
 
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -103,12 +118,10 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -118,6 +131,16 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
 
   public String getOverallProgress() {
     return overallProgress;
+  }
+
+
+  public List<ReportSynthesisCrpProgressStudy> getPlannedStudies() {
+    return plannedStudies;
+  }
+
+
+  public String getPlannedStudiesValue() {
+    return plannedStudiesValue;
   }
 
 
@@ -136,9 +159,32 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
   }
 
 
+  /**
+   * @return an array of integers.
+   */
+  public long[] getStudiesIds() {
+
+    List<ProjectExpectedStudy> expectedStudies = this.getExpectedStudies();
+    if (expectedStudies != null) {
+      long[] ids = new long[expectedStudies.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = expectedStudies.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+
   public String getSummaries() {
     return summaries;
   }
+
+
+  public List<ReportSynthesisCrpProgressTarget> getTargets() {
+    return targets;
+  }
+
 
   @Override
   public int hashCode() {
@@ -148,14 +194,17 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -165,10 +214,13 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     this.createdBy = createdBy;
   }
 
+  public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
+    this.expectedStudies = expectedStudies;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -182,6 +234,15 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     this.overallProgress = overallProgress;
   }
 
+
+  public void setPlannedStudies(List<ReportSynthesisCrpProgressStudy> plannedStudies) {
+    this.plannedStudies = plannedStudies;
+  }
+
+  public void setPlannedStudiesValue(String plannedStudiesValue) {
+    this.plannedStudiesValue = plannedStudiesValue;
+  }
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
@@ -191,7 +252,6 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     this.reportSynthesisCrpProgressStudies = reportSynthesisCrpProgressStudies;
   }
 
-
   public void
     setReportSynthesisCrpProgressTargets(Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets) {
     this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
@@ -200,6 +260,11 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
 
   public void setSummaries(String summaries) {
     this.summaries = summaries;
+  }
+
+
+  public void setTargets(List<ReportSynthesisCrpProgressTarget> targets) {
+    this.targets = targets;
   }
 
 
