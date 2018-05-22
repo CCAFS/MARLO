@@ -5734,7 +5734,7 @@ hr {
 }
 
 .expandableBlock .blockTitle.opened {
-  opacity: 0.5;
+  /* opacity: 0.5; */
   background-image: url(../../global/images/arrow-up.png);
 }
 

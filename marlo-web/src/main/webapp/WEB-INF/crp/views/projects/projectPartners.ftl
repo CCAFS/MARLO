@@ -353,28 +353,26 @@
             [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no" editable=editable /]
           </div>
           <div class="form-group">
+            [#-- Phase of research --]
+            <div class="form-group">
+              [@customForm.elementsListComponent name="${customPartnershipName}.researchPhases" elementType="repIndOrganizationType" id="partner${index}" elementList=(element.projectPartnerPartnership.researchPhases)![] label="projectPartners.researchPhase"  listName="allRepIndResearchPhases" keyFieldName="id" displayFieldName="name" indexLevel=2 /]
+            </div>
+            [#-- Geographic Scope --]
             <div class="form-group row">
               <div class="col-md-6">
-                [#-- Phase of research --]
-                [@customForm.select name="${customPartnershipName}.researchPhase.id" className="setSelect2" i18nkey="projectPartners.researchPhase" listName="allRepIndResearchPhases" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
-              </div>
-              <div class="col-md-6">
-                [#-- Geographic Scope --]
                 [@customForm.select name="${customPartnershipName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projectPartners.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
               </div>
             </div>
-            
+            [#-- Regional scope --]
             <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-              [#-- Regional scope --]
               [@customForm.selectGroup name="${customPartnershipName}.region.id" list=allRepIndRegions element=(element.projectPartnerPartnership.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="projectPartners.region" required=true className="" editable=editable /]
             </div>
-            
+            [#-- Multinational, National and Subnational scope --]
             <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-              [#-- Multinational, National and Subnational scope --]
               [@customForm.select name="${customPartnershipName}.partnershipLocationsIsos" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIsos" multiple=true required=true className="countriesSelect" disabled=!editable /]
             </div>
+            [#-- Main area of partnership --]
             <div class="form-group">
-              [#-- Main area of partnership --]
               [@customForm.textArea name="${customPartnershipName}.mainArea" className="limitWords-30" i18nkey="projectPartners.partnershipMainarea"  editable=editable required=true/]
             </div>
           </div>
