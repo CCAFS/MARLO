@@ -334,19 +334,20 @@ public class ProjectOutcomeValidator extends BaseValidator {
         }
       }
 
-
-      if (projectOutcome.getCommunications() != null && projectOutcome.getCommunications().size() > 0) {
-        int i = 0;
-        for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
-          if (projectCommunication.getYear() == action.getCurrentCycleYear()) {
-            if (!(this.isValidString(projectCommunication.getCommunication())
-              && this.wordCount(projectCommunication.getCommunication()) <= 100)) {
-              action.addMessage(action.getText("projectOutcome.communicationEngagement"));
-              action.getInvalidFields().put("input-projectOutcome.communications[" + i + "].communication",
-                InvalidFieldsMessages.EMPTYFIELD);
+      if (action.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+        if (projectOutcome.getCommunications() != null && projectOutcome.getCommunications().size() > 0) {
+          int i = 0;
+          for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+            if (projectCommunication.getYear() == action.getCurrentCycleYear()) {
+              if (!(this.isValidString(projectCommunication.getCommunication())
+                && this.wordCount(projectCommunication.getCommunication()) <= 100)) {
+                action.addMessage(action.getText("projectOutcome.communicationEngagement"));
+                action.getInvalidFields().put("input-projectOutcome.communications[" + i + "].communication",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
             }
+            i++;
           }
-          i++;
         }
       }
 

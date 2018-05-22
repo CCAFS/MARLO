@@ -128,6 +128,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<CrpClusterOfActivity> clusterofActivites;
+  private Project projectDB;
 
   private Map<String, String> projectStatuses;
 
@@ -716,6 +717,8 @@ public class ProjectDescriptionAction extends BaseAction {
     projectScales.put(APConstants.PROJECT_SCAPE_GLOBAL, this.getText("project.projectType.global"));
 
 
+    projectDB = projectManager.getProjectById(projectID);
+
     // The base permission is established for the current section
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -748,7 +751,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
+
       projectDB.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       // Load basic info project to be saved
 
@@ -931,18 +934,6 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
-      // delete the section stust for budgets by coA when there is one Coa selectd to the project
-      Project project = projectManager.getProjectById(projectID);
-      List<ProjectClusterActivity> currentClusters =
-        project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      if (currentClusters.isEmpty() || currentClusters.size() == 1) {
-        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
-        if (sectionStatus != null) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        }
-      }
-
 
       // Removing Project Scopes
 
@@ -1002,7 +993,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
       project.setModifiedBy(this.getCurrentUser());
-      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+      projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+
+
+      // delete the section stust for budgets by coA when there is one Coa selectd to the project
+      List<ProjectClusterActivity> currentClusters =
+        projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (currentClusters.isEmpty() || currentClusters.size() == 1) {
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+        if (sectionStatus != null) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
 
       Path path = this.getAutoSaveFilePath();
       // delete the draft file if exists
