@@ -665,9 +665,9 @@ function addPartnerEvent(e) {
       width: "100%"
   });
 
-  // Branch
-  $newElement.find("select.branchesSelect ").select2({
-      placeholder: "Select the branches where the project is working on...",
+  // Research Phase
+  $newElement.find("select.researchPhasesSelect ").select2({
+      placeholder: "Select here...",
       width: '100%'
   });
 
@@ -826,11 +826,14 @@ function addSelect2() {
       width: "100%"
   });
 
-  // Branch
-  $("form select.branchesSelect ").select2({
-      placeholder: "Select the branches where the project is working on...",
+  // Research Phase
+  $("form select.researchPhasesSelect ").select2({
+      placeholder: "Select here...",
       width: '100%'
   });
+  
+
+  
   $('form select.countriesList, select.countriesRequest, form select.countriesSelect').select2({
       placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,

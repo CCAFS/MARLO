@@ -355,7 +355,7 @@
           <div class="form-group">
             [#-- Phase of research --]
             <div class="form-group">
-              [@customForm.elementsListComponent name="${customPartnershipName}.researchPhases" elementType="repIndOrganizationType" id="partner${index}" elementList=(element.projectPartnerPartnership.researchPhases)![] label="projectPartners.researchPhase"  listName="allRepIndResearchPhases" keyFieldName="id" displayFieldName="name" indexLevel=2 /]
+              [@customForm.select name="${customPartnershipName}.researchPhasesIds" label="" i18nkey="projectPartners.researchPhase" listName="allRepIndResearchPhases" keyFieldName="id"  displayFieldName="name" value="${customPartnershipName}.researchPhasesIds" multiple=true required=true className="researchPhasesSelect" disabled=!editable /]
             </div>
             [#-- Geographic Scope --]
             <div class="form-group row">
