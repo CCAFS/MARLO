@@ -117,7 +117,7 @@
             </div>
             
             [#--  Regions/global and Flagships that the project is working on --]
-            [#if !project.projectInfo.administrative]
+            [#if (!project.projectInfo.administrative)!false]
             
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
