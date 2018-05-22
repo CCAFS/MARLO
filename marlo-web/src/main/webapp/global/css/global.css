@@ -5708,6 +5708,7 @@ hr {
 
 .expandableBlock .blockTitle {
   cursor: pointer;
+  font-family: 'Open Sans';
   padding-left: 20px;
   background-repeat: no-repeat;
   background-position: -5px 2px;
