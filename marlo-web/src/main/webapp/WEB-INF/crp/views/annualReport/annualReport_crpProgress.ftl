@@ -73,7 +73,7 @@
                 [/#if]
               </div>
               <div class="dottedBox">
-                [@customForm.select name="" className="setSelect2" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="name" required=true /]
+                [@customForm.select name="" className="setSelect2" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="narrative" required=true /]
               </div>
             </div>
             
@@ -216,10 +216,11 @@
     [#-- Remove button --]
     [#if editable]<div class="removeElement sm removeIcon removeElementType-${customClass}" title="Remove"></div>[/#if] 
     [#-- SLO Target --]
-    <div class="form-group grayBox"> <strong>SLO Target </strong> <br />${element.name}</div>
+    <div class="form-group grayBox"> <strong>SLO Target </strong> <br />${(element.srfSloIndicatorTarget.narrative)}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
+    ${element.birefSummary}
     <div class="form-group">
-      [@customForm.textArea name="${customName}.summaryNewEvidence" i18nkey="${customLabel}.summaryNewEvidence" className="" required=true editable=editable /]
+      [@customForm.textArea name="${customName}.birefSummary" i18nkey="${customLabel}.summaryNewEvidence" className="" required=true editable=editable /]
     </div>
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
