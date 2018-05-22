@@ -57,11 +57,18 @@ public class ReportSynthesisCrpProgressStudy implements java.io.Serializable, IA
       return false;
     }
     ReportSynthesisCrpProgressStudy other = (ReportSynthesisCrpProgressStudy) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getProjectExpectedStudy() == null) {
+      if (other.getProjectExpectedStudy() != null) {
         return false;
       }
-    } else if (!this.getId().equals(other.getId())) {
+    } else if (!this.getProjectExpectedStudy().equals(other.getProjectExpectedStudy())) {
+      return false;
+    }
+    if (this.getReportSynthesisCrpProgress() == null) {
+      if (other.getReportSynthesisCrpProgress() != null) {
+        return false;
+      }
+    } else if (!this.getReportSynthesisCrpProgress().getId().equals(other.getReportSynthesisCrpProgress().getId())) {
       return false;
     }
     return true;
@@ -118,6 +125,7 @@ public class ReportSynthesisCrpProgressStudy implements java.io.Serializable, IA
     final int prime = 31;
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((reportSynthesisCrpProgress == null) ? 0 : reportSynthesisCrpProgress.hashCode());
     return result;
   }
 

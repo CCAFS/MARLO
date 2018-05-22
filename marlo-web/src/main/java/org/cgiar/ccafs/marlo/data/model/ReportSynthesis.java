@@ -5,6 +5,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -16,8 +18,10 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -1347662217447754044L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private Phase phase;
@@ -40,10 +44,10 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private ReportSynthesisCrpProgress reportSynthesisCrpProgress;
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public ReportSynthesis() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -113,8 +117,14 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
+
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
+  }
+
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
   @Override
@@ -154,7 +164,6 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -162,6 +171,11 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setReportSynthesisCrpProgress(ReportSynthesisCrpProgress reportSynthesisCrpProgress) {
     this.reportSynthesisCrpProgress = reportSynthesisCrpProgress;
+  }
+
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

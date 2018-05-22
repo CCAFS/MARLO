@@ -17,9 +17,14 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisCrpProgressTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,13 +38,14 @@ public class ReportSynthesisCrpProgressTargetManagerImpl implements ReportSynthe
 
   private ReportSynthesisCrpProgressTargetDAO reportSynthesisCrpProgressTargetDAO;
   // Managers
-
+  private ReportSynthesisManager reportSynthesisManager;
 
   @Inject
-  public ReportSynthesisCrpProgressTargetManagerImpl(ReportSynthesisCrpProgressTargetDAO reportSynthesisCrpProgressTargetDAO) {
+  public ReportSynthesisCrpProgressTargetManagerImpl(
+    ReportSynthesisCrpProgressTargetDAO reportSynthesisCrpProgressTargetDAO,
+    ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisCrpProgressTargetDAO = reportSynthesisCrpProgressTargetDAO;
-
-
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
   @Override
@@ -51,7 +57,8 @@ public class ReportSynthesisCrpProgressTargetManagerImpl implements ReportSynthe
   @Override
   public boolean existReportSynthesisCrpProgressTarget(long reportSynthesisCrpProgressTargetID) {
 
-    return reportSynthesisCrpProgressTargetDAO.existReportSynthesisCrpProgressTarget(reportSynthesisCrpProgressTargetID);
+    return reportSynthesisCrpProgressTargetDAO
+      .existReportSynthesisCrpProgressTarget(reportSynthesisCrpProgressTargetID);
   }
 
   @Override
@@ -62,13 +69,42 @@ public class ReportSynthesisCrpProgressTargetManagerImpl implements ReportSynthe
   }
 
   @Override
-  public ReportSynthesisCrpProgressTarget getReportSynthesisCrpProgressTargetById(long reportSynthesisCrpProgressTargetID) {
+  public List<ReportSynthesisCrpProgressTarget> flagshipSynthesis(List<LiaisonInstitution> lInstitutions,
+    long phaseID) {
+
+    List<ReportSynthesisCrpProgressTarget> progressTargets = new ArrayList<>();
+
+    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+      ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (reportSynthesisFP != null) {
+        if (reportSynthesisFP.getReportSynthesisCrpProgress() != null) {
+          if (reportSynthesisFP.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressTargets() != null) {
+            List<ReportSynthesisCrpProgressTarget> targets =
+              new ArrayList<>(reportSynthesisFP.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressTargets()
+                .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+            if (targets != null || !targets.isEmpty()) {
+              for (ReportSynthesisCrpProgressTarget crpProgressTarget : targets) {
+                progressTargets.add(crpProgressTarget);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return progressTargets;
+  }
+
+  @Override
+  public ReportSynthesisCrpProgressTarget
+    getReportSynthesisCrpProgressTargetById(long reportSynthesisCrpProgressTargetID) {
 
     return reportSynthesisCrpProgressTargetDAO.find(reportSynthesisCrpProgressTargetID);
   }
 
   @Override
-  public ReportSynthesisCrpProgressTarget saveReportSynthesisCrpProgressTarget(ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget) {
+  public ReportSynthesisCrpProgressTarget
+    saveReportSynthesisCrpProgressTarget(ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget) {
 
     return reportSynthesisCrpProgressTargetDAO.save(reportSynthesisCrpProgressTarget);
   }

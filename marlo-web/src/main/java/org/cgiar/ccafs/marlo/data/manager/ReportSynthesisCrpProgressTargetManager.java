@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 
 import java.util.List;
@@ -53,22 +54,35 @@ public interface ReportSynthesisCrpProgressTargetManager {
 
 
   /**
+   * showw to PMU the information to the Flagship Synthesis Targerts Indicators.
+   * 
+   * @param lInstitutions - Flahsip List
+   * @param phaseID - the Current Phase
+   * @return All Flagships Synthesis Target report
+   */
+  public List<ReportSynthesisCrpProgressTarget> flagshipSynthesis(List<LiaisonInstitution> lInstitutions, long phaseID);
+
+  /**
    * This method gets a reportSynthesisCrpProgressTarget object by a given reportSynthesisCrpProgressTarget identifier.
    * 
    * @param reportSynthesisCrpProgressTargetID is the reportSynthesisCrpProgressTarget identifier.
    * @return a ReportSynthesisCrpProgressTarget object.
    */
-  public ReportSynthesisCrpProgressTarget getReportSynthesisCrpProgressTargetById(long reportSynthesisCrpProgressTargetID);
+  public ReportSynthesisCrpProgressTarget
+    getReportSynthesisCrpProgressTargetById(long reportSynthesisCrpProgressTargetID);
 
   /**
    * This method saves the information of the given reportSynthesisCrpProgressTarget
    * 
-   * @param reportSynthesisCrpProgressTarget - is the reportSynthesisCrpProgressTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisCrpProgressTarget was
+   * @param reportSynthesisCrpProgressTarget - is the reportSynthesisCrpProgressTarget object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisCrpProgressTarget was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisCrpProgressTarget saveReportSynthesisCrpProgressTarget(ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget);
+  public ReportSynthesisCrpProgressTarget
+    saveReportSynthesisCrpProgressTarget(ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget);
 
 
 }

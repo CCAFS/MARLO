@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisDAO;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 
 import java.util.List;
@@ -62,9 +63,21 @@ public class ReportSynthesisManagerImpl implements ReportSynthesisManager {
   }
 
   @Override
+  public ReportSynthesis findSynthesis(long phaseID, long liaisonInstitutionID) {
+    return reportSynthesisDAO.findSynthesis(phaseID, liaisonInstitutionID);
+  }
+
+
+  @Override
   public ReportSynthesis getReportSynthesisById(long reportSynthesisID) {
 
     return reportSynthesisDAO.find(reportSynthesisID);
+  }
+
+  @Override
+  public ReportSynthesis save(ReportSynthesis reportSynthesis, String sectionName, List<String> relationsName,
+    Phase phase) {
+    return reportSynthesisDAO.save(reportSynthesis, sectionName, relationsName, phase);
   }
 
   @Override

@@ -34,9 +34,9 @@
 ]/]
 
 
-[#assign submission = (action.isPowbSynthesisSubmitted(powbSynthesisID))!false /]
-[#assign canSubmit = (action.hasPersmissionSubmitPowb(powbSynthesisID))!false /]
-[#assign completed = (action.isCompletePowbSynthesis(powbSynthesisID))!false /]
+[#assign submission = false /]
+[#assign canSubmit = false /]
+[#assign completed = false /]
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]
@@ -51,8 +51,8 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
-            [#assign submitStatus = (action.getPowbSynthesisSectionStatus(item.action, powbSynthesisID))!false /]
-            [#assign hasDraft = (action.getAutoSaveFilePath(powbSynthesis.class.simpleName, item.action, powbSynthesis.id))!false /]
+            [#assign submitStatus = false /]
+            [#assign hasDraft = false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">

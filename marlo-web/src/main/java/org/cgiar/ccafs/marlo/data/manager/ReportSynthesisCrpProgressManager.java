@@ -14,6 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
 
 import java.util.List;
@@ -53,6 +56,16 @@ public interface ReportSynthesisCrpProgressManager {
 
 
   /**
+   * Shows to the pmu the Flagship Crp Progress Case Studies that included in this annual report synthesis
+   * 
+   * @param lInstitutions - List of Crp Flagships
+   * @param phaseID - The Current pahse
+   * @return PowbEvidencePlannedStudyDTO studies information
+   */
+  List<PowbEvidencePlannedStudyDTO> getPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID,
+    GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU);
+
+  /**
    * This method gets a reportSynthesisCrpProgress object by a given reportSynthesisCrpProgress identifier.
    * 
    * @param reportSynthesisCrpProgressID is the reportSynthesisCrpProgress identifier.
@@ -63,12 +76,15 @@ public interface ReportSynthesisCrpProgressManager {
   /**
    * This method saves the information of the given reportSynthesisCrpProgress
    * 
-   * @param reportSynthesisCrpProgress - is the reportSynthesisCrpProgress object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisCrpProgress was
+   * @param reportSynthesisCrpProgress - is the reportSynthesisCrpProgress object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisCrpProgress was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisCrpProgress saveReportSynthesisCrpProgress(ReportSynthesisCrpProgress reportSynthesisCrpProgress);
+  public ReportSynthesisCrpProgress
+    saveReportSynthesisCrpProgress(ReportSynthesisCrpProgress reportSynthesisCrpProgress);
 
 
 }

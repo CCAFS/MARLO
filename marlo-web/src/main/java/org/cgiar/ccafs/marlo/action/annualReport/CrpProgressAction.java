@@ -19,26 +19,37 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbTocManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
-import org.cgiar.ccafs.marlo.data.model.PowbToc;
-import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.CrpProgressValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,42 +81,89 @@ public class CrpProgressAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
-  private PowbSynthesisManager powbSynthesisManager;
+
+
+  private ReportSynthesisManager reportSynthesisManager;
+
   private AuditLogManager auditLogManager;
+
+
   private UserManager userManager;
+
+
   private CrpProgramManager crpProgramManager;
-  private FileDBManager fileDBManager;
-  private ToCAdjustmentsValidator validator;
-  private PowbTocManager powbTocManager;
+
+
+  private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
+
+
+  private CrpProgressValidator validator;
+
+
+  private ProjectFocusManager projectFocusManager;
+
+  private ProjectManager projectManager;
+
+
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+
+  private ReportSynthesisCrpProgressStudyManager reportSynthesisCrpProgressStudyManager;
+
+
+  private ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager;
+
+  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
 
   // Variables
   private String transaction;
-  private PowbSynthesis powbSynthesis;
+
+  private ReportSynthesis reportSynthesis;
+
   private Long liaisonInstitutionID;
-  private Long powbSynthesisID;
+
+  private Long synthesisID;
+
   private LiaisonInstitution liaisonInstitution;
+
   private GlobalUnit loggedCrp;
+
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<PowbTocListDTO> tocList;
+
+  private List<ProjectExpectedStudy> studiesList;
+
+  private List<SrfSloIndicatorTarget> sloTargets;
+
+  private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
+
+  private List<ReportSynthesisCrpProgressTarget> fpSynthesisTable;
 
   @Inject
   public CrpProgressAction(APConfig config, GlobalUnitManager crpManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator, PowbTocManager powbTocManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager,
+    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager, AuditLogManager auditLogManager,
+    UserManager userManager, CrpProgramManager crpProgramManager, ReportSynthesisManager reportSynthesisManager,
+    CrpProgressValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager,
+    ReportSynthesisCrpProgressStudyManager reportSynthesisCrpProgressStudyManager,
+    ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
+    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
-    this.fileDBManager = fileDBManager;
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
-    this.powbSynthesisManager = powbSynthesisManager;
+    this.reportSynthesisManager = reportSynthesisManager;
     this.validator = validator;
-    this.powbTocManager = powbTocManager;
+    this.projectFocusManager = projectFocusManager;
+    this.projectManager = projectManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.reportSynthesisCrpProgressTargetManager = reportSynthesisCrpProgressTargetManager;
+    this.reportSynthesisCrpProgressStudyManager = reportSynthesisCrpProgressStudyManager;
+    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
   }
-
 
   @Override
   public String cancel() {
@@ -126,6 +184,90 @@ public class CrpProgressAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public void expectedStudiesNewData(ReportSynthesisCrpProgress crpProgressDB) {
+
+    List<Long> selectedPs = new ArrayList<>();
+    List<Long> studiesIds = new ArrayList<>();
+
+    for (ProjectExpectedStudy std : studiesList) {
+      studiesIds.add(std.getId());
+    }
+
+    if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudiesValue() != null
+      && reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudiesValue().length() > 0) {
+      List<Long> stList = new ArrayList<>();
+      for (String string : reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudiesValue().trim().split(",")) {
+        stList.add(Long.parseLong(string.trim()));
+      }
+
+
+      for (Long studyId : studiesIds) {
+        int index = stList.indexOf(studyId);
+        if (index < 0) {
+          selectedPs.add(studyId);
+        }
+
+
+      }
+
+      for (ReportSynthesisCrpProgressStudy reportStudy : crpProgressDB.getReportSynthesisCrpProgressStudies().stream()
+        .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
+        if (!selectedPs.contains(reportStudy.getProjectExpectedStudy().getId())) {
+          reportSynthesisCrpProgressManager.deleteReportSynthesisCrpProgress(reportStudy.getId());
+        }
+      }
+
+      for (Long studyId : selectedPs) {
+        ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyId);
+
+        ReportSynthesisCrpProgressStudy crpPlannedStudyNew = new ReportSynthesisCrpProgressStudy();
+        crpPlannedStudyNew = new ReportSynthesisCrpProgressStudy();
+        crpPlannedStudyNew.setProjectExpectedStudy(expectedStudy);
+        crpPlannedStudyNew.setReportSynthesisCrpProgress(crpProgressDB);
+
+        List<ReportSynthesisCrpProgressStudy> crpPlannedStudies = crpProgressDB.getReportSynthesisCrpProgressStudies()
+          .stream().filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!crpPlannedStudies.contains(crpPlannedStudyNew)) {
+          crpPlannedStudyNew.setActive(true);
+          crpPlannedStudyNew.setActiveSince(new Date());
+          crpPlannedStudyNew.setCreatedBy(this.getCurrentUser());
+          crpPlannedStudyNew.setModifiedBy(this.getCurrentUser());
+          crpPlannedStudyNew.setModificationJustification("");
+          crpPlannedStudyNew =
+            reportSynthesisCrpProgressStudyManager.saveReportSynthesisCrpProgressStudy(crpPlannedStudyNew);
+        }
+      }
+    } else {
+
+      for (Long studyId : studiesIds) {
+        ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyId);
+
+        ReportSynthesisCrpProgressStudy crpPlannedStudyNew = new ReportSynthesisCrpProgressStudy();
+        crpPlannedStudyNew = new ReportSynthesisCrpProgressStudy();
+        crpPlannedStudyNew.setProjectExpectedStudy(expectedStudy);
+        crpPlannedStudyNew.setReportSynthesisCrpProgress(crpProgressDB);
+
+        List<ReportSynthesisCrpProgressStudy> reportPlannedStudies = crpProgressDB
+          .getReportSynthesisCrpProgressStudies().stream().filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!reportPlannedStudies.contains(crpPlannedStudyNew)) {
+          crpPlannedStudyNew.setActive(true);
+          crpPlannedStudyNew.setActiveSince(new Date());
+          crpPlannedStudyNew.setCreatedBy(this.getCurrentUser());
+          crpPlannedStudyNew.setModifiedBy(this.getCurrentUser());
+          crpPlannedStudyNew.setModificationJustification("");
+          crpPlannedStudyNew =
+            reportSynthesisCrpProgressStudyManager.saveReportSynthesisCrpProgressStudy(crpPlannedStudyNew);
+        }
+      }
+
+    }
+  }
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -137,13 +279,24 @@ public class CrpProgressAction extends BaseAction {
   }
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = powbSynthesis.getClass().getSimpleName();
+    String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_"
+      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<PowbEvidencePlannedStudyDTO> getFlagshipPlannedList() {
+    return flagshipPlannedList;
+  }
+
+  public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
+    return fpSynthesisTable;
+  }
+
+  public LiaisonInstitution getLiaisonInstitution() {
+    return liaisonInstitution;
+  }
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -170,23 +323,27 @@ public class CrpProgressAction extends BaseAction {
       .concat(File.separator);
   }
 
-
-  public PowbSynthesis getPowbSynthesis() {
-    return powbSynthesis;
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
   }
 
-  public Long getPowbSynthesisID() {
-    return powbSynthesisID;
+  public List<SrfSloIndicatorTarget> getSloTargets() {
+    return sloTargets;
   }
 
-  public List<PowbTocListDTO> getTocList() {
-    return tocList;
+  public List<ProjectExpectedStudy> getStudiesList() {
+    return studiesList;
   }
+
+
+  public Long getSynthesisID() {
+    return synthesisID;
+  }
+
 
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -202,6 +359,7 @@ public class CrpProgressAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -213,6 +371,7 @@ public class CrpProgressAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -234,10 +393,10 @@ public class CrpProgressAction extends BaseAction {
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      PowbSynthesis history = (PowbSynthesis) auditLogManager.getHistory(transaction);
+      ReportSynthesis history = (ReportSynthesis) auditLogManager.getHistory(transaction);
       if (history != null) {
-        powbSynthesis = history;
-        powbSynthesisID = powbSynthesis.getId();
+        reportSynthesis = history;
+        synthesisID = reportSynthesis.getId();
       } else {
         this.transaction = null;
         this.setTransaction("-1");
@@ -250,9 +409,11 @@ public class CrpProgressAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(
-            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getInstitution() == null)
+            .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -285,35 +446,39 @@ public class CrpProgressAction extends BaseAction {
       }
 
       try {
-        powbSynthesisID =
-          Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
-        powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+        synthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
+        reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
-        if (!powbSynthesis.getPhase().equals(phase)) {
-          powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
-          if (powbSynthesis == null) {
-            powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+        if (!reportSynthesis.getPhase().equals(phase)) {
+          reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+          if (reportSynthesis == null) {
+            reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
           }
-          powbSynthesisID = powbSynthesis.getId();
+          synthesisID = reportSynthesis.getId();
         }
       } catch (Exception e) {
-
-        powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
-        if (powbSynthesis == null) {
-          powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        if (reportSynthesis == null) {
+          reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
         }
-        powbSynthesisID = powbSynthesis.getId();
+        synthesisID = reportSynthesis.getId();
 
       }
     }
 
 
-    if (powbSynthesis != null) {
+    if (reportSynthesis != null) {
 
-      PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesisID = powbSynthesisDB.getId();
-      liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
+      ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(reportSynthesis.getId());
+      synthesisID = reportSynthesisDB.getId();
+      liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+
+      // Fill Flagship Expected Studies
+      if (this.isFlagship()) {
+        this.studiesList(phase.getId(), liaisonInstitution);
+      }
+
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -323,41 +488,56 @@ public class CrpProgressAction extends BaseAction {
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         AutoSaveReader autoSaveReader = new AutoSaveReader();
-        powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
-        powbSynthesisID = powbSynthesis.getId();
+        reportSynthesis = (ReportSynthesis) autoSaveReader.readFromJson(jReader);
+        synthesisID = reportSynthesis.getId();
         this.setDraft(true);
         reader.close();
       } else {
+
         this.setDraft(false);
         // Check if ToC relation is null -create it
-        if (powbSynthesis.getPowbToc() == null) {
-          PowbToc toc = new PowbToc();
-          toc.setActive(true);
-          toc.setActiveSince(new Date());
-          toc.setCreatedBy(this.getCurrentUser());
-          toc.setModifiedBy(this.getCurrentUser());
-          toc.setModificationJustification("");
+        if (reportSynthesis.getReportSynthesisCrpProgress() == null) {
+          ReportSynthesisCrpProgress crpProgress = new ReportSynthesisCrpProgress();
+          crpProgress.setActive(true);
+          crpProgress.setActiveSince(new Date());
+          crpProgress.setCreatedBy(this.getCurrentUser());
+          crpProgress.setModifiedBy(this.getCurrentUser());
+          crpProgress.setModificationJustification("");
           // create one to one relation
-          powbSynthesis.setPowbToc(toc);
-          toc.setPowbSynthesis(powbSynthesis);
+          reportSynthesis.setReportSynthesisCrpProgress(crpProgress);;
+          crpProgress.setReportSynthesis(reportSynthesis);
           // save the changes
-          powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+        }
+
+
+        if (this.isFlagship()) {
+          // Srf Targets List
+          if (reportSynthesis.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressTargets() != null) {
+            reportSynthesis.getReportSynthesisCrpProgress().setTargets(
+              new ArrayList<>(reportSynthesis.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressTargets()
+                .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+          }
+          // Crp Progress Studies
+          reportSynthesis.getReportSynthesisCrpProgress().setExpectedStudies(new ArrayList<>());
+          if (reportSynthesis.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressStudies() != null
+            && !reportSynthesis.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressStudies().isEmpty()) {
+            for (ReportSynthesisCrpProgressStudy plannedStudy : reportSynthesis.getReportSynthesisCrpProgress()
+              .getReportSynthesisCrpProgressStudies().stream().filter(ro -> ro.isActive())
+              .collect(Collectors.toList())) {
+              reportSynthesis.getReportSynthesisCrpProgress().getExpectedStudies()
+                .add(plannedStudy.getProjectExpectedStudy());
+            }
+          }
         }
       }
     }
 
-    // Check if the pow toc has file
-    if (this.isPMU()) {
-      if (powbSynthesis.getPowbToc().getFile() != null) {
-        if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-          powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-        } else {
-          powbSynthesis.getPowbToc().setFile(null);
-        }
-      }
-    } else {
-      powbSynthesis.getPowbToc().setFile(null);
+    if (this.isFlagship()) {
+      sloTargets = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
+        .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
     }
+
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -366,10 +546,19 @@ public class CrpProgressAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    // Setup the PUM ToC Table
+
     if (this.isPMU()) {
-      this.tocList(phase.getId());
+
+      // Table A-2 PMU Information
+      flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
+        loggedCrp, this.liaisonInstitution);
+
+      // Flagship Synthesis Table
+      fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions, phase.getId());
+
     }
+
+
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
@@ -377,11 +566,18 @@ public class CrpProgressAction extends BaseAction {
 
 
     // Base Permission
-    String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
+    String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
+    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      powbSynthesis.getPowbToc().setFile(null);
+      if (reportSynthesis.getReportSynthesisCrpProgress().getTargets() != null) {
+        reportSynthesis.getReportSynthesisCrpProgress().getTargets().clear();
+      }
+
+      if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() != null) {
+        reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies().clear();
+      }
+
     }
   }
 
@@ -389,28 +585,30 @@ public class CrpProgressAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      PowbToc powbTocDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbToc();
 
-      if (this.isPMU()) {
-        if (powbSynthesis.getPowbToc().getFile() != null) {
-          if (powbSynthesis.getPowbToc().getFile().getId() == null) {
-            powbTocDB.setFile(null);
-          } else {
-            powbTocDB.setFile(powbSynthesis.getPowbToc().getFile());
-          }
+      ReportSynthesisCrpProgress crpProgressDB =
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisCrpProgress();
+      if (this.isFlagship()) {
+
+        if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() == null) {
+          reportSynthesis.getReportSynthesisCrpProgress().setPlannedStudies(new ArrayList<>());
         }
+
+        this.expectedStudiesNewData(crpProgressDB);
+        this.saveSrfTargets(crpProgressDB);
+
       }
 
-      powbTocDB.setTocOverall(powbSynthesis.getPowbToc().getTocOverall());
-      powbTocDB = powbTocManager.savePowbToc(powbTocDB);
+      crpProgressDB.setOverallProgress(reportSynthesis.getReportSynthesisCrpProgress().getOverallProgress());
+      crpProgressDB.setSummaries(reportSynthesis.getReportSynthesisCrpProgress().getSummaries());
 
 
       List<String> relationsName = new ArrayList<>();
-      powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
+      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+      reportSynthesis.setModifiedBy(this.getCurrentUser());
+      reportSynthesis.setActiveSince(new Date());
 
-      powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
 
       Path path = this.getAutoSaveFilePath();
@@ -437,6 +635,91 @@ public class CrpProgressAction extends BaseAction {
     }
   }
 
+
+  /**
+   * Save Crp Progress Srf Targets Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveSrfTargets(ReportSynthesisCrpProgress crpProgressDB) {
+
+    // Search and deleted form Information
+    if (crpProgressDB.getReportSynthesisCrpProgressTargets() != null
+      && crpProgressDB.getReportSynthesisCrpProgressTargets().size() > 0) {
+
+      List<ReportSynthesisCrpProgressTarget> targetPrev = new ArrayList<>(crpProgressDB
+        .getReportSynthesisCrpProgressTargets().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
+
+      for (ReportSynthesisCrpProgressTarget crpTarget : targetPrev) {
+        if (!reportSynthesis.getReportSynthesisCrpProgress().getTargets().contains(crpTarget)) {
+          reportSynthesisCrpProgressTargetManager.deleteReportSynthesisCrpProgressTarget(crpTarget.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (reportSynthesis.getReportSynthesisCrpProgress().getTargets() != null) {
+      for (ReportSynthesisCrpProgressTarget crpTarget : reportSynthesis.getReportSynthesisCrpProgress().getTargets()) {
+        if (crpTarget.getId() == null) {
+          ReportSynthesisCrpProgressTarget crpTargetSave = new ReportSynthesisCrpProgressTarget();
+
+          crpTargetSave.setReportSynthesisCrpProgress(crpProgressDB);
+
+          SrfSloIndicatorTarget sloIndicator =
+            srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(crpTarget.getSrfSloIndicatorTarget().getId());
+
+          crpTargetSave.setBirefSummary(crpTarget.getBirefSummary());
+          crpTargetSave.setAdditionalContribution(crpTarget.getAdditionalContribution());
+
+          crpTargetSave.setSrfSloIndicatorTarget(sloIndicator);
+
+          reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetSave);
+        } else {
+
+
+          boolean hasChanges = false;
+          ReportSynthesisCrpProgressTarget crpTargetPrev =
+            reportSynthesisCrpProgressTargetManager.getReportSynthesisCrpProgressTargetById(crpTarget.getId());
+
+          if (!crpTargetPrev.getBirefSummary().equals(crpTarget.getBirefSummary())) {
+            hasChanges = true;
+            crpTargetPrev.setBirefSummary(crpTarget.getBirefSummary());
+          }
+
+          if (!crpTargetPrev.getAdditionalContribution().equals(crpTarget.getAdditionalContribution())) {
+            hasChanges = true;
+            crpTargetPrev.setAdditionalContribution(crpTarget.getAdditionalContribution());
+          }
+
+
+          if (hasChanges) {
+            crpTargetPrev.setModifiedBy(this.getCurrentUser());
+            reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetPrev);
+          }
+
+
+        }
+      }
+    }
+
+  }
+
+
+  public void setFlagshipPlannedList(List<PowbEvidencePlannedStudyDTO> flagshipPlannedList) {
+    this.flagshipPlannedList = flagshipPlannedList;
+  }
+
+
+  public void setFpSynthesisTable(List<ReportSynthesisCrpProgressTarget> fpSynthesisTable) {
+    this.fpSynthesisTable = fpSynthesisTable;
+  }
+
+
+  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
+    this.liaisonInstitution = liaisonInstitution;
+  }
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
@@ -449,53 +732,54 @@ public class CrpProgressAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
-  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
-    this.powbSynthesis = powbSynthesis;
+  public void setReportSynthesis(ReportSynthesis reportSynthesis) {
+    this.reportSynthesis = reportSynthesis;
   }
 
-  public void setPowbSynthesisID(Long powbSynthesisID) {
-    this.powbSynthesisID = powbSynthesisID;
+  public void setSloTargets(List<SrfSloIndicatorTarget> sloTargets) {
+    this.sloTargets = sloTargets;
   }
 
-  public void setTocList(List<PowbTocListDTO> tocList) {
-    this.tocList = tocList;
+  public void setStudiesList(List<ProjectExpectedStudy> studiesList) {
+    this.studiesList = studiesList;
   }
 
+
+  public void setSynthesisID(Long synthesisID) {
+    this.synthesisID = synthesisID;
+  }
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
 
-  public void tocList(long phaseID) {
-    tocList = new ArrayList<>();
-    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-      PowbTocListDTO powbTocList = new PowbTocListDTO();
-      powbTocList.setLiaisonInstitution(liaisonInstitution);
-      powbTocList.setOverall("");
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      if (powbSynthesis != null) {
-        if (powbSynthesis.getPowbToc() != null) {
-          if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-            powbTocList.setOverall(powbSynthesis.getPowbToc().getTocOverall());
-          }
+  public void studiesList(long phaseID, LiaisonInstitution liaisonInstitution) {
+
+    studiesList = new ArrayList<>();
+
+    if (projectFocusManager.findAll() != null) {
+
+      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+          && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+        .collect(Collectors.toList()));
+
+      for (ProjectFocus focus : projectFocus) {
+        Project project = projectManager.getProjectById(focus.getProject().getId());
+        List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
+          .filter(es -> es.isActive() && es.getPhase() != null && es.getPhase() == phaseID)
+          .collect(Collectors.toList()));
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+          studiesList.add(projectExpectedStudy);
         }
       }
-      tocList.add(powbTocList);
     }
   }
 
   @Override
   public void validate() {
     if (save) {
-      if (this.isPMU()) {
-        if (powbSynthesis.getPowbToc().getFile() != null && powbSynthesis.getPowbToc().getFile().getId() == null
-          || powbSynthesis.getPowbToc().getFile().getId().longValue() == -1) {
-          powbSynthesis.getPowbToc().setFile(null);
-        }
-      }
-
-      validator.validate(this, powbSynthesis, true);
+      validator.validate(this, reportSynthesis, true);
     }
   }
 
