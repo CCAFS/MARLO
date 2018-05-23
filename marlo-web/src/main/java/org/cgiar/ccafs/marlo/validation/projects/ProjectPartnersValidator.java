@@ -234,7 +234,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
 
         if (projectPartnerPartnership == null || partner.getHasPartnerships() == null) {
-          action.addMessage(action.getText("Please provide partnership formal partner"));
+          action.addMessage("Please provide partnership formal partner");
           action.addMissingField("project.partners[" + c + "].hasPartnerships");
           action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -250,7 +250,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
         if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope() == null
           || projectPartnerPartnership.getGeographicScope().getId() == -1) {
-          action.addMessage(action.getText("Please provide partnership geographic scope"));
+          action.addMessage("Please provide partnership geographic scope");
           action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.geographicScope.id");
           action.getInvalidFields().put(
             "input-project.partners[" + c + "].projectPartnerPartnership.geographicScope.id",
@@ -259,7 +259,7 @@ public class ProjectPartnersValidator extends BaseValidator {
           if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope().getId()
             .equals(action.getReportingIndGeographicScopeRegional())) {
             if (projectPartnerPartnership.getRegion() == null || projectPartnerPartnership.getRegion().getId() == -1) {
-              action.addMessage(action.getText("Please provide partnership region"));
+              action.addMessage("Please provide partnership region");
               action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.region.id");
               action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.region.id",
                 InvalidFieldsMessages.EMPTYFIELD);
@@ -275,7 +275,7 @@ public class ProjectPartnersValidator extends BaseValidator {
               .equals(action.getReportingIndGeographicScopeSubNational())) {
             if (projectPartnerPartnership.getPartnershipLocationsIsos() == null
               || projectPartnerPartnership.getPartnershipLocationsIsos().isEmpty()) {
-              action.addMessage(action.getText("Please provide partnership countries"));
+              action.addMessage("Please provide partnership countries");
               action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.partnershipLocationsIsos");
               action.getInvalidFields().put(
                 "input-project.partners[" + c + "].projectPartnerPartnership.partnershipLocationsIsos",
@@ -286,7 +286,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
 
         if (projectPartnerPartnership == null || !this.isValidString(projectPartnerPartnership.getMainArea())) {
-          action.addMessage(action.getText("Please provide partnership main area"));
+          action.addMessage("Please provide partnership main area");
           action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.mainArea");
           action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.mainArea",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -385,8 +385,7 @@ public class ProjectPartnersValidator extends BaseValidator {
     if (project.getPartners() != null && !project.getPartners().isEmpty()) {
       if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
         if (!this.isValidString(project.getProjectInfo().getPartnerOverall())) {
-          action.addMessage(
-            action.getText("Please provide Partnerships overall performance over the last reporting period"));
+          action.addMessage("Please provide Partnerships overall performance over the last reporting period");
           action.addMissingField("project.projectInfo.partnerOverall");
           action.getInvalidFields().put("input-project.projectInfo.partnerOverall", InvalidFieldsMessages.EMPTYFIELD);
         }
