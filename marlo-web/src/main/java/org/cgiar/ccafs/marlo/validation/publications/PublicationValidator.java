@@ -180,11 +180,13 @@ public class PublicationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (deliverableInfo.getIsLocationGlobal() == null
-      || deliverableInfo.getIsLocationGlobal().booleanValue() == false) {
-      if (deliverable.getRegionsValue() == null || deliverable.getRegionsValue().length() == 0) {
-        action.addMessage(action.getText("projectDescription.regions"));
-        action.getInvalidFields().put("input-deliverable.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
+    if (action.hasSpecificities(APConstants.CRP_HAS_REGIONS)) {
+      if (deliverableInfo.getIsLocationGlobal() == null
+        || deliverableInfo.getIsLocationGlobal().booleanValue() == false) {
+        if (deliverable.getRegionsValue() == null || deliverable.getRegionsValue().length() == 0) {
+          action.addMessage(action.getText("projectDescription.regions"));
+          action.getInvalidFields().put("input-deliverable.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
     }
 
@@ -508,31 +510,6 @@ public class PublicationValidator extends BaseValidator {
         && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
         action.addMessage(action.getText("project.deliverable.publication.v.journal"));
         action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      boolean indicators = false;
-
-      if (deliverablePublicationMetadata.getIsiPublication() != null) {
-        if (deliverablePublicationMetadata.getIsiPublication().booleanValue()) {
-          indicators = true;
-        }
-      }
-
-      if (deliverablePublicationMetadata.getNasr() != null) {
-        if (deliverablePublicationMetadata.getNasr().booleanValue()) {
-          indicators = true;
-        }
-      }
-
-      if (deliverablePublicationMetadata.getCoAuthor() != null) {
-        if (deliverablePublicationMetadata.getCoAuthor().booleanValue()) {
-          indicators = true;
-        }
-      }
-
-      if (!indicators) {
-        action.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-        action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
   }
