@@ -85,6 +85,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
@@ -172,8 +174,13 @@ public class PublicationAction extends BaseAction {
   private Map<String, String> channels;
   private PublicationValidator publicationValidator;
   private Deliverable deliverable;
+  private Deliverable deliverableDB;
+
   private String transaction;
+
+
   private HistoryComparator historyComparator;
+
   private List<DeliverableType> deliverableSubTypes;
   private List<RepositoryChannel> repositoryChannels;
   private List<CrossCuttingScoring> crossCuttingDimensions;
@@ -187,7 +194,6 @@ public class PublicationAction extends BaseAction {
   private List<RepIndFillingType> repIndFillingTypes;
   private List<RepIndPatentStatus> repIndPatentStatuses;
   private Map<String, String> statuses;
-
 
   @Inject
   public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
@@ -246,7 +252,6 @@ public class PublicationAction extends BaseAction {
     this.repIndFillingTypeManager = repIndFillingTypeManager;
     this.repIndPatentStatusManager = repIndPatentStatusManager;
   }
-
 
   @Override
   public String cancel() {
@@ -343,9 +348,15 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  public Deliverable getDeliverableDB() {
+    return deliverableDB;
+  }
+
+
   public long getDeliverableID() {
     return deliverableID;
   }
+
 
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
@@ -354,7 +365,6 @@ public class PublicationAction extends BaseAction {
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
   }
-
 
   public String[] getFlagshipIds() {
 
@@ -378,6 +388,7 @@ public class PublicationAction extends BaseAction {
       .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
+
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
@@ -397,7 +408,6 @@ public class PublicationAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public String[] getRegionsIds() {
 
@@ -436,14 +446,15 @@ public class PublicationAction extends BaseAction {
     return repIndPatentStatuses;
   }
 
+
   public List<RepIndRegion> getRepIndRegions() {
     return repIndRegions;
   }
 
-
   public List<RepIndTypeActivity> getRepIndTypeActivities() {
     return repIndTypeActivities;
   }
+
 
   public List<RepIndTypeParticipant> getRepIndTypeParticipants() {
     return repIndTypeParticipants;
@@ -453,7 +464,6 @@ public class PublicationAction extends BaseAction {
     return repositoryChannels;
   }
 
-
   public Map<String, String> getStatuses() {
     return statuses;
   }
@@ -462,6 +472,7 @@ public class PublicationAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -912,6 +923,11 @@ public class PublicationAction extends BaseAction {
         }
       }
 
+      deliverableDB = deliverableManager.getDeliverableById(deliverable.getId());
+
+      String params[] = {loggedCrp.getAcronym(), deliverable.getId() + ""};
+      this.setBasePermission(this.getText(Permission.PUBLICATION_BASE_FULL_PERMISSION, params));
+
       if (this.isHttpPost()) {
 
         if (deliverable.getPublication() != null) {
@@ -962,20 +978,15 @@ public class PublicationAction extends BaseAction {
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
         }
-        if (deliverable.getDeliverableParticipant() != null) {
-          deliverable.setDeliverableParticipant(null);
-        }
-        if (deliverable.getIntellectualAsset() != null) {
-          deliverable.setIntellectualAsset(null);
-        }
-
       }
     }
   }
 
   @Override
   public String save() {
-    if (this.hasPermission("canEdit")) {
+    User user = this.getCurrentUser();
+
+    if (this.hasPermission("*") || user.getId() == deliverableDB.getCreatedBy().getId()) {
       Deliverable deliverablePrew = this.updateDeliverableInfo();
       this.updateDeliverableFS(deliverablePrew);
 
@@ -1103,7 +1114,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -1548,6 +1558,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void savePrograms() {
 
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
@@ -1651,15 +1662,14 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingDimensions) {
     this.crossCuttingDimensions = crossCuttingDimensions;
@@ -1670,13 +1680,18 @@ public class PublicationAction extends BaseAction {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
   }
 
+
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
+  }
+
+
+  public void setDeliverableDB(Deliverable deliverableDB) {
+    this.deliverableDB = deliverableDB;
   }
 
   public void setDeliverableID(long deliverableID) {
