@@ -92,6 +92,10 @@ public class SrfSloIndicatorTarget implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public String getComposedName() {
+    return "SLO " + this.getSrfSloIndicator().getSrfSlo().getId() + " Target - " + narrative;
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -108,6 +112,7 @@ public class SrfSloIndicatorTarget implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -118,7 +123,6 @@ public class SrfSloIndicatorTarget implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getNarrative() {
     return narrative;

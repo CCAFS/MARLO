@@ -38,7 +38,7 @@
         [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
         [#assign customLabel= "annualReport.${currentStage}" /]
         [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
+        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
         <div class="borderBox">
           [#-- Overall CRP progress towards SLOs --]
           <div class="form-group">
@@ -67,13 +67,15 @@
             [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
             
             <div class="block-selectedSLOs">
-              <div class="form-group">              
+              <div class="form-group sloTargetsList">              
                 [#if reportSynthesis.reportSynthesisCrpProgress.targets?has_content]
-                  [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo][@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /][/#list]
+                  [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo]
+                    [@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /]
+                  [/#list]
                 [/#if]
               </div>
               <div class="dottedBox">
-                [@customForm.select name="" className="setSelect2" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="narrative" required=true /]
+                [@customForm.select name="" className="setSelect2 addSloTarget" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="composedName" required=true /]
               </div>
             </div>
             
@@ -103,9 +105,15 @@
         [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
       [/@s.form] 
     </div> 
-  </div> 
+  </div>
+  
+  
+  [#-- Templates --]
+  [@sloTargetMacro name="${customName}.targets" element={} index=-1 isTemplate=true /]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
@@ -210,21 +218,21 @@
 [#macro sloTargetMacro name element index=-1 isTemplate=false]
   [#local customName = "${name}.[${index}]" /]
   [#local customClass = "sloTarget" /]
-  <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}">
+  <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.srfSloIndicatorTarget.id)!}" />
     [#-- Remove button --]
-    [#if editable]<div class="removeElement sm removeIcon removeElementType-${customClass}" title="Remove"></div>[/#if] 
+    [#if editable]<div class="removeElement sm removeIcon removeSloTarget" title="Remove"></div>[/#if] 
     [#-- SLO Target --]
-    <div class="form-group grayBox"> <strong>SLO Target </strong> <br />${(element.srfSloIndicatorTarget.narrative)}</div>
+    <div class="form-group grayBox name"> <strong>SLO ${(element.srfSloIndicator.srfSlo.id)!} Target </strong> <br />${(element.srfSloIndicatorTarget.narrative)!}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
-    ${element.birefSummary}
     <div class="form-group">
-      [@customForm.textArea name="${customName}.birefSummary" i18nkey="${customLabel}.summaryNewEvidence" className="" required=true editable=editable /]
+      [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryNewEvidence" className="" required=true editable=editable /]
     </div>
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.additionalContribution" i18nkey="${customLabel}.additionalContribution" className="" required=false editable=editable /]
+      [@customForm.textArea name="${customName}.additionalContribution" value="${(element.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="" required=false editable=editable /]
     </div>
   </div>
 [/#macro]
