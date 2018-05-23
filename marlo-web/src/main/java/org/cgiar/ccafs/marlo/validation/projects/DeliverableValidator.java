@@ -130,7 +130,7 @@ public class DeliverableValidator extends BaseValidator {
           this.validatePartnershipOthersNoPersonRequired(deliverable, action);
         }
         if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
-          action.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
+          action.addMessage(action.getText("project.deliverable.fundingSource.readText"));
           action.getInvalidFields().put("list-deliverable.fundingSources",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
         }
@@ -843,31 +843,6 @@ public class DeliverableValidator extends BaseValidator {
           && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
           action.addMessage(action.getText("project.deliverable.publication.v.journal"));
           action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        boolean indicators = false;
-
-        if (deliverablePublicationMetadata.getIsiPublication() != null) {
-          if (deliverablePublicationMetadata.getIsiPublication().booleanValue()) {
-            indicators = true;
-          }
-        }
-
-        if (deliverablePublicationMetadata.getNasr() != null) {
-          if (deliverablePublicationMetadata.getNasr().booleanValue()) {
-            indicators = true;
-          }
-        }
-
-        if (deliverablePublicationMetadata.getCoAuthor() != null) {
-          if (deliverablePublicationMetadata.getCoAuthor().booleanValue()) {
-            indicators = true;
-          }
-        }
-
-        if (!indicators) {
-          action.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-          action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }

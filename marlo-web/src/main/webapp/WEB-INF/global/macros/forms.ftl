@@ -236,7 +236,7 @@
       [/#list]
     </select>
   [#else]
-    <p>[#if (element[keyFieldName]??)!false]${element[displayFieldName]}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
+    <p>[#if (element[keyFieldName]??)!false]${(element[displayFieldName])!(element.name)!'null'}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
     <input type="hidden" name="${name}" value="${valueSelected}" />
   [/#if]
 [/#macro]
@@ -489,32 +489,32 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 required=true ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary" listname="${name}" style="position:relative">
     <div class="panel-head"><label for="">[@s.text name=label /]:[@req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
       <ul class="list listType-${composedID}">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName /][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
         [/#if]
       </ul>
       [#if editable]
-        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
+        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
       [#else]
         [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
       [/#if]
     </div>
     <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 template=true /]
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
     </ul>
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" template=false]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   [#local composedID = "${type}${id}" /]
-  <li id="relationElement-${composedID}-${template?string('template', index)}" class="relationElement">
+  <li id="relationElement-${composedID}-${template?string('template', index)}" class="relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />

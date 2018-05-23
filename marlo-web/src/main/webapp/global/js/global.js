@@ -566,6 +566,9 @@ function onSelectElement() {
 
   // Clone the new element
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
+  
+  console.log($element);
+  
   // Remove template tag
   $element.find('input').each(function(i, e){
     e.name = (e.name).replace("_TEMPLATE_", "");
@@ -581,7 +584,9 @@ function onSelectElement() {
 
   // Update indexes
   $list.find('li.relationElement').each(function(i,element) {
-    $(element).setNameIndexes(1, i);
+    var indexLevel = $(element).classParam('indexLevel');
+    console.log("indexLevel", indexLevel);
+    $(element).setNameIndexes(indexLevel, i);
   });
 }
 
@@ -594,7 +599,9 @@ function onClickRemoveElement() {
 
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {
-      $(element).setNameIndexes(1, i);
+      var indexLevel = $(element).classParam('indexLevel');
+      console.log("indexLevel", indexLevel);
+      $(element).setNameIndexes(indexLevel, i);
     });
   });
 }

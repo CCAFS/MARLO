@@ -203,7 +203,7 @@
             <div class="milestonesYearSelect"> 
               <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
               <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
-              [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
+              [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
             </div>
             [/#if]
           </div>
@@ -262,7 +262,7 @@
               <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
-              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" help="projectOutcome.lessons.help" helpIcon=false className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
             </div>
           </div>
           [/#if]
@@ -290,13 +290,6 @@
 
 [#macro milestoneMacro element name index isTemplate=false]
   <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Remove Button --]
-    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
-    <div class="leftHead sm">
-      <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
-    </div>
-
     [#-- Milestone content --]
     [#if isTemplate]
       [#local year = -1 /]
@@ -308,6 +301,14 @@
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
     
+    [#local isNewAtReporting =  reportingActive && (!(projectMilestone.narrativeTarget?has_content))!true]
+
+    [#-- Remove Button --]
+    [#if editable && (!reportingActive || isNewAtReporting)]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    <div class="leftHead sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
+    </div>
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     
