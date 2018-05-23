@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipResearchPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
@@ -66,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -169,6 +171,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
   private final RepIndGeographicScopeManager repIndGeographicScopeManager;
   private final RepIndRegionManager repIndRegionManager;
+  private final ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager;
 
 
   private final ProjectPartnersValidator projectPartnersValidator;
@@ -221,7 +224,8 @@ public class ProjectPartnerAction extends BaseAction {
     RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
     ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
-    ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager) {
+    ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager,
+    ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -251,6 +255,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.repIndRegionManager = repIndRegionManager;
     this.projectPartnerPartnershipManager = projectPartnerPartnershipManager;
     this.projectPartnerPartnershipLocationManager = projectPartnerPartnershipLocationManager;
+    this.projectPartnerPartnershipResearchPhaseManager = projectPartnerPartnershipResearchPhaseManager;
   }
 
   public void addCrpUser(User user) {
@@ -574,17 +579,14 @@ public class ProjectPartnerAction extends BaseAction {
           inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (IOException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } finally {
           if (inputStream != null) {
             try {
               inputStream.close();
             } catch (IOException e) {
-              // TODO Auto-generated catch block
               e.printStackTrace();
             }
           }
@@ -1075,6 +1077,7 @@ public class ProjectPartnerAction extends BaseAction {
           }
           if (pp.getProjectPartnerPartnership() != null) {
             ProjectPartnerPartnership projectPartnerPartnership = pp.getProjectPartnerPartnership();
+            // Countries
             if (projectPartnerPartnership.getPartnershipLocationsIsosText() != null) {
               String[] locationsIsos = projectPartnerPartnership.getPartnershipLocationsIsosText().replace("[", "")
                 .replace("]", "").split(",");
@@ -1085,6 +1088,16 @@ public class ProjectPartnerAction extends BaseAction {
               projectPartnerPartnership.setPartnershipLocationsIsos(locations);
             }
 
+            // Research Phases
+            if (projectPartnerPartnership.getResearchPhasesIdsText() != null) {
+              String[] researchPhasesIds =
+                projectPartnerPartnership.getResearchPhasesIdsText().replace("[", "").replace("]", "").split(",");
+              List<Long> researchPhases = new ArrayList<>();
+              for (String value : Arrays.asList(researchPhasesIds)) {
+                researchPhases.add(Long.parseLong(value.trim()));
+              }
+              projectPartnerPartnership.setResearchPhasesIds(researchPhases);
+            }
           }
         }
 
@@ -1150,6 +1163,24 @@ public class ProjectPartnerAction extends BaseAction {
                   .getPartnershipLocations()) {
                   projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIsos()
                     .add(location.getLocation().getIsoAlpha2());
+                }
+              }
+
+              // Partnership Research Phases
+              if (projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases() == null) {
+                projectPartner.getProjectPartnerPartnership().setPartnershipResearchPhases(new ArrayList<>());
+              } else {
+                List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases =
+                  projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases().stream()
+                    .filter(rf -> rf.isActive()).collect(Collectors.toList());
+                projectPartner.getProjectPartnerPartnership().setPartnershipResearchPhases(partnershipResearchPhases);
+              }
+
+              if (projectPartner.getProjectPartnerPartnership().getPartnershipResearchPhases() != null) {
+                for (ProjectPartnerPartnershipResearchPhase partnershipResearchPhase : projectPartner
+                  .getProjectPartnerPartnership().getPartnershipResearchPhases()) {
+                  projectPartner.getProjectPartnerPartnership().getResearchPhasesIds()
+                    .add(partnershipResearchPhase.getRepIndPhaseResearchPartnership().getId());
                 }
               }
 
@@ -1262,10 +1293,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     if (this.isHttpPost()) {
-
-      // project.setProjectInfo(null);
       project.getPartners().clear();
-
     }
 
   }
@@ -1665,19 +1693,60 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
       partnershipUpdate.setMainArea(partnershipClient.getMainArea());
-      if (partnershipClient.getResearchPhase() != null && partnershipClient.getResearchPhase().getId() != -1) {
-        partnershipUpdate.setResearchPhase(partnershipClient.getResearchPhase());
-      } else {
-        partnershipUpdate.setResearchPhase(null);
-      }
+
 
       partnershipUpdate.setActive(true);
       partnershipUpdate.setActiveSince(new Date());
       partnershipUpdate.setModifiedBy(this.getCurrentUser());
       partnershipUpdate.setModificationJustification("");
+
       // Save to avoid null exception in relation with partnership_locations
       if (partnershipUpdate.getId() == null || partnershipUpdate.getId() == -1) {
         projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+      }
+
+      // Partnership Phases Save and Delete
+      List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhasesDB = new ArrayList<>();
+      if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+        partnershipResearchPhasesDB = projectPartnerPartnershipResearchPhaseManager
+          .findParnershipResearchPhaseByPartnership(partnershipClient.getId());
+      }
+      if (partnershipResearchPhasesDB == null) {
+        partnershipResearchPhasesDB = new ArrayList<>();
+      }
+
+      if (partnershipClient.getResearchPhasesIds() != null && !partnershipClient.getResearchPhasesIds().isEmpty()) {
+        List<ProjectPartnerPartnershipResearchPhase> partnershipResearchClienteList = new ArrayList<>();
+        for (Long researchPhasesIds : partnershipClient.getResearchPhasesIds()) {
+          ProjectPartnerPartnershipResearchPhase partnershipResearchPhaseSave =
+            new ProjectPartnerPartnershipResearchPhase();
+          partnershipResearchPhaseSave.setRepIndPhaseResearchPartnership(
+            repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(researchPhasesIds));
+          partnershipResearchPhaseSave.setProjectPartnerPartnership(partnershipUpdate);
+          if (!partnershipResearchPhasesDB.contains(partnershipResearchPhaseSave)) {
+            partnershipResearchPhaseSave.setActive(true);
+            partnershipResearchPhaseSave.setActiveSince(new Date());
+            partnershipResearchPhaseSave.setCreatedBy(this.getCurrentUser());
+            partnershipResearchPhaseSave.setModificationJustification("");
+            partnershipResearchPhaseSave.setModifiedBy(this.getCurrentUser());
+            projectPartnerPartnershipResearchPhaseManager
+              .saveProjectPartnerPartnershipResearchPhase(partnershipResearchPhaseSave);
+          }
+          partnershipResearchClienteList.add(partnershipResearchPhaseSave);
+        }
+        for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhaseDB : partnershipResearchPhasesDB) {
+          if (!partnershipResearchClienteList.contains(projectPartnerPartnershipResearchPhaseDB)) {
+            projectPartnerPartnershipResearchPhaseDB.setModifiedBy(this.getCurrentUser());
+            projectPartnerPartnershipResearchPhaseManager
+              .deleteProjectPartnerPartnershipResearchPhase(projectPartnerPartnershipResearchPhaseDB.getId());
+          }
+        }
+      } else {
+        // Delete DB Research Phases
+        for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : partnershipResearchPhasesDB) {
+          projectPartnerPartnershipResearchPhaseManager
+            .deleteProjectPartnerPartnershipResearchPhase(projectPartnerPartnershipResearchPhase.getId());
+        }
       }
 
 
@@ -2050,12 +2119,22 @@ public class ProjectPartnerAction extends BaseAction {
               && projectPartner.getProjectPartnerPartnership().getId().longValue() != -1) {
               projectPartner.setProjectPartnerPartnership(projectPartnerPartnershipManager
                 .getProjectPartnerPartnershipById(projectPartner.getProjectPartnerPartnership().getId()));
+              // Partnership Locations
               List<ProjectPartnerPartnershipLocation> partnerPartnershipLocations =
                 projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
                   .filter(p -> p.isActive()).collect(Collectors.toList());
               for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : partnerPartnershipLocations) {
                 projectPartner.getProjectPartnerPartnership().getPartnershipLocations()
                   .add(projectPartnerPartnershipLocation);
+              }
+
+              // Partnership Research Phases
+              List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases =
+                projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases().stream()
+                  .filter(rf -> rf.isActive()).collect(Collectors.toList());
+              for (ProjectPartnerPartnershipResearchPhase partnershipResearchPhase : partnershipResearchPhases) {
+                projectPartner.getProjectPartnerPartnership().getPartnershipResearchPhases()
+                  .add(partnershipResearchPhase);
               }
             }
           }
