@@ -275,7 +275,7 @@
       [#-- 12. Other cross-cutting dimensions   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=false editable=editable /]
       </div>
       [/#if]
       
@@ -283,7 +283,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=true editable=editable /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=false editable=editable /]
         </div>
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 
