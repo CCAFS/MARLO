@@ -262,7 +262,7 @@
               <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
-              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" help="projectOutcome.lessons.help" helpIcon=false className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
             </div>
           </div>
           [/#if]
@@ -301,16 +301,14 @@
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
     
-    [#local isNewAtReporting = (projectMilestone.narrativeTarget??)!false]
+    [#local isNewAtReporting =  reportingActive && (!(projectMilestone.narrativeTarget?has_content))!true]
 
-    
     [#-- Remove Button --]
-    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    [#if editable && (!reportingActive || isNewAtReporting)]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
     </div>
-
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     
