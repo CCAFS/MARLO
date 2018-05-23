@@ -98,20 +98,21 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 
 function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
-  // If the deliverables is disseminated
-  if($('.type-findable input').val() == "true") {
-    var channelSelected = $('select.disseminationChannel').val();
-    var inputURL = $('input.deliverableDisseminationUrl').val();
-    // Channel selected is OTHER and valid URL
-    if((channelSelected == "other") && isValidURL(inputURL)) {
-      $fairCompliant.addClass('achieved');
-    }
 
-    // If is Sync
-    if($('#fillMetadata input:hidden').val() === "true") {
-      $fairCompliant.addClass('achieved');
-    }
+  // If the deliverables is disseminated
+  var channelSelected = $('select.disseminationChannel').val();
+  var inputURL = $('input.deliverableDisseminationUrl').val();
+  // Channel selected is OTHER and valid URL
+  if((channelSelected == "other") && (inputURL != "")) {
+    $fairCompliant.addClass('achieved');
   }
+
+  // If is Sync
+  if($('#fillMetadata input:hidden').val() === "true") {
+    console.log('true sync');
+    $fairCompliant.addClass('achieved');
+  }
+
   if($('.type-findable input').val() == "false") {
     $fairCompliant.addClass('not-achieved');
   }
@@ -130,13 +131,11 @@ function checkAccessible() {
 function checkInteroperable() {
   var $fairCompliant = $('.fairCompliant.interoperable');
   // If the deliverables is disseminated and already connected with MARLO
-  if($('.type-findable input').val() == "true") {
-    var channelSelected = $('select.disseminationChannel').val();
-    if(channelSelected != "-1") {
-      // If is Synced
-      if($('#fillMetadata input:hidden').val() === "true") {
-        $fairCompliant.addClass('achieved');
-      }
+  var channelSelected = $('select.disseminationChannel').val();
+  if(channelSelected != "-1") {
+    // If is Synced
+    if($('#fillMetadata input:hidden').val() === "true") {
+      $fairCompliant.addClass('achieved');
     }
   }
 }
