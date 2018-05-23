@@ -100,7 +100,19 @@ function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
   // If the deliverables is disseminated
   if($('.type-findable input').val() == "true") {
-    $fairCompliant.addClass('achieved');
+
+    var channelSelected = $('select.disseminationChannel').val();
+    var inputURL = $('input.deliverableDisseminationUrl').val();
+    // Channel selected is OTHER and valid URL
+    if((channelSelected == "other") && isValidURL(inputURL)) {
+      $fairCompliant.addClass('achieved');
+    }
+
+    // If is Sync
+    if($('#fillMetadata input:hidden').val() === "true") {
+      $fairCompliant.addClass('achieved');
+    }
+
   } else {
     $fairCompliant.addClass('not-achieved');
   }
@@ -118,36 +130,14 @@ function checkAccessible() {
 
 function checkInteroperable() {
   var $fairCompliant = $('.fairCompliant.interoperable');
-  // If the deliverables is disseminated
+  // If the deliverables is disseminated and already connected with MARLO
   if($('.type-findable input').val() == "true") {
     var channelSelected = $('select.disseminationChannel').val();
-    // If is disseminated in CGSpace or Dataverse
-    if((channelSelected == "cgspace") || (channelSelected == "dataverse")) {
-      // If is dissemination URL filled correctly
-      var inputURL = $('input.deliverableDisseminationUrl').val();
-      if(inputURL != "") {
-
-        // If CGSpace
-        if((channelSelected == "cgspace")) {
-          if((inputURL.indexOf("cgspace") >= 0) || (inputURL.indexOf("hdl") >= 0) || (inputURL.indexOf("handle") >= 0)) {
-            $fairCompliant.addClass('achieved');
-          }
-        }
-        // If Dataverse
-        if((channelSelected == "dataverse")) {
-          if(inputURL.indexOf("dataverse") >= 0) {
-            $fairCompliant.addClass('achieved');
-          }
-        }
+    if(channelSelected != "-1") {
+      // If is Synced
+      if($('#fillMetadata input:hidden').val() === "true") {
+        $fairCompliant.addClass('achieved');
       }
-    } else if((channelSelected == "other")) {
-      // If other
-
-    }
-
-    // If is Synced
-    if($('#fillMetadata input:hidden').val() === "true") {
-      $fairCompliant.addClass('achieved');
     }
   }
 }
