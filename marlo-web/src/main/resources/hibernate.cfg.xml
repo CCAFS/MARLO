@@ -277,6 +277,7 @@
     <mapping resource="xmls/DeliverableParticipantLocations.hbm.xml"/>
     <mapping resource="xmls/RepIndFillingTypes.hbm.xml"/>
     <mapping resource="xmls/RepIndPatentStatuses.hbm.xml"/>
+    <mapping resource="xmls/ProjectPartnerPartnershipResearchPhases.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesis.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrpProgress.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrpProgressStudies.hbm.xml"/>

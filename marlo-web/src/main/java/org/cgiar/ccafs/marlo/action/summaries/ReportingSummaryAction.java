@@ -85,6 +85,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
@@ -3457,9 +3458,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (projectLeader.getHasPartnerships() != null) {
         partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
       }
-      if (partnerPartnership.getResearchPhase() != null) {
-        partnerPartnershipResearchPhase = partnerPartnership.getResearchPhase().getName();
+      List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases = partnerPartnership
+        .getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive()).collect(Collectors.toList());
+      Set<String> researchPhases = new HashSet<String>();
+      if (projectPartnerPartnershipResearchPhases != null && projectPartnerPartnershipResearchPhases.size() > 0) {
+        for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : projectPartnerPartnershipResearchPhases) {
+          researchPhases.add(projectPartnerPartnershipResearchPhase.getRepIndPhaseResearchPartnership().getName());
+        }
+        partnerPartnershipResearchPhase = String.join(",", researchPhases);
       }
+
       if (partnerPartnership.getGeographicScope() != null) {
         Long geographicScopeID = partnerPartnership.getGeographicScope().getId();
         partnerPartnershipGeographicScope = partnerPartnership.getGeographicScope().getName();
@@ -3585,8 +3593,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (projectPartner.getHasPartnerships() != null) {
             partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
           }
-          if (partnerPartnership.getResearchPhase() != null) {
-            partnerPartnershipResearchPhase = partnerPartnership.getResearchPhase().getName();
+          List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
+            partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
+              .collect(Collectors.toList());
+          Set<String> researchPhases = new HashSet<String>();
+          if (projectPartnerPartnershipResearchPhases != null && projectPartnerPartnershipResearchPhases.size() > 0) {
+            for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : projectPartnerPartnershipResearchPhases) {
+              researchPhases.add(projectPartnerPartnershipResearchPhase.getRepIndPhaseResearchPartnership().getName());
+            }
+            partnerPartnershipResearchPhase = String.join(",", researchPhases);
           }
           if (partnerPartnership.getGeographicScope() != null) {
             Long geographicScopeID = partnerPartnership.getGeographicScope().getId();
@@ -3656,8 +3671,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (projectPartner.getHasPartnerships() != null) {
             partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
           }
-          if (partnerPartnership.getResearchPhase() != null) {
-            partnerPartnershipResearchPhase = partnerPartnership.getResearchPhase().getName();
+          List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
+            partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
+              .collect(Collectors.toList());
+          Set<String> researchPhases = new HashSet<String>();
+          if (projectPartnerPartnershipResearchPhases != null && projectPartnerPartnershipResearchPhases.size() > 0) {
+            for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : projectPartnerPartnershipResearchPhases) {
+              researchPhases.add(projectPartnerPartnershipResearchPhase.getRepIndPhaseResearchPartnership().getName());
+            }
+            partnerPartnershipResearchPhase = String.join(",", researchPhases);
           }
           if (partnerPartnership.getGeographicScope() != null) {
             Long geographicScopeID = partnerPartnership.getGeographicScope().getId();

@@ -72,6 +72,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -1063,12 +1064,23 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         projectPartner.getProjectPartnerPartnerships().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       if (partnerPartnerships.size() > 0) {
         projectPartner.setProjectPartnerPartnership(partnerPartnerships.get(0));
+
+        // Partnership Locations
         List<ProjectPartnerPartnershipLocation> partnerPartnershipLocations =
           projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
             .filter(p -> p.isActive()).collect(Collectors.toList());
         for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : partnerPartnershipLocations) {
           projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIsos()
             .add(projectPartnerPartnershipLocation.getLocation().getIsoAlpha2());
+        }
+
+        // Partnership Research Phases
+        List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases =
+          projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases().stream()
+            .filter(rf -> rf.isActive()).collect(Collectors.toList());
+        for (ProjectPartnerPartnershipResearchPhase partnershipResearchPhase : partnershipResearchPhases) {
+          projectPartner.getProjectPartnerPartnership().getResearchPhasesIds()
+            .add(partnershipResearchPhase.getRepIndPhaseResearchPartnership().getId());
         }
 
       }
