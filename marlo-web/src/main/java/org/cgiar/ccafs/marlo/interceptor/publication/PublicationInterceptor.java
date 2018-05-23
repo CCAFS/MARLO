@@ -91,6 +91,7 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
       boolean isInDeliverablePhase = deliverable.getPhase().getId() == baseAction.getActualPhase().getId();
       boolean isTransaction = parameters.get(APConstants.TRANSACTION_ID).isDefined();
       boolean isSaving = parameters.get("save").isDefined();
+      boolean isCreator = user.getId() == deliverable.getCreatedBy().getId();
 
       if (!isInDeliverablePhase) {
         canEdit = false;
@@ -98,7 +99,7 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
           canEdit = true;
         } else {
-          if (hasPublicationFullPermission || hasPublicationInstitutionPermission) {
+          if (hasPublicationFullPermission || hasPublicationInstitutionPermission || isCreator) {
             canEdit = true;
           }
           if (baseAction.isCrpClosed()) {
