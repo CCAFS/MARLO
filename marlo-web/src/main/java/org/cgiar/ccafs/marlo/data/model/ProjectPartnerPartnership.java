@@ -21,21 +21,13 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   @Expose
   private String mainArea;
   @Expose
-  private RepIndPhaseResearchPartnership researchPhase;
-  @Expose
   private RepIndGeographicScope geographicScope;
   @Expose
   private RepIndRegion region;
-
-
   @Expose
   private boolean active;
-
-
   @Expose
   private Date activeSince;
-
-
   @Expose
   private User createdBy;
   @Expose
@@ -49,6 +41,12 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   private List<ProjectPartnerPartnershipLocation> partnershipLocations = new ArrayList<>();
   private List<String> partnershipLocationsIsos = new ArrayList<>();
   private String partnershipLocationsIsosText;
+
+  private Set<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
+    new HashSet<ProjectPartnerPartnershipResearchPhase>(0);
+  private List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases = new ArrayList<>();
+  private List<Long> researchPhasesIds = new ArrayList<>();
+  private String researchPhasesIdsText;
 
 
   public ProjectPartnerPartnership() {
@@ -85,9 +83,11 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
     return createdBy;
   }
 
+
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
   }
+
 
   @Override
   public Long getId() {
@@ -133,20 +133,37 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
     return partnershipLocationsIsosText;
   }
 
+  public List<ProjectPartnerPartnershipResearchPhase> getPartnershipResearchPhases() {
+    return partnershipResearchPhases;
+  }
+
+
   public ProjectPartner getProjectPartner() {
     return projectPartner;
   }
+
 
   public Set<ProjectPartnerPartnershipLocation> getProjectPartnerPartnershipLocations() {
     return projectPartnerPartnershipLocations;
   }
 
+
+  public Set<ProjectPartnerPartnershipResearchPhase> getProjectPartnerPartnershipResearchPhases() {
+    return projectPartnerPartnershipResearchPhases;
+  }
+
+
   public RepIndRegion getRegion() {
     return region;
   }
 
-  public RepIndPhaseResearchPartnership getResearchPhase() {
-    return researchPhase;
+
+  public List<Long> getResearchPhasesIds() {
+    return researchPhasesIds;
+  }
+
+  public String getResearchPhasesIdsText() {
+    return researchPhasesIdsText;
   }
 
   @Override
@@ -162,7 +179,6 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -170,7 +186,6 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -185,6 +200,7 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
     this.id = id;
   }
 
+
   public void setMainArea(String mainArea) {
     this.mainArea = mainArea;
   }
@@ -194,11 +210,9 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
-
 
   public void setPartnershipLocations(List<ProjectPartnerPartnershipLocation> partnershipLocations) {
     this.partnershipLocations = partnershipLocations;
@@ -215,6 +229,11 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   }
 
 
+  public void setPartnershipResearchPhases(List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases) {
+    this.partnershipResearchPhases = partnershipResearchPhases;
+  }
+
+
   public void setProjectPartner(ProjectPartner projectPartner) {
     this.projectPartner = projectPartner;
   }
@@ -226,20 +245,31 @@ public class ProjectPartnerPartnership implements java.io.Serializable, IAuditLo
   }
 
 
+  public void setProjectPartnerPartnershipResearchPhases(
+    Set<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases) {
+    this.projectPartnerPartnershipResearchPhases = projectPartnerPartnershipResearchPhases;
+  }
+
+
   public void setRegion(RepIndRegion region) {
     this.region = region;
   }
 
-  public void setResearchPhase(RepIndPhaseResearchPartnership researchPhase) {
-    this.researchPhase = researchPhase;
+
+  public void setResearchPhasesIds(List<Long> researchPhasesIds) {
+    this.researchPhasesIds = researchPhasesIds;
+  }
+
+
+  public void setResearchPhasesIdsText(String researchPhasesIdsText) {
+    this.researchPhasesIdsText = researchPhasesIdsText;
   }
 
 
   @Override
   public String toString() {
     return "ProjectPartnerPartnership [id=" + id + ", projectPartner=" + projectPartner + ", mainArea=" + mainArea
-      + ", researchPhase=" + researchPhase + ", geographicScope=" + geographicScope + ", region=" + region + ", active="
-      + active + "]";
+      + ", geographicScope=" + geographicScope + ", region=" + region + ", active=" + active + "]";
   }
 
 
