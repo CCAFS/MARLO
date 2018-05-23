@@ -626,6 +626,7 @@ public class DeliverableAction extends BaseAction {
           keyOutput.put("id", deliverableSubType.getId());
           keyOutput.put("name", deliverableSubType.getName());
           keyOutput.put("description", deliverableSubType.getDescription());
+          keyOutput.put("fair", deliverableSubType.getFair());
           subTypes.add(keyOutput);
         }
       }
@@ -867,14 +868,13 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list =
-        deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
-
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
-
-
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue())
+          && dp.getProjectPartner() != null && dp.getProjectPartner().isActive()
+          && ((dp.getProjectPartnerPerson() == null
+            || (dp.getProjectPartnerPerson() != null && dp.getProjectPartnerPerson().isActive()))))
+        .collect(Collectors.toList());
       return list;
     } catch (Exception e) {
       logger.error("unable to get otherPartners", e);
@@ -1788,7 +1788,10 @@ public class DeliverableAction extends BaseAction {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
-          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue())
+          && dp.getProjectPartner() != null && dp.getProjectPartner().isActive()
+          && ((dp.getProjectPartnerPerson() == null
+            || (dp.getProjectPartnerPerson() != null && dp.getProjectPartnerPerson().isActive()))))
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {
