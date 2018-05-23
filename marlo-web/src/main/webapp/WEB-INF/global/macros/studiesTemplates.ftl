@@ -153,7 +153,7 @@
         [#-- CRPs --]
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox">
-          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
         </div>
         [/#if]
         [#-- Flagships --]
@@ -162,7 +162,7 @@
           [#if !fromProject && editable]
             <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
           [/#if]
-          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
         </div>
         [/#if]
         [#-- Regions --]
@@ -171,13 +171,13 @@
             [#if !fromProject && editable]
               <p class="note">To the Region(s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="regionalMapping.CrpProgram.leaders"/] and [@s.text name="regionalMapping.CrpProgram.managers"/]</p>
             [/#if]
-            [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" id="RP" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName"/]
+            [@customForm.elementsListComponent name="${customName}.regions" elementType="crpProgram" id="RP" elementList=element.regions label="study.keyContributors.regions"  listName="regionList" keyFieldName="id" displayFieldName="composedName" required=false /]
           </div>
         [/#if]
         [#-- External Partners --]
         [#if isOutcomeCaseStudy]
         <div class="form-group simpleBox stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
-          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions label="study.keyContributors.externalPartners"  listName="institutions" keyFieldName="id" displayFieldName="composedName" required=false /]
           [#-- Request partner adition --]
           [#if editable]
           <p id="addPartnerText" class="helpMessage">
@@ -213,7 +213,7 @@
             path="${(action.getPath(expectedID))!}"
             isEditable=editable
             labelClass="label-min-width"
-            required=true
+            required=false
           /]          
         </div>
       </div>
@@ -275,7 +275,7 @@
       [#-- 12. Other cross-cutting dimensions   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=false editable=editable /]
       </div>
       [/#if]
       
@@ -283,7 +283,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=true editable=editable /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.comunicationsMaterial" i18nkey="study.communicationMaterials" help="study.communicationMaterials.help" helpIcon=false className=" " required=false editable=editable /]
         </div>
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 

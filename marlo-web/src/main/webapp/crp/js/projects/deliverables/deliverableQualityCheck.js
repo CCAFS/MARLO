@@ -98,10 +98,22 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 
 function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
+
   // If the deliverables is disseminated
-  if($('.type-findable input').val() == "true") {
+  var channelSelected = $('select.disseminationChannel').val();
+  var inputURL = $('input.deliverableDisseminationUrl').val();
+  // Channel selected is OTHER and valid URL
+  if((channelSelected == "other") && (inputURL != "")) {
     $fairCompliant.addClass('achieved');
-  } else {
+  }
+
+  // If is Sync
+  if($('#fillMetadata input:hidden').val() === "true") {
+    console.log('true sync');
+    $fairCompliant.addClass('achieved');
+  }
+
+  if($('.type-findable input').val() == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 }
@@ -118,33 +130,9 @@ function checkAccessible() {
 
 function checkInteroperable() {
   var $fairCompliant = $('.fairCompliant.interoperable');
-  // If the deliverables is disseminated
-  if($('.type-findable input').val() == "true") {
-    var channelSelected = $('select.disseminationChannel').val();
-    // If is disseminated in CGSpace or Dataverse
-    if((channelSelected == "cgspace") || (channelSelected == "dataverse")) {
-      // If is dissemination URL filled correctly
-      var inputURL = $('input.deliverableDisseminationUrl').val();
-      if(inputURL != "") {
-
-        // If CGSpace
-        if((channelSelected == "cgspace")) {
-          if((inputURL.indexOf("cgspace") >= 0) || (inputURL.indexOf("hdl") >= 0) || (inputURL.indexOf("handle") >= 0)) {
-            $fairCompliant.addClass('achieved');
-          }
-        }
-        // If Dataverse
-        if((channelSelected == "dataverse")) {
-          if(inputURL.indexOf("dataverse") >= 0) {
-            $fairCompliant.addClass('achieved');
-          }
-        }
-      }
-    } else if((channelSelected == "other")) {
-      // If other
-
-    }
-
+  // If the deliverables is disseminated and already connected with MARLO
+  var channelSelected = $('select.disseminationChannel').val();
+  if(channelSelected != "-1") {
     // If is Synced
     if($('#fillMetadata input:hidden').val() === "true") {
       $fairCompliant.addClass('achieved');
