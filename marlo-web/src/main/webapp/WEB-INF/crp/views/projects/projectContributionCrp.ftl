@@ -290,13 +290,6 @@
 
 [#macro milestoneMacro element name index isTemplate=false]
   <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Remove Button --]
-    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
-    <div class="leftHead sm">
-      <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
-    </div>
-
     [#-- Milestone content --]
     [#if isTemplate]
       [#local year = -1 /]
@@ -308,6 +301,16 @@
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
     
+    [#local isNewAtReporting = (projectMilestone.narrativeTarget??)!false]
+
+    
+    [#-- Remove Button --]
+    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    <div class="leftHead sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
+    </div>
+
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     
