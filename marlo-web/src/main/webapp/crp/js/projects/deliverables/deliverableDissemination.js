@@ -515,17 +515,17 @@ function setMetadata(data) {
   }
 
   // Open Access Validation
-  var $input = $(".accessible ").parent().find('input');
-  if(data.openacess == "Open Access") {
+  var $input = $(".type-accessible ").parent().find('input');
+  if(data.openAccess === "true") {
     $input.val(true);
-    $(".accessible ").parent().find("label").removeClass("radio-checked");
-    $(".openAccessOptions").hide("slow");
-    $(".accessible .yes-button-label ").addClass("radio-checked");
+    $(".type-accessible ").parent().find("label").removeClass("radio-checked");
+    $(".block-accessible").hide("slow");
+    $(".type-accessible .yes-button-label ").addClass("radio-checked");
   } else {
     $input.val(false);
-    $(".accessible ").parent().find("label").removeClass("radio-checked");
-    $(".openAccessOptions").show("slow");
-    $(".accessible .no-button-label ").addClass("radio-checked");
+    $(".type-accessible ").parent().find("label").removeClass("radio-checked");
+    $(".block-accessible").show("slow");
+    $(".type-accessible .no-button-label ").addClass("radio-checked");
   }
 
   syncDeliverable();
