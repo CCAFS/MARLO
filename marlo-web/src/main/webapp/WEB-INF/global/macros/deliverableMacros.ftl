@@ -425,7 +425,8 @@
       [/#if]
     [/#list]
   </ul>
-  <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
+  [#local channelSelected = (deliverable.dissemination.disseminationChannel)!'-1' /]
+  <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
     <div class="form-group" > 
       <div class="url-field">
         [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
