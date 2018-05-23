@@ -5708,6 +5708,7 @@ hr {
 
 .expandableBlock .blockTitle {
   cursor: pointer;
+  font-family: 'Open Sans';
   padding-left: 20px;
   background-repeat: no-repeat;
   background-position: -5px 2px;
@@ -5734,7 +5735,7 @@ hr {
 }
 
 .expandableBlock .blockTitle.opened {
-  opacity: 0.5;
+  /* opacity: 0.5; */
   background-image: url(../../global/images/arrow-up.png);
 }
 

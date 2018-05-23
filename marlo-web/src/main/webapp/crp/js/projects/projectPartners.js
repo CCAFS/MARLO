@@ -86,11 +86,15 @@ function attachEvents() {
     } else {
       $(this).removeClass('opened').addClass('closed');
     }
-    $(this).next().slideToggle('slow', function() {
+    
+    $(this).next().slideToggle(500, function() {
       $(this).find('textarea').autoGrow();
       $(this).find(".errorTag").hide();
       $(this).find(".errorTag").css("left", $(this).outerWidth());
       $(this).find(".errorTag").fadeIn(1000);
+      
+      // Scroll to selected partner
+      $('html, body').animate({scrollTop: $(this).offset().top - 100}, 500);
     });
   });
   
@@ -661,9 +665,9 @@ function addPartnerEvent(e) {
       width: "100%"
   });
 
-  // Branch
-  $newElement.find("select.branchesSelect ").select2({
-      placeholder: "Select the branches where the project is working on...",
+  // Research Phase
+  $newElement.find("select.researchPhasesSelect ").select2({
+      placeholder: "Select here...",
       width: '100%'
   });
 
@@ -822,11 +826,14 @@ function addSelect2() {
       width: "100%"
   });
 
-  // Branch
-  $("form select.branchesSelect ").select2({
-      placeholder: "Select the branches where the project is working on...",
+  // Research Phase
+  $("form select.researchPhasesSelect ").select2({
+      placeholder: "Select here...",
       width: '100%'
   });
+  
+
+  
   $('form select.countriesList, select.countriesRequest, form select.countriesSelect').select2({
       placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,

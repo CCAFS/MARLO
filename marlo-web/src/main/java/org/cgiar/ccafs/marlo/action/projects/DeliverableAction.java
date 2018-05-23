@@ -626,6 +626,7 @@ public class DeliverableAction extends BaseAction {
           keyOutput.put("id", deliverableSubType.getId());
           keyOutput.put("name", deliverableSubType.getName());
           keyOutput.put("description", deliverableSubType.getDescription());
+          keyOutput.put("fair", deliverableSubType.getFair());
           subTypes.add(keyOutput);
         }
       }
@@ -867,12 +868,11 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list =
-        deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+        .collect(Collectors.toList());
 
 
       return list;
@@ -1507,8 +1507,8 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager
-            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 

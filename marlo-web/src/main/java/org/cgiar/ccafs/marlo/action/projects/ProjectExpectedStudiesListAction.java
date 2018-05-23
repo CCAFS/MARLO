@@ -238,6 +238,14 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
           myNonProjectStudies.add(projectExpectedStudy);
         }
       } else {
+
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+          if (projectExpectedStudy.getCreatedBy().getId() == this.getCurrentUser().getId()) {
+            nonProjectStudies.remove(projectExpectedStudy);
+            myNonProjectStudies.add(projectExpectedStudy);
+          }
+        }
+
         expectedStudies = new ArrayList<>(
           projectExpectedStudyManager.getUserStudies(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
             .filter(e -> e.isActive()).collect(Collectors.toList()));
@@ -246,7 +254,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
             nonProjectStudies.remove(projectExpectedStudy);
             myNonProjectStudies.add(projectExpectedStudy);
           }
-
         }
       }
     }

@@ -29,7 +29,11 @@
           [#list action.getDeliverablesSubTypes(mt.id) as st]
             <tr>
               [#if st_index == 0]<th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>[/#if]
-              <td> ${st.name} [#if ((st.description?has_content)!false) && (st.description != st.name)]<br /> (<i><small>${st.description}</small></i>)[/#if]</td>
+              <td> 
+                ${st.name} 
+                [#if ((st.description?has_content)!false) && (st.description != st.name)]<br /> (<i><small>${st.description}</small></i>)[/#if]
+                [#if st.fair]<span class="label label-info pull-right">FAIR</span>[/#if]
+              </td>
             </tr>
           [/#list]
         [/#list]

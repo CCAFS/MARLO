@@ -141,6 +141,7 @@ public class AutoSaveWriterAction extends BaseAction {
       if (nameClass.equals(Project.class.getName())) {
         jSon = jSon.replaceAll("project\\.", "");
         jSon = jSon.replaceAll("partnershipLocationsIsos", "partnershipLocationsIsosText");
+        jSon = jSon.replaceAll("researchPhasesIds", "researchPhasesIdsText");
       }
       /*
        * if (nameClass.equals(ProjectBilateralCofinancing.class.getName())) {
