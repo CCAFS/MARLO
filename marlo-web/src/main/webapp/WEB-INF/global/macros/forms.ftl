@@ -236,7 +236,7 @@
       [/#list]
     </select>
   [#else]
-    <p>[#if (element[keyFieldName]??)!false]${element[displayFieldName]}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
+    <p>[#if (element[keyFieldName]??)!false]${(element[displayFieldName])!(element.name)!'null'}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
     <input type="hidden" name="${name}" value="${valueSelected}" />
   [/#if]
 [/#macro]

@@ -239,13 +239,15 @@ public class ProjectPartnersValidator extends BaseValidator {
           action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (projectPartnerPartnership == null || projectPartnerPartnership.getResearchPhase() == null
-          || projectPartnerPartnership.getResearchPhase().getId() == -1) {
-          action.addMessage(action.getText("Please provide partnership research phase"));
-          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.researchPhase.id");
-          action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.researchPhase.id",
+
+        if (projectPartnerPartnership.getResearchPhasesIds() == null
+          || projectPartnerPartnership.getResearchPhasesIds().isEmpty()) {
+          action.addMessage("Please provide partnership research phase");
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.researchPhasesIds");
+          action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.researchPhasesIds",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+
         if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope() == null
           || projectPartnerPartnership.getGeographicScope().getId() == -1) {
           action.addMessage(action.getText("Please provide partnership geographic scope"));
