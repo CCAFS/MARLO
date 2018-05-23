@@ -392,14 +392,14 @@ public class ProjectPartnerAction extends BaseAction {
           Deliverable deliverable = deliverablePartnership.getDeliverable();
           deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
           if (!deliverablesLeads.contains(deliverable)) {
-            if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+            if (deliverable.getDeliverableInfo() != null
+              && deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
               if (deliverable.isActive()) {
                 deliverablesLeads.add(deliverable);
               }
-
             } else {
-              if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus()
+                .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                 if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
                   && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
 
@@ -410,7 +410,6 @@ public class ProjectPartnerAction extends BaseAction {
               }
             }
           }
-
         }
       }
 
@@ -419,23 +418,6 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
-
-    /*
-     * Project project = projectManager.getProjectById(projectID);
-     * List<Deliverable> deliverablesLeads = new ArrayList<>();
-     * List<Deliverable> deliverables =
-     * project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-     * for (Deliverable deliverable : deliverables) {
-     * if (!deliverable.getDeliverablePartnerships().stream()
-     * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-     * && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
-     * .collect(Collectors.toList()).isEmpty()) {
-     * deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-     * deliverablesLeads.add(deliverable);
-     * }
-     * }
-     * return deliverablesLeads;
-     */
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(userID);
     if (partnerPerson != null) {
@@ -445,9 +427,10 @@ public class ProjectPartnerAction extends BaseAction {
       for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
         Deliverable deliverable = deliverablePartnership.getDeliverable();
         deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-        if (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || deliverable.getDeliverableInfo().getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+          && (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || deliverable.getDeliverableInfo().getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
           if (!deliverablesLeads.contains(deliverable)) {
             if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
 
