@@ -100,7 +100,6 @@ function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
   // If the deliverables is disseminated
   if($('.type-findable input').val() == "true") {
-
     var channelSelected = $('select.disseminationChannel').val();
     var inputURL = $('input.deliverableDisseminationUrl').val();
     // Channel selected is OTHER and valid URL
@@ -112,8 +111,8 @@ function checkFiandable() {
     if($('#fillMetadata input:hidden').val() === "true") {
       $fairCompliant.addClass('achieved');
     }
-
-  } else {
+  }
+  if($('.type-findable input').val() == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 }

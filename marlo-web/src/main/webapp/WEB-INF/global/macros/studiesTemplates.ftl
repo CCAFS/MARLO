@@ -213,7 +213,7 @@
             path="${(action.getPath(expectedID))!}"
             isEditable=editable
             labelClass="label-min-width"
-            required=true
+            required=false
           /]          
         </div>
       </div>
