@@ -237,36 +237,45 @@
         <div class="simpleBox">
           <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
+            [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!-1 ]
             [#list focusLevels  as cc]
-              [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=(element.projectExpectedStudyInfo.genderLevel.id == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+              [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=(genderLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
-          </div>
-          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
-            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
+          </div> 
+          <div class="ccCommentBox" style="display:${(genderLevel != 1)?string('block', 'none')}">
+            <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeGender" i18nkey="study.achievementsGenderRelevance" className="limitWords-100" required=true editable=editable /]
+            </div>
           </div>
         </div>
         [#-- Youth  --]
         <div class="simpleBox">
           <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
+            [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!-1 ]
             [#list focusLevels  as cc]
-              [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=(element.projectExpectedStudyInfo.youthLevel.id == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+              [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=(youthLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
-          </div>
-          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
-            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeYouth" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
+          </div> 
+          <div class="ccCommentBox" style="display:${(youthLevel != 1)?string('block', 'none')}">
+            <div class="form-group stageProcessOne" style="display:${((youthLevel != 1) && isPolicy && stageProcessOne)?string('none', 'block')}">
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeYouth" i18nkey="study.achievementsYouthRelevance"  className="limitWords-100" required=true editable=editable /]
+            </div>
           </div>
         </div>
         [#-- CapDev   --]
         <div class="simpleBox">
           <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
+            [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!-1 ]
             [#list focusLevels  as cc]
-              [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=(element.projectExpectedStudyInfo.capdevLevel.id == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+              [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=(capdevLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
           </div>
-          <div class="form-group stageProcessOne" style="display:${(isPolicy && stageProcessOne)?string('none', 'block')}">
-            [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
+          <div class="ccCommentBox" style="display:${(capdevLevel != 1)?string('block', 'none')}">
+            <div class="form-group stageProcessOne" style="display:${((capdevLevel != 1) && isPolicy && stageProcessOne)?string('none', 'block')}">
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=true editable=editable /]
+            </div>
           </div>
         </div> 
       </div>
