@@ -3179,7 +3179,7 @@ UNION
                                                                                 '{1}',
                                                                                 `del`.id
                                                                               ) AS `replace(replace(``p``.``permission``,'{0}',cp.acronym),'{1}',del.id)`,
-                                                                              `ps`.id AS `project_id`,
+                                                                              `del`.id AS `project_id`,
                                                                               `cp`.`acronym` AS `crp_acronym`,
                                                                               `p`.`id` AS `permission_id`
                                                                             FROM
