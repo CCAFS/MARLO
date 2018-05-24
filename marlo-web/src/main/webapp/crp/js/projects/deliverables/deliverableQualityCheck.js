@@ -146,15 +146,13 @@ function checkReusable() {
   if($('.type-license input').val() == "true") {
     // If is different to "Other"
     var inputChecked = $('input[name="deliverable.deliverableInfo.license"]:checked').val();
-    if(!(typeof inputChecked === "undefined")
-        && !((inputChecked == "OTHER") || (inputChecked == "CC_BY_ND") || (inputChecked == "CC_BY_NC_ND"))) {
+    console.log(inputChecked);
+    if(!(typeof inputChecked === "undefined") && (inputChecked != "OTHER")) {
       $fairCompliant.addClass('achieved');
     } else {
       // Does this license allow modifications?
-      if(($('.licenceModifications input').val() == "true") && ($('input.otherLicense').val() != "")) {
+      if($('input.otherLicense').val() != "") {
         $fairCompliant.addClass('achieved');
-      } else {
-        $fairCompliant.addClass('not-achieved');
       }
     }
   } else {
