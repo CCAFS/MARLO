@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20180523",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180523", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180523",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20180524",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180524", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180524",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrl}/global/js/fieldsValidation.js?20180524"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]

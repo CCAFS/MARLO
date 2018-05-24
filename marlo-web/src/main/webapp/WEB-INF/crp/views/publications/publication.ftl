@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/publications/publication.js?20180430",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js",
+  "${baseUrlMedia}/js/publications/publication.js?20180524",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180524", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20180524",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js", 
   "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrl}/global/js/fieldsValidation.js?20180524"
 ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css" ] /]
 [#assign currentSection = "additionalReporting" /]

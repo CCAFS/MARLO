@@ -80,9 +80,9 @@
 
 [#macro deliverableLicenseMacro ]
 <div class="simpleBox">
-  <div class="form-group row">
-    <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=editable /]</label>
-    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
+  <div class="form-group row yesNoInputDeliverable">
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=editable /]</label>
+    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
   </div>
   [#-- Deliverable type computer software --]
   [#local licenceOptions = [
@@ -134,10 +134,10 @@
         <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
           [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
         </div>
-        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
-          <label class="col-md-6" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
+        <div class="col-md-6 licence-modifications yesNoInputDeliverable" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
+          <label class="col-md-6 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
           <div class="col-md-6">
-            [@customForm.yesNoInput name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
+            [@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
           </div>  
         </div>
       </div>
@@ -151,11 +151,11 @@
   [#local customName = "deliverable.dissemination"]
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
-    <div class="row ">
-      <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
-      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
+    <div class="row yesNoInputDeliverable">
+      <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
+      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
     </div> 
-    <div class="block-accessible" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
+    <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
       <hr />
       [#local oaRestrictions = [
         {"value": "intellectualProperty", "isChecked": (deliverable.dissemination.intellectualProperty)!false },
@@ -184,9 +184,9 @@
   [#local customName = "deliverable.intellectualAsset"]
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
-    <div class="row">
-      <label class="col-md-9" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
-      <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" neutral=true /]  </div>
+    <div class="row yesNoInputDeliverable">
+      <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
+      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" neutral=true /]  </div>
     </div> 
     <div class="block-intellectualAsset" style="display:${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
       <hr />
@@ -287,9 +287,9 @@
 [#macro deliverableParticipantsMacro ]
 [#local customName = "deliverable.deliverableParticipant" /]
 <div class="simpleBox">
-  <div class="form-group row">
-    <label class="col-md-9" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
-    <div class="col-md-3">[@customForm.yesNoInput name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
+  <div class="form-group row yesNoInputDeliverable">
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
+    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
   
   <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
@@ -366,21 +366,22 @@
 
 
 [#macro alreadyDisseminatedMacro ]
-<div class="simpleBox form-group">
-  <div class=" row">
-    <span class="col-md-9">
-      <label  for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
-      <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
-    </span>
-    <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="type-findable text-center" /] 
-    </div>  
+  [#local name = "deliverable.dissemination"  /]
+  <div class="simpleBox form-group">
+    <div class=" row yesNoInputDeliverable">
+      <span class="col-md-9">
+        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
+        <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
+      </span>
+      <div class="col-md-3">
+        [@customForm.yesNoInputDeliverable name="${name}.alreadyDisseminated"  editable=editable inverse=false cssClass="type-findable text-center" /] 
+      </div>  
+    </div>
+    <div class="block-findable findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
+      <hr />
+      [@findableOptions /]
+    </div>
   </div>
-  <div class="block-findable findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
-    <hr />
-    [@findableOptions /]
-  </div>
-</div>
 [/#macro]
 
 [#macro findableOptions ]
@@ -564,12 +565,12 @@
   </div> 
   
   <hr />
-  <div class="row">
+  <div class="row yesNoInputDeliverable">
     <div class="col-md-9">
-      <label>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
+      <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
       <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
     </div>
-    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
+    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
   </div>
   <hr />
   
