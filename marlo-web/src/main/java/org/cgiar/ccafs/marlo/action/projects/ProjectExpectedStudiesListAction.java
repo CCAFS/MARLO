@@ -242,7 +242,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       } else {
 
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          if (projectExpectedStudy.getCreatedBy().getId() == this.getCurrentUser().getId()) {
+          if (projectExpectedStudy.getCreatedBy().getId().equals(this.getCurrentUser().getId())) {
             nonProjectStudies.remove(projectExpectedStudy);
             myNonProjectStudies.add(projectExpectedStudy);
           }
