@@ -118,7 +118,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
       action.addMessage(action.getText("References Cited"));
       action.addMissingField("study.referencesCited");
-      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.references",
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.referencesText",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 

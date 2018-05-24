@@ -20,6 +20,14 @@ function init() {
   // Add amount format
   $('input.currencyInput').currencyInput();
 
+  $('.ccRelevanceBlock input:radio').on('change', function() {
+    var $commentBox = $(this).parents('.ccRelevanceBlock').find('.ccCommentBox');
+    if(this.value != 1) {
+      $commentBox.slideDown();
+    } else {
+      $commentBox.slideUp();
+    }
+  });
 }
 
 function attachEvents() {
