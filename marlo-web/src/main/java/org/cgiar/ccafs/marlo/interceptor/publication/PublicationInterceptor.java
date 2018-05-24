@@ -82,16 +82,16 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
     boolean editableDefined = parameters.get(APConstants.EDITABLE_REQUEST).isDefined();
 
     if (deliverable != null) {
-      String params[] = {crp.getAcronym()};
-      String paramDeliverableID[] = {crp.getAcronym(), deliverable.getId() + ""};
-      boolean hasPublicationFullPermission =
-        baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params));
-      boolean hasPublicationInstitutionPermission =
-        baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
+      String crpAcronymParam[] = {crp.getAcronym()};
+      String publicationParams[] = {crp.getAcronym(), deliverable.getId() + ""};
+      boolean hasPublicationFullPermission = baseAction
+        .hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, crpAcronymParam));
+      boolean hasPublicationPermission =
+        baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_PERMISSION, publicationParams));
+      boolean isCreator = user.getId().equals(deliverable.getCreatedBy().getId());
       boolean isInDeliverablePhase = deliverable.getPhase().getId() == baseAction.getActualPhase().getId();
       boolean isTransaction = parameters.get(APConstants.TRANSACTION_ID).isDefined();
       boolean isSaving = parameters.get("save").isDefined();
-      boolean isCreator = user.getId() == deliverable.getCreatedBy().getId();
 
       if (!isInDeliverablePhase) {
         canEdit = false;
@@ -99,7 +99,7 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
           canEdit = true;
         } else {
-          if (hasPublicationFullPermission || hasPublicationInstitutionPermission || isCreator) {
+          if (isCreator || hasPublicationFullPermission || hasPublicationPermission) {
             canEdit = true;
           }
           if (baseAction.isCrpClosed()) {
