@@ -234,10 +234,10 @@
           [@customForm.helpLabel name="study.crossCuttingRelevance.help" showIcon=false editable=editable/]
         </label>
         [#-- Gender --]
-        <div class="simpleBox">
+        <div class="simpleBox ccRelevanceBlock">
           <label for="">[@s.text name="study.genderRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
-            [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!-1 ]
+            [#assign genderLevel = (element.projectExpectedStudyInfo.genderLevel.id)!1 ]
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="genderRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.genderLevel.id" label="${cc.name}" value="${cc.id}" checked=(genderLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
@@ -249,10 +249,10 @@
           </div>
         </div>
         [#-- Youth  --]
-        <div class="simpleBox">
+        <div class="simpleBox ccRelevanceBlock">
           <label for="">[@s.text name="study.youthRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
-            [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!-1 ]
+            [#assign youthLevel = (element.projectExpectedStudyInfo.youthLevel.id)!1 ]
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="youthRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.youthLevel.id" label="${cc.name}" value="${cc.id}" checked=(youthLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
@@ -264,10 +264,10 @@
           </div>
         </div>
         [#-- CapDev   --]
-        <div class="simpleBox">
+        <div class="simpleBox ccRelevanceBlock">
           <label for="">[@s.text name="study.capDevRelevance" /]:[@customForm.req required=editable /]</label>
           <div class="form-group">
-            [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!-1 ]
+            [#assign capdevLevel = (element.projectExpectedStudyInfo.capdevLevel.id)!1 ]
             [#list focusLevels  as cc]
               [@customForm.radioFlat id="capDevRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.capdevLevel.id" label="${cc.name}" value="${cc.id}" checked=(capdevLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
             [/#list]
