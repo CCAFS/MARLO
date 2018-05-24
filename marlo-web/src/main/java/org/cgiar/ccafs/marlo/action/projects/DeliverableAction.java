@@ -576,8 +576,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable
-        .getOtherPartners().stream().filter(d -> d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
+        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 
@@ -809,7 +809,7 @@ public class DeliverableAction extends BaseAction {
     List<ProjectPartnerPerson> deliverablePartnerPersons = new ArrayList<ProjectPartnerPerson>();
 
     for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
-      .filter(o -> o.getProjectPartner() != null && o.getProjectPartner().getId() == partnerID)
+      .filter(o -> o.isActive() && o.getProjectPartner() != null && o.getProjectPartner().getId() == partnerID)
       .collect(Collectors.toList())) {
       if (deliverablePartnership.getProjectPartnerPerson() != null
         && deliverablePartnership.getProjectPartnerPerson().isActive()
@@ -850,7 +850,7 @@ public class DeliverableAction extends BaseAction {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+          .filter(c -> c.isActive() && c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
           .collect(Collectors.toList()).size() > 0) {
           return true;
         }
@@ -1264,12 +1264,12 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverable.getDeliverableMetadataElements() != null) {
             deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-              .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
 
           if (deliverable.getDeliverableDisseminations() != null) {
             deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
-              .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
             if (deliverable.getDisseminations().size() > 0) {
               deliverable.setDissemination(deliverable.getDisseminations().get(0));
             } else {
@@ -1279,12 +1279,13 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverable.getDeliverableDataSharingFiles() != null) {
             deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
-              .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
 
           if (deliverable.getDeliverablePublicationMetadatas() != null) {
-            deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()
-              .stream().filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+            deliverable
+              .setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
           if (!deliverable.getPublicationMetadatas().isEmpty()) {
             deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
@@ -1297,12 +1298,12 @@ public class DeliverableAction extends BaseAction {
 
 
           deliverable.setUsers(deliverable.getDeliverableUsers().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
           deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
           deliverable.setFiles(new ArrayList<>());
           for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles().stream()
-            .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
             DeliverableFile deFile = new DeliverableFile();
             switch (dataSharingFile.getTypeId().toString()) {
@@ -1322,8 +1323,9 @@ public class DeliverableAction extends BaseAction {
           }
 
           if (deliverable.getDeliverableIntellectualAssets() != null) {
-            List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-              .stream().filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+            List<DeliverableIntellectualAsset> intellectualAssets =
+              deliverable.getDeliverableIntellectualAssets().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
             if (intellectualAssets.size() > 0) {
               DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
@@ -1353,7 +1355,7 @@ public class DeliverableAction extends BaseAction {
           }
           if (deliverable.getDeliverableParticipants() != null) {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
-              .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
             if (deliverableParticipants.size() > 0) {
               DeliverableParticipant pasdl =
@@ -1425,10 +1427,12 @@ public class DeliverableAction extends BaseAction {
       List<GenderType> genderTypes = null;
       if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
         genderTypes = genderTypeManager.findAll().stream()
-          .filter(c -> c.getCrp() != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue())
+          .filter(
+            c -> c.isActive() && c.getCrp() != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue())
           .collect(Collectors.toList());
       } else {
-        genderTypes = genderTypeManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList());
+        genderTypes = genderTypeManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() == null)
+          .collect(Collectors.toList());
       }
 
       for (GenderType projectStatusEnum : genderTypes) {
@@ -1486,20 +1490,19 @@ public class DeliverableAction extends BaseAction {
       crps.sort((c1, c2) -> c1.getComposedName().compareTo(c2.getComposedName()));
 
       programs = new ArrayList<CrpProgram>();
-      for (CrpProgram program : crpProgramManager.findAll().stream()
-        .filter(
-          c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      for (CrpProgram program : crpProgramManager.findAll().stream().filter(c -> c.isActive()
+        && c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList())) {
         programs.add(program);
       }
       programs.sort((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym()));
 
-      deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null && !dt.getAdminType().booleanValue())
-        .collect(Collectors.toList()));
+      deliverableTypeParent = new ArrayList<>(
+        deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
+          && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
 
       deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() != null
+        .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
           && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
         .collect(Collectors.toList())));
 
@@ -1507,13 +1510,13 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager
-            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager.findAll().stream()
+            .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
-          .filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() != null
+          .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
             && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
           .collect(Collectors.toList())));
       }
@@ -1526,10 +1529,9 @@ public class DeliverableAction extends BaseAction {
         Long deliverableTypeParentId =
           deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getDeliverableCategory().getId();
 
-        deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
-          .filter(
-            dt -> dt.getDeliverableCategory() != null && dt.getDeliverableCategory().getId() == deliverableTypeParentId)
-          .collect(Collectors.toList()));
+        deliverableSubTypes = new ArrayList<>(
+          deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
+            && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
       }
 
       if (project.getProjectOutcomes() != null) {
