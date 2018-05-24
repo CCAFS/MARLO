@@ -67,13 +67,6 @@
           </div>
           [/#if]
           
-          [#-- Previous Studies List 
-          <h3 class="headTitle">Previous Studies</h3>
-          <div id="caseStudiesBlock" class="simpleBox">
-            [@tableList list=(project.caseStudies)![] previousTable=true /]
-          </div>
-          --]
-          
         [/@s.form]
   
       </div>
@@ -86,7 +79,7 @@
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
 
-[@customForm.confirmJustification action="${crpSession}/deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove outcomes case study" /]
+[@customForm.confirmJustification action="deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove study" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
