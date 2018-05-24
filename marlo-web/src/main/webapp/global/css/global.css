@@ -277,7 +277,12 @@ span.badge.fieldError{
   min-height: 400px;
 }
 
-textarea.fieldError, input.fieldError,textarea.fieldError:focus, input.fieldError:focus, div.fieldError{
+textarea.fieldError, 
+input.fieldError,
+textarea.fieldError:focus, 
+input.fieldError:focus, 
+div.fieldError, 
+label.fieldError{
   border-color: #F44 !important;
   background-color: #FFFAFA;
   color: #EE1D1D !important;
@@ -6414,7 +6419,8 @@ div.radioFlat{
   padding-left: 5px;
 }
 
-.radioFlat input[type="radio"] {
+.radioFlat input[type="radio"],
+.button-wrap  input[type="radio"]{
   position: absolute;
   opacity: 0;
 }

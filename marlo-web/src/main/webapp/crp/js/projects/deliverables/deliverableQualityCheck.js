@@ -146,7 +146,6 @@ function checkReusable() {
   if($('.type-license input').val() == "true") {
     // If is different to "Other"
     var inputChecked = $('input[name="deliverable.deliverableInfo.license"]:checked').val();
-    console.log(inputChecked);
     if(!(typeof inputChecked === "undefined") && (inputChecked != "OTHER")) {
       $fairCompliant.addClass('achieved');
     } else {
