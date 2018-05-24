@@ -121,7 +121,7 @@
               [#if reportingActive && ((item.year == currentCycleYear)!false)]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
               <a href="${dlurl}">[#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]</a>
             </td>
-            <td class="type">[#if item.projectExpectedStudyInfo.studyType?has_content]${item.projectExpectedStudyInfo.studyType.name}[#else]Not defined[/#if]</td>
+            <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
             <td>
