@@ -139,16 +139,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   @Override
   public String delete() {
-    for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
-      if (projectExpectedStudy.getId().longValue() == expectedID) {
-        ProjectExpectedStudy projectExpectedStudyBD =
-          projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
-        for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        }
-        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
-      }
+    ProjectExpectedStudy projectExpectedStudyBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+    for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
+      sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
     }
+    projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudyBD.getId());
     return SUCCESS;
   }
 

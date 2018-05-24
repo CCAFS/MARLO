@@ -853,7 +853,7 @@
       <interceptor-ref name="editExpectedStudy" />
       <interceptor-ref name="defaultStack" />
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/expectedStudiesList</param>
+        <param name="actionName">${crpSession}/studies</param>
         <param name="projectID">${projectID}</param>
         <param name="phaseID">${phaseID}</param>
       </result>
