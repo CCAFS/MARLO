@@ -116,6 +116,9 @@ function getInputElement(fieldName,message) {
     }
   }
 
+  $(elementQuery).addClass("fieldError");
+  $(elementQuery).attr("title", message);
+
   // Find Bootstrap tabs
   var tabPane = $(elementQuery).parents('.tab-pane');
   if(tabPane) {
@@ -139,8 +142,13 @@ function getInputElement(fieldName,message) {
     $radioFlatLabel.addClass('fieldError');
   }
 
-  $(elementQuery).addClass("fieldError");
-  $(elementQuery).attr("title", message);
+  // Find yesNoInputDeliverable button
+  var $yesNoInputDeliverableLabel = $(elementQuery).parents('.yesNoInputDeliverable').find('label.yesNoLabel');
+  if($yesNoInputDeliverableLabel) {
+    $yesNoInputDeliverableLabel.addClass('fieldError');
+    $(elementQuery).removeClass("fieldError");
+    $(elementQuery).attr("title", "");
+  }
 
 }
 

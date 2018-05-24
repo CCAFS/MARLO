@@ -383,8 +383,8 @@ public class PublicationAction extends BaseAction {
 
   public List<CrpProgram> getFlagshipsList() {
     return crpProgramManager.findAll().stream()
-      .filter(
-        c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getCrp().equals(this.loggedCrp)
+        && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
@@ -426,8 +426,8 @@ public class PublicationAction extends BaseAction {
 
   public List<CrpProgram> getRegionsList() {
     return crpProgramManager.findAll().stream()
-      .filter(
-        c -> c.getCrp().equals(this.loggedCrp) && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getCrp().equals(this.loggedCrp)
+        && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .sorted((r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym())).collect(Collectors.toList());
   }
 
@@ -658,32 +658,34 @@ public class PublicationAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
 
 
-        deliverable.setLeaders(
-          deliverable.getDeliverableLeaders().stream().filter(dl -> dl.getPhase().equals(deliverable.getPhase()))
-            .sorted((l1, l2) -> l1.getInstitution().getName().compareTo(l2.getInstitution().getName()))
-            .collect(Collectors.toList()));
+        deliverable.setLeaders(deliverable.getDeliverableLeaders().stream()
+          .filter(dl -> dl.isActive() && dl.getPhase().equals(deliverable.getPhase()))
+          .sorted((l1, l2) -> l1.getInstitution().getName().compareTo(l2.getInstitution().getName()))
+          .collect(Collectors.toList()));
         List<DeliverableProgram> deliverablePrograms = deliverable.getDeliverablePrograms().stream()
-          .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
+          .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
         deliverable.setPrograms(deliverablePrograms.stream()
-          .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .sorted((f1, f2) -> f1.getCrpProgram().getAcronym().compareTo(f2.getCrpProgram().getAcronym()))
           .collect(Collectors.toList()));
         deliverable.setRegions(deliverablePrograms.stream()
-          .filter(c -> c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .sorted((r1, r2) -> r1.getCrpProgram().getAcronym().compareTo(r2.getCrpProgram().getAcronym()))
           .collect(Collectors.toList()));
 
 
         if (deliverable.getDeliverableMetadataElements() != null) {
           deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
         }
 
 
         if (deliverable.getDeliverableDisseminations() != null) {
           deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
-            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
           if (deliverable.getDisseminations().size() > 0) {
             deliverable.setDissemination(deliverable.getDisseminations().get(0));
           } else {
@@ -693,7 +695,7 @@ public class PublicationAction extends BaseAction {
 
         if (deliverable.getDeliverablePublicationMetadatas() != null) {
           deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
-            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList())));
         }
         if (!deliverable.getPublicationMetadatas().isEmpty()) {
           deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
@@ -705,13 +707,14 @@ public class PublicationAction extends BaseAction {
         }
 
         deliverable.setUsers(deliverable.getDeliverableUsers().stream()
-          .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
+          .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-          .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
+          .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList()));
 
         if (deliverable.getDeliverableIntellectualAssets() != null) {
-          List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-            .stream().filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
+          List<DeliverableIntellectualAsset> intellectualAssets =
+            deliverable.getDeliverableIntellectualAssets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
           if (intellectualAssets.size() > 0) {
             deliverable.setIntellectualAsset(intellectualAssets.get(0));
@@ -738,7 +741,7 @@ public class PublicationAction extends BaseAction {
         }
         if (deliverable.getDeliverableParticipants() != null) {
           List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
-            .filter(c -> c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
+            .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
           if (deliverableParticipants.size() > 0) {
             deliverable.setDeliverableParticipant(deliverableParticipants.get(0));
@@ -812,10 +815,12 @@ public class PublicationAction extends BaseAction {
       List<GenderType> genderTypes = null;
       if (this.hasSpecificities(APConstants.CRP_CUSTOM_GENDER)) {
         genderTypes = genderTypeManager.findAll().stream()
-          .filter(c -> c.getCrp() != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue())
+          .filter(
+            c -> c.isActive() && c.getCrp() != null && c.getCrp().getId().longValue() == loggedCrp.getId().longValue())
           .collect(Collectors.toList());
       } else {
-        genderTypes = genderTypeManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList());
+        genderTypes = genderTypeManager.findAll().stream().filter(c -> c.isActive() && c.getCrp() == null)
+          .collect(Collectors.toList());
       }
 
       for (GenderType projectStatusEnum : genderTypes) {
@@ -823,9 +828,9 @@ public class PublicationAction extends BaseAction {
       }
 
 
-      deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.getDeliverableCategory() != null && dt.getDeliverableCategory().getId().intValue() == 49)
-        .collect(Collectors.toList()));
+      deliverableSubTypes = new ArrayList<>(
+        deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
+          && dt.getDeliverableCategory().getId().intValue() == 49).collect(Collectors.toList()));
       deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(55));
       deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(56));
       deliverableSubTypes.sort((t1, t2) -> t1.getName().compareTo(t2.getName()));
@@ -838,10 +843,9 @@ public class PublicationAction extends BaseAction {
       crps.sort((c1, c2) -> c1.getComposedName().compareTo(c2.getComposedName()));
 
       this.fundingSources = new ArrayList<>();
-      this.fundingSources = fundingSourceManager.findAll().stream()
-        .filter(
-          fs -> fs.getCrp().equals(this.getCurrentCrp()) && fs.getFundingSourceInfo(deliverable.getPhase()) != null)
-        .collect(Collectors.toList());
+      this.fundingSources =
+        fundingSourceManager.findAll().stream().filter(fs -> fs.isActive() && fs.getCrp().equals(this.getCurrentCrp())
+          && fs.getFundingSourceInfo(deliverable.getPhase()) != null).collect(Collectors.toList());
 
       fundingSources.sort((f1, f2) -> f1.getId().compareTo(f2.getId()));
 
