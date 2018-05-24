@@ -926,7 +926,7 @@ public class PublicationAction extends BaseAction {
       deliverableDB = deliverableManager.getDeliverableById(deliverable.getId());
 
       String params[] = {loggedCrp.getAcronym(), deliverable.getId() + ""};
-      this.setBasePermission(this.getText(Permission.PUBLICATION_BASE_FULL_PERMISSION, params));
+      this.setBasePermission(this.getText(Permission.PUBLICATION_BASE_INSTITUTION, params));
 
       if (this.isHttpPost()) {
 
@@ -985,8 +985,8 @@ public class PublicationAction extends BaseAction {
   @Override
   public String save() {
     User user = this.getCurrentUser();
-
-    if (this.hasPermission("*") || user.getId() == deliverableDB.getCreatedBy().getId()) {
+    boolean isCreator = user.getId().equals(deliverableDB.getCreatedBy().getId());
+    if (isCreator || this.hasPermission("*")) {
       Deliverable deliverablePrew = this.updateDeliverableInfo();
       this.updateDeliverableFS(deliverablePrew);
 
