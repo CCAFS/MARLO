@@ -2851,9 +2851,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getFlagshipOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
-        "out_unit", "cross_cutting", "exp_unit", "ach_unit", "ach_value", "ach_narrative", "communications"},
+        "out_unit", "cross_cutting", "exp_unit", "ach_unit", "ach_value", "ach_narrative", "communications",
+        "showCommunications"},
       new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        Boolean.class},
       0);
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
@@ -2922,20 +2924,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }
-
-        List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
-          .filter(pc -> pc.isActive() && pc.getYear() == this.getSelectedYear()).collect(Collectors.toList());
-        if (projectCommunications != null && projectCommunications.size() > 0) {
-          communications = projectCommunications.get(0).getCommunication();
-          if (projectCommunications.size() > 1) {
-            LOG.warn("There is more than one Project Communication for P" + this.getProjectID() + "Project Outcome "
-              + projectOutcome.getId());
+        if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+          List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
+            .filter(pc -> pc.isActive() && pc.getYear() == this.getSelectedYear()).collect(Collectors.toList());
+          if (projectCommunications != null && projectCommunications.size() > 0) {
+            communications = projectCommunications.get(0).getCommunication();
+            if (projectCommunications.size() > 1) {
+              LOG.warn("There is more than one Project Communication for P" + this.getProjectID() + "Project Outcome "
+                + projectOutcome.getId());
+            }
           }
         }
 
-        model.addRow(
-          new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl, outYear, outValue,
-            outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative, communications});
+        model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
+          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative,
+          communications, this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)});
       }
     }
     return model;
