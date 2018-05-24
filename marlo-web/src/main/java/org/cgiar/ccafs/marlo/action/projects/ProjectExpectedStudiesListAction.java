@@ -216,7 +216,9 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         .collect(Collectors.toList()));
       for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
         if (!projectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
-          projectStudies.add(expectedStudy.getProjectExpectedStudy());
+          if (expectedStudy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+            projectStudies.add(expectedStudy.getProjectExpectedStudy());
+          }
         }
       }
 
