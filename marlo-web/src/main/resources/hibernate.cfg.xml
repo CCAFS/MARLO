@@ -278,6 +278,8 @@
     <mapping resource="xmls/RepIndFillingTypes.hbm.xml"/>
     <mapping resource="xmls/RepIndPatentStatuses.hbm.xml"/>
     <mapping resource="xmls/ProjectPartnerPartnershipResearchPhases.hbm.xml"/>
+    <mapping resource="xmls/RepIndContributionOfCrp.hbm.xml"/>
+    <mapping resource="xmls/RepIndDegreeInnovation.hbm.xml"/>
     
 	</session-factory>
 </hibernate-configuration>

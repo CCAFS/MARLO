@@ -17,6 +17,7 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private ProjectInnovation projectInnovation;
 
@@ -26,6 +27,7 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
 
   @Expose
   private RepIndStageInnovation repIndStageInnovation;
+
 
   @Expose
   private Phase phase;
@@ -40,6 +42,12 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
   private RepIndGeographicScope repIndGeographicScope;
 
   @Expose
+  private RepIndContributionOfCrp repIndContributionOfCrp;
+
+  @Expose
+  private RepIndDegreeInnovation repIndDegreeInnovation;
+
+  @Expose
   private RepIndGenderYouthFocusLevel genderFocusLevel;
 
   @Expose
@@ -50,9 +58,6 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String narrative;
-
-  @Expose
-  private String novel;
 
   @Expose
   private String evidenceLink;
@@ -69,17 +74,20 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
 
+  @Expose
+  private String descriptionStage;
+
   public ProjectInnovationInfo() {
   }
 
   public ProjectInnovationInfo(ProjectInnovation projectInnovation, Phase phase, String title, String narrative,
-    String novel, String evidenceLink, String genderExplaniation, String youthExplaniation, Long year) {
+    String descriptionStage, String evidenceLink, String genderExplaniation, String youthExplaniation, Long year) {
     super();
     this.projectInnovation = projectInnovation;
     this.phase = phase;
     this.title = title;
+    this.descriptionStage = descriptionStage;
     this.narrative = narrative;
-    this.novel = novel;
     this.evidenceLink = evidenceLink;
     this.genderExplaniation = genderExplaniation;
     this.youthExplaniation = youthExplaniation;
@@ -90,8 +98,8 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     RepIndPhaseResearchPartnership repIndPhaseResearchPartnership, RepIndStageInnovation repIndStageInnovation,
     Phase phase, RepIndRegion repIndRegion, RepIndInnovationType repIndInnovationType,
     RepIndGeographicScope repIndGeographicScope, RepIndGenderYouthFocusLevel genderFocusLevel,
-    RepIndGenderYouthFocusLevel youthFocusLevel, String title, String narrative, String novel, String evidenceLink,
-    String genderExplaniation, String youthExplaniation, Long year) {
+    RepIndGenderYouthFocusLevel youthFocusLevel, String title, String narrative, String descriptionStage,
+    String evidenceLink, String genderExplaniation, String youthExplaniation, Long year) {
     super();
     this.projectInnovation = projectInnovation;
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
@@ -104,34 +112,33 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.youthFocusLevel = youthFocusLevel;
     this.title = title;
     this.narrative = narrative;
-    this.novel = novel;
+
     this.evidenceLink = evidenceLink;
     this.genderExplaniation = genderExplaniation;
     this.youthExplaniation = youthExplaniation;
     this.year = year;
   }
 
+  public String getDescriptionStage() {
+    return descriptionStage;
+  }
 
   public String getEvidenceLink() {
     return evidenceLink;
   }
 
-
   public String getGenderExplaniation() {
     return genderExplaniation;
   }
-
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -160,11 +167,6 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getNovel() {
-    return novel;
-  }
-
-
   public Phase getPhase() {
     return phase;
   }
@@ -177,6 +179,16 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+
+  public RepIndContributionOfCrp getRepIndContributionOfCrp() {
+    return repIndContributionOfCrp;
+  }
+
+
+  public RepIndDegreeInnovation getRepIndDegreeInnovation() {
+    return repIndDegreeInnovation;
   }
 
 
@@ -214,17 +226,24 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     return year;
   }
 
+
   public String getYouthExplaniation() {
     return youthExplaniation;
   }
+
 
   public RepIndGenderYouthFocusLevel getYouthFocusLevel() {
     return youthFocusLevel;
   }
 
+
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setDescriptionStage(String descriptionStage) {
+    this.descriptionStage = descriptionStage;
   }
 
   public void setEvidenceLink(String evidenceLink) {
@@ -247,10 +266,6 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.narrative = narrative;
   }
 
-  public void setNovel(String novel) {
-    this.novel = novel;
-  }
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -259,8 +274,17 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
+
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
+  }
+
+  public void setRepIndContributionOfCrp(RepIndContributionOfCrp repIndContributionOfCrp) {
+    this.repIndContributionOfCrp = repIndContributionOfCrp;
+  }
+
+  public void setRepIndDegreeInnovation(RepIndDegreeInnovation repIndDegreeInnovation) {
+    this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
 
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
@@ -321,9 +345,11 @@ public class ProjectInnovationInfo implements java.io.Serializable, IAuditLog {
     this.setRepIndRegion(projectInnovationInfoUpdate.getRepIndRegion());
     this.setRepIndInnovationType(projectInnovationInfoUpdate.getRepIndInnovationType());
     this.setRepIndGeographicScope(projectInnovationInfoUpdate.getRepIndGeographicScope());
+    this.setRepIndContributionOfCrp(projectInnovationInfoUpdate.getRepIndContributionOfCrp());
+    this.setRepIndDegreeInnovation(projectInnovationInfoUpdate.getRepIndDegreeInnovation());
     this.setGenderFocusLevel(projectInnovationInfoUpdate.getGenderFocusLevel());
     this.setYouthFocusLevel(projectInnovationInfoUpdate.getYouthFocusLevel());
-    this.setNovel(projectInnovationInfoUpdate.getNovel());
+    this.setDescriptionStage(projectInnovationInfoUpdate.getDescriptionStage());
     this.setEvidenceLink(projectInnovationInfoUpdate.getEvidenceLink());
     this.setGenderExplaniation(projectInnovationInfoUpdate.getGenderExplaniation());
     this.setYouthExplaniation(projectInnovationInfoUpdate.getYouthExplaniation());
