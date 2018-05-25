@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,12 +76,15 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
 
   @Override
   public List<Map<String, Object>> getUserStudies(long userId, String crp) {
-
+    List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where permission_id in "
       + "(select id from permissions where permission = 'crp:{0}:studies:{1}:canEdit')");
-    List<Map<String, Object>> list =
-      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    if (super.getTemTableUserId() == userId) {
+      list = super.findCustomQuery(builder.toString());
+    } else {
+      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    }
     return list;
   }
 

@@ -173,6 +173,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   }
 
+
   protected List<T> findEveryone(Class<T> clazz) {
     Query query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
     query.setFlushMode(FlushMode.COMMIT);
@@ -182,7 +183,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return list;
 
   }
-
 
   /**
    * Allows clients to create the HibernateQuery and set parameters on it.
@@ -195,6 +195,21 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     hibernateQuery.setFlushMode(FlushMode.COMMIT);
     T object = clazz.cast(hibernateQuery.uniqueResult());
     return object;
+  }
+
+
+  /**
+   * This method make a query that returns a single object result from the model.
+   * This method was implemented in a generic way, so, the object to be returned will depend on how the method
+   * is being called.
+   * 
+   * @param hibernateQuery is a string representing an HQL query.
+   * @return a Object of <T>
+   */
+  protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
+    Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
+    query.setFlushMode(FlushMode.COMMIT);
+    return this.findSingleResult(clazz, query);
   }
 
 
@@ -213,27 +228,33 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   // }
 
   /**
-   * This method make a query that returns a single object result from the model.
-   * This method was implemented in a generic way, so, the object to be returned will depend on how the method
-   * is being called.
-   * 
-   * @param hibernateQuery is a string representing an HQL query.
-   * @return a Object of <T>
-   */
-  protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
-    Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
-    query.setFlushMode(FlushMode.COMMIT);
-    return this.findSingleResult(clazz, query);
-  }
-
-
-  /**
    * Return the sessionFactory. DAOs are free to get this and use it to perform custom queries.
    * 
    * @return
    */
   SessionFactory getSessionFactory() {
     return this.sessionFactory;
+  }
+
+
+  /**
+   * Get the user id that is in the temporally table (permissions)
+   * 
+   * @return the user id
+   */
+  public long getTemTableUserId() {
+    long id = -1;
+    StringBuilder builder = new StringBuilder();
+    builder.append("select DISTINCT id from user_permission");
+    try {
+      List<Map<String, Object>> list = this.findCustomQuery(builder.toString());
+      for (Map<String, Object> map : list) {
+        id = Long.parseLong(map.get("id").toString());
+      }
+    } catch (Exception e) {
+      return id;
+    }
+    return id;
   }
 
 
