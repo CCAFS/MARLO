@@ -140,10 +140,13 @@ public class PublicationListAction extends BaseAction {
   }
 
   public boolean canEdit(long deliverableID) {
-    String params[] = {loggedCrp.getAcronym()};
-    String paramDeliverableID[] = {loggedCrp.getAcronym(), deliverableID + ""};
-    return this.hasPermission(this.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
-      || this.hasPermission(this.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
+    String crpAcronymParam[] = {loggedCrp.getAcronym()};
+    String publicationParams[] = {loggedCrp.getAcronym(), deliverableID + ""};
+    boolean hasPublicationFullPermission =
+      this.hasPermission(this.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, crpAcronymParam));
+    boolean hasPublicationPermission =
+      this.hasPermission(this.generatePermission(Permission.PUBLICATION_PERMISSION, publicationParams));
+    return hasPublicationFullPermission || hasPublicationPermission;
   }
 
   @Override
@@ -180,12 +183,11 @@ public class PublicationListAction extends BaseAction {
   }
 
 
-  public List<Deliverable> getPublications(boolean permission) {
-
+  public List<Deliverable> getPublications(boolean hasPermission) {
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
-
     for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
-      if (this.canEdit(deliverable.getId().longValue()) == permission) {
+      boolean isCreator = this.getCurrentUser().getId().equals(deliverable.getCreatedBy().getId());
+      if ((isCreator && hasPermission) || this.canEdit(deliverable.getId().longValue()) == hasPermission) {
         deliverable.getDeliverableInfo(deliverable.getPhase());
         deliverables.add(deliverable);
       }

@@ -51,7 +51,7 @@ function removeElementList(e) {
   e.preventDefault();
   $dialogContent.find("#justification").val('').removeClass('fieldError');
   // Getting deliverable ID and setting input hidden to remove that deliverable
-  $dialogContent.find('input[name$=caseStudyID]').val($(e.target).parent().attr('id').split('-')[1]);
+  $dialogContent.find('input[name$=expectedID]').val($(e.target).parent().attr('id').split('-')[1]);
   dialog.dialog("open");
 }
 

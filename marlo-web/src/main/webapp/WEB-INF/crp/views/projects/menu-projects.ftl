@@ -116,13 +116,14 @@
 
 <div class="clearfix"></div>
 
-[#assign completed = sectionsChecked == sectionsForChecking?size /]
+[#assign projectEditLeader = (project.projectInfo.isProjectEditLeader())!false /]
+[#assign completed = (sectionsChecked == sectionsForChecking?size) &&  projectEditLeader/]
 
 [#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || (project.projectInfo.isProjectEditLeader())!false) && !crpClosed]
+[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || projectEditLeader) && !crpClosed]
   [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
@@ -130,7 +131,7 @@
   <br />
   [/#if]
 [#else]
-  [#if !((project.projectInfo.isProjectEditLeader())!false)]
+  [#if !projectEditLeader]
     <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>
   [/#if]
 [/#if]
@@ -141,7 +142,7 @@
 [/#if]
 
 [#-- Check button --]
-[#if canEdit && !completed && !submission  && ((project.projectInfo.projectEditLeader)!false)]
+[#if canEdit && !completed && !submission  && projectEditLeader]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>

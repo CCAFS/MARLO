@@ -99,7 +99,7 @@ $(document).ready(function() {
 
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {
-    yesnoEvent($(this));
+    // yesnoEvent($(this));
   });
 
   // hash url animation
@@ -255,22 +255,7 @@ $(document).ready(function() {
   $(".requiredTag").attr('title','This is a required field');
 
   yesnoEvent = function(target) {
-    // var isChecked = $(this).is(':checked');
-    var $t = $(target);
-    var isChecked = ($t.val() === "true");
-    $t.siblings().removeClass('radio-checked');
-    $t.next().addClass('radio-checked');
-    var array = $t.attr('name').split('.');
-    var $aditional = $('#aditional-' + array[array.length - 1]);
-    if($t.hasClass('inverse')) {
-      isChecked = !isChecked;
-    }
-    if(isChecked) {
-      $aditional.slideDown("slow");
-    } else {
-      $aditional.slideUp("slow");
-      $aditional.find('input:text,textarea').val('');
-    }
+    
   }
 
   /**

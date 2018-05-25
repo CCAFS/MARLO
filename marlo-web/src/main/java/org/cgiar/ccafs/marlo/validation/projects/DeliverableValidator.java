@@ -469,25 +469,25 @@ public class DeliverableValidator extends BaseValidator {
         if (dissemination.getDisseminationChannel() != null) {
           if (dissemination.getDisseminationChannel().equals("-1")) {
             action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.disseminationChannel",
+            action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
               InvalidFieldsMessages.EMPTYFIELD);
           } else {
             if (!(this.isValidString(dissemination.getDisseminationUrl())
               && this.wordCount(dissemination.getDisseminationUrl()) <= 100)) {
               action.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.disseminationUrl",
+              action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         } else {
           action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.disseminationChannel",
+          action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
         InvalidFieldsMessages.EMPTYFIELD);
 
     }
@@ -843,31 +843,6 @@ public class DeliverableValidator extends BaseValidator {
           && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
           action.addMessage(action.getText("project.deliverable.publication.v.journal"));
           action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        boolean indicators = false;
-
-        if (deliverablePublicationMetadata.getIsiPublication() != null) {
-          if (deliverablePublicationMetadata.getIsiPublication().booleanValue()) {
-            indicators = true;
-          }
-        }
-
-        if (deliverablePublicationMetadata.getNasr() != null) {
-          if (deliverablePublicationMetadata.getNasr().booleanValue()) {
-            indicators = true;
-          }
-        }
-
-        if (deliverablePublicationMetadata.getCoAuthor() != null) {
-          if (deliverablePublicationMetadata.getCoAuthor().booleanValue()) {
-            indicators = true;
-          }
-        }
-
-        if (!indicators) {
-          action.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-          action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }
