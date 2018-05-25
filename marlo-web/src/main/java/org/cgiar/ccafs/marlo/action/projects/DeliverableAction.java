@@ -576,8 +576,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
-        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable
+        .getOtherPartners().stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 
@@ -1161,7 +1161,9 @@ public class DeliverableAction extends BaseAction {
             if (deliverableCrp != null) {
               if (deliverableCrp.getCrpProgram() == null || deliverableCrp.getCrpProgram().getId() == null
                 || deliverableCrp.getCrpProgram().getId().intValue() == -1) {
-                deliverableCrp.setGlobalUnit(crpManager.getGlobalUnitById(deliverableCrp.getGlobalUnit().getId()));
+                if (deliverableCrp.getGlobalUnit() != null && deliverableCrp.getGlobalUnit().getId() != null) {
+                  deliverableCrp.setGlobalUnit(crpManager.getGlobalUnitById(deliverableCrp.getGlobalUnit().getId()));
+                }
               } else {
                 deliverableCrp
                   .setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));

@@ -542,7 +542,9 @@ public class PublicationAction extends BaseAction {
             if (deliverableCrp != null) {
               if (deliverableCrp.getCrpProgram() == null || deliverableCrp.getCrpProgram().getId() == null
                 || deliverableCrp.getCrpProgram().getId().intValue() == -1) {
-                deliverableCrp.setGlobalUnit(crpManager.getGlobalUnitById(deliverableCrp.getGlobalUnit().getId()));
+                if(deliverableCrp.getGlobalUnit()!=null && deliverableCrp.getGlobalUnit().getId()!=null) {
+                  deliverableCrp.setGlobalUnit(crpManager.getGlobalUnitById(deliverableCrp.getGlobalUnit().getId()));
+                }                
               } else {
                 deliverableCrp
                   .setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));
