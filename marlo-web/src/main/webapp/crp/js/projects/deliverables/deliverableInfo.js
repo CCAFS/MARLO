@@ -5,7 +5,6 @@ $(document).ready(init);
 function init() {
 
   $statuses = $('select.status');
-  console.log($statuses);
   $statusDescription = $('#statusDescription');
 
   // Take out the 0 - Not Targeted Dimension

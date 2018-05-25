@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectStudy.js",
+  "${baseUrlMedia}/js/projects/projectStudy.js?20180224",
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 

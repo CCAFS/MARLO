@@ -139,16 +139,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   @Override
   public String delete() {
-    for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
-      if (projectExpectedStudy.getId().longValue() == expectedID) {
-        ProjectExpectedStudy projectExpectedStudyBD =
-          projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
-        for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        }
-        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
-      }
+    ProjectExpectedStudy projectExpectedStudyBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+    for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
+      sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
     }
+    projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudyBD.getId());
     return SUCCESS;
   }
 
@@ -216,7 +211,9 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         .collect(Collectors.toList()));
       for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
         if (!projectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
-          projectStudies.add(expectedStudy.getProjectExpectedStudy());
+          if (expectedStudy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+            projectStudies.add(expectedStudy.getProjectExpectedStudy());
+          }
         }
       }
 
@@ -240,7 +237,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       } else {
 
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          if (projectExpectedStudy.getCreatedBy().getId() == this.getCurrentUser().getId()) {
+          if (projectExpectedStudy.getCreatedBy().getId().equals(this.getCurrentUser().getId())) {
             nonProjectStudies.remove(projectExpectedStudy);
             myNonProjectStudies.add(projectExpectedStudy);
           }

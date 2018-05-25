@@ -84,6 +84,64 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
   }
 
+  public void validateHidden(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
+    // Validate Maturity radio Button
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndStageStudy() == null) {
+      action.addMessage(action.getText("Maturity of Change reported"));
+      action.addMissingField("Maturity of Change reported");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndStageStudy.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Srf Targets
+    if (projectExpectedStudy.getSrfTargets() == null || projectExpectedStudy.getSrfTargets().isEmpty()) {
+      action.addMessage(action.getText("targets"));
+      action.addMissingField("study.stratgicResultsLink.srfTargets");
+      action.getInvalidFields().put("list-expectedStudy.srfTargets",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
+    }
+
+
+    // Validate Elaboration Outcomes
+    if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+      .getElaborationOutcomeImpactStatement())
+      && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+        .getElaborationOutcomeImpactStatement()) <= 400) {
+      action.addMessage(action.getText("Elaboration Outcome"));
+      action.addMissingField("study.elaborationStatement");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.elaborationOutcomeImpactStatement",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate References Cited
+    if (!this.isValidString(
+      projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getReferencesText())) {
+      action.addMessage(action.getText("References Cited"));
+      action.addMissingField("study.referencesCited");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.referencesText",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Quantification
+    if (!this.isValidString(
+      projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getQuantification())) {
+      action.addMessage(action.getText("Quantification"));
+      action.addMissingField("study.quantification");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.quantification",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Contacts
+    if (!this
+      .isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getContacts())) {
+      action.addMessage(action.getText("Contacts"));
+      action.addMissingField("study.contacts");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.contacts",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+
   public void validateProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy, BaseAction action) {
 
     // Validate Study type
@@ -160,10 +218,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
         // Validate Is Contribution Radio Button (Yes/No)
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsContribution() == null) {
+
           action.addMessage(action.getText("Involve a contribution of the CGIAR"));
           action.addMissingField("study.reportingIndicatorThree");
           action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isContribution",
             InvalidFieldsMessages.EMPTYFIELD);
+
+          this.validateHidden(projectExpectedStudy, action);
+
         } else {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsContribution()) {
 
@@ -258,29 +320,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                     action.getInvalidFields().put("list-expectedStudy.srfTargets",
                       action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
                   }
-                  // Validate Comments (TopLevel)
-                  if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                    .getTopLevelComments())) {
-                    action.addMessage(action.getText("Comments"));
-                    action.addMissingField("study.comments");
-                    action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.topLevelComments",
-                      InvalidFieldsMessages.EMPTYFIELD);
-                  }
-                  // Validate Flagships
-                  if (projectExpectedStudy.getFlagships() == null || projectExpectedStudy.getFlagships().isEmpty()) {
-                    action.addMessage(action.getText("flagshipList"));
-                    action.addMissingField("study.keyContributors.flagships");
-                    action.getInvalidFields().put("list-expectedStudy.flagships",
-                      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"flagshipList"}));
-                  }
-                  // Validate Institutions
-                  if (projectExpectedStudy.getInstitutions() == null
-                    || projectExpectedStudy.getInstitutions().isEmpty()) {
-                    action.addMessage(action.getText("Institutions"));
-                    action.addMissingField("study.keyContributors.externalPartners");
-                    action.getInvalidFields().put("list-expectedStudy.institutions",
-                      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Institutions"}));
-                  }
+
                   // Validate Elaboration Outcomes
                   if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
                     .getElaborationOutcomeImpactStatement())
@@ -302,49 +342,61 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
                       InvalidFieldsMessages.EMPTYFIELD);
                   }
 
+                  // Validate Quantification
+                  if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                    .getQuantification())) {
+                    action.addMessage(action.getText("Quantification"));
+                    action.addMissingField("study.quantification");
+                    action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.quantification",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
+
 
                   // Validate Describe Gender
-                  if (!this.isValidString(
-                    projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeGender())
-                    && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                      .getDescribeGender()) <= 100) {
-                    action.addMessage(action.getText("Describe Gender"));
-                    action.addMissingField("study.achievementsGenderRelevance");
-                    action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeGender",
-                      InvalidFieldsMessages.EMPTYFIELD);
+                  if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                    .getGenderLevel() != null
+                    && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
+                      .getId() != 1) {
+                    if (!this.isValidString(
+                      projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeGender())
+                      && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                        .getDescribeGender()) <= 100) {
+                      action.addMessage(action.getText("Describe Gender"));
+                      action.addMissingField("study.achievementsGenderRelevance");
+                      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeGender",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
                   }
 
                   // Validate Describe Youth
-                  if (!this.isValidString(
-                    projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeYouth())
-                    && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                      .getDescribeYouth()) <= 100) {
-                    action.addMessage(action.getText("Describe Youth"));
-                    action.addMissingField("study.achievementsYouthRelevance");
-                    action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeYouth",
-                      InvalidFieldsMessages.EMPTYFIELD);
+                  if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                    .getYouthLevel() != null
+                    && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel()
+                      .getId() != 1) {
+                    if (!this.isValidString(
+                      projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeYouth())
+                      && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                        .getDescribeYouth()) <= 100) {
+                      action.addMessage(action.getText("Describe Youth"));
+                      action.addMissingField("study.achievementsYouthRelevance");
+                      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeYouth",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
                   }
-
                   // Validate Describe Capdev
-                  if (!this.isValidString(
-                    projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeCapdev())
-                    && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                      .getDescribeCapdev()) <= 100) {
-                    action.addMessage(action.getText("Describe Capdev"));
-                    action.addMissingField("study.achievementsCapDevRelevance");
-                    action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeCapdev",
-                      InvalidFieldsMessages.EMPTYFIELD);
-                  }
-
-                  // Validate Communications Material
-                  if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                    .getComunicationsMaterial())
-                    && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                      .getComunicationsMaterial()) <= 100) {
-                    action.addMessage(action.getText("Communications Material"));
-                    action.addMissingField("study.communicationMaterials");
-                    action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.comunicationsMaterial",
-                      InvalidFieldsMessages.EMPTYFIELD);
+                  if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                    .getCapdevLevel() != null
+                    && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel()
+                      .getId() != 1) {
+                    if (!this.isValidString(
+                      projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeCapdev())
+                      && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+                        .getDescribeCapdev()) <= 100) {
+                      action.addMessage(action.getText("Describe Capdev"));
+                      action.addMissingField("study.achievementsCapDevRelevance");
+                      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeCapdev",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
                   }
 
                   // Validate Contacts
@@ -364,6 +416,12 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndStageProcess.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+          } else {
+
+            // Validate no hidden fields
+            this.validateHidden(projectExpectedStudy, action);
+
+
           }
         }
 
@@ -432,14 +490,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           action.addMissingField("study.geographicScope");
           action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndGeographicScope.id",
             InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        // Validate Crps
-        if (projectExpectedStudy.getCrps() == null || projectExpectedStudy.getCrps().isEmpty()) {
-          action.addMessage(action.getText("crps"));
-          action.addMissingField("study.keyContributors.crps");
-          action.getInvalidFields().put("list-expectedStudy.crps",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
         }
 
 
