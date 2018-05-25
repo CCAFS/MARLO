@@ -112,6 +112,11 @@
             [/#if]
           </div>
           
+          [#-- Description of Stage reached--] 
+          <div class="form-group">
+            [@customForm.textArea name="innovation.projectInnovationInfo.stageDescription" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" placeholder="" className="limitWords-50" required=true editable=editable /]
+          </div>
+          
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
             [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
