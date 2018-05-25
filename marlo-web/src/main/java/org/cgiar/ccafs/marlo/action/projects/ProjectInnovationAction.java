@@ -30,6 +30,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndContributionOfCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndDegreeInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
@@ -49,6 +51,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
+import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
@@ -91,6 +95,7 @@ public class ProjectInnovationAction extends BaseAction {
 
   private long projectID;
 
+
   private long innovationID;
 
 
@@ -98,14 +103,22 @@ public class ProjectInnovationAction extends BaseAction {
 
   private ProjectInnovation innovation;
 
+
   private ProjectInnovation innovationDB;
+
   private GlobalUnit loggedCrp;
+
+
   private List<RepIndPhaseResearchPartnership> phaseResearchList;
+
   private List<RepIndStageInnovation> stageInnovationList;
+
   private String transaction;
 
   private List<RepIndGeographicScope> geographicScopeList;
   private List<RepIndInnovationType> innovationTypeList;
+  private List<RepIndContributionOfCrp> contributionCrpList;
+  private List<RepIndDegreeInnovation> degreeInnovationList;
   private List<RepIndRegion> regionList;
   private List<LocElement> countries;
   private List<ProjectExpectedStudy> expectedStudyList;
@@ -113,9 +126,9 @@ public class ProjectInnovationAction extends BaseAction {
   private List<GlobalUnit> crpList;
   private List<RepIndGenderYouthFocusLevel> focusLevelList;
   private List<RepIndOrganizationType> organizationTypeList;
+
   private ProjectInnovationManager projectInnovationManager;
   private GlobalUnitManager globalUnitManager;
-
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
   private RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
@@ -123,6 +136,8 @@ public class ProjectInnovationAction extends BaseAction {
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
   private RepIndRegionManager repIndRegionManager;
+  private RepIndContributionOfCrpManager repIndContributionOfCrpManager;
+  private RepIndDegreeInnovationManager repIndDegreeInnovationManager;
   private LocElementManager locElementManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private DeliverableManager deriverableManager;
@@ -150,7 +165,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
     ProjectInnovationCountryManager projectInnovationCountryManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
-    AuditLogManager auditLogManager) {
+    AuditLogManager auditLogManager, RepIndContributionOfCrpManager repIndContributionOfCrpManager,
+    RepIndDegreeInnovationManager repIndDegreeInnovationManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -173,8 +189,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.validator = validator;
     this.auditLogManager = auditLogManager;
-
-
+    this.repIndContributionOfCrpManager = repIndContributionOfCrpManager;
+    this.repIndDegreeInnovationManager = repIndDegreeInnovationManager;
   }
 
   /**
@@ -193,6 +209,10 @@ public class ProjectInnovationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<RepIndContributionOfCrp> getContributionCrpList() {
+    return contributionCrpList;
+  }
+
   public List<LocElement> getCountries() {
     return countries;
   }
@@ -202,19 +222,23 @@ public class ProjectInnovationAction extends BaseAction {
     return crpList;
   }
 
+  public List<RepIndDegreeInnovation> getDegreeInnovationList() {
+    return degreeInnovationList;
+  }
 
   public List<Deliverable> getDeliverableList() {
     return deliverableList;
   }
 
-
   public List<ProjectExpectedStudy> getExpectedStudyList() {
     return expectedStudyList;
   }
 
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevelList() {
     return focusLevelList;
   }
+
 
   public List<RepIndGeographicScope> getGeographicScopeList() {
     return geographicScopeList;
@@ -228,7 +252,6 @@ public class ProjectInnovationAction extends BaseAction {
     return innovationID;
   }
 
-
   public List<RepIndInnovationType> getInnovationTypeList() {
     return innovationTypeList;
   }
@@ -236,6 +259,7 @@ public class ProjectInnovationAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<RepIndOrganizationType> getOrganizationTypeList() {
     return organizationTypeList;
@@ -408,6 +432,8 @@ public class ProjectInnovationAction extends BaseAction {
       regionList = repIndRegionManager.findAll();
       focusLevelList = focusLevelManager.findAll();
       organizationTypeList = repIndOrganizationTypeManager.findAll();
+      contributionCrpList = repIndContributionOfCrpManager.findAll();
+      degreeInnovationList = repIndDegreeInnovationManager.findAll();
 
       expectedStudyList = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
@@ -470,6 +496,8 @@ public class ProjectInnovationAction extends BaseAction {
       innovation.getProjectInnovationInfo().setRepIndGeographicScope(null);
       innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
       innovation.getProjectInnovationInfo().setRepIndRegion(null);
+      innovation.getProjectInnovationInfo().setRepIndContributionOfCrp(null);
+      innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
     }
   }
 
@@ -579,6 +607,18 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.getProjectInnovationInfo().setRepIndRegion(null);
         }
       }
+
+      if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndContributionOfCrp(null);
+        }
+      }
+
+      if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+        }
+      }
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
@@ -613,7 +653,6 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Save Project Innovation Crp Information
@@ -691,6 +730,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Project Innovation Organization Information
    * 
@@ -733,13 +773,21 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+  public void setContributionCrpList(List<RepIndContributionOfCrp> contributionCrpList) {
+    this.contributionCrpList = contributionCrpList;
+  }
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
 
-
   public void setCrpList(List<GlobalUnit> crpList) {
     this.crpList = crpList;
+  }
+
+
+  public void setDegreeInnovationList(List<RepIndDegreeInnovation> degreeInnovationList) {
+    this.degreeInnovationList = degreeInnovationList;
   }
 
   public void setDeliverableList(List<Deliverable> deliverableList) {
