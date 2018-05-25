@@ -692,7 +692,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     User user = this.getCurrentUser();
 
-    if (this.hasPermission("canEdit") || user.getId() == expectedStudyDB.getCreatedBy().getId()) {
+    if (this.hasPermission("canEdit") || user.getId().equals(expectedStudyDB.getCreatedBy().getId())) {
 
       Phase phase = this.getActualPhase();
       Path path = this.getAutoSaveFilePath();

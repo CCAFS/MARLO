@@ -411,7 +411,7 @@
         [#-- No Button --]
         <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
         [#-- Hidden Input --]
-        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="${(customValue)!}" />
+        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="${(customValue)!-1}" />
       </div>
       [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 
     [#else]
@@ -419,6 +419,33 @@
     [/#if]
   </div>
 [/#macro]
+
+[#macro yesNoInputDeliverable name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+  [#if value == ""]
+    [#assign customValue][@s.property value="${name}"/][/#assign]
+  [#else]
+    [#assign customValue=value /]
+  [/#if]
+  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+    [#if label?has_content]
+      <label for="${name}">[@s.text name=label/]</label>
+    [/#if]
+    <div class="button-wrap radio-inline">  
+      [#if editable]
+        [#-- Yes Button --]
+        <input id="${name}-yes" class="radio-input" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
+        [#-- No Button --]
+        <input id="${name}-no" class="radio-input" type="radio" name="${name}" value="false" [#if (customValue == "false")!false]checked[/#if] />
+        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label [#if (customValue == "false")!false]radio-checked[/#if]"> ${noLabel} </label>
+      [#else]
+        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+      [/#if]
+    </div>
+  </div>
+[/#macro]
+
+
 
 [#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   [#if editable]

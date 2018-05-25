@@ -9,7 +9,7 @@
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]
-
+[#assign isListSection = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -67,13 +67,6 @@
           </div>
           [/#if]
           
-          [#-- Previous Studies List 
-          <h3 class="headTitle">Previous Studies</h3>
-          <div id="caseStudiesBlock" class="simpleBox">
-            [@tableList list=(project.caseStudies)![] previousTable=true /]
-          </div>
-          --]
-          
         [/@s.form]
   
       </div>
@@ -86,7 +79,7 @@
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
 
-[@customForm.confirmJustification action="${crpSession}/deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove outcomes case study" /]
+[@customForm.confirmJustification action="deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove study" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -119,9 +112,9 @@
               [#local isThisComplete = (action.hasMissingFields(item.class.name,item.id))!{}]            
               [#-- Report Tag --]
               [#if reportingActive && ((item.year == currentCycleYear)!false)]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
-              <a href="${dlurl}">[#if item.projectExpectedStudyInfo.title?trim?has_content]${item.projectExpectedStudyInfo.title}[#else][@s.text name="global.untitled" /][/#if]</a>
+              <a href="${dlurl}">[#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]</a>
             </td>
-            <td class="type">[#if item.projectExpectedStudyInfo.studyType?has_content]${item.projectExpectedStudyInfo.studyType.name}[#else]Not defined[/#if]</td>
+            <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
             <td>

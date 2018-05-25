@@ -80,13 +80,15 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
 
   @Override
   public List<Map<String, Object>> getFundingSource(long userId, String crp) {
-
+    List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where  crp_acronym='" + crp
       + "' and permission_id = 438 and project_id is not null");
-    List<Map<String, Object>> list =
-      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
-
+    if (super.getTemTableUserId() == userId) {
+      list = super.findCustomQuery(builder.toString());
+    } else {
+      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    }
     return list;
   }
 
@@ -177,7 +179,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
     q.append("AND fsi.id_phase = " + phaseID);
     q.append(" AND fsi.end_date IS NOT NULL ");
-      q.append(" AND (" + year + " <= YEAR(fsi.end_date) or " + year + " <= YEAR(fsi.extended_date)  )");
+    q.append(" AND (" + year + " <= YEAR(fsi.end_date) or " + year + " <= YEAR(fsi.extended_date)  )");
 
     List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
 
