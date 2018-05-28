@@ -31,19 +31,29 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.annualreport.GovernanceValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -262,22 +272,120 @@ public class ManagementGovernanceAction extends BaseAction {
         synthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
         reportSynthesis = reportbSynthesisManager.getReportSynthesisById(synthesisID);
 
-        if (!powbSynthesis.getPhase().equals(phase)) {
-          powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
-          if (powbSynthesis == null) {
-            powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+        if (!reportSynthesis.getPhase().equals(phase)) {
+          reportSynthesis = reportbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+          if (reportSynthesis == null) {
+            reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
           }
-          powbSynthesisID = powbSynthesis.getId();
+          synthesisID = reportSynthesis.getId();
         }
       } catch (Exception e) {
 
-        powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
-        if (powbSynthesis == null) {
-          powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+        reportSynthesis = reportbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        if (reportSynthesis == null) {
+          reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
         }
-        powbSynthesisID = powbSynthesis.getId();
+        synthesisID = reportSynthesis.getId();
 
       }
+    }
+
+
+    if (reportSynthesis != null) {
+
+      ReportSynthesis reportSynthesisDB = reportbSynthesisManager.getReportSynthesisById(synthesisID);
+      synthesisID = reportSynthesisDB.getId();
+      liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+
+      Path path = this.getAutoSaveFilePath();
+      // Verify if there is a Draft file
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+        BufferedReader reader;
+        reader = new BufferedReader(new FileReader(path.toFile()));
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+        reportSynthesis = (ReportSynthesis) autoSaveReader.readFromJson(jReader);
+        synthesisID = reportSynthesis.getId();
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+        // Check if ToC relation is null -create it
+        if (reportSynthesis.getReportSynthesisGovernance() == null) {
+          ReportSynthesisGovernance managementGovernance = new ReportSynthesisGovernance();
+          managementGovernance.setActive(true);
+          managementGovernance.setActiveSince(new Date());
+          managementGovernance.setCreatedBy(this.getCurrentUser());
+          managementGovernance.setModifiedBy(this.getCurrentUser());
+          managementGovernance.setModificationJustification("");
+          // create one to one relation
+          reportSynthesis.setReportSynthesisGovernance(managementGovernance);
+          managementGovernance.setReportSynthesis(reportSynthesis);
+          // save the changes
+          reportSynthesis = reportbSynthesisManager.saveReportSynthesis(reportSynthesis);
+        }
+      }
+    }
+
+    if (this.isFlagship()) {
+      LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+      ReportSynthesis reportSynthesisDB = reportbSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
+      if (reportSynthesisDB != null) {
+        if (reportSynthesisDB.getReportSynthesisGovernance() != null) {
+          pmuText = reportSynthesisDB.getReportSynthesisGovernance().getDescription();
+
+        }
+      }
+    }
+
+    // Base Permission
+    String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
+    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION, params));
+  }
+
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+      ReportSynthesisGovernance reportManagementGovernancekDB =
+        reportbSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisGovernance();
+
+      reportManagementGovernancekDB.setDescription(reportSynthesis.getReportSynthesisGovernance().getDescription());
+      reportManagementGovernancekDB =
+        reportSynthesisGovernanceManager.saveReportSynthesisGovernance(reportManagementGovernancekDB);
+
+
+      List<String> relationsName = new ArrayList<>();
+      reportSynthesis = reportbSynthesisManager.getReportSynthesisById(synthesisID);
+      reportSynthesis.setModifiedBy(this.getCurrentUser());
+      reportSynthesis.setActiveSince(new Date());
+
+      reportbSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+
+      Path path = this.getAutoSaveFilePath();
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
     }
   }
 
@@ -312,6 +420,13 @@ public class ManagementGovernanceAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (this.save) {
+      validator.validate(this, reportSynthesis, true);
+    }
   }
 
 }
