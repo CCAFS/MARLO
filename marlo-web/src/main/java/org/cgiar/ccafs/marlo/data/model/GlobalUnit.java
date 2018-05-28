@@ -604,10 +604,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.roles = roles;
   }
 
-
   public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
     this.siteIntegrations = siteIntegrations;
   }
+
 
   public void setSmoCode(String smoCode) {
     this.smoCode = smoCode;
@@ -615,6 +615,12 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   public void setTargetUnits(List<TargetUnitSelect> targetUnits) {
     this.targetUnits = targetUnits;
+  }
+
+  @Override
+  public String toString() {
+    return "GlobalUnit [id=" + id + ", globalUnitType=" + globalUnitType + ", name=" + name + ", acronym=" + acronym
+      + ", active=" + active + ", marlo=" + marlo + ", login=" + login + "]";
   }
 
 

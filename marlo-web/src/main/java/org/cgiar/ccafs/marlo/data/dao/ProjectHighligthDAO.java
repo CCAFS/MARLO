@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
@@ -65,5 +66,6 @@ public interface ProjectHighligthDAO {
    */
   public ProjectHighlight save(ProjectHighlight projectHighlight);
 
-  public ProjectHighlight save(ProjectHighlight projectHighlight, String section, List<String> relationsName);
+  public ProjectHighlight save(ProjectHighlight projectHighlight, String section, List<String> relationsName,
+    Phase phase);
 }

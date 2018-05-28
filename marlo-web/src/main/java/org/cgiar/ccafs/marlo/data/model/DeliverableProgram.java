@@ -25,15 +25,15 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private Phase phase;
   @Expose
-  private IpProgram ipProgram;
+  private CrpProgram crpProgram;
 
 
   public DeliverableProgram() {
   }
 
-  public DeliverableProgram(Deliverable deliverable, IpProgram ipProgram) {
+  public DeliverableProgram(Deliverable deliverable, CrpProgram crpProgram) {
     this.deliverable = deliverable;
-    this.ipProgram = ipProgram;
+    this.crpProgram = crpProgram;
   }
 
   @Override
@@ -58,6 +58,11 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
+  }
+
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -66,11 +71,6 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
   @Override
   public Long getId() {
     return id;
-  }
-
-
-  public IpProgram getIpProgram() {
-    return ipProgram;
   }
 
   @Override
@@ -114,6 +114,10 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -122,19 +126,15 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-  public void setIpProgram(IpProgram ipProgram) {
-    this.ipProgram = ipProgram;
-  }
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
   @Override
   public String toString() {
-    return "DeliverableProgram [id=" + id + ", deliverable=" + deliverable + ", ipProgram=" + ipProgram + "]";
+    return "DeliverableProgram [id=" + id + ", deliverable=" + deliverable + ", crpProgram=" + crpProgram + ", phase="
+      + phase + "]";
   }
-
 
 }
 

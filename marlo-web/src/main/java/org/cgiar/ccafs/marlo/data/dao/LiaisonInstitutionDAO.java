@@ -75,6 +75,13 @@ public interface LiaisonInstitutionDAO {
   public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID);
 
   /**
+   * This method gets a list of liaisonInstitution object by a given user identifier
+   * 
+   * @return a list of LiaisonInstitution object.
+   */
+  List<LiaisonInstitution> findLiaisonInstitutionByUserId(long userId, long crpId);
+
+  /**
    * This method saves the information of the given liaisonInstitution
    * 
    * @param liaisonInstitution - is the liaisonInstitution object with the new information to be added/updated.

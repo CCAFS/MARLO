@@ -132,7 +132,8 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "DeliverableLeader [id=" + id + ", deliverable=" + deliverable + ", institution=" + institution + "]";
+    return "DeliverableLeader [id=" + id + ", deliverable=" + deliverable + ", institution=" + institution + ", phase="
+      + phase + "]";
   }
 
 

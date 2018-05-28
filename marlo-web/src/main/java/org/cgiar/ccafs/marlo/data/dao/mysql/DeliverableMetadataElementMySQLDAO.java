@@ -17,16 +17,22 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableMetadataElementDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.MetadataElement;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<DeliverableMetadataElement, Long> implements DeliverableMetadataElementDAO {
+public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<DeliverableMetadataElement, Long>
+  implements DeliverableMetadataElementDAO {
 
 
   @Inject
@@ -65,6 +71,22 @@ public class DeliverableMetadataElementMySQLDAO extends AbstractMarloDAO<Deliver
     }
     return null;
 
+  }
+
+
+  @Override
+  public DeliverableMetadataElement findMetadataElementByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
+    MetadataElement metadataElement) {
+    String query = "select distinct dm from DeliverableMetadataElement dm where phase.id = :phaseId "
+      + "and deliverable.id= :deliverableId and metadataElement.id = :metadataElementId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+    createQuery.setParameter("metadataElementId", metadataElement.getId());
+
+    Object findSingleResult = super.findSingleResult(DeliverableMetadataElement.class, createQuery);
+    DeliverableMetadataElement deliverableMetadataElementResult = (DeliverableMetadataElement) findSingleResult;
+    return deliverableMetadataElementResult;
   }
 
   @Override

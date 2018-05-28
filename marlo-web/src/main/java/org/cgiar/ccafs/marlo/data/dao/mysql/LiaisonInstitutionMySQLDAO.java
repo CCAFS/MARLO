@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.LiaisonInstitutionDAO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,6 +93,35 @@ public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitut
       return list.get(0);
     }
     return null;
+  }
+
+  @Override
+  public List<LiaisonInstitution> findLiaisonInstitutionByUserId(long userId, long crpId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("liaison_institutions.id as id ");
+    query.append("FROM ");
+    query.append("liaison_institutions ");
+    query.append(
+      "INNER JOIN liaison_users ON liaison_users.institution_id = liaison_institutions.id AND liaison_users.is_active ");
+    query.append("WHERE ");
+    query.append("liaison_users.user_id =" + userId + " AND liaison_users.global_unit_id=" + crpId
+      + " AND liaison_institutions.global_unit_id=" + crpId);
+    query.append(" and liaison_institutions.is_active = 1   ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+
+    List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        LiaisonInstitution liaisonUser = this.find(Long.parseLong(map.get("id").toString()));
+        liaisonInstitutions.add(liaisonUser);
+      }
+    }
+
+    return liaisonInstitutions;
   }
 
   @Override

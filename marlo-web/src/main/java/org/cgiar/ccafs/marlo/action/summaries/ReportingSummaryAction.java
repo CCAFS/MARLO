@@ -64,9 +64,17 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
@@ -81,7 +89,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
@@ -179,16 +189,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
   // Managers
-  private final ProjectManager projectManager;
-  private final CrpProgramManager programManager;
-  private final GenderTypeManager genderTypeManager;
-  private final InstitutionManager institutionManager;
-  private final ProjectBudgetManager projectBudgetManager;
-  private final LocElementManager locElementManager;
-  private final CrossCuttingScoringManager crossCuttingScoringManager;
-  private final IpElementManager ipElementManager;
-  private final RepositoryChannelManager repositoryChannelManager;
-  private final SrfTargetUnitManager srfTargetUnitManager;
+  private ProjectManager projectManager;
+  private CrpProgramManager programManager;
+  private GenderTypeManager genderTypeManager;
+  private InstitutionManager institutionManager;
+  private ProjectBudgetManager projectBudgetManager;
+  private LocElementManager locElementManager;
+  private CrossCuttingScoringManager crossCuttingScoringManager;
+  private IpElementManager ipElementManager;
+  private RepositoryChannelManager repositoryChannelManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
   private final ResourceManager resourceManager;
 
   @Inject
@@ -330,6 +340,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nPartnersReportingMenu", "2. " + this.getText("projects.menu.partners"));
     masterReport.getParameterValues().put("i8nLocationsReportingMenu", "3. " + this.getText("projects.menu.locations"));
     masterReport.getParameterValues().put("i8nOutcomesReportingMenu", "4. " + this.getText("breadCrumb.menu.outcomes"));
+
+    // Phase One
     masterReport.getParameterValues().put("i8nProjectOutcomesReportingMenu",
       "4.1 " + this.getText("projects.menu.projectOutcomes"));
     masterReport.getParameterValues().put("i8nCCAFSOutcomesReportingMenu",
@@ -338,6 +350,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       "4.3 " + this.getText("projects.menu.otherContributions"));
     masterReport.getParameterValues().put("i8nCaseStudiesReportingMenu",
       "4.4 " + this.getText("projects.menu.caseStudies"));
+
+    // Phase Two
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesReportingMenu",
+      "4.1 " + this.getText("projects.menu.contributionsCrpList"));
+    masterReport.getParameterValues().put("i8nStudiesReportingMenu", "4.2 " + this.getText("menu.studies"));
+
+
     masterReport.getParameterValues().put("i8nProjectOutputsReportingMenu",
       "5. " + this.getText("projects.menu.projectOutputs"));
     masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
@@ -389,6 +408,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("projectPartners.lessons.planning.readText"));
     masterReport.getParameterValues().put("i8nPartnerYear", this.getText("partner.year"));
     masterReport.getParameterValues().put("i8nPartnerLessons", this.getText("partner.lessons"));
+
+
+    /**
+     * Partners reporting
+     */
+    masterReport.getParameterValues().put("i8nPartnerPartnership", "Partnership");
+    masterReport.getParameterValues().put("i8nPartnerPartnershipFormal",
+      this.getText("projectPartners.hasPartnerships"));
+    masterReport.getParameterValues().put("i8nPartnerPartnershipResearchPhase",
+      this.getText("projectPartners.researchPhase"));
+    masterReport.getParameterValues().put("i8nPartnerPartnershipGeographicScope",
+      this.getText("projectPartners.geographicScope"));
+    masterReport.getParameterValues().put("i8nPartnerPartnershipRegion", this.getText("projectPartners.region"));
+    masterReport.getParameterValues().put("i8nPartnerPartnershipCountries",
+      this.getText("projectPartners.partnershipsCountries"));
+    masterReport.getParameterValues().put("i8nPartnerPartnershipMainArea",
+      this.getText("projectPartners.partnershipMainarea.readText"));
+
+
     /*
      * Locations
      */
@@ -399,8 +437,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nLocationName", this.getText("location.inputName.placeholder"));
     masterReport.getParameterValues().put("i8nLocationGlobal", this.getText("projectLocations.isGlobalYes"));
     masterReport.getParameterValues().put("i8nLocationNoGlobal", this.getText("projectLocations.isGlobalNo"));
+
     /*
-     * Contribution to flagship outcomes
+     * Contribution to project outcomes
      */
     masterReport.getParameterValues().put("i8nOutcomeNoData", this.getText("outcome.noData"));
     masterReport.getParameterValues().put("i8nOutcome", this.getText("outcome.statement.readText"));
@@ -430,7 +469,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nExpectedStudiesComments", this.getText("expectedStudy.comments"));
     masterReport.getParameterValues().put("i8nExpectedStudiesProjects",
       this.getText("summaries.expectedStudies.projects"));
-
 
     /*
      * Deliverables
@@ -499,7 +537,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nPartnerROverall",
       this.getText("projectPartners.partnershipsOverall.readText"));
     /*
-     * Reporting
+     * Reporting Outcomes Phase One
      * Project Outcomes
      */
     masterReport.getParameterValues().put("i8nProjectOutcomesRNoData", this.getText("projectOutcomes.noData"));
@@ -595,6 +633,96 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
      */
     masterReport.getParameterValues().put("i8nOverviewByMOGsRNoData", this.getText("overviewByMOGS.noData"));
     masterReport.getParameterValues().put("i8nOverviewByMOGsRMogs", this.getText("projectCcafsOutcomes.mogs"));
+
+
+    /*
+     * Reporting Outcomes Phase Two
+     * Project Outcomes
+     */
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRNoData",
+      this.getText("summaries.flagshipOutcomes.noData"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesROutcomeContribution",
+      this.getText("projectOutcome.contributionToThisOutcome"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRMilestonesContribution",
+      this.getText("projectOutcome.contributionToMilestones"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRLessons",
+      this.getText("projectOutcome.lessons.reporting.readText"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRNarrative",
+      this.getText("projectOutcome.narrativeTarget.readText"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRAchievedValue",
+      this.getText("projectOutcome.achievedValue"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRAchievedUnit",
+      this.getText("projectOutcome.achievedUnit"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRNarrativeAchieved",
+      this.getText("projectOutcome.narrativeAchieved.readText"));
+    masterReport.getParameterValues().put("i8nFlagshipOutcomesRCommunications",
+      this.getText("summaries.flagshipOutcomes.communications"));
+
+
+    /*
+     * Reporting Outcomes Phase Two
+     * Studies
+     */
+    masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
+    masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
+    masterReport.getParameterValues().put("i8nStudiesRTitle", this.getText("summaries.study.title"));
+    masterReport.getParameterValues().put("i8nStudiesRYear", this.getText("summaries.study.year"));
+    masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.status"));
+    masterReport.getParameterValues().put("i8nStudiesRType", this.getText("study.type"));
+    masterReport.getParameterValues().put("i8nStudiesROutcomeImpactStatement",
+      this.getText("summaries.study.outcomeStatement"));
+    masterReport.getParameterValues().put("i8nStudiesRIsContributionText",
+      this.getText("summaries.study.reportingIndicatorThree"));
+    masterReport.getParameterValues().put("i8nStudiesRpolicyInvestimentType",
+      this.getText("study.reportingIndicatorThree.policyType"));
+    masterReport.getParameterValues().put("i8nStudiesRPolicyAmount",
+      this.getText("study.reportingIndicatorThree.amount"));
+    masterReport.getParameterValues().put("i8nStudiesROrganizationType",
+      this.getText("study.reportingIndicatorThree.organizationType"));
+    masterReport.getParameterValues().put("i8nStudiesRStageProcess",
+      this.getText("study.reportingIndicatorThree.stage"));
+    masterReport.getParameterValues().put("i8nStudiesRStageStudy", this.getText("summaries.study.maturityChange"));
+    masterReport.getParameterValues().put("i8nStudiesRStrategicResults",
+      this.getText("summaries.study.stratgicResultsLink"));
+    masterReport.getParameterValues().put("i8nStudiesRSubIdos",
+      this.getText("summaries.study.stratgicResultsLink.subIDOs"));
+    masterReport.getParameterValues().put("i8nStudiesRSRFTargets",
+      this.getText("summaries.study.stratgicResultsLink.srfTargets"));
+    masterReport.getParameterValues().put("i8nStudiesRTopLevelCommentst",
+      this.getText("summaries.study.stratgicResultsLink.comments"));
+    masterReport.getParameterValues().put("i8nStudiesRGeographicScope", this.getText("study.geographicScope"));
+    masterReport.getParameterValues().put("i8nStudiesRRegion", this.getText("study.region"));
+    masterReport.getParameterValues().put("i8nStudiesRContries", this.getText("involveParticipants.countries"));
+    masterReport.getParameterValues().put("i8nStudiesRScopeComments",
+      this.getText("study.geographicScopeComments.readText"));
+    masterReport.getParameterValues().put("i8nStudiesRKeyContributors",
+      this.getText("summaries.study.keyContributors"));
+    masterReport.getParameterValues().put("i8nStudiesRCrps", this.getText("study.keyContributors.crps"));
+    masterReport.getParameterValues().put("i8nStudiesRFlagships", this.getText("study.keyContributors.flagships"));
+    masterReport.getParameterValues().put("i8nStudiesRRegions", this.getText("study.keyContributors.regions"));
+    masterReport.getParameterValues().put("i8nStudiesRInstitutions",
+      this.getText("study.keyContributors.externalPartners"));
+    masterReport.getParameterValues().put("i8nStudiesRElaborationOutcomeImpactStatement",
+      this.getText("summaries.study.elaborationStatement"));
+    masterReport.getParameterValues().put("i8nStudiesRReferenceText", this.getText("summaries.study.referencesCited"));
+    masterReport.getParameterValues().put("i8nStudiesRReferencesFile",
+      this.getText("study.referencesCitedAttach.readText"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantification", this.getText("summaries.study.quantification"));
+    masterReport.getParameterValues().put("i8nStudiesRGenderDevelopment",
+      this.getText("summaries.study.crossCuttingRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRGenderRelevance", this.getText("study.genderRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRYouthRelevance", this.getText("study.youthRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRCapacityRelevance", this.getText("study.capDevRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesROtherCrossCuttingDimensions",
+      this.getText("summaries.study.otherCrossCutting"));
+    masterReport.getParameterValues().put("i8nStudiesRComunicationsMaterial",
+      this.getText("summaries.study.communicationMaterials"));
+    masterReport.getParameterValues().put("i8nStudiesRComunicationsFile",
+      this.getText("study.communicationMaterialsAttach.readText"));
+    masterReport.getParameterValues().put("i8nStudiesRContacts", this.getText("summaries.study.contacts"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRStudyProjects",
+      this.getText("summaries.study.studyProjects"));
+
 
     /*
      * Reporting
@@ -967,14 +1095,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           // Subreport Project Outcomes
           args.clear();
-          this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
-          this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
-          this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
-          this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
-          this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
-          this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
-          this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
-          this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
+          // Outcomes Phase One
+          if (this.isPhaseOne()) {
+            this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
+            this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
+            this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
+            this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
+            this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
+            this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
+            this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
+            this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
+          } else {
+            // outcomes Phase Two
+            this.fillSubreport((SubReport) hm.get("flagship_outcomes"), "flagship_outcomes", args);
+            this.fillSubreport((SubReport) hm.get("studies"), "studies", args);
+          }
         }
 
         // Subreport Deliverables
@@ -1095,7 +1230,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       case "budgets_by_coas_list":
         model = this.getBudgetsbyCoasTableModel();
         break;
-      // Especific for reporting
+      // Only for reporting
+      // Outcomes Phase One
       case "project_outcomes":
         model = this.getProjectOutcomesTableModel();
         break;
@@ -1119,6 +1255,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         break;
       case "overview_by_mogs":
         model = this.getOverviewByMogsTableModel();
+        break;
+      // Outcomes Phase Two
+      case "flagship_outcomes":
+        model = this.getFlagshipOutcomesTableModel();
+        break;
+      case "studies":
+        model = this.getStudiesTableModel();
         break;
       case "deliverables_list_reporting":
         model = this.getDeliverablesReportingTableModel();
@@ -1242,7 +1385,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-
   public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
     for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
@@ -1253,7 +1395,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return null;
   }
-
 
   private TypedTableModel getBudgetsbyCoasTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
@@ -1434,6 +1575,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
+
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
@@ -1538,6 +1680,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
+
 
   private TypedTableModel getBudgetSummaryTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -1822,9 +1965,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             .getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
+          && d.getDeliverableInfo(this.getSelectedPhase()) != null
           && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
-          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus()
-            .intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear()
               || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
                 && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this
@@ -1858,7 +2002,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String delivType = null;
         String delivSubType = null;
         String delivStatus =
-          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getActualPhase());
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -2370,12 +2514,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
           for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
             .collect(Collectors.toList())) {
-            if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-              flContrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
-                + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "<br>";
+            if (deliverableCrp.getCrpProgram() != null) {
+              flContrib += "● " + deliverableCrp.getCrpProgram().getCrp().getAcronym().toUpperCase() + " - "
+                + deliverableCrp.getCrpProgram().getAcronym().toUpperCase() + "<br>";
             } else {
-              if (deliverableCrp.getCrpPandr() != null) {
-                flContrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "<br>";
+              if (deliverableCrp.getGlobalUnit() != null) {
+                flContrib += "● " + deliverableCrp.getGlobalUnit().getName().toUpperCase() + "<br>";
               }
             }
           }
@@ -2425,7 +2569,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String delivType = null;
         String delivSubType = null;
         String delivStatus =
-          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getActualPhase());
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -2713,16 +2857,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           expectedStudiesSRF = projectExpectedStudy.getSrfSloIndicator().getTitle();
         }
         expectedStudiesComments = projectExpectedStudy.getComments();
-        List<ExpectedStudyProject> expectedStudyProjectList =
-          projectExpectedStudy.getExpectedStudyProjects().stream().filter(sp -> sp.isActive())
-            .sorted((s1, s2) -> s1.getMyProject().getId().compareTo(s2.getMyProject().getId()))
-            .collect(Collectors.toList());
+        List<ExpectedStudyProject> expectedStudyProjectList = projectExpectedStudy.getExpectedStudyProjects().stream()
+          .filter(sp -> sp.isActive()).sorted((s1, s2) -> s1.getProject().getId().compareTo(s2.getProject().getId()))
+          .collect(Collectors.toList());
         if (expectedStudyProjectList != null && !expectedStudyProjectList.isEmpty()) {
           for (ExpectedStudyProject expectedStudyProject : expectedStudyProjectList) {
             if (expectedStudiesProjects.isEmpty()) {
-              expectedStudiesProjects = " ● " + expectedStudyProject.getMyProject().getComposedName();
+              expectedStudiesProjects = " ● " + expectedStudyProject.getProject().getComposedName();
             } else {
-              expectedStudiesProjects += "<br> ● " + expectedStudyProject.getMyProject().getComposedName();
+              expectedStudiesProjects += "<br> ● " + expectedStudyProject.getProject().getComposedName();
             }
           }
         } else {
@@ -2752,6 +2895,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     StringBuffer fileName = new StringBuffer();
     fileName.append("FullProjectReportSummary-");
+    fileName.append(globalUnitProject.getGlobalUnit().getName() + "-");
     fileName.append(globalUnitProject.getGlobalUnit().getAcronym() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(this.getSelectedYear() + "_");
@@ -2767,6 +2911,102 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } else {
       return newIpIndicator;
     }
+  }
+
+  private TypedTableModel getFlagshipOutcomesTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
+        "out_unit", "cross_cutting", "exp_unit", "ach_unit", "ach_value", "ach_narrative", "communications",
+        "showCommunications"},
+      new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        Boolean.class},
+      0);
+    if (!project.getProjectOutcomes().isEmpty()) {
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
+        String expValue = null;
+        String expUnit = null;
+        String outFl = null;
+        String outYear = null;
+        String outValue = null;
+        String outStatement = null;
+        String outUnit = null;
+        String crossCutting = "";
+        String ach_unit = null, ach_value = null, ach_narrative = null;
+        String communications = null;
+        if (projectOutcome.getCrpProgramOutcome() != null) {
+          outYear = "" + projectOutcome.getCrpProgramOutcome().getYear();
+          outValue = "" + projectOutcome.getCrpProgramOutcome().getValue();
+          if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
+            outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+            if (projectOutcome.getCrpProgramOutcome().getIndicator() != null
+              && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
+              outStatement += "<br><b>Indicator: </b>" + projectOutcome.getCrpProgramOutcome().getIndicator();
+            }
+          } else {
+            outStatement = projectOutcome.getCrpProgramOutcome().getDescription();
+          }
+
+          if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
+            outUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
+          }
+          if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
+            outFl = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
+          }
+        }
+        expValue = projectOutcome.getExpectedValue() + "";
+        if (projectOutcome.getAchievedValue() != null) {
+          ach_value = projectOutcome.getAchievedValue() + "";
+        }
+
+        if (outUnit == null) {
+          if (projectOutcome.getExpectedUnit() != null) {
+            expUnit = projectOutcome.getExpectedUnit().getName();
+          }
+          if (projectOutcome.getAchievedUnit() != null) {
+            ach_unit = projectOutcome.getAchievedUnit().getName();
+          }
+        } else {
+          expUnit = outUnit;
+          ach_unit = outUnit;
+        }
+        ach_narrative = projectOutcome.getNarrativeAchieved();
+
+        if (projectOutcome.getGenderDimenssion() != null && !projectOutcome.getGenderDimenssion().isEmpty()) {
+          crossCutting +=
+            "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
+              + projectOutcome.getGenderDimenssion();
+        }
+        if (projectOutcome.getYouthComponent() != null && !projectOutcome.getYouthComponent().isEmpty()) {
+          if (crossCutting.isEmpty()) {
+            crossCutting +=
+              "<br><br><b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
+                + projectOutcome.getYouthComponent();
+          }
+        }
+        if (crossCutting.isEmpty()) {
+          crossCutting = null;
+        }
+        if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+          List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
+            .filter(pc -> pc.isActive() && pc.getYear() == this.getSelectedYear()).collect(Collectors.toList());
+          if (projectCommunications != null && projectCommunications.size() > 0) {
+            communications = projectCommunications.get(0).getCommunication();
+            if (projectCommunications.size() > 1) {
+              LOG.warn("There is more than one Project Communication for P" + this.getProjectID() + "Project Outcome "
+                + projectOutcome.getId());
+            }
+          }
+        }
+
+        model.addRow(new Object[] {expValue, projectOutcome.getNarrativeTarget(), projectOutcome.getId(), outFl,
+          outYear, outValue, outStatement, outUnit, crossCutting, expUnit, ach_unit, ach_value, ach_narrative,
+          communications, this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)});
+      }
+    }
+    return model;
   }
 
   private TypedTableModel getFLTableModel(List<CrpProgram> flagships) {
@@ -2803,7 +3043,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return inputStream;
   }
 
-
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
@@ -2811,7 +3050,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       new TypedTableModel(new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget"},
         new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class}, 0);
     for (ProjectLeverage projectLeverage : project.getProjectLeverages().stream()
-      .filter(pl -> pl.isActive() && pl.getYear() == this.getSelectedYear()).collect(Collectors.toList())) {
+      .filter(pl -> pl.isActive() && pl.getYear() == this.getSelectedYear() && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList())) {
       String title = null, partnerName = null, leverageYear = null, flagship = null, budget = null;
       if (projectLeverage.getTitle() != null && !projectLeverage.getTitle().isEmpty()) {
         title = projectLeverage.getTitle();
@@ -2822,9 +3063,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear() + "";
       }
-      if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getCrpProgram().getComposedName();
+      if (projectLeverage.isPhaseOneLeverage()) {
+        if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getIpProgram().getComposedName();
+        }
+      } else {
+        if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getCrpProgram().getComposedName();
+        }
       }
+
       if (projectLeverage.getBudget() != null) {
         budget = myFormatter.format(projectLeverage.getBudget());
       }
@@ -2832,6 +3080,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
+
 
   private TypedTableModel getLocationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name"},
@@ -2882,7 +3131,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
-
 
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
     ProjectPartner projectLeader) {
@@ -3009,6 +3257,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       hasActivities, phaseID});
     return model;
   }
+
 
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpProjectContribution> ipProjectContributions =
@@ -3249,13 +3498,75 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"org_leader", "pp_id", "responsibilities", "countryOffices"},
-        new Class[] {String.class, Long.class, String.class, String.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"org_leader", "pp_id", "responsibilities", "countryOffices", "partnerPartnershipFormal",
+        "partnerPartnershipResearchPhase", "partnerPartnershipGeographicScope", "partnerPartnershipRegion",
+        "partnerPartnershipCountries", "partnerPartnershipMainArea", "showRegion", "showCountry"},
+      new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, Boolean.class, Boolean.class},
+      0);
     long ppId = 0;
     String orgLeader = null;
     String responsibilities = null;
     String countryOffices = null;
+    String partnerPartnershipFormal = null, partnerPartnershipResearchPhase = null,
+      partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
+      partnerPartnershipMainArea = null;
+    Boolean showRegion = false, showCountry = false;
+
+    // Partnerships
+    List<ProjectPartnerPartnership> projectPartnerPartnerships =
+      projectLeader.getProjectPartnerPartnerships().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+    if (projectPartnerPartnerships != null && projectPartnerPartnerships.size() > 0) {
+      if (projectPartnerPartnerships.size() > 1) {
+        LOG.warn("There is more than one Partner Partnership for P" + this.getProjectID() + " Phase "
+          + this.getSelectedPhase().toString());
+      }
+      ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
+      if (projectLeader.getHasPartnerships() != null) {
+        partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
+      }
+      List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases = partnerPartnership
+        .getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive()).collect(Collectors.toList());
+      Set<String> researchPhases = new HashSet<String>();
+      if (projectPartnerPartnershipResearchPhases != null && projectPartnerPartnershipResearchPhases.size() > 0) {
+        for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : projectPartnerPartnershipResearchPhases) {
+          researchPhases.add(projectPartnerPartnershipResearchPhase.getRepIndPhaseResearchPartnership().getName());
+        }
+        partnerPartnershipResearchPhase = String.join(",", researchPhases);
+      }
+
+      if (partnerPartnership.getGeographicScope() != null) {
+        Long geographicScopeID = partnerPartnership.getGeographicScope().getId();
+        partnerPartnershipGeographicScope = partnerPartnership.getGeographicScope().getName();
+        if (!geographicScopeID.equals(this.getReportingIndGeographicScopeGlobal())) {
+          if (geographicScopeID.equals(this.getReportingIndGeographicScopeRegional())) {
+            showRegion = true;
+            if (partnerPartnership.getRegion() != null) {
+              partnerPartnershipRegion = partnerPartnership.getRegion().getName();
+            }
+          } else {
+            showCountry = true;
+            List<ProjectPartnerPartnershipLocation> partnershipLocations =
+              partnerPartnership.getProjectPartnerPartnershipLocations().stream().filter(pl -> pl.isActive())
+                .collect(Collectors.toList());
+            if (partnershipLocations != null && partnershipLocations.size() > 0) {
+              partnershipLocations
+                .sort((pl1, pl2) -> pl1.getLocation().getName().compareTo(pl2.getLocation().getName()));
+              Set<String> countries = new HashSet<String>();
+              for (ProjectPartnerPartnershipLocation partnershipLocation : partnershipLocations) {
+                countries.add(partnershipLocation.getLocation().getName());
+              }
+              partnerPartnershipCountries = String.join(", ", countries);
+            }
+          }
+        }
+      }
+      if (partnerPartnership.getMainArea() != null && !partnerPartnership.getMainArea().isEmpty()) {
+        partnerPartnershipMainArea = partnerPartnership.getMainArea();
+      }
+    }
+
     if (projectLeader.getId() != null && projectLeader.getInstitution() != null) {
       ppId = projectLeader.getId();
       orgLeader = projectLeader.getInstitution().getComposedName();
@@ -3268,10 +3579,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           countryOffices += ", " + projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
         }
       }
-      model.addRow(new Object[] {orgLeader, ppId, responsibilities, countryOffices});
+
+      model.addRow(new Object[] {orgLeader, ppId, responsibilities, countryOffices, partnerPartnershipFormal,
+        partnerPartnershipResearchPhase, partnerPartnershipGeographicScope, partnerPartnershipRegion,
+        partnerPartnershipCountries, partnerPartnershipMainArea, showRegion, showCountry});
     } else if (projectLeader.getId() != null && projectLeader.getInstitution() == null) {
       ppId = projectLeader.getId();
-      model.addRow(new Object[] {null, ppId, responsibilities, countryOffices});
+      model.addRow(new Object[] {null, ppId, responsibilities, countryOffices, partnerPartnershipFormal,
+        partnerPartnershipResearchPhase, partnerPartnershipGeographicScope, partnerPartnershipRegion,
+        partnerPartnershipCountries, partnerPartnershipMainArea, showRegion, showCountry});
     } else if (projectLeader.getId() == null && projectLeader.getInstitution() != null) {
       orgLeader = projectLeader.getInstitution().getComposedName();
       responsibilities = projectLeader.getResponsibilities();
@@ -3283,7 +3599,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           countryOffices += ", " + projectPartnerLocation.getInstitutionLocation().getLocElement().getName();
         }
       }
-      model.addRow(new Object[] {orgLeader, null, responsibilities, countryOffices});
+      model.addRow(new Object[] {orgLeader, null, responsibilities, countryOffices, partnerPartnershipFormal,
+        partnerPartnershipResearchPhase, partnerPartnershipGeographicScope, partnerPartnershipRegion,
+        partnerPartnershipCountries, partnerPartnershipMainArea, showRegion, showCountry});
     }
     return model;
   }
@@ -3309,19 +3627,81 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getPartnersOtherTableModel(ProjectPartner projectLeader) {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"instituttion", "pp_id", "leader_count", "responsibilities", "countryOffices"},
-        new Class[] {String.class, Long.class, Integer.class, String.class, String.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"instituttion", "pp_id", "leader_count", "responsibilities", "countryOffices",
+        "partnerPartnershipFormal", "partnerPartnershipResearchPhase", "partnerPartnershipGeographicScope",
+        "partnerPartnershipRegion", "partnerPartnershipCountries", "partnerPartnershipMainArea", "showRegion",
+        "showCountry"},
+      new Class[] {String.class, Long.class, Integer.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, Boolean.class, Boolean.class},
+      0);
     int leaderCount = 0;
-    String responsibilities = null;
-    String countryOffices = null;
+
     if (projectLeader.getId() != null) {
       leaderCount = 1;
       // Get list of partners except project leader
       for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(c -> c.isActive()
         && c.getId() != projectLeader.getId() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
-        countryOffices = null;
+        String responsibilities = null;
+        String countryOffices = null;
+        String partnerPartnershipFormal = null, partnerPartnershipResearchPhase = null,
+          partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
+          partnerPartnershipMainArea = null;
+        Boolean showRegion = false, showCountry = false;
+        // Partnerships
+        List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
+          .stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        if (projectPartnerPartnerships != null && projectPartnerPartnerships.size() > 0) {
+          if (projectPartnerPartnerships.size() > 1) {
+            LOG.warn("There is more than one Partner Partnership for P" + this.getProjectID() + " Phase "
+              + this.getSelectedPhase().toString());
+          }
+          ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
+          if (projectPartner.getHasPartnerships() != null) {
+            partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
+          }
+          List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
+            partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
+              .collect(Collectors.toList());
+          Set<String> researchPhases = new HashSet<String>();
+          if (projectPartnerPartnershipResearchPhases != null && projectPartnerPartnershipResearchPhases.size() > 0) {
+            for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : projectPartnerPartnershipResearchPhases) {
+              researchPhases.add(projectPartnerPartnershipResearchPhase.getRepIndPhaseResearchPartnership().getName());
+            }
+            partnerPartnershipResearchPhase = String.join(",", researchPhases);
+          }
+          if (partnerPartnership.getGeographicScope() != null) {
+            Long geographicScopeID = partnerPartnership.getGeographicScope().getId();
+            partnerPartnershipGeographicScope = partnerPartnership.getGeographicScope().getName();
+            if (!geographicScopeID.equals(this.getReportingIndGeographicScopeGlobal())) {
+              if (geographicScopeID.equals(this.getReportingIndGeographicScopeRegional())) {
+                showRegion = true;
+                if (partnerPartnership.getRegion() != null) {
+                  partnerPartnershipRegion = partnerPartnership.getRegion().getName();
+                }
+              } else {
+                showCountry = true;
+                List<ProjectPartnerPartnershipLocation> partnershipLocations =
+                  partnerPartnership.getProjectPartnerPartnershipLocations().stream().filter(pl -> pl.isActive())
+                    .collect(Collectors.toList());
+                if (partnershipLocations != null && partnershipLocations.size() > 0) {
+                  partnershipLocations
+                    .sort((pl1, pl2) -> pl1.getLocation().getName().compareTo(pl2.getLocation().getName()));
+                  Set<String> countries = new HashSet<String>();
+                  for (ProjectPartnerPartnershipLocation partnershipLocation : partnershipLocations) {
+                    countries.add(partnershipLocation.getLocation().getName());
+                  }
+                  partnerPartnershipCountries = String.join(", ", countries);
+                }
+              }
+            }
+          }
+          if (partnerPartnership.getMainArea() != null && !partnerPartnership.getMainArea().isEmpty()) {
+            partnerPartnershipMainArea = partnerPartnership.getMainArea();
+          }
+        }
+
         responsibilities = projectPartner.getResponsibilities();
         for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
           .filter(ppl -> ppl.isActive()).collect(Collectors.toList())) {
@@ -3332,14 +3712,73 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
         model.addRow(new Object[] {projectPartner.getInstitution().getComposedName(), projectPartner.getId(),
-          leaderCount, responsibilities, countryOffices});
+          leaderCount, responsibilities, countryOffices, partnerPartnershipFormal, partnerPartnershipResearchPhase,
+          partnerPartnershipGeographicScope, partnerPartnershipRegion, partnerPartnershipCountries,
+          partnerPartnershipMainArea, showRegion, showCountry});
       }
     } else {
       // Get all partners
       for (ProjectPartner projectPartner : project.getProjectPartners().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
-        countryOffices = null;
+        String responsibilities = null;
+        String countryOffices = null;
+        String partnerPartnershipFormal = null, partnerPartnershipResearchPhase = null,
+          partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
+          partnerPartnershipMainArea = null;
+        Boolean showRegion = false, showCountry = false;
+        // Partnerships
+        List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
+          .stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        if (projectPartnerPartnerships != null && projectPartnerPartnerships.size() > 0) {
+          if (projectPartnerPartnerships.size() > 1) {
+            LOG.warn("There is more than one Partner Partnership for P" + this.getProjectID() + " Phase "
+              + this.getSelectedPhase().toString());
+          }
+          ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
+          if (projectPartner.getHasPartnerships() != null) {
+            partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
+          }
+          List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
+            partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
+              .collect(Collectors.toList());
+          Set<String> researchPhases = new HashSet<String>();
+          if (projectPartnerPartnershipResearchPhases != null && projectPartnerPartnershipResearchPhases.size() > 0) {
+            for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : projectPartnerPartnershipResearchPhases) {
+              researchPhases.add(projectPartnerPartnershipResearchPhase.getRepIndPhaseResearchPartnership().getName());
+            }
+            partnerPartnershipResearchPhase = String.join(",", researchPhases);
+          }
+          if (partnerPartnership.getGeographicScope() != null) {
+            Long geographicScopeID = partnerPartnership.getGeographicScope().getId();
+            partnerPartnershipGeographicScope = partnerPartnership.getGeographicScope().getName();
+            if (!geographicScopeID.equals(this.getReportingIndGeographicScopeGlobal())) {
+              if (geographicScopeID.equals(this.getReportingIndGeographicScopeRegional())) {
+                showRegion = true;
+                if (partnerPartnership.getRegion() != null) {
+                  partnerPartnershipRegion = partnerPartnership.getRegion().getName();
+                }
+              } else {
+                showCountry = true;
+                List<ProjectPartnerPartnershipLocation> partnershipLocations =
+                  partnerPartnership.getProjectPartnerPartnershipLocations().stream().filter(pl -> pl.isActive())
+                    .collect(Collectors.toList());
+                if (partnershipLocations != null && partnershipLocations.size() > 0) {
+                  partnershipLocations
+                    .sort((pl1, pl2) -> pl1.getLocation().getName().compareTo(pl2.getLocation().getName()));
+                  Set<String> countries = new HashSet<String>();
+                  for (ProjectPartnerPartnershipLocation partnershipLocation : partnershipLocations) {
+                    countries.add(partnershipLocation.getLocation().getName());
+                  }
+                  partnerPartnershipCountries = String.join(", ", countries);
+                }
+              }
+            }
+          }
+          if (partnerPartnership.getMainArea() != null && !partnerPartnership.getMainArea().isEmpty()) {
+            partnerPartnershipMainArea = partnerPartnership.getMainArea();
+          }
+        }
         responsibilities = projectPartner.getResponsibilities();
         for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
           .filter(ppl -> ppl.isActive()).collect(Collectors.toList())) {
@@ -3350,7 +3789,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
         model.addRow(new Object[] {projectPartner.getInstitution().getComposedName(), projectPartner.getId(),
-          leaderCount, responsibilities, countryOffices});
+          leaderCount, responsibilities, countryOffices, partnerPartnershipFormal, partnerPartnershipResearchPhase,
+          partnerPartnershipGeographicScope, partnerPartnershipRegion, partnerPartnershipCountries,
+          partnerPartnershipMainArea, showRegion, showCountry});
       }
     }
     return model;
@@ -3370,19 +3811,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String overall = "";
     if (this.getSelectedCycle().equals("Reporting")) {
       // Get project partners overall
-      for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-        .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
-        for (ProjectPartnerOverall projectPartnerOverall : projectPartner.getProjectPartnerOveralls().stream()
-          .filter(ppo -> ppo.getYear() == this.getSelectedYear()).collect(Collectors.toList())) {
-          if (!projectPartnerOverall.getOverall().isEmpty()) {
-            if (!projectPartnerOverall.getOverall().equals("null")) {
-              overall = projectPartnerOverall.getOverall();
-            }
-          }
-        }
-      }
-      if (overall.isEmpty()) {
+      overall = project.getProjectInfoLast(this.getSelectedPhase()).getPartnerOverall();
+      if (overall == null || overall.isEmpty()) {
         overall = "&lt;Not Defined&gt;";
       }
     }
@@ -3405,7 +3835,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream()
-      .filter(ph -> ph.isActive() && ph.getYear() != null && ph.getYear() >= this.getSelectedYear())
+      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
+      .filter(ph -> ph.getProjectHighlightInfo(this.getSelectedPhase()) != null && ph.isActive()
+        && ph.getProjectHighlightInfo().getYear() != null
+        && ph.getProjectHighlightInfo().getYear() >= this.getSelectedYear())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
@@ -3413,20 +3846,24 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       Long yearReported = null;
       int width = 0;
       int heigth = 0;
-      if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
-        title = projectHighlight.getTitle();
+      if (projectHighlight.getProjectHighlightInfo().getTitle() != null
+        && !projectHighlight.getProjectHighlightInfo().getTitle().isEmpty()) {
+        title = projectHighlight.getProjectHighlightInfo().getTitle();
       }
-      if (projectHighlight.getAuthor() != null && !projectHighlight.getAuthor().isEmpty()) {
-        author = projectHighlight.getAuthor();
+      if (projectHighlight.getProjectHighlightInfo().getAuthor() != null
+        && !projectHighlight.getProjectHighlightInfo().getAuthor().isEmpty()) {
+        author = projectHighlight.getProjectHighlightInfo().getAuthor();
       }
-      if (projectHighlight.getSubject() != null && !projectHighlight.getSubject().isEmpty()) {
-        subject = projectHighlight.getSubject();
+      if (projectHighlight.getProjectHighlightInfo().getSubject() != null
+        && !projectHighlight.getProjectHighlightInfo().getSubject().isEmpty()) {
+        subject = projectHighlight.getProjectHighlightInfo().getSubject();
       }
-      if (projectHighlight.getPublisher() != null && !projectHighlight.getPublisher().isEmpty()) {
-        publisher = projectHighlight.getPublisher();
+      if (projectHighlight.getProjectHighlightInfo().getPublisher() != null
+        && !projectHighlight.getProjectHighlightInfo().getPublisher().isEmpty()) {
+        publisher = projectHighlight.getProjectHighlightInfo().getPublisher();
       }
-      if (projectHighlight.getYear() != null) {
-        yearReported = projectHighlight.getYear();
+      if (projectHighlight.getProjectHighlightInfo().getYear() != null) {
+        yearReported = projectHighlight.getProjectHighlightInfo().getYear();
       }
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
@@ -3438,22 +3875,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (highlightsTypes.isEmpty()) {
         highlightsTypes = null;
       }
-      if (projectHighlight.isGlobal() == true) {
+      if (projectHighlight.getProjectHighlightInfo().isGlobal() == true) {
         highlightsIsGlobal = "Yes";
       } else {
         highlightsIsGlobal = "No";
       }
-      if (projectHighlight.getStartDate() != null) {
-        startDate = formatter.format(projectHighlight.getStartDate());
+      if (projectHighlight.getProjectHighlightInfo().getStartDate() != null) {
+        startDate = formatter.format(projectHighlight.getProjectHighlightInfo().getStartDate());
       }
-      if (projectHighlight.getEndDate() != null) {
-        endDate = formatter.format(projectHighlight.getEndDate());
+      if (projectHighlight.getProjectHighlightInfo().getEndDate() != null) {
+        endDate = formatter.format(projectHighlight.getProjectHighlightInfo().getEndDate());
       }
-      if (projectHighlight.getKeywords() != null && !projectHighlight.getKeywords().isEmpty()) {
-        keywords = projectHighlight.getKeywords();
+      if (projectHighlight.getProjectHighlightInfo().getKeywords() != null
+        && !projectHighlight.getProjectHighlightInfo().getKeywords().isEmpty()) {
+        keywords = projectHighlight.getProjectHighlightInfo().getKeywords();
       }
       int countriesFlag = 0;
-      for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighligthCountries().stream()
+      for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighlightCountries().stream()
         .filter(phc -> phc.isActive()).collect(Collectors.toList())) {
         if (projectHighlightCountry.getLocElement() != null) {
           if (countriesFlag == 0) {
@@ -3468,13 +3906,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (countries.isEmpty()) {
         countries = null;
       }
-      if (projectHighlight.getFile() != null) {
+      if (projectHighlight.getProjectHighlightInfo().getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
         double imageWidth = 0;
         double imageHeigth = 0;
-        image =
-          this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
+        image = this.getHightlightImagePath(projectHighlight.getProject().getId())
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         Image imageFile = null;
         LOG.info("Image name: " + image);
         File url;
@@ -3513,20 +3951,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
       }
-      if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
-        highlightDesc = projectHighlight.getDescription();
+      if (projectHighlight.getProjectHighlightInfo().getDescription() != null
+        && !projectHighlight.getProjectHighlightInfo().getDescription().isEmpty()) {
+        highlightDesc = projectHighlight.getProjectHighlightInfo().getDescription();
       }
-      if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
-        introduction = projectHighlight.getObjectives();
+      if (projectHighlight.getProjectHighlightInfo().getObjectives() != null
+        && !projectHighlight.getProjectHighlightInfo().getObjectives().isEmpty()) {
+        introduction = projectHighlight.getProjectHighlightInfo().getObjectives();
       }
-      if (projectHighlight.getResults() != null && !projectHighlight.getResults().isEmpty()) {
-        results = projectHighlight.getResults();
+      if (projectHighlight.getProjectHighlightInfo().getResults() != null
+        && !projectHighlight.getProjectHighlightInfo().getResults().isEmpty()) {
+        results = projectHighlight.getProjectHighlightInfo().getResults();
       }
-      if (projectHighlight.getPartners() != null && !projectHighlight.getPartners().isEmpty()) {
-        partners = projectHighlight.getPartners();
+      if (projectHighlight.getProjectHighlightInfo().getPartners() != null
+        && !projectHighlight.getProjectHighlightInfo().getPartners().isEmpty()) {
+        partners = projectHighlight.getProjectHighlightInfo().getPartners();
       }
-      if (projectHighlight.getLinks() != null && !projectHighlight.getLinks().isEmpty()) {
-        links = projectHighlight.getLinks();
+      if (projectHighlight.getProjectHighlightInfo().getLinks() != null
+        && !projectHighlight.getProjectHighlightInfo().getLinks().isEmpty()) {
+        links = projectHighlight.getProjectHighlightInfo().getLinks();
       }
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
@@ -3642,6 +4085,312 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         model.addRow(new Object[] {crpProgram.getComposedName()});
       }
     }
+    return model;
+  }
+
+  private TypedTableModel getStudiesTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"id", "year", "policyAmount", "title", "status", "type", "outcomeImpactStatement",
+        "isContributionText", "policyInvestimentType", "organizationType", "stageProcess", "stageStudy", "srfTargets",
+        "subIdos", "topLevelComments", "geographicScope", "region", "countries", "scopeComments", "crps", "flagships",
+        "regions", "institutions", "elaborationOutcomeImpactStatement", "referenceText", "referencesFile",
+        "quantification", "genderRelevance", "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions",
+        "comunicationsMaterial", "comunicationsFile", "contacts", "studyProjects", "isContribution",
+        "isBudgetInvestment", "isStage1", "isRegional", "isNational", "hasreferencesFile", "hasCommunicationFile",
+        "isOutcomeCaseStudy"},
+      new Class[] {Long.class, Integer.class, Double.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, Boolean.class, Boolean.class, Boolean.class,
+        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class},
+      0);
+    List<ProjectExpectedStudy> projectExpectedStudies = project.getProjectExpectedStudies().stream()
+      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null)
+      .collect(Collectors.toList());
+    if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
+      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
+        ProjectExpectedStudyInfo studyinfo = projectExpectedStudy.getProjectExpectedStudyInfo();
+        Long id = null;
+        Integer year = null;
+        Double policyAmount = null;
+        String title = null, status = null, type = null, outcomeImpactStatement = null, isContributionText = null,
+          policyInvestimentType = null, organizationType = null, stageProcess = null, stageStudy = null,
+          srfTargets = null, subIdos = null, topLevelComments = null, geographicScope = null, region = null,
+          countries = null, scopeComments = null, crps = null, flagships = null, regions = null, institutions = null,
+          elaborationOutcomeImpactStatement = null, referenceText = null, referencesFile = null, quantification = null,
+          genderRelevance = null, youthRelevance = null, capacityRelevance = null, otherCrossCuttingDimensions = null,
+          comunicationsMaterial = null, comunicationsFile = null, contacts = null, studyProjects = null;
+
+        Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
+          isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false;
+
+        // Id
+        id = projectExpectedStudy.getId();
+        // Year
+        if (projectExpectedStudy.getYear() != null) {
+          year = projectExpectedStudy.getYear();
+        }
+        // Title
+        if (studyinfo.getTitle() != null && !studyinfo.getTitle().trim().isEmpty()) {
+          title = studyinfo.getTitle();
+        }
+        // Status
+        if (studyinfo.getStatus() != null) {
+          status = ProjectStatusEnum.getValue(studyinfo.getStatus()).getStatus();
+        }
+        // Type
+        if (studyinfo.getStudyType() != null) {
+          type = studyinfo.getStudyType().getName();
+          if (studyinfo.getStudyType().getId().intValue() == 1) {
+            isOutcomeCaseStudy = true;
+          }
+        }
+        // outcomeImpactStatement
+        if (studyinfo.getOutcomeImpactStatement() != null && !studyinfo.getOutcomeImpactStatement().trim().isEmpty()) {
+          outcomeImpactStatement = studyinfo.getOutcomeImpactStatement();
+        }
+        // isContribution
+        if (studyinfo.getIsContribution() != null) {
+          isContribution = studyinfo.getIsContribution();
+          isContributionText = studyinfo.getIsContribution() ? "Yes" : "No";
+          if (isContribution) {
+            // Policy Investment and Amount
+            if (studyinfo.getRepIndPolicyInvestimentType() != null) {
+              policyInvestimentType = studyinfo.getRepIndPolicyInvestimentType().getName();
+              if (studyinfo.getRepIndPolicyInvestimentType().getId().equals(3l)) {
+                isBudgetInvestment = true;
+                if (studyinfo.getPolicyAmount() != null) {
+                  policyAmount = studyinfo.getPolicyAmount();
+                }
+              }
+            }
+            // organizationType
+            if (studyinfo.getRepIndOrganizationType() != null) {
+              organizationType = studyinfo.getRepIndOrganizationType().getName();
+            }
+            // stageProcess and stageStudy
+            if (studyinfo.getRepIndStageProcess() != null) {
+              stageProcess = studyinfo.getRepIndStageProcess().getName();
+              if (studyinfo.getRepIndStageProcess().getId().equals(1l)) {
+                isStage1 = true;
+              }
+            }
+          }
+        }
+        if (studyinfo.getRepIndStageStudy() != null) {
+          stageStudy = studyinfo.getRepIndStageStudy().getName();
+        }
+
+        // SubIdos
+        List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        Set<String> subIdoSet = new HashSet<>();
+        if (subIdosList != null && subIdosList.size() > 0) {
+          for (ProjectExpectedStudySubIdo studySrfTarget : subIdosList) {
+            subIdoSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + studySrfTarget.getSrfSubIdo().getDescription());
+          }
+          subIdos = String.join("", subIdoSet);
+        }
+
+        // SRF Targets
+        List<ProjectExpectedStudySrfTarget> studySrfTargets = projectExpectedStudy.getProjectExpectedStudySrfTargets()
+          .stream().filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        Set<String> srfTargetSet = new HashSet<>();
+        if (studySrfTargets != null && studySrfTargets.size() > 0) {
+          for (ProjectExpectedStudySrfTarget studySrfTarget : studySrfTargets) {
+            srfTargetSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + studySrfTarget.getSrfSloIndicator().getTitle());
+          }
+          srfTargets = String.join("", srfTargetSet);
+        }
+
+        // Comments
+        if (studyinfo.getTopLevelComments() != null && !studyinfo.getTopLevelComments().trim().isEmpty()) {
+          topLevelComments = studyinfo.getTopLevelComments();
+        }
+
+        // Geographic Scope
+        if (studyinfo.getRepIndGeographicScope() != null) {
+          geographicScope = studyinfo.getRepIndGeographicScope().getName();
+          // Regional
+          if (studyinfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+            isRegional = true;
+            if (studyinfo.getRepIndRegion() != null) {
+              region = studyinfo.getRepIndRegion().getName();
+            }
+          }
+          // Country
+          if (!studyinfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
+            && !studyinfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+            isNational = true;
+            List<ProjectExpectedStudyCountry> studyCountries =
+              projectExpectedStudy.getProjectExpectedStudyCountries().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            if (studyCountries != null && studyCountries.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (ProjectExpectedStudyCountry projectExpectedStudyCountry : studyCountries) {
+                countriesSet
+                  .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectExpectedStudyCountry.getLocElement().getName());
+              }
+              countries = String.join("", countriesSet);
+            }
+          }
+        }
+
+        // Geographic Scope comment
+        if (studyinfo.getScopeComments() != null && !studyinfo.getScopeComments().trim().isEmpty()) {
+          scopeComments = studyinfo.getScopeComments();
+        }
+
+        // Key Contributions
+        // CRPs/Platforms
+        List<ProjectExpectedStudyCrp> studyCrpsList = projectExpectedStudy.getProjectExpectedStudyCrps().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        Set<String> crpsSet = new HashSet<>();
+        if (studyCrpsList != null && studyCrpsList.size() > 0) {
+          for (ProjectExpectedStudyCrp studyCrp : studyCrpsList) {
+            crpsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyCrp.getGlobalUnit().getComposedName());
+          }
+          crps = String.join("", crpsSet);
+        }
+        // Crp Programs
+        List<ProjectExpectedStudyFlagship> studyProgramsList = projectExpectedStudy.getProjectExpectedStudyFlagships()
+          .stream().filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        // Flagships
+        List<ProjectExpectedStudyFlagship> studyFlagshipList = studyProgramsList.stream()
+          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList());
+        Set<String> flaghipsSet = new HashSet<>();
+        if (studyFlagshipList != null && studyFlagshipList.size() > 0) {
+          for (ProjectExpectedStudyFlagship studyFlagship : studyFlagshipList) {
+            flaghipsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyFlagship.getCrpProgram().getComposedName());
+          }
+          flagships = String.join("", flaghipsSet);
+        }
+        // Regional Programs
+        List<ProjectExpectedStudyFlagship> studyRegionsList = studyProgramsList.stream()
+          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList());
+        Set<String> regionSet = new HashSet<>();
+        if (studyRegionsList != null && studyRegionsList.size() > 0) {
+          for (ProjectExpectedStudyFlagship studyFlagship : studyRegionsList) {
+            regionSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyFlagship.getCrpProgram().getComposedName());
+          }
+          regions = String.join("", regionSet);
+        }
+        // External Partners
+        List<ProjectExpectedStudyInstitution> studyInstitutionList =
+          projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
+            .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+        Set<String> institutionSet = new HashSet<>();
+        if (studyInstitutionList != null && studyInstitutionList.size() > 0) {
+          for (ProjectExpectedStudyInstitution studyinstitution : studyInstitutionList) {
+            institutionSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyinstitution.getInstitution().getComposedName());
+          }
+          institutions = String.join("", institutionSet);
+        }
+
+        // Elaboration of Outcome/Impact Statement
+        if (studyinfo.getElaborationOutcomeImpactStatement() != null
+          && !studyinfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
+          elaborationOutcomeImpactStatement = studyinfo.getElaborationOutcomeImpactStatement();
+        }
+
+        // References cited
+        if (studyinfo.getReferencesText() != null && !studyinfo.getReferencesText().trim().isEmpty()) {
+          referenceText = studyinfo.getReferencesText();
+        }
+        // Atached material
+        if (studyinfo.getReferencesFile() != null) {
+          hasreferencesFile = true;
+          referencesFile = studyinfo.getReferencesFile().getFileName();
+        }
+
+        // Quantification
+        if (studyinfo.getQuantification() != null && !studyinfo.getQuantification().trim().isEmpty()) {
+          quantification = studyinfo.getQuantification();
+        }
+
+        // Gender, Youth, and Capacity Development
+        // Gender
+        if (studyinfo.getGenderLevel() != null) {
+          genderRelevance = studyinfo.getGenderLevel().getName();
+
+          if (!(isContribution && isStage1) && !studyinfo.getGenderLevel().getId().equals(1l)
+            && studyinfo.getDescribeGender() != null && !studyinfo.getDescribeGender().isEmpty()) {
+            genderRelevance += "<br>" + this.getText("study.achievementsGenderRelevance.readText") + ": "
+              + studyinfo.getDescribeGender();
+          }
+        }
+        // Youth
+        if (studyinfo.getYouthLevel() != null) {
+          youthRelevance = studyinfo.getYouthLevel().getName();
+          if (!(isContribution && isStage1) && !studyinfo.getYouthLevel().getId().equals(1l)
+            && studyinfo.getDescribeYouth() != null && !studyinfo.getDescribeYouth().isEmpty()) {
+            youthRelevance +=
+              "<br>" + this.getText("study.achievementsYouthRelevance.readText") + ": " + studyinfo.getDescribeYouth();
+          }
+        }
+        // Capacity Development
+        if (studyinfo.getCapdevLevel() != null) {
+          capacityRelevance = studyinfo.getCapdevLevel().getName();
+          if (!(isContribution && isStage1) && !studyinfo.getCapdevLevel().getId().equals(1l)
+            && studyinfo.getDescribeCapdev() != null && !studyinfo.getDescribeCapdev().isEmpty()) {
+            capacityRelevance += "<br>" + this.getText("study.achievementsCapDevRelevance.readText") + ": "
+              + studyinfo.getDescribeCapdev();
+          }
+        }
+
+        // Other cross-cutting dimensions
+        if (studyinfo.getOtherCrossCuttingDimensions() != null
+          && !studyinfo.getOtherCrossCuttingDimensions().trim().isEmpty()) {
+          otherCrossCuttingDimensions = studyinfo.getOtherCrossCuttingDimensions();
+        }
+
+        // Communications materials
+        if (studyinfo.getComunicationsMaterial() != null && !studyinfo.getComunicationsMaterial().trim().isEmpty()) {
+          comunicationsMaterial = studyinfo.getComunicationsMaterial();
+        }
+        // Atached material
+        if (studyinfo.getOutcomeFile() != null) {
+          hasCommunicationFile = true;
+          comunicationsFile = studyinfo.getOutcomeFile().getFileName();
+        }
+
+        // Contact person
+        if (studyinfo.getContacts() != null && !studyinfo.getContacts().trim().isEmpty()) {
+          contacts = studyinfo.getContacts();
+        }
+
+        // Share Study
+
+        List<ExpectedStudyProject> studyProjectList = projectExpectedStudy.getExpectedStudyProjects().stream()
+          .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        Set<String> studyProjectSet = new HashSet<>();
+        if (studyProjectList != null && studyProjectList.size() > 0) {
+          for (ExpectedStudyProject studyProject : studyProjectList) {
+            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyProject.getProject().getComposedName());
+          }
+          studyProjects = String.join("", studyProjectSet);
+        }
+
+        model.addRow(new Object[] {id, year, policyAmount, title, status, type, outcomeImpactStatement,
+          isContributionText, policyInvestimentType, organizationType, stageProcess, stageStudy, srfTargets, subIdos,
+          topLevelComments, geographicScope, region, countries, scopeComments, crps, flagships, regions, institutions,
+          elaborationOutcomeImpactStatement, referenceText, referencesFile, quantification, genderRelevance,
+          youthRelevance, capacityRelevance, otherCrossCuttingDimensions, comunicationsMaterial, comunicationsFile,
+          contacts, studyProjects, isContribution, isBudgetInvestment, isStage1, isRegional, isNational,
+          hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy});
+      }
+    }
+
     return model;
   }
 
@@ -3829,7 +4578,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }
@@ -3946,6 +4695,5 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
     this.targetUnitList = targetUnitList;
   }
-
 
 }

@@ -17,12 +17,16 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePublicationMetadataDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -66,6 +70,23 @@ public class DeliverablePublicationMetadataMySQLDAO extends AbstractMarloDAO<Del
     }
     return null;
 
+  }
+
+  @Override
+  public DeliverablePublicationMetadata findPublicationMetadataByPhaseAndDeliverable(Phase phase,
+    Deliverable deliverable) {
+    String query = "select distinct dp from DeliverablePublicationMetadata dp "
+      + " where phase.id = :phaseId and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+
+    Object findSingleResult = super.findSingleResult(DeliverablePublicationMetadata.class, createQuery);
+    DeliverablePublicationMetadata deliverablePublicationMetadataResult =
+      (DeliverablePublicationMetadata) findSingleResult;
+
+
+    return deliverablePublicationMetadataResult;
   }
 
   @Override

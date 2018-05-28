@@ -609,8 +609,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         capdev.setGlobal(this.bolValue(capdev.getsGlobal()));
         capdev.setRegional(this.bolValue(capdev.getsRegional()));
 
-        System.out.println(capdev.getRegional());
-
 
         if (capdev.getCapDevCountries() != null) {
           for (CapdevLocations capdevLocation : capdev.getCapDevCountries()) {
@@ -742,8 +740,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setDuration(capdev.getDuration());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
-
-    System.out.println(capdev.getTitle());
     capdevDB.setTitle(capdev.getTitle());
 
 
@@ -786,7 +782,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
         List<CapdevParticipant> participants = capdevParicipantService.findAll().stream()
           .filter(p -> p.isActive() && (p.getCapacityDevelopment().getId() == capdevID)).collect(Collectors.toList());
-        System.out.println(participants.size());
         if (participants != null) {
           if (participants.isEmpty()) {
             this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);

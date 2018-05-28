@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Dec 12, 2016 8:46:52 AM by Hibernate Tools 4.3.1.Final
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
@@ -22,24 +23,33 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
+  @Expose
+  private Phase phase;
+  @Expose
+  private String composeID;
 
   @Expose
-  private IpProgram crpProgram;
+  private IpProgram ipProgram;
+
+  @Expose
+  private CrpProgram crpProgram;
+
+
   @Expose
   private Institution institution;
-
 
   private Project project;
   @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
-
   @Expose
   private String title;
   @Expose
   private Integer year;
+
   @Expose
   private Double budget;
   @Expose
@@ -52,10 +62,10 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   public ProjectLeverage() {
   }
 
-  public ProjectLeverage(IpProgram crpProgram, Institution institution, Project project, User usersByCreatedBy,
+  public ProjectLeverage(IpProgram ipProgram, Institution institution, Project project, User usersByCreatedBy,
     User usersByModifiedBy, String title, Integer year, Double budget, boolean isActive, Date activeSince,
     String modificationJustification) {
-    this.crpProgram = crpProgram;
+    this.ipProgram = ipProgram;
     this.institution = institution;
     this.project = project;
     this.createdBy = usersByCreatedBy;
@@ -101,14 +111,17 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
-
   public Double getBudget() {
     return budget;
+  }
+
+
+  public String getComposeID() {
+    return composeID;
   }
 
 
@@ -117,7 +130,7 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
-  public IpProgram getCrpProgram() {
+  public CrpProgram getCrpProgram() {
     return crpProgram;
   }
 
@@ -130,6 +143,11 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
 
   public Institution getInstitution() {
     return institution;
+  }
+
+
+  public IpProgram getIpProgram() {
+    return ipProgram;
   }
 
 
@@ -153,6 +171,11 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -186,6 +209,19 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Boolean isPhaseOneLeverage() {
+    try {
+      if (this.year <= APConstants.PHASE_ONE_YEAR) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -201,12 +237,17 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
+  }
+
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
 
-  public void setCrpProgram(IpProgram crpProgram) {
+  public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
 
@@ -221,6 +262,11 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setIpProgram(IpProgram ipProgram) {
+    this.ipProgram = ipProgram;
+  }
+
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -228,6 +274,11 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 
@@ -240,16 +291,14 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
     this.title = title;
   }
 
-
   public void setYear(Integer year) {
     this.year = year;
   }
 
-
   @Override
   public String toString() {
-    return "ProjectLeverage [id=" + id + ", crpProgram=" + crpProgram + ", institution=" + institution + ", project="
-      + project + ", title=" + title + ", year=" + year + ", budget=" + budget + "]";
+    return "ProjectLeverage [id=" + id + ", ipProgram=" + ipProgram + ", crpProgram=" + crpProgram + ", institution="
+      + institution + ", project=" + project + ", title=" + title + ", year=" + year + ", budget=" + budget + "]";
   }
 
 

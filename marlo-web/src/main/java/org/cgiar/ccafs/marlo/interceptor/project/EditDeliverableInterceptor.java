@@ -175,7 +175,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit =
           ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin() || baseAction.canAcessCrpAdmin())) ? true
             : baseAction.hasPermission(
@@ -225,9 +225,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
       }
-      if (!this.canEditDeliverable(deliverable, phase)) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
+
+      if (baseAction.isPlanningActive()) {
+        if (!this.canEditDeliverable(deliverable, phase)) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
 
       if (phase.getProjectPhases().stream()

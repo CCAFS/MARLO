@@ -16,9 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface ProjectExpectedStudyDAO {
@@ -56,6 +58,15 @@ public interface ProjectExpectedStudyDAO {
 
 
   /**
+   * This method search the expected Studies that the user can be edit.
+   * 
+   * @param userId the user id
+   * @param crp the crp acronym
+   * @return The expected Studies that can edit the user
+   */
+  public List<Map<String, Object>> getUserStudies(long userId, String crp);
+
+  /**
    * This method saves the information of the given projectExpectedStudy
    * 
    * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.
@@ -64,4 +75,17 @@ public interface ProjectExpectedStudyDAO {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy);
+
+  /**
+   * This method saves the information of the given projectExpectedStudy
+   * 
+   * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.
+   * @param section - the name of the map section.
+   * @param relationsName - a List of set relations that the object have it.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudy was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
+    List<String> relationsName, Phase phase);
 }

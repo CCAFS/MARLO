@@ -73,7 +73,6 @@ public class FinancialPlanValidator extends BaseValidator {
 
       int i = 0;
       for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : powbSynthesis.getPowbFinancialPlannedBudgetList()) {
-        System.out.println(powbFinancialPlannedBudget.getId());
         this.validateFinancialPlannedBudget(powbFinancialPlannedBudget, action, i);
         i++;
       }

@@ -104,7 +104,6 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         data = data.replace(key, coverterAtrributes.get(key));
       }
       metadataModel = gson.fromJson(data, MetadataModel.class);
-      System.out.println(metadataModel.getPublicationDate());
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
       metadataModel.setAuthors(authorsArr);

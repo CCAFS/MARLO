@@ -17,15 +17,20 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   private static final long serialVersionUID = 3040210263258419226L;
 
   @Expose
-  private Integer id;
+  private Long id;
 
   private ProjectHighlight projectHighlight;
 
   @Expose
   private LocElement locElement;
 
+  @Expose
+  private Phase phase;
+
+
   public ProjectHighlightCountry() {
   }
+
 
   public ProjectHighlightCountry(ProjectHighlight projectHighlight, LocElement locElement) {
     this.projectHighlight = projectHighlight;
@@ -55,7 +60,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   }
 
   @Override
-  public Integer getId() {
+  public Long getId() {
     return this.id;
   }
 
@@ -86,10 +91,13 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public ProjectHighlight getProjectHighligth() {
     return projectHighlight;
   }
-
 
   @Override
   public int hashCode() {
@@ -107,12 +115,17 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   }
 
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectHighligth(ProjectHighlight projectHighlight) {

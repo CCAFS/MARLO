@@ -78,7 +78,6 @@ public class CapacityDevelopmentDAO extends AbstractMarloDAO<CapacityDevelopment
 
   @Override
   public CapacityDevelopment save(CapacityDevelopment capacityDevelopment) {
-    System.out.println(capacityDevelopment.getCategory());
     if (capacityDevelopment.getId() == null) {
       super.saveEntity(capacityDevelopment);
     } else {

@@ -128,6 +128,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<CrpClusterOfActivity> clusterofActivites;
+  private Project projectDB;
 
   private Map<String, String> projectStatuses;
 
@@ -708,13 +709,6 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null
-      && project.getProjecInfoPhase(this.getActualPhase()).getStatus() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-      projectStatuses.remove(ProjectStatusEnum.Ongoing.getStatusId());
-    }
-
-
     // add project scales
 
     projectScales = new HashMap<>();
@@ -722,6 +716,8 @@ public class ProjectDescriptionAction extends BaseAction {
     projectScales.put(APConstants.PROJECT_SCAPE_REGIONAL, this.getText("project.projectScape.regional"));
     projectScales.put(APConstants.PROJECT_SCAPE_GLOBAL, this.getText("project.projectType.global"));
 
+
+    projectDB = projectManager.getProjectById(projectID);
 
     // The base permission is established for the current section
 
@@ -755,7 +751,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
+
       projectDB.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       // Load basic info project to be saved
 
@@ -898,61 +894,47 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      // if the planning cycle is active
-      if (this.isPlanningActive()) {
 
-        // Removing Project Cluster Activities
-        for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())) {
+      // Removing Project Cluster Activities
+      for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
 
-          if (project.getClusterActivities() == null) {
-            project.setClusterActivities(new ArrayList<>());
-          }
-          if (!project.getClusterActivities().contains(projectClusterActivity)) {
-            projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
+        if (project.getClusterActivities() == null) {
+          project.setClusterActivities(new ArrayList<>());
+        }
+        if (!project.getClusterActivities().contains(projectClusterActivity)) {
+          projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
-            // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
+          // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
 
-            for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
-              .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
-              .collect(Collectors.toList())) {
-              projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
-            }
+          for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
+            .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList())) {
+            projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
           }
         }
-        // Add Project Cluster Activities
-
-        if (project.getClusterActivities() != null) {
-          for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
-            if (projectClusterActivity.getId() == null) {
-              projectClusterActivity.setCreatedBy(this.getCurrentUser());
-
-              projectClusterActivity.setActiveSince(new Date());
-              projectClusterActivity.setActive(true);
-              projectClusterActivity.setProject(project);
-              projectClusterActivity.setModifiedBy(this.getCurrentUser());
-              projectClusterActivity.setModificationJustification("");
-              projectClusterActivity.setPhase(this.getActualPhase());
-              projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
-            }
-
-          }
-        }
-
-        // delete the section stust for budgets by coA when there is one Coa selectd to the project
-        Project projectCluster = projectManager.getProjectById(projectID);
-        List<ProjectClusterActivity> currentClusters =
-          projectCluster.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        if (currentClusters.isEmpty() || currentClusters.size() == 1) {
-          SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID,
-            this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
-          if (sectionStatus != null) {
-            sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-          }
-        }
-
       }
+      // Add Project Cluster Activities
+
+      if (project.getClusterActivities() != null) {
+        for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
+          if (projectClusterActivity.getId() == null) {
+            projectClusterActivity.setCreatedBy(this.getCurrentUser());
+
+            projectClusterActivity.setActiveSince(new Date());
+            projectClusterActivity.setActive(true);
+            projectClusterActivity.setProject(project);
+            projectClusterActivity.setModifiedBy(this.getCurrentUser());
+            projectClusterActivity.setModificationJustification("");
+            projectClusterActivity.setPhase(this.getActualPhase());
+            projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+          }
+
+        }
+      }
+
+
       // Removing Project Scopes
 
       for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
@@ -1011,7 +993,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
       project.setModifiedBy(this.getCurrentUser());
-      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+      projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+
+
+      // delete the section stust for budgets by coA when there is one Coa selectd to the project
+      List<ProjectClusterActivity> currentClusters =
+        projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (currentClusters.isEmpty() || currentClusters.size() == 1) {
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+        if (sectionStatus != null) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
 
       Path path = this.getAutoSaveFilePath();
       // delete the draft file if exists
