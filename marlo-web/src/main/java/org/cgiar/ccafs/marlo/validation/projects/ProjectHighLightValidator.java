@@ -117,7 +117,7 @@ public class ProjectHighLightValidator extends BaseValidator {
   private void ValidateHightLigth(BaseAction action, ProjectHighlight higligth) {
 
     if (higligth.getTypesids().size() == 0) {
-      action.addMessage(action.getText("reporting.projectHighligth.types").toLowerCase());
+      action.addMessage(action.getText("reporting.projectHighligth.types"));
       action.addMissingField("reporting.projectHighligth.types");
       action.getInvalidFields().put("input-highlight.typesids", InvalidFieldsMessages.EMPTYFIELD);
     }

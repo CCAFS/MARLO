@@ -3311,8 +3311,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case EXPECTEDSTUDIES:
 
         project = projectManager.getProjectById(projectID);
-        List<ProjectExpectedStudy> studies =
-          project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null && c.getYear() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+
+        if (studies.isEmpty()) {
+          return true;
+        }
 
         for (ProjectExpectedStudy projectExpectedStudy : studies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
@@ -3321,6 +3326,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
             }
+          } else {
+            return false;
           }
         }
         returnValue = true;
@@ -3328,9 +3335,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       case INNOVATIONS:
+
         project = projectManager.getProjectById(projectID);
-        List<ProjectInnovation> innovations =
-          project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
+          .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
+            && c.getProjectInnovationInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+
+        if (innovations.isEmpty()) {
+          return true;
+        }
+
         for (ProjectInnovation projectInnovation : innovations) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
@@ -3338,9 +3353,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
             }
+          } else {
+            return false;
           }
         }
         returnValue = true;
+
         break;
 
       case LEVERAGES:

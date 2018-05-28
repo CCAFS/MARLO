@@ -117,6 +117,42 @@ public class ProjectInnovationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate Contribution of CRP
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp() != null) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
+        .getId() == null
+        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
+          .getId() == -1) {
+        action.addMessage(action.getText("Contribution Of Crp"));
+        action.addMissingField("projectInnovations.contributionOfCrp");
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Contribution Of Crp"));
+      action.addMissingField("projectInnovations.contributionOfCrp");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Degree of Innovation
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation() != null) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
+        .getId() == null
+        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
+          .getId() == -1) {
+        action.addMessage(action.getText("Degree of Innovation"));
+        action.addMissingField("projectInnovations.degreeInnovation");
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Degree of Innovation"));
+      action.addMissingField("projectInnovations.degreeInnovation");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Stage of Innovation
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation() != null) {
       if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
@@ -242,12 +278,15 @@ public class ProjectInnovationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Novel
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getNovel())
-      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNovel()) <= 100) {
-      action.addMessage(action.getText("Novel or adaptive research"));
-      action.addMissingField("projectInnovations.novelOrAdaptative");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.novel", InvalidFieldsMessages.EMPTYFIELD);
+    // Validate Description Stage
+    if (!this
+      .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getDescriptionStage())
+      && this
+        .wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getDescriptionStage()) <= 50) {
+      action.addMessage(action.getText("Description Stage"));
+      action.addMissingField("projectInnovations.stageDescription");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.descriptionStage",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Evidence Link (URL)
