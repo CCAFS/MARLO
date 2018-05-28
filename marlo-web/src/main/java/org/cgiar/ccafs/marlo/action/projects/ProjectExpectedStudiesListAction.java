@@ -222,9 +222,9 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(s -> s.isActive() && s.getProject() == null).collect(Collectors.toList()));
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-        projectExpectedStudy
-          .setProjectExpectedStudyInfo(projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()));
-        nonProjectStudies.add(projectExpectedStudy);
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+          nonProjectStudies.add(projectExpectedStudy);
+        }
       }
       myNonProjectStudies = new ArrayList<>();
 
