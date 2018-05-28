@@ -116,9 +116,6 @@ function getInputElement(fieldName,message) {
     }
   }
 
-  $(elementQuery).addClass("fieldError");
-  $(elementQuery).attr("title", message);
-
   // Find Bootstrap tabs
   var tabPane = $(elementQuery).parents('.tab-pane');
   if(tabPane) {
@@ -149,6 +146,9 @@ function getInputElement(fieldName,message) {
     $(elementQuery).removeClass("fieldError");
     $(elementQuery).attr("title", "");
   }
+
+  $(elementQuery).addClass("fieldError");
+  $(elementQuery).attr("title", message);
 
 }
 
