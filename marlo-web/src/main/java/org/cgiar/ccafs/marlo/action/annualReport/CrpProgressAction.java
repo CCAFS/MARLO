@@ -487,11 +487,11 @@ public class CrpProgressAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         reportSynthesis = (ReportSynthesis) autoSaveReader.readFromJson(jReader);
         synthesisID = reportSynthesis.getId();
         this.setDraft(true);
-        reader.close();
       } else {
 
         this.setDraft(false);
