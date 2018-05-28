@@ -8,6 +8,7 @@
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
 <input type="hidden"  name="expectedStudy.projectExpectedStudyInfo.id" value="${(expectedStudy.projectExpectedStudyInfo.id)!}"/>
+<input type="hidden"  name="expectedStudy.year" value="${(expectedStudy.year)!}"/>
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
 
