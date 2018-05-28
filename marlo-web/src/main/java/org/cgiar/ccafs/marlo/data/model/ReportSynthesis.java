@@ -26,23 +26,38 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private Phase phase;
 
+
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private User createdBy;
 
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
 
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
+
   @Expose
   private ReportSynthesisCrpProgress reportSynthesisCrpProgress;
+
+  @Expose
+  private ReportSynthesisFinancialSummary reportSynthesisFinancialSummary;
+
+  @Expose
+  private ReportSynthesisGovernance reportSynthesisGovernance;
+
+  @Expose
+  private ReportSynthesisRisk reportSynthesisRisk;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -71,27 +86,22 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -99,7 +109,6 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -123,9 +132,25 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
   }
 
 
+  public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
+    return reportSynthesisFinancialSummary;
+  }
+
+
+  public ReportSynthesisGovernance getReportSynthesisGovernance() {
+    return reportSynthesisGovernance;
+  }
+
+
+  public ReportSynthesisRisk getReportSynthesisRisk() {
+    return reportSynthesisRisk;
+  }
+
+
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
+
 
   @Override
   public int hashCode() {
@@ -135,10 +160,12 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -168,9 +195,21 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
-
   public void setReportSynthesisCrpProgress(ReportSynthesisCrpProgress reportSynthesisCrpProgress) {
     this.reportSynthesisCrpProgress = reportSynthesisCrpProgress;
+  }
+
+  public void setReportSynthesisFinancialSummary(ReportSynthesisFinancialSummary reportSynthesisFinancialSummary) {
+    this.reportSynthesisFinancialSummary = reportSynthesisFinancialSummary;
+  }
+
+  public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
+    this.reportSynthesisGovernance = reportSynthesisGovernance;
+  }
+
+
+  public void setReportSynthesisRisk(ReportSynthesisRisk reportSynthesisRisk) {
+    this.reportSynthesisRisk = reportSynthesisRisk;
   }
 
 
