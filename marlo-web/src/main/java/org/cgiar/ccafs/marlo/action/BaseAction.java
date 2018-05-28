@@ -832,11 +832,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
         FundingSource fundingSource =
           fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-        List<DeliverableFundingSource> deliverableFundingSources = fundingSource.getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
-            && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
-          .collect(Collectors.toList());
+        List<DeliverableFundingSource> deliverableFundingSources =
+          fundingSource.getDeliverableFundingSources().stream()
+            .filter(
+              c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
+                && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
+                  .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
+            .collect(Collectors.toList());
         List<Deliverable> onDeliverables =
           this.getDeliverableRelationsProject(id, ProjectBudget.class.getName(), projectBudget.getProject().getId());
         if (!onDeliverables.isEmpty()) {
@@ -2987,11 +2989,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         List<ProjectPartner> partners =
           crpPpaPartner.getInstitution().getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null
-              && c.getPhase().getId().equals(this.getActualPhase().getId())
-              && c.getProject().getGlobalUnitProjects().stream()
-                .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCrpID()))
-                .collect(Collectors.toList()).size() > 0)
+            .filter(
+              c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
+                && c.getProject().getGlobalUnitProjects().stream()
+                  .filter(
+                    gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCrpID()))
+                  .collect(Collectors.toList()).size() > 0)
             .collect(Collectors.toList());
         Set<Project> projectsSet = new HashSet<>();
         for (ProjectPartner projectPartner : partners) {
@@ -3176,14 +3179,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
 
-          openA.addAll(deliverables.stream().filter(d -> d.isActive()
-            && d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+          openA.addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                .getCurrentCycleYear()
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
         }
 
@@ -3274,8 +3278,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case EXPECTEDSTUDIES:
 
         project = projectManager.getProjectById(projectID);
-        List<ProjectExpectedStudy> studies =
-          project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null && c.getYear() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+
+        if (studies.isEmpty()) {
+          return true;
+        }
 
         for (ProjectExpectedStudy projectExpectedStudy : studies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
@@ -3284,6 +3293,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
             }
+          } else {
+            return false;
           }
         }
         returnValue = true;
@@ -3291,9 +3302,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       case INNOVATIONS:
+
         project = projectManager.getProjectById(projectID);
-        List<ProjectInnovation> innovations =
-          project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
+          .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
+            && c.getProjectInnovationInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+
+        if (innovations.isEmpty()) {
+          return true;
+        }
+
         for (ProjectInnovation projectInnovation : innovations) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
@@ -3301,9 +3320,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
             }
+          } else {
+            return false;
           }
         }
         returnValue = true;
+
         break;
 
       case LEVERAGES:
@@ -4241,13 +4263,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
           .collect(Collectors.toList()));
-        openA.addAll(deliverables.stream()
-          .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-          .collect(Collectors.toList()));
+        openA
+          .addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                .getCurrentCycleYear()
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
       }
 
       for (Deliverable deliverable : openA) {
