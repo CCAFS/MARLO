@@ -72,11 +72,15 @@
                   [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo]
                     [@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /]
                   [/#list]
+                [#else]
+                  [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
                 [/#if]
               </div>
+              [#if editable]
               <div class="dottedBox">
                 [@customForm.select name="" className="setSelect2 addSloTarget" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="composedName" required=true /]
               </div>
+              [/#if]
             </div>
             
           </div>
@@ -131,7 +135,7 @@
         </tr>
       </thead>
       <tbody>
-        [#if list??]
+        [#if list?has_content]
           [#list list as item]
             [#local customName = "${name}" /]
             <tr>
@@ -147,7 +151,7 @@
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="4"><i>No flagships loaded..</i></td>
+            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
           </tr>
         [/#if]
       </tbody>
@@ -167,7 +171,7 @@
         </tr>
       </thead>
       <tbody>
-        [#if list??]
+        [#if list?has_content]
           [#list list as item]
             <tr>
               <td><span class="programTag" style="border-color:${(item.crpProgram.color)!'#fff'}">${(item.crpProgram.acronym)!}</span></td>              
@@ -197,7 +201,7 @@
         </tr>
       </thead>
       <tbody>
-        [#if list??]
+        [#if list?has_content]
           [#list list as item]
             <tr>
               <td><span class="programTag" style="border-color:${(item.crpProgram.color)!'#fff'}">${(item.crpProgram.acronym)!}</span></td>
