@@ -29,6 +29,12 @@
         <many-to-one name="repIndGeographicScope" class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope" fetch="select">
             <column name="geographic_scope_id" />
         </many-to-one>
+        <many-to-one name="repIndContributionOfCrp" class="org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp" fetch="select">
+            <column name="rep_ind_contribution_crp_id" />
+        </many-to-one>
+        <many-to-one name="repIndDegreeInnovation" class="org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation" fetch="select">
+            <column name="rep_ind_degree_innovation_id" />
+        </many-to-one>
         <many-to-one name="genderFocusLevel" class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel" fetch="select">
             <column name="gender_focus_level_id" />
         </many-to-one>
@@ -44,9 +50,6 @@
         <property name="narrative" type="string">
             <column name="narrative" length="65535" />
         </property>
-        <property name="novel" type="string">
-            <column name="novel" length="65535" />
-        </property>
         <property name="evidenceLink" type="string">
             <column name="evidence_link" length="65535" />
         </property>
@@ -55,6 +58,9 @@
         </property>
         <property name="youthExplaniation" type="string">
             <column name="youth_explaniation" length="65535" />
+        </property>
+        <property name="descriptionStage" type="string">
+            <column name="description_stage" length="65535" />
         </property>
         <property name="year" type="java.lang.Long">
             <column name="year" />

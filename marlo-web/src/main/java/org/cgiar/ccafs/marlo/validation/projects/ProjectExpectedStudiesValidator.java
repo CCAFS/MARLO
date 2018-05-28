@@ -58,7 +58,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   public void validate(BaseAction action, Project project, ProjectExpectedStudy projectExpectedStudy, boolean saving) {
     action.setInvalidFields(new HashMap<>());
 
-    action.setInvalidFields(new HashMap<>());
     baseAction = action;
 
     if (!saving) {
