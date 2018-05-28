@@ -34,6 +34,14 @@
 		<one-to-one name="reportSynthesisCrpProgress"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress"
 			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisFinancialSummary"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisGovernance"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisRisk"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk" cascade="save-update"></one-to-one>
 		<set name="sectionStatuses" table="section_statuses" inverse="true"
 			lazy="true" fetch="select">
 			<key>

@@ -22,7 +22,7 @@ package org.cgiar.ccafs.marlo.data.model;
 public enum ReportSynthesisSectionStatusEnum {
 
 
-  CRP_PROGRESS("crpProgress");
+  CRP_PROGRESS("crpProgress"), GOVERNANCE("governance");
 
   public static ReportSynthesisSectionStatusEnum value(String status) {
     ReportSynthesisSectionStatusEnum[] lst = ReportSynthesisSectionStatusEnum.values();
