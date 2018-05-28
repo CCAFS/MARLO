@@ -689,14 +689,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
-      // openA.addAll(deliverables.stream()
-      // .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-      // && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
-      // .getCurrentCycleYear()
-      // && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-      // && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-      // .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-      // .collect(Collectors.toList()));
 
       openA.addAll(deliverables.stream().filter(d -> d.isActive()
         && d.getDeliverableInfo(action.getActualPhase()) != null
@@ -741,12 +733,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
         if (deliverable.getDeliverableMetadataElements() != null) {
           deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
         if (deliverable.getDeliverableDisseminations() != null) {
           deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
-            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
           if (deliverable.getDisseminations().size() > 0) {
             deliverable.setDissemination(deliverable.getDisseminations().get(0));
           } else {
@@ -756,12 +748,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
         if (deliverable.getDeliverableDataSharingFiles() != null) {
           deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
-            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
         if (deliverable.getDeliverablePublicationMetadatas() != null) {
           deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
-            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
         if (!deliverable.getPublicationMetadatas().isEmpty()) {
           deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
@@ -774,12 +766,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
         deliverable.setUsers(deliverable.getDeliverableUsers().stream()
-          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+          .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+          .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
         deliverable.setFiles(new ArrayList<>());
         for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles().stream()
-          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())) {
 
           DeliverableFile deFile = new DeliverableFile();
           switch (dataSharingFile.getTypeId().toString()) {
@@ -799,8 +791,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
 
         if (deliverable.getDeliverableIntellectualAssets() != null) {
-          List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-            .stream().filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+          List<DeliverableIntellectualAsset> intellectualAssets =
+            deliverable.getDeliverableIntellectualAssets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
 
           if (intellectualAssets.size() > 0) {
             deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
@@ -811,7 +804,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
         if (deliverable.getDeliverableParticipants() != null) {
           List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
-            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
 
           if (deliverableParticipants.size() > 0) {
             deliverable.setDeliverableParticipant(
