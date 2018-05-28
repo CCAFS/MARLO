@@ -1,10 +1,7 @@
 package org.cgiar.ccafs.marlo.data.model;
-// Generated Jan 25, 2018 9:11:39 AM by Hibernate Tools 4.3.1.Final
-
+// Generated Apr 30, 2018 10:48:00 AM by Hibernate Tools 3.4.0.CR1
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-
-import java.util.Date;
 
 import com.google.gson.annotations.Expose;
 
@@ -14,32 +11,27 @@ import com.google.gson.annotations.Expose;
 public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
 
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -6286537244752127538L;
-
+  private static final long serialVersionUID = 131925401132219339L;
 
   @Expose
   private Long id;
 
 
+  @Expose
+  private Phase phase;
+
+
+  @Expose
   private ProjectExpectedStudy projectExpectedStudy;
+
+
   @Expose
-  private Project myProject;
-  @Expose
-  private User modifiedBy;
-  @Expose
-  private User createdBy;
-  @Expose
-  private boolean active;
-  @Expose
-  private Date activeSince;
-  @Expose
-  private String modificationJustification;
+  private Project project;
+
 
   public ExpectedStudyProject() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -49,33 +41,24 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
     ExpectedStudyProject other = (ExpectedStudyProject) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
-    } else if (!this.getId().equals(other.getId())) {
+    } else if (!this.getId().equals(other.id)) {
       return false;
     }
     return true;
   }
 
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
-
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
-
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -84,21 +67,26 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
-    return modificationJustification;
+    return "";
   }
-
 
   @Override
   public User getModifiedBy() {
-    return modifiedBy;
+    User u = new User();
+    u.setId(new Long(3));
+    return u;
   }
 
 
-  public Project getMyProject() {
-    return myProject;
+  public Phase getPhase() {
+    return phase;
+  }
+
+
+  public Project getProject() {
+    return project;
   }
 
 
@@ -115,45 +103,23 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
-    return active;
+    return true;
   }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
 
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
-
-
-  public void setMyProject(Project project) {
-    this.myProject = project;
+  public void setProject(Project project) {
+    this.project = project;
   }
 
 

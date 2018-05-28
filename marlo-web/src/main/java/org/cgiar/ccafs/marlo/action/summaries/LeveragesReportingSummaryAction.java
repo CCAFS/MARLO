@@ -220,7 +220,8 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
-        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null
+        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase())
         && pl.getProject().getGlobalUnitProjects().stream()
           .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
           .collect(Collectors.toList()).size() > 0
@@ -242,9 +243,16 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear();
       }
-      if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getCrpProgram().getComposedName();
+      if (projectLeverage.isPhaseOneLeverage()) {
+        if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getIpProgram().getComposedName();
+        }
+      } else {
+        if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getCrpProgram().getComposedName();
+        }
       }
+
       if (projectLeverage.getBudget() != null) {
         budget = projectLeverage.getBudget();
       }
@@ -261,9 +269,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.getBaseUrl()});
     return model;
   }
 

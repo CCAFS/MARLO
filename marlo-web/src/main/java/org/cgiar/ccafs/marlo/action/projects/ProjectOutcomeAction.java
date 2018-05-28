@@ -434,7 +434,6 @@ public class ProjectOutcomeAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         List<ProjectMilestone> milestones = new ArrayList<>();
-
         if (projectOutcome.getMilestones() != null) {
           for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
             if (crpMilestone.getCrpMilestone() != null) {
@@ -455,9 +454,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
         projectOutcome.setMilestones(
           projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-        projectOutcome.setCommunications(
-          projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+          projectOutcome.setCommunications(
+            projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
         projectOutcome.setNextUsers(
           projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
@@ -538,9 +538,7 @@ public class ProjectOutcomeAction extends BaseAction {
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
-      projectOutcome.getCrpProgramOutcome().setSrfTargetUnit(null);
       projectOutcome.setAchievedUnit(null);
-      crpProgramOutcome.setSrfTargetUnit(null);
       projectOutcome.setExpectedUnit(null);
     }
 
@@ -555,17 +553,21 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
       this.saveMilestones(projectOutcomeDB);
-      this.saveCommunications(projectOutcomeDB);
+      if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+        this.saveCommunications(projectOutcomeDB);
+      }
       this.saveNextUsers(projectOutcomeDB);
       this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
-        this.saveLessonsOutcome(loggedCrp, projectOutcomeDB);
+        this.saveLessonsOutcome(loggedCrp, projectOutcomeDB, projectOutcome);
       }
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
+      projectOutcome.setCreatedBy(projectOutcomeDB.getCreatedBy());
+      projectOutcome.setActive(true);
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_INDICATORS_RELATION);
@@ -645,7 +647,8 @@ public class ProjectOutcomeAction extends BaseAction {
                 this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
             }
 
-            if (projectCommunication.getSummary().getFileName().isEmpty()) {
+            if (projectCommunication.getSummary() != null && projectCommunication.getSummary().getFileName() != null
+              && projectCommunication.getSummary().getFileName().isEmpty()) {
               projectCommunication.setSummary(null);
             }
 
@@ -765,6 +768,7 @@ public class ProjectOutcomeAction extends BaseAction {
           if (projectMilestone.getId() == null) {
             projectMilestone.setCreatedBy(this.getCurrentUser());
 
+
             projectMilestone.setActiveSince(new Date());
             projectMilestone.setActive(true);
             projectMilestone.setProjectOutcome(projectOutcomeDB);
@@ -861,6 +865,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectNextuserDB.setKnowledge(projectNextuser.getKnowledge());
             projectNextuserDB.setNextUser(projectNextuser.getNextUser());
             projectNextuserDB.setStrategies(projectNextuser.getStrategies());
+            projectNextuserDB.setStrategiesReport(projectNextuser.getStrategiesReport());
+            projectNextuserDB.setKnowledgeReport(projectNextuser.getKnowledgeReport());
 
             projectNextuserDB = projectNextuserManager.saveProjectNextuser(projectNextuserDB);
           }
@@ -911,6 +917,15 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setModificationJustification("");
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
+    } else {
+      if (projectOutcome.getExpectedUnit() != null) {
+        if (projectOutcome.getExpectedUnit().getId() == null
+          || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+          projectOutcome.setExpectedUnit(null);
+        } else {
+          projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+        }
+      }
     }
     projectOutcome.setMilestones(milestones);
     projectOutcome.setNextUsers(nextusers);

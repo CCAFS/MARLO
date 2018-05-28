@@ -70,7 +70,6 @@ public class SendMailTest extends BaseAction {
       contentType = "application/pdf";
       //
 
-      System.out.println("OK!");
       send.send("MARLOSupport@cgiar.org", "c.d.garcia@cgiar.org", "MARLOSupport@cgiar.org", "Prueba", "Message test",
         buffer.array(), contentType, fileName, true);
 

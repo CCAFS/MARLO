@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
@@ -507,22 +509,26 @@ public class HibernateAuditLogListener
       boolean hasPhase = false;
       for (String nameAtrribute : propertyNamesRelation) {
         if (nameAtrribute.equals("phase")) {
-          phaseObject = (Phase) classMetadata.getPropertyValue(entity, nameAtrribute);
+          try {
+            phaseObject = (Phase) classMetadata.getPropertyValue(entity, nameAtrribute);
+          } catch (Exception e) {
+            // The attribute is not a Phase Model Class
+            phaseObject = null;
+          }
           if (phaseObject != null) {
             phaseObject = (Phase) postUpdateEvent.getSession().get(Phase.class, phaseObject.getId());
             if (phaseObject != null) {
               hasPhase = true;
             }
           }
-
-
         }
       }
       /*
        * if have phase and the phase is the current we are checking , we load the info
        */
       if (hasPhase || entity instanceof Project || entity instanceof FundingSource || entity instanceof Deliverable
-        || entity instanceof ProjectOutcome || entity instanceof CrpProgram) {
+        || entity instanceof ProjectOutcome || entity instanceof CrpProgram || entity instanceof ProjectExpectedStudy
+        || entity instanceof ProjectInnovation) {
         if (hasPhase && (entity instanceof Deliverable == false)) {
           if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
             updateRecord.put(IAuditLog.ENTITY, entity);

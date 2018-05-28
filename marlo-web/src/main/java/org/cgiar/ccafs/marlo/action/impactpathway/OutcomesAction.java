@@ -194,7 +194,6 @@ public class OutcomesAction extends BaseAction {
 
   public String getBaseLineFileURL(String outcomeID) {
     String path = config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
-    System.out.println(path);
     return path;
   }
 
@@ -524,7 +523,6 @@ public class OutcomesAction extends BaseAction {
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
               && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
             .collect(Collectors.toList()).get(0));
-          System.out.println(submit);
         }
 
       }

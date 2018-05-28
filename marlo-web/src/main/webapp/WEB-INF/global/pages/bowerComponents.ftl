@@ -26,6 +26,7 @@
   [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.css" />[/#if]
   [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.date.css" />[/#if]
   [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.time.css" />[/#if]
+  [#if libraryName="components-font-awesome" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/components-font-awesome/css/fontawesome-all.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 

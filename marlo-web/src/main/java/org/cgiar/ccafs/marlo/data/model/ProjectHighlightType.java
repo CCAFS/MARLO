@@ -17,16 +17,19 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
   private static final long serialVersionUID = -4160886976093977707L;
 
   @Expose
-  private Integer id;
+  private Long id;
 
 
   private ProjectHighlight projectHighlight;
   @Expose
   private int idType;
+  @Expose
+  private Phase phase;
 
 
   public ProjectHighlightType() {
   }
+
 
   public ProjectHighlightType(ProjectHighlight projectHighlight, int idType) {
     this.projectHighlight = projectHighlight;
@@ -52,7 +55,7 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
   }
 
   @Override
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
@@ -70,19 +73,22 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -106,13 +112,18 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public void setId(Integer id) {
+
+  public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setIdType(int idType) {
     this.idType = idType;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

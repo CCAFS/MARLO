@@ -90,7 +90,7 @@
             </div>
           [/#if]
           
-          [#-- Collaborations among Programs and between the Program and Platforms --]
+          [#-- Table G: Collaborations among Programs and between the Program and Platforms --]
           [#if flagship]
             <div class="form-group">
               <h4 class="subTitle headTitle powb-table">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
@@ -156,11 +156,10 @@
                   --]
                   
                   [#if regionElement.effostornCountry?has_content]
-                    [#assign pmuValue]${pmuValue} 
-
-${liaisonInstitution.crpProgram.composedName} 
-${(regionElement.effostornCountry)!}
-[/#assign]
+                    [#assign pmuValue]${pmuValue}
+                    ${liaisonInstitution.crpProgram.composedName} 
+                    ${(regionElement.effostornCountry)!}
+                    [/#assign]
                   [/#if]
                 </div>
               [/#list]

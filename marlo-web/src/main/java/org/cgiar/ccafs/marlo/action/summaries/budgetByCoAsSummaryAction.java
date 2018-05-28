@@ -390,7 +390,7 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
-        title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+        title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
         phaseID = this.getSelectedPhase().getId().toString();
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagshipsList = new ArrayList<>();
@@ -655,7 +655,7 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

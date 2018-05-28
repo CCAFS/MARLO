@@ -70,71 +70,59 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
-    BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-    baseAction.clearPermissionsCache();
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     boolean canEdit = false;
-    boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
-    String projectParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
+    String deliverableParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
+    deliverableID = Long.parseLong(deliverableParameter);
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    boolean editableDefined = parameters.get(APConstants.EDITABLE_REQUEST).isDefined();
 
-    deliverableID = Long.parseLong(projectParameter);
+    if (deliverable != null) {
+      String crpAcronymParam[] = {crp.getAcronym()};
+      String publicationParams[] = {crp.getAcronym(), deliverable.getId() + ""};
+      boolean hasPublicationFullPermission = baseAction
+        .hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, crpAcronymParam));
+      boolean hasPublicationPermission =
+        baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_PERMISSION, publicationParams));
+      boolean isCreator = user.getId().equals(deliverable.getCreatedBy().getId());
+      boolean isInDeliverablePhase = deliverable.getPhase().getId() == baseAction.getActualPhase().getId();
+      boolean isTransaction = parameters.get(APConstants.TRANSACTION_ID).isDefined();
+      boolean isSaving = parameters.get("save").isDefined();
 
-    Deliverable project = deliverableManager.getDeliverableById(deliverableID);
-
-    if (project != null) {
-      String params[] = {crp.getAcronym()};
-      String paramDeliverableID[] = {crp.getAcronym(), project.getId() + ""};
-      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-        canEdit = true;
+      if (!isInDeliverablePhase) {
+        canEdit = false;
       } else {
-
-        if (baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
-          || baseAction
-            .hasPermission(baseAction.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID))) {
+        if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
           canEdit = true;
-
-
-        }
-
-        if (baseAction.isCrpClosed()) {
-          canEdit = false;
-        }
-      }
-
-
-      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
-        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
-        editParameter = stringEditable.equals("true");
-        if (!editParameter) {
-          baseAction.setEditableParameter(hasPermissionToEdit);
-        }
-      }
-      if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
-          : baseAction.hasPermission(baseAction.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
-            || baseAction
-              .hasPermission(baseAction.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID))
-
-        ;
-      }
-
-      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
-        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
-        editParameter = stringEditable.equals("true");
-        if (!editParameter) {
-          baseAction.setEditableParameter(hasPermissionToEdit);
+        } else {
+          if (isCreator || hasPublicationFullPermission || hasPublicationPermission) {
+            canEdit = true;
+          }
+          if (baseAction.isCrpClosed()) {
+            canEdit = false;
+          }
         }
       }
 
-      // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
-      baseAction.setCanEdit(canEdit);
+      if (canEdit) {
+        if (editableDefined) {
+          String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
+          editParameter = stringEditable.equals("true") && canEdit;
+        }
+        if (isSaving) {
+          editParameter = true;
+        }
+        // Set the variable that indicates if the user can edit the section
+        baseAction.setCanEdit(canEdit);
+        baseAction.setEditableParameter(editParameter && canEdit && !isTransaction);
+      } else {
+        baseAction.setCanEdit(false);
+        baseAction.setEditableParameter(false);
+      }
 
     } else {
       throw new NullPointerException();

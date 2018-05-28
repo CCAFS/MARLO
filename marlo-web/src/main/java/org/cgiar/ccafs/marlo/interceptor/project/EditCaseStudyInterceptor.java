@@ -149,7 +149,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CASE_STUDY_EDIT_PERMISSION, params));
       }
@@ -159,16 +159,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       }
 
 
-      for (CaseStudyProject studyProject : caseStudy.getCaseStudyProjects()) {
-        System.out.println(studyProject.getProject().getId());
-      }
-
-      List<CaseStudyProject> caseStudyProjects =
-        new ArrayList<>(
-          caseStudy
-            .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
-              && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-            .collect(Collectors.toList()));
+      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
+        .filter(
+          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
+        .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

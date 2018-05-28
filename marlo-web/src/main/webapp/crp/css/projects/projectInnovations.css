@@ -1,0 +1,80 @@
+table tr {
+  list-style: none;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 0.95em;
+}
+
+table tr.text-small{
+  font-size: 0.85em;
+}
+
+table tr a {
+  color: #444;
+}
+
+thead th {
+  background: #f5f5f5;
+  color: #a9a8a8;
+  padding: 9px;
+}
+
+td {
+  padding: 3px 10px;
+  vertical-align: middle !important;
+}
+
+span.icon-20 {
+  margin-top: 7px;
+}
+
+table {
+  border: 1px solid #e6e6e6;
+  font-size: 0.95em;
+}
+
+.outcomeStatement {
+  float: left;
+}
+
+table ul {
+  padding-left: 15px;
+}
+
+.subHeader th{
+  text-align: center;
+}
+
+/** MARLO Responsibe Tables */
+.table-responsive table {
+  min-width: 1500px;
+  margin-bottom: 0;
+}
+
+.table-responsive {
+  border: 1px solid #ddd;
+  max-height: 500px;
+}
+
+.table > thead > tr > th {
+  vertical-align:middle;
+}
+
+form .form-group.margin-panel {
+  margin-bottom: 40px;
+}
+
+.table-border-powb {
+  border-collapse: collapse;
+}
+.table-border-powb td {
+  border: 1px solid rgb(224, 224, 224);
+}
+.table-border-powb tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+.addInnovation a {
+  color: #fff;
+  text-decoration: initial;
+}

@@ -456,7 +456,7 @@ public class OutcomesAction extends BaseAction {
           milestone.setImpactPathway(true);
 
           SrfTargetUnit targetUnit =
-            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getTargetUnit().getId());
+            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getSrfTargetUnit().getId());
           milestone.setSrfTargetUnit(targetUnit);
           if (targetUnit.getId() != -1) {
             milestone.setValue(researchMilestone.getValue());

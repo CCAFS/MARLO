@@ -17,8 +17,13 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -31,6 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -39,15 +48,21 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -55,7 +70,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -116,6 +133,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final ProjectOutputsValidator projectOutputsValidator;
   private final ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
 
+  private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+
+  private final ProjectInnovationValidator projectInnovationValidator;
+
+  private final ProjectInnovationCountryManager projectInnovationCountryManager;
+
+  private final FundingSourceManager fundingSourceManager;
+
+  private final DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+
+  private final DeliverableParticipantManager deliverableParticipantManager;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -129,7 +158,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectOutcomesPandRValidator projectOutcomesPandRValidator,
     ProjectOtherContributionsValidator projectOtherContributionsValidator,
     ProjectOutputsValidator projectOutputsValidator, ProjectExpectedStudiesValidator projectExpectedStudiesValidator,
-    ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator) {
+    ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    ProjectInnovationValidator projectInnovationValidator,
+    ProjectInnovationCountryManager projectInnovationCountryManager, FundingSourceManager fundingSourceManager,
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
+    DeliverableParticipantManager deliverableParticipantManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -151,6 +185,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectOutputsValidator = projectOutputsValidator;
     this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
     this.projectBudgetsFlagshipValidator = projectBudgetsFlagshipValidator;
+    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.projectInnovationValidator = projectInnovationValidator;
+    this.fundingSourceManager = fundingSourceManager;
+    this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
+    this.deliverableParticipantManager = deliverableParticipantManager;
   }
 
 
@@ -272,8 +312,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locElements = projectDB.getProjectLocations()
-      .stream().filter(c -> c.isActive() && c.getLocElement() != null
+    List<ProjectLocation> locElements = projectDB
+      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
         && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
@@ -371,10 +411,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-  public DeliverablePartnership responsiblePartner(Deliverable deliverable, BaseAction action) {
+
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable, BaseAction baseAction) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.getPhase() != null && dp.getPhase().equals(action.getActualPhase()) && dp.isActive()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(baseAction.getActualPhase())
           && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).get(0);
       return partnership;
@@ -382,7 +423,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       return null;
     }
   }
-
 
   public void validateCaseStduies(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -421,12 +461,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateHighlight(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
     List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-      .filter(d -> d.isActive() && d.getYear().intValue() == action.getActualPhase().getYear())
+      .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive()
+        && d.getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
       .collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
@@ -443,6 +485,59 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
       projectHighLightValidator.validate(action, project, projectHighlight, false);
 
+    }
+
+  }
+
+  public void validateInnovations(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    Phase phase = action.getActualPhase();
+
+    List<ProjectInnovation> innovations =
+      project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setInnovations(new ArrayList<ProjectInnovation>());
+    for (ProjectInnovation projectInnovation : innovations) {
+      if (projectInnovation.getProjectInnovationInfo(phase) != null) {
+        project.getInnovations().add(projectInnovation);
+      }
+    }
+
+    for (ProjectInnovation innovation : project.getInnovations()) {
+
+      if (innovation.getProjectInnovationInfo() == null) {
+        innovation.getProjectInnovationInfo(phase);
+      }
+
+      // Innovation Countries List
+      if (innovation.getProjectInnovationCountries() == null) {
+        innovation.setCountries(new ArrayList<>());
+      } else {
+        List<ProjectInnovationCountry> countries =
+          projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+        innovation.setCountries(countries);
+      }
+
+      // Innovation Organization Type List
+      if (innovation.getProjectInnovationOrganizations() != null) {
+        innovation.setOrganizations(new ArrayList<>(innovation.getProjectInnovationOrganizations().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovation Deliverable List
+      if (innovation.getProjectInnovationDeliverables() != null) {
+        innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
+          .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovation Crp list
+      if (innovation.getProjectInnovationCrps() != null) {
+        innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      projectInnovationValidator.validate(action, project, innovation, false);
     }
 
   }
@@ -478,7 +573,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
   }
-
 
   public void validateOutcomesPandR(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -559,6 +653,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateProjectBudgetsFlagship(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -570,13 +665,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-
   public void validateProjectDeliverables(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<Deliverable> deliverables =
-      project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+    List<Deliverable> deliverables = project.getDeliverables().stream()
+      .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()) != null).collect(Collectors.toList());
     List<Deliverable> openA = deliverables.stream()
       .filter(a -> a.isActive() && ((a.getDeliverableInfo(action.getActualPhase()).getStatus() == null
         || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
@@ -595,25 +689,48 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
-            .getCurrentCycleYear()
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      // openA.addAll(deliverables.stream()
+      // .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+      // && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
+      // .getCurrentCycleYear()
+      // && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+      // && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      // .collect(Collectors.toList()));
+
+      openA.addAll(deliverables.stream().filter(d -> d.isActive()
+        && d.getDeliverableInfo(action.getActualPhase()) != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
     }
 
     for (Deliverable deliverable : openA) {
 
-      deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(action.getActualPhase()));
+      deliverable.getDeliverableInfo(action.getActualPhase());
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, action));
       deliverable.setOtherPartners(this.otherPartners(deliverable, action));
-      deliverable.setGenderLevels(
-        deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      deliverable.setFundingSources(
-        deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+        .collect(Collectors.toList()));
+
+      for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+
+        deliverableFundingSource.setFundingSource(
+          fundingSourceManager.getFundingSourceById(deliverableFundingSource.getFundingSource().getId()));
+        deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+          deliverableFundingSource.getFundingSource().getFundingSourceInfo(action.getActualPhase()));
+        if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
+          deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+            deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(action.getActualPhase()));
+        }
+      }
+      deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
 
 
       if (action.isReportingActive()) {
@@ -623,43 +740,46 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverable.setQualityCheck(deliverableQualityCheck);
 
         if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
         if (deliverable.getDeliverableDisseminations() != null) {
-          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
-          if (deliverable.getDeliverableDisseminations().size() > 0) {
+          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+          if (deliverable.getDisseminations().size() > 0) {
             deliverable.setDissemination(deliverable.getDisseminations().get(0));
           } else {
             deliverable.setDissemination(new DeliverableDissemination());
           }
-
         }
 
         if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
         if (deliverable.getDeliverablePublicationMetadatas() != null) {
-          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
         if (!deliverable.getPublicationMetadatas().isEmpty()) {
           deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
         }
 
         if (deliverable.getDeliverableDataSharings() != null) {
-          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
+          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
         }
 
 
         deliverable.setUsers(deliverable.getDeliverableUsers().stream()
-          .filter(c -> c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
-          .collect(Collectors.toList()));
+          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
         deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-          .filter(c -> c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
-          .collect(Collectors.toList()));
+          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
         deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles().stream()
+          .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())) {
 
           DeliverableFile deFile = new DeliverableFile();
           switch (dataSharingFile.getTypeId().toString()) {
@@ -677,8 +797,47 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           deFile.setSize(0);
           deliverable.getFiles().add(deFile);
         }
-      }
 
+        if (deliverable.getDeliverableIntellectualAssets() != null) {
+          List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+            .stream().filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+          if (intellectualAssets.size() > 0) {
+            deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+              .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
+          } else {
+            deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+          }
+        }
+        if (deliverable.getDeliverableParticipants() != null) {
+          List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+          if (deliverableParticipants.size() > 0) {
+            deliverable.setDeliverableParticipant(
+              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
+            // Participants Locations
+            if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
+              deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
+            } else {
+              List<DeliverableParticipantLocation> locations = deliverable.getDeliverableParticipant()
+                .getDeliverableParticipantLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList());
+              deliverable.getDeliverableParticipant().setParticipantLocations(locations);
+
+            }
+            if (deliverable.getDeliverableParticipant().getParticipantLocations() != null) {
+              for (DeliverableParticipantLocation location : deliverable.getDeliverableParticipant()
+                .getParticipantLocations()) {
+                deliverable.getDeliverableParticipant().getParticipantLocationsIsos()
+                  .add(location.getLocElement().getIsoAlpha2());
+              }
+            }
+          } else {
+            deliverable.setDeliverableParticipant(new DeliverableParticipant());
+          }
+        }
+
+      }
       deliverableValidator.validate(action, deliverable, false);
     }
 
@@ -745,9 +904,75 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    project.setExpectedStudies(project.getProjectExpectedStudies().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-    projectExpectedStudiesValidator.validate(action, project, false);
+    List<ProjectExpectedStudy> studies =
+      project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
+    for (ProjectExpectedStudy projectExpectedStudy : studies) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(action.getActualPhase()) != null) {
+        project.getExpectedStudies().add(projectExpectedStudy);
+      }
+    }
+    Phase phase = action.getActualPhase();
+    for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
+
+
+      if (expectedStudy.getProjectExpectedStudyInfo() == null) {
+        expectedStudy.getProjectExpectedStudyInfo(phase);
+      }
+
+      // Expected Study Countries List
+      if (expectedStudy.getProjectExpectedStudyCountries() == null) {
+        expectedStudy.setCountries(new ArrayList<>());
+      } else {
+        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
+          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId());
+        expectedStudy.setCountries(countries);
+      }
+
+      // Expected Study SubIdos List
+      if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
+        expectedStudy.setSubIdos(new ArrayList<>(expectedStudy.getProjectExpectedStudySubIdos().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Flagship List
+      if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
+        expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Crp List
+      if (expectedStudy.getProjectExpectedStudyCrps() != null) {
+        expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Institutions List
+      if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
+        expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Srf Target List
+      if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
+        expectedStudy.setSrfTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudySrfTargets().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Projects List
+      if (expectedStudy.getExpectedStudyProjects() != null) {
+        expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      if (expectedStudy.getCountries() != null) {
+        for (ProjectExpectedStudyCountry country : expectedStudy.getCountries()) {
+          expectedStudy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+        }
+      }
+
+      projectExpectedStudiesValidator.validate(action, project, expectedStudy, false);
+    }
 
 
   }
@@ -799,13 +1024,23 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     for (ProjectOutcome projectOutcome : project.getOutcomes()) {
       projectOutcome.setMilestones(
         projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-      projectOutcome.setCommunications(
-        projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      if (action.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+        projectOutcome.setCommunications(
+          projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      }
       projectOutcome.setNextUsers(
         projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectOutcome.setIndicators(
         projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      List<ProjectComponentLesson> projectComponentLessons = projectOutcome.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()
+          && c.getCycle().equals(action.getCurrentCycle()))
+        .collect(Collectors.toList());
+      if (projectComponentLessons != null && projectComponentLessons.size() > 0) {
+        projectOutcome.setProjectComponentLesson(projectComponentLessons.get(0));
+      }
+
       projectOutcomeValidator.validate(action, projectOutcome, false);
 
     }
@@ -820,21 +1055,36 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     for (ProjectPartner projectPartner : project.getPartners()) {
       List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
-      if (action.isReportingActive()) {
-
-        List<ProjectPartnerOverall> overalls = projectPartner.getProjectPartnerOveralls().stream()
-          .filter(c -> c.isActive() && c.getYear() == action.getReportingYear()).collect(Collectors.toList());
-        if (!overalls.isEmpty()) {
-          project.setOverall(overalls.get(0).getOverall());
-
-        }
-      }
       List<ProjectPartnerContribution> partnerContributions =
         projectPartner.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
-        contributors.add(projectPartnerContribution);
+        projectPartner.getPartnerContributors().add(projectPartnerContribution);
       }
-      projectPartner.setPartnerContributors(contributors);
+      List<ProjectPartnerPartnership> partnerPartnerships =
+        projectPartner.getProjectPartnerPartnerships().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (partnerPartnerships.size() > 0) {
+        projectPartner.setProjectPartnerPartnership(partnerPartnerships.get(0));
+
+        // Partnership Locations
+        List<ProjectPartnerPartnershipLocation> partnerPartnershipLocations =
+          projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
+            .filter(p -> p.isActive()).collect(Collectors.toList());
+        for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : partnerPartnershipLocations) {
+          projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIsos()
+            .add(projectPartnerPartnershipLocation.getLocation().getIsoAlpha2());
+        }
+
+        // Partnership Research Phases
+        List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases =
+          projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases().stream()
+            .filter(rf -> rf.isActive()).collect(Collectors.toList());
+        for (ProjectPartnerPartnershipResearchPhase partnershipResearchPhase : partnershipResearchPhases) {
+          projectPartner.getProjectPartnerPartnership().getResearchPhasesIds()
+            .add(partnershipResearchPhase.getRepIndPhaseResearchPartnership().getId());
+        }
+
+      }
+
       projectPartner.setPartnerPersons(
         projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectPartner.setSelectedLocations(new ArrayList<>());

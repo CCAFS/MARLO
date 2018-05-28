@@ -921,7 +921,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

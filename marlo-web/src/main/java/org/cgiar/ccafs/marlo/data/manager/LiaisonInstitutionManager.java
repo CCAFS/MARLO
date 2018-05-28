@@ -69,6 +69,13 @@ public interface LiaisonInstitutionManager {
   public LiaisonInstitution getLiaisonInstitutionById(long liaisonInstitutionID);
 
   /**
+   * This method gets a list of liaisonInstitution object by a given user identifier
+   * 
+   * @return a list of LiaisonInstitution object.
+   */
+  public List<LiaisonInstitution> getLiaisonInstitutionByUserId(Long userId, Long crpId);
+
+  /**
    * This method gets a liaisonInstitution object by a given Institution and Crp identifier.
    * 
    * @author avalencia - CCAFS
@@ -89,5 +96,4 @@ public interface LiaisonInstitutionManager {
    *         or -1 is some error occurred.
    */
   public LiaisonInstitution saveLiaisonInstitution(LiaisonInstitution liaisonInstitution);
-
 }

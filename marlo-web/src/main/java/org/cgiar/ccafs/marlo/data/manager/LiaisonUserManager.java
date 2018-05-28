@@ -69,6 +69,14 @@ public interface LiaisonUserManager {
   public LiaisonUser getLiaisonUserByUserId(long userID, long crpID);
 
   /**
+   * This method gets a List of liaisonUser object by a given user identifier.
+   * 
+   * @param userID is the user identifier.
+   * @return a List LiaisonUser object.
+   */
+  public List<LiaisonUser> getLiaisonUsersByUserId(long userID, long crpID);
+
+  /**
    * This method gets a list of liaisonUser by a given Institution identifier.
    * 
    * @param institutionId is the institution identifier.
@@ -85,6 +93,5 @@ public interface LiaisonUserManager {
    *         or -1 is some error occurred.
    */
   public LiaisonUser saveLiaisonUser(LiaisonUser liaisonUser);
-
 
 }

@@ -85,5 +85,8 @@
          <property name="crossCuttingScoreCapacity" type="java.lang.Long">
             <column name="cross_cutting_score_capacity" />
         </property>
+        <property name="isLocationGlobal" type="java.lang.Boolean">
+            <column name="is_location_global" />
+        </property>
     </class>
 </hibernate-mapping>

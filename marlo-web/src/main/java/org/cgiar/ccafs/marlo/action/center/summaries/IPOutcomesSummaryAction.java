@@ -129,7 +129,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      System.out.println("Pentaho SubReports: " + hm);
+      // System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
       String masterQueryName = "main";

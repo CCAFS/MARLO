@@ -39,13 +39,13 @@
         <tr>
           [#-- ID --]
           <td class="">
-            <a href="${projectUrl}">${(deliverable.id)!}</a>
+            <a href="${projectUrl}">D${(deliverable.id)!}</a>
           </td>
           [#-- Title / Name --]
           <td class="col-md-4 left">
             <a href="${projectUrl}">
-              [#if deliverable.title?has_content]
-                ${(deliverable.title)!}
+              [#if (deliverable.deliverableInfo.title?has_content)!false]
+                ${(deliverable.deliverableInfo.title)!}
               [#else]
                 Not defined
               [/#if]
@@ -63,7 +63,11 @@
           <td class="">
             [#if deliverable.leaders?has_content]
               [#list deliverable.leaders as institutionLead]
-                <p>${(institutionLead.institution.acronym)!((institutionLead.institution.name)!'undefined')}</p>
+                [#if (institutionLead.institution.acronym?has_content)!false]
+                  <p>${(institutionLead.institution.acronym)!}</p>
+                [#else]
+                  <p>${(institutionLead.institution.name)!'undefined'}</p>
+                [/#if]
               [/#list]
             [/#if]
           </td>
@@ -71,16 +75,16 @@
           <td class=""> 
             [#if deliverable.programs?has_content || deliverable.regions?has_content]
               [#if deliverable.programs?has_content][#list deliverable.programs as element]
-              <span class="programTag" style="border-color:${(element.ipProgram.crpProgram.color)!'#fff'}">${element.ipProgram.acronym}</span>[/#list]
+              <span class="programTag" style="border-color:${(element.crpProgram.color)!'#fff'}">${(element.crpProgram.acronym)!}</span>[/#list]
               [/#if][#if deliverable.regions?has_content][#list deliverable.regions as element]
-              <span class="programTag" style="border-color:${(element.ipProgram.crpProgram.color)!'#fff'}">${element.ipProgram.acronym}</span>[/#list][/#if]
+              <span class="programTag" style="border-color:${(element.crpProgram.color)!'#fff'}">${(element.crpProgram.acronym)!}</span>[/#list][/#if]
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
           </td>
           [#-- Delivery year --]
           <td class=""> 
-           ${(deliverable.year)!}
+           ${(deliverable.deliverableInfo.year)!}
           </td>
           [#-- FAIR Compliance --]
           <td class="fair"> 

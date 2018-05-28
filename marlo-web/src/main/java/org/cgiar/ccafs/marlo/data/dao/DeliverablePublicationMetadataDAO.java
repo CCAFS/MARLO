@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -54,6 +56,15 @@ public interface DeliverablePublicationMetadataDAO {
    */
   public List<DeliverablePublicationMetadata> findAll();
 
+
+  /**
+   * This method gets a DeliverablePublicationMetadata object by a given deliverablePublicationMetadata phase and
+   * deliverable.
+   * 
+   * @return a DeliverablePublicationMetadata object.
+   */
+  public DeliverablePublicationMetadata findPublicationMetadataByPhaseAndDeliverable(Phase phase,
+    Deliverable deliverable);
 
   /**
    * This method saves the information of the given deliverablePublicationMetadata

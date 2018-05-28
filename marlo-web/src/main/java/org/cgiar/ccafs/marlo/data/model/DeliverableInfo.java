@@ -63,9 +63,13 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   private Long crossCuttingScoreYouth;
   @Expose
   private Long crossCuttingScoreCapacity;
+  @Expose
+  private Boolean isLocationGlobal;
+
 
   public DeliverableInfo() {
   }
+
 
   public DeliverableInfo(CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome,
     DeliverableType deliverableType, Deliverable deliverable, Phase phase, User user, String title, String description,
@@ -128,7 +132,6 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
@@ -146,15 +149,14 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return crossCuttingScoreCapacity;
   }
 
+
   public Long getCrossCuttingScoreGender() {
     return crossCuttingScoreGender;
   }
 
-
   public Long getCrossCuttingScoreYouth() {
     return crossCuttingScoreYouth;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -185,6 +187,7 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return description;
   }
 
+
   public String getGenderScoreName() {
     if (this.crossCuttingScoreGender != null) {
       if (this.crossCuttingScoreGender == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
@@ -198,11 +201,15 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   @Override
   public Long getId() {
     return id;
   }
 
+  public Boolean getIsLocationGlobal() {
+    return isLocationGlobal;
+  }
 
   public String getLicense() {
     return license;
@@ -344,6 +351,11 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
       return true;
     }
 
+    if (status != null && newExpectedYear != null && this.newExpectedYear <= year
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      return true;
+    }
+
     return false;
   }
 
@@ -435,6 +447,11 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setIsLocationGlobal(Boolean isLocationGlobal) {
+    this.isLocationGlobal = isLocationGlobal;
   }
 
 
