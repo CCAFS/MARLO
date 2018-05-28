@@ -124,7 +124,7 @@
           
           [#-- Description of Stage reached--] 
           <div class="form-group">
-            [@customForm.textArea name="innovation.projectInnovationInfo.stageDescription" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" placeholder="" className="limitWords-50" required=true editable=editable /]
+            [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" placeholder="" className="limitWords-50" required=true editable=editable /]
           </div>
           
           [#-- Specify next user organizational type (Only if stage 4) --]
