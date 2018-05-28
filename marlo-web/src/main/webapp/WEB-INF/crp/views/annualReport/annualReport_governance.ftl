@@ -47,10 +47,6 @@
           <div class="form-group margin-panel">
             [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
           </div>
-          [#else]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${pmuText}" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
-          </div>
           [/#if]
         
         </div>

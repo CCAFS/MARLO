@@ -35,7 +35,7 @@
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       
-        [#assign customName= "annualReport.${currentStage}" /]
+        [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
         [#assign customLabel= "annualReport.${currentStage}" /]
         
         [#-- Title --]
