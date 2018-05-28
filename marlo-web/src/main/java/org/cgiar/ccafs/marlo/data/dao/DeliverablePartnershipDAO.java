@@ -54,6 +54,13 @@ public interface DeliverablePartnershipDAO {
    */
   public List<DeliverablePartnership> findAll();
 
+  /**
+   * This method gets a list of active deliverablePartnership with the defined deliverable, phase and type
+   * 
+   * @return a list from DeliverablePartnership null if no exist records
+   */
+  public List<DeliverablePartnership> findByDeliverablePhaseAndType(long deliverableId, long phaseId,
+    String partnerType);
 
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
     Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType);
