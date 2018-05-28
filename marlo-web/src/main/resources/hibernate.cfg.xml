@@ -283,6 +283,10 @@
     <mapping resource="xmls/ReportSynthesis.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrpProgress.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrpProgressStudies.hbm.xml"/>
-    <mapping resource="xmls/ReportSynthesisCrpProgressTargets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressTargets.hbm.xml"/>    
+    <mapping resource="xmls/ReportSynthesisFinancialSummaries.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFinancialSummaryBudgets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisGovernances.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisRisks.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
