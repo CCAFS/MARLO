@@ -4606,7 +4606,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * This method get the status of an specific deliverable from the sectionStatuses array.
    * 
    * @param deliverableID is the deliverable ID to be identified.
-   * @return Booleal object with the status of the deliverable
+   * @return Boolean object with the status of the deliverable
    */
   public Boolean isDeliverableComplete(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
