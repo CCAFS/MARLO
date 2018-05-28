@@ -1736,14 +1736,6 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
         }
-
-        // if (deliverable.getDeliverableParticipant() != null) {
-        // deliverable.setDeliverableParticipant(null);
-        // }
-        // if (deliverable.getIntellectualAsset() != null) {
-        // deliverable.setIntellectualAsset(null);
-        // }
-
       }
 
       try {
@@ -2345,6 +2337,7 @@ public class DeliverableAction extends BaseAction {
         participant.setCreatedBy(this.getCurrentUser());
         participant.setModificationJustification("");
         participant.setModifiedBy(this.getCurrentUser());
+        participant.setActive(true);
         participant = deliverableParticipantManager.saveDeliverableParticipant(participant);
       }
       List<DeliverableParticipantLocation> locationsDB = new ArrayList<>();
