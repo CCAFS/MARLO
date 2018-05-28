@@ -38,11 +38,14 @@ function addSloTarget() {
   }
 
   var name = $option.text().split(/-(.+)?/);
-  console.log(name);
   $item.find('.name').html("<strong>" + name[0] + "</strong> <br>" + name[1]);
+  $item.find('input.indicatorTargetID').val($option.val());
 
-  $list.append($item);
-  $item.show('slow');
+  // Show the element
+  $item.appendTo($list).hide().show('slow', function() {
+    $select.val('-1').trigger('change.select2');
+  });
+
   updateIndexes();
 }
 
