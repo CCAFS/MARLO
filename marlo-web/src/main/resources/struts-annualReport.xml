@@ -14,7 +14,7 @@
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
-        <param name="edit">true</param>        
+        <param name="edit">true</param>
       </result>
     </action>
 
