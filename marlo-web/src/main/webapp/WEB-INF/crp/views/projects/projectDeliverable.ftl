@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180524",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js?20180524"
+  "${baseUrl}/global/js/fieldsValidation.js?20180528"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
