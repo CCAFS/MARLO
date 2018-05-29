@@ -71,7 +71,7 @@ public class ManagementGovernanceAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
-  private ReportSynthesisManager reportbSynthesisManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
   private AuditLogManager auditLogManager;
 
@@ -114,13 +114,13 @@ public class ManagementGovernanceAction extends BaseAction {
 
   @Inject
   public ManagementGovernanceAction(APConfig config, GlobalUnitManager crpManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportbSynthesisManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     ReportSynthesisGovernanceManager reportSynthesisGovernanceManager, GovernanceValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
-    this.reportbSynthesisManager = reportbSynthesisManager;
+    this.reportSynthesisManager = reportSynthesisManager;
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
@@ -270,10 +270,10 @@ public class ManagementGovernanceAction extends BaseAction {
 
       try {
         synthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
-        reportSynthesis = reportbSynthesisManager.getReportSynthesisById(synthesisID);
+        reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
         if (!reportSynthesis.getPhase().equals(phase)) {
-          reportSynthesis = reportbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+          reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
           if (reportSynthesis == null) {
             reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
           }
@@ -281,7 +281,7 @@ public class ManagementGovernanceAction extends BaseAction {
         }
       } catch (Exception e) {
 
-        reportSynthesis = reportbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (reportSynthesis == null) {
           reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
         }
@@ -293,7 +293,7 @@ public class ManagementGovernanceAction extends BaseAction {
 
     if (reportSynthesis != null) {
 
-      ReportSynthesis reportSynthesisDB = reportbSynthesisManager.getReportSynthesisById(synthesisID);
+      ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(synthesisID);
       synthesisID = reportSynthesisDB.getId();
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
@@ -324,7 +324,7 @@ public class ManagementGovernanceAction extends BaseAction {
           reportSynthesis.setReportSynthesisGovernance(managementGovernance);
           managementGovernance.setReportSynthesis(reportSynthesis);
           // save the changes
-          reportSynthesis = reportbSynthesisManager.saveReportSynthesis(reportSynthesis);
+          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
       }
     }
@@ -345,7 +345,7 @@ public class ManagementGovernanceAction extends BaseAction {
     if (this.isFlagship()) {
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
-      ReportSynthesis reportSynthesisDB = reportbSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
+      ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
       if (reportSynthesisDB != null) {
         if (reportSynthesisDB.getReportSynthesisGovernance() != null) {
           pmuText = reportSynthesisDB.getReportSynthesisGovernance().getDescription();
@@ -364,7 +364,7 @@ public class ManagementGovernanceAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       ReportSynthesisGovernance reportManagementGovernancekDB =
-        reportbSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisGovernance();
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisGovernance();
 
       reportManagementGovernancekDB.setDescription(reportSynthesis.getReportSynthesisGovernance().getDescription());
       reportManagementGovernancekDB =
@@ -372,11 +372,11 @@ public class ManagementGovernanceAction extends BaseAction {
 
 
       List<String> relationsName = new ArrayList<>();
-      reportSynthesis = reportbSynthesisManager.getReportSynthesisById(synthesisID);
+      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
       reportSynthesis.setModifiedBy(this.getCurrentUser());
       reportSynthesis.setActiveSince(new Date());
 
-      reportbSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
