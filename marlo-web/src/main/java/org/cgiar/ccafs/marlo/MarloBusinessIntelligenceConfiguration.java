@@ -13,38 +13,24 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
-package org.cgiar.ccafs.marlo.config;
-
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+package org.cgiar.ccafs.marlo;
 
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class PentahoListener implements ServletContextListener {
+@Configuration
+public class MarloBusinessIntelligenceConfiguration {
 
-  private static Class<?> clazz = ResourceManager.class;
-  public static final String KEY_NAME = clazz.getName();
 
-  @Override
-  public void contextDestroyed(ServletContextEvent event) {
-    //
+  @Bean
+  public ResourceManager resourceManager() {
+    ClassicEngineBoot.getInstance().start();
+    ResourceManager manager = new ResourceManager();
+    manager.registerDefaults();
 
+    return manager;
   }
 
-  @Override
-  public void contextInitialized(ServletContextEvent event) {
-
-    try {
-      ClassicEngineBoot.getInstance().start();
-      ResourceManager manager = new ResourceManager();
-      manager.registerDefaults();
-
-      event.getServletContext().setAttribute(KEY_NAME, manager);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 }

@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
@@ -192,17 +191,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
   // Managers
-  private ProjectManager projectManager;
-  private CrpProgramManager programManager;
-  private GenderTypeManager genderTypeManager;
-  private InstitutionManager institutionManager;
-  private ProjectBudgetManager projectBudgetManager;
-  private LocElementManager locElementManager;
-  private CrossCuttingScoringManager crossCuttingScoringManager;
-  private IpElementManager ipElementManager;
-  private RepositoryChannelManager repositoryChannelManager;
-  private SrfTargetUnitManager srfTargetUnitManager;
-  private DeliverablePartnershipManager deliverablePartnershipManager;
+  private final ProjectManager projectManager;
+  private final CrpProgramManager programManager;
+  private final GenderTypeManager genderTypeManager;
+  private final InstitutionManager institutionManager;
+  private final ProjectBudgetManager projectBudgetManager;
+  private final LocElementManager locElementManager;
+  private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final IpElementManager ipElementManager;
+  private final RepositoryChannelManager repositoryChannelManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
+  private final DeliverablePartnershipManager deliverablePartnershipManager;
+  private final ResourceManager resourceManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -210,8 +210,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
     RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
-    CrossCuttingScoringManager crossCuttingScoringManager,
-    DeliverablePartnershipManager deliverablePartnershipManager) {
+    CrossCuttingScoringManager crossCuttingScoringManager, DeliverablePartnershipManager deliverablePartnershipManager,
+    ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -225,7 +225,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.repositoryChannelManager = repositoryChannelManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
-
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -992,18 +992,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
 
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = // new ResourceManager();
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    manager.registerDefaults();
-    try {
+    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       String masterQueryName = "Main_Query";
       Resource reportResource;
       if (this.getSelectedCycle().equals("Planning")) {
-        reportResource = manager.createDirectly(
+        reportResource = resourceManager.createDirectly(
           this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
       } else {
-        reportResource = manager.createDirectly(
+        reportResource = resourceManager.createDirectly(
           this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
       }
       // Get main report
@@ -1964,7 +1960,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       // get Reporting deliverables
       List<Deliverable> deliverables = project.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getGlobalUnitProjects().stream()
+          && d
+            .getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()) != null
