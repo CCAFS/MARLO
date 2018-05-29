@@ -123,7 +123,7 @@
         [#list licenseType.options as option]
           [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
           [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
-          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="" cssClassLabel="font-normal" /]</p>
+          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="licenceOption" cssClassLabel="font-normal" /]</p>
         [/#list]
       </div>
     [/#list]

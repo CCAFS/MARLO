@@ -38,6 +38,7 @@ function addDisseminationEvents() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var type = $(this).parent().parent().classParam('type');
     var inverted = $(this).parent().parent().classParam('inverted') === "true";
+
     // Set value
     // $(this).parent().find('input').val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
@@ -93,7 +94,7 @@ function addDisseminationEvents() {
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
   // Other license type
-  $('.licenseOptions input[type="radio"]').on("change", function() {
+  $('.licenseOptions input[type="radio"].licenceOption').on("change", function() {
     if($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
     } else {

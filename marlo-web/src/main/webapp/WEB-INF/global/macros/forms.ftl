@@ -434,10 +434,10 @@
       [#if editable]
         [#-- Yes Button --]
         <input id="${name}-yes" class="radio-input" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
-        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
+        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
         [#-- No Button --]
         <input id="${name}-no" class="radio-input" type="radio" name="${name}" value="false" [#if (customValue == "false")!false]checked[/#if] />
-        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label [#if (customValue == "false")!false]radio-checked[/#if]"> ${noLabel} </label>
+        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]"> ${noLabel} </label>
       [#else]
         <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
       [/#if]
