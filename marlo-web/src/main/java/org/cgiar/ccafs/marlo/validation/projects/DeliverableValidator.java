@@ -496,23 +496,23 @@ public class DeliverableValidator extends BaseValidator {
   private void validateIntellectualAsset(DeliverableIntellectualAsset intellectualAsset, BaseAction action) {
     if (intellectualAsset.getHasPatentPvp()) {
       if (!this.isValidString(intellectualAsset.getApplicant())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.applicant"));
+        action.addMessage(action.getText("intellectualAsset.applicants"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.applicant",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (intellectualAsset.getType() == null) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.type"));
+        action.addMessage(action.getText("intellectualAsset.type"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.type", InvalidFieldsMessages.EMPTYFIELD);
       } else {
         if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
           .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
           if (intellectualAsset.getFillingType() == null || intellectualAsset.getFillingType().getId() == -1) {
-            action.addMessage(action.getText("deliverable.intellectualAsset.fillingType"));
+            action.addMessage(action.getText("intellectualAsset.fillingType"));
             action.getInvalidFields().put("input-deliverable.intellectualAsset.fillingType.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
           if (intellectualAsset.getPatentStatus() == null || intellectualAsset.getPatentStatus().getId() == -1) {
-            action.addMessage(action.getText("deliverable.intellectualAsset.patentStatus"));
+            action.addMessage(action.getText("intellectualAsset.patentStatus"));
             action.getInvalidFields().put("input-deliverable.intellectualAsset.patentStatus.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -552,7 +552,7 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
       if (!this.isValidString(intellectualAsset.getTitle())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.title"));
+        action.addMessage(action.getText("intellectualAsset.title.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.title", InvalidFieldsMessages.EMPTYFIELD);
       }
       if (intellectualAsset.getDateFilling() == null) {
@@ -571,16 +571,16 @@ public class DeliverableValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getAdditionalInformation())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.additionalInformation"));
+        action.addMessage(action.getText("intellectualAsset.additionalInformation.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.additionalInformation",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getLink())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.link"));
+        action.addMessage(action.getText("intellectualAsset.link.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.link", InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getPublicCommunication())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.publicCommunication"));
+        action.addMessage(action.getText("intellectualAsset.publicCommunication.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.publicCommunication",
           InvalidFieldsMessages.EMPTYFIELD);
       }
