@@ -47,7 +47,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -79,6 +78,8 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   private List<CapacityDevelopment> capDevs;
 
   private final ICapacityDevelopmentService capdevService;
+  private final ResourceManager resourceManager;
+
   private int totalParticipants = 0;
   private int totalMen = 0;
   private int totalWomen = 0;
@@ -89,23 +90,21 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   private int year;
 
   @Inject
-  public CapdevSummaryAction(APConfig config, ICapacityDevelopmentService capdevService) {
+  public CapdevSummaryAction(APConfig config, ICapacityDevelopmentService capdevService,
+    ResourceManager resourceManager) {
     super(config);
     this.capdevService = capdevService;
+    this.resourceManager = resourceManager;
   }
 
 
   @Override
   public String execute() throws Exception {
 
-
-    ClassicEngineBoot.getInstance().start();
     final ByteArrayOutputStream os = new ByteArrayOutputStream();
-    final ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
 
     final Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/center/Capdev.prpt"), MasterReport.class);
+      resourceManager.createDirectly(this.getClass().getResource("/pentaho/center/Capdev.prpt"), MasterReport.class);
 
     final MasterReport masterReport = (MasterReport) reportResource.getResource();
 

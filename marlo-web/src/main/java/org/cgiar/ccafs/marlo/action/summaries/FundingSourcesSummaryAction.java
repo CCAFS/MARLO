@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.pentaho.reporting.engine.classic.core.Band;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -91,8 +90,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private long startTime;
   private Boolean hasW1W2Co;
   // Managers
-  private CrpProgramManager programManager;
-  private ProjectManager projectManager;
+  private final CrpProgramManager programManager;
+  private final ProjectManager projectManager;
+  private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -101,10 +101,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager, PhaseManager phaseManager) {
+    ProjectManager projectManager, PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectManager = projectManager;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -163,14 +164,12 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/FundingSources.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/FundingSources.prpt"), MasterReport.class);
 
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();

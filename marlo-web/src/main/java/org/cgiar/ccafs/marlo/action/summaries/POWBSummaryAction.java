@@ -72,7 +72,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -122,10 +121,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   // Parameter for tables E and F
   Double totalw1w2 = 0.0, totalw3Bilateral = 0.0, grandTotal = 0.0;
   // Managers
-  private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
-  private PowbExpenditureAreasManager powbExpenditureAreasManager;
-  private ProjectExpectedStudyManager projectExpectedStudyManager;
-  private PowbSynthesisManager powbSynthesisManager;
+  private final PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
+  private final PowbExpenditureAreasManager powbExpenditureAreasManager;
+  private final ProjectExpectedStudyManager projectExpectedStudyManager;
+  private final PowbSynthesisManager powbSynthesisManager;
+  private final ResourceManager resourceManager;
   // RTF bytes
   private byte[] bytesRTF;
 
@@ -137,12 +137,13 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, PowbSynthesisManager powbSynthesisManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -213,13 +214,10 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/POWBTemplate.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/POWBTemplate.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());

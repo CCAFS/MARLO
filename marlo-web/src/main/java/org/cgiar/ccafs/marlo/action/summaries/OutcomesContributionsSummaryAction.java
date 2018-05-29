@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -78,17 +77,20 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private HashMap<Long, String> targetUnitList;
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>();
   // Managers
-  private SrfTargetUnitManager srfTargetUnitManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
+  private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
+
   @Inject
   public OutcomesContributionsSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager) {
+    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -124,12 +126,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/OutcomesContributions.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();

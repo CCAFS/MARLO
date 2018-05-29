@@ -76,7 +76,7 @@ public class UploadBaseLineFileAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-
+    fileFileName = fileFileName.replace(' ', '_');
     FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getBaseLineFilePath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
     FileManager.copyFile(file, this.getBaseLineFilePath() + fileDB.getFileName());

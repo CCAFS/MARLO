@@ -66,7 +66,7 @@ public class UploadFundingSourceFileAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-
+    fileFileName = fileFileName.replace(' ', '_');
     FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getFundingSourceFilePath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
     FileManager.copyFile(file, this.getFundingSourceFilePath() + fileDB.getFileName());
