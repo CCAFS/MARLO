@@ -42,12 +42,10 @@
         <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
         <div class="borderBox">
         
-          [#-- Please describe any major changes to management, governance arrangements and practices --]
-          [#if PMU]
+          [#-- Describe any major changes to management, governance arrangements and practices --]
           <div class="form-group margin-panel">
             [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
           </div>
-          [/#if]
         
         </div>
         [#-- Section Buttons & hidden inputs--]

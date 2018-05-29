@@ -329,6 +329,19 @@ public class ManagementGovernanceAction extends BaseAction {
       }
     }
 
+    // Get the list of liaison institutions Flagships and PMU.
+    liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    // ADD PMU as liaison Institution too
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
+
+
     if (this.isFlagship()) {
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);

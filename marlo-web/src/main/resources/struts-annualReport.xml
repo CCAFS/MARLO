@@ -25,7 +25,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/flagshipProgress</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -38,7 +38,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/ccDimensions</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -51,7 +51,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/plannedVariance</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -64,7 +64,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingUse</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -77,7 +77,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/externalPartnerships</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -90,7 +90,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crossPartnerships</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -103,7 +103,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/melia</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -116,7 +116,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/efficiency</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -136,26 +136,26 @@
     </action>
     
 		<!--  3.2 Management of Risks to Your CRP  -->
-		<action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_risks.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/risks</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
     </action>
     
 		<!--  3.3 Financial Summary  -->
-		<action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_financial.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/financial</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -168,7 +168,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/influence</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
@@ -181,7 +181,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/control</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="annualReportID">${annualReportID}</param>
+        <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>

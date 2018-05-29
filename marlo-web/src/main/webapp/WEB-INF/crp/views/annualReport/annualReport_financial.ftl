@@ -21,61 +21,65 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
-  
-  <div class="row">
-    [#-- POWB Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-                  
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- POWB Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-        <div class="borderBox">
-        
-          [#-- Please give a narrative summary on the financial status and health of the CRP --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+                    
+          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customLabel= "annualReport.${currentStage}" /]
+          
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
+          <div class="borderBox">
+          
+            [#-- Please give a narrative summary on the financial status and health of the CRP --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+            
+            [#-- Table J: CRP Financial Report --]
+            <div class="form-group margin-panel">
+              <div class="evidence-plannedStudies-header">
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableJ.title" /]</h4>
+              </div>
+              <hr />
+              
+             [#-- REMOVE TEMPORAL LIST ASSIGN --]
+             [#assign list=[
+                {"id": "1", "composedName":"F1: Priorities and Policies for CSA"},
+                {"id": "2", "composedName":"F2: Climate-Smart technologies and Practices"},
+                {"id": "3", "composedName":"F3: Priorities and Policies for CSA"},
+                {"id": "4", "composedName":"F4: Climate-Smart technologies and Practices"}
+              ] /]
+              
+              [#list list as item]
+                [@tableJMacro element=item editable=editable && PMU /]
+              [/#list]
+            </div>
+          
           </div>
           
-          [#-- Table J: CRP Financial Report --]
-          <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableJ.title" /]</h4>
-            </div>
-            <hr />
-            
-           [#-- REMOVE TEMPORAL LIST ASSIGN --]
-           [#assign list=[
-              {"composedName":"F1: Priorities and Policies for CSA"},
-              {"composedName":"F2: Climate-Smart technologies and Practices"},
-              {"composedName":"F3: Priorities and Policies for CSA"},
-              {"composedName":"F4: Climate-Smart technologies and Practices"}
-            ] /]
-            
-            [#list list as item]
-              [@tableJMacro element=item editable=editable && PMU /]
-            [/#list]
-          </div>
-        
-        </div>
-        
-        [#-- Section Buttons & hidden inputs--]
-        [#if PMU]
-          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-        [/#if]
-      [/@s.form] 
-    </div> 
-  </div> 
+          [#-- Section Buttons & hidden inputs--]
+          [#if PMU]
+            [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+          [/#if]
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -84,13 +88,12 @@
 
 [#macro tableJMacro element editable]
  [#-- REMOVE TEMPORAL LISTS ASSIGN --]
- [#assign budgetTypesList=[{"name":"W1/W2"},{"name":"W3"},{"name":"Bilateral"}] /]
+ [#assign budgetTypesList=[{"id":"1", "name":"W1/W2"},{"id":"2", "name":"W3"},{"id":"3", "name":"Bilateral"}] /]
   
-  <div id="flagship-${element.id!''}" class="flagship expandableBlock borderBox">
+  <div id="flagship-${(element.id)!''}" class="flagship expandableBlock borderBox">
     <div class="blockTitle opened">
       [#-- Title --] 
       <span>${(element.composedName)!''}</span> 
-      <div class="clearfix"></div>
     </div>
     
     <div class="blockContent" style="display:block">
@@ -99,7 +102,6 @@
         <thead>
           <tr>
             <th></th>
-            
             [#-- Budget Types--]
             [#list budgetTypesList as budgetType]
               <th class="text-center">${budgetType.name}</th>
@@ -109,39 +111,42 @@
           </tr>
         </thead>
         <tbody>
-          [#-- Planned Budget row --]
+          [#-- Planned Budget  --]
           <tr>
+            [#-- Title --]
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.budget" /]: </b></td>
+            [#-- Amount --]
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center" required=true /]
+                  [@customForm.input name="${customName}.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element.id} category-planned" required=true /]
                 [#else]
-                  <div class="input">US$ ${((budgetObject.amount)!0)}</div>
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
+                  <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
                 [/#if]
               </td>
             [/#list]
+            [#-- Total --]
             <td class="text-center">
-              <div class="input">US$ ${((budgetObject.total)!0)}</div>
+              <nobr class="totalCategory element-${element.id} category-planned">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
             </td>
           </tr>
           
-          [#-- Percentage of Gender Amount --]
+          [#-- Actual expenditure --]
           <tr>
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.expenditure" /]: </b></td>
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center" required=true  /]
+                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element.id} category-actual" required=true  /]
                 [#else]
-                  <div class="input">US$ ${((budgetObject.amount)!0)}</div>
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
+                  <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
                 [/#if]
               </td>
             [/#list]
             <td class="text-center">
-              <div class="input">US$ ${((budgetObject.total)!0)}</div>
+              <nobr class="totalCategory element-${element.id} category-actual">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
             </td>
           </tr>
           [#-- Difference --]
@@ -149,14 +154,14 @@
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.difference" /]: </b></td>
             [#list budgetTypesList as budgetType]
               <td class="text-center">
-                <div class="input">US$ ${((budgetType.difference)!0)}</div>
-                <input type="hidden" name="${customName}.amount" value="${(budgetType.difference)!0}"/>
+                <input type="hidden" name="${customName}.amount" value="${(budgetObject.difference)!0}"/>
+                <nobr>US$ ${((budgetObject.difference)!'0')?number?string(",##0.00")}</nobr>
               </td>
             [/#list]
             <td class="text-center">
-              <div class="input">US$ ${((budgetObject.total)!0)}</div>
+              <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
             </td>
-
+          </tr>
         </tbody>
       </table>
 

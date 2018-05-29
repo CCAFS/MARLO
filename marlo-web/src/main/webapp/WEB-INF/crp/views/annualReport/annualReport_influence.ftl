@@ -21,63 +21,67 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
-  
-  <div class="row">
-    [#-- POWB Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- POWB Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-        <div class="borderBox">
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#-- Data --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.data" help="${customLabel}.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable /]
-          </div>
+          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customLabel= "annualReport.${currentStage}" /]
           
-          [#-- Comments/Analysis --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.comments" help="${customLabel}.comments.help" paramText="${(actualPhase.year)-1!}" className="" helpIcon=false required=true editable=editable && PMU /]
-          </div>
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
+          <div class="borderBox">
           
-          [#-- Outcomes/Impacts involved in policy/investments --]
-          <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
+            [#-- Data --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.data" help="${customLabel}.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable /]
+            </div>
             
-            <hr />
-            [@tableOutcomesMacro list=[{},{},{},{}] /]
-          </div>
+            [#-- Comments/Analysis --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.comments" help="${customLabel}.comments.help" paramText="${(actualPhase.year)-1!}" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+            
+            [#-- Outcomes/Impacts involved in policy/investments --]
+            <div class="form-group margin-panel">
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
+              
+              <hr />
+              [@tableOutcomesMacro list=[{},{},{},{}] /]
+            </div>
+            
+            [#-- Data --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.data.2" i18nkey="${customLabel}.data.2" help="${customLabel}.data.2.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable /]
+            </div>
+            
+            [#-- Comments/Analysis --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.comments.2" i18nkey="${customLabel}.comments.2" help="${customLabel}.comments.2.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
           
-          [#-- Data --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.data.2" i18nkey="${customLabel}.data.2" help="${customLabel}.data.2.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable /]
           </div>
-          
-          [#-- Comments/Analysis --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.comments.2" i18nkey="${customLabel}.comments.2" help="${customLabel}.comments.2.help" className="" helpIcon=false required=true editable=editable && PMU /]
-          </div>
-        
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#if PMU]
-          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-        [/#if]
-      [/@s.form] 
-    </div> 
-  </div> 
+          [#-- Section Buttons & hidden inputs--]
+          [#if PMU]
+            [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+          [/#if]
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 

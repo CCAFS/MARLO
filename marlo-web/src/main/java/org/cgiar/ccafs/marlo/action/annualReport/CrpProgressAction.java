@@ -546,23 +546,21 @@ public class CrpProgressAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-
-    if (this.isPMU()) {
-
-      // Table A-2 PMU Information
-      flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
-        loggedCrp, this.liaisonInstitution);
-
-      // Flagship Synthesis Table
-      fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions, phase.getId());
-
-    }
-
-
-    // ADD PMU as liasion Institutio too
+    // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
+    if (this.isPMU()) {
+      /*
+       * // Table A-2 PMU Information
+       * flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
+       * loggedCrp, this.liaisonInstitution);
+       * // Flagship Synthesis Table
+       * fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions,
+       * phase.getId());
+       */
+    }
 
 
     // Base Permission

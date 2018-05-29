@@ -21,82 +21,87 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
   
-  <div class="row">
-    [#-- POWB Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- POWB Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
-        <div class="borderBox">
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#-- Please provide a summary on any highlights of MELIA this year --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable /]
-          </div>
+          [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
+          [#assign customLabel= "annualReport.${currentStage}" /]
           
-          [#-- Flagships - Monitoring, Evaluation, Impact Assessment and Learning Synthesis --]
-          [#if PMU]
-          <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
+          <div class="borderBox">
+          
+            [#-- Please provide a summary on any highlights of MELIA this year --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable /]
+            </div>
             
-            <hr />
-            [@tableFlagshipsMacro list=[{},{},{},{}] /]
-          </div>
-          [/#if]
-          
-          [#-- Table I-1: Status of Evaluations, Impact Assessments and other Learning excercises planned --]
-          [#if flagship]
-          <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableI.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            </div>
-            <hr />
-            [@tableIMacro list=[{},{},{},{}] /]
-          </div>
-          [/#if]
-          
-          [#-- (PMU Form) Table I-2: Update on actions taken in response to relevant evaluations ... --]
-          [#if PMU]
-            <div class="form-group">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evaluation.title" /]</h4>
-              <div class="listEvaluations">
+            [#-- Flagships - Monitoring, Evaluation, Impact Assessment and Learning Synthesis --]
+            [#if PMU]
+            <div class="form-group margin-panel">
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
               
-               [#-- REMOVE TEMPORAL LIST ASSIGN --]
-               [#assign list=[{},{},{},{}] /]
-               
-               [#if list?has_content]
-                [#list list as item]
-                  [@relevantEvaluationMacro element=item name="list" index=item_index  isEditable=editable/]
-                [/#list]
-               [/#if]
-              </div>
-              [#if canEdit && editable]
-              <div class="text-right">
-                <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
-              </div> 
-              [/#if]
+              <hr />
+              [@tableFlagshipsMacro list=[{},{},{},{}] /]
             </div>
-          [/#if]
-        
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-      [/@s.form] 
-    </div> 
-  </div> 
+            [/#if]
+            
+            [#-- Table I-1: Status of Evaluations, Impact Assessments and other Learning excercises planned --]
+            [#if flagship]
+            <div class="form-group margin-panel">
+              <div class="evidence-plannedStudies-header">
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableI.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+              </div>
+              <hr />
+              [@tableIMacro list=[{},{},{},{}] /]
+            </div>
+            [/#if]
+            
+            [#-- (PMU Form) Table I-2: Update on actions taken in response to relevant evaluations ... --]
+            [#if PMU]
+              <div class="form-group">
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evaluation.title" /]</h4>
+                <div class="listEvaluations">
+                
+                 [#-- REMOVE TEMPORAL LIST ASSIGN --]
+                 [#assign list=[{},{},{},{}] /]
+                 
+                 [#if list?has_content]
+                  [#list list as item]
+                    [@relevantEvaluationMacro element=item name="list" index=item_index  isEditable=editable/]
+                  [/#list]
+                 [/#if]
+                </div>
+                [#if canEdit && editable]
+                <div class="text-right">
+                  <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
+                </div> 
+                [/#if]
+              </div>
+            [/#if]
+          
+          </div>
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if]
 </section>
 
 [#--  Relevant Evaluation Form template --]
