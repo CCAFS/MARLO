@@ -355,9 +355,13 @@ public class FinancialSummaryAction extends BaseAction {
 
 
         if (this.isPMU()) {
+          List<ReportSynthesisFinancialSummaryBudget> budgetList = new ArrayList<>(
+            reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets().stream()
+              .filter(t -> t.isActive()).collect(Collectors.toList()));
           // Flagships Financial Budgets
-          if (reportSynthesis.getReportSynthesisFinancialSummary()
-            .getReportSynthesisFinancialSummaryBudgets() != null) {
+          if (reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
+            && !reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
+              .isEmpty()) {
             reportSynthesis.getReportSynthesisFinancialSummary()
               .setBudgets(new ArrayList<>(
                 reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
