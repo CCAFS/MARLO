@@ -4,7 +4,10 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
-[#assign customJS = [ ] /]
+[#assign customJS = [ 
+  "https://www.gstatic.com/charts/loader.js",
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -45,14 +48,12 @@
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
           
-            [#-- Data --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.data" help="${customLabel}.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable /]
-            </div>
             
-            [#-- Comments/Analysis --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.comments" help="${customLabel}.comments.help" paramText="${(actualPhase.year)-1!}" className="" helpIcon=false required=true editable=editable && PMU /]
+            [#-- Chart 1 --]
+            <div class="form-group row">
+              <div class="col-md-8">
+                <div id="barchart_material" class="simpleBox"></div>
+              </div>
             </div>
             
             [#-- Outcomes/Impacts involved in policy/investments --]
