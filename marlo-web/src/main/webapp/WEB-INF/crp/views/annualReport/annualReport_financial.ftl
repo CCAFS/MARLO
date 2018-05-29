@@ -57,7 +57,7 @@
               </div>
               <hr />
               
-             [#-- REMOVE TEMPORAL LIST ASSIGN --]              
+              [#-- REMOVE TEMPORAL LIST ASSIGN --]
               [#list reportSynthesis.reportSynthesisFinancialSummary.budgets as item]
                 [@tableJMacro element=item editable=editable && PMU /]
               [/#list]
@@ -124,7 +124,6 @@
               <nobr class="totalCategory element-${element.id} category-planned">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
             </td>
           </tr>
-          
           [#-- Actual expenditure --]
           <tr>
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.expenditure" /]: </b></td>
