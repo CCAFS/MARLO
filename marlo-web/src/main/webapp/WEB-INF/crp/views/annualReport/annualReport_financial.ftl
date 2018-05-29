@@ -55,9 +55,9 @@
               <div class="evidence-plannedStudies-header">
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableJ.title" /]</h4>
               </div>
-              <hr />                
+              <hr />
               [#list reportSynthesis.reportSynthesisFinancialSummary.budgets as item]
-                [@tableJMacro element=item editable=editable && PMU /]
+                [@tableJMacro element=item element_index=item_index editable=editable && PMU /]
               [/#list]
             </div>
           
@@ -77,14 +77,14 @@
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
 
-[#macro tableJMacro element editable]
+[#macro tableJMacro element element_index editable]
  [#-- REMOVE TEMPORAL LISTS ASSIGN --]
  [#assign budgetTypesList=[{"id":"1", "name":"W1/W2"},{"id":"2", "name":"W3"},{"id":"3", "name":"Bilateral"}] /]
   
   <div id="flagship-${(element.id)!''}" class="flagship expandableBlock borderBox">
     <div class="blockTitle opened">
       [#-- Title --] 
-      <span>${(element.composedName)!''}</span> 
+      <span>${(element.liaisonInstitution.composedName)!''}</span> 
     </div>
     
     <div class="blockContent" style="display:block">
@@ -110,7 +110,7 @@
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element.id} category-planned" required=true /]
+                  [@customForm.input name="${customName}.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element_index} category-planned" required=true /]
                 [#else]
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
                   <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
@@ -119,17 +119,16 @@
             [/#list]
             [#-- Total --]
             <td class="text-center">
-              <nobr class="totalCategory element-${element.id} category-planned">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
+              <nobr class="totalCategory element-${element_index} category-planned">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
             </td>
           </tr>
-          
           [#-- Actual expenditure --]
           <tr>
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.expenditure" /]: </b></td>
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element.id} category-actualExpenditure" required=true  /]
+                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element_index} category-actualExpenditure" required=true  /]
                 [#else]
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
                   <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
@@ -137,7 +136,7 @@
               </td>
             [/#list]
             <td class="text-center">
-              <nobr class="totalCategory element-${element.id} category-actualExpenditure">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
+              <nobr class="totalCategory element-${element_index} category-actualExpenditure">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
             </td>
           </tr>
           [#-- Difference --]
@@ -145,11 +144,11 @@
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.difference" /]: </b></td>
             [#list budgetTypesList as budgetType]
               <td class="text-center">
-                <nobr class="totalDiff element-${element.id} type-${budgetType.id} category-difference">US$ <span>${((budgetObject.difference)!'0')?number?string(",##0.00")}</span></nobr>
+                <nobr class="totalDiff element-${element_index} type-${budgetType.id} category-difference">US$ <span>${((budgetObject.difference)!'0')?number?string(",##0.00")}</span></nobr>
               </td>
             [/#list]
             <td class="text-center">
-              <nobr class="totalCategory element-${element.id} category-difference"> <strong> US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span> </strong></nobr>
+              <nobr class="totalCategory element-${element_index} category-difference"> <strong> US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span> </strong></nobr>
             </td>
           </tr>
         </tbody>
