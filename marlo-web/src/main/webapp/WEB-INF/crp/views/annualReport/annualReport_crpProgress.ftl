@@ -17,112 +17,116 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
   
-  <div class="row">
-    [#-- Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-        <div class="borderBox">
-          [#-- Overall CRP progress towards SLOs --]
-          <div class="form-group">
-            [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="" helpIcon=false required=true editable=editable /]
-          </div>
-          
-          [#-- Summaries of outcome case studies --]
-          <div class="form-group">
-            [@customForm.textArea name="${customName}.summaries" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
-          </div>
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-          [#-- Flagships - Synthesis  --]
-          [#if PMU]
-          <div class="form-group">
-            <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
-            [@tableCRPProgressMacro list=fpSynthesisTable /]
-          </div>
-          [/#if]
-          
-          <hr />
-          
-          [#-- Table A-1: Evidence on progress towards the SLOs (sphere of interest)  --]
-          [#if flagship]
-          <div class="form-group">
-            <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-            [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
-            
-            <div class="block-selectedSLOs">
-              <div class="form-group sloTargetsList">              
-                [#if reportSynthesis.reportSynthesisCrpProgress.targets?has_content]
-                  [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo]
-                    [@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /]
-                  [/#list]
-                [#else]
-                  [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
-                [/#if]
-              </div>
-              [#if editable]
-              <div class="dottedBox">
-                <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-                [@customForm.select name="" className="setSelect2 addSloTarget" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="composedName" required=true /]
-              </div>
-              [/#if]
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+        
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
+          <div class="borderBox">
+            [#-- Overall CRP progress towards SLOs --]
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
+            [#-- Summaries of outcome case studies --]
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.summaries" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
+            </div>
+          
+            [#-- Flagships - Synthesis  --]
+            [#if PMU]
+            <div class="form-group">
+              <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
+              [@tableCRPProgressMacro list=fpSynthesisTable /]
+            </div>
+            [/#if]
+            
+            <hr />
+            
+            [#-- Table A-1: Evidence on progress towards the SLOs (sphere of interest)  --]
+            [#if flagship]
+            <div class="form-group">
+              <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
+              [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
+              
+              <div class="block-selectedSLOs">
+                <div class="form-group sloTargetsList">              
+                  [#if reportSynthesis.reportSynthesisCrpProgress.targets?has_content]
+                    [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo]
+                      [@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /]
+                    [/#list]
+                  [#else]
+                    [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
+                  [/#if]
+                </div>
+                [#if editable]
+                <div class="dottedBox">
+                  <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
+                  [@customForm.select name="" className="setSelect2 addSloTarget" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="composedName" required=true /]
+                </div>
+                [/#if]
+              </div>
+              
+            </div>
+            [/#if]
+            
+            [#-- Flagships - Synthesis  --]
+            [#if PMU]
+            <div class="form-group">
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
+              [@tableSLOSynthesisProgressMacro list=flagshipPlannedList /]
+            </div>
+            [/#if]
+            
+            <hr />
+            
+            [#-- Table A-2: List of New Outcome Case Studies from This Reporting Year (Sphere of Influence)  --]
+            <div class="form-group">
+              <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOutcomes" /]</h4>
+              [@customForm.helpLabel name="${customLabel}.listOutcomes.help" showIcon=false editable=editable/]
+              [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=studiesList /]
+            </div>
+            
+            
           </div>
-          [/#if]
-          
-          [#-- Flagships - Synthesis  --]
-          [#if PMU]
-          <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-            [@tableSLOSynthesisProgressMacro list=flagshipPlannedList /]
-          </div>
-          [/#if]
-          
-          <hr />
-          
-          [#-- Table A-2: List of New Outcome Case Studies from This Reporting Year (Sphere of Influence)  --]
-          <div class="form-group">
-            <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOutcomes" /]</h4>
-            [@customForm.helpLabel name="${customLabel}.listOutcomes.help" showIcon=false editable=editable/]
-            [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=studiesList /]
-          </div>
-          
-          
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-      [/@s.form] 
-    </div> 
-  </div>
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+        [/@s.form] 
+      </div> 
+    </div>
+    
+    [#-- Templates --]
+    [@sloTargetMacro name="${customName}.targets" element={} index=-1 isTemplate=true /]
   
-  
-  [#-- Templates --]
-  [@sloTargetMacro name="${customName}.targets" element={} index=-1 isTemplate=true /]
+  [/#if]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
-
-
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro tableOutcomesCaseStudiesMacro name list ]
+[#macro tableOutcomesCaseStudiesMacro name list=[] ]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -160,7 +164,7 @@
   </div>
 [/#macro]
 
-[#macro tableSLOSynthesisProgressMacro list ]
+[#macro tableSLOSynthesisProgressMacro list=[] ]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -191,7 +195,7 @@
   </div>
 [/#macro]
 
-[#macro tableCRPProgressMacro list ]
+[#macro tableCRPProgressMacro list=[] ]
   <div class="">
     <table class="table table-bordered">
       <thead>

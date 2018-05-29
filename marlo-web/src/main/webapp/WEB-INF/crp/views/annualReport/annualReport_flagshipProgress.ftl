@@ -21,69 +21,73 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
-  
-  <div class="row">
-    [#-- Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
-        <div class="borderBox">
-          [#-- Flagship summary of major results achieved in the past reporting period --]
-          [#if flagship]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
+        
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+        
+          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customLabel= "annualReport.${currentStage}" /]
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
+          <div class="borderBox">
+            [#-- Flagship summary of major results achieved in the past reporting period --]
+            [#if flagship]
+              <div class="form-group">
+                [@customForm.textArea name="${customName}.flagshipSummary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
+              </div>
+              <hr />
+            [/#if]
+            
+            [#-- Table B: Status of Planned Milestones --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.flagshipSummary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
-            </div>
-            <hr />
-          [/#if]
-          
-          [#-- Table B: Status of Planned Milestones --]
-          <div class="form-group">
-            [#if PMU]
-              [#-- Modal Large --]
-              <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
-                <span class="glyphicon glyphicon-fullscreen"></span> See Full Table B
-              </button>
-              <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-                <div class="modal-dialog modal-lg bigger" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              [#if PMU]
+                [#-- Modal Large --]
+                <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
+                  <span class="glyphicon glyphicon-fullscreen"></span> See Full Table B
+                </button>
+                <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                  <div class="modal-dialog modal-lg bigger" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      </div>
+                      [@tablePlannedMilestonesMacro allowPopups=false/]
                     </div>
-                    [@tablePlannedMilestonesMacro allowPopups=false/]
                   </div>
                 </div>
-              </div>
-              [#-- Table --]
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
-              [@tablePlannedMilestonesMacro allowPopups=true/]
-            [/#if]
-            [#if flagship]
-              [#-- Milestones per Flagships --]
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
-              [#list outcomes as outcome]
-                [@annualReportOutcomeMacro element=outcome name="${customName}" index=outcome_index /]
-              [/#list]
-            [/#if]
+                [#-- Table --]
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
+                [@tablePlannedMilestonesMacro allowPopups=true/]
+              [/#if]
+              [#if flagship]
+                [#-- Milestones per Flagships --]
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableB.title" /]</h4>
+                [#list outcomes as outcome]
+                  [@annualReportOutcomeMacro element=outcome name="${customName}" index=outcome_index /]
+                [/#list]
+              [/#if]
+            </div>
+            
           </div>
-          
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-      [/@s.form] 
-    </div> 
-  </div> 
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
