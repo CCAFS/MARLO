@@ -55,9 +55,7 @@
               <div class="evidence-plannedStudies-header">
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableJ.title" /]</h4>
               </div>
-              <hr />
-              
-             [#-- REMOVE TEMPORAL LIST ASSIGN --]              
+              <hr />                
               [#list reportSynthesis.reportSynthesisFinancialSummary.budgets as item]
                 [@tableJMacro element=item editable=editable && PMU /]
               [/#list]
