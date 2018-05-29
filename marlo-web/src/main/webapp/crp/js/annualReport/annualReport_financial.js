@@ -10,18 +10,31 @@ function init() {
 
   $('.currencyInput').on('keyup', function() {
 
-    var p = {
-        element: $(this).classParam('element'),
-        category: $(this).classParam('category'),
-        type: $(this).classParam('type')
-    }
+    var element = $(this).classParam('element');
+    var category = $(this).classParam('category');
+    var type = $(this).classParam('type');
+    // Total Category
+    var queryTotalCategory = '.element-' + element + '.category-' + category;
+    var totalCategory = $('input' + queryTotalCategory).getSumCurrencyInputs();
+    $('.totalCategory' + queryTotalCategory).find('span').text(setCurrencyFormat(totalCategory)).animateCss('flipInX');
 
-    var totalCategory = $('input.element-' + p.element + '.category-' + p.category).getSumCurrencyInputs();
-    var totalType = $('input.element-' + p.element + '.type-' + p.type).getSumCurrencyInputs();
+    // Budget Planned
+    var queryPlanned = '.element-' + element + '.type-' + type + '.category-planned';
+    var planned = $('input' + queryPlanned).getSumCurrencyInputs();
 
-    console.log(total);
+    // Actual Expenditure
+    var queryActualExpenditure = '.element-' + element + '.type-' + type + '.category-actualExpenditure';
+    var actualExpenditure = $('input' + queryActualExpenditure).getSumCurrencyInputs();
 
-    // totalType <-- RECUERDA CALCULAR ESTO
+    // Total Difference by type
+    var totalDiff = (planned - actualExpenditure);
+    var queryDiff = '.element-' + element + '.type-' + type;
+    $('.totalDiff' + queryDiff).find('span').text(setCurrencyFormat(totalDiff)).animateCss('flipInX');
+
+    // Grand Total by element
+    var queryGrandTotal = '.element-' + element + '.category-difference';
+    var grandTotal = $('.totalDiff' + queryGrandTotal + ' span').getSumCurrencyInputs();
+    $('.totalCategory' + queryGrandTotal).find('span').text(setCurrencyFormat(grandTotal)).animateCss('flipInX');
 
   }).trigger('keyup');
 }
@@ -52,7 +65,7 @@ function attachEvents() {
 jQuery.fn.getSumCurrencyInputs = function() {
   var total = 0
   $(this).each(function(i,input) {
-    total = total + removeCurrencyFormat($(input).val() || "0");
+    total = total + removeCurrencyFormat($(input).val() || $(input).text() || "0");
   });
   return total;
 };
