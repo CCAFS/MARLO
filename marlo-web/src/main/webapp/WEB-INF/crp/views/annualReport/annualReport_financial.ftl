@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis.reportSynthesisFinancialSummary" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -38,8 +41,7 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
                     
-          [#assign customName= "reportSynthesis.reportSynthesisFinancialSummary" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
+          
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
@@ -57,7 +59,7 @@
               </div>
               <hr />
               [#list reportSynthesis.reportSynthesisFinancialSummary.budgets as item]
-                [@tableJMacro element=item element_index=item_index editable=editable && PMU /]
+                [@tableJMacro name="${customName}.budgets" element=item element_index=item_index editable=editable && PMU /]
               [/#list]
             </div>
           
@@ -77,14 +79,24 @@
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
 
-[#macro tableJMacro element element_index editable]
- [#-- REMOVE TEMPORAL LISTS ASSIGN --]
- [#assign budgetTypesList=[{"id":"1", "name":"W1/W2"},{"id":"2", "name":"W3"},{"id":"3", "name":"Bilateral"}] /]
+[#macro tableJMacro name element element_index editable]
   
-  <div id="flagship-${(element.id)!''}" class="flagship expandableBlock borderBox">
+  [#local customName = "${name}[${element_index}]"]
+  [#assign budgetTypesList=[
+    {"id":"1", "name":"W1/W2",      "p": "w1Planned",         "r": "w1Actual"   },
+    {"id":"2", "name":"W3",         "p": "w3Planned",         "r": "w3Actual"    },
+    {"id":"3", "name":"Bilateral",  "p": "bilateralPlanned",  "r": "bilateralActual" }
+  ] /]
+  
+  <div id="flagship-${element_index}" class="flagship expandableBlock borderBox">
     <div class="blockTitle opened">
       [#-- Title --] 
-      <span>${(element.liaisonInstitution.composedName)!''}</span> 
+      <span>${(element.liaisonInstitution.composedName)!(element.expenditureArea.expenditureArea)!''}</span>
+      
+      [#-- Hidden Inputs --]
+      <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+      <input type="hidden" name="${customName}.liaisonInstitution.id" value="${(element.liaisonInstitution.id)!}" />
+      <input type="hidden" name="${customName}.expenditureArea.id" value="${(element.expenditureArea.id)!}" />
     </div>
     
     <div class="blockContent" style="display:block">
@@ -110,10 +122,10 @@
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element_index} category-planned" required=true /]
+                  [@customForm.input name="${customName}.${budgetType.p}" showTitle=false value="${(element[budgetType.p])!0}" className="currencyInput text-center type-${budgetType.id} element-${element_index} category-planned" required=true /]
                 [#else]
-                  <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
-                  <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
+                  <input type="hidden" name="${customName}.amount" value="${(element[budgetType.p])!0}"/>
+                  <nobr>US$ ${((element[budgetType.p])!'0')?number?string(",##0.00")}</nobr>
                 [/#if]
               </td>
             [/#list]
@@ -128,15 +140,15 @@
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element_index} category-actualExpenditure" required=true  /]
+                  [@customForm.input name="${customName}.${budgetType.r}" showTitle=false value="${(element[budgetType.r])!0}" className="currencyInput text-center type-${budgetType.id} element-${element_index} category-actualExpenditure" required=true  /]
                 [#else]
-                  <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
-                  <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
+                  <input type="hidden" name="${customName}.amount" value="${(element[budgetType.r])!0}"/>
+                  <nobr>US$ ${((element[budgetType.r])!'0')?number?string(",##0.00")}</nobr>
                 [/#if]
               </td>
             [/#list]
             <td class="text-center">
-              <nobr class="totalCategory element-${element_index} category-actualExpenditure">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
+              <nobr class="totalCategory element-${element_index} category-actualExpenditure">US$ <span>0.00</span></nobr>
             </td>
           </tr>
           [#-- Difference --]
