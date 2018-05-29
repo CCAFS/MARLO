@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -84,10 +83,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
-  private CrpProgramManager programManager;
-  private DeliverableManager deliverableManager;
-  private GenderTypeManager genderTypeManager;
-  private RepositoryChannelManager repositoryChannelManager;
+  private final CrpProgramManager programManager;
+  private final DeliverableManager deliverableManager;
+  private final GenderTypeManager genderTypeManager;
+  private final RepositoryChannelManager repositoryChannelManager;
+  private final ResourceManager resourceManager;
 
 
   // XLSX bytes
@@ -100,12 +100,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, GlobalUnitManager crpManager,
     CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager,
-    PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager) {
+    PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
     this.deliverableManager = deliverableManager;
     this.repositoryChannelManager = repositoryChannelManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -220,14 +221,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   @Override
   public String execute() throws Exception {
-
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ReportingDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();

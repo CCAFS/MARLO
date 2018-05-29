@@ -98,6 +98,7 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 
 function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
+  var isDisseminated = $('.type-findable label.radio-checked').classParam('value');
 
   // If the deliverables is disseminated
   var channelSelected = $('select.disseminationChannel').val();
@@ -109,21 +110,23 @@ function checkFiandable() {
 
   // If is Sync
   if($('#fillMetadata input:hidden').val() === "true") {
-    console.log('true sync');
     $fairCompliant.addClass('achieved');
   }
 
-  if($('.type-findable input').val() == "false") {
+  if(isDisseminated == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 }
 
 function checkAccessible() {
   var $fairCompliant = $('.fairCompliant.accessible');
+  var isOpenAccessVal = $('.type-accessible label.radio-checked').classParam('value');
+
   // Is this deliverable Open Access?
-  if($('.type-accessible input').val() == "true") {
+  if(isOpenAccessVal == "true") {
     $fairCompliant.addClass('achieved');
-  } else {
+  }
+  if(isOpenAccessVal == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 }
@@ -142,8 +145,10 @@ function checkInteroperable() {
 
 function checkReusable() {
   var $fairCompliant = $('.fairCompliant.reusable');
+  var adoptedLicenseVal = $('.type-license label.radio-checked').classParam('value');
+
   // If has the deliverable adopted a license
-  if($('.type-license input').val() == "true") {
+  if(adoptedLicenseVal == "true") {
     // If is different to "Other"
     var inputChecked = $('input[name="deliverable.deliverableInfo.license"]:checked').val();
     if(!(typeof inputChecked === "undefined") && (inputChecked != "OTHER")) {
@@ -154,7 +159,8 @@ function checkReusable() {
         $fairCompliant.addClass('achieved');
       }
     }
-  } else {
+  }
+  if(adoptedLicenseVal == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 
@@ -228,7 +234,6 @@ function checkCollection() {
 }
 
 function checkGolData() {
-  console.log("checking golden data");
   var $red = $("#red");
   var $yellow = $("#yellow");
   var $green = $("#green");
