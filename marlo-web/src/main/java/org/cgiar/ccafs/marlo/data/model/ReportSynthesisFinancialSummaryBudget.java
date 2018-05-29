@@ -24,14 +24,19 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private ReportSynthesisFinancialSummary reportSynthesisFinancialSummary;
 
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
+  @Expose
+  private PowbExpenditureAreas expenditureArea;
 
   @Expose
   private Double w1Planned;
@@ -85,11 +90,9 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public Double getBilateralActual() {
     return bilateralActual;
@@ -103,6 +106,11 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
 
   public User getCreatedBy() {
     return createdBy;
+  }
+
+
+  public PowbExpenditureAreas getExpenditureArea() {
+    return expenditureArea;
   }
 
 
@@ -161,6 +169,7 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
     return w3Planned;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -192,6 +201,10 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setExpenditureArea(PowbExpenditureAreas expenditureArea) {
+    this.expenditureArea = expenditureArea;
   }
 
   public void setId(Long id) {
