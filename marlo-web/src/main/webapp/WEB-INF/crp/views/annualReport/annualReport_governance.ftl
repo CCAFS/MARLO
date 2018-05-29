@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "annualReport.${currentStage}" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -34,9 +37,6 @@
       [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
         
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
@@ -46,7 +46,10 @@
           <div class="form-group margin-panel">
             [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
           </div>
-        
+          
+          [#if PMU]
+            ${(pmuText)!}
+          [/#if]
         </div>
         [#-- Section Buttons & hidden inputs--]
         [#if PMU]
