@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -18,8 +19,10 @@ public class ReportSynthesisFinancialSummary implements java.io.Serializable, IA
 
   private static final long serialVersionUID = -7347316405464342743L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private User modifiedBy;
@@ -41,17 +44,22 @@ public class ReportSynthesisFinancialSummary implements java.io.Serializable, IA
   @Expose
   private String modificationJustification;
 
-
   private Set<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgets =
     new HashSet<ReportSynthesisFinancialSummaryBudget>(0);
+
+  private List<ReportSynthesisFinancialSummaryBudget> budgets;
 
 
   public ReportSynthesisFinancialSummary() {
   }
 
-
   public Date getActiveSince() {
     return activeSince;
+  }
+
+
+  public List<ReportSynthesisFinancialSummaryBudget> getBudgets() {
+    return budgets;
   }
 
 
@@ -95,6 +103,7 @@ public class ReportSynthesisFinancialSummary implements java.io.Serializable, IA
     return reportSynthesis;
   }
 
+
   public Set<ReportSynthesisFinancialSummaryBudget> getReportSynthesisFinancialSummaryBudgets() {
     return reportSynthesisFinancialSummaryBudgets;
   }
@@ -110,6 +119,10 @@ public class ReportSynthesisFinancialSummary implements java.io.Serializable, IA
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setBudgets(List<ReportSynthesisFinancialSummaryBudget> budgets) {
+    this.budgets = budgets;
   }
 
   public void setCreatedBy(User createdBy) {

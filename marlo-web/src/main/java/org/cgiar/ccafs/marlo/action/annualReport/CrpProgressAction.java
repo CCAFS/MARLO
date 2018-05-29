@@ -52,7 +52,6 @@ import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.annualreport.CrpProgressValidator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -311,18 +310,6 @@ public class CrpProgressAction extends BaseAction {
     return loggedCrp;
   }
 
-  // Method to download link file
-  public String getPath() {
-    return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
-  }
-
-  // Method to get the download folder
-  private String getPowbSourceFolder() {
-    return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(this.getActionName().replace("/", "_"))
-      .concat(File.separator);
-  }
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -495,7 +482,7 @@ public class CrpProgressAction extends BaseAction {
       } else {
 
         this.setDraft(false);
-        // Check if ToC relation is null -create it
+        // Check if relation is null -create it
         if (reportSynthesis.getReportSynthesisCrpProgress() == null) {
           ReportSynthesisCrpProgress crpProgress = new ReportSynthesisCrpProgress();
           crpProgress.setActive(true);
@@ -600,6 +587,8 @@ public class CrpProgressAction extends BaseAction {
       crpProgressDB.setOverallProgress(reportSynthesis.getReportSynthesisCrpProgress().getOverallProgress());
       crpProgressDB.setSummaries(reportSynthesis.getReportSynthesisCrpProgress().getSummaries());
 
+      crpProgressDB = reportSynthesisCrpProgressManager.saveReportSynthesisCrpProgress(crpProgressDB);
+
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
@@ -637,8 +626,7 @@ public class CrpProgressAction extends BaseAction {
   /**
    * Save Crp Progress Srf Targets Information
    * 
-   * @param projectExpectedStudy
-   * @param phase
+   * @param crpProgressDB
    */
   public void saveSrfTargets(ReportSynthesisCrpProgress crpProgressDB) {
 
