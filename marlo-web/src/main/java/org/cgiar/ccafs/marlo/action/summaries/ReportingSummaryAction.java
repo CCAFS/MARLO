@@ -44,7 +44,12 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
@@ -734,6 +739,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
      */
     masterReport.getParameterValues().put("i8nDeliverablesRMainInfo",
       this.getText("project.deliverable.generalInformation.titleTab"));
+    masterReport.getParameterValues().put("i8nDeliverablesRDescription",
+      this.getText("project.deliverable.generalInformation.description.readText"));
     masterReport.getParameterValues().put("i8nDeliverablesRType",
       this.getText("project.deliverable.generalInformation.type"));
     masterReport.getParameterValues().put("i8nDeliverablesRSubType",
@@ -767,6 +774,68 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nDeliverablesRALicense", this.getText("project.deliverable.v.ALicense"));
     masterReport.getParameterValues().put("i8nDeliverablesRPublicationAllowModifications",
       this.getText("publication.publicationAllowModifications"));
+    masterReport.getParameterValues().put("i8nDeliverablesRHasIntellectualAsset",
+      this.getText("deliverable.hasIntellectualAsset.title"));
+    masterReport.getParameterValues().put("i8nDeliverablesRHasParticipants",
+      this.getText("deliverable.involveParticipants.title"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAsset",
+      this.getText("summaries.deliverable.intellectualAssets"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetApplicants",
+      this.getText("intellectualAsset.applicants"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetType",
+      this.getText("intellectualAsset.type"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetTitle",
+      this.getText("intellectualAsset.title.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetFillingType",
+      this.getText("intellectualAsset.fillingType"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPantentStatus",
+      this.getText("intellectualAsset.patentStatus"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPatentType",
+      this.getText("intellectualAsset.patentType"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPvpVarietyName",
+      this.getText("intellectualAsset.varietyName"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPvpStatus",
+      this.getText("intellectualAsset.status"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPvpCountry",
+      this.getText("intellectualAsset.country"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPvpApplicationNumber",
+      this.getText("intellectualAsset.appRegNumber"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetPvpBreederCrop",
+      this.getText("intellectualAsset.breederCrop"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetDateFilling",
+      this.getText("intellectualAsset.dateFilling"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetDateRegistration",
+      this.getText("intellectualAsset.dateRegistration"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetDateExpiry",
+      this.getText("intellectualAsset.dateExpiry"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetAdditionalInformation",
+      this.getText("intellectualAsset.additionalInformation.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetLinkPublished",
+      this.getText("intellectualAsset.link.readText"));
+    masterReport.getParameterValues().put("i8nDeliverablesRIntellectualAssetCommunication",
+      this.getText("intellectualAsset.publicCommunication.readText"));
+
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipant",
+      this.getText("summaries.deliverable.participants"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantEvent",
+      this.getText("involveParticipants.title"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantActivityType",
+      this.getText("involveParticipants.typeActivity"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantAcademicDegree",
+      this.getText("involveParticipants.academicDegree"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantTotalParticipants",
+      this.getText("involveParticipants.participants"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantFemales",
+      this.getText("involveParticipants.females"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantType",
+      this.getText("involveParticipants.participantsType"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantGeographicScope",
+      this.getText("involveParticipants.eventScope"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantRegional",
+      this.getText("involveParticipants.region"));
+    masterReport.getParameterValues().put("i8nDeliverablesRParticipantCountries",
+      this.getText("involveParticipants.countries"));
+
     masterReport.getParameterValues().put("i8nDeliverablesRMetadataSubtitle",
       this.getText("project.deliverable.dissemination.metadataSubtitle"));
     masterReport.getParameterValues().put("i8nDeliverablesRMetadataTitle", this.getText("metadata.title"));
@@ -1946,7 +2015,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "qualityAssurance", "dataDictionary", "tools", "showFAIR", "F", "A", "I", "R", "isDisseminated", "disseminated",
         "restricted_access", "isRestricted", "restricted_date", "isLastTwoRestricted", "deliv_license_modifications",
         "show_deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "show_publication", "showCompilance"},
+        "fl_contrib", "show_publication", "showCompilance", "deliv_description", "hasIntellectualAsset", "isPantent",
+        "isPvp", "hasParticipants", "isAcademicDegree", "isRegional", "isNational", "hasParticipantsText",
+        "participantEvent", "participantActivityType", "participantAcademicDegree", "participantTotalParticipants",
+        "participantFemales", "participantType", "participantGeographicScope", "participantRegional",
+        "participantCountries", "hasIntellectualAssetText", "intellectualAssetApplicants", "intellectualAssetType",
+        "intellectualAssetTitle", "intellectualAssetFillingType", "intellectualAssetPantentStatus",
+        "intellectualAssetPatentType", "intellectualAssetPvpVarietyName", "intellectualAssetPvpStatus",
+        "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop",
+        "intellectualAssetDateFilling", "intellectualAssetDateRegistration", "intellectualAssetDateExpiry",
+        "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished", "intellectualAssetCommunication"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1954,14 +2032,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean.class, String.class, String.class, String.class, String.class, Boolean.class, String.class,
         String.class, Boolean.class, String.class, Boolean.class, String.class, Boolean.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
-        Boolean.class},
+        Boolean.class, String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
+        Boolean.class, Boolean.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
       // get Reporting deliverables
       List<Deliverable> deliverables = project.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d
-            .getProject().getGlobalUnitProjects().stream()
+          && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()) != null
@@ -1999,10 +2081,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       deliverables.addAll(deliverablesHL);
       for (Deliverable deliverable : deliverables) {
         String delivType = null, delivSubType = null, delivYear = null, keyOutput = "", leader = null,
-          institution = null, fundingSources = "";
+          institution = null, fundingSources = "", deliv_description = null;
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         Boolean showFAIR = false, showPublication = false, showCompilance = false;
+
+        if (deliverable.getDeliverableInfo().getDescription() != null
+          && !deliverable.getDeliverableInfo().getDescription().isEmpty()) {
+          deliv_description = deliverable.getDeliverableInfo().getDescription();
+        }
 
         if (deliverable.getDeliverableInfo().getDeliverableType() != null) {
           DeliverableType deliverableSubType = deliverable.getDeliverableInfo().getDeliverableType();
@@ -2068,36 +2155,54 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
-          fundingSources +=
-            "● " + dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getTitle() + "<br>";
+          fundingSources += "● " + dfs.getFundingSource().getComposedName() + "<br>";
         }
         if (fundingSources.isEmpty()) {
           fundingSources = null;
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getDeliverableInfo().getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingNa() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() == true) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
           }
         }
-        if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingGender() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
+            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
+            if (scoring != null) {
+              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender (" + crossCuttingScoring.getDescription() + ")<br>";
+            } else {
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+            }
           }
         }
-        if (deliverable.getDeliverableInfo().getCrossCuttingYouth() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() == true) {
+            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
+            if (scoring != null) {
+              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth (" + crossCuttingScoring.getDescription() + ")<br>";
+            } else {
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+            }
           }
         }
-        if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() == true) {
+            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
+            if (scoring != null) {
+              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+              crossCutting +=
+                "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development (" + crossCuttingScoring.getDescription() + ")<br>";
+            } else {
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+            }
           }
         }
-        if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingGender() == true) {
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
+          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -2128,15 +2233,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Extended
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
+            if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+              && deliverable.getDeliverableInfo().getNewExpectedYear().intValue() != -1) {
+              delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
+            }
             delivNewYearJustification = deliverable.getDeliverableInfo().getStatusDescription();
           }
-          // Complete
-          if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
-          }
-          // Canceled
+          // Cancelled
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
             delivNewYearJustification = deliverable.getDeliverableInfo().getStatusDescription();
@@ -2240,6 +2343,173 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (delivLicense != null && delivLicense.isEmpty()) {
           delivLicense = null;
         }
+
+        // Intellectual Assets
+        Boolean hasIntellectualAsset = false, isPantent = false, isPvp = false;
+        String hasIntellectualAssetText = null, intellectualAssetApplicants = null, intellectualAssetType = null,
+          intellectualAssetTitle = null, intellectualAssetFillingType = null, intellectualAssetPantentStatus = null,
+          intellectualAssetPatentType = null, intellectualAssetPvpVarietyName = null, intellectualAssetPvpStatus = null,
+          intellectualAssetPvpCountry = null, intellectualAssetPvpApplicationNumber = null,
+          intellectualAssetPvpBreederCrop = null, intellectualAssetDateFilling = null,
+          intellectualAssetDateRegistration = null, intellectualAssetDateExpiry = null,
+          intellectualAssetAdditionalInformation = null, intellectualAssetLinkPublished = null,
+          intellectualAssetCommunication = null;
+
+        List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+        if (intellectualAssets != null && intellectualAssets.size() > 0) {
+          DeliverableIntellectualAsset asset = intellectualAssets.get(0);
+          if (asset.getHasPatentPvp() != null) {
+            hasIntellectualAsset = asset.getHasPatentPvp();
+            if (asset.getHasPatentPvp()) {
+              hasIntellectualAssetText = "Yes";
+              if (asset.getApplicant() != null && !asset.getApplicant().isEmpty()) {
+                intellectualAssetApplicants = asset.getApplicant();
+              }
+              if (asset.getType() != null && asset.getType().intValue() != -1) {
+                intellectualAssetType = DeliverableIntellectualAssetTypeEnum.getValue(asset.getType()).getType();
+
+                if (DeliverableIntellectualAssetTypeEnum.getValue(asset.getType())
+                  .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
+                  // Patent
+                  isPantent = true;
+                  if (asset.getFillingType() != null && asset.getFillingType().getId() != -1) {
+                    intellectualAssetFillingType = asset.getFillingType().getName();
+                  }
+                  if (asset.getPatentStatus() != null && asset.getPatentStatus().getId() != -1) {
+                    intellectualAssetPantentStatus = asset.getPatentStatus().getName();
+                  }
+                  if (asset.getPatentType() != null && asset.getPatentType().intValue() != -1) {
+                    intellectualAssetPatentType =
+                      DeliverableIntellectualAssetPantentTypeEnum.getValue(asset.getPatentType()).getType();
+                  }
+                } else if (DeliverableIntellectualAssetTypeEnum.getValue(asset.getType())
+                  .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
+                  // PVP
+                  isPvp = true;
+                  if (asset.getVarietyName() != null && !asset.getVarietyName().isEmpty()) {
+                    intellectualAssetPvpVarietyName = asset.getVarietyName();
+                  }
+
+                  if (asset.getStatus() != null && asset.getStatus() != -1) {
+                    intellectualAssetPvpStatus = ProjectStatusEnum.getValue(asset.getStatus()).getStatus();
+                  }
+                  if (asset.getCountry() != null && !asset.getCountry().getIsoAlpha2().equals("-1")) {
+                    intellectualAssetPvpCountry = asset.getCountry().getName();
+                  }
+                  if (asset.getAppRegNumber() != null) {
+                    intellectualAssetPvpApplicationNumber = asset.getAppRegNumber() + "";
+                  }
+                  if (asset.getBreederCrop() != null && !asset.getBreederCrop().isEmpty()) {
+                    intellectualAssetPvpBreederCrop = intellectualAssetPvpVarietyName = asset.getBreederCrop();
+                  }
+                }
+              }
+              if (asset.getTitle() != null && !asset.getTitle().isEmpty()) {
+                intellectualAssetTitle = asset.getTitle();
+              }
+              if (asset.getDateFilling() != null) {
+                intellectualAssetDateFilling = formatter.format(asset.getDateFilling());
+              }
+              if (asset.getDateRegistration() != null) {
+                intellectualAssetDateRegistration = formatter.format(asset.getDateRegistration());
+              }
+              if (asset.getDateExpiry() != null) {
+                intellectualAssetDateExpiry = formatter.format(asset.getDateExpiry());
+              }
+              if (asset.getAdditionalInformation() != null && !asset.getAdditionalInformation().isEmpty()) {
+                intellectualAssetAdditionalInformation = asset.getAdditionalInformation();
+              }
+              if (asset.getLink() != null && !asset.getLink().isEmpty()) {
+                intellectualAssetLinkPublished = asset.getLink();
+              }
+              if (asset.getPublicCommunication() != null && !asset.getPublicCommunication().isEmpty()) {
+                intellectualAssetCommunication = asset.getPublicCommunication();
+              }
+
+            } else {
+              hasIntellectualAssetText = "No";
+            }
+          }
+        }
+
+        // Participants
+        Boolean hasParticipants = false, isAcademicDegree = false, isRegional = false, isNational = false;
+        String hasParticipantsText = null, participantEvent = null, participantActivityType = null,
+          participantAcademicDegree = null, participantTotalParticipants = null, participantFemales = null,
+          participantType = null, participantGeographicScope = null, participantRegional = null,
+          participantCountries = null;
+
+        List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+        if (deliverableParticipants != null && deliverableParticipants.size() > 0) {
+          DeliverableParticipant participant = deliverableParticipants.get(0);
+          if (participant.getHasParticipants() != null) {
+            hasParticipants = participant.getHasParticipants();
+            if (participant.getHasParticipants()) {
+              hasParticipantsText = "Yes";
+              if (participant.getEventActivityName() != null && !participant.getEventActivityName().isEmpty()) {
+                participantEvent = participant.getEventActivityName();
+              }
+
+              if (participant.getRepIndTypeActivity() != null && participant.getRepIndTypeActivity().getId() != -1) {
+                participantActivityType = participant.getRepIndTypeActivity().getName();
+                if (participant.getRepIndTypeActivity().getId()
+                  .equals(this.getReportingIndTypeActivityAcademicDegree())) {
+                  isAcademicDegree = true;
+                  participantAcademicDegree = participant.getAcademicDegree();
+                }
+              }
+              if (participant.getParticipants() != null) {
+                participantTotalParticipants = participant.getParticipants() + "";
+              }
+              if (participant.getFemales() != null) {
+                participantFemales = participant.getFemales() + "";
+              }
+              if (participant.getRepIndTypeParticipant() != null
+                && participant.getRepIndTypeParticipant().getId() != -1) {
+                participantType = participant.getRepIndTypeParticipant().getName();
+              }
+              if (participant.getRepIndGeographicScope() != null
+                && participant.getRepIndGeographicScope().getId() != -1) {
+                participantGeographicScope = participant.getRepIndGeographicScope().getName();
+                // Regional
+                if (participant.getRepIndGeographicScope().getId()
+                  .equals(this.getReportingIndGeographicScopeRegional())) {
+                  isRegional = true;
+                  if (participant.getRepIndRegion() != null && participant.getRepIndRegion().getId() != -1) {
+                    participantRegional = participant.getRepIndRegion().getName();
+                  }
+                }
+                // National/Sub-national/Multinational
+                if (!participant.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
+                  && !participant.getRepIndGeographicScope().getId()
+                    .equals(this.getReportingIndGeographicScopeRegional())) {
+                  isNational = true;
+                  List<DeliverableParticipantLocation> locations = participant.getDeliverableParticipantLocations()
+                    .stream().filter(pl -> pl.isActive()).collect(Collectors.toList());
+                  if (locations != null && locations.size() > 0) {
+                    locations
+                      .sort((pl1, pl2) -> pl1.getLocElement().getName().compareTo(pl2.getLocElement().getName()));
+                    Set<String> countries = new HashSet<String>();
+                    for (DeliverableParticipantLocation participantLocation : locations) {
+                      countries.add(participantLocation.getLocElement().getName());
+                    }
+                    participantCountries = String.join(", ", countries);
+                  }
+                }
+              }
+
+            } else {
+              hasParticipantsText = "No";
+            }
+          }
+        }
+
+        // Metadata
+
         String titleMetadata = null;
         String descriptionMetadata = null;
         String dateMetadata = null;
@@ -2416,42 +2686,42 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // FAIR
         String F = "";
         if (this.isF(deliverable.getId()) == null) {
-          F = "#a3a3a3";
+          F = "#cccccc";
         } else {
           if (this.isF(deliverable.getId()) == true) {
-            F = "#008000";
+            F = "#8ea786";
           } else {
-            F = "#ca1010";
+            F = "#D32F2F";
           }
         }
         String A = "";
         if (this.isA(deliverable.getId()) == null) {
-          A += "#a3a3a3";
+          A += "#cccccc";
         } else {
           if (this.isA(deliverable.getId()) == true) {
-            A += "#008000";
+            A += "#8ea786";
           } else {
-            A += "#ca1010";
+            A += "#D32F2F";
           }
         }
         String I = "";
         if (this.isI(deliverable.getId()) == null) {
-          I += "#a3a3a3";
+          I += "#cccccc";
         } else {
           if (this.isI(deliverable.getId()) == true) {
-            I += "#008000";
+            I += "#8ea786";
           } else {
-            I += "#ca1010";
+            I += "#D32F2F";
           }
         }
         String R = "";
         if (this.isR(deliverable.getId()) == null) {
-          R += "#a3a3a3";
+          R += "#cccccc";
         } else {
           if (this.isR(deliverable.getId()) == true) {
-            R += "#008000";
+            R += "#8ea786";
           } else {
-            R += "#ca1010";
+            R += "#D32F2F";
           }
         }
         String volume = null;
@@ -2496,17 +2766,28 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           } else {
             acknowledge = "No";
           }
-          for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream().filter(dc -> dc.isActive())
-            .collect(Collectors.toList())) {
-            if (deliverableCrp.getCrpProgram() != null) {
-              flContrib += "● " + deliverableCrp.getCrpProgram().getCrp().getAcronym().toUpperCase() + " - "
-                + deliverableCrp.getCrpProgram().getAcronym().toUpperCase() + "<br>";
-            } else {
-              if (deliverableCrp.getGlobalUnit() != null) {
-                flContrib += "● " + deliverableCrp.getGlobalUnit().getName().toUpperCase() + "<br>";
-              }
+
+          List<DeliverableCrp> deliverableCrps = deliverable
+            .getDeliverableCrps().stream().filter(dc -> dc.isActive() && dc.getPhase() != null
+              && dc.getPhase().equals(this.getSelectedPhase()) && dc.getGlobalUnit() != null)
+            .collect(Collectors.toList());
+          List<DeliverableCrp> deliverableFlagships = deliverable
+            .getDeliverableCrps().stream().filter(dc -> dc.isActive() && dc.getPhase() != null
+              && dc.getPhase().equals(this.getSelectedPhase()) && dc.getCrpProgram() != null)
+            .collect(Collectors.toList());
+          // Crps
+          for (DeliverableCrp deliverableCrp : deliverableCrps) {
+            if (deliverableCrp.getGlobalUnit() != null) {
+              flContrib += "<br> ● " + deliverableCrp.getGlobalUnit().getComposedName();
             }
           }
+          // Flagships
+          for (DeliverableCrp deliverableFlagship : deliverableFlagships) {
+            if (deliverableFlagship.getCrpProgram() != null) {
+              flContrib += "<br> ● " + deliverableFlagship.getCrpProgram().getComposedName();
+            }
+          }
+
         }
         model.addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo().getTitle(), delivType,
           delivSubType, delivStatus, delivYear, keyOutput, leader, institution, fundingSources, crossCutting,
@@ -2515,7 +2796,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creatorAuthors, dataSharing,
           qualityAssurance, dataDictionary, tools, showFAIR, F, A, I, R, isDisseminated, disseminated, restrictedAccess,
           isRestricted, restrictedDate, isLastTwoRestricted, delivLicenseModifications, showDelivLicenseModifications,
-          volume, issue, pages, journal, journalIndicators, acknowledge, flContrib, showPublication, showCompilance});
+          volume, issue, pages, journal, journalIndicators, acknowledge, flContrib, showPublication, showCompilance,
+          deliv_description, hasIntellectualAsset, isPantent, isPvp, hasParticipants, isAcademicDegree, isRegional,
+          isNational, hasParticipantsText, participantEvent, participantActivityType, participantAcademicDegree,
+          participantTotalParticipants, participantFemales, participantType, participantGeographicScope,
+          participantRegional, participantCountries, hasIntellectualAssetText, intellectualAssetApplicants,
+          intellectualAssetType, intellectualAssetTitle, intellectualAssetFillingType, intellectualAssetPantentStatus,
+          intellectualAssetPatentType, intellectualAssetPvpVarietyName, intellectualAssetPvpStatus,
+          intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber, intellectualAssetPvpBreederCrop,
+          intellectualAssetDateFilling, intellectualAssetDateRegistration, intellectualAssetDateExpiry,
+          intellectualAssetAdditionalInformation, intellectualAssetLinkPublished, intellectualAssetCommunication});
       }
     }
     return model;
