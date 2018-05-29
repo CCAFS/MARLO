@@ -510,10 +510,17 @@ public class FinancialSummaryAction extends BaseAction {
 
           budgetSave.setReportSynthesisFinancialSummary(financialSummaryDB);
 
-          LiaisonInstitution liaisonInstitution =
-            liaisonInstitutionManager.getLiaisonInstitutionById(budget.getLiaisonInstitution().getId());
+          if (budget.getLiaisonInstitution() != null) {
+            LiaisonInstitution liaisonInstitution =
+              liaisonInstitutionManager.getLiaisonInstitutionById(budget.getLiaisonInstitution().getId());
 
-          budgetSave.setLiaisonInstitution(liaisonInstitution);
+            budgetSave.setLiaisonInstitution(liaisonInstitution);
+          } else {
+            PowbExpenditureAreas expenditureAreas =
+              powbExpenditureAreasManager.getPowbExpenditureAreasById(budget.getExpenditureArea().getId());
+
+            budgetSave.setExpenditureArea(expenditureAreas);
+          }
 
           budgetSave.setActive(true);
           budgetSave.setModificationJustification("");
