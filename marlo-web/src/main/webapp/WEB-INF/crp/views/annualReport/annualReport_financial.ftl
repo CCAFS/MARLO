@@ -131,7 +131,7 @@
             [#list budgetTypesList as budgetType]
               <td class="text-center">
                 [#if editable]
-                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element.id} category-actual" required=true  /]
+                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false value="${(budgetObject.amount)!0}" className="currencyInput text-center type-${budgetType.id} element-${element.id} category-actualExpenditure" required=true  /]
                 [#else]
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
                   <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
@@ -139,7 +139,7 @@
               </td>
             [/#list]
             <td class="text-center">
-              <nobr class="totalCategory element-${element.id} category-actual">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
+              <nobr class="totalCategory element-${element.id} category-actualExpenditure">US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span></nobr>
             </td>
           </tr>
           [#-- Difference --]
@@ -147,12 +147,11 @@
             <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.difference" /]: </b></td>
             [#list budgetTypesList as budgetType]
               <td class="text-center">
-                <input type="hidden" name="${customName}.amount" value="${(budgetObject.difference)!0}"/>
-                <nobr>US$ ${((budgetObject.difference)!'0')?number?string(",##0.00")}</nobr>
+                <nobr class="totalDiff element-${element.id} type-${budgetType.id} category-difference">US$ <span>${((budgetObject.difference)!'0')?number?string(",##0.00")}</span></nobr>
               </td>
             [/#list]
             <td class="text-center">
-              <nobr>US$ ${((budgetObject.amount)!'0')?number?string(",##0.00")}</nobr>
+              <nobr class="totalCategory element-${element.id} category-difference"> <strong> US$ <span>${((budgetObject.total)!'0')?number?string(",##0.00")}</span> </strong></nobr>
             </td>
           </tr>
         </tbody>
