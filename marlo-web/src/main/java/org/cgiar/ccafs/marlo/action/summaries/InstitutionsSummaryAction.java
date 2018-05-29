@@ -53,7 +53,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -87,6 +86,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     return bd.doubleValue();
   }
 
+  private final ResourceManager resourceManager;
+
   // Parameters
   private long startTime;
   HashMap<InstitutionType, Set<Institution>> institutionsPerType = new HashMap<InstitutionType, Set<Institution>>();
@@ -103,8 +104,10 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   InputStream inputStream;
 
   @Inject
-  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
+  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -233,13 +236,10 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
