@@ -149,7 +149,7 @@
     </action>
     
 		<!--  3.3 Financial Summary  -->
-		<action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
+		<action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.FinancialSummaryAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_financial.ftl</result>
       <result name="success" type="redirectAction">

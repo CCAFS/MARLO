@@ -16,8 +16,10 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
 
   private static final long serialVersionUID = -6823153846500574248L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private User modifiedBy;
@@ -58,8 +60,29 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
   @Expose
   private String modificationJustification;
 
-
   public ReportSynthesisFinancialSummaryBudget() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisFinancialSummaryBudget other = (ReportSynthesisFinancialSummaryBudget) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -133,8 +156,17 @@ public class ReportSynthesisFinancialSummaryBudget implements java.io.Serializab
     return w3Actual;
   }
 
+
   public Double getW3Planned() {
     return w3Planned;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

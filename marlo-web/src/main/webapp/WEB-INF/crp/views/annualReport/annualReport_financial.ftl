@@ -38,7 +38,7 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
                     
-          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customName= "reportSynthesis.reportSynthesisFinancialSummary" /]
           [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
@@ -47,7 +47,7 @@
           
             [#-- Please give a narrative summary on the financial status and health of the CRP --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
             
             [#-- Table J: CRP Financial Report --]
@@ -57,15 +57,8 @@
               </div>
               <hr />
               
-             [#-- REMOVE TEMPORAL LIST ASSIGN --]
-             [#assign list=[
-                {"id": "1", "composedName":"F1: Priorities and Policies for CSA"},
-                {"id": "2", "composedName":"F2: Climate-Smart technologies and Practices"},
-                {"id": "3", "composedName":"F3: Priorities and Policies for CSA"},
-                {"id": "4", "composedName":"F4: Climate-Smart technologies and Practices"}
-              ] /]
-              
-              [#list list as item]
+             [#-- REMOVE TEMPORAL LIST ASSIGN --]              
+              [#list reportSynthesis.reportSynthesisFinancialSummary.budgets as item]
                 [@tableJMacro element=item editable=editable && PMU /]
               [/#list]
             </div>
