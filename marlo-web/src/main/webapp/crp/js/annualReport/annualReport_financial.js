@@ -40,16 +40,6 @@ function init() {
 }
 
 function attachEvents() {
-  // Collapsible content
-  $('.blockTitle').on('click', function() {
-    if($(this).hasClass('closed')) {
-      $(this).parent().find('.blockTitle').removeClass('opened').addClass('closed');
-      $(this).removeClass('closed').addClass('opened');
-    } else {
-      $(this).removeClass('opened').addClass('closed');
-    }
-    $(this).next().slideToggle('slow');
-  });
 
 }
 
