@@ -193,7 +193,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
     if (action.isReportingActive()) {
       if (!(this.isValidString(projectNextuser.getKnowledgeReport())
-        && this.wordCount(projectNextuser.getKnowledgeReport()) <= 100)) {
+        && this.wordCount(projectNextuser.getKnowledgeReport()) <= 200)) {
         action.addMessage(action.getText("projectOutcomeNextUser.reportOnProgress.readText"));
         action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].knowledgeReport",
           InvalidFieldsMessages.EMPTYFIELD);
