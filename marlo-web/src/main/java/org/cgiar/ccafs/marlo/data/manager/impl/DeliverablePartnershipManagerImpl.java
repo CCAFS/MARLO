@@ -207,6 +207,12 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   @Override
+  public List<DeliverablePartnership> findByDeliverablePhaseAndType(long deliverableId, long phaseId,
+    String partnerType) {
+    return deliverablePartnershipDAO.findByDeliverablePhaseAndType(deliverableId, phaseId, partnerType);
+  }
+
+  @Override
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
     Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType) {
     return deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase,
