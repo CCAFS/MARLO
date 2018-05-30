@@ -44,6 +44,9 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean subDepartmentActive;
 
+  @Expose
+  private RepIndOrganizationType repIndOrganizationType;
+
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
@@ -61,7 +64,6 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
     this.institutions = institutions;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -90,9 +92,11 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     return this.acronym;
   }
 
+
   public String getDescription() {
     return description;
   }
+
 
   @Override
   public Long getId() {
@@ -132,6 +136,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
 
   public Boolean getOld() {
     return old;
+  }
+
+  public RepIndOrganizationType getRepIndOrganizationType() {
+    return repIndOrganizationType;
   }
 
   public Boolean getSubDepartmentActive() {
@@ -176,13 +184,19 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.old = old;
   }
 
+  public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
+    this.repIndOrganizationType = repIndOrganizationType;
+  }
+
   public void setSubDepartmentActive(Boolean subDepartmentActive) {
     this.subDepartmentActive = subDepartmentActive;
   }
 
   @Override
   public String toString() {
-    return "InstitutionType [id=" + id + ", name=" + name + ", acronym=" + acronym + ", description=" + description
-      + ", old=" + old + ", subDepartmentActive=" + subDepartmentActive + "]";
+    return "InstitutionType [id=" + id + ", name=" + name + ", acronym=" + acronym + ", subDepartmentActive="
+      + subDepartmentActive + ", repIndOrganizationType=" + repIndOrganizationType + "]";
   }
+
+
 }
