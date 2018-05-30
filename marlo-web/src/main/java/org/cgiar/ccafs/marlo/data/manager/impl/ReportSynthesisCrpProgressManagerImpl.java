@@ -92,9 +92,16 @@ public class ReportSynthesisCrpProgressManagerImpl implements ReportSynthesisCrp
 
       ReportSynthesisCrpProgress crpProgress = new ReportSynthesisCrpProgress();
       ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      crpProgress.setReportSynthesis(reportSynthesisFP);
-      if (reportSynthesisFP.getReportSynthesisCrpProgress() != null) {
-        crpProgress = reportSynthesisFP.getReportSynthesisCrpProgress();
+
+      if (reportSynthesisFP != null) {
+        if (reportSynthesisFP.getReportSynthesisCrpProgress() != null) {
+          crpProgress = reportSynthesisFP.getReportSynthesisCrpProgress();
+        }
+      } else {
+        ReportSynthesis synthesis = new ReportSynthesis();
+        synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+        synthesis.setLiaisonInstitution(liaisonInstitution);
+        crpProgress.setReportSynthesis(synthesis);
       }
       synthesisCrpProgres.add(crpProgress);
     }
@@ -114,6 +121,8 @@ public class ReportSynthesisCrpProgressManagerImpl implements ReportSynthesisCrp
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
+          && ps.getProjectExpectedStudyInfo(phase).getStudyType() != null
+          && ps.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1
           && ps.getProjectExpectedStudyInfo(phase).getPhase().getId() == phaseID && ps.getYear() == phase.getYear())
         .collect(Collectors.toList()));
 

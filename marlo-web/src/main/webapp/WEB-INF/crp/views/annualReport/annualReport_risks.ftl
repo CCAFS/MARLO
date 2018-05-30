@@ -38,7 +38,7 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customName= "reportSynthesis.reportSynthesisGovernance" /]
           [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
@@ -47,7 +47,7 @@
           
             [#-- Brief summary of any encountered risks including any mitigation measures taken --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
           
           </div>
