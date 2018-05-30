@@ -93,22 +93,22 @@ public class CrpProgressAction extends BaseAction {
 
   private UserManager userManager;
 
-
   private CrpProgramManager crpProgramManager;
 
 
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
-
 
   private CrpProgressValidator validator;
 
 
   private ProjectFocusManager projectFocusManager;
 
+
   private ProjectManager projectManager;
 
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+
 
   private ReportSynthesisCrpProgressStudyManager reportSynthesisCrpProgressStudyManager;
 
@@ -117,10 +117,12 @@ public class CrpProgressAction extends BaseAction {
 
   private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
 
+
   private PhaseManager phaseManager;
 
   // Variables
   private String transaction;
+
 
   private ReportSynthesis reportSynthesis;
 
@@ -141,6 +143,8 @@ public class CrpProgressAction extends BaseAction {
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
 
   private List<ReportSynthesisCrpProgressTarget> fpSynthesisTable;
+
+  private List<ReportSynthesisCrpProgress> flagshipCrpProgress;
 
   @Inject
   public CrpProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -188,7 +192,6 @@ public class CrpProgressAction extends BaseAction {
     messages = this.getActionMessages();
     return SUCCESS;
   }
-
 
   public void expectedStudiesNewData(ReportSynthesisCrpProgress crpProgressDB) {
 
@@ -291,9 +294,15 @@ public class CrpProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<ReportSynthesisCrpProgress> getFlagshipCrpProgress() {
+    return flagshipCrpProgress;
+  }
+
+
   public List<PowbEvidencePlannedStudyDTO> getFlagshipPlannedList() {
     return flagshipPlannedList;
   }
+
 
   public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
     return fpSynthesisTable;
@@ -307,7 +316,6 @@ public class CrpProgressAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -315,6 +323,7 @@ public class CrpProgressAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -328,15 +337,14 @@ public class CrpProgressAction extends BaseAction {
     return studiesList;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -365,7 +373,6 @@ public class CrpProgressAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -375,6 +382,7 @@ public class CrpProgressAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -545,8 +553,13 @@ public class CrpProgressAction extends BaseAction {
       // Table A-2 PMU Information
       flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
         loggedCrp, this.liaisonInstitution);
-      // Flagship Synthesis Table
+      // Table A-1 Evidence on Progress
       fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions, phase.getId());
+
+      // Flagships Synthesis Progress
+      flagshipCrpProgress =
+        reportSynthesisCrpProgressManager.getFlagshipCrpProgress(liaisonInstitutions, phase.getId());
+
 
     }
 
@@ -571,6 +584,7 @@ public class CrpProgressAction extends BaseAction {
 
     }
   }
+
 
   @Override
   public String save() {
@@ -627,7 +641,6 @@ public class CrpProgressAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Save Crp Progress Srf Targets Information
@@ -695,6 +708,10 @@ public class CrpProgressAction extends BaseAction {
       }
     }
 
+  }
+
+  public void setFlagshipCrpProgress(List<ReportSynthesisCrpProgress> flagshipCrpProgress) {
+    this.flagshipCrpProgress = flagshipCrpProgress;
   }
 
 
