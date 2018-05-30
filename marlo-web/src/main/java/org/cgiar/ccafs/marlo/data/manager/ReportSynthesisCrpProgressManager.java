@@ -56,6 +56,15 @@ public interface ReportSynthesisCrpProgressManager {
 
 
   /**
+   * Shows to the pmu the Flagship Crp Progress towards SLOs and Outcomes
+   * 
+   * @param lInstitutions - List of Crp Flagships
+   * @param phaseID - The Current phase
+   * @return list of ReportSynthesisCrpProgress
+   */
+  public List<ReportSynthesisCrpProgress> getFlagshipCrpProgress(List<LiaisonInstitution> lInstitutions, long phaseID);
+
+  /**
    * Shows to the pmu the Flagship Crp Progress Case Studies that included in this annual report synthesis
    * 
    * @param lInstitutions - List of Crp Flagships

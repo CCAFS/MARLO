@@ -82,6 +82,28 @@ public class ReportSynthesisCrpProgressManagerImpl implements ReportSynthesisCrp
 
   }
 
+
+  @Override
+  public List<ReportSynthesisCrpProgress> getFlagshipCrpProgress(List<LiaisonInstitution> lInstitutions, long phaseID) {
+
+    List<ReportSynthesisCrpProgress> synthesisCrpProgres = new ArrayList<>();
+
+    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+
+      ReportSynthesisCrpProgress crpProgress = new ReportSynthesisCrpProgress();
+      ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      crpProgress.setReportSynthesis(reportSynthesisFP);
+      if (reportSynthesisFP.getReportSynthesisCrpProgress() != null) {
+        crpProgress = reportSynthesisFP.getReportSynthesisCrpProgress();
+      }
+      synthesisCrpProgres.add(crpProgress);
+    }
+
+    return synthesisCrpProgres;
+
+
+  }
+
   @Override
   public List<PowbEvidencePlannedStudyDTO> getPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID,
     GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU) {
