@@ -357,42 +357,69 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nOutcomesReportingMenu", "4. " + this.getText("breadCrumb.menu.outcomes"));
 
     // Phase One
-    masterReport.getParameterValues().put("i8nProjectOutcomesReportingMenu",
-      "4.1 " + this.getText("projects.menu.projectOutcomes"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesReportingMenu",
-      "4.2 " + this.getText("projects.menu.ccafsOutcomes"));
-    masterReport.getParameterValues().put("i8nOtherContributionsReportingMenu",
-      "4.3 " + this.getText("projects.menu.otherContributions"));
-    masterReport.getParameterValues().put("i8nCaseStudiesReportingMenu",
-      "4.4 " + this.getText("projects.menu.caseStudies"));
-
-    // Phase Two
-    masterReport.getParameterValues().put("i8nFlagshipOutcomesReportingMenu",
-      "4.1 " + this.getText("projects.menu.contributionsCrpList"));
-    masterReport.getParameterValues().put("i8nStudiesReportingMenu", "4.2 " + this.getText("menu.studies"));
-
-
-    masterReport.getParameterValues().put("i8nProjectOutputsReportingMenu",
-      "5. " + this.getText("projects.menu.projectOutputs"));
-    masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
-      "5.1 " + this.getText("projects.menu.overviewByMogs"));
     if (this.isPhaseOne()) {
-      masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-        "5.2 " + this.getText("projects.menu.deliverables"));
+      masterReport.getParameterValues().put("i8nProjectOutcomesReportingMenu",
+        "4.1 " + this.getText("projects.menu.projectOutcomes"));
+      masterReport.getParameterValues().put("i8nCCAFSOutcomesReportingMenu",
+        "4.2 " + this.getText("projects.menu.ccafsOutcomes"));
+      masterReport.getParameterValues().put("i8nOtherContributionsReportingMenu",
+        "4.3 " + this.getText("projects.menu.otherContributions"));
+      masterReport.getParameterValues().put("i8nCaseStudiesReportingMenu",
+        "4.4 " + this.getText("projects.menu.caseStudies"));
     } else {
-      masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-        "5.1 " + this.getText("projects.menu.deliverables"));
-      masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
-        "5.2 " + this.getText("projects.menu.innovations"));
+      // Phase Two
+      masterReport.getParameterValues().put("i8nFlagshipOutcomesReportingMenu",
+        "4.1 " + this.getText("projects.menu.contributionsCrpList"));
+      masterReport.getParameterValues().put("i8nStudiesReportingMenu", "4.2 " + this.getText("menu.studies"));
     }
-    masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
-      "5.3 " + this.getText("breadCrumb.menu.projectHighlights"));
+    if (this.getProject().getProjectInfo().getAdministrative() != null
+      && this.getProject().getProjectInfo().getAdministrative() == true) {
+      masterReport.getParameterValues().put("i8nProjectOutputsReportingMenu",
+        "4. " + this.getText("projects.menu.projectOutputs"));
+      masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
+        "4.1 " + this.getText("projects.menu.overviewByMogs"));
+      if (this.isPhaseOne()) {
+        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+          "4.2 " + this.getText("projects.menu.deliverables"));
+      } else {
+        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+          "4.1 " + this.getText("projects.menu.deliverables"));
+        masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
+          "4.2 " + this.getText("projects.menu.innovations"));
+      }
+      masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
+        "4.3 " + this.getText("breadCrumb.menu.projectHighlights"));
 
 
-    masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
-      "6. " + this.getText("projects.menu.activities"));
-    masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
-      "7. " + this.getText("breadCrumb.menu.leverage"));
+      masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
+        "5. " + this.getText("projects.menu.activities"));
+      masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
+        "6. " + this.getText("breadCrumb.menu.leverage"));
+    } else {
+      masterReport.getParameterValues().put("i8nProjectOutputsReportingMenu",
+        "5. " + this.getText("projects.menu.projectOutputs"));
+      masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
+        "5.1 " + this.getText("projects.menu.overviewByMogs"));
+      if (this.isPhaseOne()) {
+        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+          "5.2 " + this.getText("projects.menu.deliverables"));
+      } else {
+        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+          "5.1 " + this.getText("projects.menu.deliverables"));
+        masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
+          "5.2 " + this.getText("projects.menu.innovations"));
+      }
+      masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
+        "5.3 " + this.getText("breadCrumb.menu.projectHighlights"));
+
+
+      masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
+        "6. " + this.getText("projects.menu.activities"));
+      masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
+        "7. " + this.getText("breadCrumb.menu.leverage"));
+    }
+
+
     /**
      * End Menu Reporting
      */
@@ -2215,7 +2242,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
-          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase()))
+          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
+            && d.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
           .collect(Collectors.toList())) {
           fundingSources += "● " + dfs.getFundingSource().getComposedName() + "<br>";
         }
@@ -4619,7 +4647,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class},
       0);
     List<ProjectExpectedStudy> projectExpectedStudies = project.getProjectExpectedStudies().stream()
-      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null)
+      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null && p.getYear() != null
+        && p.getYear().equals(this.getSelectedYear()))
       .collect(Collectors.toList());
     if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
       for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {

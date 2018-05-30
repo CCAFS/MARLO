@@ -25,7 +25,7 @@
       "namespace": "/projects",
       "action": "${crpSession}/reportingSummary",
       "formats": [ "PDF" ],
-      "cycles": [ "Planning" ],
+      "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
     { "active": true,
