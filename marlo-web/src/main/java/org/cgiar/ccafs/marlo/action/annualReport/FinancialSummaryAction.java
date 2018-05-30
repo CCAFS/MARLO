@@ -510,7 +510,7 @@ public class FinancialSummaryAction extends BaseAction {
 
           budgetSave.setReportSynthesisFinancialSummary(financialSummaryDB);
 
-          if (budget.getLiaisonInstitution() != null) {
+          if (budget.getLiaisonInstitution() != null && budget.getLiaisonInstitution().getId() != null) {
             LiaisonInstitution liaisonInstitution =
               liaisonInstitutionManager.getLiaisonInstitutionById(budget.getLiaisonInstitution().getId());
 
