@@ -228,28 +228,35 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       }
       myNonProjectStudies = new ArrayList<>();
 
-      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+      if (!nonProjectStudies.isEmpty()) {
+        if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
 
-        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          nonProjectStudies.remove(projectExpectedStudy);
-          myNonProjectStudies.add(projectExpectedStudy);
-        }
-      } else {
-
-        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          if (projectExpectedStudy.getCreatedBy().getId().equals(this.getCurrentUser().getId())) {
-            nonProjectStudies.remove(projectExpectedStudy);
-            myNonProjectStudies.add(projectExpectedStudy);
+          for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+              nonProjectStudies.remove(projectExpectedStudy);
+              myNonProjectStudies.add(projectExpectedStudy);
+            }
           }
-        }
 
-        expectedStudies = new ArrayList<>(
-          projectExpectedStudyManager.getUserStudies(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(e -> e.isActive()).collect(Collectors.toList()));
-        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          if (nonProjectStudies.contains(projectExpectedStudy)) {
-            nonProjectStudies.remove(projectExpectedStudy);
-            myNonProjectStudies.add(projectExpectedStudy);
+        } else {
+
+          for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+              if (projectExpectedStudy.getCreatedBy().getId().equals(this.getCurrentUser().getId())) {
+                nonProjectStudies.remove(projectExpectedStudy);
+                myNonProjectStudies.add(projectExpectedStudy);
+              }
+            }
+          }
+
+          expectedStudies = new ArrayList<>(
+            projectExpectedStudyManager.getUserStudies(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+              .filter(e -> e.isActive()).collect(Collectors.toList()));
+          for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+            if (nonProjectStudies.contains(projectExpectedStudy)) {
+              nonProjectStudies.remove(projectExpectedStudy);
+              myNonProjectStudies.add(projectExpectedStudy);
+            }
           }
         }
       }
