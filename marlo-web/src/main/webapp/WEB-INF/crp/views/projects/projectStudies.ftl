@@ -118,7 +118,7 @@
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
             <td>
-              [#if isThisComplete]
+              [#if isThisComplete || ((item.year lt  currentCycleYear)!false)]
                 <span class="icon-20 icon-check" title="Complete"></span> 
               [#else]
                 <span class="icon-20 icon-uncheck" title=""></span> 
