@@ -92,7 +92,8 @@ public class ReportSynthesisCrpProgressManagerImpl implements ReportSynthesisCrp
       List<ProjectExpectedStudy> expectedStudies =
         new ArrayList<>(
           projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase() == phaseID
+            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
+              && ps.getProjectExpectedStudyInfo(phase).getPhase().getId() == phaseID
               && ps.getProject().getGlobalUnitProjects().stream()
                 .filter(
                   gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))

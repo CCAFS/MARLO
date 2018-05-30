@@ -144,9 +144,9 @@
           [#list list as item]
             [#local customName = "${name}" /]
             <tr>
-              <td>P${item_index+10}</td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>P${(item.project.id)!}</td>
+              <td>[#if (item.projectExpectedStudyInfo.title)?has_content] ${item.projectExpectedStudyInfo.title} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.projectExpectedStudySubIdos)?has_content] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td>
               <td class="text-center">
