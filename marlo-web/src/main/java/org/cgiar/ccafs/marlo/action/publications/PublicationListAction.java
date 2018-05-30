@@ -202,7 +202,9 @@ public class PublicationListAction extends BaseAction {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     try {
       loggedCrp.setDeliverablesList(loggedCrp.getDeliverables().stream()
-        .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive())
+        .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive()
+          && c.getDeliverableInfo(this.getActualPhase()) != null
+          && c.getDeliverableInfo().getYear() == this.getActualPhase().getYear())
         .collect(Collectors.toList()));
       for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
         deliverable.setLeaders(deliverable.getDeliverableLeaders().stream()
