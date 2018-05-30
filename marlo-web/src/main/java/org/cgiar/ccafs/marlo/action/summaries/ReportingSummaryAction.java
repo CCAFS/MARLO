@@ -88,6 +88,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -370,10 +376,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       "5. " + this.getText("projects.menu.projectOutputs"));
     masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
       "5.1 " + this.getText("projects.menu.overviewByMogs"));
-    masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-      "5.2 " + this.getText("projects.menu.deliverables"));
+    if (this.isPhaseOne()) {
+      masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+        "5.2 " + this.getText("projects.menu.deliverables"));
+    } else {
+      masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+        "5.1 " + this.getText("projects.menu.deliverables"));
+      masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
+        "5.2 " + this.getText("projects.menu.innovations"));
+    }
     masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
       "5.3 " + this.getText("breadCrumb.menu.projectHighlights"));
+
+
     masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
       "6. " + this.getText("projects.menu.activities"));
     masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
@@ -885,6 +900,49 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nDeliverablesRPartnerSingular", this.getText("partner.partnerSingular"));
     masterReport.getParameterValues().put("i8nDeliverablesRType2", this.getText("deliverable.type"));
 
+
+    /*
+     * Reporting
+     * Innovations
+     */
+    masterReport.getParameterValues().put("i8nInnovationNoData", this.getText("summaries.innovation.noData"));
+    masterReport.getParameterValues().put("i8nInnovationsRInnovation", this.getText("summaries.innovation"));
+    masterReport.getParameterValues().put("i8nInnovationRTitle", this.getText("projectInnovations.title"));
+    masterReport.getParameterValues().put("i8nInnovationRNarrative",
+      this.getText("projectInnovations.narrative.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRPhaseResearch", this.getText("projectInnovations.phase"));
+    masterReport.getParameterValues().put("i8nInnovationRStageInnovation", this.getText("projectInnovations.stage"));
+    masterReport.getParameterValues().put("i8nInnovationRInnovationType",
+      this.getText("projectInnovations.innovationType"));
+    masterReport.getParameterValues().put("i8nInnovationRContributionOfCrp",
+      this.getText("projectInnovations.contributionOfCrp"));
+    masterReport.getParameterValues().put("i8nInnovationRDegreeInnovation",
+      this.getText("projectInnovations.degreeInnovation"));
+    masterReport.getParameterValues().put("i8nInnovationRGeographicScope",
+      this.getText("projectInnovations.geographicScope"));
+    masterReport.getParameterValues().put("i8nInnovationRRegion", this.getText("projectInnovations.region"));
+    masterReport.getParameterValues().put("i8nInnovationRCountries", this.getText("projectInnovations.countries"));
+    masterReport.getParameterValues().put("i8nInnovationROrganizations",
+      this.getText("summaries.innovation.organizationalType"));
+    masterReport.getParameterValues().put("i8nInnovationRProjectExpectedStudy",
+      this.getText("caseStudy.caseStudyTitle"));
+    masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
+      this.getText("projectInnovations.stageDescription.readText"));
+    masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
+      this.getText("summaries.innovation.evidenceLink"));
+    masterReport.getParameterValues().put("i8nInnovationRDeliverables",
+      this.getText("projectInnovations.deliverableId"));
+    masterReport.getParameterValues().put("i8nInnovationRCrps", this.getText("projectInnovations.contributing"));
+    masterReport.getParameterValues().put("i8nInnovationRGenderFocusLevel",
+      this.getText("projectInnovations.genderRelevance"));
+    masterReport.getParameterValues().put("i8nInnovationRGenderExplaniation",
+      this.getText("projectInnovations.genderRelevance.explanation.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRYouthFocusLevel",
+      this.getText("projectInnovations.youthRelevance"));
+    masterReport.getParameterValues().put("i8nInnovationRYouthExplaniation",
+      this.getText("projectInnovations.youthRelevance.explanation.readText"));
+
+
     /*
      * Reporting
      * Project highlights
@@ -1192,6 +1250,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           // args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+          this.fillSubreport((SubReport) hm.get("innovations"), "innovations", args);
           this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
 
@@ -1337,6 +1396,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         break;
       case "deliverables_list_reporting":
         model = this.getDeliverablesReportingTableModel();
+        break;
+      case "innovations":
+        model = this.getInnovationsTableModel();
         break;
       case "project_highlight":
         model = this.getProjectHighlightReportingTableModel();
@@ -1647,7 +1709,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
@@ -1793,6 +1854,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     model.addRow(new Object[] {this.getSelectedYear(), w1w2, w3, bilateral, centerfunds, w1w2CoFinancing, grand_total});
     return model;
   }
+
 
   public byte[] getBytesPDF() {
     return bytesPDF;
@@ -3127,7 +3189,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     if (!project.getProjectExpectedStudies().isEmpty()) {
       for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase().getId()))
         .collect(Collectors.toList())) {
         String title = null, expectedStudiesType = null, expectedStudiesScope = null, expectedStudiesSubIdo = null,
           expectedStudiesSRF = null, expectedStudiesComments = null, expectedStudiesProjects = "";
@@ -3318,6 +3380,171 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
   }
 
+  private TypedTableModel getInnovationsTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "phaseResearch",
+        "stageInnovation", "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region",
+        "countries", "organizations", "projectExpectedStudy", "descriptionStage", "evidenceLink", "deliverables",
+        "crps", "genderFocusLevel", "genderExplaniation", "youthFocusLevel", "youthExplaniation"},
+      new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
+      0);
+
+    List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
+      .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null)
+      .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList());
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      for (ProjectInnovation projectInnovation : projectInnovations) {
+        ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo();
+        Long id = null;
+        String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
+          contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
+          organizations = null, projectExpectedStudy = null, descriptionStage = null, evidenceLink = null,
+          deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
+          youthExplaniation = null;
+        Boolean isRegional = false, isNational = false, isStage4 = false;
+        // Id
+        id = projectInnovation.getId();
+        // Title
+        if (innovationInfo.getTitle() != null && !innovationInfo.getTitle().trim().isEmpty()) {
+          title = innovationInfo.getTitle();
+        }
+        // Narrative
+        if (innovationInfo.getNarrative() != null && !innovationInfo.getNarrative().trim().isEmpty()) {
+          narrative = innovationInfo.getNarrative();
+        }
+        // Phase Research
+        if (innovationInfo.getRepIndPhaseResearchPartnership() != null) {
+          phaseResearch = innovationInfo.getRepIndPhaseResearchPartnership().getName();
+        }
+        // Stage
+        if (innovationInfo.getRepIndStageInnovation() != null) {
+          stageInnovation = innovationInfo.getRepIndStageInnovation().getName();
+          if (innovationInfo.getRepIndStageInnovation().getId().equals(APConstants.REP_IND_STAGE_INNOVATION_STAGE4)) {
+            isStage4 = true;
+            // Organizations
+            List<ProjectInnovationOrganization> projectInnovationOrganizations =
+              projectInnovation.getProjectInnovationOrganizations().stream()
+                .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            if (projectInnovationOrganizations != null && projectInnovationOrganizations.size() > 0) {
+              Set<String> organizationSet = new HashSet<>();
+              for (ProjectInnovationOrganization projectInnovationOrganization : projectInnovationOrganizations) {
+                organizationSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
+                  + projectInnovationOrganization.getRepIndOrganizationType().getName());
+              }
+              organizations = String.join("", organizationSet);
+            }
+
+            // Studies
+            if (innovationInfo.getProjectExpectedStudy() != null) {
+              projectExpectedStudy = innovationInfo.getProjectExpectedStudy().getComposedName();
+            }
+          }
+        }
+        // Type
+        if (innovationInfo.getRepIndInnovationType() != null) {
+          innovationType = innovationInfo.getRepIndInnovationType().getName();
+        }
+        // ContributionCrp
+        if (innovationInfo.getRepIndContributionOfCrp() != null) {
+          contributionOfCrp = innovationInfo.getRepIndContributionOfCrp().getName();
+        }
+        // Degree
+        if (innovationInfo.getRepIndDegreeInnovation() != null) {
+          degreeInnovation = innovationInfo.getRepIndDegreeInnovation().getName();
+        }
+        // Geographic Scope
+        if (innovationInfo.getRepIndGeographicScope() != null) {
+          geographicScope = innovationInfo.getRepIndGeographicScope().getName();
+          // Regional
+          if (innovationInfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+            isRegional = true;
+            if (innovationInfo.getRepIndRegion() != null) {
+              region = innovationInfo.getRepIndRegion().getName();
+            }
+          }
+          // Country
+          if (!innovationInfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
+            && !innovationInfo.getRepIndGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+            isNational = true;
+            List<ProjectInnovationCountry> innovationCountries =
+              projectInnovation.getProjectInnovationCountries().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            if (innovationCountries != null && innovationCountries.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (ProjectInnovationCountry innovationCountry : innovationCountries) {
+                countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationCountry.getLocElement().getName());
+              }
+              countries = String.join("", countriesSet);
+            }
+          }
+        }
+
+        // Description
+        if (innovationInfo.getDescriptionStage() != null && !innovationInfo.getDescriptionStage().trim().isEmpty()) {
+          descriptionStage = innovationInfo.getDescriptionStage();
+        }
+        // Evidence Link
+        if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
+          evidenceLink = innovationInfo.getEvidenceLink();
+        }
+        // Deliverables
+        List<ProjectInnovationDeliverable> projectInnovationDeliverables =
+          projectInnovation.getProjectInnovationDeliverables().stream()
+            .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+        if (projectInnovationDeliverables != null && projectInnovationDeliverables.size() > 0) {
+          Set<String> deliverablesSet = new HashSet<>();
+          for (ProjectInnovationDeliverable projectInnovationDeliverable : projectInnovationDeliverables) {
+            deliverablesSet
+              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationDeliverable.getDeliverable().getComposedName());
+          }
+          deliverables = String.join("", deliverablesSet);
+        }
+        // Contributions CRPS/Platforms
+        List<ProjectInnovationCrp> projectInnovationCrps = projectInnovation.getProjectInnovationCrps().stream()
+          .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        if (projectInnovationCrps != null && projectInnovationCrps.size() > 0) {
+          Set<String> crpsSet = new HashSet<>();
+          for (ProjectInnovationCrp projectInnovationCrp : projectInnovationCrps) {
+            crpsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationCrp.getGlobalUnit().getComposedName());
+          }
+          crps = String.join("", crpsSet);
+        }
+
+        // Gender Relevance
+        if (innovationInfo.getGenderFocusLevel() != null) {
+          genderFocusLevel = innovationInfo.getGenderFocusLevel().getName();
+        }
+        if (innovationInfo.getGenderExplaniation() != null
+          && !innovationInfo.getGenderExplaniation().trim().isEmpty()) {
+          genderExplaniation = innovationInfo.getGenderExplaniation();
+        }
+
+        // Youth Relevance
+        if (innovationInfo.getYouthFocusLevel() != null) {
+          youthFocusLevel = innovationInfo.getYouthFocusLevel().getName();
+        }
+        if (innovationInfo.getYouthExplaniation() != null && !innovationInfo.getYouthExplaniation().trim().isEmpty()) {
+          youthExplaniation = innovationInfo.getYouthExplaniation();
+        }
+
+        model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, phaseResearch,
+          stageInnovation, innovationType, contributionOfCrp, degreeInnovation, geographicScope, region, countries,
+          organizations, projectExpectedStudy, descriptionStage, evidenceLink, deliverables, crps, genderFocusLevel,
+          genderExplaniation, youthFocusLevel, youthExplaniation});
+      }
+    }
+
+    return model;
+  }
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -3490,6 +3717,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           + ": &lt;Not Defined&gt;";
       }
     }
+
     // TODO: Get image from repository
     String centerURL = "";
     // set CRP imgage URL from repo
@@ -4111,22 +4339,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth"},
+        "introduction", "results", "partners", "links", "width", "heigth", "isGlobal"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Integer.class, Integer.class},
+        String.class, String.class, String.class, Integer.class, Integer.class, Boolean.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.getProjectHighlightInfo(this.getSelectedPhase()) != null && ph.isActive()
         && ph.getProjectHighlightInfo().getYear() != null
-        && ph.getProjectHighlightInfo().getYear() >= this.getSelectedYear())
+        && ph.getProjectHighlightInfo().getYear() == this.getSelectedYear())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
         highlightDesc = null, introduction = null, results = null, partners = null, links = null;
       Long yearReported = null;
+      Boolean isGlobal = false;
       int width = 0;
       int heigth = 0;
       if (projectHighlight.getProjectHighlightInfo().getTitle() != null
@@ -4159,6 +4388,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         highlightsTypes = null;
       }
       if (projectHighlight.getProjectHighlightInfo().isGlobal() == true) {
+        isGlobal = true;
         highlightsIsGlobal = "Yes";
       } else {
         highlightsIsGlobal = "No";
@@ -4256,7 +4486,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
-        introduction, results, partners, links, width, heigth});
+        introduction, results, partners, links, width, heigth, isGlobal});
     }
     return model;
   }
