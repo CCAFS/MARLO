@@ -4,7 +4,9 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "components-font-awesome" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -59,7 +61,10 @@
             [#if PMU]
             <div class="form-group">
               <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
-              [@tableCRPProgressMacro list=flagshipCrpProgress /]
+              <div class="viewMoreSyntesis-block" >
+                  [@tableCRPProgressMacro list=flagshipCrpProgress /]
+                  <div class="viewMoreSyntesis closed"></div>
+                </div>
             </div>
             [/#if]
             
@@ -95,7 +100,10 @@
             [#if PMU]
             <div class="form-group">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-              [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
+              <div class="viewMoreSyntesis-block" >
+                  [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
+                  <div class="viewMoreSyntesis closed"></div>
+                </div>
             </div>
             [/#if]
             
@@ -108,7 +116,10 @@
               [#if flagship]
                 [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=studiesList /]
               [#else]
-                [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=flagshipPlannedList /]
+                <div class="viewMoreSyntesis-block" >
+                  [@tableOutcomesCaseStudiesMacro name="" list=flagshipPlannedList isPMU=true /]
+                  <div class="viewMoreSyntesis closed"></div>
+                </div>
               [/#if]  
             </div>
             
@@ -129,7 +140,7 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro tableOutcomesCaseStudiesMacro name list=[] ]
+[#macro tableOutcomesCaseStudiesMacro name list=[]  isPMU=false ]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -138,31 +149,43 @@
           <th> [@s.text name="${customLabel}.table.outcomeCaseStudy" /] </th>
           <th> [@s.text name="${customLabel}.table.subIDO" /] </th>
           <th class="col-md-3"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
-          <th class="col-md-1"> [@s.text name="${customLabel}.table.includeAR" /] </th>
+          [#if !isPMU]<th class="col-md-1"> [@s.text name="${customLabel}.table.includeAR" /] </th>[/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#if isPMU]
+              [#local projectExpectedStudy = item.projectExpectedStudy]
+            [#else]
+              [#local projectExpectedStudy = item]
+            [/#if]
             [#local customName = "${name}" /]
             [#if (item.project.id??)!false]
-              [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+              [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(projectExpectedStudy.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [#else]
-              [#local URL][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+              [#local URL][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${(projectExpectedStudy.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [/#if]
             <tr>
               <td> 
                 [#-- Title --]
                 <a href="${URL}" target="_blank"> 
-                  [#if ((item.projectExpectedStudyInfo.title)?has_content)!false] ${item.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
+                  [#if ((projectExpectedStudy.projectExpectedStudyInfo.title)?has_content)!false] ${projectExpectedStudy.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
                 </a>
                 [#-- Project ID --]
-                [#if (item.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(item.project.id)!})</i> [/#if]
+                [#if (projectExpectedStudy.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(projectExpectedStudy.project.id)!})</i> [/#if]
+                [#-- Flagships --]
+                [#if isPMU]
+                  <div class="clearfix"></div>
+                  [#list liaisonInstitutions as liaisonInstitution]
+                    <span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${(liaisonInstitution.crpProgram.acronym)!}</span>
+                  [/#list]
+                [/#if]
               </td>
               <td>
-                [#if ((item.subIdos)?has_content)!false]
+                [#if ((projectExpectedStudy.subIdos)?has_content)!false]
                   <ul>
-                  [#list item.subIdos as ido]
+                  [#list projectExpectedStudy.subIdos as ido]
                     <li>${(ido.srfSubIdo.description)!}</li>
                   [/#list]
                   </ul>
@@ -172,28 +195,30 @@
               </td>
               <td>
                 [#local additional]
-                  [#if (item.projectExpectedStudyInfo.genderLevel??)!false]
+                  [#if (projectExpectedStudy.projectExpectedStudyInfo.genderLevel??)!false]
                     <strong>Gender:</strong>  
-                    ${(item.projectExpectedStudyInfo.genderLevel.name)!} <br />
-                    <small>${(item.projectExpectedStudyInfo.describeGender)!} </small><br />
+                    ${(projectExpectedStudy.projectExpectedStudyInfo.genderLevel.name)!} <br />
+                    <small>${(projectExpectedStudy.projectExpectedStudyInfo.describeGender)!} </small><br />
                   [/#if] 
-                  [#if (item.projectExpectedStudyInfo.youthLevel??)!false]
+                  [#if (projectExpectedStudy.projectExpectedStudyInfo.youthLevel??)!false]
                     <strong>Youth: </strong>  
-                    ${(item.projectExpectedStudyInfo.youthLevel.name)!} <br />
-                    <small>${(item.projectExpectedStudyInfo.describeYouth)!}</small> <br />
+                    ${(projectExpectedStudy.projectExpectedStudyInfo.youthLevel.name)!} <br />
+                    <small>${(projectExpectedStudy.projectExpectedStudyInfo.describeYouth)!}</small> <br />
                   [/#if] 
-                  [#if (item.projectExpectedStudyInfo.capdevLevel??)!false]
+                  [#if (projectExpectedStudy.projectExpectedStudyInfo.capdevLevel??)!false]
                     <strong>CapDev: </strong> 
-                    ${(item.projectExpectedStudyInfo.capdevLevel.name)!} <br />
-                    <small>${(item.projectExpectedStudyInfo.describeCapdev)!} </small><br />
+                    ${(projectExpectedStudy.projectExpectedStudyInfo.capdevLevel.name)!} <br />
+                    <small>${(projectExpectedStudy.projectExpectedStudyInfo.describeCapdev)!} </small><br />
                   [/#if]
                 [/#local]
                 [#if additional?has_content ]${additional}[#else]<i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
               </td>
               [#-- <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td> --]
+              [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}" label="" value="${item.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(item.id))!false cssClass="" /]
+                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}" label="" value="${projectExpectedStudy.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(projectExpectedStudy.id))!false cssClass="" /]
               </td>
+              [/#if]
             </tr>
           [/#list]
         [#else]
@@ -221,7 +246,8 @@
         [#if list?has_content]
           [#list list as item]
             <tr>
-              <td><span class="programTag" style="border-color:${(item.crpProgram.color)!'#fff'}">${(item.crpProgram.acronym)!}</span></td>              
+              <td> 
+              <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>              
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
@@ -250,10 +276,11 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
             <tr>
-              <td><span class="programTag" style="border-color:${(item.crpProgram.color)!'#fff'}">${(item.crpProgram.acronym)!}</span></td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
+              <td>[#if (item.overallProgress?has_content)!false] ${item.overallProgress} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.summaries?has_content)!false] ${item.summaries} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
             </tr>
           [/#list]
         [#else]
