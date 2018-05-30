@@ -88,7 +88,6 @@
                 </div>
                 [/#if]
               </div>
-              
             </div>
             [/#if]
             
@@ -131,11 +130,10 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="col-md-1"> [@s.text name="${customLabel}.table.projectId" /] </th>
+          [#-- <th class="col-md-1"> [@s.text name="${customLabel}.table.projectId" /] </th> --]
           <th> [@s.text name="${customLabel}.table.outcomeCaseStudy" /] </th>
           <th> [@s.text name="${customLabel}.table.subIDO" /] </th>
-          <th class="col-md-4"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
-          <th class="col-md-1"> [@s.text name="${customLabel}.table.evidenceLink" /] </th>
+          <th class="col-md-3"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
           <th class="col-md-1"> [@s.text name="${customLabel}.table.includeAR" /] </th>
         </tr>
       </thead>
@@ -143,12 +141,52 @@
         [#if list?has_content]
           [#list list as item]
             [#local customName = "${name}" /]
+            [#if (item.project.id??)!false]
+              [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#else]
+              [#local URL][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [/#if]
             <tr>
-              <td>P${(item.project.id)!}</td>
-              <td>[#if (item.projectExpectedStudyInfo.title)?has_content] ${item.projectExpectedStudyInfo.title} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (item.projectExpectedStudySubIdos)?has_content] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td>
+              <td> 
+                [#-- Title --]
+                <a href="${URL}" target="_blank"> 
+                  [#if ((item.projectExpectedStudyInfo.title)?has_content)!false] ${item.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
+                </a>
+                [#-- Project ID --]
+                [#if (item.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(item.project.id)!})</i> [/#if]
+              </td>
+              <td>
+                [#if ((item.subIdos)?has_content)!false]
+                  <ul>
+                  [#list item.subIdos as ido]
+                    <li>${(ido.srfSubIdo.description)!}</li>
+                  [/#list]
+                  </ul>
+                [#else]
+                  <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
+              <td>
+                [#local additional]
+                  [#if (item.projectExpectedStudyInfo.genderLevel??)!false]
+                    <strong>Gender:</strong>  
+                    ${(item.projectExpectedStudyInfo.genderLevel.name)!} <br />
+                    <small>${(item.projectExpectedStudyInfo.describeGender)!} </small><br />
+                  [/#if] 
+                  [#if (item.projectExpectedStudyInfo.youthLevel??)!false]
+                    <strong>Youth: </strong>  
+                    ${(item.projectExpectedStudyInfo.youthLevel.name)!} <br />
+                    <small>${(item.projectExpectedStudyInfo.describeYouth)!}</small> <br />
+                  [/#if] 
+                  [#if (item.projectExpectedStudyInfo.capdevLevel??)!false]
+                    <strong>CapDev: </strong> 
+                    ${(item.projectExpectedStudyInfo.capdevLevel.name)!} <br />
+                    <small>${(item.projectExpectedStudyInfo.describeCapdev)!} </small><br />
+                  [/#if]
+                [/#local]
+                [#if additional?has_content ]${additional}[#else]<i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
+              </td>
+              [#-- <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td> --]
               <td class="text-center">
                 [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}" label="" value="${item.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(item.id))!false cssClass="" /]
               </td>
