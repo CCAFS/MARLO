@@ -174,4 +174,4 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20180316" ] + customJS  /]
+[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20180530" ] + customJS  /]
