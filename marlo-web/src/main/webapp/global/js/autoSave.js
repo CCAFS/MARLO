@@ -190,6 +190,8 @@ function validateThisSection() {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
           } else {
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
+            // Hide Submit Button
+            $('.projectSubmitButton, .completed-mode').hide();
           }
         }
         $sectionMenu.removeClass('loadingSection');

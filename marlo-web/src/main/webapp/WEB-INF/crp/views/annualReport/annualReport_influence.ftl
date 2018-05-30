@@ -47,12 +47,33 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-          
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorI3" /]</h4>
             
             [#-- Chart 1 --]
+            [#assign chartData = [
+                    {"name":"CGIAR",                              "value": "89"},
+                    {"name":"Academic and Research",              "value": "6"},
+                    {"name":"Development organizations",          "value": "7"},
+                    {"name":"NARES/NARS",                         "value": "45"},
+                    {"name":"CBOs and farmers' groups",           "value": "56"},
+                    {"name":"Private sector",                     "value": "5"},
+                    {"name":"Foundations and Financial Institutions", "value": "2"},
+                    {"name":"Government",                         "value": "7"},
+                    {"name":"Bilateral and Donor governments",    "value": "7"},
+                    {"name":"Multilateral",                       "value": "45"},
+                    {"name":"Other",                              "value": "23"}
+                  ] 
+                /]
             <div class="form-group row">
-              <div class="col-md-8">
-                <div id="barchart_material" class="simpleBox"></div>
+              <div class="col-md-12">
+                <div id="chart1" class="chartBox simpleBox">
+                  <ul class="chartData" style="display:none">
+                    <li><span>Implementing Organization Type</span><span>#</span></li>
+                    [#list chartData as data]
+                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [/#list]
+                  </ul>
+                </div> 
               </div>
             </div>
             
