@@ -247,3 +247,13 @@ li#menu-melia a, li#menu-plannedVariance a {
 table.financial-report .row-title{
   color: #ceb286;
 }
+
+.chartBox {
+  background: url(../../../global/images/saving.gif) no-repeat;
+  background-position: 50%;
+  /* height: 500px; */
+}
+
+.chartBox.loaded {
+  background: #fff;
+}

@@ -1,14 +1,11 @@
 $(document).ready(init);
 
 function init() {
-
   // Attaching events
   attachEvents();
-
 }
 
 function attachEvents() {
-
 }
 
 google.charts.load('current', {
@@ -16,31 +13,37 @@ google.charts.load('current', {
     'bar'
   ]
 });
-google.charts.setOnLoadCallback(drawChart);
+google.charts.setOnLoadCallback(function() {
 
-function drawChart() {
-  var data = google.visualization.arrayToDataTable([
-      [
-          'Year', 'Sales'
-      ], [
-          'Private sector', 1000
-      ], [
-          'Government', 1170
-      ], [
-          'Academic and Research', 660
-      ], [
-          'Development organizations', 1030
-      ]
-  ]);
+  var $chart1 = $('#chart1');
+  var data1 = new google.visualization.arrayToDataTable(getChartData($chart1));
 
-  var options = {
-      chart: {
-        title: 'Implementing Organization Type'
+  var chart1 = new google.charts.Bar(document.getElementById($chart1[0].id));
+  chart1.draw(data1, google.charts.Bar.convertOptions({
+      legend: {
+        position: "none"
       },
       bars: 'horizontal' // Required for Material Bar Charts.
-  };
+  }));
 
-  var chart = new google.charts.Bar(document.getElementById('barchart_material'));
+});
 
-  chart.draw(data, google.charts.Bar.convertOptions(options));
+/**
+ * Get chart data in Array
+ * 
+ * @param chart
+ * @returns
+ */
+function getChartData(chart) {
+  var dataArray = [];
+  $(chart).find('.chartData li').each(function(i,e) {
+    dataArray.push($(e).find('span').map(function() {
+      if($(this).hasClass('number')) {
+        return parseFloat($(this).text());
+      } else {
+        return $(this).text();
+      }
+    }).toArray());
+  });
+  return dataArray;
 }
