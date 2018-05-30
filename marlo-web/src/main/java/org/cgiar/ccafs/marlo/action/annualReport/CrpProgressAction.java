@@ -781,7 +781,9 @@ public class CrpProgressAction extends BaseAction {
           .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
-            studiesList.add(projectExpectedStudy);
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
+              studiesList.add(projectExpectedStudy);
+            }
           }
         }
       }
@@ -798,8 +800,12 @@ public class CrpProgressAction extends BaseAction {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
             if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
-              studiesList.add(projectExpectedStudy);
-              break;
+              if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+                if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
+                  studiesList.add(projectExpectedStudy);
+                  break;
+                }
+              }
             }
           }
         }

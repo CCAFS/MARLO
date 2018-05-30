@@ -317,7 +317,7 @@ public class EvidencesAction extends BaseAction {
       List<ProjectExpectedStudy> expectedStudies =
         new ArrayList<>(
           projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase() == phaseID
+            .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID && ps.getProject() != null
               && ps.getProject().getGlobalUnitProjects().stream()
                 .filter(
                   gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))

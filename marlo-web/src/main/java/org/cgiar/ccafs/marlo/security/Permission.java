@@ -85,6 +85,7 @@ public class Permission {
     "crp:{0}:reportSynthesis:{1}:governance";
   public static final String REPORT_SYNTHESIS_FINANCIAL_SUMMARY_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:financial";
+  public static final String REPORT_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:risks";
 
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";

@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "annualReport.${currentStage}" /]
+[#assign customName= "reportSynthesis.reportSynthesisGovernance" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]

@@ -59,7 +59,7 @@
             [#if PMU]
             <div class="form-group">
               <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
-              [@tableCRPProgressMacro list=fpSynthesisTable /]
+              [@tableCRPProgressMacro list=flagshipCrpProgress /]
             </div>
             [/#if]
             
@@ -95,7 +95,7 @@
             [#if PMU]
             <div class="form-group">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-              [@tableSLOSynthesisProgressMacro list=flagshipPlannedList /]
+              [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
             </div>
             [/#if]
             
@@ -105,7 +105,11 @@
             <div class="form-group">
               <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOutcomes" /]</h4>
               [@customForm.helpLabel name="${customLabel}.listOutcomes.help" showIcon=false editable=editable/]
-              [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=studiesList /]
+              [#if flagship]
+                [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=studiesList /]
+              [#else]
+                [@tableOutcomesCaseStudiesMacro name="${customName}.plannedStudiesValue" list=flagshipPlannedList /]
+              [/#if]  
             </div>
             
             
