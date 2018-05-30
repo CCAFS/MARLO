@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
@@ -115,6 +117,8 @@ public class CrpProgressAction extends BaseAction {
 
   private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
 
+  private PhaseManager phaseManager;
+
   // Variables
   private String transaction;
 
@@ -147,7 +151,7 @@ public class CrpProgressAction extends BaseAction {
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisCrpProgressStudyManager reportSynthesisCrpProgressStudyManager,
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
-    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager) {
+    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -162,6 +166,8 @@ public class CrpProgressAction extends BaseAction {
     this.reportSynthesisCrpProgressTargetManager = reportSynthesisCrpProgressTargetManager;
     this.reportSynthesisCrpProgressStudyManager = reportSynthesisCrpProgressStudyManager;
     this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
+    this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -533,21 +539,21 @@ public class CrpProgressAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+
+    if (this.isPMU()) {
+
+      // Table A-2 PMU Information
+      flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
+        loggedCrp, this.liaisonInstitution);
+      // Flagship Synthesis Table
+      fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions, phase.getId());
+
+    }
+
     // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
-
-    if (this.isPMU()) {
-      /*
-       * // Table A-2 PMU Information
-       * flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
-       * loggedCrp, this.liaisonInstitution);
-       * // Flagship Synthesis Table
-       * fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions,
-       * phase.getId());
-       */
-    }
 
 
     // Base Permission
@@ -743,6 +749,8 @@ public class CrpProgressAction extends BaseAction {
 
     studiesList = new ArrayList<>();
 
+    Phase phase = phaseManager.getPhaseById(phaseID);
+
     if (projectFocusManager.findAll() != null) {
 
       List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
@@ -753,10 +761,30 @@ public class CrpProgressAction extends BaseAction {
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getPhase() != null && es.getPhase() == phaseID)
-          .collect(Collectors.toList()));
+          .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          studiesList.add(projectExpectedStudy);
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+            studiesList.add(projectExpectedStudy);
+          }
+        }
+      }
+
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear() && es.getProject() == null)
+        .collect(Collectors.toList()));
+
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+          List<ProjectExpectedStudyFlagship> studiesPrograms =
+            new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
+              .filter(s -> s.isActive() && s.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
+            CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
+            if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
+              studiesList.add(projectExpectedStudy);
+              break;
+            }
+          }
         }
       }
     }
