@@ -594,15 +594,15 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverablePartnership getDeliverablePartnershipResponsibleDB(Deliverable deliverableDB) {
     DeliverablePartnership partnershipResponsible = null;
-
-    if (deliverableDB.getDeliverablePartnerships() != null && deliverableDB.getDeliverablePartnerships().size() > 0) {
+    List<DeliverablePartnership> deliverablePartnerships = deliverableDB.getDeliverablePartnerships().stream()
+      .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+        && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue())
+        && dp.getProjectPartner() != null
+        && (dp.getProjectPartnerPerson() == null || dp.getProjectPartnerPerson().isActive()))
+      .collect(Collectors.toList());
+    if (deliverablePartnerships != null && deliverablePartnerships.size() > 0) {
       try {
-        partnershipResponsible = deliverableDB.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue())
-            && dp.getProjectPartner() != null
-            && (dp.getProjectPartnerPerson() == null || dp.getProjectPartnerPerson().isActive()))
-          .collect(Collectors.toList()).get(0);
+        partnershipResponsible = deliverablePartnerships.get(0);
       } catch (Exception e) {
         // NEVER EVER JUST SWALLOW UNCHECKED EXCEPTIONS! Logging this now.
         logger.error("unable to filter DeliverablePartnership list", e);
@@ -2970,9 +2970,10 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setDeliverableType(null);
     }
     // Set CrpClusterKeyOutput to null if has an -1 id
-    if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() != null
-      && deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId() != null
-      && deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
+
+    if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() == null
+      || deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId() == null
+      || deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId().longValue() == -1) {
       deliverableInfoDb.setCrpClusterKeyOutput(null);
     } else {
       deliverableInfoDb
@@ -3013,7 +3014,6 @@ public class DeliverableAction extends BaseAction {
         deliverableInfoDb.setAllowModifications(null);
       }
     }
-
     deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());
 
