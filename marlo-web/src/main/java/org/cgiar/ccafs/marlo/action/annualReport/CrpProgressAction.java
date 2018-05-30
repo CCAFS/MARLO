@@ -787,6 +787,15 @@ public class CrpProgressAction extends BaseAction {
           }
         }
       }
+
+      for (ProjectExpectedStudy projectExpectedStudy : studiesList) {
+        if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
+          && !projectExpectedStudy.getProjectExpectedStudySubIdos().isEmpty()) {
+          projectExpectedStudy.setSubIdos(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
+            .filter(s -> s.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+      }
+
     }
   }
 
