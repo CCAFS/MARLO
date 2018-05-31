@@ -63,9 +63,9 @@
             <div class="form-group">
               <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
               <div class="viewMoreSyntesis-block" >
-                  [@tableCRPProgressMacro list=flagshipCrpProgress /]
-                  <div class="viewMoreSyntesis closed"></div>
-                </div>
+                [@tableCRPProgressMacro list=flagshipCrpProgress /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
             
@@ -95,15 +95,13 @@
                 [/#if]
               </div>
             </div>
-            [/#if]
-            
+            [#else]
             [#-- Flagships - Synthesis  --]
-            [#if PMU]
             <div class="form-group">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
               <div class="viewMoreSyntesis-block" >
-                  [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
-                  <div class="viewMoreSyntesis closed"></div>
+                [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
+                <div class="viewMoreSyntesis closed"></div>
                 </div>
             </div>
             [/#if]
@@ -294,7 +292,7 @@
 [/#macro]
 
 [#macro sloTargetMacro name element index=-1 isTemplate=false]
-  [#local customName = "${name}.[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   [#local customClass = "sloTarget" /]
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
