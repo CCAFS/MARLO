@@ -392,6 +392,7 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
 
+
   // End
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String PROJECT_SCAPE_GLOBAL = "3";
@@ -621,6 +622,9 @@ public final class APConstants {
 
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
   public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
+
+  // Rep_ind constants
+  public static final long REP_IND_STAGE_INNOVATION_STAGE4 = 4;
 
   public static String getFilterBy() {
     return FILTER_BY;

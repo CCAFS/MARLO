@@ -41,10 +41,8 @@
               [/#if]
           </div> 
           <div class="fullPartBlock">
-            [#if !reportingActive]
               <h6>Download Full Project Report</h6>
-              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" class="button-pdf-format" target="__BLANK">PDF Format</a> 
-            [/#if]
+              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" class="button-pdf-format" target="__BLANK">PDF Format</a> 
           </div> 
         [#else]
           <p>The project is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your project.</p>

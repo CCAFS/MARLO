@@ -600,22 +600,23 @@ public class ProjectListAction extends BaseAction {
       this.loadFlagshipgsAndRegions(myProjects);
       this.loadFlagshipgsAndRegions(allProjects);
     }
-    closedProjects = projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+    closedProjects = new ArrayList<>();
+    List<Project> completedProjects =
+      projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
 
     // Not include Complete projects wihtout subbmission
-    for (Project project : closedProjects) {
+    for (Project project : completedProjects) {
       int year = this.getCurrentCycleYear();
       List<Submission> submissions = project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
         .collect(Collectors.toList());
-      if (submissions.isEmpty()) {
-        closedProjects.remove(project);
+      if (!submissions.isEmpty()) {
+        closedProjects.add(project);
       }
     }
 
     if (closedProjects != null) {
-      // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
       myProjects.removeAll(closedProjects);
       if (allProjects != null) {
         allProjects.removeAll(closedProjects);
