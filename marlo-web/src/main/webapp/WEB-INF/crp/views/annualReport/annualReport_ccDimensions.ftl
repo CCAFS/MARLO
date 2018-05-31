@@ -45,7 +45,7 @@
           <div class="borderBox">
            
             [#-- 1.3.1 Gender --]
-            <h5 class="sectionSubTitle">1.3.1 Gender</h5>
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.genderTitle" /]</h5>
             [#-- Describe any important CRP research findings, capacity development or outcomes in 2017 related to Gender issues. --]
             <div class="form-group">
               [@customForm.textArea name="${customName}.describeGenderIssues" i18nkey="${customLabel}.describeGenderIssues" help="${customLabel}.describeGenderIssues.help" className="" helpIcon=false required=true editable=editable /]
@@ -57,47 +57,92 @@
             </div>
             
             [#-- Gender Synthesis Table--]
+            [#if PMU]
             <div class="form-group">
               {TABLE HERE}
             </div>
+            [/#if]
             
             [#-- 1.3.2 Youth --]
-            <h5 class="sectionSubTitle">1.3.2 Youth </h5>
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youthTitle" /]</h5>
             [#-- Describe any important CRP research findings, capacity development or outcomes in 2017 related to Youth issues. --]
             <div class="form-group">
-            
+              [@customForm.textArea name="${customName}.describeYouthIssues" i18nkey="${customLabel}.describeYouthIssues" help="${customLabel}.describeYouthIssues.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Please briefly highlight any lessons and implications for your future work on Youth. --]
             <div class="form-group">
-            
+              [@customForm.textArea name="${customName}.lessonsYouth" i18nkey="${customLabel}.lessonsYouth" help="${customLabel}.lessonsYouth.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Youth Synthesis Table--]
+            [#if PMU]
             <div class="form-group">
               {TABLE HERE}
             </div>
+            [/#if]
             
             [#-- 1.3.3 Other Aspects of Equity / “Leaving No-one Behind ” --]
-            <h5 class="sectionSubTitle">1.3.3 Other Aspects of Equity / “Leaving No-one Behind ”</h5>
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.otherAspectsTitle" /]</h5>
             [#-- Add information on other aspects of equity and your CRP’s contribution to “leaving no-one behind” --]
             <div class="form-group">
-              
+              [@customForm.textArea name="${customName}.infoOtherAspects" i18nkey="${customLabel}.infoOtherAspects" help="${customLabel}.infoOtherAspects.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- 1.3.4 Capacity Development --]
-            <h5 class="sectionSubTitle">1.3.4 Capacity Development</h5>
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDevTitle" /]</h5>
             [#-- Please summarize key achievements and learning points in Capacity Development this year--]
             <div class="form-group">
-            
+              [@customForm.textArea name="${customName}.infoCapDev" i18nkey="${customLabel}.infoCapDev" help="${customLabel}.infoCapDev.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Other/Capdev Table--]
+            [#if PMU]
             <div class="form-group">
               {TABLE HERE}
             </div>
-          
-          
+            [/#if]
+            
+            [#-- Table C: Cross-cutting Aspect of Outputs (ONLY READ)--]
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.tableCTitle" /]</h5>
+            <div class="form-group">
+              {TABLE HERE}
+            </div>
+            
+            [#-- 1.3.5 Open Data --]
+            [#if PMU]
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.openDataTitle" /]</h5>
+            [#-- Please provide a brief summary on CRP progress, challenges, and lessons with implementing the open data commitment. --]
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.openData" i18nkey="${customLabel}.openData" help="${customLabel}.openData.help" className="" helpIcon=false required=true editable=editable /]
+            </div>
+            [/#if]
+            
+            [#-- Table D-2: List of CRP Innovations in 2017 (From indicator #C1 in Table D-1)  --]
+            [#if flagship]
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.tableD2Title" /]</h5>
+            <div class="form-group">
+              {TABLE HERE}
+            </div>
+            [/#if]
+            
+            [#-- 1.3.6 Intellectual Assets --]
+            [#if PMU]
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.intellectualAssetsTitle" /]</h5>
+            [#-- Please provide a brief summary under the three following headings --]
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.intellectualAssets" i18nkey="${customLabel}.intellectualAssets" help="${customLabel}.intellectualAssets.help" className="" helpIcon=false required=true editable=editable /]
+            </div>
+            [/#if]
+            
+            [#-- Table E: Intellectual Assets  --]
+            [#if flagship]
+            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.tableETitle" /]</h5>
+            <div class="form-group">
+              {TABLE HERE}
+            </div>
+            [/#if]
+            
           </div>
           
           [#-- Section Buttons & hidden inputs--]
