@@ -59,7 +59,7 @@
             [#-- Gender Synthesis Table--]
             [#if PMU]
             <div class="form-group">
-              {TABLE HERE}
+              [@tableFlagshipSynthesis tableName="tableGender" list=[{},{},{},{}] columns=["column1","column2"] /]
             </div>
             [/#if]
             
@@ -78,7 +78,7 @@
             [#-- Youth Synthesis Table--]
             [#if PMU]
             <div class="form-group">
-              {TABLE HERE}
+              [@tableFlagshipSynthesis tableName="tableYouth" list=[{},{},{},{}] columns=["column1","column2"] /]
             </div>
             [/#if]
             
@@ -89,6 +89,13 @@
               [@customForm.textArea name="${customName}.infoOtherAspects" i18nkey="${customLabel}.infoOtherAspects" help="${customLabel}.infoOtherAspects.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
+            [#-- Other Table--]
+            [#if PMU]
+            <div class="form-group">
+              [@tableFlagshipSynthesis tableName="tableOther" list=[{},{},{},{}] columns=["column1"] /]
+            </div>
+            [/#if]
+            
             [#-- 1.3.4 Capacity Development --]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDevTitle" /]</h5>
             [#-- Please summarize key achievements and learning points in Capacity Development this year--]
@@ -96,18 +103,20 @@
               [@customForm.textArea name="${customName}.infoCapDev" i18nkey="${customLabel}.infoCapDev" help="${customLabel}.infoCapDev.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
-            [#-- Other/Capdev Table--]
+            [#-- Capdev Table--]
             [#if PMU]
             <div class="form-group">
-              {TABLE HERE}
+              [@tableFlagshipSynthesis tableName="tableCapDev" list=[{},{},{},{}] columns=["column1"] /]
             </div>
             [/#if]
             
             [#-- Table C: Cross-cutting Aspect of Outputs (ONLY READ)--]
+            [#if PMU]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.tableCTitle" /]</h5>
             <div class="form-group">
-              {TABLE HERE}
+              [@tableCMacro /]
             </div>
+            [/#if]
             
             [#-- 1.3.5 Open Data --]
             [#if PMU]
@@ -158,3 +167,250 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
+[#macro tableCMacro ]
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th> [@s.text name="crossCuttingDimensions.tableC.crossCutting" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.principal" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.significant" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.notTargeted" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.overall" /] </th>
+        </tr>
+      </thead>
+      <tbody>
+        [#if tableC??]
+          <tr>
+            <td class="row"><strong>Gender</strong></td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderPrincipal?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored?string(",##0.00")}%</span> </td> 
+            <td rowspan="3" class="text-center"> 
+              <h3 class="animated flipInX">
+                <a class="btn btn-default btn-lg" data-toggle="modal" data-target="#overallOutputsMacro">
+                  <span class="glyphicon glyphicon-fullscreen" style="color:#b3b3b3"></span> ${tableC.total}
+                </a>
+              </h3>
+            </td> 
+          </tr>
+          <tr>
+            <td class="row"><strong>Youth</strong></td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthPrincipal?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthSignificant?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthNotScored?string(",##0.00")}%</span> </td>            
+          </tr>
+          <tr>
+            <td class="row"><strong>CapDev</strong></td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevPrincipal?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevSignificant?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevNotScored?string(",##0.00")}%</span> </td>            
+          </tr>
+        [#else]
+          <tr class="text-center">
+            <td colspan="5"><i class="text-center">No deliverables found.</i></td>
+          </tr>
+        [/#if]
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="overallOutputsMacro" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" style="" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="subTitle headTitle"> Deliverables </h4>
+        </div>
+        <div class="modal-body">
+          [@tableDeliverablesMacro dList=(deliverableList)![] /]
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+      </div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro tableDeliverablesMacro dList]
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Deliverable </th>
+          <th>Gender</th>
+          <th>Youth</th>
+          <th>CapDev</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        [#if dList?has_content]
+          [#list dList as dInfo]
+          <tr>
+            <td class="row">
+              <span title="${(dInfo.title)!}"><strong>D${(dInfo.deliverable.id)!}</strong> [@utilities.wordCutter string="${(dInfo.title)!'Not Defined'}" maxPos=70 /] </span> <br />
+              <small>(${(dInfo.deliverableType.name)!'Not Defined'})</small>
+            </td>
+            <td>
+              <nobr>
+              [#if (dInfo.crossCuttingGender)!false]
+                [#if dInfo.genderScoreName??]${(dInfo.genderScoreName)!}[#else]0 - Not Targeted[/#if]
+              [#else]
+                 0 - Not Targeted
+              [/#if]
+              </nobr>
+            </td>
+            <td>
+              <nobr>
+              [#if (dInfo.crossCuttingYouth)!false]
+                [#if dInfo.youthScoreName??]${(dInfo.youthScoreName)!}[#else]0 - Not Targeted[/#if]
+              [#else]
+                 0 - Not Targeted
+              [/#if]
+              </nobr>
+            </td>
+            <td>
+              <nobr>
+              [#if (dInfo.crossCuttingCapacity)!false]
+                [#if dInfo.capDevScoreName??]${(dInfo.capDevScoreName)!}[#else]0 - Not Targeted[/#if]
+              [#else]
+                 0 - Not Targeted
+              [/#if]
+              </nobr>
+            </td>
+            <td>
+              [#local dURL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${dInfo.deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+              <a href="${dURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+            </td>
+          </tr>
+          [/#list]
+        [/#if]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
+  <div class="form-group">
+    <h4 class="subTitle headTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="col-md-1 text-center"> FP </th>
+          [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
+        </tr>
+      </thead>
+      <tbody>
+        [#if list?has_content]
+          [#list list as item]
+            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
+            <tr>
+              <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
+              [#list columns as column]
+                <td>
+                  [#if (item[column]?has_content)!false] 
+                    ${item[column]} 
+                  [#else]
+                    <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                  [/#if]
+                </td>
+              [/#list]
+            </tr>
+          [/#list]
+        [#else]
+          <tr>
+            <td class="text-center" colspan="3"><i>No flagships loaded...</i></td>
+          </tr>
+        [/#if]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+[#macro tableD2InnovationsList name list=[]  isPMU=false ]
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          [#-- <th class="col-md-1"> [@s.text name="${customLabel}.table.projectId" /] </th> --]
+          <th> [@s.text name="${customLabel}.table.outcomeCaseStudy" /] </th>
+          <th> [@s.text name="${customLabel}.table.subIDO" /] </th>
+          <th class="col-md-3"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
+          [#if !isPMU]<th class="col-md-1"> [@s.text name="${customLabel}.table.includeAR" /] </th>[/#if]
+        </tr>
+      </thead>
+      <tbody>
+        [#if list?has_content]
+          [#list list as item]
+            [#if isPMU]
+              [#local projectExpectedStudy = item.projectExpectedStudy]
+            [#else]
+              [#local projectExpectedStudy = item]
+            [/#if]
+            [#local customName = "${name}" /]
+            [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(projectExpectedStudy.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <tr>
+              <td> 
+                [#-- Title --]
+                <a href="${URL}" target="_blank"> 
+                  [#if ((projectExpectedStudy.projectExpectedStudyInfo.title)?has_content)!false] ${projectExpectedStudy.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
+                </a>
+                [#-- Project ID --]
+                [#if (projectExpectedStudy.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(projectExpectedStudy.project.id)!})</i> [/#if]
+                [#-- Flagships --]
+                [#if isPMU]
+                  <div class="clearfix"></div>
+                  [#list liaisonInstitutions as liaisonInstitution]
+                    <span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${(liaisonInstitution.crpProgram.acronym)!}</span>
+                  [/#list]
+                [/#if]
+              </td>
+              <td>
+                [#if ((projectExpectedStudy.subIdos)?has_content)!false]
+                  <ul>
+                  [#list projectExpectedStudy.subIdos as ido]
+                    <li>${(ido.srfSubIdo.description)!}</li>
+                  [/#list]
+                  </ul>
+                [#else]
+                  <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
+              <td>
+                [#local additional]
+                  [#if (projectExpectedStudy.projectExpectedStudyInfo.genderLevel??)!false]
+                    <strong>Gender:</strong>  
+                    ${(projectExpectedStudy.projectExpectedStudyInfo.genderLevel.name)!} <br />
+                    <small>${(projectExpectedStudy.projectExpectedStudyInfo.describeGender)!} </small><br />
+                  [/#if] 
+                  [#if (projectExpectedStudy.projectExpectedStudyInfo.youthLevel??)!false]
+                    <strong>Youth: </strong>  
+                    ${(projectExpectedStudy.projectExpectedStudyInfo.youthLevel.name)!} <br />
+                    <small>${(projectExpectedStudy.projectExpectedStudyInfo.describeYouth)!}</small> <br />
+                  [/#if] 
+                  [#if (projectExpectedStudy.projectExpectedStudyInfo.capdevLevel??)!false]
+                    <strong>CapDev: </strong> 
+                    ${(projectExpectedStudy.projectExpectedStudyInfo.capdevLevel.name)!} <br />
+                    <small>${(projectExpectedStudy.projectExpectedStudyInfo.describeCapdev)!} </small><br />
+                  [/#if]
+                [/#local]
+                [#if additional?has_content ]${additional}[#else]<i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
+              </td>
+              [#-- <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td> --]
+              [#if !isPMU]
+              <td class="text-center">
+                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}" label="" value="${projectExpectedStudy.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(projectExpectedStudy.id))!false cssClass="" /]
+              </td>
+              [/#if]
+            </tr>
+          [/#list]
+        [#else]
+          <tr>
+            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+          </tr>
+        [/#if]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
