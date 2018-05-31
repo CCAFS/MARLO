@@ -6,7 +6,8 @@
 [#assign pageLibs = [ "select2", "components-font-awesome" ] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
