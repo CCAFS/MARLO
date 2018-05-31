@@ -7,6 +7,8 @@ function init() {
     width: '100%'
   });
 
+  console.log('CRP Progress');
+
   attachEvents();
 }
 
@@ -25,6 +27,8 @@ function addSloTarget() {
   var $option = $select.find('option:selected');
   var $list = $(this).parents("form").find('.sloTargetsList');
   var $item = $('#sloTarget-template').clone(true).removeAttr("id");
+
+  console.log('Change');
 
   // Verify repeated selection
   var $repeatedElement = $list.find('.indicatorTargetID[value="' + $option.val() + '"]');

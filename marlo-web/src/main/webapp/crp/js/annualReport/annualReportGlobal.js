@@ -1,15 +1,6 @@
-$(document).ready(init);
-
-function init() {
-
-  attachEvents();
-
+$(document).ready(function() {
   setViewMores();
-}
-
-function attachEvents() {
-
-}
+});
 
 /** View More Synthesis functions * */
 
