@@ -14,10 +14,6 @@ public class ExpectedStudyProject extends MarloAuditableEntity implements java.i
   private static final long serialVersionUID = 131925401132219339L;
 
   @Expose
-  private Long id;
-
-
-  @Expose
   private Phase phase;
 
 

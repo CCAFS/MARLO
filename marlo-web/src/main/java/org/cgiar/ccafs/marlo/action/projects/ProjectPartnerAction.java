@@ -1617,16 +1617,9 @@ public class ProjectPartnerAction extends BaseAction {
           projectPartnerPartnershipManager.getProjectPartnerPartnershipById(partnershipClient.getId());
       } else {
         partnershipUpdate.setProjectPartner(projectPartnerClient);
-        partnershipUpdate.setCreatedBy(this.getCurrentUser());
       }
 
       partnershipUpdate.setMainArea(partnershipClient.getMainArea());
-
-
-      partnershipUpdate.setActive(true);
-      partnershipUpdate.setActiveSince(new Date());
-      partnershipUpdate.setModifiedBy(this.getCurrentUser());
-      partnershipUpdate.setModificationJustification("");
 
       // Save to avoid null exception in relation with partnership_locations
       if (partnershipUpdate.getId() == null || partnershipUpdate.getId() == -1) {
@@ -1652,11 +1645,6 @@ public class ProjectPartnerAction extends BaseAction {
             repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(researchPhasesIds));
           partnershipResearchPhaseSave.setProjectPartnerPartnership(partnershipUpdate);
           if (!partnershipResearchPhasesDB.contains(partnershipResearchPhaseSave)) {
-            partnershipResearchPhaseSave.setActive(true);
-            partnershipResearchPhaseSave.setActiveSince(new Date());
-            partnershipResearchPhaseSave.setCreatedBy(this.getCurrentUser());
-            partnershipResearchPhaseSave.setModificationJustification("");
-            partnershipResearchPhaseSave.setModifiedBy(this.getCurrentUser());
             projectPartnerPartnershipResearchPhaseManager
               .saveProjectPartnerPartnershipResearchPhase(partnershipResearchPhaseSave);
           }
@@ -1664,7 +1652,6 @@ public class ProjectPartnerAction extends BaseAction {
         }
         for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhaseDB : partnershipResearchPhasesDB) {
           if (!partnershipResearchClienteList.contains(projectPartnerPartnershipResearchPhaseDB)) {
-            projectPartnerPartnershipResearchPhaseDB.setModifiedBy(this.getCurrentUser());
             projectPartnerPartnershipResearchPhaseManager
               .deleteProjectPartnerPartnershipResearchPhase(projectPartnerPartnershipResearchPhaseDB.getId());
           }
@@ -1723,17 +1710,11 @@ public class ProjectPartnerAction extends BaseAction {
               locationPartnership.setProjectPartnerPartnership(partnershipUpdate);
               locationsSave.add(locationPartnership);
               if (!locationsDB.contains(locationPartnership)) {
-                locationPartnership.setActive(true);
-                locationPartnership.setActiveSince(new Date());
-                locationPartnership.setCreatedBy(this.getCurrentUser());
-                locationPartnership.setModificationJustification("");
-                locationPartnership.setModifiedBy(this.getCurrentUser());
                 projectPartnerPartnershipLocationManager.saveProjectPartnerPartnershipLocation(locationPartnership);
               }
             }
             for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
               if (!locationsSave.contains(projectPartnerPartnershipLocation)) {
-                projectPartnerPartnershipLocation.setModifiedBy(this.getCurrentUser());
                 projectPartnerPartnershipLocationManager
                   .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
               }

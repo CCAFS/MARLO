@@ -188,7 +188,6 @@ public class PartnerRequestAction extends BaseAction {
     partnerRequest.setAcepted(new Boolean(true));
     partnerRequest.setAceptedDate(new Date());
     partnerRequest.setActive(false);
-    partnerRequest.setModifiedBy(this.getCurrentUser());
     partnerRequestManager.savePartnerRequest(partnerRequest);
     // inactive the parent partnerRequest
     PartnerRequest partnerRequestParent =
