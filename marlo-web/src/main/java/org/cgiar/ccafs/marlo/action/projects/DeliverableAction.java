@@ -119,7 +119,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -514,7 +513,6 @@ public class DeliverableAction extends BaseAction {
   private void deleteParticipantLocations(List<DeliverableParticipantLocation> locationsDB) {
     if (locationsDB != null) {
       for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
-        deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
         deliverableParticipantLocationManager
           .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
       }
@@ -2299,11 +2297,6 @@ public class DeliverableAction extends BaseAction {
         participant.setId(null);
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
         participant.setPhase(this.getActualPhase());
-        participant.setActiveSince(new Date());
-        participant.setCreatedBy(this.getCurrentUser());
-        participant.setModificationJustification("");
-        participant.setModifiedBy(this.getCurrentUser());
-        participant.setActive(true);
         participant = deliverableParticipantManager.saveDeliverableParticipant(participant);
       }
 
@@ -2397,18 +2390,12 @@ public class DeliverableAction extends BaseAction {
                 locationParticipant.setDeliverableParticipant(participant);
                 locationsSave.add(locationParticipant);
                 if (!locationsDB.contains(locationParticipant)) {
-                  locationParticipant.setActive(true);
-                  locationParticipant.setActiveSince(new Date());
-                  locationParticipant.setCreatedBy(this.getCurrentUser());
-                  locationParticipant.setModificationJustification("");
-                  locationParticipant.setModifiedBy(this.getCurrentUser());
                   deliverableParticipantLocationManager.saveDeliverableParticipantLocation(locationParticipant);
                 }
               }
             }
             for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
               if (!locationsSave.contains(deliverableParticipantLocation)) {
-                deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
                 deliverableParticipantLocationManager
                   .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
               }
@@ -2434,13 +2421,8 @@ public class DeliverableAction extends BaseAction {
         participant.setRepIndGeographicScope(null);
         participant.setRepIndRegion(null);
         this.deleteParticipantLocations(locationsDB);
-        participant.setActive(true);
       }
 
-
-      participant.setModifiedBy(this.getCurrentUser());
-      participant.setActiveSince(new Date());
-      participant.setModificationJustification("");
       deliverableParticipantManager.saveDeliverableParticipant(participant);
 
     }
@@ -2841,11 +2823,6 @@ public class DeliverableAction extends BaseAction {
 
 
           deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableFundingSource.setActive(true);
-          deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-          deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-          deliverableFundingSource.setModificationJustification("");
-          deliverableFundingSource.setActiveSince(new Date());
           deliverableFundingSource.setPhase(this.getActualPhase());
           deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
         }
@@ -2983,7 +2960,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());
 
     deliverableBase.setDeliverableInfo(deliverableInfoDb);

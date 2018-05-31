@@ -718,7 +718,6 @@ public class ProgramImpactsAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.RESEARCH_PROGRAM_IMPACT_RELATION);
     selectedProgram = programService.getCrpProgramById(crpProgramID);
-    selectedProgram.setModifiedBy(this.getCurrentUser());
     programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
     Path path = this.getAutoSaveFilePath();

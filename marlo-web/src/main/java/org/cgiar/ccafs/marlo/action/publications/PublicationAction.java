@@ -100,7 +100,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -303,7 +302,6 @@ public class PublicationAction extends BaseAction {
   private void deleteParticipantLocations(List<DeliverableParticipantLocation> locationsDB) {
     if (locationsDB != null) {
       for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
-        deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
         deliverableParticipantLocationManager
           .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
       }
@@ -1429,7 +1427,6 @@ public class PublicationAction extends BaseAction {
         participant.setId(null);
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
         participant.setPhase(deliverable.getPhase());
-        participant.setCreatedBy(this.getCurrentUser());
       }
       List<DeliverableParticipantLocation> locationsDB = new ArrayList<>();
       if (participant.getId() != null && participant.getId() != -1) {
@@ -1522,18 +1519,12 @@ public class PublicationAction extends BaseAction {
                   locationParticipant.setDeliverableParticipant(participant);
                   locationsSave.add(locationParticipant);
                   if (!locationsDB.contains(locationParticipant)) {
-                    locationParticipant.setActive(true);
-                    locationParticipant.setActiveSince(new Date());
-                    locationParticipant.setCreatedBy(this.getCurrentUser());
-                    locationParticipant.setModificationJustification("");
-                    locationParticipant.setModifiedBy(this.getCurrentUser());
                     deliverableParticipantLocationManager.saveDeliverableParticipantLocation(locationParticipant);
                   }
                 }
               }
               for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
                 if (!locationsSave.contains(deliverableParticipantLocation)) {
-                  deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
                   deliverableParticipantLocationManager
                     .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
                 }
@@ -1559,13 +1550,7 @@ public class PublicationAction extends BaseAction {
           participant.setRepIndGeographicScope(null);
           participant.setRepIndRegion(null);
           this.deleteParticipantLocations(locationsDB);
-          participant.setActive(true);
         }
-
-
-        participant.setModifiedBy(this.getCurrentUser());
-        participant.setActiveSince(new Date());
-        participant.setModificationJustification("");
         deliverableParticipantManager.saveDeliverableParticipant(participant);
       }
     }
@@ -1926,7 +1911,6 @@ public class PublicationAction extends BaseAction {
     }
 
     deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
-    deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
     return deliverableBase;
