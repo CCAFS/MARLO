@@ -56,12 +56,14 @@ public class DeliverableMetadataElement extends MarloBaseEntity implements Seria
     return hide;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public MetadataElement getMetadataElement() {
     return metadataElement;
@@ -73,7 +75,6 @@ public class DeliverableMetadataElement extends MarloBaseEntity implements Seria
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -99,6 +100,7 @@ public class DeliverableMetadataElement extends MarloBaseEntity implements Seria
   public void setElementValue(String elementValue) {
     this.elementValue = elementValue;
   }
+
 
   public void setHide(Boolean hide) {
     this.hide = hide;

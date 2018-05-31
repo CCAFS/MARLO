@@ -108,7 +108,7 @@
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
                 <div class="col-md-6">
-                  [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=(editable || editStatus) /]
+                  [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false required=true editable=(editable || editStatus) /]
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
@@ -117,7 +117,7 @@
             </div>
             
             [#--  Regions/global and Flagships that the project is working on --]
-            [#if !project.projectInfo.administrative]
+            [#if (!project.projectInfo.administrative)!false]
             
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
@@ -148,7 +148,7 @@
                           </p>
                         [#else]
                           <p class=""> 
-                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" /]
+                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
                           </p>
                         [/#if]
                       [/#list]
@@ -172,7 +172,7 @@
                       [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
                       [#if regionFlagships??]
                         [#list regionFlagships as element]
-                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
+                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
                         [/#list]
                       [/#if]
                        
@@ -211,7 +211,7 @@
                     <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
-                      [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation pull-right">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                      [#if editable && !reportingActive && action.hasPermission("activities") ]<span class="listButton remove popUpValidation pull-right">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
@@ -225,7 +225,7 @@
                   [#if !action.hasPermission("activities")] <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> [/#if]
                 [/#if]  
                 </ul>
-                [#if editable  && action.hasPermission("activities")]
+                [#if editable && !reportingActive && action.hasPermission("activities")]
                   [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
                   <span id="coaSelectedIds" style="display:none">[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
                   [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]

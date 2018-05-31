@@ -121,7 +121,7 @@ public class DeliverableLeader extends MarloBaseEntity implements java.io.Serial
   @Override
   public String toString() {
     return "DeliverableLeader [id=" + this.getId() + ", deliverable=" + deliverable + ", institution=" + institution
-      + "]";
+      + ", phase=" + phase + "]";
   }
 
 

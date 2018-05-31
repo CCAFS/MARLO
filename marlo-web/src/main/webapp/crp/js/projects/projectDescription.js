@@ -245,7 +245,9 @@ $(document).ready(function() {
     if(year <= currentReportingYear) {
       $statuses.removeOption(2);
     } else {
-      $statuses.addOption(2, implementationStatus);
+      if(!reportingActive){
+        $statuses.addOption(2, implementationStatus);
+      }
     }
     $statuses.select2();
   }

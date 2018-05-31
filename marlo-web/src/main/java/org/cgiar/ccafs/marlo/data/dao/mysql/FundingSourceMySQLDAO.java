@@ -80,13 +80,15 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
 
   @Override
   public List<Map<String, Object>> getFundingSource(long userId, String crp) {
-
+    List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where  crp_acronym='" + crp
       + "' and permission_id = 438 and project_id is not null");
-    List<Map<String, Object>> list =
-      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
-
+    if (super.getTemTableUserId() == userId) {
+      list = super.findCustomQuery(builder.toString());
+    } else {
+      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    }
     return list;
   }
 
@@ -177,7 +179,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
     q.append("AND fsi.id_phase = " + phaseID);
     q.append(" AND fsi.end_date IS NOT NULL ");
-      q.append(" AND (" + year + " <= YEAR(fsi.end_date) or " + year + " <= YEAR(fsi.extended_date)  )");
+    q.append(" AND (" + year + " <= YEAR(fsi.end_date) or " + year + " <= YEAR(fsi.extended_date)  )");
 
     List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
 
@@ -211,7 +213,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID) {
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
+    long phaseID) {
 
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");
@@ -223,8 +226,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.global_unit_id="
       + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
-    query.append("project_budgets.is_active = 1   ");
-    // query.append("project_budgets.`year` =" + year);
+    query.append("project_budgets.is_active = 1 AND ");
+    query.append("funding_source_locations.`id_phase` =" + phaseID);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 

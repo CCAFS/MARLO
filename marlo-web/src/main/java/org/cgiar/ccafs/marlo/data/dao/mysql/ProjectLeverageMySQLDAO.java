@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -71,12 +72,10 @@ public class ProjectLeverageMySQLDAO extends AbstractMarloDAO<ProjectLeverage, L
   @Override
   public ProjectLeverage save(ProjectLeverage projectLeverage) {
     if (projectLeverage.getId() == null) {
-      super.saveEntity(projectLeverage);
+      projectLeverage = super.saveEntity(projectLeverage);
     } else {
       projectLeverage = super.update(projectLeverage);
     }
-
-
     return projectLeverage;
   }
 

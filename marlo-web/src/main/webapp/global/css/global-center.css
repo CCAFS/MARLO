@@ -212,7 +212,7 @@ span.errorTag {
 
 .sectionSubMenu .nav-tabs>li.active:after {
 	border-top-color:  #389767;
-	border-width: 8px 20px 0 20px;;
+	border-width: 8px 20px 0 20px;
 	margin-left: -20px;
 }
 

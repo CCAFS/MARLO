@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -117,7 +118,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
     if (project.getProjecInfoPhase(action.getActualPhase()).getStartDate() == null) {
       action.addMessage(action.getText("project.startDate"));
       action.getInvalidFields().put("input-project.projectInfo.startDate", InvalidFieldsMessages.EMPTYFIELD);
@@ -134,6 +134,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
     }
 
+    // Validation for Non Administrative projects
     if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
 
@@ -150,12 +151,19 @@ public class ProjectDescriptionValidator extends BaseValidator {
           action.addMessage(action.getText("projectDescription.flagships"));
           action.getInvalidFields().put("input-project.projectInfo.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
         }
-
       }
-    }
 
-    if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
-      && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+      if (project.getClusterActivities() != null) {
+        if (project.getClusterActivities().size() == 0) {
+          action.addMessage(action.getText("projectDescription.clusterActivities"));
+          action.getInvalidFields().put("list-project.clusterActivities",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
+        }
+      } else {
+        action.addMessage(action.getText("projectDescription.clusterActivities"));
+        action.getInvalidFields().put("list-project.clusterActivities",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
+      }
 
       if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
         && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
@@ -170,51 +178,44 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
     }
 
-    if (!action.isReportingActive()) {
-      if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
-        if (project.getClusterActivities() != null) {
-          if (project.getClusterActivities().size() == 0) {
-            action.addMessage(action.getText("projectDescription.clusterActivities"));
-            action.getInvalidFields().put("list-project.clusterActivities",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
-          }
-        } else {
-          action.addMessage(action.getText("projectDescription.clusterActivities"));
-          action.getInvalidFields().put("list-project.clusterActivities",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
-        }
+    // Validation when project is no ready for project leader
+    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+      if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis())
+        && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis()) <= 100)) {
+        action.addMessage(action.getText("project.genderAnalysis"));
+        action.getInvalidFields().put("input-project.projectInfo.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-        if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis())
-          && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis()) <= 100)) {
-          action.addMessage(action.getText("project.genderAnalysis"));
-          action.getInvalidFields().put("input-project.projectInfo.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
+      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
+        || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
+        if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
+          && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
+          action.addMessage(action.getText("project.dimension"));
+          action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
         }
-
-        if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
-          || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
-          if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
-            && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
-            action.addMessage(action.getText("project.dimension"));
-            action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
+      }
+      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() == null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingCapacity() == null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa() == null) {
+        action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
+        action.getInvalidFields().put("input-project.projectInfo.crossCuttingNa",
+          action.getText(InvalidFieldsMessages.EMPTYLIST));
       }
     }
 
+    // Validate Status Justification when is not on-going
+    if (project.getProjecInfoPhase(action.getActualPhase()).getStatus() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getStatus() != Integer
+        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+      if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getStatusJustification())
+        && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getStatusJustification()) <= 100)) {
+        action.addMessage(action.getText("project.statusJustification"));
+        action.getInvalidFields().put("input-project.projectInfo.statusJustification",
+          action.getText(InvalidFieldsMessages.EMPTYLIST));
+      }
 
-    /*
-     * if (project.getScopes() != null) {
-     * if (project.getScopes().size() == 0) {
-     * action.addMessage(action.getText("projectDescription.scope"));
-     * }
-     * } else {
-     * action.addMessage(action.getText("projectDescription.scope"));
-     * }
-     */
-
+    }
 
   }
 

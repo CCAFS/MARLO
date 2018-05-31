@@ -53,7 +53,10 @@ public class DeliverableType extends MarloBaseEntity implements java.io.Serializ
 
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
 
+
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
+  private Set<DeliverableTypeRule> deliverableTypeRules = new HashSet<DeliverableTypeRule>(0);
 
   public DeliverableType() {
   }
@@ -77,6 +80,12 @@ public class DeliverableType extends MarloBaseEntity implements java.io.Serializ
     return this.deliverables;
   }
 
+
+  public Set<DeliverableTypeRule> getDeliverableTypeRules() {
+    return deliverableTypeRules;
+  }
+
+
   public Set<DeliverableType> getDeliverableTypes() {
     return this.deliverableTypes;
   }
@@ -98,6 +107,7 @@ public class DeliverableType extends MarloBaseEntity implements java.io.Serializ
 
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -142,6 +152,10 @@ public class DeliverableType extends MarloBaseEntity implements java.io.Serializ
     this.deliverables = deliverables;
   }
 
+  public void setDeliverableTypeRules(Set<DeliverableTypeRule> deliverableTypeRules) {
+    this.deliverableTypeRules = deliverableTypeRules;
+  }
+
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
     this.deliverableTypes = deliverableTypes;
   }
@@ -150,10 +164,10 @@ public class DeliverableType extends MarloBaseEntity implements java.io.Serializ
     this.description = description;
   }
 
+
   public void setFair(Boolean fair) {
     this.fair = fair;
   }
-
 
   public void setName(String name) {
     this.name = name;

@@ -46,7 +46,6 @@ public class ShiroSpringStartupListener implements ApplicationListener<ContextRe
       final DefaultWebSecurityManager sm = (DefaultWebSecurityManager) ctx.getBean("securityManager");
       sm.setRealm(mainRealm);
     } catch (Exception e) {
-      System.out.println("Error loading: " + e.getMessage());
       throw new Error("Critical system error", e);
     }
 

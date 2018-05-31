@@ -485,10 +485,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     this.roles = roles;
   }
 
-
   public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
     this.siteIntegrations = siteIntegrations;
   }
+
 
   public void setSmoCode(String smoCode) {
     this.smoCode = smoCode;
@@ -496,6 +496,12 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   public void setTargetUnits(List<TargetUnitSelect> targetUnits) {
     this.targetUnits = targetUnits;
+  }
+
+  @Override
+  public String toString() {
+    return "GlobalUnit [id=" + this.getId() + ", globalUnitType=" + globalUnitType + ", name=" + name + ", acronym="
+      + acronym + ", active=" + this.isActive() + ", marlo=" + marlo + ", login=" + login + "]";
   }
 
 

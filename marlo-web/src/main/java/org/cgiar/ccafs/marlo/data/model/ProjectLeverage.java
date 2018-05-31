@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Dec 12, 2016 8:46:52 AM by Hibernate Tools 4.3.1.Final
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
@@ -19,16 +20,25 @@ public class ProjectLeverage extends MarloAuditableEntity implements java.io.Ser
 
 
   @Expose
-  private IpProgram crpProgram;
+  private Phase phase;
+  @Expose
+  private String composeID;
+
+  @Expose
+  private IpProgram ipProgram;
+
+  @Expose
+  private CrpProgram crpProgram;
+
   @Expose
   private Institution institution;
-
 
   private Project project;
   @Expose
   private String title;
   @Expose
   private Integer year;
+
   @Expose
   private Double budget;
 
@@ -63,13 +73,24 @@ public class ProjectLeverage extends MarloAuditableEntity implements java.io.Ser
     return budget;
   }
 
-  public IpProgram getCrpProgram() {
+
+  public String getComposeID() {
+    return composeID;
+  }
+
+
+  public CrpProgram getCrpProgram() {
     return crpProgram;
   }
 
 
   public Institution getInstitution() {
     return institution;
+  }
+
+
+  public IpProgram getIpProgram() {
+    return ipProgram;
   }
 
 
@@ -81,6 +102,11 @@ public class ProjectLeverage extends MarloAuditableEntity implements java.io.Ser
 
 
     return sb.toString();
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -108,12 +134,30 @@ public class ProjectLeverage extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public Boolean isPhaseOneLeverage() {
+    try {
+      if (this.year <= APConstants.PHASE_ONE_YEAR) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+
   public void setBudget(Double budget) {
     this.budget = budget;
   }
 
 
-  public void setCrpProgram(IpProgram crpProgram) {
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
+  }
+
+
+  public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
 
@@ -122,6 +166,14 @@ public class ProjectLeverage extends MarloAuditableEntity implements java.io.Ser
     this.institution = institution;
   }
 
+
+  public void setIpProgram(IpProgram ipProgram) {
+    this.ipProgram = ipProgram;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
 
   public void setProject(Project project) {
     this.project = project;
@@ -132,16 +184,15 @@ public class ProjectLeverage extends MarloAuditableEntity implements java.io.Ser
     this.title = title;
   }
 
-
   public void setYear(Integer year) {
     this.year = year;
   }
 
-
   @Override
   public String toString() {
-    return "ProjectLeverage [id=" + this.getId() + ", crpProgram=" + crpProgram + ", institution=" + institution
-      + ", project=" + project + ", title=" + title + ", year=" + year + ", budget=" + budget + "]";
+    return "ProjectLeverage [id=" + this.getId() + ", ipProgram=" + ipProgram + ", crpProgram=" + crpProgram
+      + ", institution=" + institution + ", project=" + project + ", title=" + title + ", year=" + year + ", budget="
+      + budget + "]";
   }
 
 

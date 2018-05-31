@@ -1,0 +1,1 @@
+Delete from project_expected_study_sub_ido where sub_ido_id IS NULL;

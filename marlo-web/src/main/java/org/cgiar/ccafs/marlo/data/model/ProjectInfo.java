@@ -74,13 +74,18 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private Boolean locationRegional;
   @Expose
   private String newPartnershipsPlanned;
+  @Expose
+  private String partnerOverall;
+
 
   public ProjectInfo() {
   }
 
+
   public Boolean getAdministrative() {
     return administrative;
   }
+
 
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
@@ -104,8 +109,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return allYears;
   }
 
+
   /**
-   * This method calculates all the years between the start date and the end date.
+   * This method calculates all the years between the start date and the end date. (Only for year greater or equal to
+   * phase year)
    * 
    * @return a List of numbers representing all the years, or an empty list if nothing found.
    */
@@ -132,7 +139,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return allYears;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
@@ -141,10 +147,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return crossCuttingGender;
   }
 
+
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -154,10 +160,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return dimension;
   }
 
+
   public Date getEndDate() {
     return endDate;
   }
-
 
   public String getGenderAnalysis() {
     return genderAnalysis;
@@ -172,6 +178,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return liaisonInstitution;
   }
 
+
   public LiaisonUser getLiaisonUser() {
     return liaisonUser;
   }
@@ -180,7 +187,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public Boolean getLocationGlobal() {
     return locationGlobal;
   }
-
 
   public Boolean getLocationRegional() {
     return locationRegional;
@@ -193,6 +199,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return null;
   }
 
+
   public String getNewPartnershipsPlanned() {
     return newPartnershipsPlanned;
   }
@@ -200,6 +207,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public Boolean getNoRegional() {
     return noRegional;
+  }
+
+
+  public String getPartnerOverall() {
+    return partnerOverall;
   }
 
 
@@ -292,7 +304,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     if (startDate != null && endDate != null) {
 
       Calendar calendarEnd = Calendar.getInstance();
-      calendarEnd.setTime(endDate);
+      calendarEnd.set(Calendar.YEAR, 2050);
 
       while (year < calendarEnd.get(Calendar.YEAR)) {
         year++;
@@ -367,7 +379,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.genderAnalysis = genderAnalysis;
   }
 
-
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
   }
@@ -399,6 +410,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public void setNoRegional(Boolean noRegional) {
     this.noRegional = noRegional;
+  }
+
+
+  public void setPartnerOverall(String partnerOverall) {
+    this.partnerOverall = partnerOverall;
   }
 
 
@@ -497,4 +513,3 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
 
 }
-

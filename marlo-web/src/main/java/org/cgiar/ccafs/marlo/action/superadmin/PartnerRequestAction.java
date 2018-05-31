@@ -301,7 +301,6 @@ public class PartnerRequestAction extends BaseAction {
         sendNotification = Boolean.valueOf(
           StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
       } catch (Exception e) {
-        System.out.println(e.getMessage());
         justification = "";
       }
 

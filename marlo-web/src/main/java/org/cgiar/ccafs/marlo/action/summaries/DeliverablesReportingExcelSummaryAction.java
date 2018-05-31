@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -84,10 +83,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
-  private CrpProgramManager programManager;
-  private DeliverableManager deliverableManager;
-  private GenderTypeManager genderTypeManager;
-  private RepositoryChannelManager repositoryChannelManager;
+  private final CrpProgramManager programManager;
+  private final DeliverableManager deliverableManager;
+  private final GenderTypeManager genderTypeManager;
+  private final RepositoryChannelManager repositoryChannelManager;
+  private final ResourceManager resourceManager;
 
 
   // XLSX bytes
@@ -100,12 +100,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, GlobalUnitManager crpManager,
     CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager,
-    PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager) {
+    PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
     this.deliverableManager = deliverableManager;
     this.repositoryChannelManager = repositoryChannelManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -220,14 +221,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   @Override
   public String execute() throws Exception {
-
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ReportingDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -1021,12 +1017,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream()
               .filter(dc -> dc.isActive() && dc.getPhase() != null && dc.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList())) {
-              if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-                flContrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
-                  + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "\n";
+              if (deliverableCrp.getCrpProgram() != null) {
+                flContrib += "● " + deliverableCrp.getCrpProgram().getCrp().getAcronym().toUpperCase() + " - "
+                  + deliverableCrp.getCrpProgram().getAcronym().toUpperCase() + "\n";
               } else {
-                if (deliverableCrp.getCrpPandr() != null) {
-                  flContrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
+                if (deliverableCrp.getGlobalUnit() != null) {
+                  flContrib += "● " + deliverableCrp.getGlobalUnit().getName().toUpperCase() + "\n";
                 }
               }
             }
@@ -1564,12 +1560,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             for (DeliverableCrp deliverableCrp : deliverable.getDeliverableCrps().stream()
               .filter(dc -> dc.isActive() && dc.getPhase() != null && dc.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList())) {
-              if (deliverableCrp.getCrpPandr() != null && deliverableCrp.getIpProgram() != null) {
-                flContrib += "● " + deliverableCrp.getCrpPandr().getAcronym().toUpperCase() + " - "
-                  + deliverableCrp.getIpProgram().getAcronym().toUpperCase() + "\n";
+              if (deliverableCrp.getCrpProgram() != null) {
+                flContrib += "● " + deliverableCrp.getCrpProgram().getCrp().getAcronym().toUpperCase() + " - "
+                  + deliverableCrp.getCrpProgram().getAcronym().toUpperCase() + "\n";
               } else {
-                if (deliverableCrp.getCrpPandr() != null) {
-                  flContrib += "● " + deliverableCrp.getCrpPandr().getName().toUpperCase() + "\n";
+                if (deliverableCrp.getGlobalUnit() != null) {
+                  flContrib += "● " + deliverableCrp.getGlobalUnit().getName().toUpperCase() + "\n";
                 }
               }
             }
@@ -1595,29 +1591,27 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         // get Flagships related to the project sorted by acronym
         for (DeliverableProgram deliverableProgram : deliverable.getDeliverablePrograms().stream()
-          .filter(dp -> dp.getIpProgram() != null && dp.getIpProgram().isActive() && dp.getPhase() != null
+          .filter(dp -> dp.getCrpProgram() != null && dp.getCrpProgram().isActive() && dp.getPhase() != null
             && dp.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
-          if (deliverableProgram.getIpProgram().getIpProgramType() != null) {
-            Integer programType = deliverableProgram.getIpProgram().getIpProgramType().getId().intValue();
-            switch (programType) {
-              case 4:
-                if (flagships == null || flagships.isEmpty()) {
-                  flagships = deliverableProgram.getIpProgram().getAcronym();
-                } else {
-                  flagships += "\n " + deliverableProgram.getIpProgram().getAcronym();
-                }
-                break;
-              case 5:
-                if (regions == null || regions.isEmpty()) {
-                  regions = deliverableProgram.getIpProgram().getAcronym();
-                } else {
-                  regions += "\n " + deliverableProgram.getIpProgram().getAcronym();
-                }
-                break;
-              default:
-                break;
-            }
+          Integer programType = deliverableProgram.getCrpProgram().getProgramType();
+          switch (programType) {
+            case 4:
+              if (flagships == null || flagships.isEmpty()) {
+                flagships = deliverableProgram.getCrpProgram().getAcronym();
+              } else {
+                flagships += "\n " + deliverableProgram.getCrpProgram().getAcronym();
+              }
+              break;
+            case 5:
+              if (regions == null || regions.isEmpty()) {
+                regions = deliverableProgram.getCrpProgram().getAcronym();
+              } else {
+                regions += "\n " + deliverableProgram.getCrpProgram().getAcronym();
+              }
+              break;
+            default:
+              break;
           }
         }
 

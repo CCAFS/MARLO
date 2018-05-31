@@ -65,7 +65,6 @@ import javax.inject.Inject;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -110,10 +109,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   Set<Long> projectsList = new HashSet<Long>();
 
   // Managers
-  private GenderTypeManager genderTypeManager;
-  private CrpProgramManager crpProgramManager;
-  private CrossCuttingScoringManager crossCuttingScoringManager;
-  private CrpPpaPartnerManager crpPpaPartnerManager;
+  private final GenderTypeManager genderTypeManager;
+  private final CrpProgramManager crpProgramManager;
+  private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final CrpPpaPartnerManager crpPpaPartnerManager;
+  private final ResourceManager resourceManager;
+
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -123,12 +124,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
-    CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager) {
+    CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager,
+    ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -178,13 +181,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ExpectedDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();

@@ -46,8 +46,8 @@ public class WebAppInitializer implements WebApplicationInitializer {
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
     AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
-    appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class,
-      MarloShiroConfiguration.class);
+    appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class, MarloShiroConfiguration.class,
+      MarloBusinessIntelligenceConfiguration.class);
 
     ContextLoaderListener contextLoaderListener = new ContextLoaderListener(appContext);
     servletContext.addListener(contextLoaderListener);

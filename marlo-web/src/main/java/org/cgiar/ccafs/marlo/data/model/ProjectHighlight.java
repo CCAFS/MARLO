@@ -5,10 +5,10 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -22,40 +22,14 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
    * 
    */
   private static final long serialVersionUID = -5813880172771852517L;
-  @Expose
-  private FileDB file;
+
+
   @Expose
   private Project project;
-  @Expose
-  private String title;
-  @Expose
-  private String author;
-  @Expose
-  private Date startDate;
-  @Expose
-  private Date endDate;
-  @Expose
-  private String description;
-  @Expose
-  private String results;
-  @Expose
-  private boolean global;
-  @Expose
-  private String publisher;
-  @Expose
-  private String objectives;
-  @Expose
-  private String partners;
-  @Expose
-  private String links;
-  @Expose
-  private String keywords;
-  @Expose
-  private String subject;
-  @Expose
-  private Long year;
-  @Expose
-  private Long status;
+
+  private ProjectHighlightInfo projectHighlightInfo;
+
+  private Set<ProjectHighlightInfo> projectHighlightInfos = new HashSet<ProjectHighlightInfo>(0);
   private Set<ProjectHighlightType> projectHighligthsTypes = new HashSet<ProjectHighlightType>(0);
   private Set<ProjectHighlightCountry> projectHighlightCountries = new HashSet<ProjectHighlightCountry>(0);
   private List<ProjectHighlightType> types;
@@ -74,17 +48,15 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
 
   private List<ProjectHighlightCountry> countries;
 
-  public ProjectHighlight() {
-  }
 
-  public String getAuthor() {
-    return author;
+  public ProjectHighlight() {
   }
 
 
   public List<ProjectHighlightCountry> getCountries() {
     return countries;
   }
+
 
   public List<Long> getCountriesIds() {
     return countriesIds;
@@ -96,45 +68,14 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
   }
 
 
-  public String getDescription() {
-    return description;
-  }
-
-
-  public Date getEndDate() {
-    return endDate;
-  }
-
-  public FileDB getFile() {
-    return file;
-  }
-
-
-  public String getKeywords() {
-    return keywords;
-  }
-
-
-  public String getLinks() {
-    return links;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
+
     sb.append("Id : ").append(this.getId());
+
+
     return sb.toString();
-  }
-
-
-  public String getObjectives() {
-    return objectives;
-  }
-
-
-  public String getPartners() {
-    return partners;
   }
 
 
@@ -143,8 +84,37 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
   }
 
 
-  public Set<ProjectHighlightCountry> getProjectHighligthCountries() {
+  public Set<ProjectHighlightCountry> getProjectHighlightCountries() {
     return projectHighlightCountries;
+  }
+
+
+  public ProjectHighlightInfo getProjectHighlightInfo() {
+    return projectHighlightInfo;
+  }
+
+
+  public ProjectHighlightInfo getProjectHighlightInfo(Phase phase) {
+    if (this.getProjectHighlightInfo() != null) {
+      return this.getProjectHighlightInfo();
+    } else {
+      List<ProjectHighlightInfo> infos =
+        projectHighlightInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
+          && c.getPhase().getId().longValue() == phase.getId()).collect(Collectors.toList());
+      if (!infos.isEmpty()) {
+        this.setProjectHighlightInfo(infos.get(0));
+        return this.getProjectHighlightInfo();
+      } else {
+        return null;
+      }
+    }
+
+
+  }
+
+
+  public Set<ProjectHighlightInfo> getProjectHighlightInfos() {
+    return projectHighlightInfos;
   }
 
 
@@ -153,38 +123,8 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
   }
 
 
-  public String getPublisher() {
-    return publisher;
-  }
-
-
-  public String getResults() {
-    return results;
-  }
-
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
-  }
-
-
-  public Date getStartDate() {
-    return startDate;
-  }
-
-
-  public Long getStatus() {
-    return status;
-  }
-
-
-  public String getSubject() {
-    return subject;
-  }
-
-
-  public String getTitle() {
-    return title;
   }
 
 
@@ -208,120 +148,41 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
   }
 
 
-  public Long getYear() {
-    return year;
-  }
-
-  public boolean isGlobal() {
-    return global;
-  }
-
-
-  public void setAuthor(String author) {
-    this.author = author;
-  }
-
-
   public void setCountries(List<ProjectHighlightCountry> countries) {
     this.countries = countries;
   }
-
 
   public void setCountriesIds(List<Long> countriesIds) {
     this.countriesIds = countriesIds;
   }
 
-
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
   }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
-  }
-
-
-  public void setFile(FileDB file) {
-    this.file = file;
-  }
-
-
-  public void setGlobal(boolean global) {
-    this.global = global;
-  }
-
-
-  public void setKeywords(String keywords) {
-    this.keywords = keywords;
-  }
-
-
-  public void setLinks(String links) {
-    this.links = links;
-  }
-
-  public void setObjectives(String objectives) {
-    this.objectives = objectives;
-  }
-
-
-  public void setPartners(String partners) {
-    this.partners = partners;
-  }
-
 
   public void setProject(Project project) {
     this.project = project;
   }
 
-
-  public void setProjectHighligthCountries(Set<ProjectHighlightCountry> projectHighlightCountries) {
+  public void setProjectHighlightCountries(Set<ProjectHighlightCountry> projectHighlightCountries) {
     this.projectHighlightCountries = projectHighlightCountries;
   }
 
+  public void setProjectHighlightInfo(ProjectHighlightInfo projectHighlightInfo) {
+    this.projectHighlightInfo = projectHighlightInfo;
+  }
+
+  public void setProjectHighlightInfos(Set<ProjectHighlightInfo> projectHighlightInfos) {
+    this.projectHighlightInfos = projectHighlightInfos;
+  }
 
   public void setProjectHighligthsTypes(Set<ProjectHighlightType> projectHighligthsTypes) {
     this.projectHighligthsTypes = projectHighligthsTypes;
   }
 
 
-  public void setPublisher(String publisher) {
-    this.publisher = publisher;
-  }
-
-
-  public void setResults(String results) {
-    this.results = results;
-  }
-
-
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
-  }
-
-
-  public void setStartDate(Date startDate) {
-    this.startDate = startDate;
-  }
-
-
-  public void setStatus(Long status) {
-    this.status = status;
-  }
-
-
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
-
-
-  public void setTitle(String title) {
-    this.title = title;
   }
 
 
@@ -334,28 +195,13 @@ public class ProjectHighlight extends MarloAuditableEntity implements java.io.Se
     this.typesids = typesids;
   }
 
-
   public void setTypesIds(List<ProjectHighligthsTypeEnum> typesIds) {
     TypesIds = typesIds;
   }
-
 
   public void setTypesidsText(String typesidsText) {
     this.typesidsText = typesidsText;
   }
 
 
-  public void setYear(Long year) {
-    this.year = year;
-  }
-
-
-  @Override
-  public String toString() {
-    return "ProjectHighlight [id=" + this.getId() + ", project=" + project + ", title=" + title + ", author=" + author
-      + "]";
-  }
-
-
 }
-

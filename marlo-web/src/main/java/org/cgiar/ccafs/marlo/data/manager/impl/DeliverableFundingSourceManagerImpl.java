@@ -93,14 +93,16 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   @Override
   public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
 
-
     DeliverableFundingSource deliverableFundingSource =
       this.getDeliverableFundingSourceById(deliverableFundingSourceId);
 
     deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSource.getId());
 
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    boolean isPublication = deliverableFundingSource.getDeliverable().getIsPublication() != null
+      && deliverableFundingSource.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
         this.deleteDeliverableFundingSource(deliverableFundingSource.getPhase().getNext(),
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
@@ -154,7 +156,10 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
 
     DeliverableFundingSource deliverableFundingSourceDB = deliverableFundingSourceDAO.save(deliverableFundingSource);
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    boolean isPublication = deliverableFundingSourceDB.getDeliverable().getIsPublication() != null
+      && deliverableFundingSourceDB.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
         this.addDeliverableFundingSourcePhase(deliverableFundingSource.getPhase().getNext(),
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);

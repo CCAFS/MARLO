@@ -135,7 +135,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
 
-
     DeliverablePartnership deliverablePartnership = this.getDeliverablePartnershipById(deliverablePartnershipId);
     Phase currentPhase = phaseDAO.find(deliverablePartnership.getPhase().getId());
     deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnership.getId());
@@ -193,6 +192,12 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public List<DeliverablePartnership> findAll() {
     return deliverablePartnershipDAO.findAll();
+  }
+
+  @Override
+  public List<DeliverablePartnership> findByDeliverablePhaseAndType(long deliverableId, long phaseId,
+    String partnerType) {
+    return deliverablePartnershipDAO.findByDeliverablePhaseAndType(deliverableId, phaseId, partnerType);
   }
 
   @Override
