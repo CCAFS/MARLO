@@ -17,18 +17,19 @@ google.charts.setOnLoadCallback(function() {
   // On load
   $('.chartBox').addClass('loaded');
 
-  // Chart #1
-  var $chart1 = $('#chart1');
+  // Chart #2
+  var $chart1 = $('#chart2');
   var data1 = new google.visualization.arrayToDataTable(getChartDataArray($chart1));
 
   var chart1 = new google.charts.Bar(document.getElementById($chart1[0].id));
   chart1.draw(data1, google.charts.Bar.convertOptions({
       chart: {
-        title: "Policy/Investment Implementing Organization Type"
+        title: "Innovations by Stage"
       },
       legend: {
         position: "none"
       },
+      colors: '#27ae60',
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
