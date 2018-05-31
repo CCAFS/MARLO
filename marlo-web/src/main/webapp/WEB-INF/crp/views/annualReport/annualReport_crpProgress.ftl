@@ -146,7 +146,6 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          [#-- <th class="col-md-1"> [@s.text name="${customLabel}.table.projectId" /] </th> --]
           <th> [@s.text name="${customLabel}.table.outcomeCaseStudy" /] </th>
           <th> [@s.text name="${customLabel}.table.subIDO" /] </th>
           <th class="col-md-3"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
@@ -178,7 +177,7 @@
                 [#-- Flagships --]
                 [#if isPMU]
                   <div class="clearfix"></div>
-                  [#list liaisonInstitutions as liaisonInstitution]
+                  [#list item.liaisonInstitutions as liaisonInstitution]
                     <span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${(liaisonInstitution.crpProgram.acronym)!}</span>
                   [/#list]
                 [/#if]
