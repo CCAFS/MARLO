@@ -515,7 +515,7 @@ public class CrpProgressAction extends BaseAction {
         if (this.isFlagship()) {
           // Srf Targets List
           if (reportSynthesis.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressTargets() != null) {
-            reportSynthesis.getReportSynthesisCrpProgress().setTargets(
+            reportSynthesis.getReportSynthesisCrpProgress().setSloTargets(
               new ArrayList<>(reportSynthesis.getReportSynthesisCrpProgress().getReportSynthesisCrpProgressTargets()
                 .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
           }
@@ -574,8 +574,8 @@ public class CrpProgressAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (reportSynthesis.getReportSynthesisCrpProgress().getTargets() != null) {
-        reportSynthesis.getReportSynthesisCrpProgress().getTargets().clear();
+      if (reportSynthesis.getReportSynthesisCrpProgress().getSloTargets() != null) {
+        reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().clear();
       }
 
       if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() != null) {
@@ -649,6 +649,8 @@ public class CrpProgressAction extends BaseAction {
    */
   public void saveSrfTargets(ReportSynthesisCrpProgress crpProgressDB) {
 
+    List<ReportSynthesisCrpProgressTarget> tg = reportSynthesis.getReportSynthesisCrpProgress().getSloTargets();
+
     // Search and deleted form Information
     if (crpProgressDB.getReportSynthesisCrpProgressTargets() != null
       && crpProgressDB.getReportSynthesisCrpProgressTargets().size() > 0) {
@@ -657,17 +659,23 @@ public class CrpProgressAction extends BaseAction {
         .getReportSynthesisCrpProgressTargets().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
       for (ReportSynthesisCrpProgressTarget crpTarget : targetPrev) {
-        if (!reportSynthesis.getReportSynthesisCrpProgress().getTargets().contains(crpTarget)) {
+        if (!reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().contains(crpTarget)) {
           reportSynthesisCrpProgressTargetManager.deleteReportSynthesisCrpProgressTarget(crpTarget.getId());
         }
       }
     }
 
     // Save form Information
-    if (reportSynthesis.getReportSynthesisCrpProgress().getTargets() != null) {
-      for (ReportSynthesisCrpProgressTarget crpTarget : reportSynthesis.getReportSynthesisCrpProgress().getTargets()) {
+    if (reportSynthesis.getReportSynthesisCrpProgress().getSloTargets() != null) {
+      for (ReportSynthesisCrpProgressTarget crpTarget : reportSynthesis.getReportSynthesisCrpProgress()
+        .getSloTargets()) {
         if (crpTarget.getId() == null) {
           ReportSynthesisCrpProgressTarget crpTargetSave = new ReportSynthesisCrpProgressTarget();
+          crpTargetSave.setActive(true);
+          crpTargetSave.setModifiedBy(this.getCurrentUser());
+          crpTargetSave.setCreatedBy(this.getCurrentUser());
+          crpTargetSave.setActiveSince(new Date());
+          crpTargetSave.setModificationJustification("");
 
           crpTargetSave.setReportSynthesisCrpProgress(crpProgressDB);
 
@@ -681,7 +689,6 @@ public class CrpProgressAction extends BaseAction {
 
           reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetSave);
         } else {
-
 
           boolean hasChanges = false;
           ReportSynthesisCrpProgressTarget crpTargetPrev =
@@ -697,16 +704,14 @@ public class CrpProgressAction extends BaseAction {
             crpTargetPrev.setAdditionalContribution(crpTarget.getAdditionalContribution());
           }
 
-
           if (hasChanges) {
             crpTargetPrev.setModifiedBy(this.getCurrentUser());
             reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetPrev);
           }
-
-
         }
       }
     }
+
 
   }
 
