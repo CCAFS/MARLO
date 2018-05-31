@@ -30,10 +30,17 @@ public class ProjectNextuser extends MarloAuditableEntity implements java.io.Ser
   private String strategies;
 
   @Expose
+  private String knowledgeReport;
+
+  @Expose
+  private String strategiesReport;
+
+  @Expose
   private String composeID;
 
   public ProjectNextuser() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -57,6 +64,7 @@ public class ProjectNextuser extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
+
   public String getComposeID() {
     return composeID;
   }
@@ -66,6 +74,9 @@ public class ProjectNextuser extends MarloAuditableEntity implements java.io.Ser
     return knowledge;
   }
 
+  public String getKnowledgeReport() {
+    return knowledgeReport;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -93,6 +104,11 @@ public class ProjectNextuser extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public String getStrategiesReport() {
+    return strategiesReport;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -112,6 +128,11 @@ public class ProjectNextuser extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public void setKnowledgeReport(String knowledgeReport) {
+    this.knowledgeReport = knowledgeReport;
+  }
+
+
   public void setNextUser(String nextUser) {
     this.nextUser = nextUser;
   }
@@ -126,10 +147,16 @@ public class ProjectNextuser extends MarloAuditableEntity implements java.io.Ser
     this.strategies = strategies;
   }
 
+
+  public void setStrategiesReport(String strategiesReport) {
+    this.strategiesReport = strategiesReport;
+  }
+
   @Override
   public String toString() {
     return "ProjectNextuser [id=" + this.getId() + ", projectOutcome=" + projectOutcome + ", nextUser=" + nextUser
-      + ", knowledge=" + knowledge + ", strategies=" + strategies + "]";
+      + ", knowledge=" + knowledge + ", strategies=" + strategies + ", knowledgeReport=" + knowledgeReport
+      + ", strategiesReport=" + strategiesReport + ", active=" + this.isActive() + "]";
   }
 
 

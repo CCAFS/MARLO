@@ -22,24 +22,41 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
    */
   private static final long serialVersionUID = -1603080182029677862L;
 
+
   private GlobalUnit crp;
+
+
   @Expose
   private String description;
 
+
   @Expose
   private int year;
+
+
   @Expose
   private Boolean editable;
+
+
   @Expose
   private Boolean visible;
+
+
   @Expose
   private Phase next;
+
+
   @Expose
   private Date startDate;
+
+
   @Expose
   private Date endDate;
 
+
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
+
+
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
 
 
@@ -53,37 +70,98 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
 
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
+
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
+
 
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
 
-
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
+
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
+
+
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+
+
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
+
+
   private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
+
+
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
+
   private Set<FundingSourceInfo> fundingSourceInfo = new HashSet<FundingSourceInfo>(0);
+
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
+
+
   private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
+
+
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
   private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
+
   private Set<ProjectExpectedStudy> projectExpectedStudies = new HashSet<ProjectExpectedStudy>(0);
   private Set<ProjectBudgetsFlagship> projectBudgetsFlagships = new HashSet<ProjectBudgetsFlagship>(0);
   private Set<PowbSynthesis> powbSynthesis = new HashSet<PowbSynthesis>(0);
+  private Set<ProjectLeverage> projectLeverages = new HashSet<ProjectLeverage>(0);
+  private Set<ProjectHighlightInfo> projectHighlightInfos = new HashSet<ProjectHighlightInfo>(0);
+  private Set<ProjectHighlightType> projectHighligthsTypes = new HashSet<ProjectHighlightType>(0);
 
+  private Set<ProjectHighlightCountry> projectHighlightCountries = new HashSet<ProjectHighlightCountry>(0);
+  private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
+
+
+  private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
+    new HashSet<ProjectInnovationDeliverable>(0);
+
+
+  private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
+
+
+  private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
+    new HashSet<ProjectInnovationOrganization>(0);
+
+
+  private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
+  private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
+    new HashSet<DeliverableIntellectualAsset>(0);
+
+  private Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships =
+    new HashSet<ProjectExpectedStudyFlagship>(0);
+
+
+  private Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries = new HashSet<ProjectExpectedStudyCountry>(0);
+
+  private Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps = new HashSet<ProjectExpectedStudyCrp>(0);
+  private Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions =
+    new HashSet<ProjectExpectedStudyInstitution>(0);
+  private Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets =
+    new HashSet<ProjectExpectedStudySrfTarget>(0);
+  private Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new HashSet<ProjectExpectedStudyInfo>(0);
+  private Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = new HashSet<ProjectExpectedStudySubIdo>(0);
+  private Set<ExpectedStudyProject> expectedStudyProjects = new HashSet<ExpectedStudyProject>(0);
 
   public Phase() {
   }
-
 
   public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
     this.description = description;
     this.year = year;
+  }
+
+  public Phase(GlobalUnit crp, String description, int year, Set<ProjectPhase> projectPhases) {
+    this.crp = crp;
+    this.description = description;
+    this.year = year;
+    this.projectPhases = projectPhases;
   }
 
   @Override
@@ -120,20 +198,21 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return crpPpaPartner;
   }
 
-
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
-
 
   public Set<DeliverableInfo> getDeliverableInfos() {
     return deliverableInfos;
   }
 
+  public Set<DeliverableIntellectualAsset> getDeliverableIntellectualAssets() {
+    return deliverableIntellectualAssets;
+  }
+
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
-
 
   public String getDescription() {
     return this.description;
@@ -147,6 +226,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return endDate;
   }
 
+  public Set<ExpectedStudyProject> getExpectedStudyProjects() {
+    return expectedStudyProjects;
+  }
+
+
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
   }
@@ -156,15 +240,14 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return fundingSourceInfo;
   }
 
-
   public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
 
-
   public Set<FundingSourceLocation> getFundingSourceLocations() {
     return fundingSourceLocations;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -173,13 +256,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -187,7 +268,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     u.setId(new Long(3));
     return u;
   }
-
 
   public Phase getNext() {
     return next;
@@ -204,6 +284,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<PowbSynthesis> getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   public Set<Activity> getProjectActivites() {
     return projectActivites;
@@ -235,13 +316,85 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   }
 
 
+  public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
+    return projectExpectedStudyCountries;
+  }
+
+
+  public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
+    return projectExpectedStudyCrps;
+  }
+
+
+  public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
+    return projectExpectedStudyFlagships;
+  }
+
+  public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
+    return projectExpectedStudyInfos;
+  }
+
+  public Set<ProjectExpectedStudyInstitution> getProjectExpectedStudyInstitutions() {
+    return projectExpectedStudyInstitutions;
+  }
+
+  public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
+    return projectExpectedStudySrfTargets;
+  }
+
+  public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
+    return projectExpectedStudySubIdos;
+  }
+
+
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
 
 
+  public Set<ProjectHighlightCountry> getProjectHighlightCountries() {
+    return projectHighlightCountries;
+  }
+
+  public Set<ProjectHighlightInfo> getProjectHighlightInfos() {
+    return projectHighlightInfos;
+  }
+
+
+  public Set<ProjectHighlightType> getProjectHighligthsTypes() {
+    return projectHighligthsTypes;
+  }
+
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
+  }
+
+  public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
+    return projectInnovationCountries;
+  }
+
+  public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
+    return projectInnovationCrps;
+  }
+
+
+  public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
+    return projectInnovationDeliverables;
+  }
+
+
+  public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
+    return projectInnovationInfos;
+  }
+
+
+  public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
+    return projectInnovationOrganizations;
+  }
+
+
+  public Set<ProjectLeverage> getProjectLeverages() {
+    return projectLeverages;
   }
 
 
@@ -264,16 +417,13 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return startDate;
   }
 
-
   public Boolean getVisible() {
     return visible;
   }
 
-
   public int getYear() {
     return this.year;
   }
-
 
   @Override
   public int hashCode() {
@@ -289,6 +439,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return true;
   }
 
+
   public Boolean isReporting() {
     return description.equals(APConstants.REPORTING);
   }
@@ -302,6 +453,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {
     this.crpPpaPartner = crpPpaPartner;
@@ -317,9 +469,16 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.deliverableInfos = deliverableInfos;
   }
 
+
+  public void setDeliverableIntellectualAssets(Set<DeliverableIntellectualAsset> deliverableIntellectualAssets) {
+    this.deliverableIntellectualAssets = deliverableIntellectualAssets;
+  }
+
+
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -336,6 +495,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   }
 
 
+  public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
+    this.expectedStudyProjects = expectedStudyProjects;
+  }
+
+
   public void setFundingSourceBudgets(Set<FundingSourceBudget> fundingSourceBudgets) {
     this.fundingSourceBudgets = fundingSourceBudgets;
   }
@@ -349,23 +513,24 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.fundingSourceInstitutions = fundingSourceInstitutions;
   }
 
-
   public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
     this.fundingSourceLocations = fundingSourceLocations;
   }
+
 
   public void setNext(Phase next) {
     this.next = next;
   }
 
-
   public void setOutcomes(Set<CrpProgramOutcome> otucomes) {
     this.outcomes = otucomes;
   }
 
+
   public void setPartners(Set<ProjectPartner> partners) {
     this.partners = partners;
   }
+
 
   public void setPowbSynthesis(Set<PowbSynthesis> powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
@@ -379,28 +544,104 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectBudgets = projectBudgets;
   }
 
+
   public void setProjectBudgetsActivities(Set<ProjectBudgetsCluserActvity> projectBudgetsActivities) {
     this.projectBudgetsActivities = projectBudgetsActivities;
   }
+
 
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;
   }
 
+
   public void setProjectClusters(Set<ProjectClusterActivity> projectClusters) {
     this.projectClusters = projectClusters;
   }
 
+
   public void setProjectExpectedStudies(Set<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
+  }
+
+  public void setProjectExpectedStudyCountries(Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries) {
+    this.projectExpectedStudyCountries = projectExpectedStudyCountries;
+  }
+
+
+  public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
+    this.projectExpectedStudyCrps = projectExpectedStudyCrps;
+  }
+
+
+  public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
+    this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
+  }
+
+
+  public void setProjectExpectedStudyInfos(Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
+    this.projectExpectedStudyInfos = projectExpectedStudyInfos;
+  }
+
+  public void
+    setProjectExpectedStudyInstitutions(Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions) {
+    this.projectExpectedStudyInstitutions = projectExpectedStudyInstitutions;
+  }
+
+
+  public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
+    this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
+  }
+
+  public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
+    this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
   }
 
   public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
     this.projectFocuses = projectFocuses;
   }
 
+
+  public void setProjectHighlightCountries(Set<ProjectHighlightCountry> projectHighlightCountries) {
+    this.projectHighlightCountries = projectHighlightCountries;
+  }
+
+
+  public void setProjectHighlightInfos(Set<ProjectHighlightInfo> projectHighlightInfos) {
+    this.projectHighlightInfos = projectHighlightInfos;
+  }
+
+
+  public void setProjectHighligthsTypes(Set<ProjectHighlightType> projectHighligthsTypes) {
+    this.projectHighligthsTypes = projectHighligthsTypes;
+  }
+
   public void setProjectInfos(Set<ProjectInfo> projectInfos) {
     this.projectInfos = projectInfos;
+  }
+
+  public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
+    this.projectInnovationCountries = projectInnovationCountries;
+  }
+
+  public void setProjectInnovationCrps(Set<ProjectInnovationCrp> projectInnovationCrps) {
+    this.projectInnovationCrps = projectInnovationCrps;
+  }
+
+  public void setProjectInnovationDeliverables(Set<ProjectInnovationDeliverable> projectInnovationDeliverables) {
+    this.projectInnovationDeliverables = projectInnovationDeliverables;
+  }
+
+  public void setProjectInnovationInfos(Set<ProjectInnovationInfo> projectInnovationInfos) {
+    this.projectInnovationInfos = projectInnovationInfos;
+  }
+
+  public void setProjectInnovationOrganizations(Set<ProjectInnovationOrganization> projectInnovationOrganizations) {
+    this.projectInnovationOrganizations = projectInnovationOrganizations;
+  }
+
+  public void setProjectLeverages(Set<ProjectLeverage> projectLeverages) {
+    this.projectLeverages = projectLeverages;
   }
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
@@ -432,4 +673,3 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return "Phase [id=" + this.getId() + " description=" + description + ", year=" + year + "]";
   }
 }
-

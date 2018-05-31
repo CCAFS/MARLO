@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -28,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +94,18 @@ public class BaseValidator {
       return !string.trim().isEmpty();
     }
     return false;
+  }
+
+  /**
+   * Validate a Basic Url Structure (http://, https:// or ftp://)
+   * 
+   * @param url - The Url to Validate
+   * @return true if is a valid Url
+   */
+  protected boolean isValidUrl(String url) {
+    UrlValidator urlValidator = new UrlValidator();
+    boolean bReturn = urlValidator.isValid(url);
+    return bReturn;
   }
 
   /**
@@ -286,6 +301,7 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
+
   /**
    * ******************************************************************************************
    * ************************* CENTER METHOD **************************************************
@@ -317,7 +333,6 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
@@ -348,6 +363,7 @@ public class BaseValidator {
 
 
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.
@@ -409,7 +425,6 @@ public class BaseValidator {
 
 
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
@@ -475,6 +490,7 @@ public class BaseValidator {
 
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
    * 
@@ -505,6 +521,35 @@ public class BaseValidator {
 
 
   /**
+   * This method saves the missing fields into the database for a section at project expected study.
+   * 
+   * @param expectedStudy is a Project Expected Study.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectExpectedStudy expectedStudy, String cycle, int year,
+    String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectExpectedStudy(expectedStudy);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+
+  /**
    * This method saves the missing fields into the database for a section at project Case Study level.
    * 
    * @param highlight is a Project Highlight.
@@ -522,6 +567,34 @@ public class BaseValidator {
       status.setCycle(cycle);
       status.setYear(year);
       status.setProjectHighlight(highlight);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project Innovation.
+   * 
+   * @param innovation is a Project Innovation.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectInnovation innovation, String cycle, int year,
+    String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectInnovation(innovation);
       status.setSectionName(sectionName);
       status.setProject(project);
 
@@ -596,7 +669,6 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at ImpactPathway.
@@ -682,19 +754,6 @@ public class BaseValidator {
 
   }
 
-  protected void validateLessonsLearnOutcome(BaseAction action, ProjectOutcome project) {
-    if (project.getProjectComponentLesson() != null) {
-      ProjectComponentLesson lesson = project.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
-        // Let them save.
-        action.addMessage("Lessons");
-
-        action.addMissingField("projectLessons.lessons");
-
-      }
-    }
-
-  }
 
   /**
    * This method counts the number of words in a given text.
@@ -703,7 +762,11 @@ public class BaseValidator {
    * @return the number of words.
    */
   protected int wordCount(String text) {
-    text = text.trim();
-    return text.isEmpty() ? 0 : text.split("\\s+").length;
+    if (text != null) {
+      text = text.trim();
+      return text.isEmpty() ? 0 : text.split("\\s+").length;
+    } else {
+      return 0;
+    }
   }
 }

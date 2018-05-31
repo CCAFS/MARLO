@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -78,18 +77,21 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   private long startTime;
 
   // Managers
-  private CrpProgramManager crpProgramManager;
+  private final CrpProgramManager crpProgramManager;
+  private final ResourceManager resourceManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
   Set<Long> projectsList = new HashSet<Long>();
 
+
   @Inject
   public ProjectsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager) {
+    CrpProgramManager crpProgramManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.crpProgramManager = crpProgramManager;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -118,14 +120,10 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
+        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -250,9 +248,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
         && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
           && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))
       .sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList())) {
       Long projectId = globalUnitProject.getProject().getId();
       String projectTitle = globalUnitProject.getProject().getProjectInfo().getTitle();
@@ -328,14 +326,14 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Set<Deliverable> deliverablesSet = new HashSet();
       for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
             || (d.getDeliverableInfo().getStatus() != null
               && d.getDeliverableInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())
               && d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              && d.getDeliverableInfo().getNewExpectedYear() == 2017)
+            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
               && d.getDeliverableInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {
@@ -353,12 +351,12 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
       Set<ProjectExpectedStudy> projectExpectedStudySet = new HashSet();
       for (ProjectExpectedStudy projectExpectedStudy : globalUnitProject.getProject().getProjectExpectedStudies()
-        .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase() == this.getActualPhase().getId())
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(projectExpectedStudy);
       }
       for (ExpectedStudyProject expectedStudyProject : globalUnitProject.getProject().getExpectedStudyProjects()
-        .stream().filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase().equals(this.getActualPhase()))
+        .stream().filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase() == this.getActualPhase().getId())
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(expectedStudyProject.getProjectExpectedStudy());
       }

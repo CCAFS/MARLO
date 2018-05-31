@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.util.List;
@@ -59,6 +60,28 @@ public interface ProjectExpectedStudyManager {
    * @return a ProjectExpectedStudy object.
    */
   public ProjectExpectedStudy getProjectExpectedStudyById(long projectExpectedStudyID);
+
+  /**
+   * This method search the expected Studies that the user can be edit.
+   * 
+   * @param userId the user id
+   * @param crp the crp acronym
+   * @return The expected Studies that can edit the user
+   */
+  public List<ProjectExpectedStudy> getUserStudies(long userId, String crp);
+
+  /**
+   * This method saves the information of the given projectExpectedStudy
+   * 
+   * @param projectExpectedStudy - is the projectExpectedStudy object with the new information to be added/updated.
+   * @param section - the name of the map section.
+   * @param relationsName - a List of set relations that the object have it.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudy was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
+    List<String> relationsName, Phase phase);
 
   /**
    * This method saves the information of the given projectExpectedStudy

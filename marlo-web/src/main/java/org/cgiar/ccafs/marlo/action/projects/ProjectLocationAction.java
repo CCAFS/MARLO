@@ -609,8 +609,9 @@ public class ProjectLocationAction extends BaseAction {
           for (CountryFundingSources co : project.getRegionFS()) {
             if (co.getLocElement() != null) {
               co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
-              List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
-                co.getLocElement().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
+              List<FundingSource> sources =
+                fundingSourceManager.searchFundingSourcesByLocElement(projectID, co.getLocElement().getId(),
+                  this.getCurrentCycleYear(), loggedCrp.getId(), this.getActualPhase().getId());
               for (FundingSource fundingSource : sources) {
                 fundingSource.getFundingSourceInfo(this.getActualPhase());
               }
@@ -648,8 +649,9 @@ public class ProjectLocationAction extends BaseAction {
             if (co.getLocElement() != null) {
               co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
 
-              List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID,
-                co.getLocElement().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
+              List<FundingSource> sources =
+                fundingSourceManager.searchFundingSourcesByLocElement(projectID, co.getLocElement().getId(),
+                  this.getCurrentCycleYear(), loggedCrp.getId(), this.getActualPhase().getId());
               for (FundingSource fundingSource : sources) {
                 fundingSource.getFundingSourceInfo(this.getActualPhase());
               }
@@ -835,8 +837,9 @@ public class ProjectLocationAction extends BaseAction {
     Project projectDB = projectManager.getProjectById(project.getId());
 
 
-    List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
-      .filter(pb -> pb.isActive() && pb.getProject().isActive()).collect(Collectors.toList()));
+    List<ProjectBudget> projectBudgets =
+      new ArrayList<>(projectDB.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
+        && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
     for (ProjectBudget projectBudget : projectBudgets) {
@@ -927,7 +930,7 @@ public class ProjectLocationAction extends BaseAction {
       countryFundingSources.setLocElement(locElement);
 
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, locElement.getId(),
-        this.getCurrentCycleYear(), loggedCrp.getId());
+        this.getCurrentCycleYear(), loggedCrp.getId(), this.getActualPhase().getId());
       for (FundingSource fundingSourceElement : sources) {
         fundingSourceElement.setFundingSourceInfo(fundingSourceElement.getFundingSourceInfo(this.getActualPhase()));
       }
@@ -1283,8 +1286,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions = new ArrayList<>(this.getDBLocations()
-      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    List<ProjectLocation> regions = new ArrayList<>(this
+      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()
@@ -1375,8 +1378,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
-    regions = new ArrayList<>(this.getDBLocations()
-      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    regions = new ArrayList<>(this
+      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()

@@ -20,10 +20,13 @@ public class ProjectHighlightType extends MarloBaseEntity implements java.io.Ser
   private ProjectHighlight projectHighlight;
   @Expose
   private int idType;
+  @Expose
+  private Phase phase;
 
 
   public ProjectHighlightType() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -43,6 +46,7 @@ public class ProjectHighlightType extends MarloBaseEntity implements java.io.Ser
     return true;
   }
 
+
   public int getIdType() {
     return idType;
   }
@@ -57,19 +61,22 @@ public class ProjectHighlightType extends MarloBaseEntity implements java.io.Ser
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -98,6 +105,11 @@ public class ProjectHighlightType extends MarloBaseEntity implements java.io.Ser
   }
 
 
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+
   public void setProjectHighligth(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
   }
@@ -110,4 +122,3 @@ public class ProjectHighlightType extends MarloBaseEntity implements java.io.Ser
   }
 
 }
-

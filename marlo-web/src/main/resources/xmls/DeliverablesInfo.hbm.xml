@@ -94,5 +94,8 @@
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" not-null="true" />
         </property>
+        <property name="isLocationGlobal" type="java.lang.Boolean">
+            <column name="is_location_global" />
+        </property>
     </class>
 </hibernate-mapping>

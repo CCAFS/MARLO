@@ -30,8 +30,12 @@ public final class APConstants {
   public static final String CRP_PARTNERS_OFFICE = "crp_partners_office";
   public static final String PARTNER_ID = "partnerId";
 
+  public static final String STUDY_TYPE_REQUEST_ID = "studyTypeID";
+  public static final String EXPECTED_REQUEST_ID = "expectedID";
+  public static final String INNOVATION_REQUEST_ID = "innovationID";
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
+  public static final String STUDY_REQUEST_ID = "studyID";
   public static final String CLASS_NAME = "className";
   public static final String CRP_ACTIVITES_MODULE = "crp_activities_module";
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
@@ -64,6 +68,7 @@ public final class APConstants {
   public static final String CRP_OPEN_REAL_DATE_REPORTING = "crp_real_reporting_date";
   public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   // Crp Parameters
+  public static final String CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS = "crp_show_project_outcome_communications";
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_nonPPAPartner_resp_required";
 
@@ -192,6 +197,7 @@ public final class APConstants {
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String PHASE_ID = "phaseID";
   public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
+  public static final int PHASE_ONE_YEAR = 2016;
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
@@ -231,8 +237,26 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
 
-  public static final String PROJECT_EXPECTED_STUDIES_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectExpectedStudies)";
+  public static final String PROJECT_EXPECTED_STUDIES_PROJECTS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.expectedStudyProjects)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_SUBIDOS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudySubIdos)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_FLAGSHIP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyFlagships)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyCrps)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_INSTITUTION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyInstitutions)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyCountries)";
+
+  public static final String PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudySrfTargets)";
 
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
@@ -264,6 +288,8 @@ public final class APConstants {
 
   public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
+  public static final String PROJECT_DELIVERABLES_INTELLECTUAL_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableIntellectualAssets)";
   public static final String PROJECT_DELIVERABLE_FUNDING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableFundingSources)";
 
@@ -286,6 +312,10 @@ public final class APConstants {
 
   public static final String PROJECT_DELIVERABLE_PUBLICATION_METADATA =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePublicationMetadatas)";
+  public static final String PROJECT_DELIVERABLES_PARTICIPANT_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableParticipants)";
+  public static final String PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableParticipants.deliverableParticipantLocations)";
 
 
   public static final String PROJECT_DELIVERABLE_QUALITY_CHECK =
@@ -348,7 +378,20 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighlight.projectHighligthCountries)";
   public static final String PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighlight.projectHighligthsTypes)";
+  public static final String PROJECT_PARTNER_PARTNERSHIP_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership.projectPartnerPartnershipLocations)";
 
+  // Project innovations Relations
+  public static final String PROJECT_INNOVATION_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCountries)";
+  public static final String PROJECT_INNOVATION_ORGANIZATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationOrganizations)";
+  public static final String PROJECT_INNOVATION_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
+  public static final String PROJECT_DELIVERABLE_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
+
+  // End
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String PROJECT_SCAPE_GLOBAL = "3";
 
@@ -478,6 +521,8 @@ public final class APConstants {
 
   // POWB Synthesis
   public static final String POWB_FOLDER = "powbSynthesis";
+  // Studies
+  public static final String STUDIES_FOLDER = "studies";
 
 
   // Relations Name
@@ -558,6 +603,23 @@ public final class APConstants {
 
   public static final String SUPPORTINGDOCS_DOCUMENTS_RALATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs.capdevSuppDocsDocuments)";
+
+  public static final String DELIVERABLE_RULE_PUBLICATION_METADATA = "publicationMetadata";
+  public static final String DELIVERABLE_RULE_COMPUTER_LICENSE = "computerLicense";
+  public static final String DELIVERABLE_RULE_DATA_LICENSE = "dataLicense";
+  public static final String DELIVERABLE_RULE_COMPILANCE_CHECK = "complianceCheck";
+  public static final String DELIVERABLE_RULE_JORNAL_ARTICLES = "journalArticles";
+
+  public static final long PROJECT_PARTNER_PARTNERSHIP_GLOBAL = 1;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_REGIONAL = 2;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_MULTI_NATIONAL = 3;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_NATIONAL = 4;
+  public static final long PROJECT_PARTNER_PARTNERSHIP_SUB_NATIONAL = 5;
+
+  public static final long REPORTING_INDICATOR_TYPE_ACTIVITY_ACADEMIC_DEGREE = 1;
+
+  public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
+  public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
 
   public static String getFilterBy() {
     return FILTER_BY;

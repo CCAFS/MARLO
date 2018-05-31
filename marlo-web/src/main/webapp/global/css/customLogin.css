@@ -522,7 +522,7 @@ p.login-description{
 }
 
 #loginFormContainer input[type=checkbox] {
-  transform: scale(1.5);
+  transform: scale(1.2);
 }
 
 #loginFormContainer input[type="submit"]:disabled{

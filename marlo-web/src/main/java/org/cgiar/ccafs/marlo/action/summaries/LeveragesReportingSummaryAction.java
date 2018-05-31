@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -57,7 +56,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(LeveragesReportingSummaryAction.class);
   // Managers
-  private ProjectLeverageManager projectLeverageManager;
+  private final ProjectLeverageManager projectLeverageManager;
+  private final ResourceManager resourceManager;
+
   // Parameters
   private long startTime;
   // XLSX bytes
@@ -67,9 +68,10 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Inject
   public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager) {
+    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.projectLeverageManager = projectLeverageManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -98,12 +100,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/LeveragesReportingExcel.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
@@ -221,7 +220,8 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
-        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null
+        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase())
         && pl.getProject().getGlobalUnitProjects().stream()
           .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
           .collect(Collectors.toList()).size() > 0
@@ -243,9 +243,16 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear();
       }
-      if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getCrpProgram().getComposedName();
+      if (projectLeverage.isPhaseOneLeverage()) {
+        if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getIpProgram().getComposedName();
+        }
+      } else {
+        if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getCrpProgram().getComposedName();
+        }
       }
+
       if (projectLeverage.getBudget() != null) {
         budget = projectLeverage.getBudget();
       }
@@ -262,9 +269,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.getBaseUrl()});
     return model;
   }
 

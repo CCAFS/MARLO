@@ -23,12 +23,8 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/publication</param>
         <param name="deliverableID">${deliverableID}</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-      <result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      
+        <param name="edit">true</param> 
+        <param name="phaseID">${phaseID}</param>
       </result>
     </action>
 
@@ -36,24 +32,31 @@
       class="org.cgiar.ccafs.marlo.action.publications.PublicationListAction">
        <interceptor-ref name="homeStack" />
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/publicationsList</param>
-      
+        <param name="actionName">${crpSession}/publicationsList</param>    
+        <param name="deliverableID">${deliverableID}</param> 
       </result>
-     
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>     
     </action>
     
     
     <!-- Publication -->
     <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.publications.PublicationAction">
       <interceptor-ref name="editPublicationStack" />
-
-     
-  
       <result name="input">/WEB-INF/crp/views/publications/publication.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/publication</param>
+        <param name="edit">true</param> 
         <param name="deliverableID">${deliverable.id}</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     

@@ -100,6 +100,9 @@
         <property name="newPartnershipsPlanned" type="string">
             <column name="new_partnerships_planned" length="65535" />
         </property>
+        <property name="partnerOverall" type="string">
+            <column name="partner_overall" length="65535" />
+        </property>
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
           <column name="created_by" />
         </many-to-one>

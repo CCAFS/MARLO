@@ -112,15 +112,23 @@ public class Permission {
   public static final String PROJECT_CASE_STUDY_EDIT_PERMISSION = "crp:{0}:project:{1}:caseStudies:canEdit";
   public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities";
   public static final String PROJECT_EXPECTED_STUDIES_BASE_PERMISSION = "crp:{0}:project:{1}:expectedStudies";
+  public static final String PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION = "crp:{0}:project:{1}:expectedStudies:canEdit";
+
+  public static final String STUDIES_BASE_PERMISSION = "crp:{0}:studies:{1}";
+  public static final String STUDIES_EDIT_PERMISSION = "crp:{0}:studies:{1}:canEdit";
+
+  public static final String PROJECT_INNOVATIONS_BASE_PERMISSION = "crp:{0}:project:{1}:innovations";
+  public static final String PROJECT_INNOVATIONS_EDIT_PERMISSION = "crp:{0}:project:{1}:innovations:canEdit";
 
   public static final String PROJECT_FUNDING_SOURCE_BASE_PERMISSION = "crp:{0}:fundingSource:{1}:canEdit";
   public static final String PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION = "crp:{0}:fundingSource:{1}:budget";
   public static final String PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION = "crp:{0}:fundingSource:budget";
 
 
-  public static final String PUBLICATION_ADD = "crp:{0}:publication:add";
-  public static final String PUBLICATION_INSTITUTION = "crp:{0}:publication:{1}:*";
   public static final String PUBLICATION_FULL_PERMISSION = "crp:{0}:publication:*";
+  public static final String PUBLICATION_PERMISSION = "crp:{0}:publication:{1}:*";
+
+  public static final String PUBLICATION_ADD = "crp:{0}:publication:add";
   public static final String PUBLICATION_BASE_INSTITUTION = "crp:{0}:publication:{1}";
   public static final String PUBLICATION_BASE_FULL_PERMISSION = "crp:{0}:publication";
 

@@ -85,7 +85,6 @@ public class RejectPartnerRequestAction extends BaseAction {
         this.sendRejectedNotficationEmail(partnerRequest);
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       success = false;
     }
 
@@ -116,7 +115,6 @@ public class RejectPartnerRequestAction extends BaseAction {
       sendNotification = Boolean.valueOf(
         StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       success = false;
     }
   }

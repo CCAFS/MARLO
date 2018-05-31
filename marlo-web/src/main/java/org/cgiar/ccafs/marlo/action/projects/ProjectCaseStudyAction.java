@@ -118,6 +118,8 @@ public class ProjectCaseStudyAction extends BaseAction {
   private PhaseManager phaseManager;
   private String transaction;
 
+  private CaseStudy caseStudyDB;
+
   @Inject
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
     GlobalUnitManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
@@ -356,11 +358,14 @@ public class ProjectCaseStudyAction extends BaseAction {
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive() && cs.isActive())
-        .collect(Collectors.toList()).get(0).getProject().getId();
+      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive()).collect(Collectors.toList()).get(0)
+        .getProject().getId();
     }
 
     project = projectManager.getProjectById(projectID);
+
+
+    caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CASE_STUDY_BASE_PERMISSION, params));
@@ -406,7 +411,6 @@ public class ProjectCaseStudyAction extends BaseAction {
 
         FileManager.copyFile(file, this.getCaseStudyPath() + fileFileName);
         LOG.info("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
-        System.out.println("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
 
       }
 

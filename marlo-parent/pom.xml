@@ -59,6 +59,7 @@
 		<aspectj.version>1.8.10</aspectj.version>
 		<springfox-swagger2.version>2.7.0</springfox-swagger2.version>
 		<quartz.version>2.1.5</quartz.version>
+		<commons-validator>1.4.0</commons-validator>
 	</properties>
 	<developers>
 		<developer>
@@ -569,6 +570,11 @@
 				<groupId>net.gpedro.integrations.slack</groupId>
 				<artifactId>slack-webhook</artifactId>
 				<version>${slack.webhook.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>${commons-validator}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

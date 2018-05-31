@@ -72,6 +72,14 @@ public interface LiaisonUserDAO {
   public LiaisonUser findByUser(long id, long crpID);
 
   /**
+   * This method gets a list of liaisonUser object by a given user identifier.
+   * 
+   * @param id is the user identifier.
+   * @return a List of LiaisonUser object.
+   */
+  List<LiaisonUser> findLiasonUsersByUser(long id, long crpID);
+
+  /**
    * This method saves the information of the given liaisonUser
    * 
    * @param liaisonUser - is the liaisonUser object with the new information to be added/updated.
