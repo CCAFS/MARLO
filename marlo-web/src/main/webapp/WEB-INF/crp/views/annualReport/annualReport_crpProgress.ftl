@@ -48,27 +48,12 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
+            <h4 class="sectionSubTitle">SLOs</h4>
+            
             [#-- Overall CRP progress towards SLOs --]
             <div class="form-group">
               [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="" helpIcon=false required=true editable=editable /]
             </div>
-            
-            [#-- Summaries of outcome case studies --]
-            <div class="form-group">
-              [@customForm.textArea name="${customName}.summaries" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
-            </div>
-          
-            [#-- Flagships - Synthesis  --]
-            [#if PMU]
-            <div class="form-group">
-              <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
-              <div class="viewMoreSyntesis-block" >
-                [@tableCRPProgressMacro list=flagshipCrpProgress /]
-                <div class="viewMoreSyntesis closed"></div>
-              </div>
-            </div>
-            [/#if]
-            
             <hr />
             
             [#-- Table A-1: Evidence on progress towards the SLOs (sphere of interest)  --]
@@ -106,7 +91,23 @@
             </div>
             [/#if]
             
-            <hr />
+            <h4 class="sectionSubTitle">Outcomes</h4>
+            
+            [#-- Summaries of outcome case studies --]
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.summaries" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
+            </div>
+          
+            [#-- Flagships - Synthesis  --]
+            [#if PMU]
+            <div class="form-group">
+              <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
+              <div class="viewMoreSyntesis-block" >
+                [@tableCRPProgressMacro list=flagshipCrpProgress /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
+            </div>
+            [/#if]
             
             [#-- Table A-2: List of New Outcome Case Studies from This Reporting Year (Sphere of Influence)  --]
             <div class="form-group">
@@ -243,12 +244,12 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#local crpProgram = (item.reportSynthesisCrpProgress.reportSynthesis.liaisonInstitution.crpProgram)!false]
             <tr>
-              <td> 
-              <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>              
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if false] [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>              
+              <td>[#if item.srfSloIndicatorTarget??] ${item.srfSloIndicatorTarget.narrative} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.birefSummary?has_content)!false]${item.birefSummary}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.additionalContribution?has_content)!false]${item.additionalContribution}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
             </tr>
           [/#list]
         [#else]
