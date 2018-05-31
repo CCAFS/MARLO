@@ -58,14 +58,17 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
   private Set<ReportSynthesisCrpProgressStudy> reportSynthesisCrpProgressStudies =
     new HashSet<ReportSynthesisCrpProgressStudy>(0);
 
+
   private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets =
     new HashSet<ReportSynthesisCrpProgressTarget>(0);
 
-  private List<ReportSynthesisCrpProgressTarget> targets;
 
+  private List<ReportSynthesisCrpProgressTarget> sloTargets;
 
   private List<ReportSynthesisCrpProgressStudy> plannedStudies;
+
   private String plannedStudiesValue;
+
 
   private List<ProjectExpectedStudy> expectedStudies;
 
@@ -128,11 +131,9 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     return modifiedBy;
   }
 
-
   public String getOverallProgress() {
     return overallProgress;
   }
-
 
   public List<ReportSynthesisCrpProgressStudy> getPlannedStudies() {
     return plannedStudies;
@@ -159,6 +160,11 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
   }
 
 
+  public List<ReportSynthesisCrpProgressTarget> getSloTargets() {
+    return sloTargets;
+  }
+
+
   /**
    * @return an array of integers.
    */
@@ -178,11 +184,6 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
 
   public String getSummaries() {
     return summaries;
-  }
-
-
-  public List<ReportSynthesisCrpProgressTarget> getTargets() {
-    return targets;
   }
 
 
@@ -210,6 +211,7 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -234,10 +236,10 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     this.overallProgress = overallProgress;
   }
 
-
   public void setPlannedStudies(List<ReportSynthesisCrpProgressStudy> plannedStudies) {
     this.plannedStudies = plannedStudies;
   }
+
 
   public void setPlannedStudiesValue(String plannedStudiesValue) {
     this.plannedStudiesValue = plannedStudiesValue;
@@ -257,14 +259,13 @@ public class ReportSynthesisCrpProgress implements java.io.Serializable, IAuditL
     this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
   }
 
-
-  public void setSummaries(String summaries) {
-    this.summaries = summaries;
+  public void setSloTargets(List<ReportSynthesisCrpProgressTarget> sloTargets) {
+    this.sloTargets = sloTargets;
   }
 
 
-  public void setTargets(List<ReportSynthesisCrpProgressTarget> targets) {
-    this.targets = targets;
+  public void setSummaries(String summaries) {
+    this.summaries = summaries;
   }
 
 

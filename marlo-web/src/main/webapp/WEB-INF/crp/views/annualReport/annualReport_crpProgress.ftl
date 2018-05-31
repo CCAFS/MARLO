@@ -79,9 +79,9 @@
               
               <div class="block-selectedSLOs">
                 <div class="form-group sloTargetsList">              
-                  [#if reportSynthesis.reportSynthesisCrpProgress.targets?has_content]
-                    [#list reportSynthesis.reportSynthesisCrpProgress.targets as slo]
-                      [@sloTargetMacro name="${customName}.targets" element=slo index=slo_index /]
+                  [#if reportSynthesis.reportSynthesisCrpProgress.sloTargets?has_content]
+                    [#list reportSynthesis.reportSynthesisCrpProgress.sloTargets as slo]
+                      [@sloTargetMacro name="${customName}.sloTargets" element=slo index=slo_index /]
                     [/#list]
                   [#else]
                     [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
@@ -133,7 +133,7 @@
     </div>
     
     [#-- Templates --]
-    [@sloTargetMacro name="${customName}.targets" element={} index=-1 isTemplate=true /]
+    [@sloTargetMacro name="${customName}.sloTargets" element={} index=-1 isTemplate=true /]
   
   [/#if]
 </section>
@@ -295,7 +295,7 @@
 [/#macro]
 
 [#macro sloTargetMacro name element index=-1 isTemplate=false]
-  [#local customName = "${name}.[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   [#local customClass = "sloTarget" /]
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]

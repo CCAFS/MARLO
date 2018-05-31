@@ -182,6 +182,11 @@ public class ReportSynthesisCrpProgressTarget implements java.io.Serializable, I
     this.srfSloIndicatorTarget = srfSloIndicatorTarget;
   }
 
+  @Override
+  public String toString() {
+    return "ReportSynthesisCrpProgressTarget [id=" + id + "]";
+  }
+
 
 }
 
