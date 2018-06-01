@@ -194,14 +194,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
           canEdit = false;
         }
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
-
-          || project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-          canEdit = false;
-          baseAction.setEditStatus(true);
-        }
         if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
           .equals(APConstants.REPORTING)
           && project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {

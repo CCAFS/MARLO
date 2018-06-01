@@ -63,7 +63,7 @@ public class DeliverableIntellectualAssetMySQLDAO extends AbstractMarloDAO<Deliv
 
   @Override
   public List<DeliverableIntellectualAsset> findAll() {
-    String query = "from " + DeliverableIntellectualAsset.class.getName() + " where is_active=1";
+    String query = "from " + DeliverableIntellectualAsset.class.getName();
     List<DeliverableIntellectualAsset> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

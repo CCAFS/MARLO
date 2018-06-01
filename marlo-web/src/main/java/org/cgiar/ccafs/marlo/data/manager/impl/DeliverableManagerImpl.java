@@ -140,7 +140,8 @@ public class DeliverableManagerImpl implements DeliverableManager {
       .collect(Collectors.toList());
     for (DeliverableInfo deliverableInfo : deliverablesInfo) {
       deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
-      if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+      if (deliverableInfo.getCrpClusterKeyOutput() != null
+        && deliverableInfo.getCrpClusterKeyOutput().getId() != null) {
         CrpClusterKeyOutput crpClusterKeyOutput =
           crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(

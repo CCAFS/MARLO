@@ -42,6 +42,9 @@
 			cascade="save-update"></one-to-one>
 		<one-to-one name="reportSynthesisRisk"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk" cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisCrossCuttingDimension"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension"
+			cascade="save-update"></one-to-one>
 		<set name="sectionStatuses" table="section_statuses" inverse="true"
 			lazy="true" fetch="select">
 			<key>

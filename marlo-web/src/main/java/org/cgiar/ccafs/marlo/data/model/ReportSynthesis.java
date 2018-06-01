@@ -50,14 +50,19 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private ReportSynthesisCrpProgress reportSynthesisCrpProgress;
 
+
   @Expose
   private ReportSynthesisFinancialSummary reportSynthesisFinancialSummary;
+
 
   @Expose
   private ReportSynthesisGovernance reportSynthesisGovernance;
 
   @Expose
   private ReportSynthesisRisk reportSynthesisRisk;
+
+  @Expose
+  private ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -115,15 +120,18 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
-
   public Phase getPhase() {
     return phase;
+  }
+
+
+  public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
+    return reportSynthesisCrossCuttingDimension;
   }
 
 
@@ -171,6 +179,7 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -193,6 +202,11 @@ public class ReportSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  public void
+    setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
+    this.reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimension;
   }
 
   public void setReportSynthesisCrpProgress(ReportSynthesisCrpProgress reportSynthesisCrpProgress) {
