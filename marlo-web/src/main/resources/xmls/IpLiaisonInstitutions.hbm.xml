@@ -45,7 +45,7 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport" />
     </set>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" />
 		</property>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"

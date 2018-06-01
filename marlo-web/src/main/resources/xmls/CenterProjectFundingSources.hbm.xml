@@ -11,7 +11,7 @@
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
             <column name="created_by" />
         </many-to-one>
         <many-to-one name="centerFundingSyncType" class="org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType" fetch="select">
@@ -65,7 +65,7 @@
         <property name="autoFill" type="boolean">
             <column name="auto_fill" />
         </property>
-        <property name="activeSince" type="timestamp">
+        <property name="activeSince" type="timestamp" update="false">
             <column name="active_since" length="19" />
         </property>
         <property name="modificationJustification" type="string">
