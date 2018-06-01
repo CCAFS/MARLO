@@ -786,7 +786,8 @@ public class CrpProgressAction extends BaseAction {
           .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
+              && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
               studiesList.add(projectExpectedStudy);
             }
           }
@@ -806,7 +807,8 @@ public class CrpProgressAction extends BaseAction {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
             if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
               if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
+                if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
+                  && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
                   studiesList.add(projectExpectedStudy);
                   break;
                 }

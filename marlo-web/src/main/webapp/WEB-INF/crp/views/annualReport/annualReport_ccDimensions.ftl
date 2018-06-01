@@ -62,7 +62,10 @@
             [#-- Gender Synthesis Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableGender" list=flagshipCCDimensions columns=["genderDescription","genderLessons"] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableFlagshipSynthesis tableName="tableGender" list=flagshipCCDimensions columns=["genderDescription","genderLessons"] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
             
@@ -81,7 +84,10 @@
             [#-- Youth Synthesis Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableYouth" list=flagshipCCDimensions columns=["youthDescription","youthLessons"] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableFlagshipSynthesis tableName="tableYouth" list=flagshipCCDimensions columns=["youthDescription","youthLessons"] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
             
@@ -95,7 +101,10 @@
             [#-- Other Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableOther" list=flagshipCCDimensions columns=["otherAspects"] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableFlagshipSynthesis tableName="tableOther" list=flagshipCCDimensions columns=["otherAspects"] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
             
@@ -109,7 +118,10 @@
             [#-- Capdev Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableCapDev" list=flagshipCCDimensions columns=["capDev"] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableFlagshipSynthesis tableName="tableCapDev" list=flagshipCCDimensions columns=["capDev"] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
             
