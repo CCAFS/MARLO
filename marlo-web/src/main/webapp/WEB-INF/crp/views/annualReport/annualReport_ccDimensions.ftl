@@ -4,7 +4,10 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -353,15 +356,19 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-            [#local item = (item.projectInnovation)!item]
+            [#if isPMU]
+              [#local element = item.projectInnovation ]
+            [#else]
+              [#local element = item ]
+            [/#if]
             [#local customName = "${name}" /]
-            [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(element.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             <tr>
-              <td> 
+              <td>
                 [#-- Title --]
-                <a href="${URL}" target="_blank">[#if ((item.projectExpectedStudyInfo.title)?has_content)!false] ${item.projectExpectedStudyInfo.title}[#else]Untitled[/#if]</a>
+                <a href="${URL}" target="_blank">[#if ((element.projectInnovationInfo.title)?has_content)!false] ${element.projectInnovationInfo.title}[#else]Untitled[/#if]</a>
                 [#-- Project ID --]
-                [#if (item.project.id??)!false]<br /><i style="opacity:0.5">(From Project P${(item.project.id)!})</i> [/#if]
+                [#if (element.project.id??)!false]<br /><i style="opacity:0.5">(From Project P${(element.project.id)!})</i> [/#if]
                 [#-- Flagships --]
                 [#if isPMU]
                   <div class="clearfix"></div>
@@ -370,33 +377,41 @@
                   [/#list]
                 [/#if]
               </td>
+              [#-- Stage of Innovation --]
               <td>
-                [#if false]
+                [#if (element.projectInnovationInfo.repIndStageInnovation?has_content)!false]
+                  ${element.projectInnovationInfo.repIndStageInnovation.name}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Degree of Innovation --]
               <td>
-                [#if false]
+                [#if (element.projectInnovationInfo.repIndDegreeInnovation?has_content)!false]
+                  ${element.projectInnovationInfo.repIndDegreeInnovation.name}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Contribution of CRP --]
               <td>
-                [#if false]
+                [#if (element.projectInnovationInfo.repIndContributionOfCrp?has_content)!false]
+                  ${element.projectInnovationInfo.repIndContributionOfCrp.name}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Geographic Scope --]
               <td>
-                [#if false]
+                [#if (element.projectInnovationInfo.repIndGeographicScope?has_content)!false]
+                  ${element.projectInnovationInfo.repIndGeographicScope.name}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(item.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(item.id))!false cssClass="" /]
+                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(element.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
@@ -429,15 +444,19 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-            [#local item = (item.deliverableIntellectualAsset)!item]
+            [#if isPMU]
+              [#local element = item.deliverableIntellectualAsset ]
+            [#else]
+              [#local element = item ]
+            [/#if]
             [#local customName = "${name}" /]
-            [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(element.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             <tr>
-              <td> 
+              <td>
                 [#-- Title --]
-                <a href="${URL}" target="_blank">[#if ((item.projectExpectedStudyInfo.title)?has_content)!false] ${item.projectExpectedStudyInfo.title}[#else]Untitled[/#if]</a>
+                <a href="${URL}" target="_blank">[#if ((element.title)?has_content)!false] ${element.title}[#else]Untitled[/#if]</a>
                 [#-- Project ID --]
-                [#if (item.project.id??)!false]<br /><i style="opacity:0.5">(From Project P${(item.project.id)!})</i> [/#if]
+                [#if (element.deliverable.id??)!false]<br /><i style="opacity:0.5">(From Deliverable D${(element.deliverable.id)!})</i> [/#if]
                 [#-- Flagships --]
                 [#if isPMU]
                   <div class="clearfix"></div>
@@ -446,45 +465,60 @@
                   [/#list]
                 [/#if]
               </td>
-              <td>
-                [#if false]
+              [#-- Year reported --]
+              <td class="text-center">
+                [#local dInfo = (element.deliverable.deliverableInfo)!{}]
+                [#if ((dInfo.newExpectedYear?has_content)!false) && (dInfo.newExpectedYear != -1)]
+                  ${dInfo.newExpectedYear} <small>(Extended)</small>
+                [#elseif ((dInfo.year?has_content)!false) && (dInfo.year != -1)]
+                  ${dInfo.year} 
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Applicant(s) / owner(s) (Center or partner) --]
               <td>
-                [#if false]
+                [#if (element.applicant?has_content)!false]
+                  ${element.applicant}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Type (Patent or PVP) --]
               <td>
-                [#if false]
+                [#if (element.type?has_content)!false]
+                  ${(element.type == 1)?string('Patent', 'PVP')}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Additional Information --]
               <td>
-                [#if false]
+                [#if (element.additionalInformation?has_content)!false]
+                  ${element.additionalInformation}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Link or PDF of published application/ registration --]
               <td>
-                [#if false]
+                [#if (element.link?has_content)!false]
+                  ${element.link}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
+              [#-- Public communication relevant to the application/registration --]
               <td>
-                [#if false]
+                [#if (element.publicCommunication?has_content)!false]
+                  ${element.publicCommunication}
                 [#else]
                   <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(item.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(item.id))!false cssClass="" /]
+                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(element.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
