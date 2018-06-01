@@ -45,7 +45,7 @@
       "namespace": "/projects",
       "action": "${crpSession}/OutcomesContributionsSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Planning" ]
+      "cycles": [ "Planning","Reporting" ]
     },
     { "active": true,
       "available": true,
