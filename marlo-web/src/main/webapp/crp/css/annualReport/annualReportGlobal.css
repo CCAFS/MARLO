@@ -78,7 +78,7 @@ table ul {
 }
 
 form .form-group.margin-panel {
-  margin-bottom: 40px;
+  /* margin-bottom: 40px; */
 }
 
 .table-border {
@@ -256,4 +256,21 @@ table.financial-report .row-title{
 
 .chartBox.loaded {
   background: #fff;
+}
+
+.numberBox {
+  font-family: Roboto;
+}
+
+.numberBox label {
+  font-size: 1.1em;
+  font-weight:  normal;
+}
+
+.numberBox span {
+  font-size: 2em;
+}
+
+#chart1 {
+  height: 300px;
 }
