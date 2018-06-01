@@ -134,8 +134,9 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
 
     if (deliverableIntellectualAssetManager.findAll() != null) {
       List<DeliverableIntellectualAsset> intellectualAssets =
-        new ArrayList<>(deliverableIntellectualAssetManager.findAll().stream()
-          .filter(ps -> ps.getDeliverable().isActive() && ps.getPhase() != null && ps.getPhase().getId() == phaseID)
+        new ArrayList<>(deliverableIntellectualAssetManager.findAll()
+          .stream().filter(ps -> ps.getDeliverable().isActive() && ps.getPhase() != null
+            && ps.getPhase().getId() == phaseID && ps.getHasPatentPvp() != null && ps.getHasPatentPvp())
           .collect(Collectors.toList()));
 
       for (DeliverableIntellectualAsset intellectualAsset : intellectualAssets) {
