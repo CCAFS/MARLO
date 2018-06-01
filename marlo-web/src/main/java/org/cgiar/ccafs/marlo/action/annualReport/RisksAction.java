@@ -43,6 +43,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -357,6 +358,48 @@ public class RisksAction extends BaseAction {
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION, params));
+  }
+
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+      ReportSynthesisRisk reportManagementGovernancekDB =
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisRisk();
+
+      reportManagementGovernancekDB.setBriefSummary(reportSynthesis.getReportSynthesisRisk().getBriefSummary());
+      reportManagementGovernancekDB = reportSynthesisRiskManager.saveReportSynthesisRisk(reportManagementGovernancekDB);
+
+
+      List<String> relationsName = new ArrayList<>();
+      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+      reportSynthesis.setModifiedBy(this.getCurrentUser());
+      reportSynthesis.setActiveSince(new Date());
+
+      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+
+      Path path = this.getAutoSaveFilePath();
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
