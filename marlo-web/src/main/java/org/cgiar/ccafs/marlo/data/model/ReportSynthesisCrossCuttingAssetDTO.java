@@ -15,34 +15,37 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.util.List;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public enum ReportSynthesisSectionStatusEnum {
+public class ReportSynthesisCrossCuttingAssetDTO implements java.io.Serializable {
 
 
-  CRP_PROGRESS("crpProgress"), GOVERNANCE("governance"), FINANCIAL_SUMMARY("financial"), RISKS("risks"),
-  CROSS_CUTTING("ccDimensions");
+  private static final long serialVersionUID = 2863794067938455253L;
 
-  public static ReportSynthesisSectionStatusEnum value(String status) {
-    ReportSynthesisSectionStatusEnum[] lst = ReportSynthesisSectionStatusEnum.values();
-    for (ReportSynthesisSectionStatusEnum reportSynthesisSectionStatusEnum : lst) {
-      if (reportSynthesisSectionStatusEnum.getStatus().equalsIgnoreCase(status)) {
-        return reportSynthesisSectionStatusEnum;
-      }
-    }
-    return null;
+
+  private List<LiaisonInstitution> liaisonInstitutions;
+
+
+  private DeliverableIntellectualAsset deliverableIntellectualAsset;
+
+
+  public DeliverableIntellectualAsset getDeliverableIntellectualAsset() {
+    return deliverableIntellectualAsset;
   }
 
-  private String status;
-
-  private ReportSynthesisSectionStatusEnum(String status) {
-    this.status = status;
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
   }
 
-  public String getStatus() {
-    return status;
+  public void setDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
+    this.deliverableIntellectualAsset = deliverableIntellectualAsset;
+  }
+
+  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
   }
 
 }

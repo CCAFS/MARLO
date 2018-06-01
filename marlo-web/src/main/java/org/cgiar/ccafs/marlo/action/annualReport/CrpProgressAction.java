@@ -123,7 +123,6 @@ public class CrpProgressAction extends BaseAction {
   // Variables
   private String transaction;
 
-
   private ReportSynthesis reportSynthesis;
 
   private Long liaisonInstitutionID;
@@ -145,6 +144,7 @@ public class CrpProgressAction extends BaseAction {
   private List<ReportSynthesisCrpProgressTarget> fpSynthesisTable;
 
   private List<ReportSynthesisCrpProgress> flagshipCrpProgress;
+
 
   @Inject
   public CrpProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -222,7 +222,7 @@ public class CrpProgressAction extends BaseAction {
       for (ReportSynthesisCrpProgressStudy reportStudy : crpProgressDB.getReportSynthesisCrpProgressStudies().stream()
         .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
         if (!selectedPs.contains(reportStudy.getProjectExpectedStudy().getId())) {
-          reportSynthesisCrpProgressManager.deleteReportSynthesisCrpProgress(reportStudy.getId());
+          reportSynthesisCrpProgressStudyManager.deleteReportSynthesisCrpProgressStudy(reportStudy.getId());
         }
       }
 
