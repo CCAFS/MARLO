@@ -50,24 +50,24 @@
           <div class="borderBox">
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorI3.title" /]</h4>
             
-            [#-- Chart 1 --]
-            [#assign chartData = [
-                {"name":"CGIAR",                              "value": "89"},
-                {"name":"Academic and Research",              "value": "6"},
-                {"name":"Development organizations",          "value": "7"},
-                {"name":"NARES/NARS",                         "value": "45"},
-                {"name":"CBOs and farmers' groups",           "value": "56"},
-                {"name":"Private sector",                     "value": "5"},
-                {"name":"Foundations and Financial Institutions", "value": "2"},
-                {"name":"Government",                         "value": "7"},
-                {"name":"Bilateral and Donor governments",    "value": "7"},
-                {"name":"Multilateral",                       "value": "45"},
-                {"name":"Other",                              "value": "23"}
-              ] 
-            /]
             <div class="form-group row">
               <div class="col-md-12">
+                [#-- Chart 1 --]
                 <div id="chart1" class="chartBox simpleBox">
+                  [#assign chartData = [
+                      {"name":"CGIAR",                              "value": "89"},
+                      {"name":"Academic and Research",              "value": "6"},
+                      {"name":"Development organizations",          "value": "7"},
+                      {"name":"NARES/NARS",                         "value": "45"},
+                      {"name":"CBOs and farmers' groups",           "value": "56"},
+                      {"name":"Private sector",                     "value": "5"},
+                      {"name":"Foundations and Financial Institutions", "value": "2"},
+                      {"name":"Government",                         "value": "7"},
+                      {"name":"Bilateral and Donor governments",    "value": "7"},
+                      {"name":"Multilateral",                       "value": "45"},
+                      {"name":"Other",                              "value": "23"}
+                    ] 
+                  /]
                   <ul class="chartData" style="display:none">
                     <li><span>[@s.text name="${customLabel}.indicatorI3.chart1.0" /]</span><span>[@s.text name="${customLabel}.indicatorI3.chart1.1" /]</span></li>
                     [#list chartData as data]
