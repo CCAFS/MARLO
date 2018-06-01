@@ -41,15 +41,15 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
         <div class="borderBox">
-        
           [#-- Describe any major changes to management, governance arrangements and practices --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            [#if PMU]
+              [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            [#else]
+              <label for="">[@customForm.text name="${customLabel}.describe" readText=true /]</label>:
+              <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+            [/#if]
           </div>
-          
-          [#if PMU]
-            ${(pmuText)!}
-          [/#if]
         </div>
         [#-- Section Buttons & hidden inputs--]
         [#if PMU]
