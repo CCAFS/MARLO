@@ -47,7 +47,12 @@
           
             [#-- Brief summary of any encountered risks including any mitigation measures taken --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#if PMU]
+                [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#else]
+                <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
+                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+              [/#if]
             </div>
           
           </div>
