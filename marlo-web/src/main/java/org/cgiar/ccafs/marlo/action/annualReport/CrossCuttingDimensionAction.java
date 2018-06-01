@@ -258,7 +258,8 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
         // Setup deliverable intellectual assets
         if (deliverable.getDeliverableIntellectualAssets() != null
-          && !deliverable.getDeliverableIntellectualAssets().isEmpty()) {
+          && !deliverable.getDeliverableIntellectualAssets().isEmpty()
+          && deliverable.getDeliverableIntellectualAssets().size() > 0) {
           DeliverableIntellectualAsset deliverableIntellectualAsset = deliverable.getDeliverableIntellectualAssets()
             .stream().filter(i -> i.isActive() && i.getHasPatentPvp() != null && i.getHasPatentPvp())
             .collect(Collectors.toList()).get(0);
