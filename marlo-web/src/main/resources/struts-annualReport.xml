@@ -177,7 +177,7 @@
 		<!--  Control - Common reporting indicators  -->
 		<action name="{crp}/control" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport/annualReport_control.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/control</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
