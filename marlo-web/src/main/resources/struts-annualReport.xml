@@ -136,7 +136,7 @@
     </action>
     
 		<!--  3.2 Management of Risks to Your CRP  -->
-		<action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
+		<action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.RisksAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_risks.ftl</result>
       <result name="success" type="redirectAction">
