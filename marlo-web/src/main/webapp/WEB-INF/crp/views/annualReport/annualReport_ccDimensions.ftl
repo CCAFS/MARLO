@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis.reportSynthesisDimesions" /]
+[#assign customName= "reportSynthesis.reportSynthesisCrossCuttingDimension" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
@@ -48,18 +48,18 @@
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.genderTitle" /]</h5>
             [#-- Describe any important CRP research findings, capacity development or outcomes in 2017 related to Gender issues. --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.describeGenderIssues" i18nkey="${customLabel}.describeGenderIssues" help="${customLabel}.describeGenderIssues.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.genderDescription" i18nkey="${customLabel}.describeGenderIssues" help="${customLabel}.describeGenderIssues.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Please briefly highlight any lessons and implications for your future work on Gender. --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.lessonsGender" i18nkey="${customLabel}.lessonsGender" help="${customLabel}.lessonsGender.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.genderLessons" i18nkey="${customLabel}.lessonsGender" help="${customLabel}.lessonsGender.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Gender Synthesis Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableGender" list=[{},{},{},{}] columns=["column1","column2"] /]
+              [@tableFlagshipSynthesis tableName="tableGender" list=flagshipCCDimensions columns=["genderDescription","genderLessons"] /]
             </div>
             [/#if]
             
@@ -67,18 +67,18 @@
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youthTitle" /]</h5>
             [#-- Describe any important CRP research findings, capacity development or outcomes in 2017 related to Youth issues. --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.describeYouthIssues" i18nkey="${customLabel}.describeYouthIssues" help="${customLabel}.describeYouthIssues.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.youthDescription" i18nkey="${customLabel}.describeYouthIssues" help="${customLabel}.describeYouthIssues.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Please briefly highlight any lessons and implications for your future work on Youth. --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.lessonsYouth" i18nkey="${customLabel}.lessonsYouth" help="${customLabel}.lessonsYouth.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.youthLessons" i18nkey="${customLabel}.lessonsYouth" help="${customLabel}.lessonsYouth.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Youth Synthesis Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableYouth" list=[{},{},{},{}] columns=["column1","column2"] /]
+              [@tableFlagshipSynthesis tableName="tableYouth" list=flagshipCCDimensions columns=["youthDescription","youthLessons"] /]
             </div>
             [/#if]
             
@@ -86,13 +86,13 @@
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.otherAspectsTitle" /]</h5>
             [#-- Add information on other aspects of equity and your CRP’s contribution to “leaving no-one behind” --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.infoOtherAspects" i18nkey="${customLabel}.infoOtherAspects" help="${customLabel}.infoOtherAspects.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.otherAspects" i18nkey="${customLabel}.infoOtherAspects" help="${customLabel}.infoOtherAspects.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Other Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableOther" list=[{},{},{},{}] columns=["column1"] /]
+              [@tableFlagshipSynthesis tableName="tableOther" list=flagshipCCDimensions columns=["otherAspects"] /]
             </div>
             [/#if]
             
@@ -100,13 +100,13 @@
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDevTitle" /]</h5>
             [#-- Please summarize key achievements and learning points in Capacity Development this year--]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.infoCapDev" i18nkey="${customLabel}.infoCapDev" help="${customLabel}.infoCapDev.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.capDev" i18nkey="${customLabel}.infoCapDev" help="${customLabel}.infoCapDev.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Capdev Table--]
             [#if PMU]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableCapDev" list=[{},{},{},{}] columns=["column1"] /]
+              [@tableFlagshipSynthesis tableName="tableCapDev" list=flagshipCCDimensions columns=["capDev"] /]
             </div>
             [/#if]
             
@@ -130,7 +130,7 @@
             [#-- Table D-2: List of CRP Innovations in 2017 (From indicator #C1 in Table D-1)  --]
             <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableD2Title" param="${currentCycleYear}" /]</h4>
             <div class="form-group">
-              [@tableD2InnovationsList name="${customName}.innovationsValue" list=[{},{},{}]  isPMU=PMU /]
+              [@tableD2InnovationsList name="${customName}.innovationsValue" list=innovationsList  isPMU=PMU /]
             </div>
             
             [#-- 1.3.6 Intellectual Assets --]
@@ -145,7 +145,7 @@
             [#-- Table E: Intellectual Assets  --]
             <h4 class="simpleTitle">[@s.text name="${customLabel}.tableETitle" /]</h4>
             <div class="form-group">
-              [@tableEIntellectualAssets name="${customName}.intellectualAssetsValue" list=[{},{},{}]  isPMU=PMU /]
+              [@tableEIntellectualAssets name="${customName}.assetsValue" list=assetsList  isPMU=PMU /]
             </div>
             
           </div>

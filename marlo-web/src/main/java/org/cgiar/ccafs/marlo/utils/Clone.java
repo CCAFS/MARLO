@@ -133,8 +133,8 @@ public class Clone {
      */
 
 
-    String[] model = {"ReportSynthesisFinancialSummary", "ReportSynthesisFinancialSummaryBudget",
-      "ReportSynthesisGovernance", "ReportSynthesisRisk"};
+    String[] model = {"ReportSynthesisCrossCuttingDimension", "ReportSynthesisCrossCuttingDimensionAsset",
+      "ReportSynthesisCrossCuttingDimensionInnovation"};
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
       generateMysqlDao(model[i]);
