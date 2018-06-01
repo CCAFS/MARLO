@@ -130,7 +130,14 @@
             [#-- Table D-2: List of CRP Innovations in 2017 (From indicator #C1 in Table D-1)  --]
             <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableD2Title" param="${currentCycleYear}" /]</h4>
             <div class="form-group">
-              [@tableD2InnovationsList name="${customName}.innovationsValue" list=innovationsList  isPMU=PMU /]
+              [#if flagship]
+                [@tableD2InnovationsList name="${customName}.innovationsValue" list=innovationsList /]
+              [#else]
+                <div class="viewMoreSyntesis-block" >
+                  [@tableD2InnovationsList name="${customName}.innovationsValue" list=flagshipPlannedInnovations  isPMU=PMU /]
+                  <div class="viewMoreSyntesis closed"></div>
+                </div>
+              [/#if]
             </div>
             
             [#-- 1.3.6 Intellectual Assets --]
@@ -145,15 +152,21 @@
             [#-- Table E: Intellectual Assets  --]
             <h4 class="simpleTitle">[@s.text name="${customLabel}.tableETitle" /]</h4>
             <div class="form-group">
-              [@tableEIntellectualAssets name="${customName}.assetsValue" list=assetsList  isPMU=PMU /]
+              [#if flagship]
+                [@tableEIntellectualAssets name="${customName}.assetsValue" list=assetsList  /]
+              [#else]
+                <div class="viewMoreSyntesis-block" >
+                  [@tableEIntellectualAssets name="${customName}.assetsValue" list=flagshipPlannedAssets  isPMU=PMU /]
+                  <div class="viewMoreSyntesis closed"></div>
+                </div>
+              [/#if]
             </div>
             
           </div>
           
           [#-- Section Buttons & hidden inputs--]
-          [#if PMU]
-            [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-          [/#if]
+          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+          
         [/@s.form] 
       </div> 
     </div>
@@ -340,7 +353,7 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-            [#local item = (item.projectExpectedStudy)!item]
+            [#local item = (item.projectInnovation)!item]
             [#local customName = "${name}" /]
             [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             <tr>
@@ -383,7 +396,7 @@
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(item.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(item.id))!false cssClass="" /]
+                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(item.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(item.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
@@ -416,7 +429,7 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-            [#local item = (item.projectExpectedStudy)!item]
+            [#local item = (item.deliverableIntellectualAsset)!item]
             [#local customName = "${name}" /]
             [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             <tr>
@@ -471,7 +484,7 @@
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(item.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(item.id))!false cssClass="" /]
+                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(item.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(item.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
