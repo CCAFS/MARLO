@@ -22,6 +22,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#-- Helptext --]
+[@utils.helpBox name="projectInnovations.help" /]
+
 <section class="container">
   <div class="row">
     [#-- Project Menu --]
