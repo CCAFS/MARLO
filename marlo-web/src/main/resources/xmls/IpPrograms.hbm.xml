@@ -26,7 +26,7 @@
 		<property name="regionId" type="java.lang.Long">
 			<column name="region_id" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
       <column name="active_since" length="19"/>
     </property>
     <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
@@ -79,7 +79,7 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
     </set>
-    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
       <column name="created_by" />
     </many-to-one>
     <property name="active" type="boolean">

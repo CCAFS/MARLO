@@ -26,7 +26,7 @@
 			<column name="project_leader_id" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+			fetch="select" update="false">
 			<column name="created_by" />
 		</many-to-one>
 		<many-to-one name="projectStatus"
@@ -73,7 +73,7 @@
 		<property name="region" type="java.lang.Boolean">
 			<column name="is_region" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" />
 		</property>
 		<property name="syncDate" type="timestamp">
