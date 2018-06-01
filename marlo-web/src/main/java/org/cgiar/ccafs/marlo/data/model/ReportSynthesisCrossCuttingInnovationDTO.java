@@ -15,34 +15,37 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.util.List;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public enum ReportSynthesisSectionStatusEnum {
+public class ReportSynthesisCrossCuttingInnovationDTO implements java.io.Serializable {
 
 
-  CRP_PROGRESS("crpProgress"), GOVERNANCE("governance"), FINANCIAL_SUMMARY("financial"), RISKS("risks"),
-  CROSS_CUTTING("ccDimensions");
+  private static final long serialVersionUID = 3106876601024482717L;
 
-  public static ReportSynthesisSectionStatusEnum value(String status) {
-    ReportSynthesisSectionStatusEnum[] lst = ReportSynthesisSectionStatusEnum.values();
-    for (ReportSynthesisSectionStatusEnum reportSynthesisSectionStatusEnum : lst) {
-      if (reportSynthesisSectionStatusEnum.getStatus().equalsIgnoreCase(status)) {
-        return reportSynthesisSectionStatusEnum;
-      }
-    }
-    return null;
+
+  private List<LiaisonInstitution> liaisonInstitutions;
+
+
+  private ProjectInnovation projectInnovation;
+
+
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
   }
 
-  private String status;
-
-  private ReportSynthesisSectionStatusEnum(String status) {
-    this.status = status;
+  public ProjectInnovation getProjectInnovation() {
+    return projectInnovation;
   }
 
-  public String getStatus() {
-    return status;
+  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setProjectInnovation(ProjectInnovation projectInnovation) {
+    this.projectInnovation = projectInnovation;
   }
 
 }

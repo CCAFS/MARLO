@@ -288,5 +288,8 @@
     <mapping resource="xmls/ReportSynthesisFinancialSummaryBudgets.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisGovernances.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisRisks.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensions.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionInnovations.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionAssets.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
