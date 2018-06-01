@@ -1736,6 +1736,16 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
         }
+        if (deliverable.getDeliverableParticipant() != null) {
+          deliverable.getDeliverableParticipant().setRepIndGeographicScope(null);
+          deliverable.getDeliverableParticipant().setRepIndRegion(null);
+          deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
+          deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
+        }
+        if (deliverable.getIntellectualAsset() != null) {
+          deliverable.getIntellectualAsset().setFillingType(null);
+          deliverable.getIntellectualAsset().setPatentStatus(null);
+        }
       }
 
       try {
