@@ -993,8 +993,7 @@ public class ProjectPartnerAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-        Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 
@@ -1089,7 +1088,6 @@ public class ProjectPartnerAction extends BaseAction {
 
         this.setDraft(false);
 
-        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           project.setPartners(project.getProjectPartners().stream()
             .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
@@ -1217,8 +1215,12 @@ public class ProjectPartnerAction extends BaseAction {
     pcRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PC_ROLE)));
 
     // Getting the list of all institutions
-
-    if (!project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
+    Project projectDb = projectManager.getProjectById(project.getId());
+    Boolean isLeaderEdit = projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader();
+    Boolean isAdministrative = projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative();
+    project.getProjectInfo().setProjectEditLeader(isLeaderEdit);
+    project.getProjectInfo().setAdministrative(isAdministrative);
+    if (!isLeaderEdit) {
       allInstitutions = new ArrayList<>();
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
         .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
@@ -1409,6 +1411,10 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
+      if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
+        && project.getProjectInfo().getPartnerOverall() != null) {
+        projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
+      }
 
       if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
 
