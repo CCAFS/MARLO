@@ -187,10 +187,10 @@ tfoot {
   position: absolute;
   bottom: 0;
   width: 99%;
-  margin: 0 3px;
+  margin: 2px 1px 0 1px;
   cursor: pointer;
-  padding: 23px 0 0px 0;
-  height: 48px;
+  padding: 16px 0 0px 0;
+  height: 43px;
   font-weight: 900;
   text-align: center;
   background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
@@ -200,6 +200,10 @@ tfoot {
   background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 70%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+
+.viewMoreSyntesis.opened{
+  background: none;
 }
 
 .viewMoreSyntesis:hover {
