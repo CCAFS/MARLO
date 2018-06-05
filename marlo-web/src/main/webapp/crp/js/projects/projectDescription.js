@@ -224,7 +224,7 @@ $(document).ready(function() {
 
   $statuses.on('change', function(e) {
     var statusID= $(this).val();
-    if(isStatusCancelled(statusID) || isStatusComplete(statusID) || isStatusExtended(statusID)) {
+    if(isStatusCancelled(statusID) || isStatusExtended(statusID)) {
       $statusDescription.show(400);
     } else {
       $statusDescription.hide(400);

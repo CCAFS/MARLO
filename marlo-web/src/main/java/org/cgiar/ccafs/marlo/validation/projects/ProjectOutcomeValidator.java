@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
@@ -51,6 +52,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
   private final ProjectManager projectManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
   private final CrpMilestoneManager crpMilestoneManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
 
 
   // GlobalUnit Manager
@@ -58,12 +60,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    GlobalUnitManager crpManager, CrpMilestoneManager crpMilestoneManager) {
+    GlobalUnitManager crpManager, CrpMilestoneManager crpMilestoneManager, SrfTargetUnitManager srfTargetUnitManager) {
 
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpManager = crpManager;
     this.crpMilestoneManager = crpMilestoneManager;
+    this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
   private Path getAutoSaveFilePath(ProjectOutcome project, long crpID, BaseAction action) {
@@ -92,6 +95,24 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
+      }
+    }
+
+    if (projectOutcome.getExpectedUnit() != null) {
+      if (projectOutcome.getExpectedUnit().getId() == null
+        || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+        projectOutcome.setExpectedUnit(null);
+      } else {
+        projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+      }
+    }
+
+    if (projectOutcome.getAchievedUnit() != null) {
+      if (projectOutcome.getAchievedUnit().getId() == null
+        || projectOutcome.getAchievedUnit().getId().longValue() == -1) {
+        projectOutcome.setAchievedUnit(null);
+      } else {
+        projectOutcome.setAchievedUnit(projectOutcome.getAchievedUnit());
       }
     }
 
