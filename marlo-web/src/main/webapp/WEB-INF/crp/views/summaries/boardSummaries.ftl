@@ -120,7 +120,7 @@
       "allowPpaPartners": true 
     },
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.reportedDeliverables", 
       "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
