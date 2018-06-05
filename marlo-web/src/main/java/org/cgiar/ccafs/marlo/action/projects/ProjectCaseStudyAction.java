@@ -430,7 +430,7 @@ public class ProjectCaseStudyAction extends BaseAction {
       for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
         // This logic seems wrong. Shouldn't objects with null id be persisted to the database as new objects?
         if (caseStudyProject.getId() == null || caseStudyProject.getId().longValue() == -1) {
-          caseStudyProject.setActive(false);
+          caseStudyProject.setCreated(false);
           caseStudyProject.setCaseStudy(caseStudy);
           // Setting the id to null will create a new instance. -- not sure if the developer knows what they are doing.
           caseStudyProject.setId(null);
