@@ -63,7 +63,7 @@ google.charts.setOnLoadCallback(function() {
       }
   });
 
-// Chart #5
+  // Chart #5
   var $chart5 = $('#chart5');
   var data5 = new google.visualization.arrayToDataTable(getChartDataArray($chart5));
   var chart5 = new google.charts.Bar(document.getElementById($chart5[0].id));

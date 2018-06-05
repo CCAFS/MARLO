@@ -203,6 +203,59 @@
           
           </div>
           
+          [#--  CGIAR Indicator #C3. Number of Direct Participants in CGIAR Activities (Incorporating CGIAR Indicator #C4. Number of People Trained) --]
+          <div class="borderBox">
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC3C4.title" /]</h4>
+            <div class="form-group row">
+              <div class="col-md-3">
+                [#-- Total of participants estimated/counted --]
+                <div id="" class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <span>556</span>
+                </div>
+              </div>
+              <div class="col-md-3">
+                [#-- Percentage of female  estimated/counted --]
+                <div id="" class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <span>556</span>
+                </div>
+              </div>
+              <div class="col-md-3">
+                [#-- Percentage of Youth estimated/counted --]
+                <div id="" class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <span>556</span>
+                </div>
+              </div>
+              <div class="col-md-3">
+                [#-- Formal training estimated/counted --]
+                <div id="" class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <span>556</span>
+                </div>
+              </div>
+            </div>
+            
+            [#-- Projects Activities/Events  --]
+            <div class="form-group">
+              <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.activitiesEventsTable.title" param="${currentCycleYear}"/]</h4>
+              <hr />
+              [@tableGKeyPartnershipsMacro list=[{},{},{},{}] /]
+            </div>
+            
+            [#-- Data --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC3C4.data" help="${customLabel}.indicatorC3C4.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+            
+            [#-- Comments/Analysis --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC3C4.comments" help="${customLabel}.indicatorC3C4.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+          
+          </div>
+          
           [#if PMU]
           [#-- Section Buttons & hidden inputs--]
             [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
