@@ -70,9 +70,10 @@ public interface ProjectLocationDAO {
    * 
    * @param projectId - The project ID
    * @param LocElementId - The locElement ID
+   * @param PhaseID - The current phase
    * @return a ProjectLocation Object.
    */
-  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId);
+  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId, Long phaseId);
 
   /**
    * This method saves the information of the given projectLocation
