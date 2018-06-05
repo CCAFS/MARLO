@@ -26,11 +26,6 @@ public class CaseStudyProject extends MarloBaseEntity implements java.io.Seriali
   public CaseStudyProject() {
   }
 
-  public CaseStudyProject(CaseStudy caseStudy, Project project) {
-    this.caseStudy = caseStudy;
-    this.project = project;
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

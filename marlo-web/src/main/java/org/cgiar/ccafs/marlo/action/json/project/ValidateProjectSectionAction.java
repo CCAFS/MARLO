@@ -304,8 +304,8 @@ public class ValidateProjectSectionAction extends BaseAction {
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
-        List<ProjectExpectedStudy> studies =
-          project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+          .filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
         for (ProjectExpectedStudy projectExpectedStudy : studies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
             cycle, this.getActualPhase().getYear(), sectionName);
