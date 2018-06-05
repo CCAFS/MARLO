@@ -43,7 +43,7 @@
 		</property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select" update="false">
-			<column name="created_by" not-null="false" />
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		
 		<set name="deliverablePartnerships" table="deliverable_partnerships"

@@ -18,7 +18,7 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="collaborationNature" type="string">
             <column name="collaboration_nature" length="16777215" />
@@ -33,7 +33,7 @@
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="16777215" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>

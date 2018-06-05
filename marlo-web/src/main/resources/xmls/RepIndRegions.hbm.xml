@@ -9,7 +9,7 @@
             <generator class="identity" />
         </id>
         <property name="name" type="string">
-            <column name="name" length="65535" />
+            <column name="name" sql-type="TEXT" />
         </property>
         <many-to-one name="subRegion" class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
             <column name="sub_region" />

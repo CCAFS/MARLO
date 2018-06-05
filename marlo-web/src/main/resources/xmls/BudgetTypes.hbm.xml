@@ -12,7 +12,7 @@
             <column name="name" not-null="true" />
         </property>
          <property name="description" type="string">
-            <column name="description" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <set name="projectBudgets" table="project_budgets" inverse="true" lazy="true" fetch="select">
             <key>

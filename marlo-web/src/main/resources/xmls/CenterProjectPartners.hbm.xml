@@ -12,7 +12,7 @@
             <column name="modified_by" />
         </many-to-one>
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
-            <column name="created_by" />
+            <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" not-null="true" />
@@ -24,10 +24,10 @@
             <column name="is_active" not-null="true" />
         </property>
         <property name="activeSince" type="timestamp" update="false">
-            <column name="active_since" length="19" />
+            <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
+            <column name="modification_justification" sql-type="TEXT" />
         </property>
         <set name="projectPartnerPersons" table="center_project_partner_persons" inverse="true" lazy="true" fetch="select">
             <key>

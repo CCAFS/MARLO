@@ -21,13 +21,13 @@
 			<column name="has_patent_pvp" />
 		</property>
 		<property name="applicant" type="string">
-			<column name="applicant" length="65535" />
+			<column name="applicant" sql-type="TEXT" />
 		</property>
 		<property name="type" type="java.lang.Integer">
 			<column name="type" />
 		</property>
 		<property name="title" type="string">
-			<column name="title" length="65535" />
+			<column name="title" sql-type="TEXT" />
 		</property>
 		<many-to-one name="fillingType"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndFillingType" fetch="select">
@@ -41,7 +41,7 @@
 			<column name="patent_type" />
 		</property>
 		<property name="varietyName" type="string">
-			<column name="variety_name" length="65535" />
+			<column name="variety_name" sql-type="TEXT" />
 		</property>
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
@@ -54,7 +54,7 @@
 			<column name="app_reg_number" precision="30" scale="0" />
 		</property>
 		<property name="breederCrop" type="string">
-			<column name="breeder_crop" length="65535" />
+			<column name="breeder_crop" sql-type="TEXT" />
 		</property>
 		<property name="dateFilling" type="date">
 			<column name="date_filling" length="10" />
@@ -66,13 +66,13 @@
 			<column name="date_expiry" length="10" />
 		</property>
 		<property name="additionalInformation" type="string">
-			<column name="additional_information" length="65535" />
+			<column name="additional_information" sql-type="TEXT" />
 		</property>
 		<property name="link" type="string">
-			<column name="link" length="65535" />
+			<column name="link" sql-type="TEXT" />
 		</property>
 		<property name="publicCommunication" type="string">
-			<column name="public_communication" length="65535" />
+			<column name="public_communication" sql-type="TEXT" />
 		</property>
 	</class>
 </hibernate-mapping>

@@ -18,7 +18,7 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="year" type="int">
             <column name="year" not-null="true" />
@@ -27,13 +27,13 @@
             <column name="anual_contribution" length="16777215" />
         </property>
         <property name="briefSummary" type="string">
-            <column name="brief_summary" length="65535" />
+            <column name="brief_summary" sql-type="TEXT" />
         </property>
         <property name="genderContribution" type="string">
             <column name="gender_contribution" length="16777215" />
         </property>
         <property name="summaryGender" type="string">
-            <column name="summary_gender" length="65535" />
+            <column name="summary_gender" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
@@ -42,7 +42,7 @@
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
     </class>
 </hibernate-mapping>

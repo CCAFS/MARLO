@@ -15,7 +15,7 @@
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select" update="false">
-			<column name="created_by" />
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="capacityDevelopment"
 			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
@@ -32,7 +32,7 @@
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 		
 	</class>
