@@ -507,10 +507,6 @@ public class PublicationAction extends BaseAction {
       deliverable = deliverableManager.getDeliverableById(deliverableID);
     }
 
-    if (this.isHttpPost()) {
-      return;
-    }
-
     if (deliverable != null) {
 
 
