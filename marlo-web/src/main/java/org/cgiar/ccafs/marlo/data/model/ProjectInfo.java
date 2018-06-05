@@ -330,14 +330,12 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public Boolean getStatusJustificationRequired() {
     if (status != null) {
-      // Alow for comments when the project is extended, cancelled or complete;
+      // Alow for comments when the project is extended, or cancelled;
       if ((this.status == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))
-        || (this.status == Long.parseLong(ProjectStatusEnum.Cancelled.getStatusId()))
-        || (this.status == Long.parseLong(ProjectStatusEnum.Complete.getStatusId()))) {
+        || (this.status == Long.parseLong(ProjectStatusEnum.Cancelled.getStatusId()))) {
         return true;
       }
     }
-
     return false;
   }
 

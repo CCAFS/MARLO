@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -206,15 +205,13 @@ public class ProjectDescriptionValidator extends BaseValidator {
 
     // Validate Status Justification when is not on-going
     if (project.getProjecInfoPhase(action.getActualPhase()).getStatus() != null
-      && project.getProjecInfoPhase(action.getActualPhase()).getStatus() != Integer
-        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+      && project.getProjecInfoPhase(action.getActualPhase()).getStatusJustificationRequired()) {
       if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getStatusJustification())
         && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getStatusJustification()) <= 100)) {
         action.addMessage(action.getText("project.statusJustification"));
         action.getInvalidFields().put("input-project.projectInfo.statusJustification",
           action.getText(InvalidFieldsMessages.EMPTYLIST));
       }
-
     }
 
   }
