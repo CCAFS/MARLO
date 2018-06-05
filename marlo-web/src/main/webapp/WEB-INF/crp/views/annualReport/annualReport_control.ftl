@@ -210,28 +210,28 @@
               <div class="col-md-3">
                 [#-- Total of participants estimated/counted --]
                 <div id="" class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4.totalParticipants" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
               <div class="col-md-3">
                 [#-- Percentage of female  estimated/counted --]
                 <div id="" class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageFemale" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
               <div class="col-md-3">
                 [#-- Percentage of Youth estimated/counted --]
                 <div id="" class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageYouth" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
               <div class="col-md-3">
                 [#-- Formal training estimated/counted --]
                 <div id="" class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorC3C4." /]</label><br />
+                  <label for="">[@s.text name="${customLabel}.indicatorC3C4.formalTraining" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
@@ -241,19 +241,29 @@
             <div class="form-group">
               <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.activitiesEventsTable.title" param="${currentCycleYear}"/]</h4>
               <hr />
-              [@tableGKeyPartnershipsMacro list=[{},{},{},{}] /]
+              [@tableParticipantsTrainingsMacro list=[{},{},{},{}] /]
             </div>
             
-            [#-- Data --]
+            [#-- Data - Indicator C3 --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC3C4.data" help="${customLabel}.indicatorC3C4.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC3.data" help="${customLabel}.indicatorC3.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
             
-            [#-- Comments/Analysis --]
+            [#-- Comments/Analysis - Indicator C3  --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC3C4.comments" help="${customLabel}.indicatorC3C4.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC3.comments" help="${customLabel}.indicatorC3.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
-          
+            
+            [#-- Data - Indicator C4 --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC4.data" help="${customLabel}.indicatorC4.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+            
+            [#-- Comments/Analysis - Indicator C4  --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC4.comments" help="${customLabel}.indicatorC4.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+            
           </div>
           
           [#if PMU]
@@ -347,6 +357,76 @@
         <th id="tb-type">[@s.text name="${customLabel}.partnershipsTable.partnerType" /]</th>
         <th id="tb-organization-type">[@s.text name="${customLabel}.partnershipsTable.geoScope" /]</th>
         <th id="tb-stage">[@s.text name="${customLabel}.partnershipsTable.mainPartnership" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        <tr>
+          [#-- Title of Innovation --]
+          <td class="tb-id text-center">
+            [#if item.crp?has_content]
+              ${item.title}
+            [#else]
+              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+            [/#if]
+          </td>
+          [#-- Stage of Innovation --]
+          <td class="">
+          [#if item.crp?has_content]
+            ${item.title}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Degree of Innovation --]
+          <td class="">
+          [#if item.type?has_content]
+            ${item.type}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Contribution of CRP--]
+          <td class="text-center">
+          [#if item.type?has_content]
+            ${item.type}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Geographic scope --]
+          <td class="text-center">
+          [#if item.stage?has_content]
+            ${item.stage}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+        </tr>
+      [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+
+[#macro tableParticipantsTrainingsMacro list ]
+  <table class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.projectID" /]</th>
+        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.researchPhase" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.partnerType" /]</th>
+        <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.geoScope" /]</th>
+        <th id="tb-stage">[@s.text name="${customLabel}.activitiesEventsTable.mainPartnership" /]</th>
       </tr>
     </thead>
     <tbody>
