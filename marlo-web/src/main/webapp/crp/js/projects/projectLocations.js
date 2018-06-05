@@ -962,6 +962,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
         if(m.geopositions.length != 0) {
           latitude = m.geopositions[0].latitude;
           longitude = m.geopositions[0].longitude;
+          $item.find('.geoId').val(m.geopositions[0].id);
           $item.find('.geoLatitude').val(latitude);
           $item.find('.geoLongitude').val(longitude);
           addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);

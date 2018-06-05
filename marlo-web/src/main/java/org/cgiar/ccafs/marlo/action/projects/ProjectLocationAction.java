@@ -634,10 +634,11 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
-                .filter(
-                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
-                .collect(Collectors.toList()).size() > 0)
+              .filter(
+                c -> c.isActive() && c.getProjectBudgets().stream()
+                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
+                    && fp.getProject().getId().longValue() == projectID)
+                  .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
             }
@@ -669,10 +670,11 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
-                .filter(
-                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
-                .collect(Collectors.toList()).size() > 0)
+              .filter(
+                c -> c.isActive() && c.getProjectBudgets().stream()
+                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
+                    && fp.getProject().getId().longValue() == projectID)
+                  .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
             }
@@ -996,8 +998,8 @@ public class ProjectLocationAction extends BaseAction {
                   locElementManager.saveLocElement(element);
                 }
 
-                ProjectLocation existProjectLocation =
-                  projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
+                ProjectLocation existProjectLocation = projectLocationManager.getProjectLocationByProjectAndLocElement(
+                  project.getId(), locElement.getId(), this.getActualPhase().getId());
 
                 if (existProjectLocation == null) {
                   ProjectLocation projectLocation = new ProjectLocation();
@@ -1079,8 +1081,9 @@ public class ProjectLocationAction extends BaseAction {
                     locGeopositionManager.saveLocGeoposition(element.getLocGeoposition());
                   }
                 } else {
-                  ProjectLocation existProjectLocation = projectLocationManager
-                    .getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
+                  ProjectLocation existProjectLocation =
+                    projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId(),
+                      this.getActualPhase().getId());
                   if (existProjectLocation == null) {
 
 
@@ -1329,8 +1332,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions = new ArrayList<>(this
-      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    List<ProjectLocation> regions = new ArrayList<>(this.getDBLocations()
+      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()
@@ -1426,8 +1429,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
-    regions = new ArrayList<>(this
-      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    regions = new ArrayList<>(this.getDBLocations()
+      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()
