@@ -41,13 +41,15 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
   @Expose
   private Boolean subDepartmentActive;
 
+  @Expose
+  private RepIndOrganizationType repIndOrganizationType;
+
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
 
   public InstitutionType() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -75,6 +77,7 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
   public String getAcronym() {
     return this.acronym;
   }
+
 
   public String getDescription() {
     return description;
@@ -115,6 +118,10 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
     return old;
   }
 
+  public RepIndOrganizationType getRepIndOrganizationType() {
+    return repIndOrganizationType;
+  }
+
   public Boolean getSubDepartmentActive() {
     return subDepartmentActive;
   }
@@ -153,13 +160,19 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
     this.old = old;
   }
 
+  public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
+    this.repIndOrganizationType = repIndOrganizationType;
+  }
+
   public void setSubDepartmentActive(Boolean subDepartmentActive) {
     this.subDepartmentActive = subDepartmentActive;
   }
 
   @Override
   public String toString() {
-    return "InstitutionType [id=" + this.getId() + ", name=" + name + ", acronym=" + acronym + ", description="
-      + description + ", old=" + old + ", subDepartmentActive=" + subDepartmentActive + "]";
+    return "InstitutionType [id=" + this.getId() + ", name=" + name + ", acronym=" + acronym + ", subDepartmentActive="
+      + subDepartmentActive + ", repIndOrganizationType=" + repIndOrganizationType + "]";
   }
+
+
 }

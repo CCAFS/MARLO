@@ -25,7 +25,7 @@
       "namespace": "/projects",
       "action": "${crpSession}/reportingSummary",
       "formats": [ "PDF" ],
-      "cycles": [ "Planning" ],
+      "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
     { "active": true,
@@ -45,7 +45,7 @@
       "namespace": "/projects",
       "action": "${crpSession}/OutcomesContributionsSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Planning" ]
+      "cycles": [ "Planning","Reporting" ]
     },
     { "active": true,
       "available": true,

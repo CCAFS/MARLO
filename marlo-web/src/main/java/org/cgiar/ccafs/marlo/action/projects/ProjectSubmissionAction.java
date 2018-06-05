@@ -284,7 +284,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[6];
+    String[] values = new String[7];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crp;
     values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
@@ -292,11 +292,12 @@ public class ProjectSubmissionAction extends BaseAction {
     values[4] = String.valueOf(this.getActualPhase().getYear());
     values[5] = this.getActualPhase().getDescription().toLowerCase();
     // Message to download the pdf
-    /*
-     * values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
-     * + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-     * + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
-     */
+    if (!this.isPlanningActive()) {
+      values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
+        + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
+        + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
+    }
+
     if (this.isPlanningActive()) {
       message.append(this.getText("submit.email.message", values));
     } else {
