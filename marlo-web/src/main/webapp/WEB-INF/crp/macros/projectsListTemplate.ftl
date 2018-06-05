@@ -86,10 +86,13 @@
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          [#else] 
-             <span class="programTag" style="border-color:#444">
-              [#if (project.liaisonInstitution.crpProgram.acronym??)!false]
-                ${project.liaisonInstitution.crpProgram.acronym}
+          [#else]
+            [#local li = (project.projectInfo.liaisonInstitution)!{} ]
+            <span class="programTag" style="border-color:#444">
+              [#if (li.crpProgram??)!false]
+                ${(li.crpProgram.acronym)!(li.crpProgram.name)}
+              [#elseif (li.institution??)!false]
+                ${(li.institution.acronym)!(li.institution.name)}
               [#else]
                 [@s.text name="global.pmu" /]
               [/#if]
@@ -231,7 +234,16 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           [#else] 
-             <span class="programTag" style="border-color:#444">${(project.liaisonInstitution.crpProgram.acronym)!}</span>
+            [#local li = (project.projectInfo.liaisonInstitution)!{} ]
+            <span class="programTag" style="border-color:#444">
+              [#if (li.crpProgram??)!false]
+                ${(li.crpProgram.acronym)!(li.crpProgram.name)}
+              [#elseif (li.institution??)!false]
+                ${(li.institution.acronym)!(li.institution.name)}
+              [#else]
+                [@s.text name="global.pmu" /]
+              [/#if]
+            </span>
           [/#if]
           </td>
           [#-- Project Action Status --]
