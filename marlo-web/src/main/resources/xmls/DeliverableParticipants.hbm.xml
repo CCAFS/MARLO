@@ -20,14 +20,14 @@
 			<column name="has_participants" />
 		</property>
 		<property name="eventActivityName" type="string">
-			<column name="event_activity_name" length="65535" />
+			<column name="event_activity_name" sql-type="TEXT" />
 		</property>
 		<many-to-one name="repIndTypeActivity"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity" fetch="select">
 			<column name="rep_ind_type_activity_id" />
 		</many-to-one>
 		<property name="academicDegree" type="string">
-			<column name="academic_degree" length="65535" />
+			<column name="academic_degree" sql-type="TEXT" />
 		</property>
 		<property name="participants" type="java.lang.Double">
 			<column name="participants" precision="30" scale="0" />
@@ -70,10 +70,10 @@
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
-			<column name="modified_by" not-null="true" />
+			<column name="modified_by" />
 		</many-to-one>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
+			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
 		<set name="deliverableParticipantLocations" table="deliverable_participant_locations"

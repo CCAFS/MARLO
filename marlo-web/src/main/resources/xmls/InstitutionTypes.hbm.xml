@@ -22,7 +22,7 @@
 			<column name="old" />
 		</property>		
 		<property name="description" type="string">
-			<column name="description" length="65535" />
+			<column name="description" sql-type="TEXT" />
 		</property>
 		<set name="institutions" table="institutions" inverse="true" lazy="true"
 			fetch="select">

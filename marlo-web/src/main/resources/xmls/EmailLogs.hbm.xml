@@ -9,19 +9,19 @@
             <generator class="identity" />
         </id>
         <property name="to" type="string">
-            <column name="to_email" length="65535" />
+            <column name="to_email" sql-type="TEXT" />
         </property>
         <property name="cc" type="string">
-            <column name="cc_email" length="65535" />
+            <column name="cc_email" sql-type="TEXT" />
         </property>
         <property name="bbc" type="string">
-            <column name="bbc_email" length="65535" />
+            <column name="bbc_email" sql-type="TEXT" />
         </property>
         <property name="subject" type="string">
-            <column name="subject" length="65535" />
+            <column name="subject" sql-type="TEXT" />
         </property>
         <property name="message" type="string">
-            <column name="message" length="65535" />
+            <column name="message" sql-type="TEXT" />
         </property>
         <property name="tried" type="java.lang.Integer">
             <column name="tried" />
@@ -30,7 +30,7 @@
             <column name="date_email" length="19" />
         </property>
         <property name="error" type="string">
-            <column name="error_email" length="65535" />
+            <column name="error_email" sql-type="TEXT" />
         </property>
         <property name="succes" type="java.lang.Boolean">
             <column name="succes_email" />

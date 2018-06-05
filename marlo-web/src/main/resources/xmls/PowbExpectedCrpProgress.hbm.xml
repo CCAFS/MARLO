@@ -20,16 +20,16 @@
             </column>
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="assessment" type="string">
             <column name="assessment" length="5" />
         </property>
         <property name="means" type="string">
-            <column name="means" length="65535" />
+            <column name="means" sql-type="TEXT" />
         </property>
         <property name="expectedHighlights" type="string">
-            <column name="expected_highlights" length="65535" />
+            <column name="expected_highlights" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
@@ -38,7 +38,7 @@
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
     </class>
 </hibernate-mapping>

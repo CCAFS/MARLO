@@ -10,13 +10,13 @@
 			<generator class="identity" />
 		</id>		
 		<property name="shortName" type="string">
-			<column name="short_name" length="65535" />
+			<column name="short_name" sql-type="TEXT" />
 		</property>		
 		<property name="name" type="string">
-			<column name="name" length="65535" />
+			<column name="name" sql-type="TEXT" />
 		</property>
 		<property name="urlExample" type="string">
-      <column name="url_example" length="65535" />
+      <column name="url_example" sql-type="TEXT" />
     </property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />

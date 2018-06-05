@@ -19,7 +19,7 @@
             <column name="name" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="timeline" type="java.lang.Integer">
             <column name="timeline" />

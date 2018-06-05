@@ -31,7 +31,7 @@
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
-			<column name="modified_by" not-null="true" />
+			<column name="modified_by" />
 		</many-to-one>
 		<property name="title" type="string">
 			<column name="title" length="500" not-null="true" />
@@ -49,7 +49,7 @@
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
+			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
 		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
