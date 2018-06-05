@@ -911,6 +911,15 @@ public class ProjectOutcomeAction extends BaseAction {
         }
       }
 
+      if (projectOutcome.getAchievedUnit() != null) {
+        if (projectOutcome.getAchievedUnit().getId() == null
+          || projectOutcome.getAchievedUnit().getId().longValue() == -1) {
+          projectOutcome.setAchievedUnit(null);
+        } else {
+          projectOutcome.setAchievedUnit(projectOutcome.getAchievedUnit());
+        }
+      }
+
       // projectOutcome.setId(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
 
@@ -918,12 +927,22 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     } else {
+
       if (projectOutcome.getExpectedUnit() != null) {
         if (projectOutcome.getExpectedUnit().getId() == null
           || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
           projectOutcome.setExpectedUnit(null);
         } else {
           projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+        }
+      }
+
+      if (projectOutcome.getAchievedUnit() != null) {
+        if (projectOutcome.getAchievedUnit().getId() == null
+          || projectOutcome.getAchievedUnit().getId().longValue() == -1) {
+          projectOutcome.setAchievedUnit(null);
+        } else {
+          projectOutcome.setAchievedUnit(projectOutcome.getAchievedUnit());
         }
       }
     }

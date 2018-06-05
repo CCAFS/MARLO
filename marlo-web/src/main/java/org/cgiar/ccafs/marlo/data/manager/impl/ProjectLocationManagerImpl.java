@@ -232,8 +232,8 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   }
 
   @Override
-  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId) {
-    return projectLocationDAO.getProjectLocationByProjectAndLocElement(projectId, LocElementId);
+  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId, Long phaseId) {
+    return projectLocationDAO.getProjectLocationByProjectAndLocElement(projectId, LocElementId, phaseId);
   }
 
   @Override

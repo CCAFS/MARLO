@@ -75,8 +75,8 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
+    this.saveMissingFields(project, innovation, action.getActualPhase().getDescription(),
+      action.getActualPhase().getYear(), ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
   }
 
   private void validateProjectInnovation(BaseAction action, ProjectInnovation projectInnovation) {
