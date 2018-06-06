@@ -1063,7 +1063,6 @@ public class PublicationAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
-
   }
 
   public void saveCrps() {
@@ -1100,12 +1099,12 @@ public class PublicationAction extends BaseAction {
     if (deliverable.getGenderLevels() != null) {
       if (deliverablePrew.getDeliverableGenderLevels() != null
         && deliverablePrew.getDeliverableGenderLevels().size() > 0) {
-        List<DeliverableGenderLevel> deliverableGenderLevelDbs = deliverablePrew.getDeliverableGenderLevels().stream()
+        List<DeliverableGenderLevel> fundingSourcesPrew = deliverablePrew.getDeliverableGenderLevels().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
-        for (DeliverableGenderLevel deliverableGenderLevelDb : deliverableGenderLevelDbs) {
-          if (!deliverable.getGenderLevels().contains(deliverableGenderLevelDb)) {
-            deliverableGenderLevelManager.deleteDeliverableGenderLevel(deliverableGenderLevelDb.getId());
+        for (DeliverableGenderLevel deliverableFundingSource : fundingSourcesPrew) {
+          if (!deliverable.getGenderLevels().contains(deliverableFundingSource)) {
+            deliverableGenderLevelManager.deleteDeliverableGenderLevel(deliverableFundingSource.getId());
           }
         }
       }
@@ -1124,10 +1123,8 @@ public class PublicationAction extends BaseAction {
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
         }
       }
-      // Presume we are not updating the deliverableCrp only creating?
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -1139,7 +1136,7 @@ public class PublicationAction extends BaseAction {
       } else {
         dissemination = new DeliverableDissemination();
         dissemination.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-        dissemination.setPhase(this.getActualPhase());
+
       }
 
       dissemination.setSynced(deliverable.getDissemination().getSynced());
@@ -1398,8 +1395,6 @@ public class PublicationAction extends BaseAction {
 
 
   public void saveMetadata() {
-
-
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
@@ -1408,7 +1403,6 @@ public class PublicationAction extends BaseAction {
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
         }
       }
-
     }
   }
 
@@ -1565,43 +1559,43 @@ public class PublicationAction extends BaseAction {
 
   public void savePrograms() {
 
-    for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList())) {
-
-      if (!deliverable.getFlagshipValue().contains(deliverableProgram.getCrpProgram().getId().toString())) {
-        deliverableProgramManager.deleteDeliverableProgram(deliverableProgram.getId());
-
-      }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    if (deliverable.getFlagshipValue() == null) {
+      deliverable.setFlagshipValue("");
     }
+    if (deliverable.getRegionsValue() == null) {
+      deliverable.setRegionsValue("");
+    }
+    if (deliverable.getFlagshipValue() != null) {
 
-    for (String programID : deliverable.getFlagshipValue().trim().split(",")) {
-      if (programID.length() > 0) {
-        CrpProgram program = crpProgramManager.getCrpProgramById(Long.parseLong(programID.trim()));
-        DeliverableProgram deliverableProgram = new DeliverableProgram();
-        deliverableProgram.setCrpProgram(program);
-        deliverableProgram.setDeliverable(deliverable);
-        deliverableProgram.setPhase(deliverable.getPhase());
-        if (deliverableDB.getDeliverablePrograms().stream()
-          .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
-          .collect(Collectors.toList()).isEmpty()) {
+      for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
 
+        if (!deliverable.getFlagshipValue().contains(deliverableProgram.getCrpProgram().getId().toString())) {
+          deliverableProgramManager.deleteDeliverableProgram(deliverableProgram.getId());
 
-          deliverableProgram = deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
-        } else {
-          Log.debug("Not saving deliverableProgram: " + deliverableProgram);
         }
-      } else {
-        Log.debug("No programs can be found in String : " + programID);
       }
+      for (String programID : deliverable.getFlagshipValue().trim().split(",")) {
+        if (programID.length() > 0) {
+          CrpProgram program = crpProgramManager.getCrpProgramById(Long.parseLong(programID.trim()));
+          DeliverableProgram deliverableProgram = new DeliverableProgram();
+          deliverableProgram.setCrpProgram(program);
+          deliverableProgram.setDeliverable(deliverable);
+          deliverableProgram.setPhase(deliverable.getPhase());
+          if (deliverableDB.getDeliverablePrograms().stream()
+            .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
+            .collect(Collectors.toList()).isEmpty()) {
 
+            deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
+          }
+        }
+
+      }
     }
 
-
-    if (deliverable.getRegionsValue() != null)
-
-    {
-
+    if (deliverable.getRegionsValue() != null) {
 
       for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
@@ -1629,39 +1623,20 @@ public class PublicationAction extends BaseAction {
         }
       }
     }
+
   }
 
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
-      // deliverable.getPublication().setDeliverable(deliverable);
-      DeliverablePublicationMetadata deliverablePublication = deliverable.getPublication();
-      if (deliverablePublication.getId() == null || deliverablePublication.getId().intValue() == -1) {
-        deliverablePublication.setId(null);
-        deliverablePublication.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-        deliverablePublication.setPhase(this.getActualPhase());
-        deliverablePublication =
-          deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverablePublication);
-      } else {
-        DeliverablePublicationMetadata deliverablePublicationDb =
-          deliverablePublicationMetadataManager.getDeliverablePublicationMetadataById(deliverablePublication.getId());
-        deliverablePublicationDb.setCoAuthor(deliverablePublication.getCoAuthor());
-        deliverablePublicationDb.setIsiPublication(deliverablePublication.getIsiPublication());
-        deliverablePublicationDb.setIssue(deliverablePublication.getIssue());
-        deliverablePublicationDb.setJournal(deliverablePublication.getJournal());
-        deliverablePublicationDb.setNasr(deliverablePublication.getNasr());
-        deliverablePublicationDb.setPages(deliverablePublication.getPages());
-        deliverablePublicationDb.setPublicationAcknowledge(deliverablePublication.getPublicationAcknowledge());
-        deliverablePublicationDb.setVolume(deliverablePublication.getVolume());
-        deliverablePublicationDb =
-          deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverablePublicationDb);
+      deliverable.getPublication().setDeliverable(deliverable);
+      if (deliverable.getPublication().getId() != null && deliverable.getPublication().getId().intValue() == -1) {
+        deliverable.getPublication().setId(null);
       }
-
       deliverable.getPublication().setPhase(deliverable.getPhase());
       deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
 
     }
   }
-
 
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
@@ -1812,6 +1787,8 @@ public class PublicationAction extends BaseAction {
 
       for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
         if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
+
+
           deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
           deliverableFundingSource.setPhase(deliverable.getPhase());
           deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
