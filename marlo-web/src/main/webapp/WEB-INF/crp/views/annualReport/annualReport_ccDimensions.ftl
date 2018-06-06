@@ -537,7 +537,7 @@
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+            <td class="text-center" colspan="${isPMU?string('7', '8')}"><i>No entries added yet.</i></td>
           </tr>
         [/#if]
       </tbody>

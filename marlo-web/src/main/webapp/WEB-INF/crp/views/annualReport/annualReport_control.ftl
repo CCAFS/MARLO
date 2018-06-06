@@ -207,28 +207,30 @@
           <div class="borderBox">
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC3C4.title" /]</h4>
             <div class="form-group row">
-              <div class="col-md-3">
+              <div class="col-md-6">
                 [#-- Total of participants estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.totalParticipants" /]</label><br />
-                  <span>556</span>
+                  <span class="animated infinite bounce">556</span>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-6">
                 [#-- Percentage of female  estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageFemale" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
-              <div class="col-md-3">
+            </div>
+            <div class="form-group row">
+              <div class="col-md-6">
                 [#-- Percentage of Youth estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageYouth" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-6">
                 [#-- Formal training estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.formalTraining" /]</label><br />
@@ -263,7 +265,60 @@
             <div class="form-group margin-panel">
               [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC4.comments" help="${customLabel}.indicatorC4.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
-            
+          </div>
+          
+          [#--  CGIAR Indicator #C5: Number of CGIAR research papers published in peer reviewed journals  --]
+          <div class="borderBox">
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC5.title" /]</h4>
+            <div class="form-group row">
+              <div class="col-md-6">
+                [#-- Chart 6 --]
+                <div id="chart6" class="chartBox simpleBox">
+                  [#assign chartData = [
+                      {"name":"Open Acess",   "value": "71"},
+                      {"name":"Limited",      "value": "6"}
+                    ] 
+                  /] 
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart6.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart6.1" /]</span>
+                    </li>
+                    [#list chartData as data]
+                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [/#list]
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-6">
+                [#-- Chart 7 --]
+                <div id="chart7" class="chartBox simpleBox">
+                  [#assign chartData = [
+                      {"name":"Yes",   "value": "36"},
+                      {"name":"No",    "value": "28"}
+                    ] 
+                  /] 
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart7.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart7.1" /]</span>
+                    </li>
+                    [#list chartData as data]
+                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [/#list]
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            [#-- Data - Indicator C5 --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC5.data" help="${customLabel}.indicatorC5.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
+            [#-- Comments/Analysis - Indicator C5  --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC5.comments" help="${customLabel}.indicatorC5.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            </div>
           </div>
           
           [#if PMU]
@@ -422,11 +477,11 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.projectID" /]</th>
-        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.researchPhase" /]</th>
-        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.partnerType" /]</th>
-        <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.geoScope" /]</th>
-        <th id="tb-stage">[@s.text name="${customLabel}.activitiesEventsTable.mainPartnership" /]</th>
+        <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.activityEvent" /]</th>
+        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
+        <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.typeParticipants" /]</th>
+        <th id="tb-stage">[@s.text name="${customLabel}.activitiesEventsTable.scope" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -486,4 +541,3 @@
     </tbody>
   </table>
 [/#macro]
-

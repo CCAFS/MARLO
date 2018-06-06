@@ -54,6 +54,12 @@ google.charts.setOnLoadCallback(function() {
   var chart4 = new google.visualization.PieChart(document.getElementById($chart4[0].id));
   chart4.draw(data4, {
       title: 'Partnerships by Geographic Scope',
+      titleTextStyle: {
+          color: '#5f5e5e',
+          fontName: 'Roboto',
+          fontSize: 16,
+          bold: false
+      },
       pieHole: 0.3,
       chartArea: {
         width: '100%'
@@ -77,5 +83,65 @@ google.charts.setOnLoadCallback(function() {
       colors: '#e67e22',
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
+
+  // Chart #6
+  var $chart6 = $('#chart6');
+  var data6 = google.visualization.arrayToDataTable(getChartDataArray($chart6));
+  var chart6 = new google.visualization.PieChart(document.getElementById($chart6[0].id));
+  chart6.draw(data6, {
+      title: 'Number of peer reviewed articles by Open Access status',
+      titleTextStyle: {
+          color: '#5f5e5e',
+          fontName: 'Roboto',
+          fontSize: 16,
+          bold: false
+      },
+      pieHole: 0.4,
+      chartArea: {
+        width: '100%'
+      },
+      colors: '#e67e22',
+      legend: {
+        alignment: 'center'
+      },
+      slices: {
+          0: {
+            color: '#27ae60'
+          },
+          1: {
+            color: '#f1c40f'
+          }
+      }
+  });
+
+  // Chart #7
+  var $chart7 = $('#chart7');
+  var data7 = google.visualization.arrayToDataTable(getChartDataArray($chart7));
+  var chart7 = new google.visualization.PieChart(document.getElementById($chart7[0].id));
+  chart7.draw(data7, {
+      title: 'Number of peer reviewed articles by ISI status',
+      titleTextStyle: {
+          color: '#5f5e5e',
+          fontName: 'Roboto',
+          fontSize: 16,
+          bold: false
+      },
+      pieHole: 0.4,
+      chartArea: {
+        width: 400
+      },
+      colors: '#e67e22',
+      legend: {
+        alignment: 'center'
+      },
+      slices: {
+          0: {
+            color: '#16a085'
+          },
+          1: {
+            color: '#bdc3c7'
+          }
+      }
+  });
 
 });
