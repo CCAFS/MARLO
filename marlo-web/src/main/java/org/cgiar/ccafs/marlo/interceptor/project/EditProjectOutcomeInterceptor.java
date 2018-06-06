@@ -197,14 +197,16 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         baseAction.setEditStatus(true);
 
       }
-      if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
-
-        || project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
+      if (baseAction.isPlanningActive()) {
+        if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+          || project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
+
       if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
         .equals(APConstants.REPORTING)
         && project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
