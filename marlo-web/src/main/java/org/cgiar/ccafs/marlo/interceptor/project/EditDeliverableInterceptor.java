@@ -245,14 +245,19 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
       }
-      if (deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
 
-        || deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
+      if (baseAction.isPlanningActive()) {
+        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+          || deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
+
+      // TODO What is This?
       if (deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
         .equals(APConstants.REPORTING)
         && deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
