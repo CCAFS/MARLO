@@ -67,7 +67,6 @@
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableG.title" /]</h4>
               </div>
               <hr />
-              <label>[@s.text name="${customLabel}.includeLabel" /]:</label>
               [@tableGMacro list=[{},{},{},{}] /]
             </div>
             [/#if]
