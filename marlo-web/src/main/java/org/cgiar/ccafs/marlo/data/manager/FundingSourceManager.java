@@ -120,7 +120,8 @@ public interface FundingSourceManager {
    * @return the list of FundingSource
    */
 
-  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID);
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
+    long phaseID);
 
 
   /**

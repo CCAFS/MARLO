@@ -23,7 +23,7 @@ public class DeliverableProgram extends MarloBaseEntity implements java.io.Seria
   @Expose
   private Phase phase;
   @Expose
-  private IpProgram ipProgram;
+  private CrpProgram crpProgram;
 
 
   public DeliverableProgram() {
@@ -51,14 +51,15 @@ public class DeliverableProgram extends MarloBaseEntity implements java.io.Seria
     return true;
   }
 
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
+  }
+
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
-
-  public IpProgram getIpProgram() {
-    return ipProgram;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -101,12 +102,12 @@ public class DeliverableProgram extends MarloBaseEntity implements java.io.Seria
   }
 
 
-  public void setDeliverable(Deliverable deliverable) {
-    this.deliverable = deliverable;
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
-  public void setIpProgram(IpProgram ipProgram) {
-    this.ipProgram = ipProgram;
+  public void setDeliverable(Deliverable deliverable) {
+    this.deliverable = deliverable;
   }
 
   public void setPhase(Phase phase) {
@@ -115,9 +116,9 @@ public class DeliverableProgram extends MarloBaseEntity implements java.io.Seria
 
   @Override
   public String toString() {
-    return "DeliverableProgram [id=" + this.getId() + ", deliverable=" + deliverable + ", ipProgram=" + ipProgram + "]";
+    return "DeliverableProgram [id=" + this.getId() + ", deliverable=" + deliverable + ", crpProgram=" + crpProgram
+      + ", phase=" + phase + "]";
   }
-
 
 }
 

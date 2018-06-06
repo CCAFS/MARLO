@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +74,9 @@ public class UploadDeliverableAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    boolean fileCopied = false;
 
+    boolean fileCopied = false;
+    fileFileName = fileFileName.replace(' ', '_');
     // Validate if project parameter exists in the URL.
 
     deliverable = deliverableManager.getDeliverableById(Integer.parseInt(deliverableID));

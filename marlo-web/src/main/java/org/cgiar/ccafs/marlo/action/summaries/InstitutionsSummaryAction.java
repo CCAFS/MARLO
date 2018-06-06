@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -52,7 +53,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -86,10 +86,13 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     return bd.doubleValue();
   }
 
+  private final ResourceManager resourceManager;
+
   // Parameters
   private long startTime;
   HashMap<InstitutionType, Set<Institution>> institutionsPerType = new HashMap<InstitutionType, Set<Institution>>();
   HashMap<Institution, Set<Project>> projectsPerInstitution = new HashMap<Institution, Set<Project>>();
+  HashMap<Institution, Set<LocElement>> countriesPerInstitution = new HashMap<Institution, Set<LocElement>>();
   Set<LocElement> countries = new HashSet<>();
   Set<Project> projects = new HashSet<>();
 
@@ -101,8 +104,10 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   InputStream inputStream;
 
   @Inject
-  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
+  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -131,6 +136,7 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     masterReport.getParameterValues().put("i8nCountry", this.getText("summaries.partners.country"));
     masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
     masterReport.getParameterValues().put("i8nProjectsTitle", this.getText("summaries.partners.projectTitle"));
+    masterReport.getParameterValues().put("i8nProjectCountry", "Project " + this.getText("partner.countryOffices"));
     return masterReport;
   }
 
@@ -194,6 +200,35 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
             projectsPerInstitution.put(institution, projectSet);
           }
 
+          // countriesPerInstitution
+          List<ProjectPartnerLocation> projectPartnerLocations = projectPartner.getProjectPartnerLocations().stream()
+            .filter(ppl -> ppl.isActive()).collect(Collectors.toList());
+          if (countriesPerInstitution.containsKey(institution)) {
+            Set<LocElement> countriesSet = countriesPerInstitution.get(institution);
+            if (projectPartnerLocations != null && !projectPartnerLocations.isEmpty()) {
+
+              for (ProjectPartnerLocation projectPartnerLocation : projectPartnerLocations) {
+                if (projectPartnerLocation.getInstitutionLocation() != null) {
+                  countriesSet.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
+                  countries.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
+                }
+              }
+            }
+
+            countriesPerInstitution.put(institution, countriesSet);
+          } else {
+            Set<LocElement> countriesSet = new HashSet<>();
+            if (projectPartnerLocations != null && !projectPartnerLocations.isEmpty()) {
+              for (ProjectPartnerLocation projectPartnerLocation : projectPartnerLocations) {
+                if (projectPartnerLocation.getInstitutionLocation() != null) {
+                  countriesSet.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
+                  countries.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
+                }
+              }
+            }
+            countriesPerInstitution.put(institution, countriesSet);
+          }
+
         }
       }
     }
@@ -201,13 +236,10 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -278,16 +310,17 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   }
 
   private TypedTableModel getDetailsTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"ins_name", "ins_acr", "web_site", "ins_type", "country", "Projects"},
-        new Class[] {String.class, String.class, String.class, String.class, String.class, String.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"ins_name", "ins_acr", "web_site", "ins_type", "country", "Projects", "projectCountry"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      0);
 
     Map<Institution, Set<Project>> result = projectsPerInstitution.entrySet().stream()
       .sorted((s1, s2) -> s1.getKey().getName().compareTo(s2.getKey().getName())).collect(
         Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
     for (Institution institution : result.keySet()) {
-      String insName = "", insAcr = "", webSite = "", insType = "", country = "", projects = "";
+      String insName = "", insAcr = "", webSite = "", insType = "", country = "", projects = "", projectCountry = "";
       insName = institution.getName() != null && !institution.getName().trim().isEmpty() ? institution.getName() : null;
       insAcr = institution.getAcronym() != null && !institution.getAcronym().trim().isEmpty() ? institution.getAcronym()
         : null;
@@ -320,7 +353,23 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
       if (projects.isEmpty()) {
         projects = null;
       }
-      model.addRow(new Object[] {insName, insAcr, webSite, insType, country, projects});
+      Set<LocElement> locationSet = countriesPerInstitution.get(institution);
+      if (locationSet != null && !locationSet.isEmpty()) {
+        List<LocElement> locationList =
+          locationSet.stream().sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
+        for (LocElement locElement : locationList) {
+          if (projectCountry.isEmpty()) {
+            projectCountry += locElement.getName();
+          } else {
+            projectCountry += ", " + locElement.getName();
+          }
+        }
+      }
+      if (projectCountry.isEmpty()) {
+        projectCountry = null;
+      }
+
+      model.addRow(new Object[] {insName, insAcr, webSite, insType, country, projects, projectCountry});
     }
     return model;
   }
@@ -336,7 +385,7 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    if (!partnerType.equals("All")) {
+    if (partnerType.equals("All")) {
       fileName.append("ProjectPartnersSummary-");
     } else {
       fileName.append("ProjectLeadingInstitutionsSummary-");

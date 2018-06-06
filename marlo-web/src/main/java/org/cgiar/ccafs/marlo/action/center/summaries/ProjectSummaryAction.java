@@ -44,7 +44,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -80,26 +79,26 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   // Services
   private final GlobalUnitManager centerService;
   private final ICenterProjectManager projectService;
+  private final ResourceManager resourceManager;
 
   @Inject
-  public ProjectSummaryAction(APConfig config, GlobalUnitManager centerService, ICenterProjectManager projectService) {
+  public ProjectSummaryAction(APConfig config, GlobalUnitManager centerService, ICenterProjectManager projectService,
+    ResourceManager resourceManager) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;
+    this.resourceManager = resourceManager;
   }
 
   @Override
   public String execute() throws Exception {
 
-    ClassicEngineBoot.getInstance().start();
     final ByteArrayOutputStream os = new ByteArrayOutputStream();
-    final ResourceManager manager = new ResourceManager();
-    // (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    manager.registerDefaults();
+
     try {
 
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/center/ProjectSummary.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/center/ProjectSummary.prpt"), MasterReport.class);
 
       // Get main report
       final MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -115,7 +114,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      System.out.println("Pentaho SubReports: " + hm);
+      // System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
       final String masterQueryName = "main";

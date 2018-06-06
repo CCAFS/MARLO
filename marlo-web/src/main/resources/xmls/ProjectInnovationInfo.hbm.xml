@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2018 3:39:52 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo" table="project_innovation_info" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="projectInnovation" class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+            <column name="project_innovation_id" />
+        </many-to-one>
+        <many-to-one name="repIndPhaseResearchPartnership" class="org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership" fetch="select">
+            <column name="phase_research_id" />
+        </many-to-one>
+        <many-to-one name="repIndStageInnovation" class="org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation" fetch="select">
+            <column name="stage_innovation_id" />
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="repIndRegion" class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
+            <column name="rep_ind_region_id" />
+        </many-to-one>
+        <many-to-one name="repIndInnovationType" class="org.cgiar.ccafs.marlo.data.model.RepIndInnovationType" fetch="select">
+            <column name="innovation_type_id" />
+        </many-to-one>
+        <many-to-one name="repIndGeographicScope" class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope" fetch="select">
+            <column name="geographic_scope_id" />
+        </many-to-one>
+        <many-to-one name="repIndContributionOfCrp" class="org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp" fetch="select">
+            <column name="rep_ind_contribution_crp_id" />
+        </many-to-one>
+        <many-to-one name="repIndDegreeInnovation" class="org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation" fetch="select">
+            <column name="rep_ind_degree_innovation_id" />
+        </many-to-one>
+        <many-to-one name="genderFocusLevel" class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel" fetch="select">
+            <column name="gender_focus_level_id" />
+        </many-to-one>
+        <many-to-one name="youthFocusLevel" class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel" fetch="select">
+            <column name="youth_focus_level_id" />
+        </many-to-one>
+        <many-to-one name="projectExpectedStudy" class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
+            <column name="project_expected_studies_id" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="title" sql-type="TEXT" />
+        </property>
+        <property name="narrative" type="string">
+            <column name="narrative" sql-type="TEXT" />
+        </property>
+        <property name="evidenceLink" type="string">
+            <column name="evidence_link" sql-type="TEXT" />
+        </property>
+        <property name="genderExplaniation" type="string">
+            <column name="gender_explaniation" sql-type="TEXT" />
+        </property>
+        <property name="youthExplaniation" type="string">
+            <column name="youth_explaniation" sql-type="TEXT" />
+        </property>
+        <property name="descriptionStage" type="string">
+            <column name="description_stage" sql-type="TEXT" />
+        </property>
+        <property name="year" type="java.lang.Long">
+            <column name="year" />
+        </property>
+    </class>
+</hibernate-mapping>

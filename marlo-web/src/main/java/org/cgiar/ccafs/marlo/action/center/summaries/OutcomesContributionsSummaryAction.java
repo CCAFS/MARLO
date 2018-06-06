@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
@@ -50,7 +49,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -79,7 +77,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   // PDF bytes
   private byte[] bytesExcel;
   // Services
-  private ICenterProgramManager programService;
+  private final ICenterProgramManager programService;
+  private final ResourceManager resourceManager;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
@@ -87,22 +86,20 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   HashMap<CenterOutcome, Integer> allOutcomesProjects = new HashMap<CenterOutcome, Integer>();
 
   @Inject
-  public OutcomesContributionsSummaryAction(APConfig config, ICenterProgramManager programService) {
+  public OutcomesContributionsSummaryAction(APConfig config, ICenterProgramManager programService,
+    ResourceManager resourceManager) {
     super(config);
     this.programService = programService;
+    this.resourceManager = resourceManager;
   }
 
   @Override
   public String execute() throws Exception {
 
-
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager =
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
     try {
 
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/center/OutcomesContributions.prpt"), MasterReport.class);
 
       // Get main report
@@ -119,7 +116,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      System.out.println("Pentaho SubReports: " + hm);
+      // System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
       String masterQueryName = "main";

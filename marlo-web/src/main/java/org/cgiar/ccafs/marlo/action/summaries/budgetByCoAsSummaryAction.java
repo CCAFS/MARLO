@@ -50,7 +50,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -84,6 +83,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
   private final ProjectBudgetManager projectBudgetManager;
   private final InstitutionManager institutionManager;
 
+  private final ResourceManager resourceManager;
+
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -93,11 +94,13 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
   @Inject
   public budgetByCoAsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
+    ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager,
+    ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
+    this.resourceManager = resourceManager;
 
   }
 
@@ -159,14 +162,11 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/BudgetByCoAs.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/BudgetByCoAs.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
@@ -390,7 +390,7 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
-        title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+        title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
         phaseID = this.getSelectedPhase().getId().toString();
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagshipsList = new ArrayList<>();
@@ -655,7 +655,7 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

@@ -105,7 +105,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    System.out.println(this.getRequest().getRequestURL());
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));

@@ -17,16 +17,21 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableQualityCheckDAO;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<DeliverableQualityCheck, Long> implements DeliverableQualityCheckDAO {
+public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<DeliverableQualityCheck, Long>
+  implements DeliverableQualityCheckDAO {
 
 
   @Inject
@@ -77,6 +82,20 @@ public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<Deliverabl
       return list.get(0);
     }
     return null;
+  }
+
+  @Override
+  public DeliverableQualityCheck findQualityByPhaseAndDeliverable(Phase phase, Deliverable deliverable) {
+    String query = "select distinct dq from DeliverableQualityCheck dq "
+      + " where phase.id = :phaseId and deliverable.id= :deliverableId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+
+    Object findSingleResult = super.findSingleResult(DeliverableQualityCheck.class, createQuery);
+    DeliverableQualityCheck deliverableDisseminationResult = (DeliverableQualityCheck) findSingleResult;
+
+    return deliverableDisseminationResult;
   }
 
   @Override

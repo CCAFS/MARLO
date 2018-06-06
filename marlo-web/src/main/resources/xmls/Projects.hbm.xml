@@ -11,10 +11,10 @@
 		</id>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
-			<column name="modified_by" not-null="true" />
+			<column name="modified_by" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+			fetch="select" update="false">
 			<column name="created_by">
 				<comment>foreign key to the table users</comment>
 			</column>
@@ -25,11 +25,11 @@
 		<property name="createDate" type="timestamp">
 			<column name="create_date" length="19" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
     <property name="modificationJustification" type="string">
-      <column name="modification_justification" length="65535" not-null="true" />
+      <column name="modification_justification" sql-type="TEXT" />
     </property>
 		<set name="projectInfos" table="projects_info" inverse="true"
 			lazy="true" fetch="select">
@@ -284,11 +284,19 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship" />
 		</set>
-		<set name="expectedStudyProjects" table="expected_study_projects" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject" />
-        </set>	
+		<set name="expectedStudyProjects" table="expected_study_projects"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject" />
+		</set>
+		<set name="projectInnovations" table="project_innovations"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" />
+		</set>
 	</class>
 </hibernate-mapping>

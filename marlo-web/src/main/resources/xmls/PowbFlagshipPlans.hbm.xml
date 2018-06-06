@@ -12,7 +12,7 @@
 			</generator>
 		</id>
 		<property name="planSummary" type="string">
-			<column name="plan_summary" length="65535" />
+			<column name="plan_summary" sql-type="TEXT" />
 		</property>
 		<many-to-one name="flagshipProgramFile"
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
@@ -24,10 +24,10 @@
 			<column name="is_active" not-null="true" />
 		</property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="false" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"

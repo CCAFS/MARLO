@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -62,6 +64,12 @@ public interface DeliverableQualityCheckDAO {
    */
   public DeliverableQualityCheck findByDeliverable(long id, long phaseID);
 
+  /**
+   * This method gets a DeliverableQualityCheck object by a given deliverableQualityCheck phase and deliverable.
+   * 
+   * @return a DeliverableQualityCheck object.
+   */
+  public DeliverableQualityCheck findQualityByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
 
   /**
    * This method saves the information of the given deliverableQualityCheck

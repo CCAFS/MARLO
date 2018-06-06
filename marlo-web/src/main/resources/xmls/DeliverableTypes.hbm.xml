@@ -19,7 +19,7 @@
             <column name="name" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="timeline" type="java.lang.Integer">
             <column name="timeline" />
@@ -41,6 +41,12 @@
                 <column name="type_id" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+        </set>
+        <set name="deliverableTypeRules" table="deliverable_type_rules" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_type" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule" />
         </set>
     </class>
 </hibernate-mapping>

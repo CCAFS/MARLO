@@ -18,20 +18,20 @@
                 <comment>This column is a foreign key that references to the table activities</comment>
             </column>
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="target" type="string">
-            <column name="target" length="65535" />
+            <column name="target" sql-type="TEXT" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="gender" type="string">
-            <column name="gender" length="65535" />
+            <column name="gender" sql-type="TEXT" />
         </property>
         <property name="year" type="int">
             <column name="year" not-null="true" />
@@ -43,19 +43,19 @@
             <column name="archived" precision="11" />
         </property>
         <property name="narrativeGender" type="string">
-            <column name="narrative_gender" length="65535" />
+            <column name="narrative_gender" sql-type="TEXT" />
         </property>
         <property name="narrativeTargets" type="string">
-            <column name="narrative_targets" length="65535" />
+            <column name="narrative_targets" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
+        <property name="activeSince" type="timestamp" update="false">
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
     </class>
 </hibernate-mapping>

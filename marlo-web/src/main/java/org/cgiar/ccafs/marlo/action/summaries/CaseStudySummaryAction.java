@@ -44,7 +44,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -69,7 +68,8 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
   private static Logger LOG = LoggerFactory.getLogger(CaseStudySummaryAction.class);
 
   // Managers
-  private CaseStudyManager caseStudyManager;
+  private final CaseStudyManager caseStudyManager;
+  private final ResourceManager resourceManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -87,9 +87,10 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
 
   @Inject
   public CaseStudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.caseStudyManager = caseStudyManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -127,18 +128,15 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource =
-          manager.createDirectly(this.getClass().getResource("/pentaho/crp/CaseStudiesExcel.prpt"), MasterReport.class);
+        reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/CaseStudiesExcel.prpt"), MasterReport.class);
       } else {
-        reportResource =
-          manager.createDirectly(this.getClass().getResource("/pentaho/crp/CaseStudiesPDF.prpt"), MasterReport.class);
+        reportResource = resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/CaseStudiesPDF.prpt"),
+          MasterReport.class);
       }
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();

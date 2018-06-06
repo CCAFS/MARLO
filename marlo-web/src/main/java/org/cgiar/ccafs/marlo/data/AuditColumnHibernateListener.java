@@ -74,27 +74,17 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
 
     User user = this.getUser();
     Date now = new Date();
-    String modificationJustification = auditableEntity.getModificationJustification() != null
-      ? auditableEntity.getModificationJustification() : new String();
+
     Boolean active = new Boolean(true);
 
     this.setValue(state, propertyNames, "createdBy", user, auditableEntity);
     this.setValue(state, propertyNames, "activeSince", now, auditableEntity);
     this.setValue(state, propertyNames, "active", active, auditableEntity);
 
-
-    // Unfortunately for the moment we need to populate these - until the not-null constraints are dropped.
-    this.setValue(state, propertyNames, "modifiedBy", user, auditableEntity);
-    this.setValue(state, propertyNames, "modificationJustification", modificationJustification, auditableEntity);
-
-
     // Required to guard against an insert happening together with an update.
     auditableEntity.setCreatedBy(user);
     auditableEntity.setActiveSince(now);
     auditableEntity.setActive(active);
-    // Unfortunately for the moment we need to populate these - until the not-null constraints are dropped.
-    auditableEntity.setModificationJustification(modificationJustification);
-    auditableEntity.setModifiedBy(user);
 
     return false;
   }
@@ -114,7 +104,7 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
     User user = this.getUser();
 
     /**
-     *  This is to guard against an unauthenticated user making an update
+     * This is to guard against an unauthenticated user making an update
      */
     if (user.getId() == null) {
       return false;
