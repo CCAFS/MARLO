@@ -1024,7 +1024,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ExpectedStudyProject studyProject : projectPrev) {
-        if (!expectedStudy.getProjects().contains(studyProject)) {
+        if (expectedStudy.getProjects() != null) {
+          if (!expectedStudy.getProjects().contains(studyProject)) {
+            expectedStudyProjectManager.deleteExpectedStudyProject(studyProject.getId());
+          }
+        } else {
           expectedStudyProjectManager.deleteExpectedStudyProject(studyProject.getId());
         }
       }
