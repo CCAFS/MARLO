@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -94,9 +93,11 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
 
   // Managers
-  private ProjectBudgetManager projectBudgetManager;
-  private CrpProgramManager programManager;
-  private InstitutionManager institutionManager;
+  private final ProjectBudgetManager projectBudgetManager;
+  private final CrpProgramManager programManager;
+  private final InstitutionManager institutionManager;
+  private final ResourceManager resourceManager;
+
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -105,11 +106,12 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   @Inject
   public BudgetPerPartnersSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, ResourceManager resourceManager) {
     super(config, crpManager, phaseManager);
     this.projectBudgetManager = projectBudgetManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -331,14 +333,12 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
+    resourceManager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/BudgetPerPartners.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/BudgetPerPartners.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -921,7 +921,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

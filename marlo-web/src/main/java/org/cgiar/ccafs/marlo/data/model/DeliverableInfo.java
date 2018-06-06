@@ -57,6 +57,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private Long crossCuttingScoreYouth;
   @Expose
   private Long crossCuttingScoreCapacity;
+  @Expose
+  private Boolean isLocationGlobal;
+
 
   public DeliverableInfo() {
   }
@@ -82,7 +85,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return null;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
@@ -100,15 +102,14 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return crossCuttingScoreCapacity;
   }
 
+
   public Long getCrossCuttingScoreGender() {
     return crossCuttingScoreGender;
   }
 
-
   public Long getCrossCuttingScoreYouth() {
     return crossCuttingScoreYouth;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -139,6 +140,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return description;
   }
 
+
   public String getGenderScoreName() {
     if (this.crossCuttingScoreGender != null) {
       if (this.crossCuttingScoreGender == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
@@ -150,6 +152,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
       }
     }
     return null;
+  }
+
+
+  public Boolean getIsLocationGlobal() {
+    return isLocationGlobal;
   }
 
   public String getLicense() {
@@ -279,6 +286,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
       return true;
     }
 
+    if (status != null && newExpectedYear != null && this.newExpectedYear <= year
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      return true;
+    }
+
     return false;
   }
 
@@ -367,6 +379,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.description = description;
   }
 
+
+  public void setIsLocationGlobal(Boolean isLocationGlobal) {
+    this.isLocationGlobal = isLocationGlobal;
+  }
 
   public void setLicense(String license) {
     this.license = license;

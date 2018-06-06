@@ -464,73 +464,69 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermissionCenter("*")) {
-
-      this.setInvalidFields(new HashMap<>());
 
 
-      outcomeService.saveResearchOutcome(outcomeDB);
+    this.setInvalidFields(new HashMap<>());
 
-      if (outcome.getMonitorings() != null || !outcome.getMonitorings().isEmpty()) {
-        for (CenterMonitoringOutcome monitoringOutcome : outcome.getMonitorings()) {
 
-          CenterMonitoringOutcome monitoringOutcomeDB =
-            monitoringOutcomeService.getMonitoringOutcomeById(monitoringOutcome.getId());
+    outcomeService.saveResearchOutcome(outcomeDB);
 
-          List<CenterMonitoringMilestone> monitoringMilestones = monitoringOutcome.getMilestones();
+    if (outcome.getMonitorings() != null || !outcome.getMonitorings().isEmpty()) {
+      for (CenterMonitoringOutcome monitoringOutcome : outcome.getMonitorings()) {
 
-          if (monitoringMilestones != null) {
-            for (CenterMonitoringMilestone monitoringMilestone : monitoringMilestones) {
+        CenterMonitoringOutcome monitoringOutcomeDB =
+          monitoringOutcomeService.getMonitoringOutcomeById(monitoringOutcome.getId());
 
-              CenterMonitoringMilestone monitoringMilestoneDB =
-                monitoringMilestoneService.getMonitoringMilestoneById(monitoringMilestone.getId());
+        List<CenterMonitoringMilestone> monitoringMilestones = monitoringOutcome.getMilestones();
 
-              monitoringMilestoneDB.setAchievedValue(monitoringMilestone.getAchievedValue());
-              monitoringMilestoneDB.setNarrative(monitoringMilestone.getNarrative());
+        if (monitoringMilestones != null) {
+          for (CenterMonitoringMilestone monitoringMilestone : monitoringMilestones) {
 
-              monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestoneDB);
+            CenterMonitoringMilestone monitoringMilestoneDB =
+              monitoringMilestoneService.getMonitoringMilestoneById(monitoringMilestone.getId());
 
-            }
+            monitoringMilestoneDB.setAchievedValue(monitoringMilestone.getAchievedValue());
+            monitoringMilestoneDB.setNarrative(monitoringMilestone.getNarrative());
+
+            monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestoneDB);
+
           }
-
-
-          monitoringOutcomeDB.setStatusQuo(monitoringOutcome.getStatusQuo());
-          monitoringOutcomeDB.setCiatRole(monitoringOutcome.getCiatRole());
-          monitoringOutcomeDB.setWhatChanged(monitoringOutcome.getWhatChanged());
-          monitoringOutcomeService.saveMonitoringOutcome(monitoringOutcomeDB);
-
-          this.saveEvidences(monitoringOutcomeDB, monitoringOutcome);
-
-
         }
+
+
+        monitoringOutcomeDB.setStatusQuo(monitoringOutcome.getStatusQuo());
+        monitoringOutcomeDB.setCiatRole(monitoringOutcome.getCiatRole());
+        monitoringOutcomeDB.setWhatChanged(monitoringOutcome.getWhatChanged());
+        monitoringOutcomeService.saveMonitoringOutcome(monitoringOutcomeDB);
+
+        this.saveEvidences(monitoringOutcomeDB, monitoringOutcome);
+
+
       }
+    }
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.OUTCOME_MONITORING_RELATION);
       outcome = outcomeService.getResearchOutcomeById(outcomeID);
       outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
 
-      Path path = this.getAutoSaveFilePath();
+    Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
-
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-        }
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
-
-      return SUCCESS;
-    } else {
-
-      return NOT_AUTHORIZED;
+    if (path.toFile().exists()) {
+      path.toFile().delete();
     }
+
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
+
+    return SUCCESS;
   }
 
 

@@ -4,19 +4,36 @@ DELIMITER ;;
 CREATE PROCEDURE `modify_id_field_metadata_elements`() 
 BEGIN 
 IF (SELECT EXISTS (
-SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE constraint_name='deliverable_metadata_elements_ibfk_2' 
-AND table_name='deliverable_metadata_elements' AND table_schema = DATABASE())) = 1
+SELECT * FROM information_schema.COLUMNS WHERE column_name='id' AND table_name='metadata_elements' 
+AND data_type = 'int' AND table_schema = DATABASE())) = 1
 THEN
   ALTER TABLE `deliverable_metadata_elements` DROP FOREIGN KEY `deliverable_metadata_elements_ibfk_2`;  
   ALTER TABLE `metadata_elements` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
   ALTER TABLE `deliverable_metadata_elements` MODIFY `element_id` bigint(20);
-  ALTER TABLE `deliverable_metadata_elements` ADD CONSTRAINT `FK_deliverable_metadata_elements_metadata_elements`FOREIGN KEY (`element_id`) REFERENCES `metadata_elements`(`id`);
-  ALTER TABLE `deliverable_metadata_elements` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  ALTER TABLE `deliverable_metadata_elements` ADD CONSTRAINT `FK_deliverable_metadata_elements_metadata_elements` FOREIGN KEY (`element_id`) REFERENCES `metadata_elements`(`id`);
 END IF; 
 END ;;
 DELIMITER ;
 CALL modify_id_field_metadata_elements();
 DROP PROCEDURE `modify_id_field_metadata_elements`;
+
+
+#Change deliverable_metadata_elements id column to use bigint instead of int
+DROP PROCEDURE IF EXISTS `modify_id_field_deliverable_metadata_elements`;
+DELIMITER ;;
+CREATE PROCEDURE `modify_id_field_deliverable_metadata_elements`() 
+BEGIN 
+IF (SELECT EXISTS (
+SELECT * FROM information_schema.COLUMNS WHERE column_name='id' AND table_name='deliverable_metadata_elements' 
+AND data_type = 'int' AND table_schema = DATABASE())) = 1
+THEN
+  ALTER TABLE `deliverable_metadata_elements` MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+END IF; 
+END ;;
+DELIMITER ;
+CALL modify_id_field_deliverable_metadata_elements();
+DROP PROCEDURE `modify_id_field_deliverable_metadata_elements`;
+
 
 #Change deliverable_data_sharing id column to use bigint instead of int
 DROP PROCEDURE IF EXISTS `modify_id_field_deliverable_data_sharing`;

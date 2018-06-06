@@ -16,7 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -54,6 +58,13 @@ public interface DeliverableCrpDAO {
    */
   public List<DeliverableCrp> findAll();
 
+  /**
+   * This method gets a DeliverableCrp object by a given phase, deliverable, global unit, crp program identifier
+   * 
+   * @return a DeliverableCrp object.
+   */
+  public DeliverableCrp findDeliverableCrpByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
+    GlobalUnit globalUnit, CrpProgram crpProgram);
 
   /**
    * This method saves the information of the given deliverableCrp

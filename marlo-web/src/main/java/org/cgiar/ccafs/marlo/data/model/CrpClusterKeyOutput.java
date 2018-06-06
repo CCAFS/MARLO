@@ -144,5 +144,11 @@ public class CrpClusterKeyOutput extends MarloAuditableEntity implements java.io
     this.keyOutputOutcomes = keyOutputOutcomes;
   }
 
+  @Override
+  public String toString() {
+    return "CrpClusterKeyOutput [id=" + this.getId() + ", keyOutput=" + keyOutput + ", crpClusterOfActivity="
+      + crpClusterOfActivity + ", composeID=" + composeID + ", active=" + this.isActive() + "]";
+  }
+
 }
 

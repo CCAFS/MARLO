@@ -17,12 +17,18 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableCrpDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -66,6 +72,35 @@ public class DeliverableCrpMySQLDAO extends AbstractMarloDAO<DeliverableCrp, Lon
     }
     return null;
 
+  }
+
+  @Override
+  public DeliverableCrp findDeliverableCrpByPhaseAndDeliverable(Phase phase, Deliverable deliverable,
+    GlobalUnit globalUnit, CrpProgram crpProgram) {
+    String query =
+      "select distinct dc from DeliverableCrp dc where phase.id = :phaseId " + "and deliverable.id= :deliverableId ";
+    if (globalUnit != null) {
+      query += "and globalUnit.id = :globalUnit ";
+    } else {
+      query += "and globalUnit.id IS NULL ";
+    }
+    if (crpProgram != null) {
+      query += "and crpProgram.id = :crpProgram ";
+    } else {
+      query += "and crpProgram.id IS NULL ";
+    }
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverable.getId());
+    if (globalUnit != null) {
+      createQuery.setParameter("globalUnit", globalUnit.getId());
+    }
+    if (crpProgram != null) {
+      createQuery.setParameter("crpProgram", crpProgram.getId());
+    }
+    Object findSingleResult = super.findSingleResult(DeliverableCrp.class, createQuery);
+    DeliverableCrp deliverableCrpResult = (DeliverableCrp) findSingleResult;
+    return deliverableCrpResult;
   }
 
   @Override

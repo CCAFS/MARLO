@@ -1,0 +1,1 @@
+ALTER TABLE `project_highlights_types` ADD CONSTRAINT `project_highlights_types_ibfk_2` FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`);

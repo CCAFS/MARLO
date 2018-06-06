@@ -99,6 +99,7 @@ public class ProjectCaseStudiesListAction extends BaseAction {
 
       if (caseStudyID > 0) {
         CaseStudyProject caseStudyProject = new CaseStudyProject();
+        caseStudyProject.setCreated(true);
         caseStudyProject.setCaseStudy(caseStudy);
         caseStudyProject.setProject(project);
         caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);

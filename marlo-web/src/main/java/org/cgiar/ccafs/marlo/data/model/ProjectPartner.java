@@ -31,9 +31,12 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
   private String responsibilities;
   @Expose
   private Phase phase;
-
   @Expose
   private String subDepartment;
+  @Expose
+  private Boolean hasPartnerships;
+
+  private ProjectPartnerPartnership projectPartnerPartnership;
 
 
   private Set<ProjectPartnerContribution> projectPartnerContributions = new HashSet<ProjectPartnerContribution>(0);
@@ -43,19 +46,24 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
 
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
 
-  private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
 
+  private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
 
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
+
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
-  private List<InstitutionLocation> selectedLocations = new ArrayList<>();
+  private Set<ProjectPartnerPartnership> projectPartnerPartnerships = new HashSet<ProjectPartnerPartnership>(0);
 
+  private List<InstitutionLocation> selectedLocations = new ArrayList<>();
 
   private List<ProjectPartnerPerson> partnerPersons = new ArrayList<>();
 
   private List<ProjectPartnerContribution> partnerContributors = new ArrayList<>();
+
+  private List<ProjectPartnerPartnership> partnerPartnerships = new ArrayList<>();
+
 
   public ProjectPartner() {
   }
@@ -108,6 +116,11 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     return deliverablePartnerships;
   }
 
+
+  public Boolean getHasPartnerships() {
+    return hasPartnerships;
+  }
+
   public Institution getInstitution() {
     return this.institution;
   }
@@ -122,9 +135,12 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     return sb.toString();
   }
 
-
   public List<ProjectPartnerContribution> getPartnerContributors() {
     return partnerContributors;
+  }
+
+  public List<ProjectPartnerPartnership> getPartnerPartnerships() {
+    return partnerPartnerships;
   }
 
 
@@ -170,23 +186,32 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     return this.projectPartnerContributions;
   }
 
+
   public Set<ProjectPartnerContribution> getProjectPartnerContributors() {
     return this.projectPartnerContributors;
   }
+
 
   public Set<ProjectPartnerLocation> getProjectPartnerLocations() {
     return projectPartnerLocations;
   }
 
+
   public Set<ProjectPartnerOverall> getProjectPartnerOveralls() {
     return this.projectPartnerOveralls;
   }
 
+  public ProjectPartnerPartnership getProjectPartnerPartnership() {
+    return projectPartnerPartnership;
+  }
+
+  public Set<ProjectPartnerPartnership> getProjectPartnerPartnerships() {
+    return projectPartnerPartnerships;
+  }
 
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return this.projectPartnerPersons;
   }
-
 
   public String getResponsibilities() {
     return responsibilities;
@@ -249,23 +274,31 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     this.deliverablePartnerships = deliverablePartnerships;
   }
 
+  public void setHasPartnerships(Boolean hasPartnerships) {
+    this.hasPartnerships = hasPartnerships;
+  }
+
   public void setInstitution(Institution institution) {
     this.institution = institution;
   }
-
 
   public void setPartnerContributors(List<ProjectPartnerContribution> partnerContributors) {
     this.partnerContributors = partnerContributors;
   }
 
+  public void setPartnerPartnerships(List<ProjectPartnerPartnership> partnerPartnerships) {
+    this.partnerPartnerships = partnerPartnerships;
+  }
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -276,7 +309,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     this.projectPartnerContributions = projectPartnerContributionsesForProjectPartnerId;
   }
 
-
   public void setProjectPartnerContributors(
     Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerContributorId) {
     this.projectPartnerContributors = projectPartnerContributionsesForProjectPartnerContributorId;
@@ -286,8 +318,17 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     this.projectPartnerLocations = projectPartnerLocations;
   }
 
+
   public void setProjectPartnerOveralls(Set<ProjectPartnerOverall> projectPartnerOveralls) {
     this.projectPartnerOveralls = projectPartnerOveralls;
+  }
+
+  public void setProjectPartnerPartnership(ProjectPartnerPartnership projectPartnerPartnership) {
+    this.projectPartnerPartnership = projectPartnerPartnership;
+  }
+
+  public void setProjectPartnerPartnerships(Set<ProjectPartnerPartnership> projectPartnerPartnerships) {
+    this.projectPartnerPartnerships = projectPartnerPartnerships;
   }
 
   public void setProjectPartnerPersons(Set<ProjectPartnerPerson> projectPartnerPersonses) {

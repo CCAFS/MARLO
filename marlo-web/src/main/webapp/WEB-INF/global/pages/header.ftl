@@ -36,7 +36,7 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20181004" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20180905" />
     <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global-center.css" />
@@ -70,6 +70,7 @@
         
         <div class="container">
           <div class="marlo-header">
+            [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
                 <div id="title" >MARLO</div>    
@@ -77,27 +78,19 @@
                 <div class="clearfix"></div>
               </a>
             </div>
-            
-            [#-- Image/Logo--]
+            [#-- GlobalUnit Image/Logo--]
             [#if namespace?contains('superadmin')]
               <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
             [#else]
               [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
-            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
-            <h4 class="">
-              [#-- Planning / Reporting tag --]
-              
-              [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
-            </h4>
-            </a>
+            [#-- Testing Environment --]
+            [#if !config.production]<h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
+            [#-- Closed --]
+            <h4 class="">[#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]</h4>
           </div>
-          [#if namespace?contains('superadmin')]
-            <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
-          [#else]
-            [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
-          [/#if]
+          
         </div>
       </header>
     [/#if]

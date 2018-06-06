@@ -12,17 +12,17 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
 
   private static final long serialVersionUID = 3934374948729277454L;
 
+  @Expose
+  private CrpProgram crpProgram;
+
 
   @Expose
-  private CrpPandr crpPandr;
-
-
-  @Expose
-  private IpProgram ipProgram;
+  private GlobalUnit globalUnit;
 
 
   @Expose
   private Deliverable deliverable;
+
 
   @Expose
   private Phase phase;
@@ -36,6 +36,7 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
 
     this.deliverable = deliverable;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -59,8 +60,8 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
     return true;
   }
 
-  public CrpPandr getCrpPandr() {
-    return crpPandr;
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
   }
 
 
@@ -68,9 +69,11 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
     return deliverable;
   }
 
-  public IpProgram getIpProgram() {
-    return ipProgram;
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -79,13 +82,11 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -94,9 +95,11 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
     return u;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
+
 
   @Override
   public int hashCode() {
@@ -112,9 +115,8 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
     return true;
   }
 
-
-  public void setCrpPandr(CrpPandr crpPandr) {
-    this.crpPandr = crpPandr;
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
 
@@ -123,8 +125,8 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
   }
 
 
-  public void setIpProgram(IpProgram ipProgram) {
-    this.ipProgram = ipProgram;
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
 
@@ -135,10 +137,9 @@ public class DeliverableCrp extends MarloBaseEntity implements java.io.Serializa
 
   @Override
   public String toString() {
-    return "DeliverableCrp [id=" + this.getId() + ", crpPandr=" + crpPandr + ", ipProgram=" + ipProgram
-      + ", deliverable=" + deliverable + "]";
+    return "DeliverableCrp [id=" + this.getId() + ", deliverable=" + deliverable + ", phase=" + phase + ", crpProgram="
+      + crpProgram + ", globalUnit=" + globalUnit + "]";
   }
-
 
 }
 

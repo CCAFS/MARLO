@@ -37,9 +37,11 @@ function autoSave() {
         method: 'POST',
         url: baseURL + '/autosaveWriter.do',
         data: {
-          autoSave: JSON.stringify($('form:first').serializeObject())
+            autoSave: JSON.stringify($('form:first').serializeObject()),
+            phaseID: phaseID
         },
         beforeSend: function(xhr,opts) {
+          console.log("autoSaveActive", autoSaveActive);
           if(autoSaveActive) {
             $draftTag.text('... Saving');
           } else {
@@ -188,6 +190,8 @@ function validateThisSection() {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
           } else {
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
+            // Hide Submit Button
+            $('.projectSubmitButton, .completed-mode').hide();
           }
         }
         $sectionMenu.removeClass('loadingSection');

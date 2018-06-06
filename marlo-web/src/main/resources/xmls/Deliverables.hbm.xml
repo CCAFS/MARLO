@@ -35,15 +35,15 @@
       <column name="is_publication" />
     </property>
     
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="createDate" type="timestamp">
 			<column name="create_date" length="19" not-null="true" />
 		</property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="false" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		
 		<set name="deliverablePartnerships" table="deliverable_partnerships"
@@ -159,6 +159,19 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLeader" />
         </set>
-        
+        <set name="deliverableIntellectualAssets" table="deliverable_intellectual_assets" inverse="true"
+          lazy="true" fetch="select">
+          <key>
+            <column name="deliverable" />
+          </key>
+          <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset" />
+        </set>
+        <set name="deliverableParticipants" table="deliverable_participants" inverse="true"
+          lazy="true" fetch="select">
+          <key>
+            <column name="deliverable_id" />
+          </key>
+          <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableParticipant" />
+        </set>
 	</class>
 </hibernate-mapping>

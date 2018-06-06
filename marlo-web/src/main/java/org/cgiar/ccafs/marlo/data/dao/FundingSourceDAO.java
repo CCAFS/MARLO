@@ -115,7 +115,8 @@ public interface FundingSourceDAO {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID);
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
+    long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

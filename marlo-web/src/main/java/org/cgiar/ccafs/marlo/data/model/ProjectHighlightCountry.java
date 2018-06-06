@@ -21,12 +21,11 @@ public class ProjectHighlightCountry extends MarloBaseEntity implements java.io.
   @Expose
   private LocElement locElement;
 
-  public ProjectHighlightCountry() {
-  }
+  @Expose
+  private Phase phase;
 
-  public ProjectHighlightCountry(ProjectHighlight projectHighlight, LocElement locElement) {
-    this.projectHighlight = projectHighlight;
-    this.locElement = locElement;
+
+  public ProjectHighlightCountry() {
   }
 
   @Override
@@ -79,6 +78,10 @@ public class ProjectHighlightCountry extends MarloBaseEntity implements java.io.
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public ProjectHighlight getProjectHighligth() {
     return projectHighlight;
   }
@@ -102,6 +105,10 @@ public class ProjectHighlightCountry extends MarloBaseEntity implements java.io.
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectHighligth(ProjectHighlight projectHighlight) {

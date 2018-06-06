@@ -13,33 +13,33 @@
     <one-to-one name="powbSynthesis"
       class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" constrained="true"></one-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
             <column name="created_by">
                 <comment>foreign key to the table users</comment>
             </column>
         </many-to-one>
         <property name="keyExternalPartners" type="string">
-            <column name="key_external_partners" length="65535" />
+            <column name="key_external_partners" sql-type="TEXT" />
         </property>
         <property name="cotributionsPlatafforms" type="string">
-            <column name="cotributions_platafforms" length="65535" />
+            <column name="cotributions_platafforms" sql-type="TEXT" />
         </property>
         <property name="crossCrp" type="string">
-            <column name="cross_crp" length="65535" />
+            <column name="cross_crp" sql-type="TEXT" />
         </property>
         <property name="effostornCountry" type="string">
-            <column name="effostorn_country" length="65535" />
+            <column name="effostorn_country" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
+        <property name="activeSince" type="timestamp" update="false">
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
     </class>
 </hibernate-mapping>

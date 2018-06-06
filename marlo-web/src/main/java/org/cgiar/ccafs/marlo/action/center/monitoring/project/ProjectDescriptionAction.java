@@ -479,7 +479,6 @@ public class ProjectDescriptionAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-        System.out.println(String.valueOf(project.getGlobal()));
         if (project.getGlobal() != null) {
           project.setsGlobal(String.valueOf(project.getGlobal()));
         }

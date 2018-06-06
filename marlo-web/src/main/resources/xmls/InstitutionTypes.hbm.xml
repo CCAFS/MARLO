@@ -22,8 +22,12 @@
 			<column name="old" />
 		</property>		
 		<property name="description" type="string">
-			<column name="description" length="65535" />
+			<column name="description" sql-type="TEXT" />
 		</property>
+		<many-to-one name="repIndOrganizationType"
+      class="org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType" fetch="select">
+      <column name="rep_ind_organization_type_id" />
+    </many-to-one>
 		<set name="institutions" table="institutions" inverse="true" lazy="true"
 			fetch="select">
 			<key>

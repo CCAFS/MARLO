@@ -1,5 +1,5 @@
 package org.cgiar.ccafs.marlo.data.model;
-// Generated Jan 25, 2018 9:11:39 AM by Hibernate Tools 4.3.1.Final
+// Generated Apr 30, 2018 10:48:00 AM by Hibernate Tools 3.4.0.CR1
 
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
@@ -11,16 +11,18 @@ import com.google.gson.annotations.Expose;
  */
 public class ExpectedStudyProject extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+  private static final long serialVersionUID = 131925401132219339L;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -6286537244752127538L;
-
-
-  private ProjectExpectedStudy projectExpectedStudy;
   @Expose
-  private Project myProject;
+  private Phase phase;
+
+
+  @Expose
+  private ProjectExpectedStudy projectExpectedStudy;
+
+
+  @Expose
+  private Project project;
 
   public ExpectedStudyProject() {
   }
@@ -33,7 +35,6 @@ public class ExpectedStudyProject extends MarloAuditableEntity implements java.i
     if (obj == null) {
       return false;
     }
-
     ExpectedStudyProject other = (ExpectedStudyProject) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
@@ -53,8 +54,13 @@ public class ExpectedStudyProject extends MarloAuditableEntity implements java.i
   }
 
 
-  public Project getMyProject() {
-    return myProject;
+  public Phase getPhase() {
+    return phase;
+  }
+
+
+  public Project getProject() {
+    return project;
   }
 
 
@@ -72,8 +78,13 @@ public class ExpectedStudyProject extends MarloAuditableEntity implements java.i
   }
 
 
-  public void setMyProject(Project project) {
-    this.myProject = project;
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 
 

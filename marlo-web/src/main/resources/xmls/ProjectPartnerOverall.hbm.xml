@@ -15,7 +15,7 @@
             <column name="year" not-null="true" />
         </property>
         <property name="overall" type="string">
-            <column name="overall" length="65535" not-null="true" />
+            <column name="overall" sql-type="TEXT" not-null="true" />
         </property>
     </class>
 </hibernate-mapping>

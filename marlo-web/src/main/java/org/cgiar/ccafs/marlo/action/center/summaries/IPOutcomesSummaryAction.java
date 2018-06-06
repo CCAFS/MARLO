@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
@@ -38,7 +37,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -67,20 +65,22 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   // PDF bytes
   private byte[] bytesExcel;
   // Services
-  private ICenterProgramManager programService;
-  private ICenterOutcomeManager outcomeService;
-  private ICenterMilestoneManager milestoneService;
+  private final ICenterProgramManager programService;
+  private final ICenterOutcomeManager outcomeService;
+  private final ICenterMilestoneManager milestoneService;
+  private final ResourceManager resourceManager;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
 
   @Inject
   public IPOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
-    ICenterOutcomeManager outcomeService, ICenterMilestoneManager milestoneService) {
+    ICenterOutcomeManager outcomeService, ICenterMilestoneManager milestoneService, ResourceManager resourceManager) {
     super(config);
     this.programService = programService;
     this.outcomeService = outcomeService;
     this.milestoneService = milestoneService;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -114,13 +114,10 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
   @Override
   public String execute() throws Exception {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager =
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
     try {
 
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/center/CenterOutcomes.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/center/CenterOutcomes.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -132,7 +129,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      System.out.println("Pentaho SubReports: " + hm);
+      // System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
       String masterQueryName = "main";

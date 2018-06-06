@@ -102,30 +102,21 @@ public class OutcomesValidator extends BaseValidator {
     }
 
 
-    if (milestone.getTargetUnit() == null) {
+    if (milestone.getSrfTargetUnit() == null) {
       baseAction.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
-      baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].targetUnit.id",
+      baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].srfTargetUnit.id",
         InvalidFieldsMessages.EMPTYFIELD);
 
-
     } else {
-      if (milestone.getTargetUnit().getId() != -1 && milestone.getValue() != null) {
+      if (milestone.getSrfTargetUnit().getId() != -1 && milestone.getValue() != null) {
         if (!this.isValidNumber(String.valueOf(milestone.getValue()))) {
           baseAction.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
           baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].value",
             InvalidFieldsMessages.EMPTYFIELD);
-
         }
       }
     }
 
-    if (!this.isValidNumber(String.valueOf(milestone.getValue()))) {
-      if (milestone.getTargetUnit().getId() != -1) {
-        baseAction.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
-        baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].value",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
 
   }
 
@@ -160,13 +151,13 @@ public class OutcomesValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-outcome.targetYear", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (outcome.getTargetUnit() == null) {
+    if (outcome.getSrfTargetUnit() == null) {
       baseAction.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
-      baseAction.getInvalidFields().put("input-outcome.targetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-outcome.srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
 
 
     } else {
-      if (outcome.getTargetUnit().getId() != -1 && outcome.getValue() != null) {
+      if (outcome.getSrfTargetUnit().getId() != -1 && outcome.getValue() != null) {
         if (!this.isValidNumber(String.valueOf(outcome.getValue()))) {
           baseAction.addMessage(baseAction.getText("outcome.action.value.required"));
           baseAction.getInvalidFields().put("input-outcome.value", InvalidFieldsMessages.EMPTYFIELD);

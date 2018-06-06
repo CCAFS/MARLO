@@ -15,19 +15,19 @@
             <column name="liaison_institution_id" />
         </many-to-one>
         <property name="target" type="string">
-            <column name="target" length="65535" />
+            <column name="target" sql-type="TEXT" />
         </property>
         <property name="nextTarget" type="string">
-            <column name="next_target" length="65535" />
+            <column name="next_target" sql-type="TEXT" />
         </property>
         <property name="actual" type="string">
-            <column name="actual" length="65535" />
+            <column name="actual" sql-type="TEXT" />
         </property>
         <property name="supportLinks" type="string">
-            <column name="support_links" length="65535" />
+            <column name="support_links" sql-type="TEXT" />
         </property>
         <property name="deviation" type="string">
-            <column name="deviation" length="65535" />
+            <column name="deviation" sql-type="TEXT" />
         </property>
         <property name="year" type="int">
             <column name="year" not-null="true" />

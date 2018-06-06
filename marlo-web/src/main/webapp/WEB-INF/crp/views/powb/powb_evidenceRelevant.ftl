@@ -41,7 +41,6 @@
           [#-- Provide a short narrative for any outcome --]
           [#if PMU]
           <div class="form-group margin-panel">
-            [#-- Change display=true for display=PMU to show just for PMU --]
             [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" helpIcon=false display=true required=true className="" labelClass="" paramText="${(actualPhase.year)!}" editable=editable powbInclude=true /]
           </div>
           [/#if]

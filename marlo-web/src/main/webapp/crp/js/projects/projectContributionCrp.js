@@ -133,7 +133,7 @@ function removeMilestone() {
   var $parent = $(this).parent();
   var $select = $parent.parents('.milestonesYearBlock').find('.milestonesYearSelect select');
   var value = $parent.find('.crpMilestoneId').val();
-  var name = $parent.find('.title').text();
+  var name = $parent.find('.crpMilestoneYear').text() + " - " + $parent.find('.title').text();
 
   $parent.hide('slow', function() {
     // Remove milestone block

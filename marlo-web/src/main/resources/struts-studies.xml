@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+  <!-- Add addition packages and configuration here. -->
+  <package name="studies" namespace="/studies" extends="marlo-default">
+
+    <!-- Studies not directly linked to a Project Lists -->
+    <action name="{crp}/studiesList"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/crp/views/studies/studiesList.ftl
+      </result>
+    </action>
+
+    <!-- Study -->
+    <action name="{crp}/study"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesAction">
+      <interceptor-ref name="editStudyStack" />
+      <result name="input">/WEB-INF/crp/views/studies/study.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/study</param>
+        <param name="edit">true</param>
+        <param name="expectedID">${expectedStudy.id}</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+
+    <action name="{crp}/addNewStudy" method="add"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/crp/views/studies/studiesList.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/study</param>
+        <param name="expectedID">${expectedID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+
+    <action name="{crp}/deleteStudy" method="delete"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/studiesList</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+
+  </package>
+</struts>
