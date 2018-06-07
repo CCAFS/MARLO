@@ -21,25 +21,30 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Phase phase;
 
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
 
   @Expose
   private ReportSynthesisCrpProgress reportSynthesisCrpProgress;
 
-
   @Expose
   private ReportSynthesisFinancialSummary reportSynthesisFinancialSummary;
-
 
   @Expose
   private ReportSynthesisGovernance reportSynthesisGovernance;
 
+
   @Expose
   private ReportSynthesisRisk reportSynthesisRisk;
 
+
   @Expose
   private ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension;
+
+  @Expose
+  private ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -88,11 +93,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return phase;
   }
 
-
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
   }
-
 
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
@@ -101,6 +104,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
     return reportSynthesisFinancialSummary;
+  }
+
+
+  public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
+    return reportSynthesisFlagshipProgress;
   }
 
 
@@ -127,6 +135,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return result;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -146,6 +155,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setReportSynthesisFinancialSummary(ReportSynthesisFinancialSummary reportSynthesisFinancialSummary) {
     this.reportSynthesisFinancialSummary = reportSynthesisFinancialSummary;
+  }
+
+  public void setReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
+    this.reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgress;
   }
 
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {

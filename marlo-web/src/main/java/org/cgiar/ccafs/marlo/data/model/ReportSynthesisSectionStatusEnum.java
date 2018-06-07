@@ -23,7 +23,7 @@ public enum ReportSynthesisSectionStatusEnum {
 
 
   CRP_PROGRESS("crpProgress"), GOVERNANCE("governance"), FINANCIAL_SUMMARY("financial"), RISKS("risks"),
-  CROSS_CUTTING("ccDimensions");
+  CROSS_CUTTING("ccDimensions"), FLAGSHIP_PROGRESS("flagshipProgress");
 
   public static ReportSynthesisSectionStatusEnum value(String status) {
     ReportSynthesisSectionStatusEnum[] lst = ReportSynthesisSectionStatusEnum.values();

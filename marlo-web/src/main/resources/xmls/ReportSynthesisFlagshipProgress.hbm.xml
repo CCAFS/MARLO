@@ -26,8 +26,8 @@
         <property name="activeSince" type="timestamp" update="false">
             <column name="active_since" length="19" not-null="true" />
         </property>
-        <property name="modificationJustificacion" type="string">
-            <column name="modification_justificacion" sql-type="TEXT" />
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT" />
         </property>
         <set name="reportSynthesisFlagshipProgressMilestones" table="report_synthesis_flagship_progress_milestones" inverse="true" lazy="true" fetch="select">
             <key>
