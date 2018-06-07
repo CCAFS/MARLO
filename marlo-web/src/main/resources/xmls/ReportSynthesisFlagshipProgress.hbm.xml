@@ -14,20 +14,20 @@
             <column name="modified_by" />
         </many-to-one>
         <one-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" constrained="true"></one-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
         </many-to-one>
         <property name="summary" type="string">
-            <column name="summary" length="65535" />
+            <column name="summary" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustificacion" type="string">
-            <column name="modification_justificacion" length="65535" />
+            <column name="modification_justificacion" sql-type="TEXT" />
         </property>
         <set name="reportSynthesisFlagshipProgressMilestones" table="report_synthesis_flagship_progress_milestones" inverse="true" lazy="true" fetch="select">
             <key>

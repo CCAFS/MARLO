@@ -1279,10 +1279,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
     ReportSynthesis synthesis = new ReportSynthesis();
-    synthesis.setActive(true);
-    synthesis.setActiveSince(new Date());
-    synthesis.setCreatedBy(this.getCurrentUser());
-    synthesis.setModifiedBy(this.getCurrentUser());
     synthesis.setPhase(phase);
     synthesis.setLiaisonInstitution(liaisonInstitution);
 

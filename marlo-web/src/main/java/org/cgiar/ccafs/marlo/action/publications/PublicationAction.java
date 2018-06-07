@@ -1524,7 +1524,6 @@ public class PublicationAction extends BaseAction {
             }
             for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
               if (!locationsSave.contains(deliverableParticipantLocation)) {
-                deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
                 deliverableParticipantLocationManager
                   .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
               }
