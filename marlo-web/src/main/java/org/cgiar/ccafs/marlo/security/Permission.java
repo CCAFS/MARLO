@@ -90,6 +90,7 @@ public class Permission {
     "crp:{0}:reportSynthesis:{1}:ccDimensions";
   public static final String REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:flagshipProgress";
+  public static final String REPORT_SYNTHESIS_PROGRAM_VARIANCE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:variance";
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";

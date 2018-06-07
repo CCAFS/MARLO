@@ -45,7 +45,7 @@
     </action>
     
 		<!--  2.1 Variance from Planned Program  -->
-		<action name="{crp}/plannedVariance" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/plannedVariance" class="org.cgiar.ccafs.marlo.action.annualReport.ProgramVarianceAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_plannedVariance.ftl</result>
       <result name="success" type="redirectAction">
