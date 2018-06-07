@@ -870,13 +870,25 @@ public class ProjectOutcomeAction extends BaseAction {
         }
       }
 
-      // projectOutcome.setId(projectOutcomeID);
-      projectOutcome.setPhase(this.getActualPhase());
-
-      projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
+      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
+      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
+      projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
 
       // Reporting phase
     } else {
+
+      if (projectOutcome.getAchievedUnit() != null && (projectOutcome.getAchievedUnit().getId() == null
+        || projectOutcome.getAchievedUnit().getId().longValue() == -1)) {
+        projectOutcomeDB.setAchievedUnit(null);
+        projectOutcomeDB.setAchievedValue(null);
+      } else {
+        projectOutcomeDB.setAchievedUnit(projectOutcome.getAchievedUnit());
+        projectOutcomeDB.setAchievedValue(projectOutcome.getAchievedValue());
+      }
+
+      projectOutcomeDB.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
+
+      // Reporting phase
 
       if (projectOutcome.getExpectedUnit() != null) {
         if (projectOutcome.getExpectedUnit().getId() == null

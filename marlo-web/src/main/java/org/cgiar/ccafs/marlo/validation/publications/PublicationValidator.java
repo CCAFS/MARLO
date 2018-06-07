@@ -541,4 +541,3 @@ public class PublicationValidator extends BaseValidator {
     }
   }
 }
-
