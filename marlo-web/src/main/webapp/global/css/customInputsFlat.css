@@ -1,9 +1,6 @@
 /* The container */
 .inputContainer {
-    /* display: block; */
     position: relative;
-    /* padding-left: 35px; */
-    /* margin: 0; */
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -14,8 +11,6 @@
 /* Hide the browser's default checkbox */
 .inputContainer input {
     display: none;
-    /* position: absolute; */
-    /* opacity: 0; */
     cursor: pointer;
 }
 
@@ -24,8 +19,8 @@
     position: absolute;
     top: -10px;
     left: -10px;
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     background-color: #eee;
     border: 1px solid #ccc;
     border-radius: 2px;
@@ -65,7 +60,7 @@
 .inputContainer .checkmark:after {
     left: 6px;
     top: 3px;
-    width: 6px;
+    width: 5px;
     height: 10px;
     border: solid white;
     border-width: 0 3px 3px 0;

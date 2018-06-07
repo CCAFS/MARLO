@@ -198,12 +198,7 @@
           </td>
           [#-- Include in AR--]
           <td class="text-center">
-          [#if editable]
-            [@customForm.checkBoxFlat id="${(item.id)!''}" name="item.name" value="${(item.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(item.id))!true)/]
-          [#else]
-            [#-- If does no have permissions --]
-            [#if powbSynthesis.powbEvidence.studiesIds?seq_contains(item.id)]<p class="checked"></p>[/#if]
-          [/#if]
+            [@customForm.checkmark id="${(item.id)!''}" name="item.name" value="${(item.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(item.id))!true) editable=editable/]
           </td>
         </tr>
       [/#list]
