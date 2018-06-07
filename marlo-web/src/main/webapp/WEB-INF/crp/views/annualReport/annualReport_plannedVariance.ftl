@@ -51,7 +51,7 @@
                 [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
               [#else]
                 <div class="textArea">
-                  <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
+                  <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]:</label>
                   <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
                 </div>
               [/#if]

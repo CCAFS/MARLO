@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+          
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -37,11 +40,9 @@
         [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        
-          [#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
+
           [#-- Title --]
-          <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
             [#-- Flagship summary of major results achieved in the past reporting period --]
             [#if flagship]
@@ -107,7 +108,7 @@
         </tr>
       </thead>
       <tbody>
-        [#list flagships as fp]
+        [#list (flagships)![] as fp]
           [#assign milestoneSize = fp.milestones?size]
           [#list fp.outcomes as outcome]
             [#assign outcomesSize = outcome.milestones?size]
@@ -195,64 +196,64 @@
 [/#macro]
 
 [#macro milestoneContributions element tiny=false]
-[#local projectContributions = action.getContributions(element.id) ]
-[#if projectContributions?size > 0]
-<button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
-  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="milestone-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
-        <hr />
-        <p><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
-        [#assign hasTarget = element.srfTargetUnit?? && (element.srfTargetUnit.id != -1) /]
-        [#if hasTarget]
-          <p><strong>Target unit:</strong> ${(element.srfTargetUnit.name!)} <br /> <strong>Target value:</strong> ${(element.value!)}</p>
-        [/#if]
-      </div>
-      <div class="modal-body">
-        <div class="">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th class="col-md-1"> Project ID </th>
-                <th class=""> Project Title </th>
-                [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Expected</th>[/#if]
-                [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Achieved</th>[/#if]
-                <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.target" /]  </th>
-                <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
-                <th> </th>
-              </tr>
-            </thead>
-            <tbody>
-              [#list projectContributions as contribution]
-                [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${contribution.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                <tr>
-                  <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
-                  <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
-                  [#if hasTarget]
-                  <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]</td>
-                  <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]</td>
-                  [/#if]
-                  <td>${(contribution.narrativeTarget?replace('\n', '<br>'))!} </td>
-                  <td>${(contribution.narrativeAchieved?replace('\n', '<br>'))!} </td>                  
-                  <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
-                </tr>
-              [/#list]
-            </tbody>
-          </table>
+  [#local projectContributions = (action.getContributions(element.id))![] ]
+  [#if projectContributions?size > 0]
+  <button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
+    <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="milestone-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
+          <hr />
+          <p><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
+          [#assign hasTarget = element.srfTargetUnit?? && (element.srfTargetUnit.id != -1) /]
+          [#if hasTarget]
+            <p><strong>Target unit:</strong> ${(element.srfTargetUnit.name!)} <br /> <strong>Target value:</strong> ${(element.value!)}</p>
+          [/#if]
         </div>
-        
+        <div class="modal-body">
+          <div class="">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th class="col-md-1"> Project ID </th>
+                  <th class=""> Project Title </th>
+                  [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Expected</th>[/#if]
+                  [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Achieved</th>[/#if]
+                  <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.target" /]  </th>
+                  <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
+                  <th> </th>
+                </tr>
+              </thead>
+              <tbody>
+                [#list projectContributions as contribution]
+                  [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${contribution.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  <tr>
+                    <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
+                    <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
+                    [#if hasTarget]
+                    <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]</td>
+                    <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]</td>
+                    [/#if]
+                    <td>${(contribution.narrativeTarget?replace('\n', '<br>'))!} </td>
+                    <td>${(contribution.narrativeAchieved?replace('\n', '<br>'))!} </td>                  
+                    <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                  </tr>
+                [/#list]
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
       </div>
-      <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
     </div>
   </div>
-</div>
-[/#if]
+  [/#if]
 [/#macro]

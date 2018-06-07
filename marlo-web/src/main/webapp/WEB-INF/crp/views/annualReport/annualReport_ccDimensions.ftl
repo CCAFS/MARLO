@@ -330,7 +330,9 @@
           [#list list as item]
             [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
             <tr>
-              <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
+              <td>
+                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
+              </td>
               [#list columns as column]
                 <td>
                   [#if (item[column]?has_content)!false] 
