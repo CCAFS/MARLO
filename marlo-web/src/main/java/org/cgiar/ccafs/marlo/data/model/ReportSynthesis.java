@@ -35,7 +35,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisGovernance reportSynthesisGovernance;
 
-
   @Expose
   private ReportSynthesisRisk reportSynthesisRisk;
 
@@ -46,10 +45,16 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress;
 
+  @Expose
+  private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
+
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   public ReportSynthesis() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -101,11 +106,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrpProgress;
   }
 
-
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
     return reportSynthesisFinancialSummary;
   }
-
 
   public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
     return reportSynthesisFlagshipProgress;
@@ -114,6 +117,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
+  }
+
+
+  public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
+    return reportSynthesisProgramVariance;
   }
 
 
@@ -140,6 +148,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -163,6 +172,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
     this.reportSynthesisGovernance = reportSynthesisGovernance;
+  }
+
+  public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
+    this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
   }
 
 
