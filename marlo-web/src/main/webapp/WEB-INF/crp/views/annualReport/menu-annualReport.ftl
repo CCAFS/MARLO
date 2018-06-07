@@ -4,39 +4,39 @@
   { 'title': '1.  Key Results', 'show': true,
     'items': [
     { 'slug': 'crpProgress',          'name': 'powb.menu.crpProgress',          'action': 'crpProgress',        'active': true },
-    { 'slug': 'flagshipProgress',     'name': 'powb.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true },
+    { 'slug': 'flagshipProgress',     'name': 'powb.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
     { 'slug': 'ccDimensions',         'name': 'powb.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
     ]
   },
   { 'title': '2. CRP Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'plannedVariance',        'name': 'powb.menu.plannedVariance',      'action': 'plannedVariance',        'active': true },
-    { 'slug': 'fundingUse',             'name': 'powb.menu.fundingUse',           'action': 'fundingUse',             'active': true }
+    { 'slug': 'plannedVariance',        'name': 'powb.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'fundingUse',             'name': 'powb.menu.fundingUse',           'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
     { 'slug': 'externalPartnerships',   'name': 'powb.menu.externalPartnerships', 'action': 'externalPartnerships',   'active': true },
     { 'slug': 'crossPartnerships',      'name': 'powb.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true },
     { 'slug': 'melia',                  'name': 'powb.menu.melia',                'action': 'melia',                  'active': true },
-    { 'slug': 'efficiency',             'name': 'powb.menu.efficiency',           'action': 'efficiency',             'active': true }
+    { 'slug': 'efficiency',             'name': 'powb.menu.efficiency',           'action': 'efficiency',             'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '3.  CRP Management', 'show': true,
     'items': [
-    { 'slug': 'governance',   'name': 'powb.menu.governance',   'action': 'governance',   'active': true }
-    { 'slug': 'risks',        'name': 'powb.menu.risks',        'action': 'risks',        'active': true },
-    { 'slug': 'financial',    'name': 'powb.menu.financial',    'action': 'financial',    'active': true }
+    { 'slug': 'governance',   'name': 'powb.menu.governance',   'action': 'governance',   'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'risks',        'name': 'powb.menu.risks',        'action': 'risks',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'financial',    'name': 'powb.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': 'CRP Indicators', 'show': true,
     'items': [
-    { 'slug': 'influence',    'name': 'powb.menu.influence',    'action': 'influence',  'active': true },
-    { 'slug': 'control',      'name': 'powb.menu.control',      'action': 'control',    'active': true }
+    { 'slug': 'influence',    'name': 'powb.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'control',      'name': 'powb.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
     ]
   }
 ]/]
 
 
-[#assign submission = (action.isPowbSynthesisSubmitted(powbSynthesisID))!false /]
-[#assign canSubmit = (action.hasPersmissionSubmitPowb(powbSynthesisID))!false /]
-[#assign completed = (action.isCompletePowbSynthesis(powbSynthesisID))!false /]
+[#assign submission = false /]
+[#assign canSubmit = false /]
+[#assign completed = false /]
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]
@@ -51,8 +51,8 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
-            [#assign submitStatus = (action.getPowbSynthesisSectionStatus(item.action, powbSynthesisID))!false /]
-            [#assign hasDraft = (action.getAutoSaveFilePath(powbSynthesis.class.simpleName, item.action, powbSynthesis.id))!false /]
+            [#assign submitStatus = false /]
+            [#assign hasDraft = false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">

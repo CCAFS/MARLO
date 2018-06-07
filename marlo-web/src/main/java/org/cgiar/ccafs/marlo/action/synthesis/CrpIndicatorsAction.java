@@ -403,8 +403,6 @@ public class CrpIndicatorsAction extends BaseAction {
     }
 
     currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
-    currentLiaisonInstitution.setActiveSince(new Date());
-    currentLiaisonInstitution.setModifiedBy(this.getCurrentUser());
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPLIAISON_INDICATORS_REPORT);

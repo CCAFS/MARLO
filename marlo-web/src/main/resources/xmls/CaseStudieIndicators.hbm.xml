@@ -14,5 +14,9 @@
         <many-to-one name="ipIndicator" class="org.cgiar.ccafs.marlo.data.model.IpIndicator" fetch="select">
             <column name="id_indicator" not-null="true" />
         </many-to-one>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>
+

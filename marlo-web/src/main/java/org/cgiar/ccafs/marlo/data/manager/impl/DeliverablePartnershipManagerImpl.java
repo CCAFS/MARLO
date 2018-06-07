@@ -96,11 +96,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
     if (deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
-      deliverablePartnershipAdd.setActive(true);
-      deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
-      deliverablePartnershipAdd.setCreatedBy(deliverablePartnership.getCreatedBy());
-      deliverablePartnershipAdd.setModificationJustification(deliverablePartnership.getModificationJustification());
-      deliverablePartnershipAdd.setModifiedBy(deliverablePartnership.getModifiedBy());
       deliverablePartnershipAdd.setPhase(phase);
       deliverablePartnershipAdd.setDeliverable(deliverablePartnership.getDeliverable());
       deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
@@ -124,11 +119,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public DeliverablePartnership copyDeliverablePartnership(DeliverablePartnership deliverablePartnership, Phase phase) {
     DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
-    deliverablePartnershipAdd.setActive(true);
-    deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
-    deliverablePartnershipAdd.setCreatedBy(deliverablePartnership.getCreatedBy());
-    deliverablePartnershipAdd.setModificationJustification(deliverablePartnership.getModificationJustification());
-    deliverablePartnershipAdd.setModifiedBy(deliverablePartnership.getModifiedBy());
     deliverablePartnershipAdd.setPhase(phase);
     deliverablePartnershipAdd.setDeliverable(deliverablePartnership.getDeliverable());
     deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
@@ -147,8 +137,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
     DeliverablePartnership deliverablePartnership = this.getDeliverablePartnershipById(deliverablePartnershipId);
     Phase currentPhase = phaseDAO.find(deliverablePartnership.getPhase().getId());
-    deliverablePartnership.setActive(false);
-    deliverablePartnershipDAO.save(deliverablePartnership);
+    deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnership.getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (deliverablePartnership.getPhase().getNext() != null) {
         this.deleteDeliverablePartnership(deliverablePartnership.getPhase().getNext(),
@@ -187,8 +176,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
         projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
 
     for (DeliverablePartnership dePartnership : deliverablePartnerships) {
-      dePartnership.setActive(false);
-      deliverablePartnershipDAO.save(dePartnership);
+      deliverablePartnershipDAO.deleteDeliverablePartnership(dePartnership.getId());
     }
 
     if (phase.getNext() != null) {
@@ -343,11 +331,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
     if (deliverablePartnershipsUpdated.isEmpty() && !deliverablePartnershipsDB.isEmpty()) {
       for (DeliverablePartnership deliverablePartnershipDB : deliverablePartnershipsDB) {
-        deliverablePartnershipDB.setActive(true);
-        deliverablePartnershipDB.setActiveSince(partnershipDBUpdated.getActiveSince());
-        deliverablePartnershipDB.setCreatedBy(partnershipDBUpdated.getCreatedBy());
-        deliverablePartnershipDB.setModificationJustification(partnershipDBUpdated.getModificationJustification());
-        deliverablePartnershipDB.setModifiedBy(partnershipDBUpdated.getModifiedBy());
         deliverablePartnershipDB.setPhase(phase);
         deliverablePartnershipDB.setDeliverable(partnershipDBUpdated.getDeliverable());
         deliverablePartnershipDB.setPartnerType(partnershipDBUpdated.getPartnerType());

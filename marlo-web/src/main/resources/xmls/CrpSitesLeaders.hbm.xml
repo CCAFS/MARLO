@@ -10,19 +10,19 @@
 			<generator class="identity" />
 		</id>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
+			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="false" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
-			<column name="modified_by" not-null="true" />
+			<column name="modified_by" />
 		</many-to-one>
 		<many-to-one name="crpsSiteIntegration"
 			class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" fetch="select">

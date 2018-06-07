@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.config;
 
+import org.cgiar.ccafs.marlo.data.AuditColumnHibernateListener;
 import org.cgiar.ccafs.marlo.data.HibernateAuditLogListener;
 
 import org.hibernate.cfg.Configuration;
@@ -44,11 +45,16 @@ public class MyIntegrator implements Integrator {
 
     HibernateAuditLogListener hibernateAuditLogListener = new HibernateAuditLogListener();
 
+    AuditColumnHibernateListener auditColumnHibernateListener = new AuditColumnHibernateListener();
+
     eventListenerRegistry.prependListeners(EventType.POST_UPDATE, hibernateAuditLogListener);
     eventListenerRegistry.prependListeners(EventType.POST_INSERT, hibernateAuditLogListener);
     eventListenerRegistry.prependListeners(EventType.POST_DELETE, hibernateAuditLogListener);
 
     eventListenerRegistry.prependListeners(EventType.FLUSH, hibernateAuditLogListener);
+
+    eventListenerRegistry.prependListeners(EventType.PRE_INSERT, auditColumnHibernateListener);
+    eventListenerRegistry.prependListeners(EventType.PRE_UPDATE, auditColumnHibernateListener);
 
     LOG.debug("Finished registering Hibernate Event Listeners");
 

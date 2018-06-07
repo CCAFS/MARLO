@@ -17,14 +17,12 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.Date;
-
 import com.google.gson.annotations.Expose;
 
 /**
  * @author hjimenez
  */
-public class ProjectBudget implements java.io.Serializable, IAuditLog {
+public class ProjectBudget extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
 
   /**
@@ -32,20 +30,11 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -6117852720583204865L;
 
-
-  @Expose
-  private Long id;
-
   @Expose
   private Institution institution;
 
 
   private Project project;
-
-  @Expose
-  private User createdBy;
-  @Expose
-  private User modifiedBy;
 
   @Expose
   private Double amount;
@@ -58,17 +47,9 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private Double genderValue;
   @Expose
-  private boolean active;
-  @Expose
   private FundingSource fundingSource;
   @Expose
-  private Date activeSince;
-  @Expose
   private Phase phase;
-
-
-  @Expose
-  private String modificationJustification;
 
 
   @Override
@@ -81,18 +62,14 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     }
 
     ProjectBudget other = (ProjectBudget) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
-  }
-
-  public Date getActiveSince() {
-    return activeSince;
   }
 
   public Double getAmount() {
@@ -101,10 +78,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public BudgetType getBudgetType() {
     return budgetType;
-  }
-
-  public User getCreatedBy() {
-    return createdBy;
   }
 
   public FundingSource getFundingSource() {
@@ -119,11 +92,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return genderValue;
   }
 
-  @Override
-  public Long getId() {
-    return id;
-  }
-
 
   public Institution getInstitution() {
     return institution;
@@ -135,16 +103,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   public Phase getPhase() {
@@ -164,22 +122,8 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
   }
 
   public void setAmount(Double amount) {
@@ -188,10 +132,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
-  }
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
   }
 
   public void setFundingSource(FundingSource fundingSource) {
@@ -207,20 +147,8 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.genderValue = genderValue;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setInstitution(Institution institution) {
     this.institution = institution;
-  }
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
   public void setPhase(Phase phase) {
@@ -239,8 +167,8 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "ProjectBudget [id=" + id + ", institution=" + institution + ", project=" + project + ", amount=" + amount
-      + ", budgetType=" + budgetType + ", year=" + year + ", fundingSource=" + fundingSource + "]";
+    return "ProjectBudget [id=" + this.getId() + ", institution=" + institution + ", project=" + project + ", amount="
+      + amount + ", budgetType=" + budgetType + ", year=" + year + ", fundingSource=" + fundingSource + "]";
   }
 
 

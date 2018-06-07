@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
@@ -21,60 +21,63 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
-  
-  <div class="row">
-    [#-- POWB Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- POWB Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-        <div class="borderBox">
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#-- Summarize highlights, value added and points to improve/learning points from this year on external partnerships --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.summarizeHighlights" i18nkey="${customLabel}.summarizeHighlights" help="${customLabel}.summarizeHighlights.help" className="" helpIcon=false required=true editable=editable /]
-          </div>
+          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customLabel= "annualReport.${currentStage}" /]
           
-          [#-- Flagships - External Partnerships Synthesis --]
-          [#if PMU]
-          <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
-            
-            <hr />
-            [@tableFlagshipsMacro list=[{},{},{},{}] /]
-          </div>
-          [/#if]
-
-          [#-- Table G: Projects Key Partnerships --]
-          [#if flagship]
-          <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableG.title" /]</h4>
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
+          <div class="borderBox">
+          
+            [#-- Summarize highlights, value added and points to improve/learning points from this year on external partnerships --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.summarizeHighlights" i18nkey="${customLabel}.summarizeHighlights" help="${customLabel}.summarizeHighlights.help" className="" helpIcon=false required=true editable=editable /]
             </div>
-            <hr />
-            <label>[@s.text name="${customLabel}.includeLabel" /]:</label>
-            [@tableGMacro list=[{},{},{},{}] /]
+            
+            [#-- Flagships - External Partnerships Synthesis --]
+            [#if PMU]
+            <div class="form-group margin-panel">
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
+              
+              <hr />
+              [@tableFlagshipsMacro list=[{},{},{},{}] /]
+            </div>
+            [/#if]
+  
+            [#-- Table G: Projects Key Partnerships --]
+            [#if flagship]
+            <div class="form-group margin-panel">
+              <div class="evidence-plannedStudies-header">
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableG.title" /]</h4>
+              </div>
+              <hr />
+              [@tableGMacro list=[{},{},{},{}] /]
+            </div>
+            [/#if]
+          
           </div>
-          [/#if]
-        
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-      [/@s.form] 
-    </div> 
-  </div> 
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 

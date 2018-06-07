@@ -2092,7 +2092,7 @@ h3.contentSubTitle {
   font-family: 'Open Sans', sans-serif;
   font-weight: lighter;
   padding-bottom: 5px;
-  border-bottom: 1px solid #a09f9f;
+  /* border-bottom: 1px solid #a09f9f; */
 }
 
 .sectionSubTitle {
@@ -2100,6 +2100,7 @@ h3.contentSubTitle {
   border-bottom: 1px solid #95a5ce;
   color: #95a5ce;
   padding-bottom: 3px;
+  line-height: 20px;
 }
 
 
