@@ -7,7 +7,7 @@ IF (SELECT EXISTS (
 SELECT * FROM information_schema.COLUMNS WHERE column_name='entity_id' AND table_name='auditlog' 
 AND DATA_TYPE = 'varchar' AND table_schema = DATABASE())) = 1
 THEN
-  ALTER TABLE `auditlog` DROP INDEX `ENTITY_ID`;  
+  -- ALTER TABLE `auditlog` DROP INDEX `ENTITY_ID`;  
   ALTER TABLE `auditlog` MODIFY COLUMN `entity_id` bigint(20) NOT NULL;
   CREATE INDEX `ENTITY_ID` ON `auditlog`(`entity_id`);
 END IF; 
