@@ -40,8 +40,6 @@
         [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-                    
-          
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>

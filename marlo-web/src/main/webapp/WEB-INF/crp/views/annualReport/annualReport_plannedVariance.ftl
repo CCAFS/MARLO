@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "annualReport.reportSynthesisVariencePlanned" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -37,9 +40,6 @@
         [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        
-          [#assign customName= "annualReport.${currentStage}" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
@@ -47,9 +47,16 @@
           
             [#-- Please provide a brief summary under the three following headings --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#if PMU]
+                [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#else]
+                <div class="textArea">
+                  <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
+                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                </div>
+              [/#if]
             </div>
-          
+            
           </div>
           [#-- Section Buttons & hidden inputs--]
           [#if PMU]
