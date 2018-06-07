@@ -38,7 +38,7 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
           [#assign customLabel= "annualReport.${currentStage}" /]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customName}.title" /]</h3>
@@ -150,7 +150,7 @@
     [#-- Milestones List --]
     <div class="form-group">
       [#list element.milestones as milestone]
-        [@annualReportMilestoneMacro element=milestone name="${customName}.milestoneProgresses" index=milestone_index /]
+        [@annualReportMilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
       [/#list]
     </div>
     
@@ -158,7 +158,7 @@
 [/#macro]
 
 [#macro annualReportMilestoneMacro element name index isTemplate=false]
-  [#local annualReportElement= action.getPowbExpectedCrpProgress(element.id)]
+  [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
   [#local customName = "${name}[${action.getIndex(element.id)}]" /]
   
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">

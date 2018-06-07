@@ -295,6 +295,8 @@
     <mapping resource="xmls/ReportSynthesisCrossCuttingDimensions.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionInnovations.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionAssets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFlagshipProgress.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressMilestones.hbm.xml"/>
 
 	</session-factory>
 </hibernate-configuration>
