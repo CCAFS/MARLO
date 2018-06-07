@@ -670,7 +670,7 @@ public class ProjectInnovationAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ProjectInnovationCrp innovationCrp : crpPrev) {
-        if (!innovation.getCrps().contains(innovationCrp)) {
+        if (innovation.getCrps() == null || !innovation.getCrps().contains(innovationCrp)) {
           projectInnovationCrpManager.deleteProjectInnovationCrp(innovationCrp.getId());
         }
       }
