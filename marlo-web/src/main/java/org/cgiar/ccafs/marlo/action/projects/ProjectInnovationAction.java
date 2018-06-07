@@ -73,7 +73,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -522,11 +521,7 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INNOVATION_CRP_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_CRP_RELATION);
 
-      innovation.setActiveSince(new Date());
-      innovation.setModifiedBy(this.getCurrentUser());
       innovation.setModificationJustification(this.getJustification());
-      innovation.setCreatedBy(innovationDB.getCreatedBy());
-      innovation.setActive(true);
 
       // Save the Countries List (ProjectInnovationcountry)
       if (innovation.getCountriesIds() != null || !innovation.getCountriesIds().isEmpty()) {
@@ -670,7 +665,7 @@ public class ProjectInnovationAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ProjectInnovationCrp innovationCrp : crpPrev) {
-        if (!innovation.getCrps().contains(innovationCrp)) {
+        if (innovation.getCrps() == null || !innovation.getCrps().contains(innovationCrp)) {
           projectInnovationCrpManager.deleteProjectInnovationCrp(innovationCrp.getId());
         }
       }

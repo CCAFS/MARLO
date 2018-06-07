@@ -13,19 +13,19 @@
 			<column name="ACTION" length="100" not-null="true" />
 		</property>
 		<property name="detail" type="string">
-			<column name="DETAIL" length="65535" not-null="true" />
+			<column name="DETAIL" sql-type="TEXT" not-null="true" />
 		</property>
 		<property name="createdDate" type="timestamp">
 			<column name="CREATED_DATE" length="19" not-null="true" />
 		</property>
-		<property name="entityId" type="string">
-			<column name="ENTITY_ID" length="50" not-null="true" />
+		<property name="entityId" type="java.lang.Long">
+			<column name="ENTITY_ID" not-null="true" />
 		</property>
 		<property name="entityName" type="string">
 			<column name="ENTITY_NAME" not-null="true" />
 		</property>
 		<property name="entityJson" type="string">
-			<column name="Entity_json" length="65535" not-null="true" />
+			<column name="Entity_json" sql-type="TEXT" not-null="true" />
 
 		</property>
 	 <property name="userId" type="java.lang.Long">
@@ -38,7 +38,7 @@
 
     </property>
       <property name="transactionId" type="java.lang.String">
-      <column name="transaction_id" length="65535" not-null="true" />
+      <column name="transaction_id" sql-type="TEXT" not-null="true" />
 
     </property>
     
@@ -48,7 +48,7 @@
     </property>
 		
 		  <property name="modificationJustification" type="java.lang.String">
-      <column name="modification_justification" length="65535" not-null="false" />
+      <column name="modification_justification" sql-type="TEXT" not-null="false" />
 
     </property>
 		<property name="relationName" type="string">

@@ -56,14 +56,6 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
-  public User activeUser(User user, User createdBy) {
-
-    user.setCreatedBy(createdBy);
-    return userDAO.saveUser(user);
-
-  }
-
-  @Override
   public List<String> getCenterPermission(int userId, String centerId) {
     List<String> permissions = new ArrayList<String>();
 
@@ -172,11 +164,11 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
-  public User saveUser(User user, User createdBy) {
+  public User saveUser(User user) {
     if (!user.isCgiarUser() && user.getPassword() != null) {
       user.setPassword(MD5Convert.stringToMD5(user.getPassword()));
     }
-    user.setCreatedBy(createdBy);
+
     return userDAO.saveUser(user);
 
   }

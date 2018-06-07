@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -37,7 +38,6 @@ public class CaseStudyProjectMySQLDAO extends AbstractMarloDAO<CaseStudyProject,
   @Override
   public void deleteCaseStudyProject(long caseStudyProjectId) {
     CaseStudyProject caseStudyProject = this.find(caseStudyProjectId);
-
     super.delete(caseStudyProject);
   }
 

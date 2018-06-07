@@ -45,7 +45,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -316,11 +315,6 @@ public class RisksAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (reportSynthesis.getReportSynthesisRisk() == null) {
           ReportSynthesisRisk managementRisk = new ReportSynthesisRisk();
-          managementRisk.setActive(true);
-          managementRisk.setActiveSince(new Date());
-          managementRisk.setCreatedBy(this.getCurrentUser());
-          managementRisk.setModifiedBy(this.getCurrentUser());
-          managementRisk.setModificationJustification("");
           // create one to one relation
           reportSynthesis.setReportSynthesisRisk(managementRisk);
           managementRisk.setReportSynthesis(reportSynthesis);
@@ -373,8 +367,6 @@ public class RisksAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-      reportSynthesis.setModifiedBy(this.getCurrentUser());
-      reportSynthesis.setActiveSince(new Date());
 
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

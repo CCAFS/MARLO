@@ -11,7 +11,7 @@ CREATE TABLE `report_synthesis_flagship_progress` (
   `active_since` timestamp NULL DEFAULT NULL,
   `created_by` bigint(20) DEFAULT NULL,
   `modified_by` bigint(20) DEFAULT NULL,
-  `modification_justificacion` text,
+  `modification_justification` text,
   PRIMARY KEY (`id`),
   KEY `created_by` (`created_by`),
   KEY `modified_by` (`modified_by`),

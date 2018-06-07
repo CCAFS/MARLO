@@ -64,7 +64,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -544,11 +543,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
         // Check if relation is null -create it
         if (reportSynthesis.getReportSynthesisCrossCuttingDimension() == null) {
           ReportSynthesisCrossCuttingDimension cuttingDimension = new ReportSynthesisCrossCuttingDimension();
-          cuttingDimension.setActive(true);
-          cuttingDimension.setActiveSince(new Date());
-          cuttingDimension.setCreatedBy(this.getCurrentUser());
-          cuttingDimension.setModifiedBy(this.getCurrentUser());
-          cuttingDimension.setModificationJustification("");
           // create one to one relation
           reportSynthesis.setReportSynthesisCrossCuttingDimension(cuttingDimension);
           cuttingDimension.setReportSynthesis(reportSynthesis);
@@ -685,8 +679,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-      reportSynthesis.setModifiedBy(this.getCurrentUser());
-      reportSynthesis.setActiveSince(new Date());
 
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
@@ -769,11 +761,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
 
         if (!crpPlannedStudies.contains(assetNew)) {
-          assetNew.setActive(true);
-          assetNew.setActiveSince(new Date());
-          assetNew.setCreatedBy(this.getCurrentUser());
-          assetNew.setModifiedBy(this.getCurrentUser());
-          assetNew.setModificationJustification("");
           assetNew =
             reportSynthesisCrossCuttingDimensionAssetManager.saveReportSynthesisCrossCuttingDimensionAsset(assetNew);
         }
@@ -795,11 +782,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
 
         if (!crpPlannedStudies.contains(assetNew)) {
-          assetNew.setActive(true);
-          assetNew.setActiveSince(new Date());
-          assetNew.setCreatedBy(this.getCurrentUser());
-          assetNew.setModifiedBy(this.getCurrentUser());
-          assetNew.setModificationJustification("");
           assetNew =
             reportSynthesisCrossCuttingDimensionAssetManager.saveReportSynthesisCrossCuttingDimensionAsset(assetNew);
         }
@@ -860,11 +842,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
 
         if (!crpPlannedStudies.contains(innovationNew)) {
-          innovationNew.setActive(true);
-          innovationNew.setActiveSince(new Date());
-          innovationNew.setCreatedBy(this.getCurrentUser());
-          innovationNew.setModifiedBy(this.getCurrentUser());
-          innovationNew.setModificationJustification("");
           innovationNew = reportSynthesisCrossCuttingDimensionInnovationManager
             .saveReportSynthesisCrossCuttingDimensionInnovation(innovationNew);
         }
@@ -885,11 +862,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
             .filter(rio -> rio.isActive()).collect(Collectors.toList());
 
         if (!crpPlannedStudies.contains(innovationNew)) {
-          innovationNew.setActive(true);
-          innovationNew.setActiveSince(new Date());
-          innovationNew.setCreatedBy(this.getCurrentUser());
-          innovationNew.setModifiedBy(this.getCurrentUser());
-          innovationNew.setModificationJustification("");
           innovationNew = reportSynthesisCrossCuttingDimensionInnovationManager
             .saveReportSynthesisCrossCuttingDimensionInnovation(innovationNew);
         }

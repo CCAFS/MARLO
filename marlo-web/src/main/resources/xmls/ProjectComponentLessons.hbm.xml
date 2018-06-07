@@ -15,16 +15,16 @@
             <column name="ip_program_id" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
             <column name="created_by" not-null="true" />
         </many-to-one>
         <property name="componentName" type="string">
             <column name="component_name" not-null="true" />
         </property>
         <property name="lessons" type="string">
-            <column name="lessons" length="65535" />
+            <column name="lessons" sql-type="TEXT" />
         </property>
         <property name="year" type="int">
             <column name="year" not-null="true" />
@@ -32,14 +32,14 @@
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
+        <property name="activeSince" type="timestamp" update="false">
             <column name="active_since" length="19" not-null="true" />
         </property>
         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />
         </many-to-one>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
         <property name="cycle" type="string">
             <column name="cycle" />

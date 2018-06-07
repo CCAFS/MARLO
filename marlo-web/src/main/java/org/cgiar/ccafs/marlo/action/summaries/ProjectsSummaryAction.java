@@ -246,11 +246,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-          || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))
+        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null)
       .sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList())) {
       Long projectId = globalUnitProject.getProject().getId();
       String projectTitle = globalUnitProject.getProject().getProjectInfo().getTitle();

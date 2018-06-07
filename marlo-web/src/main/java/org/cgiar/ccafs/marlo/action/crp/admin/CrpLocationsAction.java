@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,11 +120,6 @@ public class CrpLocationsAction extends BaseAction {
 
         locElementType.setName(locElementType.getName());
         locElementType.setCrp(loggedCrp);
-        locElementType.setActive(true);
-        locElementType.setModifiedBy(this.getCurrentUser());
-        locElementType.setCreatedBy(this.getCurrentUser());
-        locElementType.setActiveSince(new Date());
-        locElementType.setModificationJustification("");
         locElementType.setScope(true);
         locElementType = locElementTypeManager.saveLocElementType(locElementType);
 
@@ -140,11 +134,6 @@ public class CrpLocationsAction extends BaseAction {
               locElement.setLocElement(parentElement);
               locElement.setLocGeoposition(null);
               locElement.setCrp(loggedCrp);
-              locElement.setActive(true);
-              locElement.setModifiedBy(this.getCurrentUser());
-              locElement.setCreatedBy(this.getCurrentUser());
-              locElement.setActiveSince(new Date());
-              locElement.setModificationJustification("");
               locElement = locElementManager.saveLocElement(locElement);
 
               locElementType.setHasCoordinates(false);
@@ -167,11 +156,6 @@ public class CrpLocationsAction extends BaseAction {
               locElement.setLocElement(parentElement);
               locElement.setLocGeoposition(null);
               locElement.setCrp(loggedCrp);
-              locElement.setActive(true);
-              locElement.setModifiedBy(this.getCurrentUser());
-              locElement.setCreatedBy(this.getCurrentUser());
-              locElement.setActiveSince(new Date());
-              locElement.setModificationJustification("");
               locElementManager.saveLocElement(locElement);
 
               elementType.setHasCoordinates(false);
@@ -235,11 +219,6 @@ public class CrpLocationsAction extends BaseAction {
 
         locElementType.setName(locElementType.getName());
         locElementType.setCrp(loggedCrp);
-        locElementType.setActive(true);
-        locElementType.setModifiedBy(this.getCurrentUser());
-        locElementType.setCreatedBy(this.getCurrentUser());
-        locElementType.setActiveSince(new Date());
-        locElementType.setModificationJustification("");
         locElementType.setScope(false);
         locElementType = locElementTypeManager.saveLocElementType(locElementType);
 
@@ -250,11 +229,6 @@ public class CrpLocationsAction extends BaseAction {
               LocGeoposition locGeoposition = new LocGeoposition();
               locGeoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
               locGeoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
-              locGeoposition.setActive(true);
-              locGeoposition.setModifiedBy(this.getCurrentUser());
-              locGeoposition.setCreatedBy(this.getCurrentUser());
-              locGeoposition.setActiveSince(new Date());
-              locGeoposition.setModificationJustification("");
 
               locGeoposition = locGeopositionManager.saveLocGeoposition(locGeoposition);
               LocElement parentElement =
@@ -264,11 +238,6 @@ public class CrpLocationsAction extends BaseAction {
               locElement.setLocElementType(locElementType);
               locElement.setLocElement(parentElement);
               locElement.setCrp(loggedCrp);
-              locElement.setActive(true);
-              locElement.setModifiedBy(this.getCurrentUser());
-              locElement.setCreatedBy(this.getCurrentUser());
-              locElement.setActiveSince(new Date());
-              locElement.setModificationJustification("");
               locElementManager.saveLocElement(locElement);
 
               locElementType.setHasCoordinates(true);
@@ -301,11 +270,6 @@ public class CrpLocationsAction extends BaseAction {
                 LocGeoposition locGeoposition = new LocGeoposition();
                 locGeoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
                 locGeoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
-                locGeoposition.setActive(true);
-                locGeoposition.setModifiedBy(this.getCurrentUser());
-                locGeoposition.setCreatedBy(this.getCurrentUser());
-                locGeoposition.setActiveSince(new Date());
-                locGeoposition.setModificationJustification("");
 
                 locGeoposition = locGeopositionManager.saveLocGeoposition(locGeoposition);
                 LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
@@ -316,11 +280,6 @@ public class CrpLocationsAction extends BaseAction {
                 locElement.setLocElementType(elementType);
                 locElement.setLocElement(parentElement);
                 locElement.setCrp(loggedCrp);
-                locElement.setActive(true);
-                locElement.setModifiedBy(this.getCurrentUser());
-                locElement.setCreatedBy(this.getCurrentUser());
-                locElement.setActiveSince(new Date());
-                locElement.setModificationJustification("");
                 locElementManager.saveLocElement(locElement);
 
                 elementType.setHasCoordinates(true);
