@@ -15,7 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.FundingSourceBudgetDAO;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
+import org.cgiar.ccafs.marlo.data.dao.FundingSourceLocationsDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -24,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -35,12 +37,21 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
 
 
   private FundingSourceDAO fundingSourceDAO;
+
+  private FundingSourceBudgetDAO fundingSourceBudgetDAO;
+
+  private FundingSourceLocationsDAO fundingSourceLocationsDAO;
+
+
   // Managers
 
 
   @Inject
-  public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO) {
+  public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO, FundingSourceBudgetDAO fundingSourceBudgetDAO,
+    FundingSourceLocationsDAO fundingSourceLocationsDAO) {
     this.fundingSourceDAO = fundingSourceDAO;
+    this.fundingSourceBudgetDAO = fundingSourceBudgetDAO;
+    this.fundingSourceLocationsDAO = fundingSourceLocationsDAO;
 
 
   }
@@ -49,6 +60,19 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   public void deleteFundingSource(long fundingSourceId) {
 
     fundingSourceDAO.deleteFundingSource(fundingSourceId);
+
+    /**
+     * Because we are not using cascade delete and we need to set the inactive flag on the
+     * entities, we need to do this for all child entities.
+     * At this point in time I am not going to delete many to many relationships e.g. DeliverableFundingSource
+     * and instead look to prevent FundingSources being deleted when there are still deliverables linked
+     * to the funding source.
+     * Note there is a more elegant way of doing soft deletes, see this article for instructions:
+     * https://vladmihalcea.com/the-best-way-to-soft-delete-with-hibernate/
+     */
+    fundingSourceBudgetDAO.deleteAllFundingSourceBudgetForFundingSource(fundingSourceId);
+
+    fundingSourceLocationsDAO.deleteAllFundingSourceLocationsForFundingSource(fundingSourceId);
   }
 
   @Override
