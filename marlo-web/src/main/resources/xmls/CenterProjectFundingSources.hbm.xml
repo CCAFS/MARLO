@@ -11,8 +11,8 @@
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="centerFundingSyncType" class="org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType" fetch="select">
             <column name="funding_source_sync_type_id" />
@@ -27,13 +27,13 @@
             <column name="project_id" not-null="true" />
         </many-to-one>
         <property name="code" type="string">
-            <column name="code" length="65535" />
+            <column name="code" sql-type="TEXT" />
         </property>
         <property name="title" type="string">
-            <column name="title" length="65535" />
+            <column name="title" sql-type="TEXT" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="startDate" type="timestamp">
             <column name="start_date" length="19" />
@@ -48,10 +48,10 @@
             <column name="sync_date" length="19" />
         </property>
         <property name="originalDonor" type="string">
-            <column name="original_donor" length="65535" />
+            <column name="original_donor" sql-type="TEXT" />
         </property>
         <property name="directDonor" type="string">
-            <column name="direct_donor" length="65535" />
+            <column name="direct_donor" sql-type="TEXT" />
         </property>
         <property name="totalAmount" type="java.lang.Double">
             <column name="total_amount" precision="30" />
@@ -65,11 +65,11 @@
         <property name="autoFill" type="boolean">
             <column name="auto_fill" />
         </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
+            <column name="modification_justification" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>

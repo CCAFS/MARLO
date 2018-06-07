@@ -84,7 +84,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -717,11 +716,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
 
-      expectedStudy.setActiveSince(new Date());
-      expectedStudy.setModifiedBy(this.getCurrentUser());
       expectedStudy.setModificationJustification(this.getJustification());
-      expectedStudy.setCreatedBy(expectedStudyDB.getCreatedBy());
-      expectedStudy.setActive(true);
+
 
       // Save the Countries List (ProjectExpectedStudyCountry)
       if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {

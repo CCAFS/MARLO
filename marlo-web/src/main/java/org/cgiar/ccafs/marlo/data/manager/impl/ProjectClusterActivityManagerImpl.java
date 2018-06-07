@@ -58,12 +58,7 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
     if (clusters.isEmpty()) {
 
       ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
-      projectClusterAdd.setActive(true);
-      projectClusterAdd.setActiveSince(projectCluster.getActiveSince());
-      projectClusterAdd.setCreatedBy(projectCluster.getCreatedBy());
       projectClusterAdd.setCrpClusterOfActivity(projectCluster.getCrpClusterOfActivity());
-      projectClusterAdd.setModificationJustification(projectCluster.getModificationJustification());
-      projectClusterAdd.setModifiedBy(projectCluster.getModifiedBy());
       projectClusterAdd.setPhase(phase);
       projectClusterAdd.setProject(projectCluster.getProject());
       this.projectClusterActivityDAO.save(projectClusterAdd);

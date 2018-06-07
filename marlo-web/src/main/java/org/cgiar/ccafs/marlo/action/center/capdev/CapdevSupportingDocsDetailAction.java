@@ -40,7 +40,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,9 +138,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     CenterDeliverableDocument document = centerDeliverableDocService.getDeliverableDocumentById(documentID);
     if (document != null) {
-      document.setActive(false);
-      document.setModifiedBy(this.getCurrentUser());
-      centerDeliverableDocService.saveDeliverableDocument(document);
+      centerDeliverableDocService.deleteDeliverableDocument(documentID);
     }
     return SUCCESS;
   }
@@ -394,10 +391,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
 
-
-    supportingDocDB.setActiveSince(new Date());
-    supportingDocDB.setModifiedBy(this.getCurrentUser());
-
     centerDeliverableService.saveDeliverable(supportingDocDB, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
@@ -430,13 +423,8 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
           if (document.getId() == null) {
 
             documentSave = new CenterDeliverableDocument();
-            documentSave.setActive(true);
-            documentSave.setActiveSince(new Date());
             documentSave.setLink(document.getLink());
             documentSave.setDeliverable(supportingDocDB);
-            documentSave.setCreatedBy(this.getCurrentUser());
-            documentSave.setModifiedBy(this.getCurrentUser());
-            documentSave.setModificationJustification(null);
             centerDeliverableDocService.saveDeliverableDocument(documentSave);
           } else {
             boolean hasChanges = false;
@@ -448,9 +436,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
             }
 
             if (hasChanges) {
-              documentprevio.setActiveSince(new Date());
-              documentprevio.setModifiedBy(this.getCurrentUser());
-              documentprevio.setModificationJustification(null);
               centerDeliverableDocService.saveDeliverableDocument(documentprevio);
             }
 

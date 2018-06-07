@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsFlagshipManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,11 +58,6 @@ public class ProjectBudgetsFlagshipManagerImpl implements ProjectBudgetsFlagship
    * @param phase
    */
   public void cloneBudget(ProjectBudgetsFlagship projectBudgetAdd, ProjectBudgetsFlagship budget, Phase phase) {
-    projectBudgetAdd.setActive(true);
-    projectBudgetAdd.setActiveSince(new Date());
-    projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
-    projectBudgetAdd.setModifiedBy(budget.getCreatedBy());
-    projectBudgetAdd.setCreatedBy(budget.getCreatedBy());
     projectBudgetAdd.setPhase(phase);
     projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
     projectBudgetAdd.setAmount(budget.getAmount());

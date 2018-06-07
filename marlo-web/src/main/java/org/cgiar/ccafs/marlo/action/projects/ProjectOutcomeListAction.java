@@ -35,11 +35,11 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -85,12 +85,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   public String addProjectOutcome() {
     if (this.hasPermission("add")) {
       ProjectOutcome projectOutcome = new ProjectOutcome();
-      projectOutcome.setActive(true);
-      projectOutcome.setCreatedBy(this.getCurrentUser());
-      projectOutcome.setModificationJustification("");
-      projectOutcome.setActiveSince(new Date());
       projectOutcome.setPhase(this.getActualPhase());
-      projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setProject(project);
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
@@ -109,8 +104,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
-      outcome.setActive(false);
-      projectOutcomeManager.saveProjectOutcome(outcome);
+      projectOutcomeManager.deleteProjectOutcome(outcome.getId());
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;

@@ -9,13 +9,13 @@
             <generator class="identity" />
         </id>
         <property name="name" type="string">
-            <column name="name" length="65535" />
+            <column name="name" sql-type="TEXT" />
         </property>
         <property name="iatiName" type="string">
-            <column name="iati_name" length="65535" />
+            <column name="iati_name" sql-type="TEXT" />
         </property>
         <property name="definition" type="string">
-            <column name="definition" length="65535" />
+            <column name="definition" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>
