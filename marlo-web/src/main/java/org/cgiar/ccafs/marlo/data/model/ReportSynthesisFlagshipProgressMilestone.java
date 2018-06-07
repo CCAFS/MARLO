@@ -30,6 +30,25 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
   public ReportSynthesisFlagshipProgressMilestone() {
   }
 
+  public String getAssesmentName() {
+
+    if (milestonesStatus == null) {
+      return "";
+    } else {
+      switch (milestonesStatus.intValue()) {
+        case 1:
+          return "Complete";
+
+        case 2:
+          return "Extended";
+
+        case 3:
+          return "Cancelled";
+      }
+    }
+    return "";
+  }
+
   public CrpMilestone getCrpMilestone() {
     return crpMilestone;
   }
