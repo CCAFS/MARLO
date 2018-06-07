@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,16 +70,11 @@ public class ActivityManagerImpl implements ActivityManager {
    * @param phase the current phase
    */
   public void cloneActivity(Activity activityAdd, Activity activity, Phase phase) {
-    activityAdd.setActive(true);
-    activityAdd.setActiveSince(new Date());
     activityAdd.setActivityProgress(activity.getActivityProgress());
     activityAdd.setActivityStatus(activity.getActivityStatus());
     activityAdd.setComposeID(activity.getComposeID());
-    activityAdd.setCreatedBy(activity.getCreatedBy());
     activityAdd.setDescription(activity.getDescription());
     activityAdd.setEndDate(activity.getEndDate());
-    activityAdd.setModificationJustification(activity.getModificationJustification());
-    activityAdd.setModifiedBy(activity.getCreatedBy());
     activityAdd.setPhase(phase);
     activityAdd.setProject(projectDAO.find(activity.getProject().getId()));
     activityAdd.setProjectPartnerPerson(this.getPartnerPerson(phase, activity.getProjectPartnerPerson()));
@@ -98,13 +92,8 @@ public class ActivityManagerImpl implements ActivityManager {
    */
   public void cloneDeliverableActivity(DeliverableActivity deliverableActivityAdd,
     DeliverableActivity deliverableActivity, Activity activity, Activity activityAdd, Phase phase) {
-    deliverableActivityAdd.setActive(true);
-    deliverableActivityAdd.setActiveSince(activity.getActiveSince());
     deliverableActivityAdd.setActivity(activityAdd);
-    deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
     deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
-    deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
-    deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
     deliverableActivityAdd.setPhase(phase);
   }
 
@@ -137,8 +126,8 @@ public class ActivityManagerImpl implements ActivityManager {
       phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && activity.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());
     for (Activity activityDB : activities) {
-      activityDB.setActive(false);
-      activityDAO.save(activityDB);
+
+      activityDAO.deleteActivity(activityDB.getId());
     }
 
     if (phase.getNext() != null) {
@@ -151,8 +140,7 @@ public class ActivityManagerImpl implements ActivityManager {
   public void deleteActivity(long activityId) {
 
     Activity activity = this.getActivityById(activityId);
-    activity.setActive(false);
-    activity = activityDAO.save(activity);
+    activityDAO.deleteActivity(activityId);
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (activity.getPhase().getNext() != null) {
@@ -254,8 +242,7 @@ public class ActivityManagerImpl implements ActivityManager {
         if (activity.getDeliverables().stream()
           .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())
           .isEmpty()) {
-          deliverableActivity.setActive(false);
-          deliverableActivityDAO.save(deliverableActivity);
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
 
       }

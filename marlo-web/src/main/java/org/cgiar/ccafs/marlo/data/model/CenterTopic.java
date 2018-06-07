@@ -21,7 +21,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,14 +30,10 @@ import com.google.gson.annotations.Expose;
 /**
  * Modified by @author nmatovu last on Oct 9, 2016
  */
-public class CenterTopic implements Serializable, IAuditLog {
+public class CenterTopic extends MarloAuditableEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 365817271325565483L;
-
-
-  @Expose
-  private Long id;
 
   /**
    * The research topic description text.
@@ -52,24 +47,6 @@ public class CenterTopic implements Serializable, IAuditLog {
    */
   @Expose
   private CrpProgram researchProgram;
-
-  @Expose
-  private boolean active;
-
-  @Expose
-  private Date activeSince;
-
-
-  @Expose
-  private User createdBy;
-
-
-  @Expose
-  private User modifiedBy;
-
-  @Expose
-  private String modificationJustification;
-
 
   @Expose
   private String color;
@@ -88,17 +65,6 @@ public class CenterTopic implements Serializable, IAuditLog {
    * 
    */
   public CenterTopic() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-
-
-  /**
-   * @param researchTopic
-   */
-  public CenterTopic(String researchTopic) {
-    super();
-    this.researchTopic = researchTopic;
   }
 
 
@@ -114,18 +80,14 @@ public class CenterTopic implements Serializable, IAuditLog {
       return false;
     }
     CenterTopic other = (CenterTopic) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
-  }
-
-  public Date getActiveSince() {
-    return activeSince;
   }
 
 
@@ -133,37 +95,12 @@ public class CenterTopic implements Serializable, IAuditLog {
     return color;
   }
 
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
-  /**
-   * @return the id
-   */
-  @Override
-  public Long getId() {
-    return id;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
-  }
-
 
   public Integer getOrder() {
     return order;
@@ -195,48 +132,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
-
   public void setColor(String color) {
     this.color = color;
-  }
-
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
 
@@ -268,8 +169,8 @@ public class CenterTopic implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CenterTopic [id=" + id + ", researchTopic=" + researchTopic + ", researchProgram=" + researchProgram
-      + ", shortName=" + shortName + "]";
+    return "CenterTopic [id=" + this.getId() + ", researchTopic=" + researchTopic + ", researchProgram="
+      + researchProgram + ", shortName=" + shortName + "]";
   }
 
 

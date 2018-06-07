@@ -47,7 +47,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -154,16 +153,10 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
 
         if (exercises.getId() == null) {
           exercisesNew = new PowbMonitoringEvaluationLearningExercise();
-          exercisesNew.setActive(true);
-          exercisesNew.setActiveSince(new Date());
-          exercisesNew.setCreatedBy(this.getCurrentUser());
-          exercisesNew.setModifiedBy(this.getCurrentUser());
-          exercisesNew.setModificationJustification("");
 
         } else {
           exercisesNew = powbMonitoringEvaluationLearningExerciseManager
             .getPowbMonitoringEvaluationLearningExerciseById(exercises.getId());
-          exercisesNew.setModifiedBy(this.getCurrentUser());
 
         }
         exercisesNew.setPowbMonitoringEvaluationLearning(powbMonitoringEvaluationLearningDB);
@@ -395,11 +388,6 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getPowbMonitoringEvaluationLearning() == null) {
           PowbMonitoringEvaluationLearning monitoringEvaluationLearning = new PowbMonitoringEvaluationLearning();
-          monitoringEvaluationLearning.setActive(true);
-          monitoringEvaluationLearning.setActiveSince(new Date());
-          monitoringEvaluationLearning.setCreatedBy(this.getCurrentUser());
-          monitoringEvaluationLearning.setModifiedBy(this.getCurrentUser());
-          monitoringEvaluationLearning.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setPowbMonitoringEvaluationLearning(monitoringEvaluationLearning);
           monitoringEvaluationLearning.setPowbSynthesis(powbSynthesis);
@@ -474,8 +462,6 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
 
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

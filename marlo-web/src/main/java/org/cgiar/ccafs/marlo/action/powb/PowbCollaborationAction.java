@@ -63,7 +63,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -321,19 +320,12 @@ public class PowbCollaborationAction extends BaseAction {
         if (powbCollaborationGlobalUnit.getId() == null) {
 
           powbCollaborationGlobalUnitNew = new PowbCollaborationGlobalUnit();
-          powbCollaborationGlobalUnitNew.setActive(true);
-          powbCollaborationGlobalUnitNew.setCreatedBy(this.getCurrentUser());
-          powbCollaborationGlobalUnitNew.setModifiedBy(this.getCurrentUser());
-          powbCollaborationGlobalUnitNew.setModificationJustification("");
-          powbCollaborationGlobalUnitNew.setActiveSince(new Date());
           powbCollaborationGlobalUnitNew.setPowbSynthesis(powbSynthesis);
 
         } else {
 
           powbCollaborationGlobalUnitNew =
             powbCollaborationGlobalUnitManager.getPowbCollaborationGlobalUnitById(powbCollaborationGlobalUnit.getId());
-          powbCollaborationGlobalUnitNew.setModifiedBy(this.getCurrentUser());
-
 
         }
         powbCollaborationGlobalUnitNew.setFlagship(powbCollaborationGlobalUnit.getFlagship());
@@ -767,11 +759,6 @@ public class PowbCollaborationAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getCollaboration() == null) {
           PowbCollaboration powbCollaboration = new PowbCollaboration();
-          powbCollaboration.setActive(true);
-          powbCollaboration.setActiveSince(new Date());
-          powbCollaboration.setCreatedBy(this.getCurrentUser());
-          powbCollaboration.setModifiedBy(this.getCurrentUser());
-          powbCollaboration.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setCollaboration(powbCollaboration);
           powbCollaboration.setPowbSynthesis(powbSynthesis);
@@ -931,19 +918,12 @@ public class PowbCollaborationAction extends BaseAction {
         if (powbCollaborationRegion.getId() == null) {
 
           powbCollaborationRegionNew = new PowbCollaborationRegion();
-          powbCollaborationRegionNew.setActive(true);
-          powbCollaborationRegionNew.setCreatedBy(this.getCurrentUser());
-          powbCollaborationRegionNew.setModifiedBy(this.getCurrentUser());
-          powbCollaborationRegionNew.setModificationJustification("");
-          powbCollaborationRegionNew.setActiveSince(new Date());
           powbCollaborationRegionNew.setPowbSynthesis(powbSynthesis);
 
         } else {
 
           powbCollaborationRegionNew =
             powbCollaborationRegionManager.getPowbCollaborationRegionById(powbCollaborationRegion.getId());
-          powbCollaborationRegionNew.setModifiedBy(this.getCurrentUser());
-
 
         }
         powbCollaborationRegionNew.setLiaisonInstitution(powbCollaborationRegion.getLiaisonInstitution());
@@ -969,11 +949,6 @@ public class PowbCollaborationAction extends BaseAction {
 
       if (powCollabrotionDB == null) {
         powCollabrotionDB = new PowbCollaboration();
-        powCollabrotionDB.setActive(true);
-        powCollabrotionDB.setActiveSince(new Date());
-        powCollabrotionDB.setCreatedBy(this.getCurrentUser());
-        powCollabrotionDB.setModifiedBy(this.getCurrentUser());
-        powCollabrotionDB.setModificationJustification("");
         // create one to one relation
         powCollabrotionDB.setPowbSynthesis(powbSynthesis);
         // save the changes
@@ -1000,8 +975,6 @@ public class PowbCollaborationAction extends BaseAction {
 
 
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

@@ -11,8 +11,8 @@
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="dataDictionary" class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer" fetch="select">
             <column name="data_dictionary" />
@@ -32,20 +32,20 @@
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
+            <column name="modification_justification" sql-type="TEXT" />
         </property>
         <property name="linkAssurance" type="string">
-            <column name="link_assurance" length="65535" />
+            <column name="link_assurance" sql-type="TEXT" />
         </property>
         <property name="linkDictionary" type="string">
-            <column name="link_dictionary" length="65535" />
+            <column name="link_dictionary" sql-type="TEXT" />
         </property>
         <property name="linkTools" type="string">
-            <column name="link_tools" length="65535" />
+            <column name="link_tools" sql-type="TEXT" />
         </property>
         <many-to-one name="fileTools" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
             <column name="file_tools" />

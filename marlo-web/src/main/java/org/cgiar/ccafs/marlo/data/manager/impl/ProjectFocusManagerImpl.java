@@ -54,15 +54,10 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
       .collect(Collectors.toList());
-    if ( projectFocuses.isEmpty()) {
+    if (projectFocuses.isEmpty()) {
 
       ProjectFocus projectFocusAdd = new ProjectFocus();
-      projectFocusAdd.setActive(true);
-      projectFocusAdd.setActiveSince(projectFocus.getActiveSince());
-      projectFocusAdd.setCreatedBy(projectFocus.getCreatedBy());
       projectFocusAdd.setCrpProgram(projectFocus.getCrpProgram());
-      projectFocusAdd.setModificationJustification(projectFocus.getModificationJustification());
-      projectFocusAdd.setModifiedBy(projectFocus.getModifiedBy());
       projectFocusAdd.setPhase(phase);
       projectFocusAdd.setProject(projectFocus.getProject());
       projectFocusDAO.save(projectFocusAdd);

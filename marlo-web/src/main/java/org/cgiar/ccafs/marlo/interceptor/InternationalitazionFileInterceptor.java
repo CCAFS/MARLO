@@ -99,7 +99,7 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     }
 
     GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-    if (crp != null) {
+    if (crp != null && crp.getId() != null) {
       GlobalUnit loggedCrp = crpManager.getGlobalUnitById(crp.getId());
 
       if (this.isCrpRefresh(loggedCrp)) {

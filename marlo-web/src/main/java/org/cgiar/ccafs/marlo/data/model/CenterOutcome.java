@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,14 +32,10 @@ import com.google.gson.annotations.Expose;
 /**
  * Modified by @author nmatovu last on Oct 9, 2016
  */
-public class CenterOutcome implements Serializable, IAuditLog {
+public class CenterOutcome extends MarloAuditableEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -5206789836821862166L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private String description;
@@ -57,28 +52,10 @@ public class CenterOutcome implements Serializable, IAuditLog {
   private CenterImpact researchImpact;
 
   @Expose
-  private boolean active;
-
-  @Expose
-  private Date activeSince;
-
-  @Expose
   private CenterTopic researchTopic;
 
   @Expose
-  private User createdBy;
-
-
-  @Expose
-  private User modifiedBy;
-
-  @Expose
   private CenterTargetUnit targetUnit;
-
-
-  @Expose
-  private String modificationJustification;
-
 
   @Expose
   private boolean impactPathway;
@@ -105,46 +82,15 @@ public class CenterOutcome implements Serializable, IAuditLog {
   private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
 
   public CenterOutcome() {
-    super();
-    // TODO Auto-generated constructor stub
   }
 
-  /**
-   * @param description
-   * @param targetYear
-   * @param outcome
-   * @param researchImpact
-   * @param active
-   * @param activeSince
-   * @param researchTopic
-   */
-  public CenterOutcome(String description, Integer targetYear, BigDecimal value, CenterImpact researchImpact,
-    boolean active, Date activeSince, CenterTopic researchTopic) {
-    super();
-    this.description = description;
-    this.targetYear = targetYear;
-    this.researchImpact = researchImpact;
-    this.active = active;
-    this.activeSince = activeSince;
-    this.researchTopic = researchTopic;
-    this.value = value;
-  }
-
-
-  public Date getActiveSince() {
-    return activeSince;
-  }
 
   public Set<CenterOutputsOutcome> getCenterOutputsOutcomes() {
     return centerOutputsOutcomes;
   }
 
   public String getComposedName() {
-    return "OC" + this.id + "- " + (this.description != null ? this.description : "title not defined");
-  }
-
-  public User getCreatedBy() {
-    return createdBy;
+    return "OC" + this.getId() + "- " + (this.description != null ? this.description : "title not defined");
   }
 
   /**
@@ -154,13 +100,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return description;
   }
 
-  /**
-   * @return the id
-   */
-  @Override
-  public Long getId() {
-    return id;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -171,16 +110,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   public List<CenterMilestone> getMilestones() {
     return milestones;
-  }
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   public Set<CenterMonitoringOutcome> getMonitoringOutcomes() {
@@ -238,36 +167,15 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return value;
   }
 
-  /**
-   * @return the active
-   */
-  @Override
-  public boolean isActive() {
-    return active;
-  }
 
   public boolean isImpactPathway() {
     return impactPathway;
-  }
-
-  /**
-   * @param active the active to set
-   */
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
   }
 
   public void setCenterOutputsOutcomes(Set<CenterOutputsOutcome> centerOutputsOutcomes) {
     this.centerOutputsOutcomes = centerOutputsOutcomes;
   }
 
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
 
   /**
    * @param description the description to set
@@ -276,29 +184,12 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.description = description;
   }
 
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
   public void setImpactPathway(boolean impactPathway) {
     this.impactPathway = impactPathway;
   }
 
   public void setMilestones(List<CenterMilestone> milestones) {
     this.milestones = milestones;
-  }
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
 
@@ -364,7 +255,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CenterOutcome [id=" + id + ", description=" + description + ", shortName=" + shortName + "]";
+    return "CenterOutcome [id=" + this.getId() + ", description=" + description + ", shortName=" + shortName + "]";
   }
 
 }
