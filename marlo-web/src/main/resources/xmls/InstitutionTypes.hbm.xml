@@ -22,7 +22,7 @@
 			<column name="old" />
 		</property>		
 		<property name="description" type="string">
-			<column name="description" length="65535" />
+			<column name="description" sql-type="TEXT" />
 		</property>
 		<many-to-one name="repIndOrganizationType"
       class="org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType" fetch="select">

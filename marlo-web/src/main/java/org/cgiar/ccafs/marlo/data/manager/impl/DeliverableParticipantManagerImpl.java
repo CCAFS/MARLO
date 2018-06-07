@@ -63,11 +63,6 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
     newDeliverableParticipantPhase.setRepIndTypeParticipant(deliverableParticipant.getRepIndTypeParticipant());
     newDeliverableParticipantPhase.setRepIndGeographicScope(deliverableParticipant.getRepIndGeographicScope());
     newDeliverableParticipantPhase.setRepIndRegion(deliverableParticipant.getRepIndRegion());
-    newDeliverableParticipantPhase.setActive(deliverableParticipant.isActive());
-    newDeliverableParticipantPhase.setActiveSince(deliverableParticipant.getActiveSince());
-    newDeliverableParticipantPhase.setCreatedBy(deliverableParticipant.getCreatedBy());
-    newDeliverableParticipantPhase.setModifiedBy(deliverableParticipant.getModifiedBy());
-    newDeliverableParticipantPhase.setModificationJustification(deliverableParticipant.getModificationJustification());
   }
 
   @Override

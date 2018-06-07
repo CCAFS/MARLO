@@ -14,8 +14,8 @@
 			<column name="impact_outcome_id" not-null="true" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="false" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
@@ -30,11 +30,11 @@
 			<column name="target_unit_id" not-null="false" />
 		</many-to-one>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
+			<column name="modification_justification" sql-type="TEXT"
 				not-null="false" />
 		</property>
 		<property name="title" type="string">
-			<column name="title" length="65535" not-null="false" />
+			<column name="title" sql-type="TEXT" not-null="false" />
 		</property>
 		<property name="targetYear" type="java.lang.Integer">
 			<column name="target_year" not-null="false" />
@@ -48,7 +48,7 @@
 		<property name="impactPathway" type="boolean">
       <column name="is_impact_pathway"/>
     </property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<set name="monitoringMilestones" table="center_monitoring_milestones"

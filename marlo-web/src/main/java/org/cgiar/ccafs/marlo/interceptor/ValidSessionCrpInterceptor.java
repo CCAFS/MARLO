@@ -73,15 +73,17 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     action.setSwitchSession(false);
     Map<String, Object> session = invocation.getInvocationContext().getSession();
 
+    /**
+     * Interestingly the loggedCrp can exist but with a null id.
+     */
     loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-
 
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
       GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
-        if (crp.equals(loggedCrp)) {
+        if (loggedCrp == null || loggedCrp.getId() == null || crp.equals(loggedCrp)) {
           this.changeSessionSection(session);
           return invocation.invoke();
         } else {

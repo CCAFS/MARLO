@@ -2,12 +2,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import com.google.gson.annotations.Expose;
 
-public class RepIndFillingType implements java.io.Serializable {
+public class RepIndFillingType extends MarloBaseEntity implements java.io.Serializable {
 
   private static final long serialVersionUID = -8684565312361702239L;
 
-  @Expose
-  private Long id;
   @Expose
   private String name;
   @Expose
@@ -22,11 +20,6 @@ public class RepIndFillingType implements java.io.Serializable {
     return description;
   }
 
-
-  public Long getId() {
-    return id;
-  }
-
   public String getName() {
     return name;
   }
@@ -35,9 +28,6 @@ public class RepIndFillingType implements java.io.Serializable {
     this.description = description;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
 
   public void setName(String name) {
     this.name = name;
@@ -46,7 +36,7 @@ public class RepIndFillingType implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "RepIndFillingType [id=" + id + ", name=" + name + ", description=" + description + "]";
+    return "RepIndFillingType [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
   }
 
 

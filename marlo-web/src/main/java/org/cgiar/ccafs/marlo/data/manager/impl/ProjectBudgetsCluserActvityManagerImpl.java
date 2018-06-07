@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,11 +52,6 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
 
   public void cloneBudget(ProjectBudgetsCluserActvity projectBudgetAdd, ProjectBudgetsCluserActvity budget,
     Phase phase) {
-    projectBudgetAdd.setActive(true);
-    projectBudgetAdd.setActiveSince(new Date());
-    projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
-    projectBudgetAdd.setModifiedBy(budget.getCreatedBy());
-    projectBudgetAdd.setCreatedBy(budget.getCreatedBy());
     projectBudgetAdd.setPhase(phase);
     projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
     projectBudgetAdd.setAmount(budget.getAmount());
@@ -89,8 +83,7 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
         && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
       .collect(Collectors.toList());
     for (ProjectBudgetsCluserActvity projectBudgetDB : budgets) {
-      projectBudgetDB.setActive(false);
-      projectBudgetsCluserActvityDAO.save(projectBudgetDB);
+      projectBudgetsCluserActvityDAO.deleteProjectBudgetsCluserActvity(projectBudgetDB.getId());
     }
 
     if (phase.getNext() != null) {

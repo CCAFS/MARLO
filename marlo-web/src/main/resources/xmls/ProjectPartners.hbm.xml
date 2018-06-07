@@ -26,24 +26,24 @@
 			<column name="id_phase" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+			fetch="select" update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
-			<column name="modified_by" not-null="true" />
+			<column name="modified_by" />
 		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
 		<property name="responsibilities" type="string">
-			<column name="responsibilities" length="65535" />
+			<column name="responsibilities" sql-type="TEXT" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
+			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
 		<set name="projectPartnerContributions" table="project_partner_contributions"
@@ -93,7 +93,7 @@
 				class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
 		</set>
 		<property name="subDepartment" type="string">
-			<column name="sub_department" length="65535" not-null="false" />
+			<column name="sub_department" sql-type="TEXT" not-null="false" />
 		</property>
 		<property name="hasPartnerships" type="boolean">
 			<column name="has_partnerships" not-null="true" />

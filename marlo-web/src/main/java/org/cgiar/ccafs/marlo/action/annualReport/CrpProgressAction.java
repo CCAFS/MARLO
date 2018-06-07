@@ -60,7 +60,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -239,11 +238,6 @@ public class CrpProgressAction extends BaseAction {
 
 
         if (!crpPlannedStudies.contains(crpPlannedStudyNew)) {
-          crpPlannedStudyNew.setActive(true);
-          crpPlannedStudyNew.setActiveSince(new Date());
-          crpPlannedStudyNew.setCreatedBy(this.getCurrentUser());
-          crpPlannedStudyNew.setModifiedBy(this.getCurrentUser());
-          crpPlannedStudyNew.setModificationJustification("");
           crpPlannedStudyNew =
             reportSynthesisCrpProgressStudyManager.saveReportSynthesisCrpProgressStudy(crpPlannedStudyNew);
         }
@@ -263,11 +257,6 @@ public class CrpProgressAction extends BaseAction {
 
 
         if (!reportPlannedStudies.contains(crpPlannedStudyNew)) {
-          crpPlannedStudyNew.setActive(true);
-          crpPlannedStudyNew.setActiveSince(new Date());
-          crpPlannedStudyNew.setCreatedBy(this.getCurrentUser());
-          crpPlannedStudyNew.setModifiedBy(this.getCurrentUser());
-          crpPlannedStudyNew.setModificationJustification("");
           crpPlannedStudyNew =
             reportSynthesisCrpProgressStudyManager.saveReportSynthesisCrpProgressStudy(crpPlannedStudyNew);
         }
@@ -499,11 +488,6 @@ public class CrpProgressAction extends BaseAction {
         // Check if relation is null -create it
         if (reportSynthesis.getReportSynthesisCrpProgress() == null) {
           ReportSynthesisCrpProgress crpProgress = new ReportSynthesisCrpProgress();
-          crpProgress.setActive(true);
-          crpProgress.setActiveSince(new Date());
-          crpProgress.setCreatedBy(this.getCurrentUser());
-          crpProgress.setModifiedBy(this.getCurrentUser());
-          crpProgress.setModificationJustification("");
           // create one to one relation
           reportSynthesis.setReportSynthesisCrpProgress(crpProgress);;
           crpProgress.setReportSynthesis(reportSynthesis);
@@ -612,8 +596,6 @@ public class CrpProgressAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-      reportSynthesis.setModifiedBy(this.getCurrentUser());
-      reportSynthesis.setActiveSince(new Date());
 
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
@@ -671,11 +653,6 @@ public class CrpProgressAction extends BaseAction {
         .getSloTargets()) {
         if (crpTarget.getId() == null) {
           ReportSynthesisCrpProgressTarget crpTargetSave = new ReportSynthesisCrpProgressTarget();
-          crpTargetSave.setActive(true);
-          crpTargetSave.setModifiedBy(this.getCurrentUser());
-          crpTargetSave.setCreatedBy(this.getCurrentUser());
-          crpTargetSave.setActiveSince(new Date());
-          crpTargetSave.setModificationJustification("");
 
           crpTargetSave.setReportSynthesisCrpProgress(crpProgressDB);
 

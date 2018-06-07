@@ -103,8 +103,8 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       // projectIDParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
       projectIDParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
     } catch (Exception e) {
-      projectIDParameter = String.valueOf(caseStudy.getCaseStudyProjects().stream()
-        .filter(cs -> cs.isActive() && cs.isCreated()).collect(Collectors.toList()).get(0).getProject().getId());
+      projectIDParameter = String.valueOf(caseStudy.getCaseStudyProjects().stream().filter(cs -> cs.isActive())
+        .collect(Collectors.toList()).get(0).getProject().getId());
     }
 
     Project project = projectManager.getProjectById(Long.parseLong(projectIDParameter));
@@ -158,10 +158,9 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
         canSwitchProject = true;
       }
 
-
       List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
         .filter(
-          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
+          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isActive())
         .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {

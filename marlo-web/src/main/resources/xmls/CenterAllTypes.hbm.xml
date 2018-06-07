@@ -12,7 +12,7 @@
 			<column name="class_name" length="50" not-null="true" />
 		</property>
 		<property name="typeName" type="string">
-			<column name="type_name" length="65535" not-null="true" />
+			<column name="type_name" sql-type="TEXT" not-null="true" />
 		</property>
 	</class>
 </hibernate-mapping>

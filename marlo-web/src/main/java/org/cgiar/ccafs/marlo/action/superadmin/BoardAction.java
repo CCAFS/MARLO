@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,25 +116,16 @@ public class BoardAction extends BaseAction {
       }
 
       for (SrfTargetUnit srfTargetUnit : targetUnitList) {
-        if (srfTargetUnit.getId() == null) {
+        if (srfTargetUnit != null) {
+          if (srfTargetUnit.getId() == null || srfTargetUnit.getId() == -1L) {
+            srfTargetUnit = srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+          } else {
+            SrfTargetUnit srfTargetUnitDb = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
 
-          srfTargetUnit.setActive(true);
-          srfTargetUnit.setCreatedBy(this.getCurrentUser());
-          srfTargetUnit.setModifiedBy(this.getCurrentUser());
-          srfTargetUnit.setModificationJustification("");
-          srfTargetUnit.setActiveSince(new Date());
+            srfTargetUnitDb.setName(srfTargetUnit.getName());
+            srfTargetUnitDb = srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnitDb);
+          }
 
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
-        } else {
-          SrfTargetUnit srfTargetUnitDB = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
-
-          srfTargetUnit.setActive(true);
-          srfTargetUnit.setCreatedBy(srfTargetUnitDB.getCreatedBy());
-          srfTargetUnit.setModifiedBy(this.getCurrentUser());
-          srfTargetUnit.setModificationJustification("");
-          srfTargetUnit.setActiveSince(srfTargetUnitDB.getActiveSince());
-
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
         }
       }
       Collection<String> messages = this.getActionMessages();
