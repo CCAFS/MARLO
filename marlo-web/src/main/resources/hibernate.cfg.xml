@@ -17,6 +17,10 @@
 		<property name="generate_statistics">false</property>
 		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
 		<property name="hibernate.current_session_context_class">thread</property>
+    <!-- The following property will validate the hibernate hbm.xml files against the schema.
+     This is a recommended setting, but we have an issue where some of our entities are using
+     mysql INT primary keys instead of BIGINT so validation fails.  -->
+<!--     <property name="hibernate.hbm2ddl.auto">validate</property> -->
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
@@ -291,5 +295,6 @@
     <mapping resource="xmls/ReportSynthesisCrossCuttingDimensions.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionInnovations.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionAssets.hbm.xml"/>
+
 	</session-factory>
 </hibernate-configuration>

@@ -82,7 +82,6 @@ public class PublicationValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
-
       this.validateDeliverableInfo(deliverable.getDeliverableInfo(), deliverable, action);
 
       // Validate Leaders
@@ -124,8 +123,7 @@ public class PublicationValidator extends BaseValidator {
       }
 
       // Validate Intellectual Asset
-      if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getId() != null
-        && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+      if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
         this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
       } else {
         action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
@@ -163,12 +161,13 @@ public class PublicationValidator extends BaseValidator {
   }
 
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, BaseAction action) {
-    if (!this.isValidString(deliverableInfo.getTitle())) {
+    if (!(this.isValidString(deliverableInfo.getTitle()) && this.wordCount(deliverableInfo.getTitle()) <= 25)) {
       action.addMessage(action.getText("project.deliverable.generalInformation.title"));
       action.getInvalidFields().put("input-deliverable.deliverableInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!this.isValidString(deliverableInfo.getDescription())) {
+    if (!(this.isValidString(deliverableInfo.getDescription())
+      && this.wordCount(deliverableInfo.getDescription()) <= 50)) {
       action.addMessage(action.getText("project.deliverable.generalInformation.description"));
       action.getInvalidFields().put("input-deliverable.deliverableInfo.description", InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -209,7 +208,8 @@ public class PublicationValidator extends BaseValidator {
       this.validateLicense(deliverableInfo, action);
     } else {
       action.addMessage(action.getText("project.deliverable.v.ALicense"));
-      action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
@@ -291,19 +291,6 @@ public class PublicationValidator extends BaseValidator {
 
   public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
 
-    if (!this.isValidString(dissemination.getDisseminationChannel())
-      || dissemination.getDisseminationChannel().equals("-1")) {
-      action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
-      action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
-        InvalidFieldsMessages.EMPTYFIELD);
-    } else {
-      if (!this.isValidString(dissemination.getDisseminationUrl())) {
-        action.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
-        action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
     if (dissemination.getIsOpenAccess() != null) {
       if (!dissemination.getIsOpenAccess().booleanValue()) {
 
@@ -344,28 +331,57 @@ public class PublicationValidator extends BaseValidator {
       action.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
       action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
     }
+
+
+    if (dissemination.getAlreadyDisseminated() != null) {
+      if (dissemination.getAlreadyDisseminated().booleanValue()) {
+        if (dissemination.getDisseminationChannel() != null) {
+          if (dissemination.getDisseminationChannel().equals("-1")) {
+            action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+            action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+              InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            if (!(this.isValidString(dissemination.getDisseminationUrl())
+              && this.wordCount(dissemination.getDisseminationUrl()) <= 100)) {
+              action.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
+              action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        } else {
+          action.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+          action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    } else {
+      action.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
+      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
+        InvalidFieldsMessages.EMPTYFIELD);
+
+    }
   }
 
   private void validateIntellectualAsset(DeliverableIntellectualAsset intellectualAsset, BaseAction action) {
     if (intellectualAsset.getHasPatentPvp()) {
       if (!this.isValidString(intellectualAsset.getApplicant())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.applicant"));
+        action.addMessage(action.getText("intellectualAsset.applicants"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.applicant",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (intellectualAsset.getType() == null) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.type"));
+        action.addMessage(action.getText("intellectualAsset.type"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.type", InvalidFieldsMessages.EMPTYFIELD);
       } else {
         if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
           .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
           if (intellectualAsset.getFillingType() == null || intellectualAsset.getFillingType().getId() == -1) {
-            action.addMessage(action.getText("deliverable.intellectualAsset.fillingType"));
+            action.addMessage(action.getText("intellectualAsset.fillingType"));
             action.getInvalidFields().put("input-deliverable.intellectualAsset.fillingType.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
           if (intellectualAsset.getPatentStatus() == null || intellectualAsset.getPatentStatus().getId() == -1) {
-            action.addMessage(action.getText("deliverable.intellectualAsset.patentStatus"));
+            action.addMessage(action.getText("intellectualAsset.patentStatus"));
             action.getInvalidFields().put("input-deliverable.intellectualAsset.patentStatus.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -405,7 +421,7 @@ public class PublicationValidator extends BaseValidator {
         }
       }
       if (!this.isValidString(intellectualAsset.getTitle())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.title"));
+        action.addMessage(action.getText("intellectualAsset.title.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.title", InvalidFieldsMessages.EMPTYFIELD);
       }
       if (intellectualAsset.getDateFilling() == null) {
@@ -424,16 +440,16 @@ public class PublicationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getAdditionalInformation())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.additionalInformation"));
+        action.addMessage(action.getText("intellectualAsset.additionalInformation.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.additionalInformation",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getLink())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.link"));
+        action.addMessage(action.getText("intellectualAsset.link.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.link", InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!this.isValidString(intellectualAsset.getPublicCommunication())) {
-        action.addMessage(action.getText("deliverable.intellectualAsset.publicCommunication"));
+        action.addMessage(action.getText("intellectualAsset.publicCommunication.readText"));
         action.getInvalidFields().put("input-deliverable.intellectualAsset.publicCommunication",
           InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -442,16 +458,26 @@ public class PublicationValidator extends BaseValidator {
 
   public void validateLicense(DeliverableInfo deliverableInfo, BaseAction action) {
     if (deliverableInfo.getAdoptedLicense().booleanValue()) {
-      if (this.isValidString(deliverableInfo.getLicense())) {
-        if (deliverableInfo.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-          if (deliverableInfo.getOtherLicense() != null) {
-            if (!(this.isValidString(deliverableInfo.getOtherLicense())
-              && this.wordCount(deliverableInfo.getOtherLicense()) <= 100)) {
-              action.addMessage(action.getText("project.deliverable.license.v.other"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
-                InvalidFieldsMessages.EMPTYFIELD);
+      if (deliverableInfo.getLicense() != null) {
+        if (this.isValidString(deliverableInfo.getLicense())) {
+          if (deliverableInfo.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+            if (deliverableInfo.getOtherLicense() != null) {
+              if (!(this.isValidString(deliverableInfo.getOtherLicense())
+                && this.wordCount(deliverableInfo.getOtherLicense()) <= 100)) {
+                action.addMessage(action.getText("project.deliverable.license.v.other"));
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+              if (deliverableInfo.getAllowModifications() == null) {
+                action.addMessage(action.getText("project.deliverable.license.v.allowModification"));
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.allowModification",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
             }
           }
+        } else {
+          action.addMessage(action.getText("project.deliverable.v.license"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
         }
       } else {
         action.addMessage(action.getText("project.deliverable.v.license"));
@@ -468,13 +494,12 @@ public class PublicationValidator extends BaseValidator {
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
       if (deliverableMetadataElement != null) {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
-          switch (deliverableMetadataElement.getMetadataElement().getId()) {
-            case 8:
-              if ((this.isValidString(deliverableMetadataElement.getElementValue())
-                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
-                description = true;
-              }
-              break;
+          if (8L == deliverableMetadataElement.getMetadataElement().getId().longValue()) {
+            if ((this.isValidString(deliverableMetadataElement.getElementValue())
+              && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+              description = true;
+            }
+            break;
 
           }
         }
@@ -491,27 +516,28 @@ public class PublicationValidator extends BaseValidator {
 
   public void validatePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,
     DeliverableInfo deliverableInfo, BaseAction action) {
-    if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
-      && deliverablePublicationMetadata.getId().intValue() != -1) {
-      if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
-        if (!this.isValidString(deliverablePublicationMetadata.getVolume())
-          && !this.isValidString(deliverablePublicationMetadata.getIssue())
-          && !this.isValidString(deliverablePublicationMetadata.getPages())) {
-          action.addMessage(action.getText("project.deliverable.publication.v.volume"));
-          action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
-          action.addMessage(action.getText("project.deliverable.publication.v.issue"));
-          action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
-          action.addMessage(action.getText("project.deliverable.publication.v.pages"));
-          action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
+    if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_PUBLICATION_METADATA)) {
+      if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
+        && deliverablePublicationMetadata.getId().intValue() != -1) {
+        if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+          if (!this.isValidString(deliverablePublicationMetadata.getVolume())
+            && !this.isValidString(deliverablePublicationMetadata.getIssue())
+            && !this.isValidString(deliverablePublicationMetadata.getPages())) {
+            action.addMessage(action.getText("project.deliverable.publication.v.volume"));
+            action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+            action.addMessage(action.getText("project.deliverable.publication.v.issue"));
+            action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+            action.addMessage(action.getText("project.deliverable.publication.v.pages"));
+            action.getInvalidFields().put("input-deliverable.publication.pages", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
-      }
 
-      if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
-        && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
-        action.addMessage(action.getText("project.deliverable.publication.v.journal"));
-        action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
+          && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
+          action.addMessage(action.getText("project.deliverable.publication.v.journal"));
+          action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
     }
   }
 }
-

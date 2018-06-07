@@ -24,11 +24,9 @@ import java.io.Serializable;
 /**
  * Modified by @author nmatovu last on Oct 9, 2016
  */
-public class CenterAllTypes implements Serializable {
+public class CenterAllTypes extends MarloBaseEntity implements Serializable {
 
   private static final long serialVersionUID = 8700833701800021858L;
-
-  private Long id;
   /**
    * The class or entity to which this type belongs.
    */
@@ -66,14 +64,6 @@ public class CenterAllTypes implements Serializable {
     return className;
   }
 
-
-  /**
-   * @return the id
-   */
-  public Long getId() {
-    return id;
-  }
-
   /**
    * @return the typeName
    */
@@ -89,13 +79,6 @@ public class CenterAllTypes implements Serializable {
   }
 
   /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  /**
    * @param typeName the typeName to set
    */
   public void setTypeName(String typeName) {
@@ -104,7 +87,7 @@ public class CenterAllTypes implements Serializable {
 
   @Override
   public String toString() {
-    return "CenterAllTypes [id=" + id + ", className=" + className + ", typeName=" + typeName + "]";
+    return "CenterAllTypes [id=" + this.getId() + ", className=" + className + ", typeName=" + typeName + "]";
   }
 
 

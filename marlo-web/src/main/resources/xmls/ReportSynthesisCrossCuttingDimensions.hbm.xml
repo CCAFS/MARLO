@@ -19,41 +19,41 @@
 		<one-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis"
 			constrained="true"></one-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<property name="genderDescription" type="string">
-			<column name="gender_description" length="65535" />
+			<column name="gender_description" sql-type="TEXT" />
 		</property>
 		<property name="genderLessons" type="string">
-			<column name="gender_lessons" length="65535" />
+			<column name="gender_lessons" sql-type="TEXT" />
 		</property>
 		<property name="youthLessons" type="string">
-      <column name="youth_lessons" length="65535" />
+      <column name="youth_lessons" sql-type="TEXT" />
     </property>
 		<property name="youthDescription" type="string">
-			<column name="youth_description" length="65535" />
+			<column name="youth_description" sql-type="TEXT" />
 		</property>
 		<property name="otherAspects" type="string">
-			<column name="other_aspects" length="65535" />
+			<column name="other_aspects" sql-type="TEXT" />
 		</property>
 		<property name="capDev" type="string">
-			<column name="cap_dev" length="65535" />
+			<column name="cap_dev" sql-type="TEXT" />
 		</property>
 		<property name="openData" type="string">
-			<column name="open_data" length="65535" />
+			<column name="open_data" sql-type="TEXT" />
 		</property>
 		<property name="intellectualAssets" type="string">
-			<column name="intellectual_assets" length="65535" />
+			<column name="intellectual_assets" sql-type="TEXT" />
 		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
-			<column name="active_since" length="19" />
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 		<set name="reportSynthesisCrossCuttingDimensionAssets" table="report_synthesis_cross_cutting_dimension_assets"
 			inverse="true" lazy="true" fetch="select">

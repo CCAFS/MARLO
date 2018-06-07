@@ -89,13 +89,11 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
         + " where pb.funding_source_id= " + fundingSourceID + " and pb.year= " + year
         + " and pb.is_active=1 and pb.id_phase=" + idPhase;
     List<Map<String, Object>> list = super.findCustomQuery(query);
-    try {
-      if (list.size() > 0) {
-        Map<String, Object> result = list.get(0);
+    if (list.size() > 0) {
+      Map<String, Object> result = list.get(0);
+      if (result.get("amount") != null) {
         return result.get("amount").toString();
       }
-    } catch (Exception e) {
-      return "0";
     }
     return "0";
   }
@@ -188,13 +186,11 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
       "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId + " and pb.id_phase="
         + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type + " and pb.is_active=1";
     List<Map<String, Object>> list = super.findCustomQuery(query);
-    try {
-      if (list.size() > 0) {
-        Map<String, Object> result = list.get(0);
+    if (list.size() > 0) {
+      Map<String, Object> result = list.get(0);
+      if (result.get("amount") != null) {
         return Double.parseDouble(result.get("amount").toString());
       }
-    } catch (Exception e) {
-      return 0;
     }
     return 0;
   }

@@ -21,7 +21,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,17 +31,10 @@ import com.google.gson.annotations.Expose;
  * Represents the research objective in the systems for the research area/research program.
  * Modified by @author nmatovu last on Oct 7, 2016
  */
-public class CenterObjective implements Serializable, IAuditLog {
+public class CenterObjective extends MarloAuditableEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -3618614156720044325L;
-
-
-  /**
-   * The id or identifier for the research objective.
-   */
-  @Expose
-  private Long id;
 
   /**
    * The research objective
@@ -50,27 +42,8 @@ public class CenterObjective implements Serializable, IAuditLog {
   @Expose
   private String objective;
 
-
   @Expose
   private GlobalUnit researchCenter;
-
-  @Expose
-  private boolean active;
-
-
-  @Expose
-  private Date activeSince;
-
-
-  @Expose
-  private User createdBy;
-
-  @Expose
-  private User modifiedBy;
-
-  @Expose
-  private String modificationJustification;
-
 
   private Set<CenterImpactObjective> researchImpactObjectives = new HashSet<>(0);
 
@@ -78,21 +51,8 @@ public class CenterObjective implements Serializable, IAuditLog {
    * 
    */
   public CenterObjective() {
-    super();
-    // TODO Auto-generated constructor stub
   }
 
-
-  /**
-   * @param name
-   * @param researchCenter
-   * @param entityType
-   */
-  public CenterObjective(String objective, GlobalUnit researchCenter) {
-    super();
-    this.objective = objective;
-    this.researchCenter = researchCenter;
-  }
 
   @Override
   public boolean equals(Object obj) {
@@ -106,32 +66,14 @@ public class CenterObjective implements Serializable, IAuditLog {
       return false;
     }
     CenterObjective other = (CenterObjective) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
-  }
-
-
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
-
-  /**
-   * @return the id
-   */
-  @Override
-  public Long getId() {
-    return id;
   }
 
 
@@ -142,16 +84,6 @@ public class CenterObjective implements Serializable, IAuditLog {
     return sb.toString();
   }
 
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
-  }
 
   public String getObjective() {
     return objective;
@@ -170,42 +102,8 @@ public class CenterObjective implements Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
 
@@ -225,7 +123,8 @@ public class CenterObjective implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CenterObjective [id=" + id + ", objective=" + objective + ", researchCenter=" + researchCenter + "]";
+    return "CenterObjective [id=" + this.getId() + ", objective=" + objective + ", researchCenter=" + researchCenter
+      + "]";
   }
 
 }

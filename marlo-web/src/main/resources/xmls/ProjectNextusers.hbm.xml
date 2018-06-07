@@ -11,38 +11,38 @@
         <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
             <column name="project_outcome_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="composeID" type="string">
            <column name="composed_id" length="20" />
         </property>
         <property name="nextUser" type="string">
-            <column name="next_user" length="65535" />
+            <column name="next_user" sql-type="TEXT" />
         </property>
         <property name="knowledge" type="string">
-            <column name="knowledge" length="65535" />
+            <column name="knowledge" sql-type="TEXT" />
         </property>
         <property name="strategies" type="string">
-            <column name="strategies" length="65535" />
+            <column name="strategies" sql-type="TEXT" />
         </property>
         <property name="knowledgeReport" type="string">
-            <column name="knowledge_report" length="65535" />
+            <column name="knowledge_report" sql-type="TEXT" />
         </property>
         <property name="strategiesReport" type="string">
-            <column name="strategies_report" length="65535" />
+            <column name="strategies_report" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
+        <property name="activeSince" type="timestamp" update="false">
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
     </class>
 </hibernate-mapping>

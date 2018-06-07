@@ -49,9 +49,6 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
     DeliverableQualityCheck newDeliverableQualityCheck, Phase next) {
     newDeliverableQualityCheck.setDeliverable(deliverableQualityCheck.getDeliverable());
     newDeliverableQualityCheck.setPhase(next);
-    newDeliverableQualityCheck.setActive(deliverableQualityCheck.isActive());
-    newDeliverableQualityCheck.setActiveSince(deliverableQualityCheck.getActiveSince());
-    newDeliverableQualityCheck.setCreatedBy(deliverableQualityCheck.getCreatedBy());
     newDeliverableQualityCheck.setDataDictionary(deliverableQualityCheck.getDataDictionary());
     newDeliverableQualityCheck.setDataTools(deliverableQualityCheck.getDataTools());
     newDeliverableQualityCheck.setFileAssurance(deliverableQualityCheck.getFileAssurance());
@@ -61,8 +58,6 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
     newDeliverableQualityCheck.setLinkDictionary(deliverableQualityCheck.getLinkDictionary());
     newDeliverableQualityCheck.setLinkTools(deliverableQualityCheck.getLinkTools());
     newDeliverableQualityCheck.setQualityAssurance(deliverableQualityCheck.getQualityAssurance());
-    newDeliverableQualityCheck.setModificationJustification(deliverableQualityCheck.getModificationJustification());
-    newDeliverableQualityCheck.setModifiedBy(deliverableQualityCheck.getModifiedBy());
   }
 
   @Override

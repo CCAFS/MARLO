@@ -8,10 +8,10 @@
             <generator class="identity" />
         </id>
         <property name="name" type="string">
-            <column name="name" length="65535" />
+            <column name="name" sql-type="TEXT" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>
