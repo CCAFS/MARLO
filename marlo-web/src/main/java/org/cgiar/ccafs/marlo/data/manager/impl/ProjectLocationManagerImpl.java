@@ -79,13 +79,8 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
     if (locations.isEmpty()) {
       ProjectLocation projectLocationAdd = new ProjectLocation();
-      projectLocationAdd.setActive(true);
-      projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
-      projectLocationAdd.setCreatedBy(projectLocation.getCreatedBy());
       projectLocationAdd.setLocElement(projectLocation.getLocElement());
       projectLocationAdd.setLocElementType(projectLocation.getLocElementType());
-      projectLocationAdd.setModificationJustification(projectLocation.getModificationJustification());
-      projectLocationAdd.setModifiedBy(projectLocation.getModifiedBy());
       projectLocationAdd.setPhase(phase);
       projectLocationAdd.setProject(projectLocation.getProject());
       projectLocationDAO.save(projectLocationAdd);
@@ -130,13 +125,8 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
     if (locations.isEmpty()) {
       ProjectLocation projectLocationAdd = new ProjectLocation();
-      projectLocationAdd.setActive(true);
-      projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
-      projectLocationAdd.setCreatedBy(projectLocation.getCreatedBy());
       projectLocationAdd.setLocElement(projectLocation.getLocElement());
       projectLocationAdd.setLocElementType(projectLocation.getLocElementType());
-      projectLocationAdd.setModificationJustification(projectLocation.getModificationJustification());
-      projectLocationAdd.setModifiedBy(projectLocation.getModifiedBy());
       projectLocationAdd.setPhase(phase);
       projectLocationAdd.setProject(projectLocation.getProject());
       projectLocationDAO.save(projectLocationAdd);
@@ -170,7 +160,6 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
           projectLocation);
       }
     }
-
   }
 
   public void deleteProjectLocationPhase(Phase next, long projectID, ProjectLocation projectLocation) {
@@ -194,8 +183,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
         .collect(Collectors.toList()));
     }
     for (ProjectLocation location : locations) {
-      location.setActive(false);
-      projectLocationDAO.save(location);
+      projectLocationDAO.deleteProjectLocation(location.getId());
     }
 
     if (phase.getNext() != null) {

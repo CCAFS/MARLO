@@ -38,7 +38,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -281,16 +280,6 @@ public class PartnersSaveAction extends BaseAction {
     PartnerRequest partnerRequest = new PartnerRequest();
     // Add a clone request to check if there are changes later
     PartnerRequest partnerRequestModifications = new PartnerRequest();
-    partnerRequest.setActive(true);
-    partnerRequestModifications.setActive(true);
-    partnerRequest.setActiveSince(new Date());
-    partnerRequestModifications.setActiveSince(new Date());
-    partnerRequest.setCreatedBy(this.getCurrentUser());
-    partnerRequestModifications.setCreatedBy(this.getCurrentUser());
-    partnerRequest.setModifiedBy(this.getCurrentUser());
-    partnerRequestModifications.setModifiedBy(this.getCurrentUser());
-    partnerRequest.setModificationJustification("");
-    partnerRequestModifications.setModificationJustification("");
 
     partnerRequest.setPartnerName(institutionName);
     partnerRequestModifications.setPartnerName(institutionName);

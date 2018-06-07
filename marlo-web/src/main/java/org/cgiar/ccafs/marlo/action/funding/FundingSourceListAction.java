@@ -105,14 +105,8 @@ public class FundingSourceListAction extends BaseAction {
   public String add() {
     FundingSource fundingSource = new FundingSource();
 
-    fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSource.setModifiedBy(this.getCurrentUser());
-
-    fundingSource.setActive(true);
-    fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
     fundingSource.setCreateDate(new Date());
-    // project.setCrp(loggedCrp);
     fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
     fundingSourceID = fundingSource.getId();
@@ -123,7 +117,6 @@ public class FundingSourceListAction extends BaseAction {
 
 
       FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
-      fundingSourceInfo.setModifiedBy(this.getCurrentUser());
       fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
       fundingSourceInfo.setPhase(phase);
       fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
@@ -192,7 +185,6 @@ public class FundingSourceListAction extends BaseAction {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
     FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(this.getActualPhase());
     logger.info("Deleting fundingSource with  id: " + fundingSourceID);
-    fundingSource.setModifiedBy(this.getCurrentUser());
     fundingSourceInfo.setModificationJustification(justification);
 
     fundingSource = fundingSourceManager.saveFundingSource(fundingSource);

@@ -119,7 +119,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -488,11 +487,6 @@ public class DeliverableAction extends BaseAction {
     partnership.setPartnerType(value);
     partnership.setDeliverable(deliverable);
     partnership.setProjectPartner(partnershipResponsibleManaged.getProjectPartner());
-    partnership.setActive(true);
-    partnership.setCreatedBy(this.getCurrentUser());
-    partnership.setModifiedBy(this.getCurrentUser());
-    partnership.setModificationJustification("");
-    partnership.setActiveSince(new Date());
     partnership.setPhase(this.getActualPhase());
     partnership = this.saveUpdateDeliverablePartnershipDivision(partnership, partnershipResponsibleManaged);
     return partnership;
@@ -519,7 +513,6 @@ public class DeliverableAction extends BaseAction {
   private void deleteParticipantLocations(List<DeliverableParticipantLocation> locationsDB) {
     if (locationsDB != null) {
       for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
-        deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
         deliverableParticipantLocationManager
           .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
       }
@@ -576,8 +569,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable
-        .getOtherPartners().stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
+        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 
@@ -886,7 +879,6 @@ public class DeliverableAction extends BaseAction {
         partnershipOth.setProjectPartnerPerson(partnerPersonDb);
         partnershipOth.setProjectPartner(partnerDb);
         partnershipOth.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-        partnershipOth.setActive(true);
         if (partnership.getPartnerDivision() != null && partnership.getPartnerDivision().getId() != null) {
           partnershipOth.setPartnerDivision(partnership.getPartnerDivision());
         }
@@ -917,11 +909,6 @@ public class DeliverableAction extends BaseAction {
               partnership.setProjectPartnerPerson(partnerPerson);
               partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
               partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-              partnership.setActive(true);
-              partnership.setCreatedBy(this.getCurrentUser());
-              partnership.setModifiedBy(this.getCurrentUser());
-              partnership.setModificationJustification("");
-              partnership.setActiveSince(new Date());
               partnership.setPhase(this.getActualPhase());
               if (deliverablePartnership.getPartnerDivision() != null
                 && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
@@ -963,11 +950,6 @@ public class DeliverableAction extends BaseAction {
                 partnershipNew.setProjectPartnerPerson(partnerPerson);
                 partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
                 partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-                partnershipNew.setActive(true);
-                partnershipNew.setCreatedBy(this.getCurrentUser());
-                partnershipNew.setModifiedBy(this.getCurrentUser());
-                partnershipNew.setModificationJustification("");
-                partnershipNew.setActiveSince(new Date());
                 partnershipNew.setPhase(this.getActualPhase());
                 if (deliverablePartnership.getPartnerDivision() != null
                   && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
@@ -1834,7 +1816,6 @@ public class DeliverableAction extends BaseAction {
 
       partnership.setPartnerDivision(partnerDivision);
       partnership.setPartnerType(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
-      partnership.setActive(true);
 
       return partnership;
     } catch (Exception e) {
@@ -1881,7 +1862,6 @@ public class DeliverableAction extends BaseAction {
         this.saveParticipant();
       }
 
-      deliverableManagedState.getDeliverableInfo(this.getActualPhase()).setModifiedBy(this.getCurrentUser());
       deliverableManagedState.getDeliverableInfo(this.getActualPhase())
         .setModificationJustification(this.getJustification());
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo(this.getActualPhase()));
@@ -1903,7 +1883,6 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
       }
-      deliverableManagedState.setActiveSince(new Date());
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
@@ -2039,18 +2018,12 @@ public class DeliverableAction extends BaseAction {
         if (deliverableGenderLevel.getId() == null || deliverableGenderLevel.getId() == -1) {
 
           deliverableGenderLevel.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableGenderLevel.setActive(true);
-          deliverableGenderLevel.setCreatedBy(this.getCurrentUser());
-          deliverableGenderLevel.setModifiedBy(this.getCurrentUser());
-          deliverableGenderLevel.setModificationJustification("");
-          deliverableGenderLevel.setActiveSince(new Date());
           deliverableGenderLevel.setPhase(this.getActualPhase());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevel);
 
         } else {
           DeliverableGenderLevel deliverableGenderLevelDB =
             deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableGenderLevel.getId());
-          deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
           deliverableGenderLevelDB.setGenderLevel(deliverableGenderLevel.getGenderLevel());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
         }
@@ -2334,11 +2307,6 @@ public class DeliverableAction extends BaseAction {
         participant.setId(null);
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
         participant.setPhase(this.getActualPhase());
-        participant.setActiveSince(new Date());
-        participant.setCreatedBy(this.getCurrentUser());
-        participant.setModificationJustification("");
-        participant.setModifiedBy(this.getCurrentUser());
-        participant.setActive(true);
         participant = deliverableParticipantManager.saveDeliverableParticipant(participant);
       }
 
@@ -2432,18 +2400,12 @@ public class DeliverableAction extends BaseAction {
                 locationParticipant.setDeliverableParticipant(participant);
                 locationsSave.add(locationParticipant);
                 if (!locationsDB.contains(locationParticipant)) {
-                  locationParticipant.setActive(true);
-                  locationParticipant.setActiveSince(new Date());
-                  locationParticipant.setCreatedBy(this.getCurrentUser());
-                  locationParticipant.setModificationJustification("");
-                  locationParticipant.setModifiedBy(this.getCurrentUser());
                   deliverableParticipantLocationManager.saveDeliverableParticipantLocation(locationParticipant);
                 }
               }
             }
             for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
               if (!locationsSave.contains(deliverableParticipantLocation)) {
-                deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
                 deliverableParticipantLocationManager
                   .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
               }
@@ -2469,13 +2431,8 @@ public class DeliverableAction extends BaseAction {
         participant.setRepIndGeographicScope(null);
         participant.setRepIndRegion(null);
         this.deleteParticipantLocations(locationsDB);
-        participant.setActive(true);
       }
 
-
-      participant.setModifiedBy(this.getCurrentUser());
-      participant.setActiveSince(new Date());
-      participant.setModificationJustification("");
       deliverableParticipantManager.saveDeliverableParticipant(participant);
 
     }
@@ -2487,9 +2444,8 @@ public class DeliverableAction extends BaseAction {
   private void saveProjectAuditData() {
     // projectDB is a managed hibernate, project is in a detached state
     Project projectDB = projectManager.getProjectById(project.getId());
-    projectDB.setActive(true);
-    projectDB.setModifiedBy(this.getCurrentUser());
-    // projectDB.setModificationJustification(this.getJustification());
+
+    projectDB.setModificationJustification(this.getJustification());
     // No need to call save as hibernate will detect the changes and auto flush.
   }
 
@@ -2616,11 +2572,6 @@ public class DeliverableAction extends BaseAction {
     qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkDictionary());
     qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkTools());
 
-
-    qualityCheck.setActive(true);
-    qualityCheck.setActiveSince(new Date());
-    qualityCheck.setModifiedBy(this.getCurrentUser());
-    qualityCheck.setCreatedBy(this.getCurrentUser());
     qualityCheck.setPhase(this.getActualPhase());
     deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
@@ -2882,11 +2833,6 @@ public class DeliverableAction extends BaseAction {
 
 
           deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableFundingSource.setActive(true);
-          deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-          deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-          deliverableFundingSource.setModificationJustification("");
-          deliverableFundingSource.setActiveSince(new Date());
           deliverableFundingSource.setPhase(this.getActualPhase());
           deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
         }
@@ -3024,7 +2970,7 @@ public class DeliverableAction extends BaseAction {
         deliverableInfoDb.setAllowModifications(null);
       }
     }
-    deliverableInfoDb.setModifiedBy(this.getCurrentUser());
+
     deliverableInfoDb.setModificationJustification(this.getJustification());
 
     deliverableBase.setDeliverableInfo(deliverableInfoDb);

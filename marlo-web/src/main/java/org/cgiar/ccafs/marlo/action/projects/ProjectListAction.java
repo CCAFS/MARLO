@@ -213,7 +213,6 @@ public class ProjectListAction extends BaseAction {
       projectPhaseManager.saveProjectPhase(projectPhase);
     }
     ProjectInfo projectInfo = new ProjectInfo();
-    projectInfo.setModifiedBy(this.getCurrentUser());
     projectInfo.setModificationJustification("New expected Project created");
     projectInfo.setType(type);
     projectInfo.setLiaisonUser(liaisonUser);
@@ -279,11 +278,7 @@ public class ProjectListAction extends BaseAction {
     if (liaisonUser != null) {
 
       Project project = new Project();
-      project.setCreatedBy(this.getCurrentUser());
-      project.setActive(true);
-      project.setActiveSince(new Date());
       project.setCreateDate(new Date());
-      project.setModifiedBy(this.getCurrentUser());
       project = projectManager.saveProject(project);
       projectID = project.getId();
 
@@ -291,10 +286,6 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProject = new GlobalUnitProject();
       globalUnitProject.setProject(project);
       globalUnitProject.setGlobalUnit(loggedCrp);
-      globalUnitProject.setActive(true);
-      globalUnitProject.setActiveSince(new Date());
-      globalUnitProject.setModifiedBy(this.getCurrentUser());
-      globalUnitProject.setCreatedBy(this.getCurrentUser());
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
@@ -319,10 +310,6 @@ public class ProjectListAction extends BaseAction {
 
     } else {
       Project project = new Project();
-      project.setCreatedBy(this.getCurrentUser());
-      project.setActive(true);
-      project.setModifiedBy(this.getCurrentUser());
-      project.setActiveSince(new Date());
       project.setCreateDate(new Date());
       project = projectManager.saveProject(project);
       projectID = project.getId();
@@ -331,15 +318,10 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProject = new GlobalUnitProject();
       globalUnitProject.setProject(project);
       globalUnitProject.setGlobalUnit(loggedCrp);
-      globalUnitProject.setActive(true);
-      globalUnitProject.setActiveSince(new Date());
-      globalUnitProject.setModifiedBy(this.getCurrentUser());
-      globalUnitProject.setCreatedBy(this.getCurrentUser());
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
       ProjectInfo projectInfo = new ProjectInfo();
-      projectInfo.setModifiedBy(this.getCurrentUser());
       projectInfo.setModificationJustification("New expected Project created");
       projectInfo.setType(type);
       projectInfo.setLiaisonUser(liaisonUser);
@@ -391,7 +373,6 @@ public class ProjectListAction extends BaseAction {
       boolean permission = this.hasPermissionNoBase(permissionStr);
       if (permission) {
         Project project = projectManager.getProjectById(projectID);
-        project.setActive(false);
         try {
           projectManager.deleteProject(project);
           for (ProjectPhase projectPhase : project.getProjectPhases()) {

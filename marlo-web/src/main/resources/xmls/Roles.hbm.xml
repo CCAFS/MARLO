@@ -14,7 +14,7 @@
 			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
 		<property name="description" type="string">
-			<column name="description" length="65535" not-null="true" />
+			<column name="description" sql-type="TEXT" not-null="true" />
 		</property>
 		<property name="acronym" type="string">
 			<column name="acronym" length="50" not-null="true" />

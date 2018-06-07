@@ -40,9 +40,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   @Inject
   public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
-
   }
-
 
   @Override
   public void deleteProjectExpectedStudy(long projectExpectedStudyId) {
@@ -79,7 +77,6 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     if (view != null) {
       for (Map<String, Object> map : view) {
         projects.add(this.getProjectExpectedStudyById((Long.parseLong(map.get("project_id").toString()))));
-
       }
     }
 
