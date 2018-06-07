@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,11 +58,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   public void cloneBudget(ProjectBudget projectBudgetAdd, ProjectBudget budget, Phase phase) {
-    projectBudgetAdd.setActive(true);
-    projectBudgetAdd.setActiveSince(new Date());
-    projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
-    projectBudgetAdd.setModifiedBy(budget.getCreatedBy());
-    projectBudgetAdd.setCreatedBy(budget.getCreatedBy());
     projectBudgetAdd.setPhase(phase);
     projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
     projectBudgetAdd.setAmount(budget.getAmount());

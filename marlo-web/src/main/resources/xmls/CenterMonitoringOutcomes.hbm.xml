@@ -14,8 +14,8 @@
 			<column name="modified_by" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="researchOutcome"
 			class="org.cgiar.ccafs.marlo.data.model.CenterOutcome" fetch="select">
@@ -25,22 +25,22 @@
 			<column name="year" precision="4" scale="0" not-null="true" />
 		</property>
 		<property name="statusQuo" type="string">
-			<column name="status_quo" length="65535" />
+			<column name="status_quo" sql-type="TEXT" />
 		</property>
 		<property name="ciatRole" type="string">
-      <column name="ciat_role" length="65535" />
+      <column name="ciat_role" sql-type="TEXT" />
     </property>
     <property name="whatChanged" type="string">
-      <column name="what_changed" length="65535" />
+      <column name="what_changed" sql-type="TEXT" />
     </property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
-			<column name="active_since" length="19" />
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 		<set name="monitoringMilestones" table="center_monitoring_milestones"
 			inverse="true" lazy="true" fetch="select">

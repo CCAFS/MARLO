@@ -1,7 +1,6 @@
 [#ftl]
 <ul id="liaisonInstitutions" class="horizontalSubMenu text-center">
   [#if liaisonInstitutions?has_content]
-    
     [#--  --]
     <div>
     [#assign itemSizePercentage = (98)/liaisonInstitutions?size /]
@@ -18,6 +17,7 @@
     [/#list]
     </div>
     <br />
-
+  [#else]
+    {LiaisonInstitutions not loaded}
   [/#if]
 </ul>

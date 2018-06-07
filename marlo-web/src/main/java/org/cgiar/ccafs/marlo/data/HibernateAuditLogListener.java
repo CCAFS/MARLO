@@ -163,9 +163,9 @@ public class HibernateAuditLogListener
       } else {
         detailBuilder.append("Action: ").append(actionName).append(" ").append(entity.getLogDeatil());
       }
-      Auditlog auditRecord = new Auditlog(action, detailBuilder.toString(), new Date(), entity.getId().toString(),
-        entity.getClass().toString(), json, userId, transactionId, principal, relationName,
-        entity.getModificationJustification(), phase.getId());
+      Auditlog auditRecord =
+        new Auditlog(action, detailBuilder.toString(), new Date(), entity.getId(), entity.getClass().toString(), json,
+          userId, transactionId, principal, relationName, entity.getModificationJustification(), phase.getId());
       return auditRecord;
     }
 
@@ -313,7 +313,7 @@ public class HibernateAuditLogListener
   public Set<HashMap<String, Object>> loadListOfRelations(IAuditLog entity, Session session)
     throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     Set<HashMap<String, Object>> setRelations = new HashSet<>();
-    entity = (IAuditLog) session.get(entity.getClass(), (Long) entity.getId());
+    entity = (IAuditLog) session.get(entity.getClass(), entity.getId());
 
     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
     String[] propertyNames = classMetadata.getPropertyNames();
@@ -499,7 +499,7 @@ public class HibernateAuditLogListener
       } catch (ClassNotFoundException e) {
 
       }
-      Object obj = postUpdateEvent.getSession().get(className, (Serializable) iAuditLog.getId());
+      Object obj = postUpdateEvent.getSession().get(className, iAuditLog.getId());
 
       ClassMetadata classMetadata = postUpdateEvent.getSession().getSessionFactory().getClassMetadata(obj.getClass());
       Type[] types = classMetadata.getPropertyTypes();
@@ -593,12 +593,12 @@ public class HibernateAuditLogListener
           try {
             className = Class.forName(name);
 
-            Object obj = session.get(className, (Serializable) audit.getId());
+            Object obj = session.get(className, audit.getId());
 
             Set<IAuditLog> listRelation = new HashSet<>();
             listRelation.add((IAuditLog) obj);
             IAuditLog auditlog = (IAuditLog) obj;
-            auditlog = (IAuditLog) session.get(auditlog.getClass(), (Serializable) auditlog.getId());
+            auditlog = (IAuditLog) session.get(auditlog.getClass(), auditlog.getId());
             // session.refresh(auditlog);
             Set<HashMap<String, Object>> loadList = this.loadListOfRelations(auditlog, session);
             for (HashMap<String, Object> hashMap : loadList) {
@@ -662,7 +662,7 @@ public class HibernateAuditLogListener
                        * Christian Garcia
                        */
 
-                      Object obj = session.get(className, (Serializable) audit.getId());
+                      Object obj = session.get(className, audit.getId());
 
 
                       if (obj == null) {
@@ -704,7 +704,7 @@ public class HibernateAuditLogListener
                           if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
                             listRelation.add((IAuditLog) obj);
                             IAuditLog auditlog = (IAuditLog) obj;
-                            auditlog = (IAuditLog) session.get(auditlog.getClass(), (Serializable) auditlog.getId());
+                            auditlog = (IAuditLog) session.get(auditlog.getClass(), auditlog.getId());
 
                             // session.refresh(auditlog);
                             Set<HashMap<String, Object>> loadList = this.loadListOfRelations(auditlog, session);
@@ -728,7 +728,7 @@ public class HibernateAuditLogListener
                            */
                           listRelation.add((IAuditLog) obj);
                           IAuditLog auditlog = (IAuditLog) obj;
-                          auditlog = (IAuditLog) session.get(auditlog.getClass(), (Serializable) auditlog.getId());
+                          auditlog = (IAuditLog) session.get(auditlog.getClass(), auditlog.getId());
                           // session.refresh(auditlog);
                           Set<HashMap<String, Object>> loadList = this.loadListOfRelations(auditlog, session);
                           for (HashMap<String, Object> hashMap : loadList) {

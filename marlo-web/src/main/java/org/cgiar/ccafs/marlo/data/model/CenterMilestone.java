@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,14 +31,10 @@ import com.google.gson.annotations.Expose;
 /**
  * Modified by @author nmatovu last on Oct 9, 2016
  */
-public class CenterMilestone implements Serializable, IAuditLog {
+public class CenterMilestone extends MarloAuditableEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -338676464720877306L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private String title;
@@ -52,21 +47,6 @@ public class CenterMilestone implements Serializable, IAuditLog {
   private BigDecimal value;
 
   @Expose
-  private boolean active;
-
-
-  @Expose
-  private Date activeSince;
-
-  @Expose
-  private User createdBy;
-
-
-  @Expose
-  private User modifiedBy;
-  @Expose
-  private String modificationJustification;
-  @Expose
   private CenterOutcome researchOutcome;
   @Expose
   private CenterTargetUnit targetUnit;
@@ -77,26 +57,6 @@ public class CenterMilestone implements Serializable, IAuditLog {
   private Set<CenterMonitoringMilestone> monitoringMilestones = new HashSet<CenterMonitoringMilestone>(0);
 
   public CenterMilestone() {
-    super();
-  }
-
-  /**
-   * @param title
-   * @param targetYear
-   * @param milestone
-   * @param active
-   * @param activeSince
-   * @param impactOutcome
-   */
-  public CenterMilestone(String title, Integer targetYear, BigDecimal value, boolean active, Date activeSince,
-    CenterOutcome researchOutcome) {
-    super();
-    this.title = title;
-    this.targetYear = targetYear;
-    this.active = active;
-    this.activeSince = activeSince;
-    this.researchOutcome = researchOutcome;
-    this.value = value;
   }
 
   @Override
@@ -111,30 +71,14 @@ public class CenterMilestone implements Serializable, IAuditLog {
       return false;
     }
     CenterMilestone other = (CenterMilestone) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
-  }
-
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
-  /**
-   * @return the id
-   */
-  @Override
-  public Long getId() {
-    return id;
   }
 
   @Override
@@ -142,16 +86,6 @@ public class CenterMilestone implements Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   public Set<CenterMonitoringMilestone> getMonitoringMilestones() {
@@ -195,58 +129,18 @@ public class CenterMilestone implements Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
-  /**
-   * @return the active
-   */
-  @Override
-  public boolean isActive() {
-    return active;
-  }
 
   public boolean isImpactPathway() {
     return impactPathway;
   }
 
 
-  /**
-   * @param active the active to set
-   */
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
   public void setImpactPathway(boolean impactPathway) {
     this.impactPathway = impactPathway;
-  }
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
 
@@ -295,7 +189,8 @@ public class CenterMilestone implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CenterMilestone [id=" + id + ", title=" + title + ", targetYear=" + targetYear + ", value=" + value + "]";
+    return "CenterMilestone [id=" + this.getId() + ", title=" + title + ", targetYear=" + targetYear + ", value="
+      + value + "]";
   }
 
 

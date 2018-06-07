@@ -35,7 +35,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -258,12 +257,6 @@ public class CrpTargetUnitsAction extends BaseAction {
           if (targetUnit.getCheck() != null && targetUnit.getCheck()) {
 
             CrpTargetUnit crpTargetUnitNew = new CrpTargetUnit();
-
-            crpTargetUnitNew.setActive(true);
-            crpTargetUnitNew.setActiveSince(new Date());
-            crpTargetUnitNew.setCreatedBy(this.getCurrentUser());
-            crpTargetUnitNew.setModifiedBy(this.getCurrentUser());
-            crpTargetUnitNew.setModificationJustification("");
             crpTargetUnitNew.setCrp(loggedCrp);
             crpTargetUnitNew.setSrfTargetUnit(targetUnit.getTargetUnit());
 

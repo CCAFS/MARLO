@@ -58,7 +58,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,11 +167,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       .collect(Collectors.toList());
 
     if (userCrp == null || userCrp.isEmpty()) {
-      crpUser.setActive(true);
-      crpUser.setActiveSince(new Date());
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
   }
@@ -372,10 +366,6 @@ public class CrpProgamRegionsAction extends BaseAction {
         config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
 
-      // Saving the new user configuration.
-      // user.setActive(true);
-
-      // userManager.saveUser(user, this.getCurrentUser());
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
       mapUser.put("password", password);
@@ -621,14 +611,9 @@ public class CrpProgamRegionsAction extends BaseAction {
       if (crpProgram.getManagers() != null) {
         for (CrpProgramLeader crpProgramLeader : crpProgram.getManagers()) {
           if (crpProgramLeader.getId() == null) {
-            crpProgramLeader.setActive(true);
             crpProgramLeader.setCrpProgram(crpProgram);
-            crpProgramLeader.setCreatedBy(this.getCurrentUser());
-            crpProgramLeader.setModifiedBy(this.getCurrentUser());
-            crpProgramLeader.setModificationJustification("");
             crpProgramLeader.setManager(true);
 
-            crpProgramLeader.setActiveSince(new Date());
             CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
             if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
               .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
@@ -694,11 +679,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       for (CrpProgram crpProgram : regionsPrograms) {
         if (crpProgram.getId() == null) {
           crpProgram.setCrp(loggedCrp);
-          crpProgram.setActive(true);
-          crpProgram.setCreatedBy(this.getCurrentUser());
-          crpProgram.setModifiedBy(this.getCurrentUser());
-          crpProgram.setModificationJustification("");
-          crpProgram.setActiveSince(new Date());
           crpProgram.setProgramType(ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
           crpProgramManager.saveCrpProgram(crpProgram);
           LiaisonInstitution liasonInstitution = new LiaisonInstitution();
@@ -711,14 +691,11 @@ public class CrpProgamRegionsAction extends BaseAction {
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
         } else {
           CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
-          crpProgram.setCrp(loggedCrp);
-          crpProgram.setActive(true);
-          crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
-          crpProgram.setModifiedBy(this.getCurrentUser());
-          crpProgram.setModificationJustification("");
-          crpProgram.setActiveSince(crpProgramDb.getActiveSince());
-          crpProgram.setProgramType(ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
-          crpProgramManager.saveCrpProgram(crpProgram);
+          crpProgramDb.setCrp(loggedCrp);
+          crpProgramDb.setAcronym(crpProgram.getAcronym());
+          crpProgramDb.setName(crpProgram.getName());
+          crpProgramDb.setProgramType(ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
+          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
           for (LiaisonInstitution liasonInstitution : crpProgram.getLiaisonInstitutions()) {
             liasonInstitution.setAcronym(crpProgram.getAcronym());
             liasonInstitution.setName(crpProgram.getName());
@@ -796,13 +773,8 @@ public class CrpProgamRegionsAction extends BaseAction {
               .filter(c -> c.isActive() && c.getLocElement().getId().equals(locElement.getId()))
               .collect(Collectors.toList()).isEmpty()) {
               CrpProgramCountry crpProgramCountry = new CrpProgramCountry();
-              crpProgramCountry.setActive(true);
               crpProgramCountry.setLocElement(locElement);
               crpProgramCountry.setCrpProgram(crpProgram);
-              crpProgramCountry.setCreatedBy(this.getCurrentUser());
-              crpProgramCountry.setModifiedBy(this.getCurrentUser());
-              crpProgramCountry.setModificationJustification("");
-              crpProgramCountry.setActiveSince(new Date());
               crpProgramCountryManager.saveCrpProgramCountry(crpProgramCountry);
               // Here is calling to saveSiteLeaderBySiteIntegration
               this.saveSiteIntegration(locElement, crpProgramPrevLeaders);
@@ -814,12 +786,7 @@ public class CrpProgamRegionsAction extends BaseAction {
         if (crpProgram.getLeaders() != null) {
           for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
             if (crpProgramLeader.getId() == null) {
-              crpProgramLeader.setActive(true);
               crpProgramLeader.setCrpProgram(crpProgram);
-              crpProgramLeader.setCreatedBy(this.getCurrentUser());
-              crpProgramLeader.setModifiedBy(this.getCurrentUser());
-              crpProgramLeader.setModificationJustification("");
-              crpProgramLeader.setActiveSince(new Date());
               crpProgramLeader.setManager(false);
               CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
               if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
@@ -909,11 +876,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       CrpsSiteIntegration crpsSiteIntegration = new CrpsSiteIntegration();
       crpsSiteIntegration.setCrp(loggedCrp);
       crpsSiteIntegration.setLocElement(locElement);
-      crpsSiteIntegration.setActive(true);
-      crpsSiteIntegration.setModifiedBy(this.getCurrentUser());
-      crpsSiteIntegration.setCreatedBy(this.getCurrentUser());
-      crpsSiteIntegration.setModificationJustification("");
-      crpsSiteIntegration.setActiveSince(new Date());
       crpsSiteIntegration.setRegional(true);
 
       crpsSiteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(crpsSiteIntegration);
@@ -944,11 +906,6 @@ public class CrpProgamRegionsAction extends BaseAction {
         CrpSitesLeader sitesLeader = new CrpSitesLeader();
         sitesLeader.setCrpsSiteIntegration(siteIntegration);
         sitesLeader.setUser(user);
-        sitesLeader.setActive(true);
-        sitesLeader.setModifiedBy(this.getCurrentUser());
-        sitesLeader.setCreatedBy(this.getCurrentUser());
-        sitesLeader.setModificationJustification("");
-        sitesLeader.setActiveSince(new Date());
         sitesLeader.setRegional(true);
 
         List<CrpSitesLeader> siLeaders = null;
@@ -978,11 +935,6 @@ public class CrpProgamRegionsAction extends BaseAction {
         CrpSitesLeader sitesLeader = new CrpSitesLeader();
         sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
         sitesLeader.setUser(userSiteLeader);
-        sitesLeader.setActive(true);
-        sitesLeader.setModifiedBy(this.getCurrentUser());
-        sitesLeader.setCreatedBy(this.getCurrentUser());
-        sitesLeader.setModificationJustification("");
-        sitesLeader.setActiveSince(new Date());
         sitesLeader.setRegional(true);
 
         List<CrpSitesLeader> siLeaders = null;
