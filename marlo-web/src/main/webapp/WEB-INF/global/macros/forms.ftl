@@ -460,11 +460,15 @@
 
 [#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   <div class="inputsFlat">
+    [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
+    [#else]
+      ${checked?string('Yes', 'No')}
+    [/#if]
   </div>
 [/#macro]
 

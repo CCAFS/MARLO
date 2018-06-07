@@ -158,7 +158,6 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
           projectLocation);
       }
     }
-
     projectLocationDAO.deleteProjectLocation(projectLocation.getId());
 
   }

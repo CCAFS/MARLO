@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
@@ -21,50 +21,54 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
-  
-  <div class="row">
-    [#-- POWB Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-            
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- POWB Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-        <div class="borderBox">
-        
-          [#-- Summarize the main areas of expenditure of W1/2 --]
-          <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.summarize" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
-          </div>
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+              
+          [#assign customName= "annualReport.${currentStage}" /]
+          [#assign customLabel= "annualReport.${currentStage}" /]
           
-          [#-- Table F: Main Areas of W1/2 Expenditure --]
-          <div class="form-group margin-panel">
-            <div class="">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
+          <div class="borderBox">
+          
+            [#-- Summarize the main areas of expenditure of W1/2 --]
+            <div class="form-group margin-panel">
+              [@customForm.textArea name="${customName}.summarize" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
-            <hr />
-            [@tableFMacro list=[{},{},{},{}] /]
+            
+            [#-- Table F: Main Areas of W1/2 Expenditure --]
+            <div class="form-group margin-panel">
+              <div class="">
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+              </div>
+              <hr />
+              [@tableFMacro list=[{},{},{},{}] /]
+            </div>
+          
           </div>
-        
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#if PMU]
-          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-        [/#if]
-        
-      [/@s.form] 
-    </div> 
-  </div> 
+          [#-- Section Buttons & hidden inputs--]
+          [#if PMU]
+            [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+          [/#if]
+          
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if]
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 

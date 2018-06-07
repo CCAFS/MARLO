@@ -495,6 +495,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.year = year;
   }
 
+  @Override
+  public String toString() {
+    return "ProjectExpectedStudy [id=" + this.getId() + "]";
+  }
+
 
 }
 

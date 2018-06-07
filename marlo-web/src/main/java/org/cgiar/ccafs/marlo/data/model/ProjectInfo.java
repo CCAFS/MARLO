@@ -86,7 +86,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return administrative;
   }
 
-
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
     if (startDate != null && endDate != null) {
@@ -377,6 +376,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.genderAnalysis = genderAnalysis;
   }
 
+
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
   }
@@ -496,6 +496,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setLiaisonInstitution(update.getLiaisonInstitution());
     this.setLiaisonUser(update.getLiaisonUser());
     this.setLocationGlobal(update.getLocationGlobal());
+    this.setModificationJustification(update.getModificationJustification());
     this.setNoRegional(update.getNoRegional());
     this.setPresetDate(update.getPresetDate());
     this.setReporting(update.getReporting());

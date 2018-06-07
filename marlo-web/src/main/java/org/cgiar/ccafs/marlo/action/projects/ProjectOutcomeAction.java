@@ -888,6 +888,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
       projectOutcomeDB.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
 
+      // Reporting phase
 
       if (projectOutcome.getExpectedUnit() != null) {
         if (projectOutcome.getExpectedUnit().getId() == null

@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.BufferedWriter;
@@ -190,6 +191,9 @@ public class AutoSaveWriterAction extends BaseAction {
       if (nameClass.equals(Deliverable.class.getName())) {
         jSon = jSon.replaceAll("deliverable\\.", "");
         jSon = jSon.replaceAll("participantLocationsIsos", "participantLocationsIsosText");
+      }
+      if (nameClass.equals(ReportSynthesis.class.getName())) {
+        jSon = jSon.replaceAll("reportSynthesis\\.", "");
       }
 
       /****************************************************

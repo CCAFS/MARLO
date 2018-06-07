@@ -1,24 +1,12 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
 package org.cgiar.ccafs.marlo.data.model;
-// Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
+// Generated May 21, 2018 2:10:20 PM by Hibernate Tools 3.4.0.CR1
 
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -27,21 +15,58 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-  private static final long serialVersionUID = -6059800120149718264L;
+
+  private static final long serialVersionUID = -8975527941728871240L;
+
 
   @Expose
   private SrfSloIndicator srfSloIndicator;
 
+
   @Expose
-  private SrfTargetUnit srfTargetUnit;
+  private String narrative;
+
 
   @Expose
   private BigDecimal value;
 
+
   @Expose
   private int year;
 
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
+
+  private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets =
+    new HashSet<ReportSynthesisCrpProgressTarget>(0);
+
   public SrfSloIndicatorTarget() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    SrfSloIndicatorTarget other = (SrfSloIndicatorTarget) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+  public String getComposedName() {
+    return "SLO " + this.getSrfSloIndicator().getSrfSlo().getId() + " Target - " + narrative;
   }
 
   @Override
@@ -51,42 +76,74 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
     return sb.toString();
   }
 
-  public SrfSloIndicator getSrfSloIndicator() {
-    return this.srfSloIndicator;
+  public String getNarrative() {
+    return narrative;
   }
+
+
+  public Set<ReportSynthesisCrpProgressTarget> getReportSynthesisCrpProgressTargets() {
+    return reportSynthesisCrpProgressTargets;
+  }
+
+
+  public SrfSloIndicator getSrfSloIndicator() {
+    return srfSloIndicator;
+  }
+
 
   public SrfTargetUnit getSrfTargetUnit() {
-    return this.srfTargetUnit;
+    return srfTargetUnit;
   }
+
 
   public BigDecimal getValue() {
-    return this.value;
+    return value;
   }
+
 
   public int getYear() {
-    return this.year;
+    return year;
   }
 
-  public void setSrfSloIndicator(SrfSloIndicator srfSloIndicators) {
-    this.srfSloIndicator = srfSloIndicators;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
   }
 
-  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnits) {
-    this.srfTargetUnit = srfTargetUnits;
+  public void setNarrative(String narrative) {
+    this.narrative = narrative;
+  }
+
+  public void
+    setReportSynthesisCrpProgressTargets(Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets) {
+    this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
+  }
+
+  public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
+    this.srfSloIndicator = srfSloIndicator;
+  }
+
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
   public void setValue(BigDecimal value) {
     this.value = value;
   }
 
+
   public void setYear(int year) {
     this.year = year;
   }
 
+
   @Override
   public String toString() {
-    return "SrfSloIndicatorTarget [id=" + this.getId() + ", srfSloIndicator=" + srfSloIndicator + ", srfTargetUnit="
-      + srfTargetUnit + ", value=" + value + ", year=" + year + "]";
+    return "SrfSloIndicatorTarget [id=" + this.getId() + ", narrative=" + narrative + ", value=" + value + ", year="
+      + year + "]";
   }
 
 }
