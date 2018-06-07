@@ -277,11 +277,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
         }
         i++;
       }
-
-
-    } else
-
-    {
+    } else {
       powbSynthesis.setExpectedCrpProgresses(new ArrayList<>());
     }
 
