@@ -682,7 +682,6 @@ public class CrpProgressAction extends BaseAction {
           }
 
           if (hasChanges) {
-            crpTargetPrev.setModifiedBy(this.getCurrentUser());
             reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetPrev);
           }
         }

@@ -14,8 +14,8 @@
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="reportSynthesisFlagshipProgress" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress" fetch="select">
             <column name="report_synthesis_flagship_progress_id" />
@@ -24,16 +24,16 @@
             <column name="milestones_status" precision="10" scale="0" />
         </property>
         <property name="evidence" type="string">
-            <column name="evidence" length="65535" />
+            <column name="evidence" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
+            <column name="modification_justification" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>
