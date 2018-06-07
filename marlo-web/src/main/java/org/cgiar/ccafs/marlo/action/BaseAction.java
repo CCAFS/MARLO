@@ -60,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
@@ -138,6 +139,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
@@ -459,6 +461,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private List<Map<String, Object>> usersToActive;
   @Inject
   private GlobalUnitProjectManager globalUnitProjectManager;
+
+  @Inject
+  private ReportSynthesisManager reportSynthesisManager;
 
   private StringBuilder validationMessage = new StringBuilder();
 
@@ -1254,6 +1259,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     synthesis.setLiaisonInstitution(liaisonInstitution);
 
     synthesis = powbSynthesisManager.savePowbSynthesis(synthesis);
+
+    this.clearPermissionsCache();
+
+    return synthesis;
+
+  }
+
+  /**
+   * Create a liaison institution Annual Report Synthesis in this phase
+   * 
+   * @param phase
+   * @return ReportSynthesis object
+   */
+  public ReportSynthesis createReportSynthesis(long phaseID, long liaisonInstitutionID) {
+
+    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+    Phase phase = phaseManager.getPhaseById(phaseID);
+
+
+    ReportSynthesis synthesis = new ReportSynthesis();
+    synthesis.setPhase(phase);
+    synthesis.setLiaisonInstitution(liaisonInstitution);
+
+    synthesis = reportSynthesisManager.saveReportSynthesis(synthesis);
 
     this.clearPermissionsCache();
 

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2018 10:47:34 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget" table="report_synthesis_financial_summary_budgets" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="reportSynthesisFinancialSummary" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary" fetch="select">
+            <column name="report_synthesis_financial_summary_id" />
+        </many-to-one>
+        <many-to-one name="liaisonInstitution" class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+            <column name="liaison_institution_id" />
+        </many-to-one>
+        <many-to-one name="expenditureArea" class="org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas" fetch="select">
+            <column name="expenditure_area_id" />
+        </many-to-one>
+        <property name="w1Planned" type="java.lang.Double">
+            <column name="w1_planned" precision="30" />
+        </property>
+        <property name="w3Planned" type="java.lang.Double">
+            <column name="w3_planned" precision="30" />
+        </property>
+        <property name="bilateralPlanned" type="java.lang.Double">
+            <column name="bilateral_planned" precision="30" />
+        </property>
+        <property name="w1Actual" type="java.lang.Double">
+            <column name="w1_actual" precision="30" />
+        </property>
+        <property name="w3Actual" type="java.lang.Double">
+            <column name="w3_actual" precision="30" />
+        </property>
+        <property name="bilateralActual" type="java.lang.Double">
+            <column name="bilateral_actual" precision="30" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" />
+        </property>
+    </class>
+</hibernate-mapping>
