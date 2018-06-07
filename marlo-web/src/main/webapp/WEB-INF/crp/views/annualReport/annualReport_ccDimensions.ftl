@@ -423,7 +423,7 @@
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(element.id))!false cssClass="" /]
+                [@customForm.checkmark id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(element.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
@@ -530,7 +530,7 @@
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(element.id))!false cssClass="" /]
+                [@customForm.checkmark id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(element.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
