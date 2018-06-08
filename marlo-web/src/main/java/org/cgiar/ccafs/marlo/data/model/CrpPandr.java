@@ -74,6 +74,12 @@ public class CrpPandr extends MarloSoftDeleteableEntity implements java.io.Seria
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setName(String name) {
     this.name = name;
   }

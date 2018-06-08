@@ -304,6 +304,13 @@ public class DeliverableIntellectualAsset extends MarloBaseEntity implements jav
     this.link = link;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+
+  }
+
+
   public void setPatentStatus(RepIndPatentStatus patentStatus) {
     this.patentStatus = patentStatus;
   }

@@ -103,6 +103,11 @@ public class CaseStudyIndicator extends MarloSoftDeleteableEntity implements jav
   }
 
   @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+  @Override
   public String toString() {
     return "CaseStudyIndicator [id=" + this.getId() + ", caseStudy=" + caseStudy + ", ipIndicator=" + ipIndicator + "]";
   }

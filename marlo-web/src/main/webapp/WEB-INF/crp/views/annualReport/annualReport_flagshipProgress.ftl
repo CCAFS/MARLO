@@ -47,7 +47,7 @@
             [#-- Flagship summary of major results achieved in the past reporting period --]
             [#if flagship]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.flagshipSummary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
               </div>
               <hr />
             [/#if]

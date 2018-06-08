@@ -50,6 +50,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -458,10 +459,103 @@ public class FlagshipProgressAction extends BaseAction {
     }
   }
 
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+
+      ReportSynthesisFlagshipProgress flagshipProgressDB =
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
+
+      if (this.isFlagship()) {
+        this.saveFlagshipProgressNewData(flagshipProgressDB);
+      }
+
+      flagshipProgressDB.setSummary(reportSynthesis.getReportSynthesisFlagshipProgress().getSummary());
+
+      flagshipProgressDB =
+        reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(flagshipProgressDB);
+
+      List<String> relationsName = new ArrayList<>();
+      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+      /**
+       * The following is required because we need to update something on the @ReportSynthesis if we want a row created
+       * in the auditlog table.
+       */
+      this.setModificationJustification(reportSynthesis);
+
+      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+
+
+      Path path = this.getAutoSaveFilePath();
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+  }
+
+
+  public void saveFlagshipProgressNewData(ReportSynthesisFlagshipProgress flagshipProgressDB) {
+
+    if (reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones() == null) {
+      reportSynthesis.getReportSynthesisFlagshipProgress().setMilestones(new ArrayList<>());
+    }
+
+    for (ReportSynthesisFlagshipProgressMilestone flagshipProgressMilestone : reportSynthesis
+      .getReportSynthesisFlagshipProgress().getMilestones()) {
+      ReportSynthesisFlagshipProgressMilestone flagshipProgressMilestoneNew = null;
+
+      if (flagshipProgressMilestone != null) {
+
+        if (flagshipProgressMilestone.getCrpMilestone() != null
+          && flagshipProgressMilestone.getCrpMilestone().getId() > 0) {
+          flagshipProgressMilestone.setCrpMilestone(
+            crpMilestoneManager.getCrpMilestoneById(flagshipProgressMilestone.getCrpMilestone().getId()));
+        }
+
+        if (flagshipProgressMilestone.getId() == null) {
+          flagshipProgressMilestoneNew = new ReportSynthesisFlagshipProgressMilestone();
+          flagshipProgressMilestoneNew.setReportSynthesisFlagshipProgress(flagshipProgressDB);
+        } else {
+          flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressMilestoneManager
+            .getReportSynthesisFlagshipProgressMilestoneById(flagshipProgressMilestone.getId());
+        }
+
+        flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestone.getEvidence());
+        flagshipProgressMilestoneNew.setMilestonesStatus(flagshipProgressMilestone.getMilestonesStatus());
+        flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestone.getCrpMilestone());
+
+        flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressMilestoneManager
+          .saveReportSynthesisFlagshipProgressMilestone(flagshipProgressMilestoneNew);
+
+
+      }
+
+    }
+
+  }
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -471,6 +565,7 @@ public class FlagshipProgressAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -479,10 +574,10 @@ public class FlagshipProgressAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
+
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;

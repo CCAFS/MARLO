@@ -77,10 +77,15 @@ public class CrpIndicatorType extends MarloBaseEntity implements java.io.Seriali
     this.crpIndicators = crpIndicatorses;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setName(String name) {
     this.name = name;
   }
-
 
   @Override
   public String toString() {

@@ -132,6 +132,12 @@ public class LiaisonUser extends MarloSoftDeleteableEntity implements java.io.Se
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setProjects(Set<ProjectInfo> projects) {
     this.projects = projects;
   }
@@ -140,7 +146,6 @@ public class LiaisonUser extends MarloSoftDeleteableEntity implements java.io.Se
   public void setUser(User user) {
     this.user = user;
   }
-
 
   @Override
   public String toString() {

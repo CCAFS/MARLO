@@ -108,10 +108,15 @@ public class ProjectInnovationDeliverable extends MarloBaseEntity implements jav
     this.deliverable = deliverable;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;

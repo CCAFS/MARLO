@@ -126,6 +126,11 @@ public class DeliverablePublicationMetadata extends MarloBaseEntity implements j
     this.journal = journal;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setNasr(Boolean nasr) {
     this.nasr = nasr;
   }
