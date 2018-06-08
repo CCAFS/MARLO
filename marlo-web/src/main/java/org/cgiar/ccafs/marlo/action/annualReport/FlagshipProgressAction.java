@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -36,6 +37,11 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
@@ -50,6 +56,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -122,11 +129,16 @@ public class FlagshipProgressAction extends BaseAction {
 
   private Long liaisonInstitutionID;
 
+
   private Long synthesisID;
+
+
   private LiaisonInstitution liaisonInstitution;
+
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<CrpProgramOutcome> outcomes;
+  private List<CrpProgram> flagships;
 
   @Inject
   public FlagshipProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -168,6 +180,45 @@ public class FlagshipProgressAction extends BaseAction {
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_"
       + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public List<ProjectMilestone> getContributions(long milestoneID) {
+    List<ProjectMilestone> milestones = new ArrayList<>();
+    Set<ProjectMilestone> milestonesSet = new HashSet<>();
+
+    CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
+    List<ProjectMilestone> projectMilestones =
+      crpMilestone.getProjectMilestones().stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
+        && c.getProjectOutcome().getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+    for (ProjectMilestone projectMilestone : projectMilestones) {
+      projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase());
+      if (projectMilestone.getProjectOutcome().isActive()) {
+        Project project = projectMilestone.getProjectOutcome().getProject();
+        if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+              .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
+              Calendar cal = Calendar.getInstance();
+              cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
+              if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+                milestonesSet.add(projectMilestone);
+              }
+            }
+          }
+        }
+      }
+
+
+    }
+    milestones.addAll(milestonesSet);
+    return milestones;
+  }
+
+  public List<CrpProgram> getFlagships() {
+    return flagships;
   }
 
   public int getIndex(Long crpMilestoneID) {
@@ -218,12 +269,26 @@ public class FlagshipProgressAction extends BaseAction {
     return outcomes;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
   public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
     return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
+  }
+
+  public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
+    Long crpProgramID) {
+    List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestonesPrev =
+      reportSynthesisFlagshipProgressMilestoneManager.findByProgram(crpProgramID);
+    List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestones = flagshipProgressMilestonesPrev.stream()
+      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue() && c.isActive())
+      .collect(Collectors.toList());
+    if (!flagshipProgressMilestones.isEmpty()) {
+      return flagshipProgressMilestones.get(0);
+    }
+    return new ReportSynthesisFlagshipProgressMilestone();
   }
 
   public Long getSynthesisID() {
@@ -258,6 +323,103 @@ public class FlagshipProgressAction extends BaseAction {
     }
     return isFP;
 
+  }
+
+  public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
+    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    Set<Project> myProjects = new HashSet();
+    for (ProjectFocus projectFocus : projects) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(project);
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
+          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
+        .collect(Collectors.toList());
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+
+      if (!this.getCountProjectFlagships(project.getId())) {
+        percentageW1 = 100;
+        percentageW3 = 100;
+        percentageB = 100;
+
+      }
+      for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+        switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+          case 1:
+            percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+            break;
+          case 2:
+            percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
+            break;
+          case 3:
+            percentageB = percentageB + projectBudgetsFlagship.getAmount();
+            break;
+          default:
+            break;
+        }
+      }
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+      crpProgram.setW1(crpProgram.getW1() + w1);
+      crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
+
+
+    }
+  }
+
+  public void loadTablePMU() {
+    flagships = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+    for (CrpProgram crpProgram : flagships) {
+      crpProgram.setMilestones(new ArrayList<>());
+      crpProgram.setW1(new Double(0));
+      crpProgram.setW3(new Double(0));
+
+      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+        crpProgramOutcome.setSubIdos(
+          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        if (!crpProgram.getMilestones().isEmpty()) {
+          validOutcomes.add(crpProgramOutcome);
+        }
+      }
+      crpProgram.setOutcomes(validOutcomes);
+      this.loadFlagShipBudgetInfo(crpProgram);
+
+    }
   }
 
   @Override
@@ -398,6 +560,10 @@ public class FlagshipProgressAction extends BaseAction {
               .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
           }
 
+        } else {
+          reportSynthesis.getReportSynthesisFlagshipProgress().setMilestones(
+            reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressMilestones().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList()));
         }
       }
     }
@@ -437,9 +603,7 @@ public class FlagshipProgressAction extends BaseAction {
 
 
     if (this.isPMU()) {
-
-      // TODO
-
+      this.loadTablePMU();
     }
 
     // ADD PMU as liasion Institution too
@@ -459,6 +623,7 @@ public class FlagshipProgressAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -469,9 +634,8 @@ public class FlagshipProgressAction extends BaseAction {
 
       if (this.isFlagship()) {
         this.saveFlagshipProgressNewData(flagshipProgressDB);
+        flagshipProgressDB.setSummary(reportSynthesis.getReportSynthesisFlagshipProgress().getSummary());
       }
-
-      flagshipProgressDB.setSummary(reportSynthesis.getReportSynthesisFlagshipProgress().getSummary());
 
       flagshipProgressDB =
         reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(flagshipProgressDB);
@@ -511,7 +675,6 @@ public class FlagshipProgressAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveFlagshipProgressNewData(ReportSynthesisFlagshipProgress flagshipProgressDB) {
 
@@ -553,9 +716,14 @@ public class FlagshipProgressAction extends BaseAction {
 
   }
 
+  public void setFlagships(List<CrpProgram> flagships) {
+    this.flagships = flagships;
+  }
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -565,10 +733,10 @@ public class FlagshipProgressAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
@@ -578,7 +746,6 @@ public class FlagshipProgressAction extends BaseAction {
     this.reportSynthesis = reportSynthesis;
   }
 
-
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
   }
@@ -586,6 +753,7 @@ public class FlagshipProgressAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   @Override
   public void validate() {
