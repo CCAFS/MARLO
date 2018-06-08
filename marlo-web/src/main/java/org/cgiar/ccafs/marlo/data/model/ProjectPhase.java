@@ -59,6 +59,11 @@ public class ProjectPhase extends MarloBaseEntity implements java.io.Serializabl
     return true;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -66,6 +71,7 @@ public class ProjectPhase extends MarloBaseEntity implements java.io.Serializabl
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   @Override
   public String toString() {

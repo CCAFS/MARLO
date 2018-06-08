@@ -98,6 +98,11 @@ public class IpProgramElement extends MarloBaseEntity implements java.io.Seriali
 
 
   @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+  @Override
   public String toString() {
     return "IpProgramElement [id=" + this.getId() + ", ipElement=" + ipElement + ", ipProgramElementRelationType="
       + ipProgramElementRelationType + ", ipProgram=" + ipProgram + "]";
