@@ -115,7 +115,7 @@
             [#list outcome.milestones as milestone]
               [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
               [#assign isOutcomeRow = (milestone_index == 0)]
-              [#assign milestoneProgress = action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id) ]
+              [#assign milestoneProgress = action.getReportSynthesisFlagshipProgressProgram(milestone.id,fp.id) ]
               <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
@@ -129,9 +129,9 @@
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- Milestone status --]
-                <td>[#if (milestoneProgress.status?has_content)!false]${milestoneProgress.statusName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td>[#if (milestoneProgress.milestonesStatus?has_content)!false]${milestoneProgress.statusName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Explanation --]
-                <td>[#if (milestoneProgress.explanation?has_content)!false]${milestoneProgress.explanation}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td>[#if (milestoneProgress.evidence?has_content)!false]${milestoneProgress.evidence}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]
@@ -178,17 +178,17 @@
     [#-- Milestone status --]
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#local milestoneStatus = (annualReportElement.status)!"-1" /]
-      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.status" label="Complete"   value="1" checked=(milestoneStatus == "1")!false editable=editable cssClass="" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.status" label="Extended"   value="2" checked=(milestoneStatus == "2")!false editable=editable cssClass="" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.status" label="Cancelled"  value="3" checked=(milestoneStatus == "3")!false editable=editable cssClass="" cssClassLabel="font-normal"/]
+      [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
+      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       
       [#if !editable && (milestoneStatus = "-1")][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
     [#-- Provide evidence for completed milestones** or explanation for extended or cancelled --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.explanation" i18nkey="${customLabel}.explanation" help="${customLabel}.explanation.help" helpIcon=false display=true required=true className="" editable=editable /]
+      [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.explanation" help="${customLabel}.explanation.help" helpIcon=false display=true required=true className="" editable=editable /]
     </div>
     
     

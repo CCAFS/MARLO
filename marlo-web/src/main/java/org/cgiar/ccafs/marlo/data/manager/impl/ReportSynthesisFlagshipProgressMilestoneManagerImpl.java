@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisFlagshipProgressMilestoneManagerImpl implements ReportSynthesisFlagshipProgressMilestoneManager {
+public class ReportSynthesisFlagshipProgressMilestoneManagerImpl
+  implements ReportSynthesisFlagshipProgressMilestoneManager {
 
 
   private ReportSynthesisFlagshipProgressMilestoneDAO reportSynthesisFlagshipProgressMilestoneDAO;
@@ -36,7 +37,8 @@ public class ReportSynthesisFlagshipProgressMilestoneManagerImpl implements Repo
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressMilestoneManagerImpl(ReportSynthesisFlagshipProgressMilestoneDAO reportSynthesisFlagshipProgressMilestoneDAO) {
+  public ReportSynthesisFlagshipProgressMilestoneManagerImpl(
+    ReportSynthesisFlagshipProgressMilestoneDAO reportSynthesisFlagshipProgressMilestoneDAO) {
     this.reportSynthesisFlagshipProgressMilestoneDAO = reportSynthesisFlagshipProgressMilestoneDAO;
 
 
@@ -45,13 +47,15 @@ public class ReportSynthesisFlagshipProgressMilestoneManagerImpl implements Repo
   @Override
   public void deleteReportSynthesisFlagshipProgressMilestone(long reportSynthesisFlagshipProgressMilestoneId) {
 
-    reportSynthesisFlagshipProgressMilestoneDAO.deleteReportSynthesisFlagshipProgressMilestone(reportSynthesisFlagshipProgressMilestoneId);
+    reportSynthesisFlagshipProgressMilestoneDAO
+      .deleteReportSynthesisFlagshipProgressMilestone(reportSynthesisFlagshipProgressMilestoneId);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressMilestone(long reportSynthesisFlagshipProgressMilestoneID) {
 
-    return reportSynthesisFlagshipProgressMilestoneDAO.existReportSynthesisFlagshipProgressMilestone(reportSynthesisFlagshipProgressMilestoneID);
+    return reportSynthesisFlagshipProgressMilestoneDAO
+      .existReportSynthesisFlagshipProgressMilestone(reportSynthesisFlagshipProgressMilestoneID);
   }
 
   @Override
@@ -62,13 +66,20 @@ public class ReportSynthesisFlagshipProgressMilestoneManagerImpl implements Repo
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestoneById(long reportSynthesisFlagshipProgressMilestoneID) {
+  public List<ReportSynthesisFlagshipProgressMilestone> findByProgram(long crpProgramID) {
+    return reportSynthesisFlagshipProgressMilestoneDAO.findByProgram(crpProgramID);
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressMilestone
+    getReportSynthesisFlagshipProgressMilestoneById(long reportSynthesisFlagshipProgressMilestoneID) {
 
     return reportSynthesisFlagshipProgressMilestoneDAO.find(reportSynthesisFlagshipProgressMilestoneID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressMilestone saveReportSynthesisFlagshipProgressMilestone(ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone) {
+  public ReportSynthesisFlagshipProgressMilestone saveReportSynthesisFlagshipProgressMilestone(
+    ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone) {
 
     return reportSynthesisFlagshipProgressMilestoneDAO.save(reportSynthesisFlagshipProgressMilestone);
   }

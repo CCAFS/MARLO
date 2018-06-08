@@ -30,7 +30,32 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
   public ReportSynthesisFlagshipProgressMilestone() {
   }
 
-  public String getAssesmentName() {
+  public CrpMilestone getCrpMilestone() {
+    return crpMilestone;
+  }
+
+  public String getEvidence() {
+    return evidence;
+  }
+
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+  public Long getMilestonesStatus() {
+    return milestonesStatus;
+  }
+
+
+  public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
+    return reportSynthesisFlagshipProgress;
+  }
+
+  public String getStatusName() {
 
     if (milestonesStatus == null) {
       return "";
@@ -47,31 +72,6 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
       }
     }
     return "";
-  }
-
-  public CrpMilestone getCrpMilestone() {
-    return crpMilestone;
-  }
-
-
-  public String getEvidence() {
-    return evidence;
-  }
-
-  @Override
-  public String getLogDeatil() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Id : ").append(this.getId());
-    return sb.toString();
-  }
-
-
-  public Long getMilestonesStatus() {
-    return milestonesStatus;
-  }
-
-  public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
-    return reportSynthesisFlagshipProgress;
   }
 
 
