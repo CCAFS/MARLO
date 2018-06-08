@@ -21,22 +21,26 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseSummaryManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisProgramVarianceManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.ProgramVarianceValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.FundingUseValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -56,21 +60,23 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author Andres Valencia - CIAT/CCAFS
+ * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProgramVarianceAction extends BaseAction {
+public class FundingUseAction extends BaseAction {
 
 
-  private static final long serialVersionUID = 1087968306297693209L;
+  private static final long serialVersionUID = -8306463804965610803L;
 
 
   // Managers
   private GlobalUnitManager crpManager;
 
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
   private ReportSynthesisManager reportSynthesisManager;
+
 
   private AuditLogManager auditLogManager;
 
@@ -81,13 +87,15 @@ public class ProgramVarianceAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
 
 
-  private ReportSynthesisProgramVarianceManager reportSynthesisProgramVarianceManager;
+  private FundingUseValidator validator;
 
 
-  private ProgramVarianceValidator validator;
+  private ReportSynthesisFundingUseSummaryManager reportSynthesisFundingUseSummaryManager;
 
 
-  private String pmuText;
+  private ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager;
+
+  private PowbExpenditureAreasManager powbExpenditureAreasManager;
 
 
   // Variables
@@ -99,23 +107,22 @@ public class ProgramVarianceAction extends BaseAction {
 
   private Long liaisonInstitutionID;
 
-  private Long synthesisID;
 
+  private Long synthesisID;
 
   private LiaisonInstitution liaisonInstitution;
 
-
   private GlobalUnit loggedCrp;
-
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
-
   @Inject
-  public ProgramVarianceAction(APConfig config, GlobalUnitManager crpManager,
+  public FundingUseAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    ProgramVarianceValidator validator, ReportSynthesisProgramVarianceManager reportSynthesisProgramVarianceManager) {
+    FundingUseValidator validator, ReportSynthesisFundingUseSummaryManager reportSynthesisFundingUseSummaryManager,
+    ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager,
+    PowbExpenditureAreasManager powbExpenditureAreasManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -123,10 +130,30 @@ public class ProgramVarianceAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
-    this.reportSynthesisProgramVarianceManager = reportSynthesisProgramVarianceManager;
     this.validator = validator;
+    this.reportSynthesisFundingUseSummaryManager = reportSynthesisFundingUseSummaryManager;
+    this.reportSynthesisFundingUseExpendituryAreaManager = reportSynthesisFundingUseExpendituryAreaManager;
+    this.powbExpenditureAreasManager = powbExpenditureAreasManager;
   }
 
+  @Override
+  public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+    if (path.toFile().exists()) {
+      boolean fileDeleted = path.toFile().delete();
+    }
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+    return SUCCESS;
+  }
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -162,10 +189,6 @@ public class ProgramVarianceAction extends BaseAction {
     return loggedCrp;
   }
 
-  public String getPmuText() {
-    return pmuText;
-  }
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -173,7 +196,6 @@ public class ProgramVarianceAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -203,6 +225,16 @@ public class ProgramVarianceAction extends BaseAction {
     }
     return isFP;
 
+  }
+
+  @Override
+  public String next() {
+    String result = this.save();
+    if (result.equals(BaseAction.SUCCESS)) {
+      return BaseAction.NEXT;
+    } else {
+      return result;
+    }
   }
 
   @Override
@@ -279,23 +311,22 @@ public class ProgramVarianceAction extends BaseAction {
           synthesisID = reportSynthesis.getId();
         }
       } catch (Exception e) {
-
         reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (reportSynthesis == null) {
           reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
         }
         synthesisID = reportSynthesis.getId();
-
       }
     }
 
 
     if (reportSynthesis != null) {
 
-      ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(synthesisID);
+      ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(reportSynthesis.getId());
       synthesisID = reportSynthesisDB.getId();
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -310,18 +341,46 @@ public class ProgramVarianceAction extends BaseAction {
         synthesisID = reportSynthesis.getId();
         this.setDraft(true);
       } else {
+
         this.setDraft(false);
-        // Check if ProgramVariance relation is null -create it
-        if (reportSynthesis.getReportSynthesisProgramVariance() == null) {
-          ReportSynthesisProgramVariance programVariance = new ReportSynthesisProgramVariance();
-          // create one to one relation
-          reportSynthesis.setReportSynthesisProgramVariance(programVariance);
-          programVariance.setReportSynthesis(reportSynthesis);
-          // save the changes
-          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+
+        if (this.isPMU()) {
+          // Check if relation is null -create it
+          if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
+            ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
+            // create one to one relation
+            reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
+            fundingUseSummary.setReportSynthesis(reportSynthesis);
+            // save the changes
+            reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+          }
+
+          // Flagships Funding Expenditure Areas
+          if (reportSynthesis.getReportSynthesisFundingUseSummary()
+            .getReportSynthesisFundingUseExpendituryAreas() != null
+            && !reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+              .isEmpty()) {
+            reportSynthesis.getReportSynthesisFundingUseSummary()
+              .setExpenditureAreas(new ArrayList<>(
+                reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+          } else {
+            reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
+            List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
+              .filter(x -> x.isActive() && x.getIsExpenditure()).collect(Collectors.toList()));
+            for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
+              ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
+                new ReportSynthesisFundingUseExpendituryArea();
+              fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
+              reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas()
+                .add(fundingUseExpenditureArea);
+            }
+
+          }
         }
       }
     }
+
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -330,39 +389,58 @@ public class ProgramVarianceAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    // ADD PMU as liaison Institution too
+    // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
-
+    // Informative table to Flagships
     if (this.isFlagship()) {
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
       if (reportSynthesisDB != null) {
-        if (reportSynthesisDB.getReportSynthesisProgramVariance() != null) {
-          pmuText = reportSynthesisDB.getReportSynthesisProgramVariance().getDescription();
+        if (reportSynthesisDB.getReportSynthesisFundingUseSummary() != null) {
+          if (reportSynthesisDB.getReportSynthesisFundingUseSummary()
+            .getReportSynthesisFundingUseExpendituryAreas() != null
+            && !reportSynthesisDB.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+              .isEmpty()) {
+            reportSynthesis.getReportSynthesisFundingUseSummary()
+              .setExpenditureAreas(new ArrayList<>(
+                reportSynthesisDB.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+          }
         }
       }
     }
 
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_PROGRAM_VARIANCE_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FUNDING_USE_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      if (reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas() != null) {
+        reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas().clear();
+      }
+    }
   }
+
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ReportSynthesisProgramVariance reportProgramVaianceDB =
-        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisProgramVariance();
+      ReportSynthesisFundingUseSummary fundingUseSummaryDB =
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFundingUseSummary();
 
-      reportProgramVaianceDB.setDescription(reportSynthesis.getReportSynthesisProgramVariance().getDescription());
-      reportProgramVaianceDB =
-        reportSynthesisProgramVarianceManager.saveReportSynthesisProgramVariance(reportProgramVaianceDB);
+      if (this.isPMU()) {
+        this.saveFundingUseExpenditureAreas(fundingUseSummaryDB);
+        fundingUseSummaryDB.setMainArea(reportSynthesis.getReportSynthesisFundingUseSummary().getMainArea());
 
+        fundingUseSummaryDB =
+          reportSynthesisFundingUseSummaryManager.saveReportSynthesisFundingUseSummary(fundingUseSummaryDB);
+      }
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
@@ -374,6 +452,7 @@ public class ProgramVarianceAction extends BaseAction {
       this.setModificationJustification(reportSynthesis);
 
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -397,6 +476,64 @@ public class ProgramVarianceAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+
+
+  }
+
+  /**
+   * Save Funding Use Expenditure Areas
+   * 
+   * @param fundingUseSummaryDB
+   */
+  public void saveFundingUseExpenditureAreas(ReportSynthesisFundingUseSummary fundingUseSummaryDB) {
+
+    // Save form Information
+    if (reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas() != null) {
+      for (ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea : reportSynthesis
+        .getReportSynthesisFundingUseSummary().getExpenditureAreas()) {
+        if (fundingUseExpenditureArea.getId() == null) {
+
+          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureAreaSave =
+            new ReportSynthesisFundingUseExpendituryArea();
+
+          fundingUseExpenditureAreaSave.setReportSynthesisFundingUseSummary(fundingUseSummaryDB);
+
+          PowbExpenditureAreas expenditureAreas = powbExpenditureAreasManager
+            .getPowbExpenditureAreasById(fundingUseExpenditureArea.getExpenditureArea().getId());
+
+          fundingUseExpenditureAreaSave.setExpenditureArea(expenditureAreas);
+
+          fundingUseExpenditureAreaSave.setW1w2Percentage(fundingUseExpenditureArea.getW1w2Percentage());
+          fundingUseExpenditureAreaSave.setComments(fundingUseExpenditureArea.getComments());
+          reportSynthesisFundingUseExpendituryAreaManager
+            .saveReportSynthesisFundingUseExpendituryArea(fundingUseExpenditureAreaSave);
+
+        } else {
+          boolean hasChanges = false;
+          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureAreaPrev =
+            reportSynthesisFundingUseExpendituryAreaManager
+              .getReportSynthesisFundingUseExpendituryAreaById(fundingUseExpenditureArea.getId());
+
+          if (fundingUseExpenditureAreaPrev.getW1w2Percentage() != fundingUseExpenditureArea.getW1w2Percentage()) {
+            hasChanges = true;
+            fundingUseExpenditureAreaPrev.setW1w2Percentage(fundingUseExpenditureArea.getW1w2Percentage());
+          }
+
+          if (fundingUseExpenditureAreaPrev.getComments() != fundingUseExpenditureArea.getComments()) {
+            hasChanges = true;
+            fundingUseExpenditureAreaPrev.setComments(fundingUseExpenditureArea.getComments());
+          }
+
+
+          if (hasChanges) {
+            reportSynthesisFundingUseExpendituryAreaManager
+              .saveReportSynthesisFundingUseExpendituryArea(fundingUseExpenditureAreaPrev);
+          }
+
+        }
+      }
+    }
+
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
@@ -407,22 +544,20 @@ public class ProgramVarianceAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setPmuText(String pmuText) {
-    this.pmuText = pmuText;
-  }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
-
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
@@ -434,7 +569,7 @@ public class ProgramVarianceAction extends BaseAction {
 
   @Override
   public void validate() {
-    if (this.save) {
+    if (save) {
       validator.validate(this, reportSynthesis, true);
     }
   }

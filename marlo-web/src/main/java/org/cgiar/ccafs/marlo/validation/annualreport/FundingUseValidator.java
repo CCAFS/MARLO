@@ -31,15 +31,15 @@ import java.util.HashMap;
 import javax.inject.Named;
 
 /**
- * @author Andres Valencia - CIAT/CCAFS
+ * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
-public class FinancialSummaryValidator extends BaseValidator {
+public class FundingUseValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
 
-  public FinancialSummaryValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+  public FundingUseValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
   }
@@ -48,7 +48,7 @@ public class FinancialSummaryValidator extends BaseValidator {
   private Path getAutoSaveFilePath(ReportSynthesis reportSynthesis, long crpID, BaseAction baseAction) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = reportSynthesis.getClass().getSimpleName();
-    String actionFile = ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus().replace("/", "_");
+    String actionFile = ReportSynthesisSectionStatusEnum.FUNDING_USE.getStatus().replace("/", "_");
     String autoSaveFile =
       reportSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";

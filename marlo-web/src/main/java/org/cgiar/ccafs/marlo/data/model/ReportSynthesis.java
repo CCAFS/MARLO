@@ -48,6 +48,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
 
+  @Expose
+  private ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary;
+
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -78,9 +81,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -109,6 +114,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisFlagshipProgress;
   }
 
+  public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
+    return reportSynthesisFundingUseSummary;
+  }
 
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
@@ -148,6 +156,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.phase = phase;
   }
 
+
   public void
     setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
     this.reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimension;
@@ -163,6 +172,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
     this.reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgress;
+  }
+
+  public void setReportSynthesisFundingUseSummary(ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary) {
+    this.reportSynthesisFundingUseSummary = reportSynthesisFundingUseSummary;
   }
 
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
