@@ -19,10 +19,10 @@
 
 [#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
-          
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
-    
+
 <section class="container">
   [#if !reportingActive]
     <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
@@ -84,7 +84,9 @@
             
           </div>
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+          [#if flagship]
+            [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+          [/#if]
         [/@s.form] 
       </div> 
     </div>
@@ -223,10 +225,8 @@
                 <tr>
                   <th class="col-md-1"> Project ID </th>
                   <th class=""> Project Title </th>
-                  [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Expected</th>[/#if]
                   [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Achieved</th>[/#if]
-                  <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.target" /]  </th>
-                  <th class="col-md-3"> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
+                  <th> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
                   <th> </th>
                 </tr>
               </thead>
@@ -238,11 +238,15 @@
                     <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
                     <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
                     [#if hasTarget]
-                    <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]</td>
                     <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]</td>
                     [/#if]
-                    <td>${(contribution.narrativeTarget?replace('\n', '<br>'))!} </td>
-                    <td>${(contribution.narrativeAchieved?replace('\n', '<br>'))!} </td>                  
+                    <td>
+                      [#if ((contribution.narrativeAchieved)?has_content)!false]
+                        ${(contribution.narrativeAchieved?replace('\n', '<br>'))!}
+                      [#else]
+                        <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                      [/#if]
+                    </td>                  
                     <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                   </tr>
                 [/#list]
