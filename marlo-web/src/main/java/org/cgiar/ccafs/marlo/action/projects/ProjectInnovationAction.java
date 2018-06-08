@@ -617,6 +617,11 @@ public class ProjectInnovationAction extends BaseAction {
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
+      /**
+       * The following is required because we need to update something on the @ProjectInnovation if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(innovation);
       projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName,
         this.getActualPhase());
 

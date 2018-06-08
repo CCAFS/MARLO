@@ -32,7 +32,8 @@ public interface ReportSynthesisFlagshipProgressMilestoneDAO {
   public void deleteReportSynthesisFlagshipProgressMilestone(long reportSynthesisFlagshipProgressMilestoneId);
 
   /**
-   * This method validate if the reportSynthesisFlagshipProgressMilestone identify with the given id exists in the system.
+   * This method validate if the reportSynthesisFlagshipProgressMilestone identify with the given id exists in the
+   * system.
    * 
    * @param reportSynthesisFlagshipProgressMilestoneID is a reportSynthesisFlagshipProgressMilestone identifier.
    * @return true if the reportSynthesisFlagshipProgressMilestone exists, false otherwise.
@@ -40,7 +41,8 @@ public interface ReportSynthesisFlagshipProgressMilestoneDAO {
   public boolean existReportSynthesisFlagshipProgressMilestone(long reportSynthesisFlagshipProgressMilestoneID);
 
   /**
-   * This method gets a reportSynthesisFlagshipProgressMilestone object by a given reportSynthesisFlagshipProgressMilestone identifier.
+   * This method gets a reportSynthesisFlagshipProgressMilestone object by a given
+   * reportSynthesisFlagshipProgressMilestone identifier.
    * 
    * @param reportSynthesisFlagshipProgressMilestoneID is the reportSynthesisFlagshipProgressMilestone identifier.
    * @return a ReportSynthesisFlagshipProgressMilestone object.
@@ -55,13 +57,18 @@ public interface ReportSynthesisFlagshipProgressMilestoneDAO {
   public List<ReportSynthesisFlagshipProgressMilestone> findAll();
 
 
+  public List<ReportSynthesisFlagshipProgressMilestone> findByProgram(long crpProgramID);
+
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressMilestone
    * 
-   * @param reportSynthesisFlagshipProgressMilestone - is the reportSynthesisFlagshipProgressMilestone object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgressMilestone was
+   * @param reportSynthesisFlagshipProgressMilestone - is the reportSynthesisFlagshipProgressMilestone object with the
+   *        new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgressMilestone was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgressMilestone save(ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone);
+  public ReportSynthesisFlagshipProgressMilestone
+    save(ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone);
 }

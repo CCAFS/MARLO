@@ -330,7 +330,9 @@
           [#list list as item]
             [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
             <tr>
-              <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
+              <td>
+                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
+              </td>
               [#list columns as column]
                 <td>
                   [#if (item[column]?has_content)!false] 
@@ -423,7 +425,7 @@
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(element.id))!false cssClass="" /]
+                [@customForm.checkmark id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.innovationIds?seq_contains(element.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>
@@ -530,7 +532,7 @@
               </td>
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(element.id))!false cssClass="" /]
+                [@customForm.checkmark id="innovation-${item_index}" name="${customName}" label="" value="${(element.id)!}" editable=editable checked=(!reportSynthesis.reportSynthesisCrossCuttingDimension.assetIds?seq_contains(element.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>

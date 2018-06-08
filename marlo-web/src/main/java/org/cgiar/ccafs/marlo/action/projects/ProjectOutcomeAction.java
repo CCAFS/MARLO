@@ -570,6 +570,11 @@ public class ProjectOutcomeAction extends BaseAction {
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
+      /**
+       * The following is required because we need to update something on the @ProjectOutcome if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(projectOutcome);
       projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
         this.getActualPhase());
 

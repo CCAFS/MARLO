@@ -114,6 +114,11 @@ public class DeliverableLeader extends MarloBaseEntity implements java.io.Serial
     this.institution = institution;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }

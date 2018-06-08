@@ -368,6 +368,12 @@ public class RisksAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
+      /**
+       * The following is required because we need to update something on the @ReportSynthesis if we want a row created
+       * in the auditlog table.
+       */
+      this.setModificationJustification(reportSynthesis);
+
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();

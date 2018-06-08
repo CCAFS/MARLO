@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2018 10:47:34 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea" table="report_synthesis_funding_use_expenditury_areas" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>        
+        <many-to-one name="reportSynthesisFundingUseSummary" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary" fetch="select">
+            <column name="report_synthesis_funding_use_summary_id" />
+        </many-to-one>
+        <many-to-one name="expenditureArea" class="org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas" fetch="select">
+            <column name="expenditure_area_id" />
+        </many-to-one>
+        <property name="w1w2Percentage" type="java.lang.Double">
+            <column name="w1w2_percentage" precision="30" />
+        </property>
+        <property name="comments" type="string">
+            <column name="comments" sql-type="TEXT" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" />
+        </property>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

@@ -1005,6 +1005,12 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfoDB);
 
 
+      /**
+       * The following is required because we need to update something on the @FundingSource if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(fundingSourceDB);
+
       fundingSourceDB = fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName,
         this.getActualPhase());
 

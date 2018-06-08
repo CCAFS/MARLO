@@ -208,11 +208,6 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
   }
 
 
-  @Override
-  public String getModificationJustification() {
-    return "";
-  }
-
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }

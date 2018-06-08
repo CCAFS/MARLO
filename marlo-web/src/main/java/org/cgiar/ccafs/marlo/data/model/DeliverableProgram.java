@@ -110,6 +110,11 @@ public class DeliverableProgram extends MarloBaseEntity implements java.io.Seria
     this.deliverable = deliverable;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }

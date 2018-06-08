@@ -219,8 +219,11 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
         .registerTypeAdapter(Float.class, new FloatTypeAdapter())
         .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
         .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
+
       Class<?> classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
       IAuditLog iAuditLog = (IAuditLog) gson.fromJson(auditlog.getEntityJson(), classToCast);
+
+      iAuditLog.setModifiedBy(userDao.getUser(iAuditLog.getModifiedBy().getId()));
 
       return iAuditLog;
     } catch (JsonSyntaxException e) {

@@ -3,6 +3,7 @@
 @import url("custom.pickadate.css");
 @import url("custom.bootstrap.css");
 @import url("customLogin.css");
+@import url("customInputsFlat.css");
 
 .mce-widget.mce-tooltip {
   display: none !important;
@@ -6301,6 +6302,8 @@ p.checkDisable:before {
   text-align: center;
   -webkit-transition: all 250ms ease;
   transition: all 250ms ease;
+
+  
 }
 .inputsFlat input[type="checkbox"]:checked + .checkbox-label:before {
   background-color: #3197EE;

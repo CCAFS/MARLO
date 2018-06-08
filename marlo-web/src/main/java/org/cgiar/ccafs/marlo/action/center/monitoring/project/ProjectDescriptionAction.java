@@ -713,6 +713,13 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OUTPUT_RELATION);
       relationsName.add(APConstants.PROJECT_LOCATION_RELATION);
       project = projectService.getCenterProjectById(projectID);
+
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in the
+       * auditlog table.
+       */
+      this.setModificationJustification(project);
+
       projectService.saveCenterProject(project, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();

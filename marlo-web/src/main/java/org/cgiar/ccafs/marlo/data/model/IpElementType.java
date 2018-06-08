@@ -71,6 +71,11 @@ public class IpElementType extends MarloBaseEntity implements java.io.Serializab
     this.ipElements = ipElementses;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setName(String name) {
     this.name = name;
   }

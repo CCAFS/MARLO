@@ -110,6 +110,12 @@ public class CaseStudyProject extends MarloBaseEntity implements java.io.Seriali
     this.created = created;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+
+  }
+
   public void setProject(Project project) {
     this.project = project;
   }

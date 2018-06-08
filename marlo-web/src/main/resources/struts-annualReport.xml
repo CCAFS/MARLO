@@ -19,7 +19,7 @@
     </action>
 
 		<!--  1.2 Progress by CRP Flagships  -->
-		<action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
+		<action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_flagshipProgress.ftl</result>
       <result name="success" type="redirectAction">
@@ -45,7 +45,7 @@
     </action>
     
 		<!--  2.1 Variance from Planned Program  -->
-		<action name="{crp}/plannedVariance" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/plannedVariance" class="org.cgiar.ccafs.marlo.action.annualReport.ProgramVarianceAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_plannedVariance.ftl</result>
       <result name="success" type="redirectAction">
@@ -58,7 +58,7 @@
     </action>
     
 		<!--  2.2 Use of W1-2 Funding  -->
-		<action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.FundingUseAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_fundingUse.ftl</result>
       <result name="success" type="redirectAction">

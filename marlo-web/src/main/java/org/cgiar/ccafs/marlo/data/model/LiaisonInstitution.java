@@ -171,6 +171,11 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setName(String name) {
     this.name = name;
   }
@@ -186,6 +191,7 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
   public void setProjects(Set<ProjectInfo> projects) {
     this.projects = projects;
   }
+
 
   public void setW1(double w1) {
     this.w1 = w1;
