@@ -56,7 +56,10 @@
             [#-- Flagships - External Partnerships Synthesis --]
             [#if PMU]
             <div class="form-group margin-panel">
+              <div class="viewMoreSyntesis-block" >
               [@tableFlagshipSynthesis tableName="tablePartnerships" list=[{},{},{},{}] columns=["summarizeHighlights"] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
   
