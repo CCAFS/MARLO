@@ -448,14 +448,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               if (projectExpectedStudy.getCountries() == null || projectExpectedStudy.getCountries().isEmpty()) {
                 action.addMessage(action.getText("countries"));
                 action.addMissingField("study.countries");
-                action.getInvalidFields().put("list-expectedStudy.countriesIds",
+                action.getInvalidFields().put("input-expectedStudy.countriesIds",
                   action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
               } else {
                 if (projectExpectedStudy.getCountriesIds() == null
                   || projectExpectedStudy.getCountriesIds().isEmpty()) {
                   action.addMessage(action.getText("countries"));
                   action.addMissingField("study.countries");
-                  action.getInvalidFields().put("list-expectedStudy.countriesIds",
+                  action.getInvalidFields().put("input-expectedStudy.countriesIds",
                     action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
                 }
               }

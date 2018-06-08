@@ -307,8 +307,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           && ph.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
-          && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && ph.getProject().getProjectInfo().getReporting())
+          && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null)
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
