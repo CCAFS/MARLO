@@ -232,7 +232,10 @@ $(document).ready(function() {
   });
 
   $endDate.on('change', changeStatus);
-  $endDate.trigger('change');
+  if (editable){
+    $endDate.trigger('change');
+  }
+  
 
   /** Functions */
 

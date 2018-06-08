@@ -892,14 +892,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudyCrps() != null
       && projectExpectedStudy.getProjectExpectedStudyCrps().size() > 0) {
-      if (expectedStudy.getCrps() != null) {
-        List<ProjectExpectedStudyCrp> crpPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps()
-          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectExpectedStudyCrp> crpPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-        for (ProjectExpectedStudyCrp studyCrp : crpPrev) {
-          if (!expectedStudy.getCrps().contains(studyCrp)) {
-            projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
-          }
+      for (ProjectExpectedStudyCrp studyCrp : crpPrev) {
+        if (expectedStudy.getCrps() == null || !expectedStudy.getCrps().contains(studyCrp)) {
+          projectExpectedStudyCrpManager.deleteProjectExpectedStudyCrp(studyCrp.getId());
         }
       }
     }
@@ -942,7 +940,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .collect(Collectors.toList()));
 
       for (ProjectExpectedStudyFlagship studyFlagship : flagshipPrev) {
-        if (!expectedStudy.getFlagships().contains(studyFlagship)) {
+        if (expectedStudy.getFlagships() == null || !expectedStudy.getFlagships().contains(studyFlagship)) {
           projectExpectedStudyFlagshipManager.deleteProjectExpectedStudyFlagship(studyFlagship.getId());
         }
       }
@@ -984,7 +982,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyInstitution studyInstitution : institutionPrev) {
-        if (!expectedStudy.getInstitutions().contains(studyInstitution)) {
+        if (expectedStudy.getInstitutions() == null || !expectedStudy.getInstitutions().contains(studyInstitution)) {
           projectExpectedStudyInstitutionManager.deleteProjectExpectedStudyInstitution(studyInstitution.getId());
         }
       }
@@ -1025,7 +1023,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ExpectedStudyProject studyProject : projectPrev) {
-        if (!expectedStudy.getProjects().contains(studyProject)) {
+        if (expectedStudy.getProjects() == null || !expectedStudy.getProjects().contains(studyProject)) {
           expectedStudyProjectManager.deleteExpectedStudyProject(studyProject.getId());
         }
       }
@@ -1069,7 +1067,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .collect(Collectors.toList()));
 
       for (ProjectExpectedStudyFlagship studyFlagship : flagshipPrev) {
-        if (!expectedStudy.getRegions().contains(studyFlagship)) {
+        if (expectedStudy.getRegions() == null || !expectedStudy.getRegions().contains(studyFlagship)) {
           projectExpectedStudyFlagshipManager.deleteProjectExpectedStudyFlagship(studyFlagship.getId());
         }
       }
@@ -1111,7 +1109,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
-        if (!expectedStudy.getSrfTargets().contains(studytarget)) {
+        if (expectedStudy.getSrfTargets() == null || !expectedStudy.getSrfTargets().contains(studytarget)) {
           projectExpectedStudySrfTargetManager.deleteProjectExpectedStudySrfTarget(studytarget.getId());
         }
       }
@@ -1154,7 +1152,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ProjectExpectedStudySubIdo studySubIdo : subIdoPrev) {
-        if (!expectedStudy.getSubIdos().contains(studySubIdo)) {
+        if (expectedStudy.getSubIdos() == null || !expectedStudy.getSubIdos().contains(studySubIdo)) {
           projectExpectedStudySubIdoManager.deleteProjectExpectedStudySubIdo(studySubIdo.getId());
         }
       }
