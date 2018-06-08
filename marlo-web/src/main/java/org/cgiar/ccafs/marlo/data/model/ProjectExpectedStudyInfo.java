@@ -344,6 +344,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.isContribution = isContribution;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setOtherCrossCuttingDimensions(String otherCrossCuttingDimensions) {
     this.otherCrossCuttingDimensions = otherCrossCuttingDimensions;
   }
@@ -372,10 +377,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.quantification = quantification;
   }
 
+
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
   }
-
 
   public void setReferencesText(String referencesText) {
     this.referencesText = referencesText;
@@ -409,6 +414,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.scopeComments = scopeComments;
   }
 
+
   public void setStatus(Integer status) {
     this.status = status;
   }
@@ -427,7 +433,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setTopLevelComments(String topLevelComments) {
     this.topLevelComments = topLevelComments;
   }
-
 
   public void setYouthLevel(RepIndGenderYouthFocusLevel youthLevel) {
     this.youthLevel = youthLevel;

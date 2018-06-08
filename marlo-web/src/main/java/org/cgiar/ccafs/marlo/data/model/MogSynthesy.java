@@ -136,6 +136,12 @@ public class MogSynthesy extends MarloBaseEntity implements java.io.Serializable
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setSynthesisGender(String synthesisGender) {
     this.synthesisGender = synthesisGender;
   }
@@ -149,7 +155,6 @@ public class MogSynthesy extends MarloBaseEntity implements java.io.Serializable
   public void setYear(int year) {
     this.year = year;
   }
-
 
   @Override
   public String toString() {

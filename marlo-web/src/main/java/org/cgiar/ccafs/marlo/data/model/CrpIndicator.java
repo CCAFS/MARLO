@@ -110,6 +110,12 @@ public class CrpIndicator extends MarloSoftDeleteableEntity implements java.io.S
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setName(String name) {
     this.name = name;
   }
@@ -118,7 +124,6 @@ public class CrpIndicator extends MarloSoftDeleteableEntity implements java.io.S
   public void setSerial(String serial) {
     this.serial = serial;
   }
-
 
   @Override
   public String toString() {

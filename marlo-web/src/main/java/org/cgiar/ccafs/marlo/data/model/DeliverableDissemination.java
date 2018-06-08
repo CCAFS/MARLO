@@ -226,6 +226,11 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
     this.limitedExclusivity = limitedExclusivity;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setNotDisseminated(Boolean notDisseminated) {
     this.notDisseminated = notDisseminated;
   }
@@ -249,6 +254,7 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
   public void setSynced(Boolean synced) {
     this.synced = synced;
   }
+
 
   public void setType(String type) {
     this.type = type;

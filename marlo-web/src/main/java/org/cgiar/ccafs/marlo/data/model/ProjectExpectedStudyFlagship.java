@@ -101,10 +101,15 @@ public class ProjectExpectedStudyFlagship extends MarloBaseEntity implements jav
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;

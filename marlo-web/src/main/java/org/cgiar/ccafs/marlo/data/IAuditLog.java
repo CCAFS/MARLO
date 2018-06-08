@@ -68,4 +68,6 @@ public interface IAuditLog {
    */
   public boolean isActive();
 
+  public void setModifiedBy(User modifiedBy);
+
 }

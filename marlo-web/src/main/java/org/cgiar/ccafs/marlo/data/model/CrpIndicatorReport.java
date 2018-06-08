@@ -165,6 +165,12 @@ public class CrpIndicatorReport extends MarloBaseEntity implements java.io.Seria
     this.lastUpdate = lastUpdate;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setNextTarget(String nextTarget) {
     this.nextTarget = nextTarget;
   }
@@ -183,7 +189,6 @@ public class CrpIndicatorReport extends MarloBaseEntity implements java.io.Seria
   public void setYear(int year) {
     this.year = year;
   }
-
 
   @Override
   public String toString() {

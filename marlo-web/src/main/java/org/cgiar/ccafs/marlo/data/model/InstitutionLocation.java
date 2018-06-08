@@ -136,6 +136,12 @@ public class InstitutionLocation extends MarloBaseEntity implements java.io.Seri
 
 
   @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
+  @Override
   public String toString() {
     return "InstitutionLocation [id=" + this.getId() + ", institution=" + institution + ", locElement=" + locElement
       + ", headquater=" + headquater + ", city=" + city + "]";

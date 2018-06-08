@@ -61,10 +61,15 @@ public class IpLiaisonUser extends MarloBaseEntity implements java.io.Serializab
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setUser(User user) {
     this.user = user;
   }
-
 
   @Override
   public String toString() {

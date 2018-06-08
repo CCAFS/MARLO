@@ -107,6 +107,11 @@ public class ProjectHighlightCountry extends MarloBaseEntity implements java.io.
     this.locElement = locElement;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
