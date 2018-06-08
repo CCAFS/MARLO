@@ -118,6 +118,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.MarloAuditableEntity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
@@ -163,6 +164,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -5765,6 +5767,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.missingFields = missingFields;
   }
 
+  /**
+   * Common logic for setting the Modification Justification
+   * 
+   * @param entity
+   */
+  protected void setModificationJustification(MarloAuditableEntity entity) {
+    /**
+     * Hibernate will not save unchanged entities, so having the localDateTime ensures a unique entry is created each
+     * save.
+     */
+    if (StringUtils.isEmpty(this.justification)) {
+      entity.setModificationJustification("No justification provided at : " + LocalDateTime.now());
+    } else if (this.justification.equals(entity.getModificationJustification())) {
+      /**
+       * We have the same justification text as before - which can lead to the entity not being saved if no other fields
+       * have been saved. Add a * character to ensure that they are different.
+       */
+      entity.setModificationJustification(this.justification + "*");
+    } else {
+      entity.setModificationJustification(this.justification);
+    }
+  }
+
   public void setNext(boolean next) {
     this.next = true;
   }
@@ -5839,6 +5864,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.years = years;
   }
 
+
   public String specificityValue(String specificity) {
     try {
       String value = (this.getSession().get(specificity).toString());
@@ -5853,7 +5879,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String submit() {
     return SUCCESS;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************

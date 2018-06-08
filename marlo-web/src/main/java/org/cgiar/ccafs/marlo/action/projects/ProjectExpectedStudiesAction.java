@@ -843,6 +843,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // End
 
       projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(expectedStudy.getProjectExpectedStudyInfo());
+      /**
+       * The following is required because we need to update something on the @ProjectExpectedStudy if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(expectedStudy);
       projectExpectedStudyManager.save(expectedStudy, this.getActionName(), relationsName, this.getActualPhase());
 
       if (path.toFile().exists()) {

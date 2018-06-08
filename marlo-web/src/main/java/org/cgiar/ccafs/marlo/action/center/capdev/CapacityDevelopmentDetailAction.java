@@ -844,6 +844,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     relationsName.add(APConstants.CAPDEV_LOCATIONS_RELATION);
     relationsName.add(APConstants.CAPDEV_PARTICIPANTS_RELATION);
 
+    /**
+     * The following is required because we need to update something on the @CapacityDevelopment if we want a row
+     * created in the auditlog table.
+     */
+    this.setModificationJustification(capdev);
+
     capdevService.saveCapacityDevelopment(capdev, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();

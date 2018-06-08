@@ -485,6 +485,13 @@ public class ProjectDeliverableAction extends BaseAction {
       relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
       relationsName.add(APConstants.DELIVERABLE_OUTPUTS_RELATION);
       deliverable = deliverableService.getDeliverableById(deliverableID);
+
+      /**
+       * The following is required because we need to update something on the @Deliverable if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(deliverable);
+
       deliverableService.saveDeliverable(deliverable, this.getActionName(), relationsName);
 
       final Path path = this.getAutoSaveFilePath();

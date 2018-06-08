@@ -371,6 +371,11 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
     program = ipProgramManager.getIpProgramById(program.getId());
+    /**
+     * The following is required because we need to update something on the @IpProgram if we want a row
+     * created in the auditlog table.
+     */
+    this.setModificationJustification(program);
     ipProgramManager.save(program, this.getActionName(), relationsName);
     Path path = this.getAutoSaveFilePath();
 

@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.MarloAuditableEntity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -120,10 +121,28 @@ public class HibernateAuditLogListener
             if (collectionRecord.isActive()) {
               String json = gson.toJson(collectionRecord);
 
-              Auditlog auditlog = this.createAuditlog(IAuditLog.UPDATED, collectionRecord, json,
-                collectionRecord.getModifiedBy().getId(), transactionId,
-                new Long(record.get(IAuditLog.PRINCIPAL).toString()), record.get(IAuditLog.RELATION_NAME).toString(),
-                actionName, AuditLogContextProvider.getAuditLogContext().getPhase());
+              /**
+               * If the modifiedBy is null (e.g. it has been created but never updated) then we will try and use the
+               * createdBy id
+               */
+              Long modifiedByUserId;
+              if (collectionRecord.getModifiedBy() == null) {
+                try {
+                  MarloAuditableEntity collectionEntity = (MarloAuditableEntity) collectionRecord;
+                  modifiedByUserId = collectionEntity.getCreatedBy().getId();
+                } catch (ClassCastException e) {
+                  // Hack to fix another hack where entities implement IAuditLog but do not contain the audit columns.
+                  modifiedByUserId = 3L;
+                }
+              } else {
+                modifiedByUserId = collectionRecord.getModifiedBy().getId();
+              }
+
+
+              Auditlog auditlog =
+                this.createAuditlog(IAuditLog.UPDATED, collectionRecord, json, modifiedByUserId, transactionId,
+                  new Long(record.get(IAuditLog.PRINCIPAL).toString()), record.get(IAuditLog.RELATION_NAME).toString(),
+                  actionName, AuditLogContextProvider.getAuditLogContext().getPhase());
               auditLogs.add(auditlog);
             }
           }

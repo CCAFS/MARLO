@@ -436,9 +436,16 @@ public class OutputsAction extends BaseAction {
     this.saveOutcomes(outputDb);
 
 
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);
-      outputService.saveResearchOutput(outputDb, this.getActionName(), relationsName);
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);
+
+    /**
+     * The following is required because we need to update something on the @CenterOutput if we want a row created
+     * in the auditlog table.
+     */
+    this.setModificationJustification(outputDb);
+
+    outputService.saveResearchOutput(outputDb, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
 

@@ -89,11 +89,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
-  @Override
-  public String getModificationJustification() {
-    return "";
-  }
-
   public Phase getPhase() {
     return phase;
   }

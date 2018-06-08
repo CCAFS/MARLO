@@ -457,6 +457,11 @@ public class ProjectCaseStudyAction extends BaseAction {
           }
         }
       }
+      /**
+       * The following is required because we need to update something on the @CaseStudy if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(caseStudy);
       caseStudyManager.saveCaseStudy(caseStudy, this.getActionName(), relationsName);
 
       if (path.toFile().exists()) {
