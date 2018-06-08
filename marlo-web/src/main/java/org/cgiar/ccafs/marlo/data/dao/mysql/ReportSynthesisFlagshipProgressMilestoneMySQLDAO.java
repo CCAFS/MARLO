@@ -24,10 +24,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisFlagshipProgressMilestoneMySQLDAO extends AbstractMarloDAO<ReportSynthesisFlagshipProgressMilestone, Long> implements ReportSynthesisFlagshipProgressMilestoneDAO {
+public class ReportSynthesisFlagshipProgressMilestoneMySQLDAO
+  extends AbstractMarloDAO<ReportSynthesisFlagshipProgressMilestone, Long>
+  implements ReportSynthesisFlagshipProgressMilestoneDAO {
 
 
   @Inject
@@ -37,14 +40,16 @@ public class ReportSynthesisFlagshipProgressMilestoneMySQLDAO extends AbstractMa
 
   @Override
   public void deleteReportSynthesisFlagshipProgressMilestone(long reportSynthesisFlagshipProgressMilestoneId) {
-    ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone = this.find(reportSynthesisFlagshipProgressMilestoneId);
+    ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone =
+      this.find(reportSynthesisFlagshipProgressMilestoneId);
     reportSynthesisFlagshipProgressMilestone.setActive(false);
     this.update(reportSynthesisFlagshipProgressMilestone);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressMilestone(long reportSynthesisFlagshipProgressMilestoneID) {
-    ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone = this.find(reportSynthesisFlagshipProgressMilestoneID);
+    ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone =
+      this.find(reportSynthesisFlagshipProgressMilestoneID);
     if (reportSynthesisFlagshipProgressMilestone == null) {
       return false;
     }
@@ -70,7 +75,20 @@ public class ReportSynthesisFlagshipProgressMilestoneMySQLDAO extends AbstractMa
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressMilestone save(ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone) {
+  public List<ReportSynthesisFlagshipProgressMilestone> findByProgram(long crpProgramID) {
+    String query =
+      "select distinct pp from ReportSynthesisFlagshipProgressMilestone as pp inner join pp.reportSynthesisFlagshipProgress.reportSynthesis as reportSynthesis "
+        + " inner join reportSynthesis.liaisonInstitution liai" + " where liai.crpProgram.id = :crpProgramID ";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("crpProgramID", crpProgramID);
+    List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestones = createQuery.list();
+    return flagshipProgressMilestones;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressMilestone
+    save(ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone) {
     if (reportSynthesisFlagshipProgressMilestone.getId() == null) {
       super.saveEntity(reportSynthesisFlagshipProgressMilestone);
     } else {

@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -15,7 +16,9 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
 
   private static final long serialVersionUID = 7688189402530792639L;
 
+
   private ReportSynthesis reportSynthesis;
+
 
   @Expose
   private String summary;
@@ -23,6 +26,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   private Set<ReportSynthesisFlagshipProgressMilestone> reportSynthesisFlagshipProgressMilestones =
     new HashSet<ReportSynthesisFlagshipProgressMilestone>(0);
 
+  private List<ReportSynthesisFlagshipProgressMilestone> milestones;
 
   public ReportSynthesisFlagshipProgress() {
   }
@@ -34,17 +38,26 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return sb.toString();
   }
 
+
+  public List<ReportSynthesisFlagshipProgressMilestone> getMilestones() {
+    return milestones;
+  }
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
-
 
   public Set<ReportSynthesisFlagshipProgressMilestone> getReportSynthesisFlagshipProgressMilestones() {
     return reportSynthesisFlagshipProgressMilestones;
   }
 
+
   public String getSummary() {
     return summary;
+  }
+
+  public void setMilestones(List<ReportSynthesisFlagshipProgressMilestone> milestones) {
+    this.milestones = milestones;
   }
 
 

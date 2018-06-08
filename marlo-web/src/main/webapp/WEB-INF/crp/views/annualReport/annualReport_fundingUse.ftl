@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis.reportSynthesisFundingUseSummary" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -37,9 +40,6 @@
         [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-              
-          [#assign customName= "annualReport.${currentStage}" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
@@ -47,7 +47,7 @@
           
             [#-- Summarize the main areas of expenditure of W1/2 --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.summarize" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.mainArea" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
             
             [#-- Table F: Main Areas of W1/2 Expenditure --]
@@ -56,7 +56,7 @@
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               </div>
               <hr />
-              [@tableFMacro list=[{},{},{},{}] /]
+              [@tableFMacro name="${customName}.expenditureAreas" list=(reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas)![] /]
             </div>
           
           </div>
@@ -74,7 +74,7 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro tableFMacro list]
+[#macro tableFMacro name="" list=[] ]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -92,32 +92,29 @@
       </thead>
       <tbody>
       [#if list??]
-        [#list list  as expenditureArea]
-          [#assign localCustomName = "${customName}[${expenditureArea_index}]" /]
-          [#assign element = (action.getPowbFinancialExpenditurebyExpenditureArea(expenditureArea.id))!{} /]
+        [#list list  as synthesisExpArea]
+          [#local customName = "${name}[${synthesisExpArea_index}]" /]
           <tr>
             [#-- Expenditure area --]
-            <td> 
-              <span> ${expenditureArea.expenditureArea!''} </span>
-              
-              [#local expenditureHelp][@s.text name="${customLabel}.tableF.expenditureHelp.${expenditureArea.id!''}" /][/#local]
+            <td>
+              <span> ${(synthesisExpArea.expenditureArea.expenditureArea)!''} </span>
+              [#local expenditureHelp][@s.text name="${customLabel}.expenditureHelp.${(synthesisExpArea.expenditureArea.id)!''}" /][/#local]
               [#if expenditureHelp?has_content]<img title="${expenditureHelp}" src="${baseUrl}/global/images/icon-help2.png" alt="" />[/#if]
-              
-              <input type="hidden" name="${localCustomName}.id" value="${(element.id)!}" />
-              <input type="hidden" name="${localCustomName}.powbExpenditureArea.id" value="${(expenditureArea.id)!}" />
+              <input type="hidden" name="${customName}.id" value="${(synthesisExpArea.id)!}" />
+              <input type="hidden" name="${customName}.expenditureArea.id" value="${(synthesisExpArea.expenditureArea.id)!}" />
             </td>
             [#-- Estimated percentage of total W1/W2 --]
             <td class="text-center">
               [#if editable && PMU ]
-                [@customForm.input name="${localCustomName}.w1w2Percentage" value="${(element.w1w2Percentage)!'0'}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${expenditureArea_index}" required=true /]
+                [@customForm.input name="${customName}.w1w2Percentage" value="${(synthesisExpArea.w1w2Percentage)!'0'}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${synthesisExpArea_index}" required=true /]
               [#else]
-                <input type="hidden" name="${localCustomName}.w1w2Percentage" value="${(element.w1w2Percentage)!'0'}" class="percentageInput type-percentage category-${expenditureArea_index}"/>
-                <nobr>${(element.w1w2Percentage)!0}%</nobr>
+                <input type="hidden" name="${customName}.w1w2Percentage" value="${(synthesisExpArea.w1w2Percentage)!'0'}" class="percentageInput type-percentage category-${expenditureArea_index}"/>
+                <nobr>${(synthesisExpArea.w1w2Percentage)!0}%</nobr>
               [/#if]
             </td>
             [#-- Comments --]
             <td class="col-md-6">
-              [@customForm.textArea  name="${localCustomName}.comments" value="${(element.comments)!}" fieldEmptyText="global.prefilledByPmu" placeholder="" i18nkey="" showTitle=false className="" editable=editable && PMU/] 
+              [@customForm.textArea  name="${customName}.comments" value="${(synthesisExpArea.comments)!}" fieldEmptyText="global.prefilledByPmu" placeholder="" i18nkey="" showTitle=false className="" editable=editable && PMU/] 
             </td>
           </tr>
         [/#list]

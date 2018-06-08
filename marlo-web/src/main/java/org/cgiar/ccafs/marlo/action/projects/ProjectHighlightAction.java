@@ -624,7 +624,11 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.getProjectHighlightInfo().setProjectHighlight(highlight);
 
       projectHighlightInfoManager.saveProjectHighlightInfo(highlight.getProjectHighlightInfo());
-
+      /**
+       * The following is required because we need to update something on the @ProjectHighlight if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(highlight);
       projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName,
         this.getActualPhase());
 

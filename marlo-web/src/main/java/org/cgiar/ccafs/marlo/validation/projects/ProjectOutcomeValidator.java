@@ -326,7 +326,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (projectOutcome.getProjectComponentLesson() != null) {
           ProjectComponentLesson lesson = projectOutcome.getProjectComponentLesson();
-          if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
+          if (!(this.isValidString(lesson.getLessons()))) {
             action.addMessage(action.getText("projectOutcome.lessons.reporting.readText"));
             action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
               action.getText(InvalidFieldsMessages.EMPTYLIST));

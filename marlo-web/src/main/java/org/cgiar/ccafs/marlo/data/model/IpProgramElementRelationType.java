@@ -74,6 +74,11 @@ public class IpProgramElementRelationType extends MarloBaseEntity implements jav
     this.ipProgramElements = ipProgramElementses;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setName(String name) {
     this.name = name;
   }

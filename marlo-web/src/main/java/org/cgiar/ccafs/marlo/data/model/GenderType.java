@@ -97,6 +97,11 @@ public class GenderType extends MarloBaseEntity implements java.io.Serializable,
 
 
   @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+  @Override
   public String toString() {
     return "GenderType [id=" + this.getId() + ", crp=" + crp + ", description=" + description + ", completeDescription="
       + completeDescription + "]";

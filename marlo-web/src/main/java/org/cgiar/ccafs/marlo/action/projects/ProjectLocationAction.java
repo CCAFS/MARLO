@@ -633,11 +633,10 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(
-                c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
-                    && fp.getProject().getId().longValue() == projectID)
-                  .collect(Collectors.toList()).size() > 0)
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(
+                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
             }
@@ -669,11 +668,10 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(
-                c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
-                    && fp.getProject().getId().longValue() == projectID)
-                  .collect(Collectors.toList()).size() > 0)
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(
+                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
             }
@@ -1221,6 +1219,11 @@ public class ProjectLocationAction extends BaseAction {
       projectDB.getProjecInfoPhase(this.getActualPhase()).setLocationGlobal(isProjectGlobal);
       projectDB.getProjecInfoPhase(this.getActualPhase()).setLocationRegional(isProjectRegional);
       projectInfoManager.saveProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 

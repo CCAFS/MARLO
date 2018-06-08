@@ -334,6 +334,11 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
     this.locations = locations;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setName(String name) {
     this.name = name;
   }

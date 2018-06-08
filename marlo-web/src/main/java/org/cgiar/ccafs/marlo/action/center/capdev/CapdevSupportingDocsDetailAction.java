@@ -391,6 +391,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
 
+    /**
+     * The following is required because we need to update something on the @CenterDeliverable if we want a row created
+     * in the auditlog table.
+     */
+    this.setModificationJustification(supportingDocDB);
+
     centerDeliverableService.saveDeliverable(supportingDocDB, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();

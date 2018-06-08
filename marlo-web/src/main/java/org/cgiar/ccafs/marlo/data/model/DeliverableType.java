@@ -169,6 +169,11 @@ public class DeliverableType extends MarloBaseEntity implements java.io.Serializ
     this.fair = fair;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setName(String name) {
     this.name = name;
   }

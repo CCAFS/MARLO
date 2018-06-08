@@ -4,7 +4,10 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -17,6 +20,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "annualReport.${currentStage}" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -38,8 +43,6 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#assign customName= "annualReport.${currentStage}" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
@@ -53,23 +56,25 @@
             [#-- Flagships - External Partnerships Synthesis --]
             [#if PMU]
             <div class="form-group margin-panel">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
-              
-              <hr />
-              [@tableFlagshipsMacro list=[{},{},{},{}] /]
+              <div class="viewMoreSyntesis-block" >
+              [@tableFlagshipSynthesis tableName="tablePartnerships" list=[{},{},{},{}] columns=["summarizeHighlights"] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             [/#if]
   
             [#-- Table G: Projects Key Partnerships --]
-            [#if flagship]
+            <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableG.title" param="${currentCycleYear}" /]</h4>
             <div class="form-group margin-panel">
-              <div class="evidence-plannedStudies-header">
-                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableG.title" /]</h4>
-              </div>
-              <hr />
-              [@tableGMacro list=[{},{},{},{}] /]
+              [#if flagship]
+                [@tableGMacro name="${customName}.keyPartnershipsValue" list=[{},{},{},{}] /]
+              [#else]
+                <div class="viewMoreSyntesis-block" >
+                  [@tableGMacro name="" list=[{},{},{},{}] isPMU=PMU /]
+                  <div class="viewMoreSyntesis closed"></div>
+                </div>
+              [/#if]
             </div>
-            [/#if]
           
           </div>
           [#-- Section Buttons & hidden inputs--]
@@ -83,38 +88,38 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro tableFlagshipsMacro list ]
-  <div class="">
-    <table class="annual-report-table table table-bordered">
+[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
+  <div class="form-group">
+    <h4 class="simpleTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
+    <table class="table table-bordered">
       <thead>
-        <tr class="subHeader">
-          <th width="20%" > [@s.text name="${customLabel}.table.flagship" /] </th>
-          <th width="80%" > [@s.text name="${customLabel}.table.externalPartnerships" /] </th>
+        <tr>
+          <th class="col-md-1 text-center"> FP </th>
+          [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
             <tr>
-              [#-- Flagship --]
               <td>
-                [#if item.liaisonInstitution?has_content]
-                <span class="programTag" style="border-color:${(item.liaisonInstitution.crpProgram.color)!'#fff'}">${item.liaisonInstitution.crpProgram.acronym!''}</span>
-                [/#if]
+                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
               </td>
-              [#-- External Partnerships --]
-              <td class="text-center">
-              [#if item.externalPartnerships?has_content] 
-                ${item.externalPartnerships!''} 
-              [#else]
-                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-              [/#if]
-              </td>
+              [#list columns as column]
+                <td>
+                  [#if (item[column]?has_content)!false] 
+                    ${item[column]} 
+                  [#else]
+                    <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                  [/#if]
+                </td>
+              [/#list]
             </tr>
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="3"><i>[@s.text name="${customLabel}.table.void" /]</i></td>
+            <td class="text-center" colspan="3"><i>No flagships loaded...</i></td>
           </tr>
         [/#if]
       </tbody>
@@ -122,7 +127,7 @@
   </div>
 [/#macro]
 
-[#macro tableGMacro list ]
+[#macro tableGMacro name="" list=[] isPMU=false ]
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
@@ -131,64 +136,65 @@
         <th id="tb-type" width="11%">[@s.text name="${customLabel}.tableG.type" /]</th>
         <th id="tb-geographicScope" width="24%">[@s.text name="${customLabel}.tableG.geoScope" /]</th>
         <th id="tb-mainArea" width="34%">[@s.text name="${customLabel}.tableG.mainArea" /]</th>
-        <th id="tb-include" width="0%">[@s.text name="${customLabel}.tableG.include" /]</th>
+        [#if !isPMU]
+          <th id="tb-include" width="0%">[@s.text name="${customLabel}.tableG.include" /]</th>
+        [/#if]
       </tr>
     </thead>
     <tbody>
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
-        [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${(item.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        [#local wordCutterMaxPos=180]
-        [#-- 
-          [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        --]
+        [#if isPMU]
+          [#local element = (item.projectPartnerTales)!{} ]
+        [#else]
+          [#local element = item ]
+        [/#if]
+        [#local customName = "${name}" /]
+        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(element.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- Project ID --]
           <td class="tb-projectId text-center">
-            <a href="${pURL}" target="_blank">P${(item.project.id)!''}</a>
+            <a href="${URL}" target="_blank">P${(element.project.id)!''}</a>
           </td>
           [#-- Phase of research --]
           <td class="text-center">
-          [#if item.phase?has_content]
-            ${item.phase}
+          [#if element.phase?has_content]
+            ${element.phase}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Partner type --]
           <td class="text-center">
-          [#if item.type?has_content]
-            ${item.type}
+          [#if element.type?has_content]
+            ${element.type}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-          [#if item.scope?has_content]
-            ${item.scope}
+          [#if element.scope?has_content]
+            ${element.scope}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Main area of partnership --]
           <td class="text-center">
-          [#if item.area?has_content]
-            ${item.area}
+          [#if element.area?has_content]
+            ${element.area}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Include in AR--]
+          [#if !isPMU]
           <td class="plannedStudiesCheckbox text-center">
-          [#if editable]
-            [@customForm.checkBoxFlat id="${(item.id)!''}" name="item.name" value="${(item.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(item.id))!true)/]
-          [#else]
-            [#-- If does no have permissions --]
-            [#if powbSynthesis.powbEvidence.studiesIds?seq_contains(item.id)]<p class="checked"></p>[/#if]
-          [/#if]
+            [@customForm.checkmark id="keyPartnership-${item_index}" name="${customName}" value="${(element.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(element.id))!true) editable=editable /]
           </td>
+          [/#if]
         </tr>
       [/#list]
     [#else]

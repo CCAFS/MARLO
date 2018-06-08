@@ -472,6 +472,17 @@
   </div>
 [/#macro]
 
+[#macro checkmark id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+  <label class="inputContainer ${cssClassLabel}"> 
+    [#if editable]
+        <input id="${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] >
+        <span class="checkmark"></span>
+    [#else]
+      ${checked?string('Yes', 'No')}
+    [/#if]
+  </label>
+[/#macro]
+
 [#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass=""]
   [#assign hasFile = (fileDB.id??)!false /]
   <div class="fileUploadContainer ${cssClass}" >
