@@ -95,6 +95,12 @@ public class ProjectExpectedStudySubIdo extends MarloBaseEntity implements java.
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -103,7 +109,6 @@ public class ProjectExpectedStudySubIdo extends MarloBaseEntity implements java.
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
     this.srfSubIdo = srfSubIdo;

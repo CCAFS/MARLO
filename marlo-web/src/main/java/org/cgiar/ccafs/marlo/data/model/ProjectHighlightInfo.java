@@ -199,10 +199,15 @@ public class ProjectHighlightInfo extends MarloBaseEntity implements java.io.Ser
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setObjectives(String objectives) {
     this.objectives = objectives;
   }
-
 
   public void setPartners(String partners) {
     this.partners = partners;
@@ -216,10 +221,10 @@ public class ProjectHighlightInfo extends MarloBaseEntity implements java.io.Ser
     this.projectHighlight = projectHighlight;
   }
 
+
   public void setPublisher(String publisher) {
     this.publisher = publisher;
   }
-
 
   public void setResults(String results) {
     this.results = results;

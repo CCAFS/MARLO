@@ -132,6 +132,11 @@ public class MetadataElement extends MarloBaseEntity implements Serializable, IA
     this.element = element;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setQualifier(String qualifier) {
     this.qualifier = qualifier;
   }

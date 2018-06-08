@@ -96,6 +96,12 @@ public class ProjectExpectedStudySrfTarget extends MarloBaseEntity implements ja
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -104,7 +110,6 @@ public class ProjectExpectedStudySrfTarget extends MarloBaseEntity implements ja
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
     this.srfSloIndicator = srfSloIndicator;
