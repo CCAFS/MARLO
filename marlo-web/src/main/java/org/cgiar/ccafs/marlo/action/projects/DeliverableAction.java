@@ -1883,6 +1883,11 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
       }
+      /**
+       * The following is required because we need to update something on the @Deliverable if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(deliverableManagedState);
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();

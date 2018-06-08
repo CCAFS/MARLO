@@ -9,7 +9,7 @@
             <generator class="identity" />
         </id>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true"/>
+            <column name="modified_by"/>
         </many-to-one>
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
             <column name="created_by" not-null="true" />

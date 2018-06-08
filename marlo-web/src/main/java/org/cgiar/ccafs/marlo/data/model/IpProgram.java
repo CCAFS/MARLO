@@ -140,12 +140,6 @@ public class IpProgram extends MarloAuditableEntity implements java.io.Serializa
     return sb.toString();
   }
 
-  @Override
-  public String getModificationJustification() {
-
-    return "";
-  }
-
   public Set<MogSynthesy> getMogSynthesis() {
     return mogSynthesis;
   }

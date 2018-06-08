@@ -331,6 +331,13 @@ public class ProjectPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
+
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in the
+       * auditlog table.
+       */
+      this.setModificationJustification(projectDB);
+
       projectDB = projectService.saveCenterProject(projectDB, this.getActionName(), relationsName);
 
       project = projectDB;

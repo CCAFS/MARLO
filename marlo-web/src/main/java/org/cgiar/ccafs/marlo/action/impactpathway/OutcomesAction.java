@@ -557,8 +557,12 @@ public class OutcomesAction extends BaseAction {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
-      selectedProgram.setModificationJustification(this.getJustification());
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
+      /**
+       * The following is required because we need to update something on the @CrpProgram if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(selectedProgram);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();

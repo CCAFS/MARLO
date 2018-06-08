@@ -373,6 +373,11 @@ public class ProjectOutputsAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OVERVIEWS_RELATION);
       project = projectManager.getProjectById(projectID);
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

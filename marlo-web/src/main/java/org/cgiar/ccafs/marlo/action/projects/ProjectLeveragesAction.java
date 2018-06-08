@@ -386,6 +386,11 @@ public class ProjectLeveragesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LEVERAGES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
