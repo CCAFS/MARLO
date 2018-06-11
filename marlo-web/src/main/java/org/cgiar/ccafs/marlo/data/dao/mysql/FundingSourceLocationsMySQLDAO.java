@@ -86,6 +86,17 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
 
 
   @Override
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId) {
+    String queryString = "SELECT fsl FROM FundingSourceLocation fsl " + "WHERE fsl.active = TRUE "
+      + "AND fsl.fundingSource.id = :fundingSourceId";
+    List<FundingSourceLocation> fundingSourceLocations = this.getSessionFactory().getCurrentSession()
+      .createQuery(queryString).setParameter("fundingSourceId", fundingSourceId).list();
+
+    return fundingSourceLocations;
+  }
+
+
+  @Override
   public FundingSourceLocation save(FundingSourceLocation fundingSourceLocations) {
     if (fundingSourceLocations.getId() == null) {
       super.saveEntity(fundingSourceLocations);

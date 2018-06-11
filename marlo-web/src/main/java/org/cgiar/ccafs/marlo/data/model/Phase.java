@@ -25,7 +25,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   private GlobalUnit crp;
 
-
+  // TODO - change this to use the PhaseDescription enum
   @Expose
   private String description;
 
