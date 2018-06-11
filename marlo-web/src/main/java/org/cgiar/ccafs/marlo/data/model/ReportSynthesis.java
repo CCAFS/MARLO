@@ -21,16 +21,16 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Phase phase;
 
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
 
   @Expose
   private ReportSynthesisCrpProgress reportSynthesisCrpProgress;
 
-
   @Expose
   private ReportSynthesisFinancialSummary reportSynthesisFinancialSummary;
-
 
   @Expose
   private ReportSynthesisGovernance reportSynthesisGovernance;
@@ -38,13 +38,26 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisRisk reportSynthesisRisk;
 
+
   @Expose
   private ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension;
 
+  @Expose
+  private ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress;
+
+  @Expose
+  private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
+
+  @Expose
+  private ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary;
+
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   public ReportSynthesis() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -68,9 +81,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -79,33 +94,37 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
-  @Override
-  public String getModificationJustification() {
-    return "";
-  }
-
   public Phase getPhase() {
     return phase;
   }
-
 
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
   }
 
-
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
   }
-
 
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
     return reportSynthesisFinancialSummary;
   }
 
+  public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
+    return reportSynthesisFlagshipProgress;
+  }
+
+  public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
+    return reportSynthesisFundingUseSummary;
+  }
 
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
+  }
+
+
+  public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
+    return reportSynthesisProgramVariance;
   }
 
 
@@ -127,13 +146,16 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return result;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void
     setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
@@ -148,8 +170,20 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisFinancialSummary = reportSynthesisFinancialSummary;
   }
 
+  public void setReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
+    this.reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgress;
+  }
+
+  public void setReportSynthesisFundingUseSummary(ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary) {
+    this.reportSynthesisFundingUseSummary = reportSynthesisFundingUseSummary;
+  }
+
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
     this.reportSynthesisGovernance = reportSynthesisGovernance;
+  }
+
+  public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
+    this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
   }
 
 

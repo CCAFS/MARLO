@@ -169,6 +169,12 @@ public class OutcomeSynthesy extends MarloBaseEntity implements java.io.Serializ
     this.ipProgram = ipProgram;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setSynthesisAnual(String synthesisAnual) {
     this.synthesisAnual = synthesisAnual;
   }
@@ -182,7 +188,6 @@ public class OutcomeSynthesy extends MarloBaseEntity implements java.io.Serializ
   public void setYear(int year) {
     this.year = year;
   }
-
 
   @Override
   public String toString() {

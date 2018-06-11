@@ -66,6 +66,11 @@ public class ProjectPartnerOverall extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setOverall(String overall) {
     this.overall = overall;
   }

@@ -101,6 +101,12 @@ public class ProjectInnovationOrganization extends MarloBaseEntity implements ja
     return true;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -109,7 +115,6 @@ public class ProjectInnovationOrganization extends MarloBaseEntity implements ja
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
-
 
   public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;

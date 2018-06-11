@@ -31,7 +31,7 @@ import java.util.HashMap;
 import javax.inject.Named;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andres Valencia - CIAT/CCAFS
  */
 @Named
 public class FinancialSummaryValidator extends BaseValidator {

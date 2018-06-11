@@ -249,6 +249,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.genderFocusLevel = genderFocusLevel;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setNarrative(String narrative) {
     this.narrative = narrative;
   }
@@ -257,10 +262,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.phase = phase;
   }
 
+
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
@@ -290,6 +295,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndRegion = repIndRegion;
   }
 
+
   public void setRepIndStageInnovation(RepIndStageInnovation repIndStageInnovation) {
     this.repIndStageInnovation = repIndStageInnovation;
   }
@@ -308,7 +314,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setYouthExplaniation(String youthExplaniation) {
     this.youthExplaniation = youthExplaniation;
   }
-
 
   public void setYouthFocusLevel(RepIndGenderYouthFocusLevel youthFocusLevel) {
     this.youthFocusLevel = youthFocusLevel;

@@ -212,6 +212,5 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     return "Activity [id=" + this.getId() + ", title=" + title + ", description=" + description + "]";
   }
 
-
 }
 

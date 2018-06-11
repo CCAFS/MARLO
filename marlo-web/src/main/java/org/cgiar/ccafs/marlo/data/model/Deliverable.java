@@ -481,11 +481,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  @Override
-  public String getModificationJustification() {
-    return "";
-  }
-
   public List<DeliverablePartnership> getOtherPartners() {
     return otherPartners;
   }

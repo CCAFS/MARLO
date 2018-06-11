@@ -739,13 +739,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return sb.toString();
   }
 
-
-  @Override
-  public String getModificationJustification() {
-
-    return "";
-  }
-
   public List<IpElement> getMogs() {
     return mogs;
   }

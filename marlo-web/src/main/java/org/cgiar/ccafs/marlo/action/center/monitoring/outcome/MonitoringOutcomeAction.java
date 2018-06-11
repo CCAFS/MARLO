@@ -505,10 +505,17 @@ public class MonitoringOutcomeAction extends BaseAction {
       }
     }
 
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.OUTCOME_MONITORING_RELATION);
-      outcome = outcomeService.getResearchOutcomeById(outcomeID);
-      outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.OUTCOME_MONITORING_RELATION);
+    outcome = outcomeService.getResearchOutcomeById(outcomeID);
+
+    /**
+     * The following is required because we need to update something on the @CenterOutcome if we want a row created in
+     * the auditlog table.
+     */
+    this.setModificationJustification(outcome);
+
+    outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
 

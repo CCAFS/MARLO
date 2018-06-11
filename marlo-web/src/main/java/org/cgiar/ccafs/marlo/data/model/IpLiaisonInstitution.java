@@ -83,13 +83,6 @@ public class IpLiaisonInstitution extends MarloAuditableEntity implements java.i
     return sb.toString();
   }
 
-
-  @Override
-  public String getModificationJustification() {
-    return "";
-  }
-
-
   public String getName() {
     return name;
   }

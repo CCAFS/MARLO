@@ -329,6 +329,11 @@ public class CRPStaffingAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       relationsName.add(APConstants.SYNTHESIS_CRP_STAFFING_CATEGORIES_RELATION);
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {

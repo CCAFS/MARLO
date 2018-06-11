@@ -71,10 +71,15 @@ public class FileDB extends MarloBaseEntity implements java.io.Serializable, IAu
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setTokenId(String tokenId) {
     this.tokenId = tokenId;
   }
-
 
   @Override
   public String toString() {

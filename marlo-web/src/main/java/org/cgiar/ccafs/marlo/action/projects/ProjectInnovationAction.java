@@ -617,6 +617,11 @@ public class ProjectInnovationAction extends BaseAction {
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
+      /**
+       * The following is required because we need to update something on the @ProjectInnovation if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(innovation);
       projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName,
         this.getActualPhase());
 
@@ -665,7 +670,7 @@ public class ProjectInnovationAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (ProjectInnovationCrp innovationCrp : crpPrev) {
-        if (!innovation.getCrps().contains(innovationCrp)) {
+        if (innovation.getCrps() == null || !innovation.getCrps().contains(innovationCrp)) {
           projectInnovationCrpManager.deleteProjectInnovationCrp(innovationCrp.getId());
         }
       }

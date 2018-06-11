@@ -76,6 +76,11 @@ public class CrpLocElementType extends MarloBaseEntity implements java.io.Serial
 
 
   @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+  @Override
   public String toString() {
     return "CrpLocElementType [id=" + this.getId() + ", crp=" + crp + ", locElementType=" + locElementType + "]";
   }

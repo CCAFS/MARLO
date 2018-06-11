@@ -110,6 +110,11 @@ public class DeliverableMetadataElement extends MarloBaseEntity implements Seria
     this.metadataElement = metadataElement;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
