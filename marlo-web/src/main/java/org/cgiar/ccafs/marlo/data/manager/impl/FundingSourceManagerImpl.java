@@ -15,16 +15,23 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSummary;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceBudgetDAO;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceLocationsDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.mapper.FundingSourceSummaryMapper;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,25 +42,23 @@ import javax.inject.Named;
 @Named
 public class FundingSourceManagerImpl implements FundingSourceManager {
 
+  private final FundingSourceDAO fundingSourceDAO;
 
-  private FundingSourceDAO fundingSourceDAO;
+  private final FundingSourceBudgetDAO fundingSourceBudgetDAO;
 
-  private FundingSourceBudgetDAO fundingSourceBudgetDAO;
+  private final FundingSourceLocationsDAO fundingSourceLocationsDAO;
 
-  private FundingSourceLocationsDAO fundingSourceLocationsDAO;
-
-
+  private final FundingSourceSummaryMapper fundingSourceSummaryMapper;
   // Managers
 
 
   @Inject
   public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO, FundingSourceBudgetDAO fundingSourceBudgetDAO,
-    FundingSourceLocationsDAO fundingSourceLocationsDAO) {
+    FundingSourceLocationsDAO fundingSourceLocationsDAO, FundingSourceSummaryMapper fundingSourceSummaryMapper) {
     this.fundingSourceDAO = fundingSourceDAO;
     this.fundingSourceBudgetDAO = fundingSourceBudgetDAO;
     this.fundingSourceLocationsDAO = fundingSourceLocationsDAO;
-
-
+    this.fundingSourceSummaryMapper = fundingSourceSummaryMapper;
   }
 
   @Override
@@ -89,6 +94,21 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  public List<FundingSourceSummary> getClosedFundingSourceSummaries(GlobalUnit globalUnit, Phase phase) {
+
+    Set<Integer> statusTypes = new HashSet<>();
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Complete.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Cancelled.getStatusId()));
+
+    List<FundingSource> fundingSources = fundingSourceDAO.getFundingSourceSummaries(globalUnit, phase, statusTypes);
+
+    List<FundingSourceSummary> fundingSourceSummaries =
+      fundingSourceSummaryMapper.fundingSourcesToFundingSourceSummaries(fundingSources);
+
+    return fundingSourceSummaries;
+  }
+
+  @Override
   public List<FundingSource> getFundingSource(long userId, String crp) {
     List<FundingSource> projects = new ArrayList<>();
 
@@ -113,6 +133,24 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  public List<FundingSourceSummary> getOngoingFundingSourceSummaries(GlobalUnit globalUnit, Phase phase) {
+
+    Set<Integer> statusTypes = new HashSet<>();
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Pipeline.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Informally.getStatusId()));
+
+    List<FundingSource> fundingSources = fundingSourceDAO.getFundingSourceSummaries(globalUnit, phase, statusTypes);
+
+    List<FundingSourceSummary> fundingSourceSummaries =
+      fundingSourceSummaryMapper.fundingSourcesToFundingSourceSummaries(fundingSources);
+
+    return fundingSourceSummaries;
+
+  }
+
+  @Override
   public FundingSource saveFundingSource(FundingSource fundingSource) {
 
     return fundingSourceDAO.save(fundingSource);
@@ -126,7 +164,7 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID) {
+  public List<FundingSourceSearchSummary> searchFundingSources(String query, int year, long crpID, long phaseID) {
     return fundingSourceDAO.searchFundingSources(query, year, crpID, phaseID);
   }
 
@@ -136,9 +174,9 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
-    long phaseID) {
-    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year, crpID, phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
+    int year, long crpID, long phaseID) {
+    return fundingSourceDAO.searchFundingSourcesByInstitution(userInput, institutionID, year, crpID, phaseID);
   }
 
   @Override
