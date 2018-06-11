@@ -959,6 +959,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
 
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in the
+       * auditlog table.
+       */
+      this.setModificationJustification(project);
       projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
 
 

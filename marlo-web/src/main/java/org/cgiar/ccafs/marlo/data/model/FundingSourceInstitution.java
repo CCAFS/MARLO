@@ -110,9 +110,15 @@ public class FundingSourceInstitution extends MarloBaseEntity implements java.io
     this.institution = institution;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   @Override
   public String toString() {

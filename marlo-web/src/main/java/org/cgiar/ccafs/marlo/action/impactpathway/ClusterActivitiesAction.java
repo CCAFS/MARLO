@@ -933,10 +933,16 @@ public class ClusterActivitiesAction extends BaseAction {
 
       }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      selectedProgram.setModificationJustification(this.getJustification());
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
+
+      /**
+       * The following is required because we need to update something on the @CrpProgram if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(selectedProgram);
+
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
       this.addUsers();
 

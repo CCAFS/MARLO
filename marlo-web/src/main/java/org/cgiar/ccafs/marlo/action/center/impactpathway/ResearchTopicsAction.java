@@ -425,6 +425,12 @@ public class ResearchTopicsAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.RESEARCH_PROGRAM_TOPIC_RELATION);
     selectedProgram = programService.getCrpProgramById(crpProgramID);
+    /**
+     * The following is required because we need to update something on the @CrpProgram if we want a row created
+     * in the auditlog table.
+     */
+    this.setModificationJustification(selectedProgram);
+
     programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
     Path path = this.getAutoSaveFilePath();

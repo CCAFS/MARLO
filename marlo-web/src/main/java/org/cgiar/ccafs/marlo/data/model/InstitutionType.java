@@ -152,6 +152,11 @@ public class InstitutionType extends MarloBaseEntity implements java.io.Serializ
     this.institutions = institutions;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setName(String name) {
     this.name = name;
   }

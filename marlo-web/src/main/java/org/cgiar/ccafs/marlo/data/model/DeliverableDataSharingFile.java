@@ -130,14 +130,19 @@ public class DeliverableDataSharingFile extends MarloBaseEntity implements java.
     this.file = file;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
+
   public void setTypeId(Integer typeId) {
     this.typeId = typeId;
   }
-
 
   @Override
   public String toString() {

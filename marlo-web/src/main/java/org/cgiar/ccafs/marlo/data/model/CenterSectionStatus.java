@@ -110,6 +110,13 @@ public class CenterSectionStatus extends MarloSoftDeleteableEntity implements ja
     this.missingFields = missingFields;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+    User u = new User();
+    u.setId(new Long(3));
+    u = modifiedBy;
+  }
+
   public void setProject(CenterProject project) {
     this.project = project;
   }

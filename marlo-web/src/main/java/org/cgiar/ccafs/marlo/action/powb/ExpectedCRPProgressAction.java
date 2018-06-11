@@ -277,11 +277,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
         }
         i++;
       }
-
-
-    } else
-
-    {
+    } else {
       powbSynthesis.setExpectedCrpProgresses(new ArrayList<>());
     }
 
@@ -685,6 +681,11 @@ public class ExpectedCRPProgressAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       relationsName.add(APConstants.SYNTHESIS_EXPECTED_RELATION);
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
 

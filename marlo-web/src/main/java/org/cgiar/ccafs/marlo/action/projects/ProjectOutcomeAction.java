@@ -570,6 +570,11 @@ public class ProjectOutcomeAction extends BaseAction {
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
+      /**
+       * The following is required because we need to update something on the @ProjectOutcome if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(projectOutcome);
       projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
         this.getActualPhase());
 
@@ -870,13 +875,25 @@ public class ProjectOutcomeAction extends BaseAction {
         }
       }
 
-      // projectOutcome.setId(projectOutcomeID);
-      projectOutcome.setPhase(this.getActualPhase());
-
-      projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
+      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
+      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
+      projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
 
       // Reporting phase
     } else {
+
+      if (projectOutcome.getAchievedUnit() != null && (projectOutcome.getAchievedUnit().getId() == null
+        || projectOutcome.getAchievedUnit().getId().longValue() == -1)) {
+        projectOutcomeDB.setAchievedUnit(null);
+        projectOutcomeDB.setAchievedValue(null);
+      } else {
+        projectOutcomeDB.setAchievedUnit(projectOutcome.getAchievedUnit());
+        projectOutcomeDB.setAchievedValue(projectOutcome.getAchievedValue());
+      }
+
+      projectOutcomeDB.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
+
+      // Reporting phase
 
       if (projectOutcome.getExpectedUnit() != null) {
         if (projectOutcome.getExpectedUnit().getId() == null

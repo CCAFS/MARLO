@@ -336,6 +336,11 @@ public class FlagshipPlansAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
 
     powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    /**
+     * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+     * the auditlog table.
+     */
+    this.setModificationJustification(powbSynthesis);
     powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
   }
 

@@ -1034,6 +1034,11 @@ public class PublicationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
+      /**
+       * The following is required because we need to update something on the @Deliverable if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(deliverablePrew);
       deliverableManager.saveDeliverable(deliverablePrew, this.getActionName(), relationsName, deliverable.getPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {

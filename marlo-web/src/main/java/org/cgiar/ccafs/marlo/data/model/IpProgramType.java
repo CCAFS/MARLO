@@ -66,10 +66,15 @@ public class IpProgramType extends MarloBaseEntity implements java.io.Serializab
   }
 
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
+
   public void setName(String name) {
     this.name = name;
   }
-
 
   @Override
   public String toString() {

@@ -215,7 +215,7 @@
               [#-- <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td> --]
               [#if !isPMU]
               <td class="text-center">
-                [@customForm.checkBoxFlat id="studyCheck-${item_index}" name="${customName}" label="" value="${projectExpectedStudy.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(projectExpectedStudy.id))!false cssClass="" /]
+                [@customForm.checkmark id="studyCheck-${item_index}" name="${customName}" label="" value="${projectExpectedStudy.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(projectExpectedStudy.id))!false cssClass="" /]
               </td>
               [/#if]
             </tr>

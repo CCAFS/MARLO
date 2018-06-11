@@ -123,6 +123,11 @@ public class DeliverableUser extends MarloBaseEntity implements java.io.Serializ
     this.lastName = lastName;
   }
 
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }

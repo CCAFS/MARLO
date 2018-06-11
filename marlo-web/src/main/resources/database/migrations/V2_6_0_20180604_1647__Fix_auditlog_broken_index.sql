@@ -15,4 +15,3 @@ END ;;
 DELIMITER ;
 CALL fix_broken_index_on_audit_log_table();
 DROP PROCEDURE `fix_broken_index_on_audit_log_table`;
-
