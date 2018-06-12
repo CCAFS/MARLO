@@ -480,7 +480,7 @@ public class POISummary {
         break;
     }
 
-    table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(15000));
+    table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
 
   }
 
