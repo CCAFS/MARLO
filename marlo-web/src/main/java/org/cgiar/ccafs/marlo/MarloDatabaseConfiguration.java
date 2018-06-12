@@ -153,6 +153,14 @@ public class MarloDatabaseConfiguration {
       sessionBuilder.setProperty(Environment.SHOW_SQL, "true");
     }
 
+    // Enable second level cache with ehcache
+    sessionBuilder.setProperty("hibernate.cache.use_second_level_cache", Boolean.TRUE.toString());
+    sessionBuilder.setProperty("hibernate.cache.region.factory_class",
+      "org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory");
+
+    // // Enable query cache
+    sessionBuilder.setProperty("hibernate.cache.use_query_cache", Boolean.TRUE.toString());
+
     SessionFactory sessionFactory = sessionBuilder.buildSessionFactory();
     return sessionFactory;
   }

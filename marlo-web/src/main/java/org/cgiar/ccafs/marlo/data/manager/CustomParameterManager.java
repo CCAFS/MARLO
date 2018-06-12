@@ -52,6 +52,8 @@ public interface CustomParameterManager {
   public List<CustomParameter> findAll();
 
 
+  public List<CustomParameter> getAllCustomParametersByGlobalUnitId(long globalUnitId);
+
   /**
    * This method gets a customParameter object by a given customParameter identifier.
    * 
@@ -59,6 +61,9 @@ public interface CustomParameterManager {
    * @return a CustomParameter object.
    */
   public CustomParameter getCustomParameterById(long customParameterID);
+
+
+  public CustomParameter getCustomParameterByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId);
 
   /**
    * This method saves the information of the given customParameter

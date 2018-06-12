@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
@@ -41,6 +43,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   private CrpProgramDAO crpProgramDAO;
   private APConfig apConfig;
 
+  private Logger LOG = LoggerFactory.getLogger(ProjectMySQLDAO.class);
 
   @Inject
   public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO,
@@ -107,6 +110,9 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
             super.executeUpdateQuery(query.toString());
           } catch (Exception e) {
 
+            // Adding logging, but really we should re-throw the exception.
+            LOG.error("Unable to execute query: " + query, e);
+
           }
 
 
@@ -117,8 +123,8 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     } catch (Exception e)
 
     {
-
-      e.printStackTrace();
+      // Adding logging, but really we should re-throw the exception.
+      LOG.error("Unable to execute query: " + query, e);
       return false;
     }
 

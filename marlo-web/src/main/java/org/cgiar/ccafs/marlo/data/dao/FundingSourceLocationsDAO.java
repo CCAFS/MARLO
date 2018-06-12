@@ -24,6 +24,13 @@ import java.util.List;
 public interface FundingSourceLocationsDAO {
 
   /**
+   * A batch method to delete all funding source locations for a funding source Id.
+   * 
+   * @param fundingSourceId
+   */
+  public void deleteAllFundingSourceLocationsForFundingSource(long fundingSourceId);
+
+  /**
    * This method removes a specific fundingSourceLocations value from the database.
    * 
    * @param fundingSourceLocationsId is the fundingSourceLocations identifier.
@@ -47,12 +54,16 @@ public interface FundingSourceLocationsDAO {
    */
   public FundingSourceLocation find(long id);
 
+
   /**
    * This method gets a list of fundingSourceLocations that are active
    * 
    * @return a list from FundingSourceLocation null if no exist records
    */
   public List<FundingSourceLocation> findAll();
+
+
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId);
 
 
   /**

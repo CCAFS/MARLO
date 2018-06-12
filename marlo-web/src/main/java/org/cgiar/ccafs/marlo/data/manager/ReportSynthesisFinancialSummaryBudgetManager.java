@@ -53,22 +53,28 @@ public interface ReportSynthesisFinancialSummaryBudgetManager {
 
 
   /**
-   * This method gets a reportSynthesisFinancialSummaryBudget object by a given reportSynthesisFinancialSummaryBudget identifier.
+   * This method gets a reportSynthesisFinancialSummaryBudget object by a given reportSynthesisFinancialSummaryBudget
+   * identifier.
    * 
    * @param reportSynthesisFinancialSummaryBudgetID is the reportSynthesisFinancialSummaryBudget identifier.
    * @return a ReportSynthesisFinancialSummaryBudget object.
    */
-  public ReportSynthesisFinancialSummaryBudget getReportSynthesisFinancialSummaryBudgetById(long reportSynthesisFinancialSummaryBudgetID);
+  public ReportSynthesisFinancialSummaryBudget
+    getReportSynthesisFinancialSummaryBudgetById(long reportSynthesisFinancialSummaryBudgetID);
+
+  public double getTotalW1W2ActualExpenditure(long reportSynthesisId);
 
   /**
    * This method saves the information of the given reportSynthesisFinancialSummaryBudget
    * 
-   * @param reportSynthesisFinancialSummaryBudget - is the reportSynthesisFinancialSummaryBudget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFinancialSummaryBudget was
+   * @param reportSynthesisFinancialSummaryBudget - is the reportSynthesisFinancialSummaryBudget object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFinancialSummaryBudget was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFinancialSummaryBudget saveReportSynthesisFinancialSummaryBudget(ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget);
-
+  public ReportSynthesisFinancialSummaryBudget saveReportSynthesisFinancialSummaryBudget(
+    ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget);
 
 }
