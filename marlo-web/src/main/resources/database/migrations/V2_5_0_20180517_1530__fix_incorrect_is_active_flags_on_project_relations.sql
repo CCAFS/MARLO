@@ -20,11 +20,11 @@ SET d.is_active = 0
 WHERE d.is_active = 1 AND p.is_active = 0;
 
 #### Update Expected_study_projects
-
-UPDATE expected_study_projects esp
-INNER JOIN projects p ON esp.project_id = p.id
-SET esp.is_active = 0
-WHERE esp.is_active = 1 AND p.is_active = 0;
+-- in this instance Expected_study_projects does not have is_active 
+--UPDATE expected_study_projects esp
+--INNER JOIN projects p ON esp.project_id = p.id
+--SET esp.is_active = 0
+--WHERE esp.is_active = 1 AND p.is_active = 0;
 
 #### Update Global unit projects
 
