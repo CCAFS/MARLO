@@ -109,8 +109,6 @@ public class RisksAction extends BaseAction {
 
 
   private List<LiaisonInstitution> liaisonInstitutions;
-
-
   private String pmuText;
 
   @Inject
@@ -147,10 +145,10 @@ public class RisksAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -342,8 +340,8 @@ public class RisksAction extends BaseAction {
         .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
       if (reportSynthesisDB != null) {
-        if (reportSynthesisDB.getReportSynthesisGovernance() != null) {
-          pmuText = reportSynthesisDB.getReportSynthesisGovernance().getDescription();
+        if (reportSynthesisDB.getReportSynthesisRisk() != null) {
+          pmuText = reportSynthesisDB.getReportSynthesisRisk().getBriefSummary();
 
         }
       }
@@ -351,18 +349,18 @@ public class RisksAction extends BaseAction {
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION, params));
   }
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ReportSynthesisRisk reportManagementGovernancekDB =
+      ReportSynthesisRisk reportSynthesisRiskDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisRisk();
 
-      reportManagementGovernancekDB.setBriefSummary(reportSynthesis.getReportSynthesisRisk().getBriefSummary());
-      reportManagementGovernancekDB = reportSynthesisRiskManager.saveReportSynthesisRisk(reportManagementGovernancekDB);
+      reportSynthesisRiskDB.setBriefSummary(reportSynthesis.getReportSynthesisRisk().getBriefSummary());
+      reportSynthesisRiskDB = reportSynthesisRiskManager.saveReportSynthesisRisk(reportSynthesisRiskDB);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -428,9 +426,16 @@ public class RisksAction extends BaseAction {
     this.synthesisID = synthesisID;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+
+  @Override
+  public void validate() {
+    if (this.save) {
+      validator.validate(this, reportSynthesis, true);
+    }
   }
 
 }
