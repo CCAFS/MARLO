@@ -343,17 +343,16 @@ public class FundingUseAction extends BaseAction {
       } else {
 
         this.setDraft(false);
-
+        // Check if relation is null -create it
+        if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
+          ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
+          // create one to one relation
+          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
+          fundingUseSummary.setReportSynthesis(reportSynthesis);
+          // save the changes
+          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+        }
         if (this.isPMU()) {
-          // Check if relation is null -create it
-          if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
-            ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
-            // create one to one relation
-            reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
-            fundingUseSummary.setReportSynthesis(reportSynthesis);
-            // save the changes
-            reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
-          }
 
           // Flagships Funding Expenditure Areas
           if (reportSynthesis.getReportSynthesisFundingUseSummary()
