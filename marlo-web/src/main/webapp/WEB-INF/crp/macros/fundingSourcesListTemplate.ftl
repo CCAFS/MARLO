@@ -25,7 +25,6 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#-- [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /] --]
         [#assign isCompleted = project.hasRequiredFields!false /]
         
         <tr>
@@ -159,8 +158,6 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#-- [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]  --]
-        
         <tr>
         [#-- ID --]
         <td class="projectId">
