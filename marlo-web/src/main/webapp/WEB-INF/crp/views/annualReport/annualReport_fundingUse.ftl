@@ -108,7 +108,7 @@
               [#if editable && PMU ]
                 [@customForm.input name="${customName}.w1w2Percentage" value="${(synthesisExpArea.w1w2Percentage)!'0'}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${synthesisExpArea_index}" required=true /]
               [#else]
-                <input type="hidden" name="${customName}.w1w2Percentage" value="${(synthesisExpArea.w1w2Percentage)!'0'}" class="percentageInput type-percentage category-${expenditureArea_index}"/>
+                <input type="hidden" name="${customName}.w1w2Percentage" value="${(synthesisExpArea.w1w2Percentage)!'0'}" class="percentageInput type-percentage category-${synthesisExpArea_index}"/>
                 <nobr>${(synthesisExpArea.w1w2Percentage)!0}%</nobr>
               [/#if]
             </td>
@@ -121,7 +121,7 @@
       [/#if]
       <tr>
         <th>[@s.text name="${customLabel}.tableF.total" /]</th>
-        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">${(totalFunding)!}</span></nobr> </th>
         <th class="text-right"> </th>
       </tr>
       </tbody>

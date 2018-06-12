@@ -36,7 +36,8 @@ public class ReportSynthesisFinancialSummaryBudgetManagerImpl implements ReportS
 
 
   @Inject
-  public ReportSynthesisFinancialSummaryBudgetManagerImpl(ReportSynthesisFinancialSummaryBudgetDAO reportSynthesisFinancialSummaryBudgetDAO) {
+  public ReportSynthesisFinancialSummaryBudgetManagerImpl(
+    ReportSynthesisFinancialSummaryBudgetDAO reportSynthesisFinancialSummaryBudgetDAO) {
     this.reportSynthesisFinancialSummaryBudgetDAO = reportSynthesisFinancialSummaryBudgetDAO;
 
 
@@ -45,13 +46,15 @@ public class ReportSynthesisFinancialSummaryBudgetManagerImpl implements ReportS
   @Override
   public void deleteReportSynthesisFinancialSummaryBudget(long reportSynthesisFinancialSummaryBudgetId) {
 
-    reportSynthesisFinancialSummaryBudgetDAO.deleteReportSynthesisFinancialSummaryBudget(reportSynthesisFinancialSummaryBudgetId);
+    reportSynthesisFinancialSummaryBudgetDAO
+      .deleteReportSynthesisFinancialSummaryBudget(reportSynthesisFinancialSummaryBudgetId);
   }
 
   @Override
   public boolean existReportSynthesisFinancialSummaryBudget(long reportSynthesisFinancialSummaryBudgetID) {
 
-    return reportSynthesisFinancialSummaryBudgetDAO.existReportSynthesisFinancialSummaryBudget(reportSynthesisFinancialSummaryBudgetID);
+    return reportSynthesisFinancialSummaryBudgetDAO
+      .existReportSynthesisFinancialSummaryBudget(reportSynthesisFinancialSummaryBudgetID);
   }
 
   @Override
@@ -62,13 +65,20 @@ public class ReportSynthesisFinancialSummaryBudgetManagerImpl implements ReportS
   }
 
   @Override
-  public ReportSynthesisFinancialSummaryBudget getReportSynthesisFinancialSummaryBudgetById(long reportSynthesisFinancialSummaryBudgetID) {
+  public ReportSynthesisFinancialSummaryBudget
+    getReportSynthesisFinancialSummaryBudgetById(long reportSynthesisFinancialSummaryBudgetID) {
 
     return reportSynthesisFinancialSummaryBudgetDAO.find(reportSynthesisFinancialSummaryBudgetID);
   }
 
   @Override
-  public ReportSynthesisFinancialSummaryBudget saveReportSynthesisFinancialSummaryBudget(ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget) {
+  public double getTotalW1W2ActualExpenditure(long reportSynthesisId) {
+    return reportSynthesisFinancialSummaryBudgetDAO.getTotalW1W2ActualExpenditure(reportSynthesisId);
+  }
+
+  @Override
+  public ReportSynthesisFinancialSummaryBudget saveReportSynthesisFinancialSummaryBudget(
+    ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget) {
 
     return reportSynthesisFinancialSummaryBudgetDAO.save(reportSynthesisFinancialSummaryBudget);
   }

@@ -58,63 +58,38 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andres Valencia - CIAT/CCAFS
  */
 public class FundingUseAction extends BaseAction {
 
-
   private static final long serialVersionUID = -8306463804965610803L;
 
+  private static Logger LOG = LoggerFactory.getLogger(FundingUseAction.class);
 
   // Managers
   private GlobalUnitManager crpManager;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private ReportSynthesisManager reportSynthesisManager;
-
-
   private AuditLogManager auditLogManager;
-
-
   private UserManager userManager;
-
-
   private CrpProgramManager crpProgramManager;
-
-
-  private FundingUseValidator validator;
-
-
   private ReportSynthesisFundingUseSummaryManager reportSynthesisFundingUseSummaryManager;
-
-
   private ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager;
-
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
-
-
   // Variables
   private String transaction;
-
-
+  private FundingUseValidator validator;
   private ReportSynthesis reportSynthesis;
-
-
   private Long liaisonInstitutionID;
-
-
   private Long synthesisID;
-
   private LiaisonInstitution liaisonInstitution;
-
   private GlobalUnit loggedCrp;
-
   private List<LiaisonInstitution> liaisonInstitutions;
+  private ReportSynthesis reportSynthesisPMU;
 
   @Inject
   public FundingUseAction(APConfig config, GlobalUnitManager crpManager,
@@ -195,6 +170,17 @@ public class FundingUseAction extends BaseAction {
 
   public Long getSynthesisID() {
     return synthesisID;
+  }
+
+  public double getTotalFunding() {
+    try {
+      return reportSynthesisFundingUseExpendituryAreaManager
+        .getTotalEstimatedOfW1W2ActualExpenditure(reportSynthesisPMU.getId());
+    } catch (Exception e) {
+      LOG.error("Error getting total funding by percentage");
+      return 0;
+    }
+
   }
 
   public String getTransaction() {
@@ -321,6 +307,10 @@ public class FundingUseAction extends BaseAction {
 
 
     if (reportSynthesis != null) {
+      // reportSynthesisPMU: Used to calculate FLagships values
+      LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+      reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
 
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(reportSynthesis.getId());
       synthesisID = reportSynthesisDB.getId();
@@ -343,17 +333,16 @@ public class FundingUseAction extends BaseAction {
       } else {
 
         this.setDraft(false);
-
+        // Check if relation is null -create it
+        if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
+          ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
+          // create one to one relation
+          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
+          fundingUseSummary.setReportSynthesis(reportSynthesis);
+          // save the changes
+          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+        }
         if (this.isPMU()) {
-          // Check if relation is null -create it
-          if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
-            ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
-            // create one to one relation
-            reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
-            fundingUseSummary.setReportSynthesis(reportSynthesis);
-            // save the changes
-            reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
-          }
 
           // Flagships Funding Expenditure Areas
           if (reportSynthesis.getReportSynthesisFundingUseSummary()
@@ -396,18 +385,15 @@ public class FundingUseAction extends BaseAction {
 
     // Informative table to Flagships
     if (this.isFlagship()) {
-      LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
-      ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
-      if (reportSynthesisDB != null) {
-        if (reportSynthesisDB.getReportSynthesisFundingUseSummary() != null) {
-          if (reportSynthesisDB.getReportSynthesisFundingUseSummary()
+      if (reportSynthesisPMU != null) {
+        if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
+          if (reportSynthesisPMU.getReportSynthesisFundingUseSummary()
             .getReportSynthesisFundingUseExpendituryAreas() != null
-            && !reportSynthesisDB.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+            && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
               .isEmpty()) {
             reportSynthesis.getReportSynthesisFundingUseSummary()
               .setExpenditureAreas(new ArrayList<>(
-                reportSynthesisDB.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+                reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
                   .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
           }
         }

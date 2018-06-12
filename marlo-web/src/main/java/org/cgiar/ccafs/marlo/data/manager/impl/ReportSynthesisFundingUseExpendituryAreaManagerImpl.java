@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFinancialSummaryBudgetDAO;
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFundingUseExpendituryAreaDAO;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
@@ -28,16 +29,21 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisFundingUseExpendituryAreaManagerImpl implements ReportSynthesisFundingUseExpendituryAreaManager {
+public class ReportSynthesisFundingUseExpendituryAreaManagerImpl
+  implements ReportSynthesisFundingUseExpendituryAreaManager {
 
 
   private ReportSynthesisFundingUseExpendituryAreaDAO reportSynthesisFundingUseExpendituryAreaDAO;
+  private ReportSynthesisFinancialSummaryBudgetDAO reportSynthesisFinancialSummaryBudgetDAO;
   // Managers
 
 
   @Inject
-  public ReportSynthesisFundingUseExpendituryAreaManagerImpl(ReportSynthesisFundingUseExpendituryAreaDAO reportSynthesisFundingUseExpendituryAreaDAO) {
+  public ReportSynthesisFundingUseExpendituryAreaManagerImpl(
+    ReportSynthesisFundingUseExpendituryAreaDAO reportSynthesisFundingUseExpendituryAreaDAO,
+    ReportSynthesisFinancialSummaryBudgetDAO reportSynthesisFinancialSummaryBudgetDAO) {
     this.reportSynthesisFundingUseExpendituryAreaDAO = reportSynthesisFundingUseExpendituryAreaDAO;
+    this.reportSynthesisFinancialSummaryBudgetDAO = reportSynthesisFinancialSummaryBudgetDAO;
 
 
   }
@@ -45,13 +51,15 @@ public class ReportSynthesisFundingUseExpendituryAreaManagerImpl implements Repo
   @Override
   public void deleteReportSynthesisFundingUseExpendituryArea(long reportSynthesisFundingUseExpendituryAreaId) {
 
-    reportSynthesisFundingUseExpendituryAreaDAO.deleteReportSynthesisFundingUseExpendituryArea(reportSynthesisFundingUseExpendituryAreaId);
+    reportSynthesisFundingUseExpendituryAreaDAO
+      .deleteReportSynthesisFundingUseExpendituryArea(reportSynthesisFundingUseExpendituryAreaId);
   }
 
   @Override
   public boolean existReportSynthesisFundingUseExpendituryArea(long reportSynthesisFundingUseExpendituryAreaID) {
 
-    return reportSynthesisFundingUseExpendituryAreaDAO.existReportSynthesisFundingUseExpendituryArea(reportSynthesisFundingUseExpendituryAreaID);
+    return reportSynthesisFundingUseExpendituryAreaDAO
+      .existReportSynthesisFundingUseExpendituryArea(reportSynthesisFundingUseExpendituryAreaID);
   }
 
   @Override
@@ -62,13 +70,27 @@ public class ReportSynthesisFundingUseExpendituryAreaManagerImpl implements Repo
   }
 
   @Override
-  public ReportSynthesisFundingUseExpendituryArea getReportSynthesisFundingUseExpendituryAreaById(long reportSynthesisFundingUseExpendituryAreaID) {
+  public ReportSynthesisFundingUseExpendituryArea
+    getReportSynthesisFundingUseExpendituryAreaById(long reportSynthesisFundingUseExpendituryAreaID) {
 
     return reportSynthesisFundingUseExpendituryAreaDAO.find(reportSynthesisFundingUseExpendituryAreaID);
   }
 
   @Override
-  public ReportSynthesisFundingUseExpendituryArea saveReportSynthesisFundingUseExpendituryArea(ReportSynthesisFundingUseExpendituryArea reportSynthesisFundingUseExpendituryArea) {
+  public double getTotalEstimatedOfW1W2ActualExpenditure(long reportSynthesisId) {
+    double totalW1W2 = reportSynthesisFinancialSummaryBudgetDAO.getTotalW1W2ActualExpenditure(reportSynthesisId);
+    double totalPercentaje = this.getTotalW1W2Percentage(reportSynthesisId);
+    return totalW1W2 * totalPercentaje / 100;
+  }
+
+  @Override
+  public double getTotalW1W2Percentage(long reportSynthesisId) {
+    return reportSynthesisFundingUseExpendituryAreaDAO.getTotalW1W2Percentage(reportSynthesisId);
+  }
+
+  @Override
+  public ReportSynthesisFundingUseExpendituryArea saveReportSynthesisFundingUseExpendituryArea(
+    ReportSynthesisFundingUseExpendituryArea reportSynthesisFundingUseExpendituryArea) {
 
     return reportSynthesisFundingUseExpendituryAreaDAO.save(reportSynthesisFundingUseExpendituryArea);
   }

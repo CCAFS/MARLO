@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.interceptor.center;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -42,15 +44,18 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
   private static final long serialVersionUID = -3706764472200123669L;
 
 
-  private CrpUserManager userService;
-  private GlobalUnitManager crpManager;
+  private final CrpUserManager userService;
+  private final GlobalUnitManager crpManager;
+  private final CustomParameterManager customParameterManager;
   private GlobalUnit looggedCenter;
 
 
   @Inject
-  public ValidSessionInterceptor(CrpUserManager userService, GlobalUnitManager crpManager) {
+  public ValidSessionInterceptor(CrpUserManager userService, GlobalUnitManager crpManager,
+    CustomParameterManager customParameterManager) {
     this.userService = userService;
     this.crpManager = crpManager;
+    this.customParameterManager = customParameterManager;
   }
 
   private void changeSessionSection(Map<String, Object> session) {
@@ -86,7 +91,10 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
           if (userService.existCrpUser(user.getId(), crp.getId())) {
-            for (CustomParameter parameter : looggedCenter.getCustomParameters()) {
+            List<CustomParameter> customParameters =
+              customParameterManager.getAllCustomParametersByGlobalUnitId(crp.getId());
+
+            for (CustomParameter parameter : customParameters) {
               if (parameter.isActive()) {
                 session.remove(parameter.getParameter().getKey());
               }
@@ -97,7 +105,7 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
             session.replace(APConstants.SESSION_CRP, crp);
             session.remove(APConstants.ALL_PHASES);
             // put the global unit parameters in the session
-            for (CustomParameter parameter : crp.getCustomParameters()) {
+            for (CustomParameter parameter : customParameters) {
               if (parameter.isActive()) {
                 session.put(parameter.getParameter().getKey(), parameter.getValue());
               }

@@ -598,9 +598,14 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
-        /*
-         * Funding source Locations
+        /**
+         * Temporary Performance improvement until we develop a single query to fetch all the fundingSource data for
+         * this screen
          */
+        @SuppressWarnings("unused")
+        List<FundingSourceLocation> findAllByFundingSourceId =
+          fundingSourceLocationsManager.findAllByFundingSourceId(fundingSourceID);
+
         if (fundingSource.getFundingSourceLocations() != null) {
 
           List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations()

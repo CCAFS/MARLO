@@ -159,6 +159,11 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   }
 
   @Override
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId) {
+    return fundingSourceLocationsDAO.findAllByFundingSourceId(fundingSourceId);
+  }
+
+  @Override
   public FundingSourceLocation getFundingSourceLocationsById(long fundingSourceLocationsID) {
 
     return fundingSourceLocationsDAO.find(fundingSourceLocationsID);
