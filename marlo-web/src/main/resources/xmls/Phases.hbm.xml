@@ -205,6 +205,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" />
 		</set>
+		<set name="reportSynthesis" table="report_synthesis" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" />
+    </set>
 		<set name="projectHighlightInfos" table="project_highlights_info"
 			inverse="true" lazy="true" fetch="select">
 			<key>

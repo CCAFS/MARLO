@@ -54,6 +54,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
@@ -82,10 +84,6 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,8 +112,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   // Parameters
   private POISummary poiSummary;
   private List<PowbSynthesis> powbSynthesisList;
+  private List<ReportSynthesis> reportSysthesisList;
   private LiaisonInstitution pmuInstitution;
   private PowbSynthesis powbSynthesisPMU;
+  private ReportSynthesis reportSysthesisPMU;
   private long startTime;
   private XWPFDocument document;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
@@ -270,6 +270,24 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       }
       poiSummary.textParagraph(document.createParagraph(), expectedCrpDescription);
     }
+
+
+    /***********************/
+
+    if (reportSysthesisPMU != null) {
+      String synthesisCrpDescription = "";
+      // CRP Progress
+      List<ReportSynthesisCrpProgress> reportSynthesisCrpProgressList = reportSysthesisPMU
+        .getReportSynthesisCrpProgress().stream().filter(e -> e.isActive()).collect(Collectors.toList());
+
+      if (reportSynthesisCrpProgressList != null && !reportSynthesisCrpProgressList.isEmpty()) {
+        ReportSynthesisCrpProgress reportSynthesisCrpProgress = reportSynthesisCrpProgressList.get(0);
+        synthesisCrpDescription = reportSynthesisCrpProgress.getOverallProgress() != null
+          && !reportSynthesisCrpProgress.getOverallProgress().trim().isEmpty()
+            ? reportSynthesisCrpProgress.getOverallProgress() : "";
+      }
+      poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+    }
   }
 
   private void addFinancialPlan() {
@@ -368,16 +386,17 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       }
     }
     poiSummary.textParagraph(document.createParagraph(),
-      this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters);
+      this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters + ":");
   }
 
   public void createTableA1() {
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader =
-      {new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.CENTER),};
+    POIField[] sHeader = {
+      new POIField(this.getText("annualReport.crpProgress.selectSLOTarget")
+        + this.getText("summaries.annualReport.tableA1.targetTitle2"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.CENTER),};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -1024,15 +1043,18 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       if (zone.equals("Z")) {
         zone = "+0";
       }
+
       String currentDate = timezone.format(format) + "(GMT" + zone + ")";
       // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
+
+      // Cover
       poiSummary.textLineBreak(document, 13);
       poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.annualReport.mainTitle"));
-      poiSummary.textLineBreak(document, 12);
+
+      // First page
+      poiSummary.textLineBreak(document, 14);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.mainTitle2"));
-      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.cover"));
-      poiSummary.textLineBreak(document, 1);
       String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
         ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
       poiSummary.textParagraph(document.createParagraph(),
@@ -1040,17 +1062,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textParagraph(document.createParagraph(),
         this.getText("summaries.annualReport.LeadCenter") + ": " + " name ");
       this.addParticipatingCenters();
-      // poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.keyResults"));
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.keyResults.crpProgress"));
-      this.addAdjustmentDescription();
-      poiSummary.textHead2Title(document.createParagraph(),
-        this.getText("summaries.annualReport.keyResults.progressFlagships"));
       this.addExpectedCrp();
       poiSummary.textHead2Title(document.createParagraph(),
+        this.getText("summaries.annualReport.keyResults.progressFlagships"));
+      this.addAdjustmentDescription();
+      poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.keyResults.dimensions"));
-      this.addEvidence();
+      // this.addEvidence();
       poiSummary.textHead3Title(document.createParagraph(),
         this.getText("summaries.annualReport.keyResults.dimensions.gender"));
       poiSummary.textHead3Title(document.createParagraph(),
@@ -1091,15 +1112,17 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.addManagement();
 
       /* Create a landscape text Section */
-      XWPFParagraph para = document.createParagraph();
-      CTSectPr sectionTable = body.getSectPr();
-      CTPageSz pageSizeTable = sectionTable.addNewPgSz();
-      CTP ctpTable = para.getCTP();
-      CTPPr brTable = ctpTable.addNewPPr();
-      brTable.setSectPr(sectionTable);
 
       /*
-       * pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
+       * XWPFParagraph para = document.createParagraph();
+       * CTSectPr sectionTable = body.getSectPr();
+       * CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+       * CTP ctpTable = para.getCTP();
+       * CTPPr brTable = ctpTable.addNewPPr();
+       * brTable.setSectPr(sectionTable);
+       * pageSizeTable.setOrient(STPageOrientation.PORTRAIT);
+       */
+      /*
        * pageSizeTable.setW(BigInteger.valueOf(842 * 20));
        * pageSizeTable.setH(BigInteger.valueOf(595 * 20));
        */
@@ -1110,8 +1133,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       // Table a1
       poiSummary.textHead1Title(paragraph, "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
-      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title")
-        + this.getText("summaries.annualReport.tableA1.targetTitle2"));
+      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title"));
       this.createTableA1();
 
       // Table a2
@@ -1134,6 +1156,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableD.title"));
       this.createTableD();
+
+      // Table d1
+      document.createParagraph().setPageBreak(true); // Fast Page Break
+      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD1.title"));
+
+      // Table d2
+      document.createParagraph().setPageBreak(true); // Fast Page Break
+      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD2.title"));
+
 
       // Table e
       poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD1.footer"));
@@ -1628,8 +1659,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.setGeneralParameters();
     powbSynthesisList =
       this.getSelectedPhase().getPowbSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
+    reportSysthesisList =
+      this.getSelectedPhase().getReportSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
     pmuInstitution = this.getPMUInstitution();
     List<PowbSynthesis> powbSynthesisPMUList = powbSynthesisList.stream()
+      .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(pmuInstitution)).collect(Collectors.toList());
+    List<ReportSynthesis> reportSysthesisPMUList = reportSysthesisList.stream()
       .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(pmuInstitution)).collect(Collectors.toList());
     if (powbSynthesisPMUList != null && !powbSynthesisPMUList.isEmpty()) {
       powbSynthesisPMU = powbSynthesisPMUList.get(0);
