@@ -120,6 +120,10 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
       + statusTypes.stream().map(i -> i.toString()).collect(Collectors.joining(",")) + " ) ) ) "
       + "ORDER BY fsi.endDate NULLS FIRST";
 
+    /**
+     * We are using PhaseDescription.PLANNING because if REPORTING is entered the section status results will
+     * filter out the results.
+     */
     @SuppressWarnings("unchecked")
     List<FundingSource> fundingSources =
       this.getSessionFactory().getCurrentSession().createQuery(queryString).setParameter("globalUnit", globalUnit)
