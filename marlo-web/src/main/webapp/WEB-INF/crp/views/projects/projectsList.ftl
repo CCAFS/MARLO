@@ -43,14 +43,16 @@
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active">
             <a href="#active-tab" aria-controls="home" role="tab" data-toggle="tab">
-              <strong><span class="glyphicon glyphicon-flag"></span>  [@s.text name="projectsList.active"/] </strong> <br /><small>([@s.text name="projectsList.active.help"/])</small>
+              <strong><span class="glyphicon glyphicon-flag"></span>  [@s.text name="projectsList.active"/] </strong> <br /><small>([@s.text name="projectsList.active${reportingActive?string('Reporting', 'Planning')}.help"/])</small>
             </a>
           </li>
+          [#if !reportingActive]
           <li role="presentation">
             <a href="#archived-tab" aria-controls="profile" role="tab" data-toggle="tab">
               <strong><span class="glyphicon glyphicon-inbox"></span> [@s.text name="projectsList.archived"/] </strong> <br /><small>([@s.text name="projectsList.archived.help"/])</small>
             </a>
           </li>
+          [/#if]
         </ul>
       
         <!-- Tab panes -->
@@ -64,11 +66,13 @@
             <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /] <br /> <small>[@s.text name="projectsList.otherProjects.help" /]</small></h3>
             [@projectList.projectsList projects=allProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]
           </div>
+          [#if !reportingActive]
           <div role="tabpanel" class="tab-pane" id="archived-tab">
             [#-- Archived Projects List (My Projects) --]
             <h3 class="headTitle text-center">[@s.text name="projectsList.archivedProjects"/]</h3>
             [@projectList.projectsListArchived projects=(closedProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
+          [/#if]
         </div>
       </div>
       [#-- Section Buttons --]
