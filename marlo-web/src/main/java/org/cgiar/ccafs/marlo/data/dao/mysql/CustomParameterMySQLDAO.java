@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -66,6 +67,32 @@ public class CustomParameterMySQLDAO extends AbstractMarloDAO<CustomParameter, L
     }
     return null;
 
+  }
+
+  @Override
+  public List<CustomParameter> getAllCustomParametersByGlobalUnitId(long globalUnitId) {
+    String queryString = "SELECT cp FROM CustomParameter cp INNER JOIN FETCH cp.parameter p "
+      + "WHERE cp.crp.id =:globalUnitId " + "AND cp.active = TRUE";
+
+    List<CustomParameter> customParameters = this.getSessionFactory().getCurrentSession().createQuery(queryString)
+      .setParameter("globalUnitId", globalUnitId).list();
+
+    return customParameters;
+  }
+
+  @Override
+  public CustomParameter getCustomParematerByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId) {
+
+    String queryString = "SELECT cp FROM CustomParameter cp INNER JOIN cp.parameter p "
+      + "WHERE p.key =:key AND cp.crp.id =:globalUnitId " + "AND cp.active = TRUE";
+
+    Object customParameter = this.getSessionFactory().getCurrentSession().createQuery(queryString)
+      .setParameter("key", paramaterKey).setParameter("globalUnitId", globalUnitId).setCacheable(true).uniqueResult();
+
+    if (customParameter != null) {
+      return (CustomParameter) customParameter;
+    }
+    return null;
   }
 
   @Override
