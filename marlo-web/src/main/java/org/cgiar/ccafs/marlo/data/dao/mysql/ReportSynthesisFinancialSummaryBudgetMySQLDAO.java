@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFinancialSummaryBudgetDAO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +28,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisFinancialSummaryBudgetMySQLDAO extends AbstractMarloDAO<ReportSynthesisFinancialSummaryBudget, Long> implements ReportSynthesisFinancialSummaryBudgetDAO {
+public class ReportSynthesisFinancialSummaryBudgetMySQLDAO extends
+  AbstractMarloDAO<ReportSynthesisFinancialSummaryBudget, Long> implements ReportSynthesisFinancialSummaryBudgetDAO {
 
 
   @Inject
@@ -37,14 +39,16 @@ public class ReportSynthesisFinancialSummaryBudgetMySQLDAO extends AbstractMarlo
 
   @Override
   public void deleteReportSynthesisFinancialSummaryBudget(long reportSynthesisFinancialSummaryBudgetId) {
-    ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget = this.find(reportSynthesisFinancialSummaryBudgetId);
+    ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget =
+      this.find(reportSynthesisFinancialSummaryBudgetId);
     reportSynthesisFinancialSummaryBudget.setActive(false);
     this.update(reportSynthesisFinancialSummaryBudget);
   }
 
   @Override
   public boolean existReportSynthesisFinancialSummaryBudget(long reportSynthesisFinancialSummaryBudgetID) {
-    ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget = this.find(reportSynthesisFinancialSummaryBudgetID);
+    ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget =
+      this.find(reportSynthesisFinancialSummaryBudgetID);
     if (reportSynthesisFinancialSummaryBudget == null) {
       return false;
     }
@@ -70,7 +74,25 @@ public class ReportSynthesisFinancialSummaryBudgetMySQLDAO extends AbstractMarlo
   }
 
   @Override
-  public ReportSynthesisFinancialSummaryBudget save(ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget) {
+  public double getTotalW1W2ActualExpenditure(long reportSynthesisId) {
+    String query =
+      "SELECT SUM(w1_actual) AS amount FROM report_synthesis_financial_summary_budgets b INNER JOIN report_synthesis_financial_summaries fs ON fs.id = "
+        + reportSynthesisId + " AND fs.is_active WHERE b.report_synthesis_financial_summary_id = " + reportSynthesisId
+        + " AND b.is_active";
+
+    List<Map<String, Object>> list = super.findCustomQuery(query);
+    if (list.size() > 0) {
+      Map<String, Object> result = list.get(0);
+      if (result.get("amount") != null) {
+        return Double.valueOf(result.get("amount").toString());
+      }
+    }
+    return 0;
+  }
+
+  @Override
+  public ReportSynthesisFinancialSummaryBudget
+    save(ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget) {
     if (reportSynthesisFinancialSummaryBudget.getId() == null) {
       super.saveEntity(reportSynthesisFinancialSummaryBudget);
     } else {
@@ -80,6 +102,5 @@ public class ReportSynthesisFinancialSummaryBudgetMySQLDAO extends AbstractMarlo
 
     return reportSynthesisFinancialSummaryBudget;
   }
-
 
 }
