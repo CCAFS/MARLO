@@ -516,14 +516,16 @@ function setMetadata(data) {
   }
 
   // Open Access Validation
-  var $input = $(".type-accessible ").parent().find('input');
+  var $input = $(".type-accessible ").parent();
   if(data.openAccess === "true") {
-    // $input.val(true);
+    $input.find('input.yesInput').prop("checked", true);
+    console.log($input.find('input.yesInput'));
     $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").hide("slow");
     $(".type-accessible .yes-button-label ").addClass("radio-checked");
   } else {
-    // $input.val(false);
+    $input.find('input.noInput').prop("checked", true);
+    console.log($input.find('input.noInput'));
     $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").show("slow");
     $(".type-accessible .no-button-label ").addClass("radio-checked");
