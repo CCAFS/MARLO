@@ -121,7 +121,7 @@
       [/#if]
       <tr>
         <th>[@s.text name="${customLabel}.tableF.total" /]</th>
-        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">${(totalFunding)!}</span></nobr> </th>
         <th class="text-right"> </th>
       </tr>
       </tbody>
