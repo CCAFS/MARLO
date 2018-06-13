@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
       
-[#assign customName= "annualReport.${currentStage}" /]
+[#assign customName= "reportSynthesis.reportSynthesisEfficiency" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
@@ -43,11 +43,17 @@
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-          <div class="borderBox">
-          
+          <div class="borderBox"> 
             [#-- Please describe any successes and points to improve in future, providing numbers where possible --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.successes" i18nkey="${customLabel}.successes" help="${customLabel}.successes.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#if PMU]
+                [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.successes" help="${customLabel}.successes.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#else]
+                <div class="textArea">
+                  <label for="">[@customForm.text name="${customLabel}.successes" readText=true /]</label>:
+                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                </div>
+              [/#if]
             </div>
           
           </div>
