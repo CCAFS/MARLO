@@ -104,15 +104,24 @@
     <tbody>
     [#if list?has_content]
         [#list list as item]
-          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='expectedID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
+          [#-- URL --]
+          [#local dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='expectedID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#-- Is this complete --]
+          [#local isThisComplete = (action.hasMissingFields(item.class.name,item.id))!{}]
+          [#-- Previous year --]
+          [#local previousYear = (item.year < currentCycleYear)!false ]
           <tr>
-            <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
+            <td class="id" >
+              [#if !previousYear]<a href="${dlurl}">[/#if]
+                ${item.id}
+              [#if !previousYear]</a>[/#if]
+            </td> 
             <td class="name">
-              [#-- Is this complete --]
-              [#local isThisComplete = (action.hasMissingFields(item.class.name,item.id))!{}]            
               [#-- Report Tag --]
-              [#if reportingActive && ((item.year == currentCycleYear)!false)]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
-              <a href="${dlurl}">[#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]</a>
+              [#if reportingActive && !previousYear]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+              [#if !previousYear]<a href="${dlurl}">[/#if]
+                [#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]
+              [#if !previousYear]</a>[/#if]
             </td>
             <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
