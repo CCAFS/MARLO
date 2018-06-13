@@ -271,14 +271,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textParagraph(document.createParagraph(), expectedCrpDescription);
     }
 
-
     /***********************/
 
     if (reportSysthesisPMU != null) {
       String synthesisCrpDescription = "";
       // CRP Progress
-      List<ReportSynthesisCrpProgress> reportSynthesisCrpProgressList = reportSysthesisPMU
-        .getReportSynthesisCrpProgress().stream().filter(e -> e.isActive()).collect(Collectors.toList());
+      List<ReportSynthesisCrpProgress> reportSynthesisCrpProgressList = null;
+      // = reportSysthesisPMU.getReportSynthesisCrpProgress().stream().filter(e ->
+      // e.isActive()).collect(Collectors.toList());
 
       if (reportSynthesisCrpProgressList != null && !reportSynthesisCrpProgressList.isEmpty()) {
         ReportSynthesisCrpProgress reportSynthesisCrpProgress = reportSynthesisCrpProgressList.get(0);
@@ -1659,15 +1659,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.setGeneralParameters();
     powbSynthesisList =
       this.getSelectedPhase().getPowbSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
-    reportSysthesisList =
-      this.getSelectedPhase().getReportSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
     pmuInstitution = this.getPMUInstitution();
     List<PowbSynthesis> powbSynthesisPMUList = powbSynthesisList.stream()
       .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(pmuInstitution)).collect(Collectors.toList());
-    List<ReportSynthesis> reportSysthesisPMUList = reportSysthesisList.stream()
-      .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(pmuInstitution)).collect(Collectors.toList());
     if (powbSynthesisPMUList != null && !powbSynthesisPMUList.isEmpty()) {
       powbSynthesisPMU = powbSynthesisPMUList.get(0);
+    }
+
+    reportSysthesisList =
+      this.getSelectedPhase().getReportSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
+    pmuInstitution = this.getPMUInstitution();
+    List<ReportSynthesis> reportSysthesisPMUList = reportSysthesisList.stream()
+      .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(pmuInstitution)).collect(Collectors.toList());
+    if (reportSysthesisPMUList != null && !reportSysthesisPMUList.isEmpty()) {
+      reportSysthesisPMU = reportSysthesisPMUList.get(0);
     }
 
     // Calculate time to generate report
