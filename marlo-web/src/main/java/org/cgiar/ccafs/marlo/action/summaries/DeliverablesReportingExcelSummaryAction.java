@@ -620,7 +620,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
             if (deliverable.getDeliverableInfo().getAdoptedLicense() == true) {
               delivLicense = deliverable.getDeliverableInfo().getLicense();
-              if (delivLicense.equals("OTHER")) {
+              if (delivLicense != null && delivLicense.equals("OTHER")) {
                 delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
                 showDelivLicenseModifications = true;
                 if (deliverable.getDeliverableInfo().getAllowModifications() != null
