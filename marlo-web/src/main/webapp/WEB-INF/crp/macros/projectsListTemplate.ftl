@@ -129,24 +129,23 @@
           <td>
             [#assign currentCycleYear= currentCycleYear /]
             [#assign submission = action.isProjectSubmitted(project.id) /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
-            [#assign completed = (action.isCompleteProject(project.id))!false /]
-            [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
+           
+            [#--assign canSubmit = (action.hasPersmissionSubmit(projectID))!false / --]
             
-            [#-- Submit button --]
-            [#if submission]
-              <p title="Submitted">Submitted</p>
-            [#else]
-              [#if canSubmit]
-                [#assign showSubmit=(canSubmit && !submission && completed)]
-                [#--  <a id="submitProject-${project.id}" class="submitButton" href="[@s.url namespace=namespace action='submit'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" style="display:${showSubmit?string('block','none')}">[@s.text name="form.buttons.submit" /]</a>--]
-              [/#if]
-            [/#if]
+            
             
             [#if !project.projectInfo.isProjectEditLeader()]
               <p>Pre-setting</p>
             [#else]
               [#if !submission]
-                <p title="Ready for project leader completion">Ready for PL</p>
+                [#if !reportingActive]<p title="Ready for project leader completion">Ready for PL</p>[/#if]
+              [#else]
+                <strong title="Submitted">Submitted</strong>
+              [/#if]
+              
+              [#-- Status --]
+              [#if reportingActive]
+                <p>${(project.projectInfo.statusName)!}</p>
               [/#if]
             [/#if]
           </td>

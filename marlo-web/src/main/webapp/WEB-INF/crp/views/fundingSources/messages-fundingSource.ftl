@@ -56,7 +56,7 @@
     <div class="layer"></div>
     <div class="content">
       <span class="glyphicon glyphicon-lock"></span>
-      <p>[@s.text name="fundingSource.message.concurrence" /] [@s.text name="fundingSource.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+      <p>[@s.text name="fundingSource.message.concurrence" /] [@s.text name="fundingSource.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][@s.param name="phaseID" value="${(actualPhase.id)!}" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
     </div>
   </div>
   

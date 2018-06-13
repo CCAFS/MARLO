@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/publications/publication.js?20180529",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180529", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180529", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180612", 
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
 ] /]
