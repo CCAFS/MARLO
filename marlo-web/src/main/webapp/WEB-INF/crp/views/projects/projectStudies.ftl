@@ -107,7 +107,7 @@
           [#-- URL --]
           [#local dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='expectedID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#-- Is this complete --]
-          [#local isThisComplete = (action.hasMissingFields(item.class.name,item.id))!{}]
+          [#local isThisComplete = (action.hasStudiesMissingFields(item.class.name,item.id))!{}]
           [#-- Previous year --]
           [#local previousYear = (item.year < currentCycleYear)!false ]
           <tr>
