@@ -33,7 +33,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This controller publishes Refrence data for REST clients to consume. This is a read only service and it's purpose
@@ -43,7 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  * @author GrantL
  */
-@RestController
+// Temporally Disable Controller
+// @RestController
 public class ReferenceDataController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ReferenceDataController.class);
