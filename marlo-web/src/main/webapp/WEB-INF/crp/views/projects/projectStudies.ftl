@@ -110,6 +110,8 @@
           [#local isThisComplete = (action.hasMissingFields(item.class.name,item.id))!{}]
           [#-- Previous year --]
           [#local previousYear = (item.year < currentCycleYear)!false ]
+          [#-- Owner --]
+          [#local isOwner = (item.project.id == projectID)!false]
           <tr>
             <td class="id" >
               [#if !previousYear]<a href="${dlurl}">[/#if]
@@ -135,7 +137,7 @@
             </td>
             [#if !previousTable]
             <td class="removeHighlight-row text-center">
-              [#if canEdit  && ((item.year gte  currentCycleYear)!true) ]
+              [#if canEdit && isOwner && ((item.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>
