@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -138,6 +139,12 @@ public class DeliverableManagerImpl implements DeliverableManager {
     List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
       .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
       .collect(Collectors.toList());
+
+    if (deliverablesInfo == null || deliverablesInfo.isEmpty()) {
+      deliverablesInfo = new ArrayList<>();
+      deliverablesInfo.add(new DeliverableInfo());
+    }
+
     for (DeliverableInfo deliverableInfo : deliverablesInfo) {
       deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
       if (deliverableInfo.getCrpClusterKeyOutput() != null
