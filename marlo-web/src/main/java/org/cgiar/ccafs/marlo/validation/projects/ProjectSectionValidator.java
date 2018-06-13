@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -896,15 +897,29 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   public void validateProjectExpectedStudies(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
-
-    List<ProjectExpectedStudy> studies =
-      project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
-    for (ProjectExpectedStudy projectExpectedStudy : studies) {
-      if (projectExpectedStudy.getProjectExpectedStudyInfo(action.getActualPhase()) != null) {
-        project.getExpectedStudies().add(projectExpectedStudy);
+
+    List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream()
+      .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(action.getActualPhase()) != null)
+      .collect(Collectors.toList());
+
+    // Owner Studies
+    if (ownerStudies != null && !ownerStudies.isEmpty()) {
+      project.getExpectedStudies().addAll(ownerStudies);
+    }
+
+    // Shared Studies
+    List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase())
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(action.getActualPhase()) != null)
+      .collect(Collectors.toList());
+
+    if (sharedStudies != null && !sharedStudies.isEmpty()) {
+      for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
+        project.getExpectedStudies().add(expectedStudyProject.getProjectExpectedStudy());
       }
     }
+
     Phase phase = action.getActualPhase();
     for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
 

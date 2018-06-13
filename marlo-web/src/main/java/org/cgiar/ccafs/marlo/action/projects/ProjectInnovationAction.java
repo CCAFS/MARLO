@@ -60,7 +60,6 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
-import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -73,6 +72,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -436,14 +436,13 @@ public class ProjectInnovationAction extends BaseAction {
 
       expectedStudyList = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
-        .filter(ex -> ex.isActive() && ex.getType() != null
-          && ex.getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId() && ex.getProject() != null
+        .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
+          && ex.getProjectExpectedStudyInfo().getStudyType() != null
+          && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
           && ex.getProject().getId() == project.getId())
         .collect(Collectors.toList());
       for (ProjectExpectedStudy study : expectedStudies) {
-        if (study.getProjectExpectedStudyInfo(phase) != null) {
-          expectedStudyList.add(study);
-        }
+        expectedStudyList.add(study);
       }
 
       List<DeliverableInfo> infos = phase
