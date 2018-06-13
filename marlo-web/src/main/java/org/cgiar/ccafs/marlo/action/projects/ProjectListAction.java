@@ -604,28 +604,31 @@ public class ProjectListAction extends BaseAction {
     List<Project> completedProjects =
       projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
 
-    // Not include Complete projects wihtout subbmission
-    for (Project project : completedProjects) {
-      int year = this.getCurrentCycleYear();
-      List<Submission> submissions = project
-        .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
-          && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
-      if (!submissions.isEmpty()) {
-        closedProjects.add(project);
+    // Skip closed projects for Reporting
+    if (this.isPlanningActive()) {
+      // Not include Complete projects wihtout subbmission
+      for (Project project : completedProjects) {
+        int year = this.getCurrentCycleYear();
+        List<Submission> submissions = project
+          .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+            && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList());
+        if (!submissions.isEmpty()) {
+          closedProjects.add(project);
+        }
       }
-    }
 
-    if (closedProjects != null) {
-      myProjects.removeAll(closedProjects);
-      if (allProjects != null) {
-        allProjects.removeAll(closedProjects);
+      if (closedProjects != null) {
+        myProjects.removeAll(closedProjects);
+        if (allProjects != null) {
+          allProjects.removeAll(closedProjects);
+        }
+        Set<Project> uniqueProjects = new HashSet<>();
+        uniqueProjects.addAll(closedProjects);
+        closedProjects.clear();
+        closedProjects.addAll(uniqueProjects);
+        this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
       }
-      Set<Project> uniqueProjects = new HashSet<>();
-      uniqueProjects.addAll(closedProjects);
-      closedProjects.clear();
-      closedProjects.addAll(uniqueProjects);
-      this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
     }
 
     if (this.isCenterGlobalUnit()) {
