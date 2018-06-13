@@ -110,7 +110,7 @@
     </action>
     
 		<!--  2.6 Improving Efficiency  -->
-		<action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.EfficiencyAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_efficiency.ftl</result>
       <result name="success" type="redirectAction">

@@ -48,12 +48,16 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
 
+
   @Expose
   private ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary;
 
 
-  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+  @Expose
+  private ReportSynthesisEfficiency reportSynthesisEfficiency;
 
+
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public ReportSynthesis() {
   }
@@ -94,9 +98,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
+
   public Phase getPhase() {
     return phase;
   }
+
 
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
@@ -104,6 +110,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
+  }
+
+  public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
+    return reportSynthesisEfficiency;
   }
 
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
@@ -121,7 +131,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
   }
-
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -162,8 +171,13 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisCrossCuttingDimension = reportSynthesisCrossCuttingDimension;
   }
 
+
   public void setReportSynthesisCrpProgress(ReportSynthesisCrpProgress reportSynthesisCrpProgress) {
     this.reportSynthesisCrpProgress = reportSynthesisCrpProgress;
+  }
+
+  public void setReportSynthesisEfficiency(ReportSynthesisEfficiency reportSynthesisEfficiency) {
+    this.reportSynthesisEfficiency = reportSynthesisEfficiency;
   }
 
   public void setReportSynthesisFinancialSummary(ReportSynthesisFinancialSummary reportSynthesisFinancialSummary) {

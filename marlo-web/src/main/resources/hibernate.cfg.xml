@@ -300,6 +300,7 @@
     <mapping resource="xmls/ReportSynthesisProgramVariances.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisFundingUseSummaries.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisFundingUseExpendituryAreas.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisEfficiency.hbm.xml"/>   
 
 	</session-factory>
 </hibernate-configuration>
