@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -38,9 +39,11 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -304,9 +307,31 @@ public class ValidateProjectSectionAction extends BaseAction {
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
-        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
-          .filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
-        for (ProjectExpectedStudy projectExpectedStudy : studies) {
+        Set<ProjectExpectedStudy> myStudies = new HashSet<>();
+        // Owner Studies
+        List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream().filter(c -> c.isActive()
+          && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null && c.getYear() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+        if (ownerStudies != null && !ownerStudies.isEmpty()) {
+          myStudies.addAll(ownerStudies);
+        }
+
+        // Shared Studies
+        List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getProjectExpectedStudy().getYear() != null
+            && c.getProjectExpectedStudy().getYear() == this.getCurrentCycleYear()
+            && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList());
+
+        if (sharedStudies != null && !sharedStudies.isEmpty()) {
+          for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
+            myStudies.add(expectedStudyProject.getProjectExpectedStudy());
+          }
+        }
+
+
+        for (ProjectExpectedStudy projectExpectedStudy : myStudies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
             cycle, this.getActualPhase().getYear(), sectionName);
           section = new HashMap<String, Object>();
