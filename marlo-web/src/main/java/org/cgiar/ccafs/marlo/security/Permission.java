@@ -217,4 +217,12 @@ public class Permission {
   public static final String CRPS_UPDATE_REST_API_PERMISSION = "api:crps:update";
   public static final String CRPS_DELETE_REST_API_PERMISSION = "api:crps:delete";
   public static final String CRPS_FULL_REST_API_PERMISSION = "api:crps:*";
+
+
+  // CrpProgram
+  public static final String CRP_PROGRAM_READ_REST_API_PERMISSION = "api:crpProgram:read";
+  public static final String CRP_PROGRAM_CREATE_REST_API_PERMISSION = "api:crpProgram:create";
+  public static final String CRP_PROGRAM_UPDATE_REST_API_PERMISSION = "api:crpProgram:update";
+  public static final String CRP_PROGRAM_DELETE_REST_API_PERMISSION = "api:crpProgram:delete";
+  public static final String CRP_PROGRAM_FULL_REST_API_PERMISSION = "api:crpProgram:*";
 }
