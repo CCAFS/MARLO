@@ -103,6 +103,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -3292,15 +3293,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case EXPECTEDSTUDIES:
 
         project = projectManager.getProjectById(projectID);
-        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream().filter(c -> c.isActive()
+        Set<ProjectExpectedStudy> myStudies = new HashSet<>();
+
+        // Owner Studies
+        List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream().filter(c -> c.isActive()
           && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null && c.getYear() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
+        if (ownerStudies != null && !ownerStudies.isEmpty()) {
+          myStudies.addAll(ownerStudies);
+        }
 
-        if (studies.isEmpty()) {
+        // Shared Studies
+        List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getProjectExpectedStudy().getYear() != null
+            && c.getProjectExpectedStudy().getYear() == this.getCurrentCycleYear()
+            && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList());
+
+        if (sharedStudies != null && !sharedStudies.isEmpty()) {
+          for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
+            myStudies.add(expectedStudyProject.getProjectExpectedStudy());
+          }
+        }
+
+        if (myStudies.isEmpty()) {
           return true;
         }
 
-        for (ProjectExpectedStudy projectExpectedStudy : studies) {
+        for (ProjectExpectedStudy projectExpectedStudy : myStudies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
           if (sectionStatus != null) {
@@ -3624,34 +3645,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  /**
-   * Validate Missing fields in the tables.
-   * 
-   * @return
-   */
-  public boolean hasMissingFields(String className, long id) {
-    SectionStatus sectionStatus = null;
-    if (className.equals(ProjectExpectedStudy.class.getName())) {
-
-      ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id);
-
-      sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(),
-        this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus());
-
-      if (sectionStatus != null) {
-        if (sectionStatus.getMissingFields() != null) {
-          if (sectionStatus.getMissingFields().trim().equals("")) {
-            return true;
-          }
-        }
-      }
-
-
-    }
-
-    return false;
-  }
-
   public boolean hasPermission(String fieldName) {
 
     if (basePermission == null) {
@@ -3803,6 +3796,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+  }
+
+  /**
+   * Validate Missing fields in Project Expected Studies
+   * 
+   * @return
+   */
+  public boolean hasStudiesMissingFields(String className, long id) {
+    SectionStatus sectionStatus = null;
+    ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id);
+
+    sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(),
+      this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus());
+
+    if (sectionStatus != null) {
+      if (sectionStatus.getMissingFields() != null) {
+        if (sectionStatus.getMissingFields().trim().equals("")) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
 
