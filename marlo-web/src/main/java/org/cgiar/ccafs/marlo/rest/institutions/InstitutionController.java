@@ -21,22 +21,16 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -47,7 +41,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,71 +78,72 @@ public class InstitutionController {
     this.userManager = userManager;
   }
 
-  @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.POST,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<InstitutionDTO> createInstitution(@PathVariable String globalUnit,
-    @Valid @RequestBody InstitutionDTO institutionDTO) {
-    LOG.debug("Create a new institution with : {}", institutionDTO);
+  // Temporally Disable This service.
+  // @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
+  // @RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.POST,
+  // produces = MediaType.APPLICATION_JSON_VALUE)
+  // public ResponseEntity<InstitutionDTO> createInstitution(@PathVariable String globalUnit,
+  // @Valid @RequestBody InstitutionDTO institutionDTO) {
+  // LOG.debug("Create a new institution with : {}", institutionDTO);
+  //
+  // /**
+  // * For an institution to be accepted it needs to be reviewed. We have a separate entity for this (not sure this
+  // * is a good idea), so we will use the same institutionDTO and hide the complexity from them and map back and forth
+  // * between the institutionDTO and the PartnerRequest. Question - how to handle the ids - do we leave blank?
+  // */
+  //
+  // GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(globalUnit);
+  //
+  // LocElement locElement = locElementManager
+  // .getLocElementByISOCode(institutionDTO.getInstitutionsLocations().get(0).getCountryIsoAlpha2Code());
+  //
+  // PartnerRequest partnerRequestParent = institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+  // globalUnitEntity, locElement, this.getCurrentUser());
+  //
+  // partnerRequestParent = partnerRequestManager.savePartnerRequest(partnerRequestParent);
+  //
+  // /**
+  // * Need to create a parent child relationship for the partnerRequest to display. That design might need to be
+  // * re-visited.
+  // */
+  // PartnerRequest partnerRequestChild = institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+  // globalUnitEntity, locElement, this.getCurrentUser());
+  //
+  // partnerRequestChild.setPartnerRequest(partnerRequestParent);
+  //
+  // partnerRequestChild = partnerRequestManager.savePartnerRequest(partnerRequestChild);
+  //
+  // // Return an institutionDTO with a blank id - so that the user doesn't try and look up the institution straight
+  // // away.
+  // return new ResponseEntity<InstitutionDTO>(institutionMapper.partnerRequestToInstitutionDTO(partnerRequestParent),
+  // HttpStatus.CREATED);
+  // }
 
-    /**
-     * For an institution to be accepted it needs to be reviewed. We have a separate entity for this (not sure this
-     * is a good idea), so we will use the same institutionDTO and hide the complexity from them and map back and forth
-     * between the institutionDTO and the PartnerRequest. Question - how to handle the ids - do we leave blank?
-     */
-
-    GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(globalUnit);
-
-    LocElement locElement = locElementManager
-      .getLocElementByISOCode(institutionDTO.getInstitutionsLocations().get(0).getCountryIsoAlpha2Code());
-
-    PartnerRequest partnerRequestParent = institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
-      globalUnitEntity, locElement, this.getCurrentUser());
-
-    partnerRequestParent = partnerRequestManager.savePartnerRequest(partnerRequestParent);
-
-    /**
-     * Need to create a parent child relationship for the partnerRequest to display. That design might need to be
-     * re-visited.
-     */
-    PartnerRequest partnerRequestChild = institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
-      globalUnitEntity, locElement, this.getCurrentUser());
-
-    partnerRequestChild.setPartnerRequest(partnerRequestParent);
-
-    partnerRequestChild = partnerRequestManager.savePartnerRequest(partnerRequestChild);
-
-    // Return an institutionDTO with a blank id - so that the user doesn't try and look up the institution straight
-    // away.
-    return new ResponseEntity<InstitutionDTO>(institutionMapper.partnerRequestToInstitutionDTO(partnerRequestParent),
-      HttpStatus.CREATED);
-  }
-
-  @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.DELETE,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> deleteInstitution(@PathVariable String globalUnit, @PathVariable Long id) {
-    LOG.debug("Delete institution with id: {}", id);
-
-    /**
-     * We need to enable cascade delete on the institution -> institutionLocations relationship
-     * if we want to avoid doing this.
-     */
-    Institution institutionToDelete = institutionManager.getInstitutionById(id);
-    Set<InstitutionLocation> institutionsLocations = institutionToDelete.getInstitutionsLocations();
-    for (InstitutionLocation institutionLocation : institutionsLocations) {
-      institutionLocationManager.deleteInstitutionLocation(institutionLocation.getId());
-    }
-
-    // Now delete the institution.
-    institutionManager.deleteInstitution(id);
-    return ResponseEntity.ok().build();
-  }
+  // Temporally Disable This service.
+  // @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
+  // @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.DELETE,
+  // produces = MediaType.APPLICATION_JSON_VALUE)
+  // public ResponseEntity<Void> deleteInstitution(@PathVariable String globalUnit, @PathVariable Long id) {
+  // LOG.debug("Delete institution with id: {}", id);
+  //
+  // /**
+  // * We need to enable cascade delete on the institution -> institutionLocations relationship
+  // * if we want to avoid doing this.
+  // */
+  // Institution institutionToDelete = institutionManager.getInstitutionById(id);
+  // Set<InstitutionLocation> institutionsLocations = institutionToDelete.getInstitutionsLocations();
+  // for (InstitutionLocation institutionLocation : institutionsLocations) {
+  // institutionLocationManager.deleteInstitutionLocation(institutionLocation.getId());
+  // }
+  //
+  // // Now delete the institution.
+  // institutionManager.deleteInstitution(id);
+  // return ResponseEntity.ok().build();
+  // }
 
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<InstitutionDTO> getAllInstitutions(@PathVariable String globalUnit) {
+  @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionDTO> getAllInstitutions() {
     LOG.debug("REST request to get Institutions");
     List<Institution> institutions = institutionManager.findAll();
     List<InstitutionDTO> institutionDTOs = institutions.stream()
@@ -165,36 +159,36 @@ public class InstitutionController {
   }
 
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable String globalUnit, @PathVariable Long id) {
+  @RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
     LOG.debug("REST request to get Institution : {}", id);
     Institution institution = institutionManager.getInstitutionById(id);
     return Optional.ofNullable(institution).map(institutionMapper::institutionToInstitutionDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  @RequiresPermissions(Permission.INSTITUTIONS_UPDATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.PUT,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<InstitutionDTO> updateInstitution(@PathVariable String globalUnit, @PathVariable Long id,
-    @Valid @RequestBody InstitutionDTO institutionDTO) {
-    LOG.debug("REST request to update Institution : {}", institutionDTO);
-
-    Institution existingInstitution = institutionManager.getInstitutionById(institutionDTO.getId());
-
-    /**
-     * Note that the institutionLocation information will be ignored as this is better done in a separate web service
-     * where each location can be updated individually rather than in bulk.
-     */
-    existingInstitution = institutionMapper.updateInstitutionFromInstitutionDto(institutionDTO, existingInstitution);
-
-    // Now update the existingInstitution with the updated values.
-    existingInstitution = institutionManager.saveInstitution(existingInstitution);
-
-    return new ResponseEntity<InstitutionDTO>(institutionMapper.institutionToInstitutionDTO(existingInstitution),
-      HttpStatus.OK);
-
-  }
+  // Temporally Disable This service.
+  // @RequiresPermissions(Permission.INSTITUTIONS_UPDATE_REST_API_PERMISSION)
+  // @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.PUT,
+  // produces = MediaType.APPLICATION_JSON_VALUE)
+  // public ResponseEntity<InstitutionDTO> updateInstitution(@PathVariable String globalUnit, @PathVariable Long id,
+  // @Valid @RequestBody InstitutionDTO institutionDTO) {
+  // LOG.debug("REST request to update Institution : {}", institutionDTO);
+  //
+  // Institution existingInstitution = institutionManager.getInstitutionById(institutionDTO.getId());
+  //
+  // /**
+  // * Note that the institutionLocation information will be ignored as this is better done in a separate web service
+  // * where each location can be updated individually rather than in bulk.
+  // */
+  // existingInstitution = institutionMapper.updateInstitutionFromInstitutionDto(institutionDTO, existingInstitution);
+  //
+  // // Now update the existingInstitution with the updated values.
+  // existingInstitution = institutionManager.saveInstitution(existingInstitution);
+  //
+  // return new ResponseEntity<InstitutionDTO>(institutionMapper.institutionToInstitutionDTO(existingInstitution),
+  // HttpStatus.OK);
+  //
+  // }
 
 }
