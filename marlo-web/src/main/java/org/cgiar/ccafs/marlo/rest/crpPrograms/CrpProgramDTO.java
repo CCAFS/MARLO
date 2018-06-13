@@ -13,34 +13,23 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.institutions.dto;
-
-import java.util.Date;
-import java.util.List;
+package org.cgiar.ccafs.marlo.rest.crpPrograms;
 
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
-public class InstitutionDTO {
-
-
-  private Long id;
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class CrpProgramDTO {
 
   @NotNull
-  private InstitutionTypeDTO institutionType;
+  private Long id;
 
   @NotNull
   private String name;
 
+
   private String acronym;
-
-  private String websiteLink;
-
-  private Date added;
-
-  @NotEmpty
-  private List<InstitutionLocationDTO> institutionsLocations;
 
 
   public String getAcronym() {
@@ -48,22 +37,8 @@ public class InstitutionDTO {
   }
 
 
-  public Date getAdded() {
-    return added;
-  }
-
-
   public Long getId() {
     return id;
-  }
-
-  public List<InstitutionLocationDTO> getInstitutionsLocations() {
-    return institutionsLocations;
-  }
-
-
-  public InstitutionTypeDTO getInstitutionType() {
-    return institutionType;
   }
 
 
@@ -71,44 +46,16 @@ public class InstitutionDTO {
     return name;
   }
 
-
-  public String getWebsiteLink() {
-    return websiteLink;
-  }
-
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
-
-
-  public void setAdded(Date added) {
-    this.added = added;
-  }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
-  public void setInstitutionsLocations(List<InstitutionLocationDTO> institutionsLocations) {
-    this.institutionsLocations = institutionsLocations;
-  }
-
-
-  public void setInstitutionType(InstitutionTypeDTO institutionType) {
-    this.institutionType = institutionType;
-  }
-
-
   public void setName(String name) {
     this.name = name;
-  }
-
-
-  public void setWebsiteLink(String websiteLink) {
-    this.websiteLink = websiteLink;
   }
 
 
