@@ -21,7 +21,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "annualReport.${currentStage}" /]
+[#assign customName= "reportSynthesis.reportSynthesisIndicatorGeneral" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
@@ -84,15 +84,17 @@
               <hr />
               [@tableOutcomesMacro list=[{},{},{},{}] /]
             </div>
+            [#-- Hidden Input --]
+            <input type="hidden"  name="${customName}.synthesisIndicators[0].repIndSynthesisIndicator.id" value="${(reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[0].repIndSynthesisIndicator.id)!}"/>
             
             [#-- Data --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorI3.data" help="${customLabel}.indicatorI3.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable  && PMU /]
+              [@customForm.textArea name="${customName}.synthesisIndicators[0].data" i18nkey="${customLabel}.indicatorI3.data" help="${customLabel}.indicatorI3.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable  && PMU /]
             </div>
             
             [#-- Comments/Analysis --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorI3.comments" help="${customLabel}.indicatorI3.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.synthesisIndicators[0].comment" i18nkey="${customLabel}.indicatorI3.comments" help="${customLabel}.indicatorI3.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
           
           </div>

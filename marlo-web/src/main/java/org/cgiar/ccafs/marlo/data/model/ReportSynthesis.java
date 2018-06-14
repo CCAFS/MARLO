@@ -56,6 +56,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisEfficiency reportSynthesisEfficiency;
 
+  @Expose
+  private ReportSynthesisIndicatorGeneral reportSynthesisIndicatorGeneral;
+
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -132,6 +135,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisGovernance;
   }
 
+  public ReportSynthesisIndicatorGeneral getReportSynthesisIndicatorGeneral() {
+    return reportSynthesisIndicatorGeneral;
+  }
+
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
   }
@@ -195,6 +202,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
     this.reportSynthesisGovernance = reportSynthesisGovernance;
   }
+
+  public void setReportSynthesisIndicatorGeneral(ReportSynthesisIndicatorGeneral reportSynthesisIndicatorGeneral) {
+    this.reportSynthesisIndicatorGeneral = reportSynthesisIndicatorGeneral;
+  }
+
 
   public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
     this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;

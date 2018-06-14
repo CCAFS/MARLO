@@ -57,6 +57,9 @@
 			<one-to-one name="reportSynthesisEfficiency"
       class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisEfficiency"
       cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisIndicatorGeneral"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral"
+			cascade="save-update"></one-to-one>
 		<set name="sectionStatuses" table="section_statuses" inverse="true"
 			lazy="true" fetch="select">
 			<key>
