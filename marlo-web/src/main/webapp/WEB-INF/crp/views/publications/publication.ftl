@@ -217,7 +217,7 @@
     <h3 class="headTitle"> Publication Metadata</h3> 
     <div class="borderBox">
       [#-- Metadata (included publications) --]
-      [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" /]
+      [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" allowFlagships=false /]
     </div> 
     
     [#-- Section Buttons & hidden inputs--]
