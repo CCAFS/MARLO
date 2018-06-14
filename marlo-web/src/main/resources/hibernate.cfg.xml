@@ -301,6 +301,9 @@
     <mapping resource="xmls/ReportSynthesisFundingUseSummaries.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisFundingUseExpendituryAreas.hbm.xml"/>   
     <mapping resource="xmls/ReportSynthesisEfficiency.hbm.xml"/>   
+    <mapping resource="xmls/RepIndSynthesisIndicator.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisIndicators.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisIndicatorGenerals.hbm.xml"/>   
 
 	</session-factory>
 </hibernate-configuration>
