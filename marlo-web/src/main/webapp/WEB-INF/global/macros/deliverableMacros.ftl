@@ -461,144 +461,145 @@
   </div>
 [/#macro]
 
-[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps"]
-<div class="form-group ">
-  [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
-</div>
-<div class="form-group ">
-  [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
-</div>
-<div class="form-group row">
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
+[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true ]
+  <div class="form-group ">
+    [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
+  <div class="form-group ">
+    [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
-</div>
-<div class="form-group row">
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
-  </div>
-</div>  
-<div class="form-group ">
-  [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
-</div>
-<div class="form-group row">
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
-  </div>
-</div>
- 
-<hr />
- 
-[#-- Creator/Authors --]
-<div class="form-group">
-  <label for="">[@s.text name="metadata.creator" /]:  </label>
-  [#-- Hidden input --]
-  [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
-  [#-- Some Instructions  --]
-  [#if editable]
-    <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
-    [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
-    </div>
-  [/#if]
-  [#-- Authors List --]
-  <div class="authorsList simpleBox row" >
-    [#if deliverable.users?has_content]
-      [#list deliverable.users as author]
-        [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
-      [/#list]
-    [#else]
-      <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
-    [/#if]
-  </div>
-  [#-- Add an author --]
-  [#if editable]
-  <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
-  <label for="">Add an Author:</label>
-  <div class="form-group">
-    <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
-    <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
-    <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
-    <div class="pull-right" style="width:14%">
-      <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
-    </div>
-  </div>
-  <div class="clearfix"></div>
-  </div>
-  [/#if] 
-</div>
-
-<div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
-  <br />
-  <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
-  <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
-  [#if editable] <p class="note">[@s.text name="project.deliverable.dissemination.journalFields" /]</p> [/#if]
   <div class="form-group row">
-    <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-    <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-    <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-  </div>
-  <div class="form-group">
-    [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
-  </div>
-  <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
-    <div class="checkbox">
-      [#if editable]
-        <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if (deliverable.publication.isiPublication)!false]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
-        <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if (deliverable.publication.nasr)!false]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
-        <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if (deliverable.publication.coAuthor)!false]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
-      [#else]
-        <p [#if (deliverable.publication.isiPublication)!false]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
-        <p [#if (deliverable.publication.nasr)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
-        <p [#if (deliverable.publication.coAuthor)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
-      [/#if]
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
     </div>
-  </div> 
-  
-  <hr />
-  <div class="row yesNoInputDeliverable">
-    <div class="col-md-9">
-      <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
-      <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
     </div>
-    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
   </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
+    </div>
+  </div>  
+  <div class="form-group ">
+    [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
+  </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
+    </div>
+  </div>
+   
   <hr />
-  
+   
+  [#-- Creator/Authors --]
   <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.publicationContribution" /]</label>
-    <div class="flagshipList simpleBox">
-      [#if deliverable.crps?has_content]
-        [#list deliverable.crps as flagShips]
-          [@deliverableMacros.flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
+    <label for="">[@s.text name="metadata.creator" /]:  </label>
+    [#-- Hidden input --]
+    [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
+    [#-- Some Instructions  --]
+    [#if editable]
+      <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+      [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
+      </div>
+    [/#if]
+    [#-- Authors List --]
+    <div class="authorsList simpleBox row" >
+      [#if deliverable.users?has_content]
+        [#list deliverable.users as author]
+          [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
         [/#list]
       [#else]
-        <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.Notflagships" /]</p> 
+        <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
     </div>
+    [#-- Add an author --]
     [#if editable]
-      <div class="form-group row">
-        <div class="col-md-5">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName=crpsListName keyFieldName="id"  displayFieldName="composedName" className="crpSelect" editable=editable/]
-        </div>
-        <div class="col-md-7">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName=flagshipslistName keyFieldName="id"  displayFieldName="composedName" className="flaghsipSelect" editable=editable/]
-        </div>
+    <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+    <label for="">Add an Author:</label>
+    <div class="form-group">
+      <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
+      <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
+      <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
+      <div class="pull-right" style="width:14%">
+        <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
       </div>
+    </div>
+    <div class="clearfix"></div>
+    </div>
     [/#if] 
   </div>
   
-</div>
-
+  <div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
+    <br />
+    <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
+    <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
+    [#if editable] <p class="note">[@s.text name="project.deliverable.dissemination.journalFields" /]</p> [/#if]
+    <div class="form-group row">
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+    </div>
+    <div class="form-group">
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
+    </div>
+    <div class="form-group">
+      <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
+      <div class="checkbox">
+        [#if editable]
+          <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if (deliverable.publication.isiPublication)!false]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
+          <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if (deliverable.publication.nasr)!false]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
+          <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if (deliverable.publication.coAuthor)!false]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
+        [#else]
+          <p [#if (deliverable.publication.isiPublication)!false]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
+          <p [#if (deliverable.publication.nasr)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
+          <p [#if (deliverable.publication.coAuthor)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
+        [/#if]
+      </div>
+    </div> 
+    
+    <hr />
+    <div class="row yesNoInputDeliverable">
+      <div class="col-md-9">
+        <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
+        <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
+      </div>
+      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
+    </div>
+    <hr />
+    
+    <div class="form-group">
+      <label for="">[@s.text name="project.deliverable.dissemination.publicationContribution" /]</label>
+      <div class="flagshipList simpleBox">
+        [#if deliverable.crps?has_content]
+          [#list deliverable.crps as flagShips]
+            [@deliverableMacros.flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
+          [/#list]
+        [#else]
+          <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.Notflagships" /]</p> 
+        [/#if]
+      </div>
+      [#if editable]
+        <div class="form-group row">
+          <div class="col-md-${allowFlagships?string('5','12')}">
+            [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName=crpsListName keyFieldName="id"  displayFieldName="composedName" className="crpSelect" editable=editable/]
+          </div>
+          [#if allowFlagships]
+            <div class="col-md-7">
+              [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" paramText="${(crpSession)!'CRP'}" listName=flagshipslistName keyFieldName="id"  displayFieldName="composedName" className="flaghsipSelect" editable=editable/]
+            </div>
+          [/#if]
+        </div>
+      [/#if] 
+    </div>
+    
+  </div>
 [/#macro]
 
 
