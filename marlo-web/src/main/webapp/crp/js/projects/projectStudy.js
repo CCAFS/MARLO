@@ -58,9 +58,11 @@ function attachEvents() {
     var stageProcessOne = ($('select.stageProcess').val() == 1);
 
     if(isPolicy && stageProcessOne) {
-      $('.stageProcessOne').slideUp();
+      $('.stageProcessOne span.requiredTag').slideUp();
+      // Hide asterix
     } else {
-      $('.stageProcessOne').slideDown();
+      // Hide asterix
+      $('.stageProcessOne span.requiredTag').slideDown();
     }
   });
 
