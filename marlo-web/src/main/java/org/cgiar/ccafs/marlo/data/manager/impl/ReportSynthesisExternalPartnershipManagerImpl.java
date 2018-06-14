@@ -16,10 +16,24 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisExternalPartnershipDAO;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipProject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,25 +47,32 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
 
   private ReportSynthesisExternalPartnershipDAO reportSynthesisExternalPartnershipDAO;
   // Managers
-
+  private PhaseManager phaseManager;
+  private ProjectPartnerPartnershipManager projectPartnerPartnershipManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
   @Inject
-  public ReportSynthesisExternalPartnershipManagerImpl(ReportSynthesisExternalPartnershipDAO reportSynthesisExternalPartnershipDAO) {
+  public ReportSynthesisExternalPartnershipManagerImpl(
+    ReportSynthesisExternalPartnershipDAO reportSynthesisExternalPartnershipDAO, PhaseManager phaseManager,
+    ProjectPartnerPartnershipManager projectPartnerPartnershipManager, ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisExternalPartnershipDAO = reportSynthesisExternalPartnershipDAO;
-
-
+    this.phaseManager = phaseManager;
+    this.projectPartnerPartnershipManager = projectPartnerPartnershipManager;
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
   @Override
   public void deleteReportSynthesisExternalPartnership(long reportSynthesisExternalPartnershipId) {
 
-    reportSynthesisExternalPartnershipDAO.deleteReportSynthesisExternalPartnership(reportSynthesisExternalPartnershipId);
+    reportSynthesisExternalPartnershipDAO
+      .deleteReportSynthesisExternalPartnership(reportSynthesisExternalPartnershipId);
   }
 
   @Override
   public boolean existReportSynthesisExternalPartnership(long reportSynthesisExternalPartnershipID) {
 
-    return reportSynthesisExternalPartnershipDAO.existReportSynthesisExternalPartnership(reportSynthesisExternalPartnershipID);
+    return reportSynthesisExternalPartnershipDAO
+      .existReportSynthesisExternalPartnership(reportSynthesisExternalPartnershipID);
   }
 
   @Override
@@ -62,13 +83,119 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
   }
 
   @Override
-  public ReportSynthesisExternalPartnership getReportSynthesisExternalPartnershipById(long reportSynthesisExternalPartnershipID) {
+  public List<ReportSynthesisExternalPartnershipDTO> getPlannedPartnershipList(List<LiaisonInstitution> lInstitutions,
+    long phaseID, GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU) {
+
+    List<ReportSynthesisExternalPartnershipDTO> partnershipPlannedList = new ArrayList<>();
+    Phase phase = phaseManager.getPhaseById(phaseID);
+
+    if (projectPartnerPartnershipManager.findAll() != null) {
+      List<ProjectPartnerPartnership> projectPartnerPartnerships =
+        new ArrayList<>(projectPartnerPartnershipManager.findAll().stream()
+          .filter(ps -> ps.isActive() && ps.getProjectPartner().getPhase() != null
+            && ps.getProjectPartner().getPhase().getId() == phaseID
+            && ps.getProjectPartner().getPhase().getYear() == phase.getYear())
+          .collect(Collectors.toList()));
+
+      for (ProjectPartnerPartnership projectPartnerPartnership : projectPartnerPartnerships) {
+        ReportSynthesisExternalPartnershipDTO dto = new ReportSynthesisExternalPartnershipDTO();
+        dto.setProjectPartnerPartnership(projectPartnerPartnership);
+        if (projectPartnerPartnership.getProjectPartner().getProject().getProjectInfo().getAdministrative() != null
+          && projectPartnerPartnership.getProjectPartner().getProject().getProjectInfo().getAdministrative()) {
+          dto.setLiaisonInstitutions(new ArrayList<>());
+          dto.getLiaisonInstitutions().add(liaisonInstitutionPMU);
+        } else {
+          List<ProjectFocus> projectFocuses =
+            new ArrayList<>(projectPartnerPartnership.getProjectPartner().getProject().getProjectFocuses().stream()
+              .filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+          for (ProjectFocus projectFocus : projectFocuses) {
+            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+              .filter(li -> li.isActive() && li.getCrpProgram() != null
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              .collect(Collectors.toList()));
+          }
+          dto.setLiaisonInstitutions(liaisonInstitutions);
+        }
+
+        partnershipPlannedList.add(dto);
+
+      }
+
+      List<ReportSynthesisExternalPartnershipProject> externalPartnershipProjects = new ArrayList<>();
+
+
+      for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+        ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        if (reportSynthesisFP != null) {
+          if (reportSynthesisFP.getReportSynthesisExternalPartnership() != null) {
+            if (reportSynthesisFP.getReportSynthesisExternalPartnership()
+              .getReportSynthesisExternalPartnershipProjects() != null) {
+              List<ReportSynthesisExternalPartnershipProject> partnerships = new ArrayList<>(reportSynthesisFP
+                .getReportSynthesisExternalPartnership().getReportSynthesisExternalPartnershipProjects().stream()
+                .filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (partnerships != null || !partnerships.isEmpty()) {
+                for (ReportSynthesisExternalPartnershipProject reportSynthesisExternalPartnershipProject : partnerships) {
+                  externalPartnershipProjects.add(reportSynthesisExternalPartnershipProject);
+                }
+              }
+            }
+          }
+        }
+
+      }
+
+      List<ReportSynthesisExternalPartnershipDTO> removeList = new ArrayList<>();
+      for (ReportSynthesisExternalPartnershipDTO dto : partnershipPlannedList) {
+
+        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
+        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
+          ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          if (reportSynthesisFP != null) {
+            if (reportSynthesisFP.getReportSynthesisExternalPartnership() != null) {
+
+              ReportSynthesisExternalPartnershipProject externalPartnershipNew =
+                new ReportSynthesisExternalPartnershipProject();
+              externalPartnershipNew = new ReportSynthesisExternalPartnershipProject();
+              externalPartnershipNew.setProjectPartnerPartnership(dto.getProjectPartnerPartnership());
+              externalPartnershipNew
+                .setReportSynthesisExternalPartnership(reportSynthesisFP.getReportSynthesisExternalPartnership());
+
+              if (externalPartnershipProjects.contains(externalPartnershipNew)) {
+                removeLiaison.add(liaisonInstitution);
+              }
+            }
+          }
+        }
+
+        for (LiaisonInstitution li : removeLiaison) {
+          dto.getLiaisonInstitutions().remove(li);
+        }
+
+        if (dto.getLiaisonInstitutions().isEmpty()) {
+          removeList.add(dto);
+        }
+      }
+
+
+      for (ReportSynthesisExternalPartnershipDTO i : removeList) {
+        partnershipPlannedList.remove(i);
+      }
+
+    }
+    return partnershipPlannedList;
+  }
+
+  @Override
+  public ReportSynthesisExternalPartnership
+    getReportSynthesisExternalPartnershipById(long reportSynthesisExternalPartnershipID) {
 
     return reportSynthesisExternalPartnershipDAO.find(reportSynthesisExternalPartnershipID);
   }
 
   @Override
-  public ReportSynthesisExternalPartnership saveReportSynthesisExternalPartnership(ReportSynthesisExternalPartnership reportSynthesisExternalPartnership) {
+  public ReportSynthesisExternalPartnership
+    saveReportSynthesisExternalPartnership(ReportSynthesisExternalPartnership reportSynthesisExternalPartnership) {
 
     return reportSynthesisExternalPartnershipDAO.save(reportSynthesisExternalPartnership);
   }

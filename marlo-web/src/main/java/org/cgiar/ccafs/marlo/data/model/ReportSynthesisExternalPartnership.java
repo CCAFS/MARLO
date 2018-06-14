@@ -22,6 +22,7 @@ public class ReportSynthesisExternalPartnership extends MarloAuditableEntity
 
   private ReportSynthesis reportSynthesis;
 
+
   @Expose
   private String highlights;
 
@@ -29,17 +30,21 @@ public class ReportSynthesisExternalPartnership extends MarloAuditableEntity
   private Set<ReportSynthesisExternalPartnershipProject> reportSynthesisExternalPartnershipProjects =
     new HashSet<ReportSynthesisExternalPartnershipProject>(0);
 
-
   private List<ReportSynthesisExternalPartnershipProject> partnerships;
+
+
+  private String partnershipsValue;
+
+  private List<ProjectPartnerPartnership> partnerPartnerships;
 
 
   public ReportSynthesisExternalPartnership() {
   }
 
+
   public String getHighlights() {
     return highlights;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -48,15 +53,41 @@ public class ReportSynthesisExternalPartnership extends MarloAuditableEntity
     return sb.toString();
   }
 
+  public List<ProjectPartnerPartnership> getPartnerPartnerships() {
+    return partnerPartnerships;
+  }
+
+
+  /**
+   * @return an array of integers.
+   */
+  public long[] getPartnershipIds() {
+
+    List<ProjectPartnerPartnership> partnerPartnershipsList = this.getPartnerPartnerships();
+    if (partnerPartnershipsList != null) {
+      long[] ids = new long[partnerPartnershipsList.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = partnerPartnershipsList.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
+  }
 
   public List<ReportSynthesisExternalPartnershipProject> getPartnerships() {
     return partnerships;
   }
 
 
+  public String getPartnershipsValue() {
+    return partnershipsValue;
+  }
+
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public Set<ReportSynthesisExternalPartnershipProject> getReportSynthesisExternalPartnershipProjects() {
     return reportSynthesisExternalPartnershipProjects;
@@ -66,19 +97,27 @@ public class ReportSynthesisExternalPartnership extends MarloAuditableEntity
     this.highlights = highlights;
   }
 
+  public void setPartnerPartnerships(List<ProjectPartnerPartnership> partnerPartnerships) {
+    this.partnerPartnerships = partnerPartnerships;
+  }
+
   public void setPartnerships(List<ReportSynthesisExternalPartnershipProject> partnerships) {
     this.partnerships = partnerships;
+  }
+
+  public void setPartnershipsValue(String partnershipsValue) {
+    this.partnershipsValue = partnershipsValue;
   }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+
   public void setReportSynthesisExternalPartnershipProjects(
     Set<ReportSynthesisExternalPartnershipProject> reportSynthesisExternalPartnershipProjects) {
     this.reportSynthesisExternalPartnershipProjects = reportSynthesisExternalPartnershipProjects;
   }
-
 
 }
 
