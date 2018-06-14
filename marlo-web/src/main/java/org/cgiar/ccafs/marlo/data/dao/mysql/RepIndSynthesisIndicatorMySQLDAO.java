@@ -60,7 +60,7 @@ public class RepIndSynthesisIndicatorMySQLDAO extends AbstractMarloDAO<RepIndSyn
 
   @Override
   public List<RepIndSynthesisIndicator> findAll() {
-    String query = "from " + RepIndSynthesisIndicator.class.getName() + " where is_active=1";
+    String query = "from " + RepIndSynthesisIndicator.class.getName();
     List<RepIndSynthesisIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

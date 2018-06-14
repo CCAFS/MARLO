@@ -237,5 +237,12 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  @Override
+  public String toString() {
+    return "ReportSynthesis [Id=" + this.getId() + ",phase=" + phase + ", liaisonInstitution=" + liaisonInstitution
+      + ", isActive()=" + this.isActive() + "]";
+  }
+
+
 }
 
