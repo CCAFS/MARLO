@@ -96,6 +96,8 @@ public class Permission {
   public static final String REPORT_SYNTHESIS_EFFICIENCY_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:efficiency";
   public static final String REPORT_SYNTHESIS_EXTERNAL_PARTNERSHIP_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:externalPartnerships";
+  public static final String REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:influence";
+  public static final String REPORT_SYNTHESIS_CONTROL_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:control";
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";

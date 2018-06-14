@@ -337,7 +337,7 @@ public class ControlIndicatorAction extends BaseAction {
         if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
           ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
           // create one to one relation
-          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
+          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);
           fundingUseSummary.setReportSynthesis(reportSynthesis);
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);

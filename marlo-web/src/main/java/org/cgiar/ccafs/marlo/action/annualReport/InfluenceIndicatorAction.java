@@ -21,9 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseSummaryManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorGeneralManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -31,16 +31,16 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.FundingUseValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.InfluenceValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -77,12 +77,12 @@ public class InfluenceIndicatorAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
-  private ReportSynthesisFundingUseSummaryManager reportSynthesisFundingUseSummaryManager;
-  private ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager;
-  private PowbExpenditureAreasManager powbExpenditureAreasManager;
+  private ReportSynthesisIndicatorGeneralManager reportSynthesisIndicatorGeneralManager;
+  private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
+  private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   // Variables
   private String transaction;
-  private FundingUseValidator validator;
+  private InfluenceValidator validator;
   private ReportSynthesis reportSynthesis;
   private Long liaisonInstitutionID;
   private Long synthesisID;
@@ -95,9 +95,9 @@ public class InfluenceIndicatorAction extends BaseAction {
   public InfluenceIndicatorAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    FundingUseValidator validator, ReportSynthesisFundingUseSummaryManager reportSynthesisFundingUseSummaryManager,
-    ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager,
-    PowbExpenditureAreasManager powbExpenditureAreasManager) {
+    InfluenceValidator validator, ReportSynthesisIndicatorGeneralManager reportSynthesisIndicatorGeneralManager,
+    RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
+    ReportSynthesisIndicatorManager reportSynthesisIndicatorManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -106,9 +106,9 @@ public class InfluenceIndicatorAction extends BaseAction {
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.validator = validator;
-    this.reportSynthesisFundingUseSummaryManager = reportSynthesisFundingUseSummaryManager;
-    this.reportSynthesisFundingUseExpendituryAreaManager = reportSynthesisFundingUseExpendituryAreaManager;
-    this.powbExpenditureAreasManager = powbExpenditureAreasManager;
+    this.reportSynthesisIndicatorGeneralManager = reportSynthesisIndicatorGeneralManager;
+    this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
+    this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
   }
 
   @Override
@@ -170,17 +170,6 @@ public class InfluenceIndicatorAction extends BaseAction {
 
   public Long getSynthesisID() {
     return synthesisID;
-  }
-
-  public double getTotalFunding() {
-    try {
-      return reportSynthesisFundingUseExpendituryAreaManager
-        .getTotalEstimatedOfW1W2ActualExpenditure(reportSynthesisPMU.getId());
-    } catch (Exception e) {
-      LOG.error("Error getting total funding by percentage");
-      return 0;
-    }
-
   }
 
   public String getTransaction() {
@@ -334,35 +323,36 @@ public class InfluenceIndicatorAction extends BaseAction {
 
         this.setDraft(false);
         // Check if relation is null -create it
-        if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
-          ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
+        if (reportSynthesis.getReportSynthesisIndicatorGeneral() == null) {
+          ReportSynthesisIndicatorGeneral indicatorGeneral = new ReportSynthesisIndicatorGeneral();
           // create one to one relation
-          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
-          fundingUseSummary.setReportSynthesis(reportSynthesis);
+          reportSynthesis.setReportSynthesisIndicatorGeneral(indicatorGeneral);
+          indicatorGeneral.setReportSynthesis(reportSynthesis);
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
         if (this.isPMU()) {
 
-          // Flagships Funding Expenditure Areas
-          if (reportSynthesis.getReportSynthesisFundingUseSummary()
-            .getReportSynthesisFundingUseExpendituryAreas() != null
-            && !reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-              .isEmpty()) {
-            reportSynthesis.getReportSynthesisFundingUseSummary()
-              .setExpenditureAreas(new ArrayList<>(
-                reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+          List<ReportSynthesisIndicator> reportSynthesisIndicators =
+            reportSynthesis.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
+              .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
+                && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
+                  .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
+              .collect(Collectors.toList());
+          if (reportSynthesisIndicators != null && !reportSynthesisIndicators.isEmpty()) {
+            reportSynthesis.getReportSynthesisIndicatorGeneral()
+              .setSynthesisIndicators(new ArrayList<>(reportSynthesisIndicators));
           } else {
-            reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
-            List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
-              .filter(x -> x.isActive() && x.getIsExpenditure()).collect(Collectors.toList()));
-            for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
-              ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
-                new ReportSynthesisFundingUseExpendituryArea();
-              fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
-              reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas()
-                .add(fundingUseExpenditureArea);
+            reportSynthesis.getReportSynthesisIndicatorGeneral().setSynthesisIndicators(new ArrayList<>());
+
+            List<RepIndSynthesisIndicator> repIndSynthesisIndicator = repIndSynthesisIndicatorManager.findAll().stream()
+              .filter(i -> i.isMarlo() && i.getType().equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
+              .collect(Collectors.toList());
+            for (RepIndSynthesisIndicator synthesisIndicator : repIndSynthesisIndicator) {
+              ReportSynthesisIndicator reportSynthesisIndicator = new ReportSynthesisIndicator();
+              reportSynthesisIndicator.setRepIndSynthesisIndicator(synthesisIndicator);
+              reportSynthesis.getReportSynthesisIndicatorGeneral().getSynthesisIndicators()
+                .add(reportSynthesisIndicator);
             }
 
           }
@@ -386,15 +376,15 @@ public class InfluenceIndicatorAction extends BaseAction {
     // Informative table to Flagships
     if (this.isFlagship()) {
       if (reportSynthesisPMU != null) {
-        if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
-          if (reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-            .getReportSynthesisFundingUseExpendituryAreas() != null
-            && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-              .isEmpty()) {
-            reportSynthesis.getReportSynthesisFundingUseSummary()
-              .setExpenditureAreas(new ArrayList<>(
-                reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+        if (reportSynthesisPMU.getReportSynthesisIndicatorGeneral() != null) {
+          List<ReportSynthesisIndicator> reportSynthesisIndicators =
+            reportSynthesisPMU.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
+              .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
+                && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
+                  .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
+              .collect(Collectors.toList());
+          if (reportSynthesisIndicators != null && !reportSynthesisIndicators.isEmpty()) {
+            reportSynthesis.getReportSynthesisIndicatorGeneral().setSynthesisIndicators(reportSynthesisIndicators);
           }
         }
       }
@@ -403,11 +393,11 @@ public class InfluenceIndicatorAction extends BaseAction {
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FUNDING_USE_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas() != null) {
-        reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas().clear();
+      if (reportSynthesis.getReportSynthesisIndicatorGeneral().getSynthesisIndicators() != null) {
+        reportSynthesis.getReportSynthesisIndicatorGeneral().getSynthesisIndicators().clear();
       }
     }
   }
@@ -417,15 +407,11 @@ public class InfluenceIndicatorAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      ReportSynthesisFundingUseSummary fundingUseSummaryDB =
-        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFundingUseSummary();
+      ReportSynthesisIndicatorGeneral indicatorGeneralDB =
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisIndicatorGeneral();
 
       if (this.isPMU()) {
-        this.saveFundingUseExpenditureAreas(fundingUseSummaryDB);
-        fundingUseSummaryDB.setMainArea(reportSynthesis.getReportSynthesisFundingUseSummary().getMainArea());
-
-        fundingUseSummaryDB =
-          reportSynthesisFundingUseSummaryManager.saveReportSynthesisFundingUseSummary(fundingUseSummaryDB);
+        this.saveSynthesisIndicators(indicatorGeneralDB);
       }
 
       List<String> relationsName = new ArrayList<>();
@@ -467,53 +453,49 @@ public class InfluenceIndicatorAction extends BaseAction {
   }
 
   /**
-   * Save Funding Use Expenditure Areas
+   * Save Synthesis Indicators
    * 
-   * @param fundingUseSummaryDB
+   * @param IndicatorGeneralDB
    */
-  public void saveFundingUseExpenditureAreas(ReportSynthesisFundingUseSummary fundingUseSummaryDB) {
+  public void saveSynthesisIndicators(ReportSynthesisIndicatorGeneral IndicatorGeneralDB) {
 
     // Save form Information
-    if (reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas() != null) {
-      for (ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea : reportSynthesis
-        .getReportSynthesisFundingUseSummary().getExpenditureAreas()) {
-        if (fundingUseExpenditureArea.getId() == null) {
+    if (reportSynthesis.getReportSynthesisIndicatorGeneral().getSynthesisIndicators() != null) {
+      for (ReportSynthesisIndicator synthesisIndicator : reportSynthesis.getReportSynthesisIndicatorGeneral()
+        .getSynthesisIndicators()) {
+        if (synthesisIndicator.getId() == null) {
 
-          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureAreaSave =
-            new ReportSynthesisFundingUseExpendituryArea();
+          ReportSynthesisIndicator synthesisIndicatorSave = new ReportSynthesisIndicator();
 
-          fundingUseExpenditureAreaSave.setReportSynthesisFundingUseSummary(fundingUseSummaryDB);
+          synthesisIndicatorSave.setReportSynthesisIndicatorGeneral(IndicatorGeneralDB);
 
-          PowbExpenditureAreas expenditureAreas = powbExpenditureAreasManager
-            .getPowbExpenditureAreasById(fundingUseExpenditureArea.getExpenditureArea().getId());
+          RepIndSynthesisIndicator repIndSynthesisIndicator = repIndSynthesisIndicatorManager
+            .getRepIndSynthesisIndicatorById(synthesisIndicator.getRepIndSynthesisIndicator().getId());
 
-          fundingUseExpenditureAreaSave.setExpenditureArea(expenditureAreas);
+          synthesisIndicatorSave.setRepIndSynthesisIndicator(repIndSynthesisIndicator);
 
-          fundingUseExpenditureAreaSave.setW1w2Percentage(fundingUseExpenditureArea.getW1w2Percentage());
-          fundingUseExpenditureAreaSave.setComments(fundingUseExpenditureArea.getComments());
-          reportSynthesisFundingUseExpendituryAreaManager
-            .saveReportSynthesisFundingUseExpendituryArea(fundingUseExpenditureAreaSave);
+          synthesisIndicatorSave.setData(synthesisIndicator.getData());
+          synthesisIndicatorSave.setComment(synthesisIndicator.getComment());
+          reportSynthesisIndicatorManager.saveReportSynthesisIndicator(synthesisIndicatorSave);
 
         } else {
           boolean hasChanges = false;
-          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureAreaPrev =
-            reportSynthesisFundingUseExpendituryAreaManager
-              .getReportSynthesisFundingUseExpendituryAreaById(fundingUseExpenditureArea.getId());
+          ReportSynthesisIndicator synthesisIndicatorPrev =
+            reportSynthesisIndicatorManager.getReportSynthesisIndicatorById(synthesisIndicator.getId());
 
-          if (fundingUseExpenditureAreaPrev.getW1w2Percentage() != fundingUseExpenditureArea.getW1w2Percentage()) {
+          if (synthesisIndicatorPrev.getData() != synthesisIndicator.getData()) {
             hasChanges = true;
-            fundingUseExpenditureAreaPrev.setW1w2Percentage(fundingUseExpenditureArea.getW1w2Percentage());
+            synthesisIndicatorPrev.setData(synthesisIndicator.getData());
           }
 
-          if (fundingUseExpenditureAreaPrev.getComments() != fundingUseExpenditureArea.getComments()) {
+          if (synthesisIndicatorPrev.getComment() != synthesisIndicator.getComment()) {
             hasChanges = true;
-            fundingUseExpenditureAreaPrev.setComments(fundingUseExpenditureArea.getComments());
+            synthesisIndicatorPrev.setComment(synthesisIndicator.getComment());
           }
 
 
           if (hasChanges) {
-            reportSynthesisFundingUseExpendituryAreaManager
-              .saveReportSynthesisFundingUseExpendituryArea(fundingUseExpenditureAreaPrev);
+            reportSynthesisIndicatorManager.saveReportSynthesisIndicator(synthesisIndicatorPrev);
           }
 
         }

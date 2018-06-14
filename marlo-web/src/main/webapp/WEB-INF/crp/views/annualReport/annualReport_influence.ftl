@@ -85,6 +85,7 @@
               [@tableOutcomesMacro list=[{},{},{},{}] /]
             </div>
             [#-- Hidden Input --]
+            <input type="hidden" name="${customName}.synthesisIndicators[0].id" value="${(reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[0].id)!}" />
             <input type="hidden"  name="${customName}.synthesisIndicators[0].repIndSynthesisIndicator.id" value="${(reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[0].repIndSynthesisIndicator.id)!}"/>
             
             [#-- Data --]

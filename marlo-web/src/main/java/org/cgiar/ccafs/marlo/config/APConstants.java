@@ -625,6 +625,8 @@ public final class APConstants {
 
   // Rep_ind constants
   public static final long REP_IND_STAGE_INNOVATION_STAGE4 = 4;
+  public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE = "Influence";
+  public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL = "Control";
 
   public static String getFilterBy() {
     return FILTER_BY;
