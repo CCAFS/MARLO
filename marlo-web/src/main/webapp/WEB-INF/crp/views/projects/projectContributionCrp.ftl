@@ -109,7 +109,7 @@
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && !reportingActive/]
+                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
               </div>
               
             </div> 
@@ -149,12 +149,12 @@
             <div class="form-group">
               [#if (project.projectInfo.crossCuttingGender)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable && !reportingActive /]
+                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.genderDimenssion?has_content)!false)) /]
                 </div>
               [/#if]
               [#if (project.projectInfo.crossCuttingYouth)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable && !reportingActive /]
+                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.youthComponent?has_content)!false)) /]
                 </div> 
               [/#if]
             </div>
