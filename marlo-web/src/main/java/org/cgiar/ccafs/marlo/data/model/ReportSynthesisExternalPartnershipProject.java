@@ -27,6 +27,36 @@ public class ReportSynthesisExternalPartnershipProject extends MarloAuditableEnt
 
 
   @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisExternalPartnershipProject other = (ReportSynthesisExternalPartnershipProject) obj;
+    if (projectPartnerPartnership == null) {
+      if (other.projectPartnerPartnership != null) {
+        return false;
+      }
+    } else if (!this.getProjectPartnerPartnership().equals(other.getProjectPartnerPartnership())) {
+      return false;
+    }
+    if (reportSynthesisExternalPartnership == null) {
+      if (other.reportSynthesisExternalPartnership != null) {
+        return false;
+      }
+    } else if (!this.getReportSynthesisExternalPartnership().equals(other.getReportSynthesisExternalPartnership())) {
+      return false;
+    }
+    return true;
+  }
+
+
+  @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
@@ -38,8 +68,19 @@ public class ReportSynthesisExternalPartnershipProject extends MarloAuditableEnt
     return projectPartnerPartnership;
   }
 
+
   public ReportSynthesisExternalPartnership getReportSynthesisExternalPartnership() {
     return reportSynthesisExternalPartnership;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((projectPartnerPartnership == null) ? 0 : projectPartnerPartnership.hashCode());
+    result = prime * result
+      + ((reportSynthesisExternalPartnership == null) ? 0 : reportSynthesisExternalPartnership.hashCode());
+    return result;
   }
 
 
