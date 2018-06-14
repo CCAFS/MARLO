@@ -1164,28 +1164,30 @@ public class DeliverableAction extends BaseAction {
             }
           }
         }
-
-        String type = deliverable.getDissemination().getType();
-        if (type != null) {
-          switch (type) {
-            case "intellectualProperty":
-              deliverable.getDissemination().setIntellectualProperty(true);
-              break;
-            case "limitedExclusivity":
-              deliverable.getDissemination().setLimitedExclusivity(true);
-              break;
-            case "restrictedUseAgreement":
-              deliverable.getDissemination().setRestrictedUseAgreement(true);
-              break;
-            case "effectiveDateRestriction":
-              deliverable.getDissemination().setEffectiveDateRestriction(true);
-              break;
-            case "notDisseminated":
-              deliverable.getDissemination().setNotDisseminated(true);
-            default:
-              break;
+        if (deliverable.getDissemination() != null && deliverable.getDissemination().getType() != null) {
+          String type = deliverable.getDissemination().getType();
+          if (type != null) {
+            switch (type) {
+              case "intellectualProperty":
+                deliverable.getDissemination().setIntellectualProperty(true);
+                break;
+              case "limitedExclusivity":
+                deliverable.getDissemination().setLimitedExclusivity(true);
+                break;
+              case "restrictedUseAgreement":
+                deliverable.getDissemination().setRestrictedUseAgreement(true);
+                break;
+              case "effectiveDateRestriction":
+                deliverable.getDissemination().setEffectiveDateRestriction(true);
+                break;
+              case "notDisseminated":
+                deliverable.getDissemination().setNotDisseminated(true);
+              default:
+                break;
+            }
           }
         }
+
         if (deliverable.getDeliverableParticipant() != null) {
           DeliverableParticipant deliverableParticipant = deliverable.getDeliverableParticipant();
           if (deliverableParticipant.getParticipantLocationsIsosText() != null) {
