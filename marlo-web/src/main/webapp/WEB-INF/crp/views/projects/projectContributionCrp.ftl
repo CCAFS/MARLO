@@ -90,7 +90,7 @@
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
                   [#if editable]
-                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  /]
+                    [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true  editable=!reportingActive/]
                   [#else]
                     <label for="">[@s.text name="projectOutcome.expectedValue" /]:</label>
                     <div class="input"><p>${(projectOutcome.expectedValue)!'Prefilled if available'}</p></div>
@@ -109,7 +109,7 @@
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
               </div>
               
             </div> 
@@ -149,12 +149,12 @@
             <div class="form-group">
               [#if (project.projectInfo.crossCuttingGender)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.genderDimenssion?has_content)!false)) /]
                 </div>
               [/#if]
               [#if (project.projectInfo.crossCuttingYouth)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.youthComponent?has_content)!false)) /]
                 </div> 
               [/#if]
             </div>
