@@ -29,8 +29,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisCrpProgress reportSynthesisCrpProgress;
 
+
   @Expose
   private ReportSynthesisFinancialSummary reportSynthesisFinancialSummary;
+
 
   @Expose
   private ReportSynthesisGovernance reportSynthesisGovernance;
@@ -38,26 +40,28 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisRisk reportSynthesisRisk;
 
-
   @Expose
   private ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension;
 
   @Expose
   private ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress;
 
+
   @Expose
   private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
 
-
   @Expose
   private ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary;
-
 
   @Expose
   private ReportSynthesisEfficiency reportSynthesisEfficiency;
 
   @Expose
   private ReportSynthesisIndicatorGeneral reportSynthesisIndicatorGeneral;
+
+
+  @Expose
+  private ReportSynthesisExternalPartnership reportSynthesisExternalPartnership;
 
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
@@ -88,7 +92,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -111,12 +114,18 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrossCuttingDimension;
   }
 
+
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
   }
 
+
   public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
     return reportSynthesisEfficiency;
+  }
+
+  public ReportSynthesisExternalPartnership getReportSynthesisExternalPartnership() {
+    return reportSynthesisExternalPartnership;
   }
 
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
@@ -142,7 +151,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
   }
-
 
   public ReportSynthesisRisk getReportSynthesisRisk() {
     return reportSynthesisRisk;
@@ -183,8 +191,14 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisCrpProgress = reportSynthesisCrpProgress;
   }
 
+
   public void setReportSynthesisEfficiency(ReportSynthesisEfficiency reportSynthesisEfficiency) {
     this.reportSynthesisEfficiency = reportSynthesisEfficiency;
+  }
+
+  public void
+    setReportSynthesisExternalPartnership(ReportSynthesisExternalPartnership reportSynthesisExternalPartnership) {
+    this.reportSynthesisExternalPartnership = reportSynthesisExternalPartnership;
   }
 
   public void setReportSynthesisFinancialSummary(ReportSynthesisFinancialSummary reportSynthesisFinancialSummary) {
