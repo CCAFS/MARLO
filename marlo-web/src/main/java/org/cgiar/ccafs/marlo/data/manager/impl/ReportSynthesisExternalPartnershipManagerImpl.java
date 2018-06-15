@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipProject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -125,6 +126,9 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
             && ps.getProjectPartner().getPhase().getId() == phaseID
             && ps.getProjectPartner().getPhase().getYear() == phase.getYear())
           .collect(Collectors.toList()));
+
+      Collections.sort(projectPartnerPartnerships, (p1, p2) -> p1.getProjectPartner().getInstitution().getAcronym()
+        .compareTo(p2.getProjectPartner().getInstitution().getAcronym()));
 
       for (ProjectPartnerPartnership projectPartnerPartnership : projectPartnerPartnerships) {
         ReportSynthesisExternalPartnershipDTO dto = new ReportSynthesisExternalPartnershipDTO();
