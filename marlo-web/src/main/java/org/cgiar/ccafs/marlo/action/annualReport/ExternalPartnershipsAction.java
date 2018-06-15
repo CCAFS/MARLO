@@ -250,6 +250,24 @@ public class ExternalPartnershipsAction extends BaseAction {
           List<ProjectPartnerPartnership> projectPartnerPartnerships = new ArrayList<>(projectPartner
             .getProjectPartnerPartnerships().stream().filter(ppp -> ppp.isActive()).collect(Collectors.toList()));
           for (ProjectPartnerPartnership projectPartnerPartnership : projectPartnerPartnerships) {
+
+            // Set up list
+            projectPartnerPartnership.setPartnershipResearchPhases(new ArrayList<>());
+            if (projectPartnerPartnership.getProjectPartnerPartnershipResearchPhases() != null
+              || !projectPartnerPartnership.getProjectPartnerPartnershipResearchPhases().isEmpty()) {
+              projectPartnerPartnership.getPartnershipResearchPhases()
+                .addAll(projectPartnerPartnership.getProjectPartnerPartnershipResearchPhases().stream()
+                  .filter(p -> p.isActive()).collect(Collectors.toList()));
+            }
+
+            projectPartnerPartnership.setPartnershipLocations(new ArrayList<>());
+            if (projectPartnerPartnership.getProjectPartnerPartnershipLocations() != null
+              || !projectPartnerPartnership.getProjectPartnerPartnershipLocations().isEmpty()) {
+              projectPartnerPartnership.getPartnershipLocations()
+                .addAll(projectPartnerPartnership.getProjectPartnerPartnershipLocations().stream()
+                  .filter(p -> p.isActive()).collect(Collectors.toList()));
+            }
+
             partnerShipList.add(projectPartnerPartnership);
           }
         }
