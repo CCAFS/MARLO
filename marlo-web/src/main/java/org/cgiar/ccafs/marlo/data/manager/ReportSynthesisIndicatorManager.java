@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 
 import java.util.List;
@@ -53,6 +54,13 @@ public interface ReportSynthesisIndicatorManager {
 
 
   /**
+   * This method gets a list of reportSynthesisIndicator by a given type indicator that are active
+   * 
+   * @return a list from ReportSynthesisIndicator null if no exist records
+   */
+  public List<ReportSynthesisIndicator> getIndicatorsByType(ReportSynthesis reportSynthesis, String indicatorType);
+
+  /**
    * This method gets a reportSynthesisIndicator object by a given reportSynthesisIndicator identifier.
    * 
    * @param reportSynthesisIndicatorID is the reportSynthesisIndicator identifier.
@@ -60,15 +68,16 @@ public interface ReportSynthesisIndicatorManager {
    */
   public ReportSynthesisIndicator getReportSynthesisIndicatorById(long reportSynthesisIndicatorID);
 
+
   /**
    * This method saves the information of the given reportSynthesisIndicator
    * 
-   * @param reportSynthesisIndicator - is the reportSynthesisIndicator object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisIndicator was
+   * @param reportSynthesisIndicator - is the reportSynthesisIndicator object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisIndicator
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public ReportSynthesisIndicator saveReportSynthesisIndicator(ReportSynthesisIndicator reportSynthesisIndicator);
-
-
 }

@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorGeneralManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -36,10 +35,12 @@ import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.annualreport.ControlValidator;
 import org.cgiar.ccafs.marlo.validation.annualreport.InfluenceValidator;
 
 import java.io.BufferedReader;
@@ -64,11 +65,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andres Valencia - CIAT/CCAFS
  */
-public class InfluenceIndicatorAction extends BaseAction {
+public class IndicatorsAction extends BaseAction {
 
   private static final long serialVersionUID = -8306463804965610803L;
 
-  private static Logger LOG = LoggerFactory.getLogger(InfluenceIndicatorAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(IndicatorsAction.class);
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -77,12 +78,12 @@ public class InfluenceIndicatorAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
-  private ReportSynthesisIndicatorGeneralManager reportSynthesisIndicatorGeneralManager;
   private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   // Variables
   private String transaction;
-  private InfluenceValidator validator;
+  private InfluenceValidator influenceValidator;
+  private ControlValidator controlValidator;
   private ReportSynthesis reportSynthesis;
   private Long liaisonInstitutionID;
   private Long synthesisID;
@@ -90,12 +91,13 @@ public class InfluenceIndicatorAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private ReportSynthesis reportSynthesisPMU;
+  private Boolean isInfluence;
 
   @Inject
-  public InfluenceIndicatorAction(APConfig config, GlobalUnitManager crpManager,
+  public IndicatorsAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    InfluenceValidator validator, ReportSynthesisIndicatorGeneralManager reportSynthesisIndicatorGeneralManager,
+    InfluenceValidator influenceValidator, ControlValidator controlValidator,
     RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager) {
     super(config);
@@ -105,8 +107,8 @@ public class InfluenceIndicatorAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
-    this.validator = validator;
-    this.reportSynthesisIndicatorGeneralManager = reportSynthesisIndicatorGeneralManager;
+    this.influenceValidator = influenceValidator;
+    this.controlValidator = controlValidator;
     this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
   }
@@ -214,10 +216,23 @@ public class InfluenceIndicatorAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     Phase phase = this.getActualPhase();
+
+    // Verify if is Influence or Control section
+    String[] actionParts = this.getActionName().split("/");
+    if (actionParts.length > 0) {
+      String action = actionParts[1];
+      if (action.equals(ReportSynthesisSectionStatusEnum.INFLUENCE.getStatus())) {
+        isInfluence = true;
+      } else if (action.equals(ReportSynthesisSectionStatusEnum.CONTROL.getStatus())) {
+        isInfluence = false;
+      }
+    }
+
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -332,22 +347,31 @@ public class InfluenceIndicatorAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
         if (this.isPMU()) {
+          List<ReportSynthesisIndicator> reportSynthesisIndicators = new ArrayList<>();
+          if (isInfluence) {
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesis,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE);
+          } else {
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesis,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL);
+          }
 
-          List<ReportSynthesisIndicator> reportSynthesisIndicators =
-            reportSynthesis.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-              .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
-                && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
-                  .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
-              .collect(Collectors.toList());
           if (reportSynthesisIndicators != null && !reportSynthesisIndicators.isEmpty()) {
             reportSynthesis.getReportSynthesisIndicatorGeneral()
               .setSynthesisIndicators(new ArrayList<>(reportSynthesisIndicators));
           } else {
             reportSynthesis.getReportSynthesisIndicatorGeneral().setSynthesisIndicators(new ArrayList<>());
+            List<RepIndSynthesisIndicator> repIndSynthesisIndicator = new ArrayList<>();
+            if (isInfluence) {
+              repIndSynthesisIndicator = repIndSynthesisIndicatorManager.findAll().stream()
+                .filter(i -> i.isMarlo() && i.getType().equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
+                .collect(Collectors.toList());
+            } else {
+              repIndSynthesisIndicator = repIndSynthesisIndicatorManager.findAll().stream()
+                .filter(i -> i.isMarlo() && i.getType().equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL))
+                .collect(Collectors.toList());
+            }
 
-            List<RepIndSynthesisIndicator> repIndSynthesisIndicator = repIndSynthesisIndicatorManager.findAll().stream()
-              .filter(i -> i.isMarlo() && i.getType().equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
-              .collect(Collectors.toList());
             for (RepIndSynthesisIndicator synthesisIndicator : repIndSynthesisIndicator) {
               ReportSynthesisIndicator reportSynthesisIndicator = new ReportSynthesisIndicator();
               reportSynthesisIndicator.setRepIndSynthesisIndicator(synthesisIndicator);
@@ -377,12 +401,16 @@ public class InfluenceIndicatorAction extends BaseAction {
     if (this.isFlagship()) {
       if (reportSynthesisPMU != null) {
         if (reportSynthesisPMU.getReportSynthesisIndicatorGeneral() != null) {
-          List<ReportSynthesisIndicator> reportSynthesisIndicators =
-            reportSynthesisPMU.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-              .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
-                && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
-                  .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
-              .collect(Collectors.toList());
+          List<ReportSynthesisIndicator> reportSynthesisIndicators = new ArrayList<>();
+
+          if (isInfluence) {
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesisPMU,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE);
+          } else {
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesisPMU,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL);
+          }
+
           if (reportSynthesisIndicators != null && !reportSynthesisIndicators.isEmpty()) {
             reportSynthesis.getReportSynthesisIndicatorGeneral().setSynthesisIndicators(reportSynthesisIndicators);
           }
@@ -393,7 +421,11 @@ public class InfluenceIndicatorAction extends BaseAction {
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION, params));
+    if (isInfluence) {
+      this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION, params));
+    } else {
+      this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CONTROL_BASE_PERMISSION, params));
+    }
 
     if (this.isHttpPost()) {
       if (reportSynthesis.getReportSynthesisIndicatorGeneral().getSynthesisIndicators() != null) {
@@ -538,7 +570,11 @@ public class InfluenceIndicatorAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true);
+      if (isInfluence) {
+        influenceValidator.validate(this, reportSynthesis, true);
+      } else {
+        controlValidator.validate(this, reportSynthesis, true);
+      }
     }
   }
 
