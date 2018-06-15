@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -55,12 +57,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
-import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -68,6 +71,7 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -83,10 +87,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,12 +132,19 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesis reportSynthesisPMU;
   private long startTime;
   private XWPFDocument document;
-  private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
+  // private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
   private List<DeliverableInfo> deliverableList;
   private CrossCuttingDimensionTableDTO tableC;
   private NumberFormat currencyFormat;
   private DecimalFormat percentageFormat;
   private List<CrpProgram> flagships;
+
+  private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
+  private List<ReportSynthesisCrpProgressTarget> fpSynthesisTable;
+  private List<ReportSynthesisCrpProgress> flagshipCrpProgress;
+  private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
+  private ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager;
+
   // Parameter for tables E and F
   Double totalCarry = 0.0, totalw1w2 = 0.0, totalw3Bilateral = 0.0, totalCenter = 0.0, grandTotal = 0.0;
   // Streams
@@ -398,6 +414,27 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
   }
 
+  private void addExternalPartnerships() {
+
+    String keyExternal = "";
+
+    if (reportSynthesisPMU != null) {
+
+      if (reportSynthesisPMU.getReportSynthesisExternalPartnership() != null) {
+        ReportSynthesisExternalPartnership externalPartnership =
+          reportSynthesisPMU.getReportSynthesisExternalPartnership();
+        if (externalPartnership != null) {
+          keyExternal = externalPartnership.getHighlights();
+        }
+      }
+    }
+
+    if (keyExternal != null && !keyExternal.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), keyExternal);
+    }
+
+  }
+
   private void addFinancialPlan() {
     String financialPlanDescription = "";
     if (powbSynthesisPMU != null) {
@@ -618,7 +655,95 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   }
 
+  public void createPageFooter() {
+    CTP ctp = CTP.Factory.newInstance();
+    // this add page number incremental
+    ctp.addNewR().addNewPgNum();
+
+    XWPFParagraph codePara = new XWPFParagraph(ctp, document);
+    XWPFParagraph[] paragraphs = new XWPFParagraph[1];
+    paragraphs[0] = codePara;
+    // position of number
+    codePara.setAlignment(ParagraphAlignment.CENTER);
+
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+
+    try {
+      XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
+      headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
   public void createTableA1() {
+    List<List<POIField>> headers = new ArrayList<>();
+
+    POIField[] sHeader = {
+      new POIField(this.getText("annualReport.crpProgress.selectSLOTarget")
+        + this.getText("summaries.annualReport.tableA1.targetTitle2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.LEFT),};
+
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+    String FP, subIDO = "", outcomes;
+
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    if (!fpSynthesisTable.isEmpty() || fpSynthesisTable != null) {
+      for (ReportSynthesisCrpProgressTarget fpSynthesis : fpSynthesisTable) {
+        int flagshipIndex = 0;
+        data = new ArrayList<>();
+        for (int i = 0; i < fpSynthesisTable.size(); i++) {
+          subIDO = "";
+
+          /*
+           * for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+           * if (subIdo.getSrfSubIdo() != null) {
+           * if (subIDO.isEmpty()) {
+           * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+           * subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
+           * } else {
+           * subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
+           * }
+           * } else {
+           * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+           * subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
+           * } else {
+           * subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
+           * }
+           * }
+           * }
+           * }
+           */
+          outcomes = "";
+
+          if (flagshipIndex == 0) {
+            FP = fpSynthesis.getSrfSloIndicatorTarget().getNarrative();
+          } else {
+            FP = " ";
+          }
+
+          Boolean bold = false;
+          String blackColor = "000000";
+          String redColor = "c00000";
+          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT, bold, blackColor),
+            new POIField(subIDO, ParagraphAlignment.LEFT, bold, blackColor),
+            new POIField(outcomes, ParagraphAlignment.LEFT, bold, blackColor)};
+          data = Arrays.asList(sData);
+          datas.add(data);
+          flagshipIndex++;
+        }
+      }
+    }
+
+
+    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
+  }
+
+  public void createTableA1Test() {
     List<List<POIField>> headers = new ArrayList<>();
 
     POIField[] sHeader = {
@@ -741,61 +866,56 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
 
-  private void createTableB() {
-    /*
-     * List<List<POIField>> headers = new ArrayList<>();
-     * POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("expectedProgress.tableA.milestone" + "*"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("annualReport.flagshipProgress.tableB.explanation"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("Provide " + "annualReport.flagshipProgress.tableB.status"),
-     * ParagraphAlignment.CENTER)};
-     * List<POIField> header = Arrays.asList(sHeader);
-     * headers.add(header);
-     * String FP, outcomes, milestone, assessment, meansVerifications;
-     * List<List<POIField>> datas = new ArrayList<>();
-     * List<POIField> data;
-     * for (CrpProgram flagship : flagships) {
-     * data = new ArrayList<>();
-     * int outcome_index = 0;
-     * for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-     * int milestone_index = 0;
-     * for (CrpMilestone crpMilestone : outcome.getMilestones()) {
-     * Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
-     * Boolean isOutcomeRow = (milestone_index == 0);
-     * if (isFlagshipRow) {
-     * FP = flagship.getAcronym();
-     * } else {
-     * FP = " ";
-     * }
-     * if (isOutcomeRow) {
-     * outcomes = outcome.getComposedName();
-     * } else {
-     * outcomes = " ";
-     * }
-     * milestone = crpMilestone.getComposedName();
-     * PowbExpectedCrpProgress milestoneProgress =
-     * this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
-     * assessment =
-     * milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
-     * ? milestoneProgress.getAssesmentName() : " ";
-     * meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
-     * ? milestoneProgress.getMeans() : " ";
-     * POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
-     * new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-     * new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-     * new POIField(meansVerifications, ParagraphAlignment.LEFT),
-     * new POIField(assessment, ParagraphAlignment.CENTER)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * milestone_index++;
-     * }
-     * outcome_index++;
-     * }
-     * }
-     * poiSummary.textTable(document, headers, datas, false, "tableA")
-     */
+  private void createTableA2Test() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+
+    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableA2.field1"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableA2.field2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableA2.field3"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableA2.field4"), ParagraphAlignment.LEFT)};
+
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+    String FP = null, outcomes = null, milestone, assessment, meansVerifications;
+
+    List<List<POIField>> datas = new ArrayList<>();
+
+    List<POIField> data;
+
+    for (CrpProgram flagship : flagships) {
+      data = new ArrayList<>();
+      int outcome_index = 0;
+      for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+        int milestone_index = 0;
+        for (CrpMilestone crpMilestone : outcome.getMilestones()) {
+          Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
+          Boolean isOutcomeRow = (milestone_index == 0);
+
+          milestone = crpMilestone.getComposedName();
+
+          PowbExpectedCrpProgress milestoneProgress =
+            this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
+          assessment =
+            milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
+              ? milestoneProgress.getAssesmentName() : " ";
+          meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
+            ? milestoneProgress.getMeans() : " ";
+
+          POIField[] sData =
+            {new POIField(FP, ParagraphAlignment.CENTER), new POIField(outcomes, ParagraphAlignment.LEFT),
+              new POIField(milestone, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.CENTER)};
+          data = Arrays.asList(sData);
+          datas.add(data);
+
+          milestone_index++;
+        }
+        outcome_index++;
+      }
+    }
+
+
+    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
 
 
@@ -856,6 +976,63 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
    * }
    */
 
+  private void createTableB() {
+    /*
+     * List<List<POIField>> headers = new ArrayList<>();
+     * POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER),
+     * new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.CENTER),
+     * new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.CENTER),
+     * new POIField(this.getText("expectedProgress.tableA.milestone" + "*"), ParagraphAlignment.CENTER),
+     * new POIField(this.getText("annualReport.flagshipProgress.tableB.explanation"), ParagraphAlignment.CENTER),
+     * new POIField(this.getText("Provide " + "annualReport.flagshipProgress.tableB.status"),
+     * ParagraphAlignment.CENTER)};
+     * List<POIField> header = Arrays.asList(sHeader);
+     * headers.add(header);
+     * String FP, outcomes, milestone, assessment, meansVerifications;
+     * List<List<POIField>> datas = new ArrayList<>();
+     * List<POIField> data;
+     * for (CrpProgram flagship : flagships) {
+     * data = new ArrayList<>();
+     * int outcome_index = 0;
+     * for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+     * int milestone_index = 0;
+     * for (CrpMilestone crpMilestone : outcome.getMilestones()) {
+     * Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
+     * Boolean isOutcomeRow = (milestone_index == 0);
+     * if (isFlagshipRow) {
+     * FP = flagship.getAcronym();
+     * } else {
+     * FP = " ";
+     * }
+     * if (isOutcomeRow) {
+     * outcomes = outcome.getComposedName();
+     * } else {
+     * outcomes = " ";
+     * }
+     * milestone = crpMilestone.getComposedName();
+     * PowbExpectedCrpProgress milestoneProgress =
+     * this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
+     * assessment =
+     * milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
+     * ? milestoneProgress.getAssesmentName() : " ";
+     * meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
+     * ? milestoneProgress.getMeans() : " ";
+     * POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
+     * new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+     * new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+     * new POIField(meansVerifications, ParagraphAlignment.LEFT),
+     * new POIField(assessment, ParagraphAlignment.CENTER)};
+     * data = Arrays.asList(sData);
+     * datas.add(data);
+     * milestone_index++;
+     * }
+     * outcome_index++;
+     * }
+     * }
+     * poiSummary.textTable(document, headers, datas, false, "tableA")
+     */
+  }
+
   private void createTableC() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
@@ -904,7 +1081,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       datas.add(data);
     }
 
-    poiSummary.textTable(document, headers, datas, true, "tableC");
+    poiSummary.textTable(document, headers, datas, true, "tableCAnnualReport");
   }
 
   private void createTableD() {
@@ -1262,44 +1439,41 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void createTableG() {
-    List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {
-      new POIField(
-        this.getText("monitoringLearning.table.plannedStudies", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("monitoringLearning.table.comments"), ParagraphAlignment.CENTER)};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
-    for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList.stream()
-      .filter(p -> p.getProjectExpectedStudy() != null && p.getProjectExpectedStudy().getType() != null
-        && (p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.EVAULATION.getId()
-          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTASSESMENT.getId()
-          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.LEARNING.getId()
-          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTCASESTUDY.getId()
-          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.CRP_PTF.getId()
-          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.REVIEW.getId()))
-      .collect(Collectors.toList())) {
-      String plannedStudy = "", comments = "";
-      plannedStudy = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() != null
-        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
-          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() : " ";
-      comments = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() != null
-        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments().trim().isEmpty()
-          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() : " ";
-
-      POIField[] sData =
-        {new POIField(plannedStudy, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
-
-      data = Arrays.asList(sData);
-      datas.add(data);
-    }
-
-    poiSummary.textTable(document, headers, datas, false, "tableH");
+    /*
+     * List<List<POIField>> headers = new ArrayList<>();
+     * POIField[] sHeader = {
+     * new POIField(
+     * this.getText("monitoringLearning.table.plannedStudies", new String[] {String.valueOf(this.getSelectedYear())}),
+     * ParagraphAlignment.CENTER),
+     * new POIField(this.getText("monitoringLearning.table.comments"), ParagraphAlignment.CENTER)};
+     * List<POIField> header = Arrays.asList(sHeader);
+     * headers.add(header);
+     * List<List<POIField>> datas = new ArrayList<>();
+     * List<POIField> data;
+     * this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
+     * for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList.stream()
+     * .filter(p -> p.getProjectExpectedStudy() != null && p.getProjectExpectedStudy().getType() != null
+     * && (p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.EVAULATION.getId()
+     * || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTASSESMENT.getId()
+     * || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.LEARNING.getId()
+     * || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTCASESTUDY.getId()
+     * || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.CRP_PTF.getId()
+     * || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.REVIEW.getId()))
+     * .collect(Collectors.toList())) {
+     * String plannedStudy = "", comments = "";
+     * plannedStudy = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() != null
+     * && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
+     * ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() : " ";
+     * comments = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() != null
+     * && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments().trim().isEmpty()
+     * ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() : " ";
+     * POIField[] sData =
+     * {new POIField(plannedStudy, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+     * data = Arrays.asList(sData);
+     * datas.add(data);
+     * }
+     * poiSummary.textTable(document, headers, datas, false, "tableH");
+     */
   }
 
   private void createTableH() {
@@ -1430,6 +1604,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     poiSummary.textTable(document, headers, datas, false, "tableG");
   }
 
+
   private void createTableJ() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField(this.getText("annualReport.financial.tableJ.budget"), ParagraphAlignment.CENTER),
@@ -1472,7 +1647,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     poiSummary.textTable(document, headers, datas, false, "tableG");
   }
 
-
   @Override
   public String execute() throws Exception {
     try {
@@ -1490,6 +1664,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       }
 
       String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+
+      //
+      this.createPageFooter();
       // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
 
       // Cover
@@ -1554,6 +1731,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.addFundingSummarize();
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.effectiveness.partnership"));
+      this.addExternalPartnerships();
       this.addCollaboration();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.cross"));
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.mel"));
@@ -1593,7 +1771,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textHead1Title(document.createParagraph(), "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title"));
-      this.createTableA1();
+      // this.createTableA1();
 
       // Table a2
       document.createParagraph().setPageBreak(true); // Fast Page Break
@@ -2126,7 +2304,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     reportSysthesisList =
       this.getSelectedPhase().getReportSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
 
-    System.out.println("test");
     LiaisonInstitution pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
@@ -2143,6 +2320,37 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+
+    // Get liaison institution list
+    List<LiaisonInstitution> liaisonInstitutionsList =
+      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+
+    // Table A-2 PMU Information
+    try {
+      flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutionsList,
+        this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+      System.out.println(flagshipPlannedList + " flagship");
+
+      System.out.println("largo lista " + liaisonInstitutionsList.size() + " phase " + this.getSelectedPhase().getId());
+
+      // Table A-1 Evidence on Progress
+      fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutionsList,
+        this.getSelectedPhase().getId());
+
+      // Flagships Synthesis Progress
+      flagshipCrpProgress = reportSynthesisCrpProgressManager.getFlagshipCrpProgress(liaisonInstitutionsList,
+        this.getSelectedPhase().getId());
+      // flagshipCrpProgress.get(0).getSloTargets().get(0).getSrfSloIndicatorTarget().getNarrative()
+
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+
   }
 
   public void setInputStream(InputStream inputStream) {
