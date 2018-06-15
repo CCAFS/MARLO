@@ -223,12 +223,14 @@ public class IndicatorsAction extends BaseAction {
     Phase phase = this.getActualPhase();
 
     // Verify if is Influence or Control section
-    if (this.getActionName().equals(
-      loggedCrp.getAcronym() + "/" + ReportSynthesisSectionStatusEnum.INFLUENCE.getStatus().replace("/", "_"))) {
-      isInfluence = true;
-    } else if (this.getActionName()
-      .equals(loggedCrp.getAcronym() + "/" + ReportSynthesisSectionStatusEnum.CONTROL.getStatus().replace("/", "_"))) {
-      isInfluence = false;
+    String[] actionParts = this.getActionName().split("/");
+    if (actionParts.length > 0) {
+      String action = actionParts[1];
+      if (action.equals(ReportSynthesisSectionStatusEnum.INFLUENCE.getStatus())) {
+        isInfluence = true;
+      } else if (action.equals(ReportSynthesisSectionStatusEnum.CONTROL.getStatus())) {
+        isInfluence = false;
+      }
     }
 
 
@@ -347,19 +349,11 @@ public class IndicatorsAction extends BaseAction {
         if (this.isPMU()) {
           List<ReportSynthesisIndicator> reportSynthesisIndicators = new ArrayList<>();
           if (isInfluence) {
-            reportSynthesisIndicators =
-              reportSynthesis.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-                .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
-                  && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
-                    .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
-                .collect(Collectors.toList());
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesis,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE);
           } else {
-            reportSynthesisIndicators =
-              reportSynthesis.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-                .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
-                  && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
-                    .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL))
-                .collect(Collectors.toList());
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesis,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL);
           }
 
           if (reportSynthesisIndicators != null && !reportSynthesisIndicators.isEmpty()) {
@@ -408,20 +402,13 @@ public class IndicatorsAction extends BaseAction {
       if (reportSynthesisPMU != null) {
         if (reportSynthesisPMU.getReportSynthesisIndicatorGeneral() != null) {
           List<ReportSynthesisIndicator> reportSynthesisIndicators = new ArrayList<>();
+
           if (isInfluence) {
-            reportSynthesisIndicators =
-              reportSynthesisPMU.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-                .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
-                  && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
-                    .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
-                .collect(Collectors.toList());
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesisPMU,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE);
           } else {
-            reportSynthesisIndicators =
-              reportSynthesisPMU.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-                .filter(si -> si.isActive() && si.getRepIndSynthesisIndicator() != null
-                  && si.getRepIndSynthesisIndicator().isMarlo() && si.getRepIndSynthesisIndicator().getType()
-                    .equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL))
-                .collect(Collectors.toList());
+            reportSynthesisIndicators = reportSynthesisIndicatorManager.getIndicatorsByType(reportSynthesisPMU,
+              APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL);
           }
 
           if (reportSynthesisIndicators != null && !reportSynthesisIndicators.isEmpty()) {
