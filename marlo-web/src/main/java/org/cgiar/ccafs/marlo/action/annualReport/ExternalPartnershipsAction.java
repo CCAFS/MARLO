@@ -578,7 +578,7 @@ public class ExternalPartnershipsAction extends BaseAction {
       }
     } else {
 
-      for (Long studyId : selectedPs) {
+      for (Long studyId : studiesIds) {
         ProjectPartnerPartnership projectPartnerPartnership =
           projectPartnerPartnershipManager.getProjectPartnerPartnershipById(studyId);
 
