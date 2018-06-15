@@ -412,6 +412,10 @@ public class ExternalPartnershipsAction extends BaseAction {
       // Table G
       flagshipPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(liaisonInstitutions,
         phase.getId(), loggedCrp, this.liaisonInstitution);
+
+      // Flagship External Partnership Synthesis Progress
+      flagshipExternalPartnerships =
+        reportSynthesisExternalPartnershipManager.getFlagshipCExternalPartnership(liaisonInstitutions, phase.getId());
     }
 
     // ADD PMU as liasion Institution too

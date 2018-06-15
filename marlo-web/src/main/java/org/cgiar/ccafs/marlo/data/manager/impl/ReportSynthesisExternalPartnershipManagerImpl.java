@@ -83,6 +83,35 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
   }
 
   @Override
+  public List<ReportSynthesisExternalPartnership>
+    getFlagshipCExternalPartnership(List<LiaisonInstitution> lInstitutions, long phaseID) {
+
+    List<ReportSynthesisExternalPartnership> externalPartnerships = new ArrayList<>();
+
+    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+
+      ReportSynthesisExternalPartnership externalPartnership = new ReportSynthesisExternalPartnership();
+      ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+
+      if (reportSynthesisFP != null) {
+        if (reportSynthesisFP.getReportSynthesisExternalPartnership() != null) {
+          externalPartnership = reportSynthesisFP.getReportSynthesisExternalPartnership();
+        }
+      } else {
+        ReportSynthesis synthesis = new ReportSynthesis();
+        synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+        synthesis.setLiaisonInstitution(liaisonInstitution);
+        externalPartnership.setReportSynthesis(synthesis);
+      }
+      externalPartnerships.add(externalPartnership);
+    }
+
+    return externalPartnerships;
+
+
+  }
+
+  @Override
   public List<ReportSynthesisExternalPartnershipDTO> getPlannedPartnershipList(List<LiaisonInstitution> lInstitutions,
     long phaseID, GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU) {
 
