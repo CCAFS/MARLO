@@ -18,10 +18,12 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport/macros-annualReport.ftl" as annualReport /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "annualReport.${currentStage}" /]
+[#assign customName= "reportSynthesis.reportSynthesisIndicatorGeneral" /]
+[#assign synthesisIndicators= (reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators)![] /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
@@ -89,15 +91,10 @@
               [@tableD2InnovationsMacro list=[{},{},{},{}] /]
             </div>
             
-            [#-- Data --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC1.data" help="${customLabel}.indicatorC1.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            [#-- Information -  Indicator C1  --]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[0] index=0 id="indicatorC1" label="${customLabel}" editable=editable && PMU /]
             
-            [#-- Comments/Analysis --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC1.comments" help="${customLabel}.indicatorC1.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            
           </div>
           
           [#--  CGIAR Indicator #C2: Partnerships --]
@@ -191,15 +188,9 @@
               [@tableGKeyPartnershipsMacro list=[{},{},{},{}] /]
             </div>
             
-            [#-- Data --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC2.data" help="${customLabel}.indicatorC2.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            [#-- Information -  Indicator C2  --]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[1] index=1 id="indicatorC2" label="${customLabel}" editable=editable && PMU /]
             
-            [#-- Comments/Analysis --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC2.comments" help="${customLabel}.indicatorC2.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
           
           </div>
           
@@ -246,25 +237,12 @@
               [@tableParticipantsTrainingsMacro list=[{},{},{},{}] /]
             </div>
             
-            [#-- Data - Indicator C3 --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC3.data" help="${customLabel}.indicatorC3.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            [#-- Information -  Indicator C3  --]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[2] index=2 id="indicatorC3" label="${customLabel}" editable=editable && PMU /]
             
-            [#-- Comments/Analysis - Indicator C3  --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC3.comments" help="${customLabel}.indicatorC3.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            [#-- Information -  Indicator C4  --]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[3] index=3 id="indicatorC4" label="${customLabel}" editable=editable && PMU /]
             
-            [#-- Data - Indicator C4 --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC4.data" help="${customLabel}.indicatorC4.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
-            
-            [#-- Comments/Analysis - Indicator C4  --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC4.comments" help="${customLabel}.indicatorC4.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
           </div>
           
           [#--  CGIAR Indicator #C5: Number of CGIAR research papers published in peer reviewed journals  --]
@@ -310,15 +288,10 @@
                 </div>
               </div>
             </div>
-
-            [#-- Data - Indicator C5 --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.data" i18nkey="${customLabel}.indicatorC5.data" help="${customLabel}.indicatorC5.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
-            [#-- Comments/Analysis - Indicator C5  --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.indicatorC5.comments" help="${customLabel}.indicatorC5.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            
+            [#-- Information -  Indicator C5  --]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[4] index=4 id="indicatorC5" label="${customLabel}" editable=editable && PMU /]
+            
           </div>
           
           [#if PMU]

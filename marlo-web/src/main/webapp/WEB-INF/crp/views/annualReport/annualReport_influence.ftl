@@ -18,10 +18,12 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport/macros-annualReport.ftl" as annualReport /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#assign customName= "reportSynthesis.reportSynthesisIndicatorGeneral" /]
+[#assign synthesisIndicators= (reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators)![] /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
@@ -84,19 +86,9 @@
               <hr />
               [@tableOutcomesMacro list=[{},{},{},{}] /]
             </div>
-            [#-- Hidden Input --]
-            <input type="hidden" name="${customName}.synthesisIndicators[0].id" value="${(reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[0].id)!}" />
-            <input type="hidden"  name="${customName}.synthesisIndicators[0].repIndSynthesisIndicator.id" value="${(reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[0].repIndSynthesisIndicator.id)!}"/>
             
-            [#-- Data --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.synthesisIndicators[0].data" i18nkey="${customLabel}.indicatorI3.data" help="${customLabel}.indicatorI3.data.help" paramText="${(actualPhase.year)!}" className="" helpIcon=false required=true editable=editable  && PMU /]
-            </div>
-            
-            [#-- Comments/Analysis --]
-            <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.synthesisIndicators[0].comment" i18nkey="${customLabel}.indicatorI3.comments" help="${customLabel}.indicatorI3.comments.help" className="" helpIcon=false required=true editable=editable && PMU /]
-            </div>
+            [#-- Information -  Indicator C3  --]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[0] index=0 id="indicatorI3" label="${customLabel}" editable=editable && PMU /]
           
           </div>
           [#-- Section Buttons & hidden inputs--]
