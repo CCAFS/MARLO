@@ -20,7 +20,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "annualReport.${currentStage}" /]
+[#assign customName= "reportSynthesis.reportSynthesisExternalPartnership" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
@@ -50,7 +50,7 @@
           
             [#-- Summarize highlights, value added and points to improve/learning points from this year on external partnerships --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.summarizeHighlights" i18nkey="${customLabel}.summarizeHighlights" help="${customLabel}.summarizeHighlights.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.summarizeHighlights" help="${customLabel}.summarizeHighlights.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
             [#-- Flagships - External Partnerships Synthesis --]
@@ -67,10 +67,10 @@
             <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableG.title" param="${currentCycleYear}" /]</h4>
             <div class="form-group margin-panel">
               [#if flagship]
-                [@tableGMacro name="${customName}.keyPartnershipsValue" list=[{},{},{},{}] /]
+                [@tableGMacro name="${customName}.partnershipsValue" list=partnerShipList /]
               [#else]
                 <div class="viewMoreSyntesis-block" >
-                  [@tableGMacro name="" list=[{},{},{},{}] isPMU=PMU /]
+                  [@tableGMacro name="" list=flagshipPlannedList isPMU=PMU /]
                   <div class="viewMoreSyntesis closed"></div>
                 </div>
               [/#if]
