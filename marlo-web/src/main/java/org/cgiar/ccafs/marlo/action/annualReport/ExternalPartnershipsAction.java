@@ -55,6 +55,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -245,6 +246,8 @@ public class ExternalPartnershipsAction extends BaseAction {
         List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
           .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().getId() == phaseID)
           .collect(Collectors.toList()));
+        Collections.sort(projectPartners,
+          (p1, p2) -> p1.getInstitution().getAcronym().compareTo(p2.getInstitution().getAcronym()));
 
         for (ProjectPartner projectPartner : projectPartners) {
           List<ProjectPartnerPartnership> projectPartnerPartnerships = new ArrayList<>(projectPartner
