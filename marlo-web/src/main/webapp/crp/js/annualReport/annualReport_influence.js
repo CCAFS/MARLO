@@ -24,7 +24,7 @@ google.charts.setOnLoadCallback(function() {
   var chart1 = new google.charts.Bar(document.getElementById($chart1[0].id));
   chart1.draw(data1, google.charts.Bar.convertOptions({
       chart: {
-        title: "Policy/Investment Implementing Organization Type"
+        title: "Implementing Organization Type"
       },
       legend: {
         position: "none"
