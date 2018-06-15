@@ -11,7 +11,7 @@ function expandViewMoreSyntesisBlock() {
 
   if($(this).hasClass("closed")) {
     $(this).parent().css({
-      height: blockHeight + 20
+      height: blockHeight + 40
     });
     $(this).html('View less');
     $(this).addClass("opened").removeClass("closed");
