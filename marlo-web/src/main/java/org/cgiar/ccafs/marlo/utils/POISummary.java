@@ -501,13 +501,13 @@ public class POISummary {
         break;
 
       case "tableAAnnualReport":
-        this.tableAAnnualReportStyle(table);
+        this.tableGStyle(table);
         break;
       case "tableBAnnualReport":
-        this.tableEStyle(table);
+        this.tableGStyle(table);
         break;
       case "tableCAnnualReport":
-        this.tableCStyle(table);
+        this.tableGStyle(table);
         break;
       case "tableDAnnualReport":
         this.tableFStyle(table);
@@ -516,7 +516,7 @@ public class POISummary {
         this.tableGStyle(table);
         break;
       case "tableFAnnualReport":
-        this.tableGStyle(table);
+        this.tableEStyle(table);
         break;
       case "tableGAnnualReport":
         this.tableGStyle(table);
