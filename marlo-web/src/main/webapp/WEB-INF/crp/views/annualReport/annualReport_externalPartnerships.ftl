@@ -125,6 +125,8 @@
       </tbody>
     </table>
   </div>
+  <br />
+  <br />
 [/#macro]
 
 [#macro tableGMacro name="" list=[] isPMU=false ]
@@ -157,10 +159,10 @@
           [#-- Flagships --]
           [#if isPMU]
           <td>
-              <div class="clearfix"></div>
-              [#list (item.liaisonInstitutions)![] as liaisonInstitution]
-                <span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${(liaisonInstitution.crpProgram.acronym)!}</span>
-              [/#list]
+            <div class="clearfix"></div>
+            [#list (item.liaisonInstitutions)![] as li]
+              <span class="programTag" style="border-color:${(li.crpProgram.color)!'#4a4a4a'}">${(li.crpProgram.acronym)!(li.crpProgram.institution.acronymName)!(li.acronym)!'NULL'}</span>
+            [/#list]
           </td>
           [/#if]
           <td class="tb-projectId text-center">
