@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,6 +64,15 @@ public class ReportSynthesisIndicatorManagerImpl implements ReportSynthesisIndic
   }
 
   @Override
+  public List<ReportSynthesisIndicator> getIndicatorsByType(ReportSynthesis reportSynthesis, String indicatorType) {
+    return reportSynthesis.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
+      .filter(
+        si -> si.isActive() && si.getRepIndSynthesisIndicator() != null && si.getRepIndSynthesisIndicator().isMarlo()
+          && si.getRepIndSynthesisIndicator().getType().equals(indicatorType))
+      .collect(Collectors.toList());
+  }
+
+  @Override
   public ReportSynthesisIndicator getReportSynthesisIndicatorById(long reportSynthesisIndicatorID) {
 
     return reportSynthesisIndicatorDAO.find(reportSynthesisIndicatorID);
@@ -72,6 +83,5 @@ public class ReportSynthesisIndicatorManagerImpl implements ReportSynthesisIndic
 
     return reportSynthesisIndicatorDAO.save(reportSynthesisIndicator);
   }
-
 
 }
