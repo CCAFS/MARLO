@@ -90,6 +90,8 @@ public class FundingUseAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private ReportSynthesis reportSynthesisPMU;
+  private String pmuText;
+
 
   @Inject
   public FundingUseAction(APConfig config, GlobalUnitManager crpManager,
@@ -110,6 +112,7 @@ public class FundingUseAction extends BaseAction {
     this.reportSynthesisFundingUseExpendituryAreaManager = reportSynthesisFundingUseExpendituryAreaManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
   }
+
 
   @Override
   public String cancel() {
@@ -162,6 +165,10 @@ public class FundingUseAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public String getPmuText() {
+    return pmuText;
   }
 
   public ReportSynthesis getReportSynthesis() {
@@ -337,7 +344,7 @@ public class FundingUseAction extends BaseAction {
         if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
           ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
           // create one to one relation
-          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);;
+          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);
           fundingUseSummary.setReportSynthesis(reportSynthesis);
           // save the changes
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
@@ -350,13 +357,14 @@ public class FundingUseAction extends BaseAction {
             && !reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
               .isEmpty()) {
             reportSynthesis.getReportSynthesisFundingUseSummary()
-              .setExpenditureAreas(new ArrayList<>(
-                reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
+              .setExpenditureAreas(new ArrayList<>(reportSynthesis.getReportSynthesisFundingUseSummary()
+                .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
+                .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
           } else {
             reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
-            List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
-              .filter(x -> x.isActive() && x.getIsExpenditure()).collect(Collectors.toList()));
+            List<PowbExpenditureAreas> expAreas = new ArrayList<>(
+              powbExpenditureAreasManager.findAll().stream().filter(x -> x.isActive() && x.getIsExpenditure())
+                .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList()));
             for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
               ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
                 new ReportSynthesisFundingUseExpendituryArea();
@@ -364,7 +372,6 @@ public class FundingUseAction extends BaseAction {
               reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas()
                 .add(fundingUseExpenditureArea);
             }
-
           }
         }
       }
@@ -385,17 +392,26 @@ public class FundingUseAction extends BaseAction {
 
     // Informative table to Flagships
     if (this.isFlagship()) {
-      if (reportSynthesisPMU != null) {
-        if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
-          if (reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-            .getReportSynthesisFundingUseExpendituryAreas() != null
-            && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-              .isEmpty()) {
-            reportSynthesis.getReportSynthesisFundingUseSummary()
-              .setExpenditureAreas(new ArrayList<>(
-                reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-                  .stream().filter(t -> t.isActive()).collect(Collectors.toList())));
-          }
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null
+        && reportSynthesisPMU.getReportSynthesisFundingUseSummary()
+          .getReportSynthesisFundingUseExpendituryAreas() != null
+        && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+          .isEmpty()) {
+        pmuText = reportSynthesisPMU.getReportSynthesisFundingUseSummary().getMainArea();
+        reportSynthesis.getReportSynthesisFundingUseSummary()
+          .setExpenditureAreas(new ArrayList<>(reportSynthesisPMU.getReportSynthesisFundingUseSummary()
+            .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
+            .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
+      } else {
+        reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
+        List<PowbExpenditureAreas> expAreas = new ArrayList<>(
+          powbExpenditureAreasManager.findAll().stream().filter(x -> x.isActive() && x.getIsExpenditure())
+            .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList()));
+        for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
+          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
+            new ReportSynthesisFundingUseExpendituryArea();
+          fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
+          reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas().add(fundingUseExpenditureArea);
         }
       }
     }
@@ -411,7 +427,6 @@ public class FundingUseAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -465,6 +480,7 @@ public class FundingUseAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Funding Use Expenditure Areas
@@ -530,7 +546,6 @@ public class FundingUseAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -538,6 +553,11 @@ public class FundingUseAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setPmuText(String pmuText) {
+    this.pmuText = pmuText;
   }
 
 
