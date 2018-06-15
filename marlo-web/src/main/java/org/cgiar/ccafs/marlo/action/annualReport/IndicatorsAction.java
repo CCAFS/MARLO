@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
@@ -83,6 +85,7 @@ public class IndicatorsAction extends BaseAction {
   private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
   // Variables
   private String transaction;
   private InfluenceValidator influenceValidator;
@@ -96,6 +99,7 @@ public class IndicatorsAction extends BaseAction {
   private ReportSynthesis reportSynthesisPMU;
   private Boolean isInfluence;
   private List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs;
+  private List<ProjectExpectedStudy> projectExpectedStudies;
 
 
   @Inject
@@ -105,7 +109,8 @@ public class IndicatorsAction extends BaseAction {
     InfluenceValidator influenceValidator, ControlValidator controlValidator,
     RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
-    RepIndOrganizationTypeManager repIndOrganizationTypeManager) {
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -118,6 +123,7 @@ public class IndicatorsAction extends BaseAction {
     this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
 
@@ -140,6 +146,7 @@ public class IndicatorsAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -149,6 +156,7 @@ public class IndicatorsAction extends BaseAction {
     long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
     return liaisonInstitutionId;
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
@@ -174,10 +182,14 @@ public class IndicatorsAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<ReportSynthesisStudiesByOrganizationTypeDTO> getOrganizationTypeByStudiesDTOs() {
     return organizationTypeByStudiesDTOs;
   }
+
+  public List<ProjectExpectedStudy> getProjectExpectedStudies() {
+    return projectExpectedStudies;
+  }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -433,6 +445,7 @@ public class IndicatorsAction extends BaseAction {
     // Informative Tables/Charts
     if (isInfluence) {
       organizationTypeByStudiesDTOs = repIndOrganizationTypeManager.getOrganizationTypesByStudies(phase);
+      projectExpectedStudies = projectExpectedStudyManager.getStudiesByPhase(phase);
     }
 
     // Base Permission
@@ -449,7 +462,6 @@ public class IndicatorsAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -499,6 +511,7 @@ public class IndicatorsAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Synthesis Indicators
@@ -560,7 +573,6 @@ public class IndicatorsAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -574,6 +586,11 @@ public class IndicatorsAction extends BaseAction {
   public void
     setOrganizationTypeByStudiesDTOs(List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs) {
     this.organizationTypeByStudiesDTOs = organizationTypeByStudiesDTOs;
+  }
+
+
+  public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
+    this.projectExpectedStudies = projectExpectedStudies;
   }
 
 

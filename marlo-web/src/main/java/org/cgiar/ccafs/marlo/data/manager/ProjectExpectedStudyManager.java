@@ -71,6 +71,13 @@ public interface ProjectExpectedStudyManager {
     Phase phase);
 
   /**
+   * This method gets a list of projectExpectedStudy that are active by a given phase
+   * 
+   * @return a list from ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase);
+
+  /**
    * This method search the expected Studies that the user can be edit.
    * 
    * @param userId the user id
@@ -101,5 +108,4 @@ public interface ProjectExpectedStudyManager {
    *         or -1 is some error occurred.
    */
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy);
-
 }
