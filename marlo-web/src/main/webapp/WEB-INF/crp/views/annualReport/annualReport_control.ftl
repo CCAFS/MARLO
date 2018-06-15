@@ -92,7 +92,7 @@
             </div>
             
             [#-- Information -  Indicator C1  --]
-            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[0] index=0 id="indicatorC1" label="${customLabel}" editable=editable && PMU /]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=0 id="indicatorC1" label="${customLabel}" editable=editable && PMU /]
             
             
           </div>
@@ -189,7 +189,7 @@
             </div>
             
             [#-- Information -  Indicator C2  --]
-            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[1] index=1 id="indicatorC2" label="${customLabel}" editable=editable && PMU /]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=1 id="indicatorC2" label="${customLabel}" editable=editable && PMU /]
             
           
           </div>
@@ -238,10 +238,10 @@
             </div>
             
             [#-- Information -  Indicator C3  --]
-            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[2] index=2 id="indicatorC3" label="${customLabel}" editable=editable && PMU /]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=2 id="indicatorC3" label="${customLabel}" editable=editable && PMU /]
             
             [#-- Information -  Indicator C4  --]
-            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[3] index=3 id="indicatorC4" label="${customLabel}" editable=editable && PMU /]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=3 id="indicatorC4" label="${customLabel}" editable=editable && PMU /]
             
           </div>
           
@@ -290,7 +290,7 @@
             </div>
             
             [#-- Information -  Indicator C5  --]
-            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[4] index=4 id="indicatorC5" label="${customLabel}" editable=editable && PMU /]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=4 id="indicatorC5" label="${customLabel}" editable=editable && PMU /]
             
           </div>
           
