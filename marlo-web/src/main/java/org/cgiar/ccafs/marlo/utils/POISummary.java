@@ -121,8 +121,8 @@ public class POISummary {
         CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
 
         CTTcPr pr = cell.getCTTc().addNewTcPr();
-        pr.addNewNoWrap();
-        cellWidth.setW(BigInteger.valueOf(200));
+        // pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(100));
       }
     }
   }
@@ -531,8 +531,11 @@ public class POISummary {
         this.tableGStyle(table);
         break;
     }
-
-    table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
+    if (tableType.contains("AnnualReport")) {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(7500));
+    } else {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
+    }
 
   }
 

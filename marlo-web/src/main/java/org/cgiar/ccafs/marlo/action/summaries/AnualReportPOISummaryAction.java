@@ -564,12 +564,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
     poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.management.governance"));
     this.addManagementGovernance();
-    poiSummary.textParagraph(document.createParagraph(), CRPManagementGovernanceDescription);
+    // poiSummary.textParagraph(document.createParagraph(), CRPManagementGovernanceDescription);
 
     poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.management.risk"));
     this.addManagementRisks();
 
-    poiSummary.textParagraph(document.createParagraph(), managementRisksTitleDescription);
+    // poiSummary.textParagraph(document.createParagraph(), managementRisksTitleDescription);
     poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.management.financial"));
     this.addFinancialSummary();
   }
@@ -663,12 +663,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   public void createPageFooter() {
     CTP ctp = CTP.Factory.newInstance();
+
     // this add page number incremental
     ctp.addNewR().addNewPgNum();
 
     XWPFParagraph codePara = new XWPFParagraph(ctp, document);
     XWPFParagraph[] paragraphs = new XWPFParagraph[1];
     paragraphs[0] = codePara;
+
     // position of number
     codePara.setAlignment(ParagraphAlignment.CENTER);
 
@@ -864,7 +866,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
 
 
-    poiSummary.textTable(document, headers, datas, false, "tableA");
+    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
 
 
@@ -1086,125 +1088,65 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     poiSummary.textTable(document, headers, datas, true, "tableCAnnualReport");
   }
 
-  private void createTableD() {
-
+  public void createTableD() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader =
-      {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER)};
+
+    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER)};
+
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
+    String FP, subIDO = "", outcomes;
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnitList =
-        powbSynthesis.getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      if (powbCollaborationGlobalUnitList != null && !powbCollaborationGlobalUnitList.isEmpty()) {
-        for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbCollaborationGlobalUnitList) {
-          String crpPlatform = " ", descriptionCollaboration = " ", relevantFP = " ";
-          if (powbCollaborationGlobalUnit.getGlobalUnit() != null) {
-            crpPlatform = powbCollaborationGlobalUnit.getGlobalUnit().getAcronym() != null
-              && !powbCollaborationGlobalUnit.getGlobalUnit().getAcronym().isEmpty()
-                ? powbCollaborationGlobalUnit.getGlobalUnit().getAcronym()
-                : powbCollaborationGlobalUnit.getGlobalUnit().getName();
-          }
+    if (!sloTargets.isEmpty() || sloTargets != null) {
 
-          descriptionCollaboration =
-            powbCollaborationGlobalUnit.getBrief() != null && !powbCollaborationGlobalUnit.getBrief().isEmpty()
-              ? powbCollaborationGlobalUnit.getBrief() : " ";
-          relevantFP =
-            powbCollaborationGlobalUnit.getFlagship() != null && !powbCollaborationGlobalUnit.getFlagship().isEmpty()
-              ? powbCollaborationGlobalUnit.getFlagship() : " ";
+      int flagshipIndex = 0;
+      data = new ArrayList<>();
+      for (int i = 0; i < sloTargets.size(); i++) {
+        subIDO = "";
 
-          POIField[] sData =
-            {new POIField(crpPlatform, ParagraphAlignment.CENTER), new POIField(crpPlatform, ParagraphAlignment.CENTER),
-              new POIField(descriptionCollaboration, ParagraphAlignment.LEFT),
-              new POIField(relevantFP, ParagraphAlignment.LEFT)};
+        /*
+         * for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+         * if (subIdo.getSrfSubIdo() != null) {
+         * if (subIDO.isEmpty()) {
+         * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+         * subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
+         * } else {
+         * subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
+         * }
+         * } else {
+         * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+         * subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
+         * } else {
+         * subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
+         * }
+         * }
+         * }
+         * }
+         */
+        outcomes = "";
 
-          data = Arrays.asList(sData);
-          datas.add(data);
-        }
+        FP = sloTargets.get(i).getNarrative();
+
+        Boolean bold = false;
+        String blackColor = "000000";
+        String redColor = "c00000";
+        POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(subIDO, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(outcomes, ParagraphAlignment.LEFT, bold, blackColor)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+        flagshipIndex++;
       }
+
     }
-    poiSummary.textTable(document, headers, datas, false, "tableG");
 
 
-    /*
-     * List<List<POIField>> headers = new ArrayList<>();
-     * POIField[] sHeader =
-     * {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER)};
-     * List<POIField> header = Arrays.asList(sHeader);
-     * headers.add(header);
-     * List<List<POIField>> datas = new ArrayList<>();
-     * List<POIField> data;
-     * Double totalFemale = 0.0, totalMale = 0.0, totalFemaleNoCg = 0.0, totalMaleNoCg = 0.0;
-     * for (PowbCrpStaffingCategories crpStaffingCategory : powbCrpStaffingCategoriesManager.findAll().stream()
-     * .filter(c -> c.isActive()).collect(Collectors.toList())) {
-     * String category = "";
-     * Double female = 0.0, femaleNoCg = 0.0, totalFTE = 0.0, femalePercentaje = 0.0, male = 0.0, maleNoCg = 0.0;
-     * category = crpStaffingCategory.getCategory();
-     * if (powbSynthesisPMU != null) {
-     * List<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategoryList = crpStaffingCategory
-     * .getPowbSynthesisCrpStaffingCategory().stream().sorted((c1, c2) -> c1.getId().compareTo(c2.getId()))
-     * .filter(
-     * pc -> pc.isActive() && pc.getPowbSynthesis() != null && pc.getPowbSynthesis().equals(powbSynthesisPMU))
-     * .collect(Collectors.toList());
-     * if (powbSynthesisCrpStaffingCategoryList != null && powbSynthesisCrpStaffingCategoryList.size() > 0) {
-     * PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory =
-     * powbSynthesisCrpStaffingCategoryList.get(0);
-     * female =
-     * powbSynthesisCrpStaffingCategory.getFemale() != null ? powbSynthesisCrpStaffingCategory.getFemale() : 0.0;
-     * femaleNoCg = powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() != null
-     * ? powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() : 0.0;
-     * femalePercentaje = powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0;
-     * male = powbSynthesisCrpStaffingCategory.getMale() != null ? powbSynthesisCrpStaffingCategory.getMale() : 0.0;
-     * maleNoCg = powbSynthesisCrpStaffingCategory.getMaleNoCgiar() != null
-     * ? powbSynthesisCrpStaffingCategory.getMaleNoCgiar() : 0.0;
-     * totalFemale += female;
-     * totalFemaleNoCg += femaleNoCg;
-     * totalMale += male;
-     * totalMaleNoCg += maleNoCg;
-     * totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
-     * }
-     * }
-     * POIField[] sData = {
-     * new POIField(category, ParagraphAlignment.LEFT),
-     * new POIField(String.valueOf(round(female, 2)) + " (" + round(femaleNoCg, 2) + ")", ParagraphAlignment.CENTER),
-     * new POIField(String.valueOf(round(male, 2)) + " (" + round(maleNoCg, 2) + ")", ParagraphAlignment.CENTER),
-     * new POIField(percentageFormat.format(round(femalePercentaje, 4)), ParagraphAlignment.CENTER)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * }
-     * PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory = new PowbSynthesisCrpStaffingCategory();
-     * powbSynthesisCrpStaffingCategory.setMale(totalMale);
-     * powbSynthesisCrpStaffingCategory.setMaleNoCgiar(totalMaleNoCg);
-     * powbSynthesisCrpStaffingCategory.setFemale(totalFemale);
-     * powbSynthesisCrpStaffingCategory.setFemaleNoCgiar(totalFemaleNoCg);
-     * Boolean bold = true;
-     * String blackColor = "000000";
-     * POIField[] sData = {new POIField("Total CRP", ParagraphAlignment.LEFT, bold, blackColor),
-     * new POIField(
-     * String.valueOf(round(powbSynthesisCrpStaffingCategory.getFemale(), 2)) + " ("
-     * + round(powbSynthesisCrpStaffingCategory.getFemaleNoCgiar(), 2) + ")",
-     * ParagraphAlignment.CENTER, bold, blackColor),
-     * new POIField(
-     * String.valueOf(round(powbSynthesisCrpStaffingCategory.getMale(), 2)) + " ("
-     * + round(powbSynthesisCrpStaffingCategory.getMaleNoCgiar(), 2) + ")",
-     * ParagraphAlignment.CENTER, bold, blackColor),
-     * new POIField(String.valueOf(round(powbSynthesisCrpStaffingCategory.getTotalFTE(), 2)), ParagraphAlignment.CENTER,
-     * bold, blackColor),
-     * new POIField(percentageFormat.format(round(powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0, 4)),
-     * ParagraphAlignment.CENTER, bold, blackColor)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * poiSummary.textTable(document, headers, datas, false, "tableD");
-     */
+    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
 
   private void createTableD2() {
@@ -1768,7 +1710,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.loadTablePMU();
 
       // Table a1
-      poiSummary.textLineBreak(document, 1);
+
       // poiSummary.textHead1Title(paragraph, "TABLES");
       poiSummary.textHead1Title(document.createParagraph(), "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
@@ -1776,49 +1718,47 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.createTableA1();
 
       // Table a2
-      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA2.title"));
       this.createTableA2();
 
       // Table b
       poiSummary.textNotes(document.createParagraph(), "*" + this.getText("summaries.annualReport.tableA2.footer"));
-      document.createParagraph().setPageBreak(true); // Fast Page Break
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableB.title"));
       this.createTableB();
 
       // Table c
-      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("annualReport.ccDimensions.tableCTitle"));
       this.createTableC();
 
       // Table d
-      document.createParagraph().setPageBreak(true); // Fast Page Break
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableD.title"));
 
       // Table d1
-      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD1.title"));
       this.createTableD();
+      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD1.footer"));
 
       // Table d2
-      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD2.title"));
       this.createTableD2();
+      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD2.footer"));
 
       // Table e
-      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD1.footer"));
-      document.createParagraph().setPageBreak(true); // Fast Page Break
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("annualReport.ccDimensions.tableETitle", new String[] {String.valueOf(this.getSelectedYear())}));
       this.createTableE();
 
       // Table f
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title2017"));
+      poiSummary.textLineBreak(document, 1);
       this.createTableF();
-      poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help2017"));
+      poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title2017"));
 
       // Table g
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textNotes(document.createParagraph(),
         this.getText("financialPlan.tableF.estimatedPercentage.help2017"));
       document.createParagraph().setPageBreak(true); // Fast Page Break
@@ -1826,12 +1766,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.createTableG();
 
       // Table h
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableG.description.help"));
       document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableH.title"));
       this.createTableH();
 
       // Table i
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableI.title"));
       poiSummary.textHead3Title(document.createParagraph(), this.getText("annualReport.melia.tableI.title"));
       this.createTableI1();
@@ -1839,6 +1781,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.createTableI2();
 
       // Table j
+      poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableJ.title"));
       document.createParagraph().setPageBreak(true); // Fast Page Break
       this.createTableJ();
