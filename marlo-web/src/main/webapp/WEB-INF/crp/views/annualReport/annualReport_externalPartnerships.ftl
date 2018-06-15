@@ -57,7 +57,7 @@
             [#if PMU]
             <div class="form-group margin-panel">
               <div class="viewMoreSyntesis-block" >
-                [@tableFlagshipSynthesis tableName="tablePartnerships" list=[{},{},{},{}] columns=["summarizeHighlights"] /]
+                [@tableFlagshipSynthesis tableName="tablePartnerships" list=flagshipExternalPartnerships columns=["summarizeHighlights"] /]
                 <div class="viewMoreSyntesis closed"></div>
               </div>
             </div>
