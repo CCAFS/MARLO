@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -76,6 +77,13 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
 
   @Override
+  public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase) {
+    return phase.getProjectExpectedStudies().stream()
+      .filter(s -> s.isActive() && s.getProjectExpectedStudyInfo(phase) != null)
+      .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList());
+  }
+
+  @Override
   public List<ProjectExpectedStudy> getUserStudies(long userId, String crp) {
 
     List<ProjectExpectedStudy> projects = new ArrayList<>();
@@ -102,6 +110,5 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     return projectExpectedStudyDAO.save(projectExpectedStudy);
   }
-
 
 }

@@ -451,14 +451,9 @@ public class ExternalPartnershipsAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_EXTERNAL_PARTNERSHIP_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (reportSynthesis.getReportSynthesisCrpProgress().getSloTargets() != null) {
-        reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().clear();
+      if (reportSynthesis.getReportSynthesisExternalPartnership().getPartnerPartnerships() != null) {
+        reportSynthesis.getReportSynthesisExternalPartnership().getPartnerPartnerships().clear();
       }
-
-      if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() != null) {
-        reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies().clear();
-      }
-
     }
   }
 
@@ -550,8 +545,6 @@ public class ExternalPartnershipsAction extends BaseAction {
         if (index < 0) {
           selectedPs.add(studyId);
         }
-
-
       }
 
       for (ReportSynthesisExternalPartnershipProject reportStudy : externalPartnershipDB

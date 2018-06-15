@@ -57,7 +57,7 @@
             [#if PMU]
             <div class="form-group margin-panel">
               <div class="viewMoreSyntesis-block" >
-                [@tableFlagshipSynthesis tableName="tablePartnerships" list=flagshipExternalPartnerships columns=["summarizeHighlights"] /]
+                [@tableFlagshipSynthesis tableName="tablePartnerships" list=flagshipExternalPartnerships columns=["highlights"] /]
                 <div class="viewMoreSyntesis closed"></div>
               </div>
             </div>
@@ -131,7 +131,8 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-projectId" width="0%">[@s.text name="${customLabel}.tableG.projectId" /]</th>
+        [#if isPMU] <th>FP</th> [/#if]
+        <th id="tb-projectId" width="0%">[@s.text name="${customLabel}.tableG.partner" /]</th>
         <th id="tb-phase" width="20%">[@s.text name="${customLabel}.tableG.phase" /]</th>
         <th id="tb-type" width="11%">[@s.text name="${customLabel}.tableG.type" /]</th>
         <th id="tb-geographicScope" width="24%">[@s.text name="${customLabel}.tableG.geoScope" /]</th>
@@ -153,15 +154,29 @@
         [#local customName = "${name}" /]
         [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(element.projectPartner.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
-          [#-- Project ID --]
+          [#-- Flagships --]
+          [#if isPMU]
+          <td>
+              <div class="clearfix"></div>
+              [#list (item.liaisonInstitutions)![] as liaisonInstitution]
+                <span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${(liaisonInstitution.crpProgram.acronym)!}</span>
+              [/#list]
+          </td>
+          [/#if]
           <td class="tb-projectId text-center">
-            <p>${(element.projectPartner.institution.acronymName)!'--'}</p>
-            <a href="${URL}" target="_blank"><i><small>(From P${(element.projectPartner.project.id)!''})</small></i></a>
+            <a href="${URL}" target="_blank">
+              [#-- Partner Name --]
+              ${(element.projectPartner.institution.acronymName)!'--'}
+              [#-- Project ID --]
+              <br /><i><small>(From P${(element.projectPartner.project.id)!''})</small></i>
+            </a>
           </td>
           [#-- Phase of research --]
           <td class="text-center">
           [#if element.partnershipResearchPhases?has_content]
-            ${element.partnershipResearchPhases} ssdadsadas
+            [#list element.partnershipResearchPhases as reseacrhPhase]
+              <span>${reseacrhPhase.repIndPhaseResearchPartnership.name}</span><br />
+            [/#list]
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
@@ -193,7 +208,7 @@
           [#-- Include in AR--]
           [#if !isPMU]
           <td class="plannedStudiesCheckbox text-center">
-            [@customForm.checkmark id="keyPartnership-${item_index}" name="${customName}" value="${(element.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(element.id))!true) editable=editable /]
+            [@customForm.checkmark id="keyPartnership-${item_index}" name="${customName}" value="${(element.id)!''}" checked=((!reportSynthesis.reportSynthesisExternalPartnership.partnershipIds?seq_contains(element.id))!true) editable=editable /]
           </td>
           [/#if]
         </tr>
