@@ -33,7 +33,9 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
@@ -109,8 +111,24 @@ public class POISummary {
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
 
+  public void tableAAnnualReportStyle(XWPFTable table) {
+    /* horizontal merge, From format tables A */
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+
+        CTTcPr pr = cell.getCTTc().addNewTcPr();
+        pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(200));
+      }
+    }
+  }
+
   public void tableAStyle(XWPFTable table) {
-    /* Vertical merge, From format tables A */
+    /* Horizontal merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
 
@@ -148,6 +166,7 @@ public class POISummary {
       }
     }
   }
+
 
   public void tableCStyle(XWPFTable table) {
     /* Vertical merge, From format tables C */
@@ -473,9 +492,42 @@ public class POISummary {
         break;
       case "tableC":
         this.tableCStyle(table);
+        break;
       case "tableF":
         this.tableFStyle(table);
+        break;
       case "tableG":
+        this.tableGStyle(table);
+        break;
+
+      case "tableAAnnualReport":
+        this.tableAAnnualReportStyle(table);
+        break;
+      case "tableBAnnualReport":
+        this.tableEStyle(table);
+        break;
+      case "tableCAnnualReport":
+        this.tableCStyle(table);
+        break;
+      case "tableDAnnualReport":
+        this.tableFStyle(table);
+        break;
+      case "tableEAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableFAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableGAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableHAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableIAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableJAnnualReport":
         this.tableGStyle(table);
         break;
     }
