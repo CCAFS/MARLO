@@ -57,7 +57,7 @@
             [#if PMU]
             <div class="form-group margin-panel">
               <div class="viewMoreSyntesis-block" >
-              [@tableFlagshipSynthesis tableName="tablePartnerships" list=[{},{},{},{}] columns=["summarizeHighlights"] /]
+                [@tableFlagshipSynthesis tableName="tablePartnerships" list=[{},{},{},{}] columns=["summarizeHighlights"] /]
                 <div class="viewMoreSyntesis closed"></div>
               </div>
             </div>
@@ -146,45 +146,46 @@
     [#if list?has_content]
       [#list list as item]
         [#if isPMU]
-          [#local element = (item.projectPartnerTales)!{} ]
+          [#local element = (item.projectPartnerPartnership)!{} ]
         [#else]
           [#local element = item ]
         [/#if]
         [#local customName = "${name}" /]
-        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(element.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(element.projectPartner.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- Project ID --]
           <td class="tb-projectId text-center">
-            <a href="${URL}" target="_blank">P${(element.project.id)!''}</a>
+            <p>${(element.projectPartner.institution.acronymName)!'--'}</p>
+            <a href="${URL}" target="_blank"><i><small>(From P${(element.projectPartner.project.id)!''})</small></i></a>
           </td>
           [#-- Phase of research --]
           <td class="text-center">
-          [#if element.phase?has_content]
-            ${element.phase}
+          [#if element.partnershipResearchPhases?has_content]
+            ${element.partnershipResearchPhases} ssdadsadas
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Partner type --]
           <td class="text-center">
-          [#if element.type?has_content]
-            ${element.type}
+          [#if element.projectPartner.institution.institutionType.repIndOrganizationType?has_content]
+            ${element.projectPartner.institution.institutionType.repIndOrganizationType.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-          [#if element.scope?has_content]
-            ${element.scope}
+          [#if element.geographicScope?has_content]
+            ${element.geographicScope.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Main area of partnership --]
-          <td class="text-center">
-          [#if element.area?has_content]
-            ${element.area}
+          <td class="">
+          [#if element.mainArea?has_content]
+            ${element.mainArea}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
