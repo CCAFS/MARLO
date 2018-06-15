@@ -752,7 +752,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
         }
       }
 
-      for (Long studyId : selectedPs) {
+      for (Long studyId : studiesIds) {
         DeliverableIntellectualAsset asset =
           deliverableIntellectualAssetManager.getDeliverableIntellectualAssetById(studyId);
 
@@ -833,7 +833,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
         }
       }
 
-      for (Long studyId : selectedPs) {
+      for (Long studyId : studiesIds) {
         ProjectInnovation innovation = projectInnovationManager.getProjectInnovationById(studyId);
 
         ReportSynthesisCrossCuttingDimensionInnovation innovationNew =
