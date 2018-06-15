@@ -90,16 +90,12 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
     query.append("si.`is_contribution` = 1 AND ");
     query.append("ot.`id` =" + repIndOrganizationType.getId());
 
-
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
-
     List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>();
 
     if (rList != null) {
       for (Map<String, Object> map : rList) {
         ProjectExpectedStudy projectExpectedStudy = this.find(Long.parseLong(map.get("id").toString()));
-
-
         projectExpectedStudies.add(projectExpectedStudy);
       }
     }
@@ -108,6 +104,29 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
 
   }
 
+  @Override
+  public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("s.id as id ");
+    query.append("FROM ");
+    query.append("project_expected_studies AS s ");
+    query.append("INNER JOIN project_expected_study_info AS si ON si.project_expected_study_id = s.id ");
+    query.append("WHERE s.is_active = 1 AND ");
+    query.append("si.`id_phase` =" + phase.getId());
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectExpectedStudy projectExpectedStudy = this.find(Long.parseLong(map.get("id").toString()));
+        projectExpectedStudies.add(projectExpectedStudy);
+      }
+    }
+
+    return projectExpectedStudies;
+  }
 
   @Override
   public List<Map<String, Object>> getUserStudies(long userId, String crp) {
