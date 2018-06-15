@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -80,6 +82,7 @@ public class IndicatorsAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
+  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   // Variables
   private String transaction;
   private InfluenceValidator influenceValidator;
@@ -92,6 +95,8 @@ public class IndicatorsAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private ReportSynthesis reportSynthesisPMU;
   private Boolean isInfluence;
+  private List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs;
+
 
   @Inject
   public IndicatorsAction(APConfig config, GlobalUnitManager crpManager,
@@ -99,7 +104,8 @@ public class IndicatorsAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     InfluenceValidator influenceValidator, ControlValidator controlValidator,
     RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
-    ReportSynthesisIndicatorManager reportSynthesisIndicatorManager) {
+    ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -111,7 +117,9 @@ public class IndicatorsAction extends BaseAction {
     this.controlValidator = controlValidator;
     this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
+    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
   }
+
 
   @Override
   public String cancel() {
@@ -164,6 +172,11 @@ public class IndicatorsAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+
+  public List<ReportSynthesisStudiesByOrganizationTypeDTO> getOrganizationTypeByStudiesDTOs() {
+    return organizationTypeByStudiesDTOs;
   }
 
   public ReportSynthesis getReportSynthesis() {
@@ -417,7 +430,10 @@ public class IndicatorsAction extends BaseAction {
         }
       }
     }
-
+    // Informative Tables/Charts
+    if (isInfluence) {
+      organizationTypeByStudiesDTOs = repIndOrganizationTypeManager.getOrganizationTypesByStudies(phase);
+    }
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
@@ -552,6 +568,12 @@ public class IndicatorsAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void
+    setOrganizationTypeByStudiesDTOs(List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs) {
+    this.organizationTypeByStudiesDTOs = organizationTypeByStudiesDTOs;
   }
 
 
