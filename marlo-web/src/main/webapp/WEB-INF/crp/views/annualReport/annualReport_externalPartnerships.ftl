@@ -208,7 +208,7 @@
           [#-- Include in AR--]
           [#if !isPMU]
           <td class="plannedStudiesCheckbox text-center">
-            [@customForm.checkmark id="keyPartnership-${item_index}" name="${customName}" value="${(element.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(element.id))!true) editable=editable /]
+            [@customForm.checkmark id="keyPartnership-${item_index}" name="${customName}" value="${(element.id)!''}" checked=((!reportSynthesis.reportSynthesisExternalPartnership.partnershipIds?seq_contains(element.id))!true) editable=editable /]
           </td>
           [/#if]
         </tr>

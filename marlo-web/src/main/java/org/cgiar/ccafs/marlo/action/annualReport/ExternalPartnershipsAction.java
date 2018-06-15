@@ -545,8 +545,6 @@ public class ExternalPartnershipsAction extends BaseAction {
         if (index < 0) {
           selectedPs.add(studyId);
         }
-
-
       }
 
       for (ReportSynthesisExternalPartnershipProject reportStudy : externalPartnershipDB
