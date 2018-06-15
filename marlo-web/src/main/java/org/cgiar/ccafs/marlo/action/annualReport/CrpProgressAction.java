@@ -740,7 +740,6 @@ public class CrpProgressAction extends BaseAction {
     this.studiesList = studiesList;
   }
 
-
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
   }

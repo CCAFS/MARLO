@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -64,6 +65,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -144,6 +146,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private List<ReportSynthesisCrpProgress> flagshipCrpProgress;
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
   private ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager;
+  private List<SrfSloIndicatorTarget> sloTargets;
+  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
 
   // Parameter for tables E and F
   Double totalCarry = 0.0, totalw1w2 = 0.0, totalw3Bilateral = 0.0, totalCenter = 0.0, grandTotal = 0.0;
@@ -157,7 +161,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ReportSynthesisManager reportSynthesisManager) {
+    PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ReportSynthesisManager reportSynthesisManager,
+    SrfSloIndicatorTargetManager srfSloIndicatorTargetManager) {
     super(config, crpManager, phaseManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -170,6 +175,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.powbCrpStaffingCategoriesManager = powbCrpStaffingCategoriesManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
   }
 
   private void addAdjustmentDescription() {
@@ -692,51 +698,47 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    if (!fpSynthesisTable.isEmpty() || fpSynthesisTable != null) {
-      for (ReportSynthesisCrpProgressTarget fpSynthesis : fpSynthesisTable) {
-        int flagshipIndex = 0;
-        data = new ArrayList<>();
-        for (int i = 0; i < fpSynthesisTable.size(); i++) {
-          subIDO = "";
+    if (!sloTargets.isEmpty() || sloTargets != null) {
 
-          /*
-           * for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-           * if (subIdo.getSrfSubIdo() != null) {
-           * if (subIDO.isEmpty()) {
-           * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-           * subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
-           * } else {
-           * subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
-           * }
-           * } else {
-           * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-           * subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
-           * } else {
-           * subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
-           * }
-           * }
-           * }
-           * }
-           */
-          outcomes = "";
+      int flagshipIndex = 0;
+      data = new ArrayList<>();
+      for (int i = 0; i < sloTargets.size(); i++) {
+        subIDO = "";
 
-          if (flagshipIndex == 0) {
-            FP = fpSynthesis.getSrfSloIndicatorTarget().getNarrative();
-          } else {
-            FP = " ";
-          }
+        /*
+         * for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+         * if (subIdo.getSrfSubIdo() != null) {
+         * if (subIDO.isEmpty()) {
+         * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+         * subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
+         * } else {
+         * subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
+         * }
+         * } else {
+         * if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+         * subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
+         * } else {
+         * subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
+         * }
+         * }
+         * }
+         * }
+         */
+        outcomes = "";
 
-          Boolean bold = false;
-          String blackColor = "000000";
-          String redColor = "c00000";
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT, bold, blackColor),
-            new POIField(subIDO, ParagraphAlignment.LEFT, bold, blackColor),
-            new POIField(outcomes, ParagraphAlignment.LEFT, bold, blackColor)};
-          data = Arrays.asList(sData);
-          datas.add(data);
-          flagshipIndex++;
-        }
+        FP = sloTargets.get(i).getNarrative();
+
+        Boolean bold = false;
+        String blackColor = "000000";
+        String redColor = "c00000";
+        POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(subIDO, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(outcomes, ParagraphAlignment.LEFT, bold, blackColor)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+        flagshipIndex++;
       }
+
     }
 
 
@@ -1771,7 +1773,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textHead1Title(document.createParagraph(), "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title"));
-      // this.createTableA1();
+      this.createTableA1();
 
       // Table a2
       document.createParagraph().setPageBreak(true); // Fast Page Break
@@ -2331,12 +2333,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
 
     // Table A-2 PMU Information
+
+    sloTargets = new ArrayList<>(srfSloIndicatorTargetManager.findAll().stream()
+      .filter(sr -> sr.isActive() && sr.getYear() == 2022).collect(Collectors.toList()));
+
+    System.out.println("slo targets " + sloTargets.size());
+
     try {
       flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutionsList,
         this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-      System.out.println(flagshipPlannedList + " flagship");
-
-      System.out.println("largo lista " + liaisonInstitutionsList.size() + " phase " + this.getSelectedPhase().getId());
 
       // Table A-1 Evidence on Progress
       fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutionsList,
@@ -2346,6 +2351,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       flagshipCrpProgress = reportSynthesisCrpProgressManager.getFlagshipCrpProgress(liaisonInstitutionsList,
         this.getSelectedPhase().getId());
       // flagshipCrpProgress.get(0).getSloTargets().get(0).getSrfSloIndicatorTarget().getNarrative()
+
 
     } catch (Exception e) {
       System.out.println(e);
