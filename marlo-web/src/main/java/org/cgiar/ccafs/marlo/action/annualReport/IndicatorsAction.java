@@ -378,11 +378,11 @@ public class IndicatorsAction extends BaseAction {
             if (isInfluence) {
               repIndSynthesisIndicator = repIndSynthesisIndicatorManager.findAll().stream()
                 .filter(i -> i.isMarlo() && i.getType().equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE))
-                .collect(Collectors.toList());
+                .sorted((i1, i2) -> i1.getIndicator().compareTo(i2.getIndicator())).collect(Collectors.toList());
             } else {
               repIndSynthesisIndicator = repIndSynthesisIndicatorManager.findAll().stream()
                 .filter(i -> i.isMarlo() && i.getType().equals(APConstants.REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL))
-                .collect(Collectors.toList());
+                .sorted((i1, i2) -> i1.getIndicator().compareTo(i2.getIndicator())).collect(Collectors.toList());
             }
 
             for (RepIndSynthesisIndicator synthesisIndicator : repIndSynthesisIndicator) {
