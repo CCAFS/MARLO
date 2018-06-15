@@ -446,6 +446,9 @@ public class IndicatorsAction extends BaseAction {
     if (isInfluence) {
       organizationTypeByStudiesDTOs = repIndOrganizationTypeManager.getOrganizationTypesByStudies(phase);
       projectExpectedStudies = projectExpectedStudyManager.getStudiesByPhase(phase);
+      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
+        projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      }
     }
 
     // Base Permission
