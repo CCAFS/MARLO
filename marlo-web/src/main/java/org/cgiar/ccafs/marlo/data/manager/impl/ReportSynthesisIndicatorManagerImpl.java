@@ -69,6 +69,8 @@ public class ReportSynthesisIndicatorManagerImpl implements ReportSynthesisIndic
       .filter(
         si -> si.isActive() && si.getRepIndSynthesisIndicator() != null && si.getRepIndSynthesisIndicator().isMarlo()
           && si.getRepIndSynthesisIndicator().getType().equals(indicatorType))
+      .sorted((i1, i2) -> i1.getRepIndSynthesisIndicator().getIndicator()
+        .compareTo(i2.getRepIndSynthesisIndicator().getIndicator()))
       .collect(Collectors.toList());
   }
 
