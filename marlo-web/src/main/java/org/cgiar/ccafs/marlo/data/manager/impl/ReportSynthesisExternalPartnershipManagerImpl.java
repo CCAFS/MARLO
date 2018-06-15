@@ -100,8 +100,9 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
       for (ProjectPartnerPartnership projectPartnerPartnership : projectPartnerPartnerships) {
         ReportSynthesisExternalPartnershipDTO dto = new ReportSynthesisExternalPartnershipDTO();
         dto.setProjectPartnerPartnership(projectPartnerPartnership);
-        if (projectPartnerPartnership.getProjectPartner().getProject().getProjectInfo().getAdministrative() != null
-          && projectPartnerPartnership.getProjectPartner().getProject().getProjectInfo().getAdministrative()) {
+        if (projectPartnerPartnership.getProjectPartner().getProject().getProjecInfoPhase(phase)
+          .getAdministrative() != null
+          && projectPartnerPartnership.getProjectPartner().getProject().getProjecInfoPhase(phase).getAdministrative()) {
           dto.setLiaisonInstitutions(new ArrayList<>());
           dto.getLiaisonInstitutions().add(liaisonInstitutionPMU);
         } else {
