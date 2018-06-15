@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipProject;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.annualreport.ExternalPartnershipsValidator;
 
@@ -111,15 +112,15 @@ public class ExternalPartnershipsAction extends BaseAction {
   private List<ReportSynthesisExternalPartnershipDTO> flagshipPlannedList;
 
   @Inject
-  public ExternalPartnershipsAction(GlobalUnitManager crpManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    ReportSynthesisManager reportSynthesisManager, AuditLogManager auditLogManager, UserManager userManager,
-    CrpProgramManager crpProgramManager,
+  public ExternalPartnershipsAction(APConfig config, GlobalUnitManager crpManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
+    AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager,
     ExternalPartnershipsValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
     ReportSynthesisExternalPartnershipProjectManager reportSynthesisExternalPartnershipProjectManager,
     PhaseManager phaseManager) {
-    super();
+    super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.reportSynthesisManager = reportSynthesisManager;
@@ -150,6 +151,7 @@ public class ExternalPartnershipsAction extends BaseAction {
     String actionFile = this.getActionName().replace("/", "_");
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_"
       + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String fl = config.getAutoSaveFolder();
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 

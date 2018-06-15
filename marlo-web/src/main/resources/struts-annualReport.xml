@@ -71,7 +71,7 @@
     </action>
     
 		<!--  2.3 Key External Partnerships  -->
-		<action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_externalPartnerships.ftl</result>
       <result name="success" type="redirectAction">
