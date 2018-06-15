@@ -1,7 +1,7 @@
 [#ftl]
 [#macro indicatorInformation name list index id="indicatorID" label="" editable=true]
   [#local customName = "${name}[${index}]"]
-  [#local element = list[index] ]
+  [#local element = (list[index])!{} ]
   [#-- Hidden Inputs Indicator --]
   <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
   <input type="hidden"  name="${customName}.repIndSynthesisIndicator.id" value="${(element.repIndSynthesisIndicator.id)!}"/>
