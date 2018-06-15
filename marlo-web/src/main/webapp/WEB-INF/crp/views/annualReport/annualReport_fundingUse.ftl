@@ -47,7 +47,14 @@
           
             [#-- Summarize the main areas of expenditure of W1/2 --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.mainArea" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#if PMU]
+                [@customForm.textArea name="${customName}.mainArea" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#else]
+                <div class="textArea">
+                  <label for="">[@customForm.text name="${customLabel}.summarize" readText=true /]:</label>
+                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                </div>
+              [/#if]
             </div>
             
             [#-- Table F: Main Areas of W1/2 Expenditure --]
