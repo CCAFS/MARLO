@@ -88,7 +88,7 @@
             </div>
             
             [#-- Information -  Indicator C3  --]
-            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" element=synthesisIndicators[0] index=0 id="indicatorI3" label="${customLabel}" editable=editable && PMU /]
+            [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=0 id="indicatorI3" label="${customLabel}" editable=editable && PMU /]
           
           </div>
           [#-- Section Buttons & hidden inputs--]
