@@ -247,7 +247,7 @@ public class ExternalPartnershipsAction extends BaseAction {
           .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().getId() == phaseID)
           .collect(Collectors.toList()));
         Collections.sort(projectPartners,
-          (p1, p2) -> p1.getInstitution().getAcronym().compareTo(p2.getInstitution().getAcronym()));
+          (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
 
         for (ProjectPartner projectPartner : projectPartners) {
           List<ProjectPartnerPartnership> projectPartnerPartnerships = new ArrayList<>(projectPartner

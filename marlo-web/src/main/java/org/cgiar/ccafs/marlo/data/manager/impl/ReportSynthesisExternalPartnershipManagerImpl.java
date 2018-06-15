@@ -127,8 +127,8 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
             && ps.getProjectPartner().getPhase().getYear() == phase.getYear())
           .collect(Collectors.toList()));
 
-      Collections.sort(projectPartnerPartnerships, (p1, p2) -> p1.getProjectPartner().getInstitution().getAcronym()
-        .compareTo(p2.getProjectPartner().getInstitution().getAcronym()));
+      Collections.sort(projectPartnerPartnerships, (p1, p2) -> p1.getProjectPartner().getInstitution().getId()
+        .compareTo(p2.getProjectPartner().getInstitution().getId()));
 
       for (ProjectPartnerPartnership projectPartnerPartnership : projectPartnerPartnerships) {
         ReportSynthesisExternalPartnershipDTO dto = new ReportSynthesisExternalPartnershipDTO();
