@@ -46,13 +46,23 @@ public interface ReportSynthesisExternalPartnershipManager {
    */
   public boolean existReportSynthesisExternalPartnership(long reportSynthesisExternalPartnershipID);
 
-
   /**
    * This method gets a list of reportSynthesisExternalPartnership that are active
    * 
    * @return a list from ReportSynthesisExternalPartnership null if no exist records
    */
   public List<ReportSynthesisExternalPartnership> findAll();
+
+
+  /**
+   * get the flagships external Partnership information
+   * 
+   * @param lInstitutions
+   * @param phaseID
+   * @return
+   */
+  public List<ReportSynthesisExternalPartnership>
+    getFlagshipCExternalPartnership(List<LiaisonInstitution> lInstitutions, long phaseID);
 
   /**
    * Get the Table G Synthesis Information
