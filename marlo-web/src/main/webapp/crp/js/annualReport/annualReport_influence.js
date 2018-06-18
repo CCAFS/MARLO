@@ -37,13 +37,11 @@ google.charts.setOnLoadCallback(function() {
       legend: {
         position: "none"
       },
-      hAxes: {
-        textStyle: {
-          color: 'red'
-        }
-      },
       vAxis: {
-      // textPosition: 'in'
+        textStyle: {
+            color: '#8c8c8c',
+            fontName: 'Roboto'
+        }
       },
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
