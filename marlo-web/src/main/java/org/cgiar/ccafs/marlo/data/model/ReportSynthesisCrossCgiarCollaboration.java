@@ -36,6 +36,29 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisCrossCgiarCollaboration other = (ReportSynthesisCrossCgiarCollaboration) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
@@ -44,7 +67,6 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
   public String getDescription() {
     return description;
   }
-
 
   public GlobalUnit getGlobalUnit() {
     return globalUnit;

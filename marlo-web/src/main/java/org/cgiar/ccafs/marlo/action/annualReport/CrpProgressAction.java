@@ -637,7 +637,6 @@ public class CrpProgressAction extends BaseAction {
    */
   public void saveSrfTargets(ReportSynthesisCrpProgress crpProgressDB) {
 
-    List<ReportSynthesisCrpProgressTarget> tg = reportSynthesis.getReportSynthesisCrpProgress().getSloTargets();
 
     // Search and deleted form Information
     if (crpProgressDB.getReportSynthesisCrpProgressTargets() != null
