@@ -378,7 +378,6 @@ public class POISummary {
     String id = paragraph.getDocument().getPackagePart()
       .addExternalRelationship(url, XWPFRelation.HYPERLINK.getRelation()).getId();
 
-
     // Append the link and bind it to the relationship
     CTHyperlink cLink = paragraph.getCTP().addNewHyperlink();
     cLink.setId(id);
