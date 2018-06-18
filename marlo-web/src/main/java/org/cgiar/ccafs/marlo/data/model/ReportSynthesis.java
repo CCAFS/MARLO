@@ -37,8 +37,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisGovernance reportSynthesisGovernance;
 
+
   @Expose
   private ReportSynthesisRisk reportSynthesisRisk;
+
 
   @Expose
   private ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension;
@@ -46,12 +48,12 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress;
 
-
   @Expose
   private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
 
   @Expose
   private ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary;
+
 
   @Expose
   private ReportSynthesisEfficiency reportSynthesisEfficiency;
@@ -59,9 +61,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisIndicatorGeneral reportSynthesisIndicatorGeneral;
 
-
   @Expose
   private ReportSynthesisExternalPartnership reportSynthesisExternalPartnership;
+
+  @Expose
+  private ReportSynthesisCrossCgiar reportSynthesisCrossCgiar;
 
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
@@ -104,9 +108,13 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
-
   public Phase getPhase() {
     return phase;
+  }
+
+
+  public ReportSynthesisCrossCgiar getReportSynthesisCrossCgiar() {
+    return reportSynthesisCrossCgiar;
   }
 
 
@@ -123,6 +131,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
     return reportSynthesisEfficiency;
   }
+
 
   public ReportSynthesisExternalPartnership getReportSynthesisExternalPartnership() {
     return reportSynthesisExternalPartnership;
@@ -156,7 +165,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisRisk;
   }
 
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
@@ -178,6 +186,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+
+  public void setReportSynthesisCrossCgiar(ReportSynthesisCrossCgiar reportSynthesisCrossCgiar) {
+    this.reportSynthesisCrossCgiar = reportSynthesisCrossCgiar;
   }
 
 
