@@ -64,7 +64,7 @@
             [/#if]
   
             [#-- Table G: Projects Key Partnerships --]
-            <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableG.title" param="${currentCycleYear}" /]</h4>
+            <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableG.title" param="${currentCycleYear}" /] ([#if PMU]${flagshipPlannedList?size}[#else]${partnerShipList?size}[/#if])</h4>
             <div class="form-group margin-panel">
               [#if flagship]
                 [@tableGMacro name="${customName}.partnershipsValue" list=partnerShipList /]

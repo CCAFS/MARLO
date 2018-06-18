@@ -108,27 +108,22 @@
               <div class="col-md-7">
                 [#-- Chart 3 --]
                 <div id="chart3" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"CGIAR",                              "value": "89"},
-                      {"name":"Academic and Research",              "value": "6"},
-                      {"name":"Development organizations",          "value": "7"},
-                      {"name":"NARES/NARS",                         "value": "45"},
-                      {"name":"CBOs and farmers' groups",           "value": "56"},
-                      {"name":"Private sector",                     "value": "5"},
-                      {"name":"Foundations and Financial Institutions", "value": "2"},
-                      {"name":"Government",                         "value": "7"},
-                      {"name":"Bilateral and Donor governments",    "value": "7"},
-                      {"name":"Multilateral",                       "value": "45"},
-                      {"name":"Other",                              "value": "23"}
-                    ] 
-                  /]
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart3.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart3.1" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [#list partnershipsByInstitutionTypeDTOs as data]
+                      [#if data.projectPartnerPartnerships?has_content]
+                      <li>
+                        <span>${data.institutionType.repIndOrganizationType.name}</span>
+                        <span class="number">${data.projectPartnerPartnerships?size}</span>
+                        <span>#f39c12</span>
+                        <span>${data.projectPartnerPartnerships?size}</span>
+                      </li>
+                      [/#if]
                     [/#list]
                   </ul>
                 </div>
@@ -136,20 +131,18 @@
               <div class="col-md-5">
                 [#-- Chart 4 --]
                 <div id="chart4" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Global",         "value": "89"},
-                      {"name":"Multinational",  "value": "6"},
-                      {"name":"National",       "value": "7"},
-                      {"name":"Sub-National",   "value": "45"}
-                    ] 
-                  /] 
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart4.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart4.1" /]</span>
                     </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [#list partnershipsByGeographicScopeDTO as data]
+                      [#if data.projectPartnerPartnerships?has_content]
+                      <li>
+                        <span>${data.repIndGeographicScope.name}</span>
+                        <span class="number">${data.projectPartnerPartnerships?size}</span>
+                      </li>
+                      [/#if]
                     [/#list]
                   </ul>
                 </div>
@@ -159,19 +152,18 @@
               <div class="col-md-7">
                 [#-- Chart 5 --]
                 <div id="chart5" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Phase 1: Discovery/Proof of concept",    "value": "50"},
-                      {"name":"Phase 2: Piloting",                      "value": "16"},
-                      {"name":"Phase 3: Scaling up and scaling out",    "value": "17"}
-                    ] 
-                  /]
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart5.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart5.1" /]</span>
                     </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [#list partnershipsByPhaseDTO as data]
+                      [#if data.projectPartnerPartnerships?has_content]
+                      <li>
+                        <span>${data.repIndPhaseResearchPartnership.name}</span>
+                        <span class="number">${data.projectPartnerPartnerships?size}</span>
+                      </li>
+                      [/#if]
                     [/#list]
                   </ul>
                 </div>
@@ -180,7 +172,7 @@
                 [#-- Total of partnerships--]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC2.totalPartnerships" /]</label><br />
-                  <span>556</span>
+                  <span>${projectPartnerPartnerships?size}</span>
                 </div>
               </div>
             </div>
@@ -189,7 +181,10 @@
             <div class="form-group">
               <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.partnershipsTable.title" param="${currentCycleYear}"/]</h4>
               <hr />
-              [@tableGKeyPartnershipsMacro list=[{},{},{},{}] /]
+               <div class="viewMoreSyntesis-block" >
+                [@tableGKeyPartnershipsMacro list=(projectPartnerPartnerships)![] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             
             [#-- Information -  Indicator C2  --]

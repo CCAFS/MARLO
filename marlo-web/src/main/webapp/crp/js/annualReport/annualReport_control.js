@@ -48,18 +48,35 @@ google.charts.setOnLoadCallback(function() {
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
-  // Chart #3
+  // Chart #3 - Partnerships by Partner type
   var $chart3 = $('#chart3');
   var data3 = new google.visualization.arrayToDataTable(getChartDataArray($chart3));
-  var chart3 = new google.charts.Bar(document.getElementById($chart3[0].id));
-  chart3.draw(data3, google.charts.Bar.convertOptions({
-      chart: {
-        title: "Partnerships by Partner type"
+  var view3 = new google.visualization.DataView(data3);
+  var chart3 = new google.visualization.BarChart(document.getElementById($chart3[0].id));
+  chart3.draw(view3, google.charts.Bar.convertOptions({
+      title: "Partnerships by Partner type",
+      titleTextStyle: {
+          color: '#5f5e5e',
+          fontName: 'Roboto',
+          fontSize: 16,
+          bold: false
+      },
+      chartArea: {
+          right: 0,
+          bottom: 0,
+          width: '60%',
+          height: '85%'
       },
       legend: {
         position: "none"
       },
-      colors: '#f39c12',
+      vAxis: {
+        textStyle: {
+            color: '#8c8c8c',
+            fontName: 'Roboto'
+        }
+      },
+      // colors: '#27ae60',
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
@@ -77,7 +94,10 @@ google.charts.setOnLoadCallback(function() {
       },
       pieHole: 0.3,
       chartArea: {
-        width: '100%'
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          height: '85%'
       },
       legend: {
         alignment: 'center'
