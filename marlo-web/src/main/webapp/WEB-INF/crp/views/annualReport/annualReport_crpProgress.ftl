@@ -63,7 +63,7 @@
               [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
               
               <div class="block-selectedSLOs">
-                <div class="form-group sloTargetsList">              
+                <div class="form-group sloTargetsList">
                   [#if reportSynthesis.reportSynthesisCrpProgress.sloTargets?has_content]
                     [#list reportSynthesis.reportSynthesisCrpProgress.sloTargets as slo]
                       [@sloTargetMacro name="${customName}.sloTargets" element=slo index=slo_index /]
@@ -87,7 +87,7 @@
               <div class="viewMoreSyntesis-block" >
                 [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
                 <div class="viewMoreSyntesis closed"></div>
-                </div>
+              </div>
             </div>
             [/#if]
             

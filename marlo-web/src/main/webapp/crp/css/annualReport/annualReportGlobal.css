@@ -182,14 +182,17 @@ tfoot {
 }
 
 .viewMoreSyntesis {
-  color: #6b6b6b;
-  /* border-bottom: 1px solid #dddddd; */
+  color: #2196f3;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+  /* border: 1px solid #dddddd; */
+  border-top: 0;
   position: absolute;
   bottom: 0;
-  width: 99%;
-  margin: 2px 1px 0 1px;
+  left: 1px;
+  width: 99.8%;
+  /* margin: 2px 1px 0 1px; */
   cursor: pointer;
-  padding: 16px 0 0px 0;
+  padding: 16px 7px 0px 0;
   height: 43px;
   font-weight: 900;
   text-align: center;
