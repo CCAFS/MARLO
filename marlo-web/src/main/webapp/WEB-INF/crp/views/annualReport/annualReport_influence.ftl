@@ -57,9 +57,21 @@
                 [#-- Chart 1 --]
                 <div id="chart1" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
-                    <li><span>[@s.text name="${customLabel}.indicatorI3.chart1.0" /]</span><span>[@s.text name="${customLabel}.indicatorI3.chart1.1" /]</span></li>
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorI3.chart1.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorI3.chart1.1" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
+                    </li>
                     [#list (organizationTypeByStudiesDTOs)![] as data]
-                      <li><span>${data.repIndOrganizationType.name}</span><span class="number">${data.projectExpectedStudies?size}</span></li>
+                      [#if (data.projectExpectedStudies?has_content)!false]
+                      <li>
+                        <span>${(data.repIndOrganizationType.name)!}</span>
+                        <span class="number">${data.projectExpectedStudies?size}</span>
+                        <span>#4285f4</span>
+                        <span>${data.projectExpectedStudies?size}</span>
+                      </li>
+                      [/#if]
                     [/#list]
                   </ul>
                 </div> 
@@ -70,7 +82,10 @@
             <div class="form-group margin-panel">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.indicatorI3.policyTable" /]</h4>
               <hr />
-              [@tableOutcomesMacro list=[{},{},{},{}] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableOutcomesMacro list=projectExpectedStudies /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             
             [#-- Information -  Indicator C3  --]
@@ -92,7 +107,6 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id">[@s.text name="${customLabel}.table.id" /]</th>
         <th id="tb-title">[@s.text name="${customLabel}.table.studiesTitle" /]</th>
         <th id="tb-type">[@s.text name="${customLabel}.table.policy" /]</th>
         <th id="tb-organization-type">[@s.text name="${customLabel}.table.implementingType" /]</th>
@@ -104,47 +118,50 @@
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
+        [#if (item.project.id??)!false]
+          [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#else]
+          [#local URL][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [/#if]
         <tr>
-          [#-- OICS ID --]
-          <td class="tb-id text-center">
-            ${item_index}
-          </td>
           [#-- Title --]
           <td class="">
-          [#if item.crp?has_content]
-            ${item.title}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
+            [#if item.composedName?has_content]
+              <a href="${URL}" target="_blank">${item.composedName}</a>
+            [#else]
+              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+            [/#if]
+            [#-- Project ID --]
+            [#if (item.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(item.project.id)!})</i> [/#if]
           </td>
           [#-- Policy/Investment Type --]
           <td class="">
-          [#if item.type?has_content]
-            ${item.type}
+          [#if item.projectExpectedStudyInfo.repIndPolicyInvestimentType?has_content]
+            ${item.projectExpectedStudyInfo.repIndPolicyInvestimentType.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Implementing Organization Type --]
           <td class="text-center">
-          [#if item.type?has_content]
-            ${item.type}
+          [#if item.projectExpectedStudyInfo.repIndOrganizationType?has_content]
+            ${item.projectExpectedStudyInfo.repIndOrganizationType.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Stage --]
           <td class="text-center">
-          [#if item.stage?has_content]
-            ${item.stage}
+          [#if item.projectExpectedStudyInfo.repIndStageProcess?has_content]
+            ${item.projectExpectedStudyInfo.repIndStageProcess.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Geographic Scope --]
           <td class="text-center">
-          [#if item.scope?has_content]
-            ${item.scope}
+          [#if item.projectExpectedStudyInfo.repIndGeographicScope?has_content]
+            ${item.projectExpectedStudyInfo.repIndGeographicScope.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]

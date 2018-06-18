@@ -57,6 +57,8 @@ function getChartDataArray(chart) {
     dataArray.push($(e).find('span').map(function() {
       if($(this).hasClass('number')) {
         return parseFloat($(this).text());
+      } else if($(this).hasClass('json')) {
+        return JSON.parse($(this).text());
       } else {
         return $(this).text();
       }
