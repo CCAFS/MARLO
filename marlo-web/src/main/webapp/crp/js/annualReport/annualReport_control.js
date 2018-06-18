@@ -21,15 +21,30 @@ google.charts.setOnLoadCallback(function() {
   // Chart #2
   var $chart2 = $('#chart2');
   var data2 = new google.visualization.arrayToDataTable(getChartDataArray($chart2));
-  var chart2 = new google.charts.Bar(document.getElementById($chart2[0].id));
-  chart2.draw(data2, google.charts.Bar.convertOptions({
-      chart: {
-        title: "Innovations by Stage"
+  var view2 = new google.visualization.DataView(data2);
+  var chart2 = new google.visualization.BarChart(document.getElementById($chart2[0].id));
+  chart2.draw(view2, google.charts.Bar.convertOptions({
+      title: "Innovations by Stage",
+      titleTextStyle: {
+          color: '#5f5e5e',
+          fontName: 'Roboto',
+          fontSize: 16,
+          bold: false
+      },
+      chartArea: {
+          right: 0,
+          width: '60%'
       },
       legend: {
         position: "none"
       },
-      colors: '#27ae60',
+      vAxis: {
+        textStyle: {
+            color: '#8c8c8c',
+            fontName: 'Roboto'
+        }
+      },
+      // colors: '#27ae60',
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
