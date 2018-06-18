@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,19 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.RepIndStageInnovationDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -32,12 +37,15 @@ public class RepIndStageInnovationManagerImpl implements RepIndStageInnovationMa
 
 
   private RepIndStageInnovationDAO repIndStageInnovationDAO;
+  private ProjectInnovationInfoDAO projectInnovationInfoDAO;
   // Managers
 
 
   @Inject
-  public RepIndStageInnovationManagerImpl(RepIndStageInnovationDAO repIndStageInnovationDAO) {
+  public RepIndStageInnovationManagerImpl(RepIndStageInnovationDAO repIndStageInnovationDAO,
+    ProjectInnovationInfoDAO projectInnovationInfoDAO) {
     this.repIndStageInnovationDAO = repIndStageInnovationDAO;
+    this.projectInnovationInfoDAO = projectInnovationInfoDAO;
 
 
   }
@@ -62,6 +70,25 @@ public class RepIndStageInnovationManagerImpl implements RepIndStageInnovationMa
   }
 
   @Override
+  public List<ReportSynthesisInnovationsByStageDTO> getInnovationsByStageDTO(Phase phase) {
+    List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTOs = new ArrayList<>();
+    List<RepIndStageInnovation> stageInnovations = this.findAll().stream().collect(Collectors.toList());
+    if (stageInnovations != null) {
+      for (RepIndStageInnovation stageInnovation : stageInnovations) {
+        ReportSynthesisInnovationsByStageDTO reportSynthesisInnovationsByStageDTO =
+          new ReportSynthesisInnovationsByStageDTO();
+        reportSynthesisInnovationsByStageDTO.setRepIndStageInnovation(stageInnovation);
+        reportSynthesisInnovationsByStageDTO
+          .setProjectInnovationInfos(projectInnovationInfoDAO.getInnovationsByStage(stageInnovation, phase));
+        innovationsByStageDTOs.add(reportSynthesisInnovationsByStageDTO);
+      }
+    }
+
+    return innovationsByStageDTOs.stream().sorted((o1, o2) -> new Integer(o2.getProjectInnovationInfos().size())
+      .compareTo(new Integer(o1.getProjectInnovationInfos().size()))).collect(Collectors.toList());
+  }
+
+  @Override
   public RepIndStageInnovation getRepIndStageInnovationById(long repIndStageInnovationID) {
 
     return repIndStageInnovationDAO.find(repIndStageInnovationID);
@@ -72,6 +99,5 @@ public class RepIndStageInnovationManagerImpl implements RepIndStageInnovationMa
 
     return repIndStageInnovationDAO.save(repIndStageInnovation);
   }
-
 
 }
