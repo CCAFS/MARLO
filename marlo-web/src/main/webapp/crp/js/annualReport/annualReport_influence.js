@@ -30,6 +30,10 @@ google.charts.setOnLoadCallback(function() {
           fontSize: 16,
           bold: false
       },
+      chartArea: {
+          right: 0,
+          width: '60%'
+      },
       legend: {
         position: "none"
       },
