@@ -22,7 +22,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -34,10 +36,12 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -86,6 +90,8 @@ public class IndicatorsAction extends BaseAction {
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectInnovationInfoManager projectInnovationInfoManager;
+  private RepIndStageInnovationManager repIndStageInnovationManager;
   // Variables
   private String transaction;
   private InfluenceValidator influenceValidator;
@@ -99,8 +105,12 @@ public class IndicatorsAction extends BaseAction {
   private ReportSynthesis reportSynthesisPMU;
   private Boolean isInfluence;
   private List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs;
+  private List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO;
+
   private List<ProjectExpectedStudy> projectExpectedStudies;
 
+
+  private List<ProjectInnovationInfo> projectInnovationInfos;
 
   @Inject
   public IndicatorsAction(APConfig config, GlobalUnitManager crpManager,
@@ -110,7 +120,8 @@ public class IndicatorsAction extends BaseAction {
     RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationInfoManager projectInnovationInfoManager,
+    RepIndStageInnovationManager repIndStageInnovationManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -124,8 +135,9 @@ public class IndicatorsAction extends BaseAction {
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectInnovationInfoManager = projectInnovationInfoManager;
+    this.repIndStageInnovationManager = repIndStageInnovationManager;
   }
-
 
   @Override
   public String cancel() {
@@ -166,13 +178,21 @@ public class IndicatorsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
+  public List<ReportSynthesisInnovationsByStageDTO> getInnovationsByStageDTO() {
+    return innovationsByStageDTO;
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -190,6 +210,9 @@ public class IndicatorsAction extends BaseAction {
     return projectExpectedStudies;
   }
 
+  public List<ProjectInnovationInfo> getProjectInnovationInfos() {
+    return projectInnovationInfos;
+  }
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -198,6 +221,7 @@ public class IndicatorsAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -444,11 +468,18 @@ public class IndicatorsAction extends BaseAction {
     }
     // Informative Tables/Charts
     if (isInfluence) {
+      // Chart: Studies by organization type
       organizationTypeByStudiesDTOs = repIndOrganizationTypeManager.getOrganizationTypesByStudies(phase);
+      // Table: Outcomes/Impacts involved in policy/investments
       projectExpectedStudies = projectExpectedStudyManager.getStudiesByPhase(phase);
       for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
         projectExpectedStudy.getProjectExpectedStudyInfo(phase);
       }
+    } else {
+      // Table: Table D-2: List of CRP Innovations in 2017
+      projectInnovationInfos = projectInnovationInfoManager.getProjectInnovationInfoByPhase(phase);
+      // Innovations by stage
+      innovationsByStageDTO = repIndStageInnovationManager.getInnovationsByStageDTO(phase);
     }
 
     // Base Permission
@@ -515,7 +546,6 @@ public class IndicatorsAction extends BaseAction {
 
   }
 
-
   /**
    * Save Synthesis Indicators
    * 
@@ -568,6 +598,11 @@ public class IndicatorsAction extends BaseAction {
 
   }
 
+  public void setInnovationsByStageDTO(List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO) {
+    this.innovationsByStageDTO = innovationsByStageDTO;
+  }
+
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -579,7 +614,6 @@ public class IndicatorsAction extends BaseAction {
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -594,6 +628,11 @@ public class IndicatorsAction extends BaseAction {
 
   public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
+  }
+
+
+  public void setProjectInnovationInfos(List<ProjectInnovationInfo> projectInnovationInfos) {
+    this.projectInnovationInfos = projectInnovationInfos;
   }
 
 

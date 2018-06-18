@@ -73,6 +73,11 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
     return projectInnovationInfoDAO.find(projectInnovationInfoID);
   }
 
+  @Override
+  public List<ProjectInnovationInfo> getProjectInnovationInfoByPhase(Phase phase) {
+    return projectInnovationInfoDAO.getProjectInnovationInfoByPhase(phase);
+  }
+
   /**
    * Reply the information to the next Phases
    * 

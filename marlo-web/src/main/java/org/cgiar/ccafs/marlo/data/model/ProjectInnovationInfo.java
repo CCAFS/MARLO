@@ -144,7 +144,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -233,6 +232,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
+
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
   }
@@ -262,10 +262,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.phase = phase;
   }
 
-
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
+
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
@@ -295,7 +295,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndRegion = repIndRegion;
   }
 
-
   public void setRepIndStageInnovation(RepIndStageInnovation repIndStageInnovation) {
     this.repIndStageInnovation = repIndStageInnovation;
   }
@@ -315,8 +314,15 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.youthExplaniation = youthExplaniation;
   }
 
+
   public void setYouthFocusLevel(RepIndGenderYouthFocusLevel youthFocusLevel) {
     this.youthFocusLevel = youthFocusLevel;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectInnovationInfo [projectInnovation=" + projectInnovation + ", phase=" + phase + ", title=" + title
+      + ", narrative=" + narrative + ", year=" + year + "]";
   }
 
   /**
