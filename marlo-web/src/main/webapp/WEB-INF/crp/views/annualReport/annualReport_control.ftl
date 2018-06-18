@@ -58,26 +58,28 @@
                 [#-- Total of CRP Innovations --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC1.totalInnovations" /]</label><br />
-                  <span>256</span>
+                  <span>${(projectInnovationInfos?size)!0}</span>
                 </div>
               </div>
               <div class="col-md-8">
                 [#-- Chart 2 --]
                 <div id="chart2" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Stage 1: end of research phase ",    "value": "89"},
-                      {"name":"Stage 2: end of piloting phase",     "value": "6"},
-                      {"name":"Stage 3: available for uptake",      "value": "7"},
-                      {"name":"Stage 4: uptake by next user",       "value": "45"}
-                    ] 
-                  /]
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart2.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart2.1" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [#list innovationsByStageDTO as data]
+                      [#if data.projectInnovationInfos?has_content]
+                      <li>
+                        <span>${data.repIndStageInnovation.name}</span>
+                        <span class="number">${data.projectInnovationInfos?size}</span>
+                        <span>#27ae60</span>
+                        <span>${data.projectInnovationInfos?size}</span>
+                      </li>
+                      [/#if]
                     [/#list]
                   </ul>
                 </div> 
@@ -88,12 +90,14 @@
             <div class="form-group">
               <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.innovationsTable.title" param="${currentCycleYear}"/]</h4>
               <hr />
-              [@tableD2InnovationsMacro list=[{},{},{},{}] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableD2InnovationsMacro list=(projectInnovationInfos)![] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             
             [#-- Information -  Indicator C1  --]
             [@annualReport.indicatorInformation name="${customName}.synthesisIndicators" list=synthesisIndicators index=0 id="indicatorC1" label="${customLabel}" editable=editable && PMU /]
-            
             
           </div>
           
@@ -322,43 +326,46 @@
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
+        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(item.projectInnovation.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- Title of Innovation --]
-          <td class="tb-id text-center">
-            [#if item.crp?has_content]
-              ${item.title}
+          <td class="">
+            [#if item.title?has_content]
+              <a href="${URL}" target="_blank">${item.title}</a>
             [#else]
               <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
             [/#if]
+            [#-- Project ID --]
+            [#if (item.projectInnovation.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(item.projectInnovation.project.id)!})</i> [/#if]
           </td>
           [#-- Stage of Innovation --]
           <td class="">
-          [#if item.crp?has_content]
-            ${item.title}
+          [#if item.repIndStageInnovation?has_content]
+            ${item.repIndStageInnovation.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Degree of Innovation --]
           <td class="">
-          [#if item.type?has_content]
-            ${item.type}
+          [#if item.repIndDegreeInnovation?has_content]
+            ${item.repIndDegreeInnovation.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Contribution of CRP--]
           <td class="text-center">
-          [#if item.type?has_content]
-            ${item.type}
+          [#if item.repIndContributionOfCrp?has_content]
+            ${item.repIndContributionOfCrp.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-          [#if item.stage?has_content]
-            ${item.stage}
+          [#if item.repIndGeographicScope?has_content]
+            ${item.repIndGeographicScope.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
