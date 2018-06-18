@@ -167,6 +167,46 @@ public class POISummary {
     }
   }
 
+  public void tableBAnnualReportStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables A */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        for (int y = 0; y < 2; y++) {
+          XWPFTableCell cell = row.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+  }
+
 
   public void tableCStyle(XWPFTable table) {
     /* Vertical merge, From format tables C */
@@ -503,8 +543,11 @@ public class POISummary {
       case "tableAAnnualReport":
         this.tableGStyle(table);
         break;
+      case "tableA2AnnualReport":
+        this.tableAStyle(table);
+        break;
       case "tableBAnnualReport":
-        this.tableGStyle(table);
+        this.tableBAnnualReportStyle(table);
         break;
       case "tableCAnnualReport":
         this.tableGStyle(table);
@@ -516,7 +559,7 @@ public class POISummary {
         this.tableGStyle(table);
         break;
       case "tableFAnnualReport":
-        this.tableEStyle(table);
+        this.tableFStyle(table);
         break;
       case "tableGAnnualReport":
         this.tableGStyle(table);
@@ -528,11 +571,11 @@ public class POISummary {
         this.tableGStyle(table);
         break;
       case "tableJAnnualReport":
-        this.tableGStyle(table);
+        this.tableEStyle(table);
         break;
     }
     if (tableType.contains("AnnualReport")) {
-      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(7500));
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9500));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
