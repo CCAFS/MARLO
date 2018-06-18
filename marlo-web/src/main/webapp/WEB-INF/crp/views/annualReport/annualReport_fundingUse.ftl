@@ -89,7 +89,6 @@
           <th width="25%">[@s.text name="${customLabel}.tableF.expenditure" /]</th>
           <th width="25%">
             [@s.text name="${customLabel}.tableF.percentage"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]**
-            <img title="[@s.text name="${customLabel}.tableF.percentage.help" /]" src="${baseUrl}/global/images/icon-help2.png" alt="" />
           </th>
           <th width="50%">
             [@s.text name="${customLabel}.tableF.comments" /] [@customForm.req required=editable && PMU /]<br />
@@ -128,11 +127,12 @@
       [/#if]
       <tr>
         <th>[@s.text name="${customLabel}.tableF.total" /]</th>
-        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">${(totalFunding)!}</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">${(totalFunding?number?string(",##0.00"))!}</span></nobr> </th>
         <th class="text-right"> </th>
       </tr>
       </tbody>
     </table>
+    
     <i>**[@s.text name="${customLabel}.tableF.help" /]</i>
   </div>
 [/#macro]
