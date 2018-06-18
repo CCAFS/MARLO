@@ -20,10 +20,14 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
@@ -37,11 +41,15 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByGeographicScopeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByInstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByPhaseDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -92,6 +100,10 @@ public class IndicatorsAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectInnovationInfoManager projectInnovationInfoManager;
   private RepIndStageInnovationManager repIndStageInnovationManager;
+  private ProjectPartnerPartnershipManager projectPartnerPartnershipManager;
+  private InstitutionTypeManager institutionTypeManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
   // Variables
   private String transaction;
   private InfluenceValidator influenceValidator;
@@ -106,11 +118,13 @@ public class IndicatorsAction extends BaseAction {
   private Boolean isInfluence;
   private List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs;
   private List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO;
-
   private List<ProjectExpectedStudy> projectExpectedStudies;
-
-
   private List<ProjectInnovationInfo> projectInnovationInfos;
+  private List<ProjectPartnerPartnership> projectPartnerPartnerships;
+  private List<ReportSynthesisPartnershipsByInstitutionTypeDTO> partnershipsByInstitutionTypeDTOs;
+  private List<ReportSynthesisPartnershipsByGeographicScopeDTO> partnershipsByGeographicScopeDTO;
+  private List<ReportSynthesisPartnershipsByPhaseDTO> partnershipsByPhaseDTO;
+
 
   @Inject
   public IndicatorsAction(APConfig config, GlobalUnitManager crpManager,
@@ -121,7 +135,10 @@ public class IndicatorsAction extends BaseAction {
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationInfoManager projectInnovationInfoManager,
-    RepIndStageInnovationManager repIndStageInnovationManager) {
+    RepIndStageInnovationManager repIndStageInnovationManager,
+    ProjectPartnerPartnershipManager projectPartnerPartnershipManager, InstitutionTypeManager institutionTypeManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager,
+    RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -137,7 +154,12 @@ public class IndicatorsAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectInnovationInfoManager = projectInnovationInfoManager;
     this.repIndStageInnovationManager = repIndStageInnovationManager;
+    this.projectPartnerPartnershipManager = projectPartnerPartnershipManager;
+    this.institutionTypeManager = institutionTypeManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.repIndPhaseResearchPartnershipManager = repIndPhaseResearchPartnershipManager;
   }
+
 
   @Override
   public String cancel() {
@@ -206,12 +228,34 @@ public class IndicatorsAction extends BaseAction {
     return organizationTypeByStudiesDTOs;
   }
 
+
+  public List<ReportSynthesisPartnershipsByGeographicScopeDTO> getPartnershipsByGeographicScopeDTO() {
+    return partnershipsByGeographicScopeDTO;
+  }
+
+
+  public List<ReportSynthesisPartnershipsByInstitutionTypeDTO> getPartnershipsByInstitutionTypeDTOs() {
+    return partnershipsByInstitutionTypeDTOs;
+  }
+
+
+  public List<ReportSynthesisPartnershipsByPhaseDTO> getPartnershipsByPhaseDTO() {
+    return partnershipsByPhaseDTO;
+  }
+
+
   public List<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
   }
 
+
   public List<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
+  }
+
+
+  public List<ProjectPartnerPartnership> getProjectPartnerPartnerships() {
+    return projectPartnerPartnerships;
   }
 
   public ReportSynthesis getReportSynthesis() {
@@ -221,7 +265,6 @@ public class IndicatorsAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -262,6 +305,7 @@ public class IndicatorsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -480,6 +524,19 @@ public class IndicatorsAction extends BaseAction {
       projectInnovationInfos = projectInnovationInfoManager.getProjectInnovationInfoByPhase(phase);
       // Innovations by stage
       innovationsByStageDTO = repIndStageInnovationManager.getInnovationsByStageDTO(phase);
+
+      // Table G: Projects Key Partnerships
+      projectPartnerPartnerships = projectPartnerPartnershipManager.getProjectPartnerPartnershipByPhase(phase);
+      // Chart: Partnerships by Partner type
+      partnershipsByInstitutionTypeDTOs =
+        institutionTypeManager.getPartnershipsByInstitutionTypeDTO(projectPartnerPartnerships);
+      // Chart: Partnerships by Geographic Scope
+      partnershipsByGeographicScopeDTO =
+        repIndGeographicScopeManager.getPartnershipsByGeographicScopeDTO(projectPartnerPartnerships);
+      // Chart: Partnerships by Phase
+      partnershipsByPhaseDTO =
+        repIndPhaseResearchPartnershipManager.getPartnershipsByPhaseDTO(projectPartnerPartnerships);
+
     }
 
     // Base Permission
@@ -602,7 +659,6 @@ public class IndicatorsAction extends BaseAction {
     this.innovationsByStageDTO = innovationsByStageDTO;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -625,6 +681,20 @@ public class IndicatorsAction extends BaseAction {
     this.organizationTypeByStudiesDTOs = organizationTypeByStudiesDTOs;
   }
 
+  public void setPartnershipsByGeographicScopeDTO(
+    List<ReportSynthesisPartnershipsByGeographicScopeDTO> partnershipsByGeographicScopeDTO) {
+    this.partnershipsByGeographicScopeDTO = partnershipsByGeographicScopeDTO;
+  }
+
+  public void setPartnershipsByInstitutionTypeDTOs(
+    List<ReportSynthesisPartnershipsByInstitutionTypeDTO> partnershipsByInstitutionTypeDTOs) {
+    this.partnershipsByInstitutionTypeDTOs = partnershipsByInstitutionTypeDTOs;
+  }
+
+  public void setPartnershipsByPhaseDTO(List<ReportSynthesisPartnershipsByPhaseDTO> partnershipsByPhaseDTO) {
+    this.partnershipsByPhaseDTO = partnershipsByPhaseDTO;
+  }
+
 
   public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
@@ -633,6 +703,11 @@ public class IndicatorsAction extends BaseAction {
 
   public void setProjectInnovationInfos(List<ProjectInnovationInfo> projectInnovationInfos) {
     this.projectInnovationInfos = projectInnovationInfos;
+  }
+
+
+  public void setProjectPartnerPartnerships(List<ProjectPartnerPartnership> projectPartnerPartnerships) {
+    this.projectPartnerPartnerships = projectPartnerPartnerships;
   }
 
 
