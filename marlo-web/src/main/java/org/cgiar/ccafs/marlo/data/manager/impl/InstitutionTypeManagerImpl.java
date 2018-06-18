@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,11 +18,15 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByInstitutionTypeDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -68,10 +72,37 @@ public class InstitutionTypeManagerImpl implements InstitutionTypeManager {
   }
 
   @Override
+  public List<ReportSynthesisPartnershipsByInstitutionTypeDTO>
+    getPartnershipsByInstitutionTypeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships) {
+    List<ReportSynthesisPartnershipsByInstitutionTypeDTO> partnershipsByInstitutionTypeDTOs = new ArrayList<>();
+
+    List<InstitutionType> institutionTypes = this.findAll().stream().collect(Collectors.toList());
+    if (institutionTypes != null && !institutionTypes.isEmpty()) {
+      for (InstitutionType institutionType : institutionTypes) {
+
+        ReportSynthesisPartnershipsByInstitutionTypeDTO partnershipsByInstitutionTypeDTO =
+          new ReportSynthesisPartnershipsByInstitutionTypeDTO();
+        partnershipsByInstitutionTypeDTO.setInstitutionType(institutionType);
+        if (projectPartnerPartnerships != null && !projectPartnerPartnerships.isEmpty()) {
+          partnershipsByInstitutionTypeDTO.setProjectPartnerPartnerships(projectPartnerPartnerships.stream()
+            .filter(ppp -> ppp.getProjectPartner() != null && ppp.getProjectPartner().getInstitution() != null
+              && ppp.getProjectPartner().getInstitution().getInstitutionType() != null
+              && ppp.getProjectPartner().getInstitution().getInstitutionType().equals(institutionType))
+            .collect(Collectors.toList()));
+        } else {
+          partnershipsByInstitutionTypeDTO.setProjectPartnerPartnerships(new ArrayList<ProjectPartnerPartnership>());
+        }
+        partnershipsByInstitutionTypeDTOs.add(partnershipsByInstitutionTypeDTO);
+
+      }
+    }
+    return partnershipsByInstitutionTypeDTOs;
+  }
+
+  @Override
   public InstitutionType saveInstitutionType(InstitutionType institutionType) {
 
     return institutionTypeDAO.save(institutionType);
   }
-
 
 }

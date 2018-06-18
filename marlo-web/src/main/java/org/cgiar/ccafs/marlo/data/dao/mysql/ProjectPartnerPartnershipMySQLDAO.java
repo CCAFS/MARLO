@@ -17,9 +17,12 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPartnershipDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +30,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectPartnerPartnership, Long> implements ProjectPartnerPartnershipDAO {
+public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectPartnerPartnership, Long>
+  implements ProjectPartnerPartnershipDAO {
 
 
   @Inject
@@ -70,6 +74,33 @@ public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectP
   }
 
   @Override
+  public List<ProjectPartnerPartnership> getProjectPartnerPartnershipByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("ppp.id as id ");
+    query.append("FROM ");
+    query.append("project_partner_partnerships AS ppp ");
+    query.append("INNER JOIN project_partners AS pp ON pp.id = ppp.project_partner ");
+    query.append("INNER JOIN projects AS p ON p.id = pp.project_id ");
+    query.append("WHERE ppp.is_active = 1 AND ");
+    query.append("pp.is_active = 1 AND ");
+    query.append("p.is_active = 1 AND ");
+    query.append("pp.`id_phase` =" + phase.getId());
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectPartnerPartnership> projectPartnerPartnerships = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectPartnerPartnership projectPartnerPartnership = this.find(Long.parseLong(map.get("id").toString()));
+        projectPartnerPartnerships.add(projectPartnerPartnership);
+      }
+    }
+
+    return projectPartnerPartnerships;
+  }
+
+  @Override
   public ProjectPartnerPartnership save(ProjectPartnerPartnership projectPartnerPartnership) {
     if (projectPartnerPartnership.getId() == null) {
       super.saveEntity(projectPartnerPartnership);
@@ -80,6 +111,5 @@ public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectP
 
     return projectPartnerPartnership;
   }
-
 
 }
