@@ -81,7 +81,6 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
   private ReportSynthesisManager reportSynthesisManager;
 
-
   private AuditLogManager auditLogManager;
 
 
@@ -126,10 +125,15 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
 
   private List<LiaisonInstitution> liaisonInstitutions;
+
+
   private List<GlobalUnit> globalUnitList;
+
+
   private List<RepIndCollaborationType> collaborationList;
   private Map<Integer, String> statuses;
   private List<ReportSynthesisCrossCgiarCollaboration> flagshipCollaborations;
+  private String pmuText;
 
   @Inject
   public CrossCgiarPartnershipAction(APConfig config, GlobalUnitManager crpManager,
@@ -163,6 +167,7 @@ public class CrossCgiarPartnershipAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -183,7 +188,6 @@ public class CrossCgiarPartnershipAction extends BaseAction {
     return globalUnitList;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -192,12 +196,17 @@ public class CrossCgiarPartnershipAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public String getPmuText() {
+    return pmuText;
   }
 
   public ReportSynthesis getReportSynthesis() {
@@ -365,6 +374,17 @@ public class CrossCgiarPartnershipAction extends BaseAction {
               .setCollaborations(new ArrayList<>(
                 reportSynthesis.getReportSynthesisCrossCgiar().getReportSynthesisCrossCgiarCollaborations().stream()
                   .filter(st -> st.isActive()).collect(Collectors.toList())));
+          }
+
+          LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
+            .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+          ReportSynthesis reportSynthesisPMU =
+            reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
+          if (reportSynthesisPMU != null) {
+            if (reportSynthesisPMU.getReportSynthesisCrossCgiar() != null) {
+              pmuText = reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights();
+
+            }
           }
         }
       }
@@ -551,10 +571,10 @@ public class CrossCgiarPartnershipAction extends BaseAction {
     this.flagshipCollaborations = flagshipCollaborations;
   }
 
-
   public void setGlobalUnitList(List<GlobalUnit> globalUnitList) {
     this.globalUnitList = globalUnitList;
   }
+
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
@@ -570,6 +590,10 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setPmuText(String pmuText) {
+    this.pmuText = pmuText;
   }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
