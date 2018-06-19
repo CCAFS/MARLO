@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -84,6 +85,7 @@ public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectP
     query.append("INNER JOIN projects AS p ON p.id = pp.project_id ");
     query.append("WHERE ppp.is_active = 1 AND ");
     query.append("pp.is_active = 1 AND ");
+    query.append("pp.has_partnerships = 1 AND ");
     query.append("p.is_active = 1 AND ");
     query.append("pp.`id_phase` =" + phase.getId());
 
@@ -97,7 +99,9 @@ public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectP
       }
     }
 
-    return projectPartnerPartnerships;
+    return projectPartnerPartnerships.stream().sorted((p1, p2) -> p1.getProjectPartner().getInstitution()
+      .getComposedName().compareTo(p2.getProjectPartner().getInstitution().getComposedName()))
+      .collect(Collectors.toList());
   }
 
   @Override

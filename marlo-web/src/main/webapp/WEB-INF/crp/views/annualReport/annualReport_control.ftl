@@ -115,10 +115,10 @@
                       <span class="json">{"role":"style"}</span>
                       <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list partnershipsByInstitutionTypeDTOs as data]
+                    [#list partnershipsByRepIndOrganizationTypeDTOs as data]
                       [#if data.projectPartnerPartnerships?has_content]
                       <li>
-                        <span>${data.institutionType.repIndOrganizationType.name}</span>
+                        <span>${data.repIndOrganizationType.name}</span>
                         <span class="number">${data.projectPartnerPartnerships?size}</span>
                         <span>#f39c12</span>
                         <span>${data.projectPartnerPartnerships?size}</span>
