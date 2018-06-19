@@ -16,10 +16,17 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisCrossCgiarCollaborationDAO;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarCollaborationManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,16 +35,23 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisCrossCgiarCollaborationManagerImpl implements ReportSynthesisCrossCgiarCollaborationManager {
+public class ReportSynthesisCrossCgiarCollaborationManagerImpl
+  implements ReportSynthesisCrossCgiarCollaborationManager {
 
 
   private ReportSynthesisCrossCgiarCollaborationDAO reportSynthesisCrossCgiarCollaborationDAO;
   // Managers
+  private PhaseManager phaseManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
 
   @Inject
-  public ReportSynthesisCrossCgiarCollaborationManagerImpl(ReportSynthesisCrossCgiarCollaborationDAO reportSynthesisCrossCgiarCollaborationDAO) {
+  public ReportSynthesisCrossCgiarCollaborationManagerImpl(
+    ReportSynthesisCrossCgiarCollaborationDAO reportSynthesisCrossCgiarCollaborationDAO, PhaseManager phaseManager,
+    ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisCrossCgiarCollaborationDAO = reportSynthesisCrossCgiarCollaborationDAO;
+    this.phaseManager = phaseManager;
+    this.reportSynthesisManager = reportSynthesisManager;
 
 
   }
@@ -45,13 +59,15 @@ public class ReportSynthesisCrossCgiarCollaborationManagerImpl implements Report
   @Override
   public void deleteReportSynthesisCrossCgiarCollaboration(long reportSynthesisCrossCgiarCollaborationId) {
 
-    reportSynthesisCrossCgiarCollaborationDAO.deleteReportSynthesisCrossCgiarCollaboration(reportSynthesisCrossCgiarCollaborationId);
+    reportSynthesisCrossCgiarCollaborationDAO
+      .deleteReportSynthesisCrossCgiarCollaboration(reportSynthesisCrossCgiarCollaborationId);
   }
 
   @Override
   public boolean existReportSynthesisCrossCgiarCollaboration(long reportSynthesisCrossCgiarCollaborationID) {
 
-    return reportSynthesisCrossCgiarCollaborationDAO.existReportSynthesisCrossCgiarCollaboration(reportSynthesisCrossCgiarCollaborationID);
+    return reportSynthesisCrossCgiarCollaborationDAO
+      .existReportSynthesisCrossCgiarCollaboration(reportSynthesisCrossCgiarCollaborationID);
   }
 
   @Override
@@ -62,13 +78,52 @@ public class ReportSynthesisCrossCgiarCollaborationManagerImpl implements Report
   }
 
   @Override
-  public ReportSynthesisCrossCgiarCollaboration getReportSynthesisCrossCgiarCollaborationById(long reportSynthesisCrossCgiarCollaborationID) {
+  public List<ReportSynthesisCrossCgiarCollaboration> getFlagshipCollaborations(List<LiaisonInstitution> lInstitutions,
+    long phaseID) {
+
+    List<ReportSynthesisCrossCgiarCollaboration> synthesisCrpProgres = new ArrayList<>();
+
+    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+
+      ReportSynthesisCrossCgiar crossCgiar = new ReportSynthesisCrossCgiar();
+      ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+
+      if (reportSynthesisFP != null) {
+        if (reportSynthesisFP.getReportSynthesisCrpProgress() != null) {
+          crossCgiar = reportSynthesisFP.getReportSynthesisCrossCgiar();
+          crossCgiar.setCollaborations(new ArrayList<>());
+          if (crossCgiar.getReportSynthesisCrossCgiarCollaborations() != null) {
+            crossCgiar.setCollaborations(new ArrayList<>(crossCgiar.getReportSynthesisCrossCgiarCollaborations()
+              .stream().filter(st -> st.isActive()).collect(Collectors.toList())));
+          }
+        } else {
+          crossCgiar.setCollaborations(new ArrayList<>());
+        }
+      } else {
+        ReportSynthesis synthesis = new ReportSynthesis();
+        synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+        synthesis.setLiaisonInstitution(liaisonInstitution);
+        crossCgiar.setReportSynthesis(synthesis);
+        crossCgiar.setCollaborations(new ArrayList<>());
+      }
+      synthesisCrpProgres.addAll(crossCgiar.getCollaborations());
+    }
+
+    return synthesisCrpProgres;
+
+
+  }
+
+  @Override
+  public ReportSynthesisCrossCgiarCollaboration
+    getReportSynthesisCrossCgiarCollaborationById(long reportSynthesisCrossCgiarCollaborationID) {
 
     return reportSynthesisCrossCgiarCollaborationDAO.find(reportSynthesisCrossCgiarCollaborationID);
   }
 
   @Override
-  public ReportSynthesisCrossCgiarCollaboration saveReportSynthesisCrossCgiarCollaboration(ReportSynthesisCrossCgiarCollaboration reportSynthesisCrossCgiarCollaboration) {
+  public ReportSynthesisCrossCgiarCollaboration saveReportSynthesisCrossCgiarCollaboration(
+    ReportSynthesisCrossCgiarCollaboration reportSynthesisCrossCgiarCollaboration) {
 
     return reportSynthesisCrossCgiarCollaborationDAO.save(reportSynthesisCrossCgiarCollaboration);
   }

@@ -14,16 +14,14 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
 
   private static final long serialVersionUID = -7242774805983782350L;
 
-
   @Expose
   private GlobalUnit globalUnit;
-
 
   @Expose
   private ReportSynthesisCrossCgiar reportSynthesisCrossCgiar;
 
   @Expose
-  private CrpProgram crpProgram;
+  private String flagship;
 
   @Expose
   private RepIndCollaborationType repIndCollaborationType;
@@ -59,14 +57,12 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
     return true;
   }
 
-
-  public CrpProgram getCrpProgram() {
-    return crpProgram;
-  }
-
-
   public String getDescription() {
     return description;
+  }
+
+  public String getFlagship() {
+    return flagship;
   }
 
 
@@ -82,10 +78,10 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
     return sb.toString();
   }
 
+
   public RepIndCollaborationType getRepIndCollaborationType() {
     return repIndCollaborationType;
   }
-
 
   public ReportSynthesisCrossCgiar getReportSynthesisCrossCgiar() {
     return reportSynthesisCrossCgiar;
@@ -97,13 +93,13 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
   }
 
 
-  public void setCrpProgram(CrpProgram crpProgram) {
-    this.crpProgram = crpProgram;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setFlagship(String flagship) {
+    this.flagship = flagship;
   }
 
   public void setGlobalUnit(GlobalUnit globalUnit) {

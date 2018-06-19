@@ -84,7 +84,7 @@
             <div class="form-group margin-panel">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /]</h4>              
               <hr />
-              [@tableHMacro list=[{},{},{},{}] /]
+              [@tableHMacro list=flagshipCollaborations /]
             </div>
             [/#if]
           
@@ -123,7 +123,7 @@
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-7">
-        [@customForm.input name="${customName}.crpProgramText" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
+        [@customForm.input name="${customName}.flagship" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
       </div>
     </div>
     
@@ -142,13 +142,13 @@
       
       [#-- Status --]
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.collaboration.status" value="${(project.projectInfo.status)!}" listName="statusList"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.collaboration.status" value="${(project.projectInfo.status)!}" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
     
     [#-- Brief Description --] 
     <div class="form-group"> 
-      [@customForm.textArea name="${customName}.descriptions" i18nkey="${customLabel}.collaboration.description" className="" required=true editable=isEditable /]
+      [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.collaboration.description" className="" required=true editable=isEditable /]
     </div>
     
   </div>
@@ -171,14 +171,16 @@
         <tr>
           [#-- Flagship --]
           <td class="tb-flagship text-center">
-            [#if item.liaisonInstitution?has_content]
-            <span class="programTag" style="border-color:${(item.liaisonInstitution.crpProgram.color)!'#fff'}">${item.liaisonInstitution.crpProgram.acronym!''}</span>
+            [#if item.flagship?has_content]
+              ${item.flagship}
+            [#else]
+              <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
             [/#if]
           </td>
           [#-- CRP/Platform --]
           <td class="text-center">
-          [#if item.crp?has_content]
-            ${item.crp}
+          [#if item.globalUnit?has_content]
+            ${item.globalUnit.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
           [/#if]
