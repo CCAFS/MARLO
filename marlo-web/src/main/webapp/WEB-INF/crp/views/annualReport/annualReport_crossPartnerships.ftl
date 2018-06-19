@@ -43,10 +43,17 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-          
+
             [#-- Summarize highlights, value added and points to improve/learning points from this year on Cross-CGIAR partnerships --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#if PMU]
+                [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#else]
+                <div class="textArea">
+                  <label for="">[@customForm.text name="${customLabel}.summarize" readText=true /]:</label>
+                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                </div>
+              [/#if]
             </div>
             
             [#-- (Flagship Form) Table H: Status of Internal (CGIAR) Collaborations ... --]
@@ -82,7 +89,7 @@
             [#-- Flagships - Table H: Status of Internal(CGIAR) Collaborations --]
             [#if PMU]
             <div class="form-group margin-panel">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /]</h4>              
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /] (${(flagshipCollaborations?size)!'0'})</h4>              
               <hr />
               [@tableHMacro list=flagshipCollaborations /]
             </div>
