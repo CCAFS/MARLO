@@ -185,7 +185,7 @@
             <div class="form-group">
               <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.partnershipsTable.title" param="${currentCycleYear}"/]</h4>
               <hr />
-               <div class="viewMoreSyntesis-block" >
+              <div class="viewMoreSyntesis-block" >
                 [@tableGKeyPartnershipsMacro list=(projectPartnerPartnerships)![] /]
                 <div class="viewMoreSyntesis closed"></div>
               </div>
@@ -205,21 +205,21 @@
                 [#-- Total of participants estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.totalParticipants" /]</label><br />
-                  <span class="animated infinite bounce">556</span>
+                  <span class="animated infinite bounce">${(totalParticipants?number?string(",##0"))!0}</span>
                 </div>
               </div>
               <div class="col-md-4">
                 [#-- Percentage of female estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageFemale" /]</label><br />
-                  <span>556</span>
+                  <span>${(percentageFemales)!0}% </span>
                 </div>
               </div>
               <div class="col-md-4">
                 [#-- Formal training estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.formalTraining" /]</label><br />
-                  <span>556</span>
+                  <span>${(totalParticipantFormalTraining)!0}</span>
                 </div>
               </div>
             </div>
@@ -228,7 +228,10 @@
             <div class="form-group">
               <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.activitiesEventsTable.title" param="${currentCycleYear}"/]</h4>
               <hr />
-              [@tableParticipantsTrainingsMacro list=[{},{},{},{}] /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
             </div>
             
             [#-- Information -  Indicator C3  --]
@@ -462,43 +465,48 @@
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
+        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- Title of Innovation --]
-          <td class="tb-id text-center">
-            [#if item.crp?has_content]
-              ${item.title}
-            [#else]
-              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-            [/#if]
-          </td>
-          [#-- Stage of Innovation --]
           <td class="">
-          [#if item.crp?has_content]
-            ${item.title}
+            <a href="${URL}" target="_blank">
+              [#if item.eventActivityName?has_content]
+                ${item.eventActivityName}
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+              [#-- Deliverable ID --]
+              <br /><i><small>(From D${(item.deliverable.id)!''})</small></i>
+            </a>
+          </td>
+          [#-- Activity Type --]
+          <td class="">
+          [#if item.repIndTypeActivity?has_content]
+            ${item.repIndTypeActivity.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
-          [#-- Degree of Innovation --]
-          <td class="">
-          [#if item.type?has_content]
-            ${item.type}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-          [#-- Contribution of CRP--]
+          [#-- Total Participants --]
           <td class="text-center">
-          [#if item.type?has_content]
-            ${item.type}
+          [#if item.participants?has_content]
+            ${item.participants}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Type of participants --]
+          <td class="text-center">
+          [#if item.repIndTypeParticipant?has_content]
+            ${item.repIndTypeParticipant.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-          [#if item.stage?has_content]
-            ${item.stage}
+          [#if item.repIndGeographicScope?has_content]
+            ${item.repIndGeographicScope.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]

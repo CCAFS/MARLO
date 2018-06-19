@@ -62,10 +62,10 @@ google.charts.setOnLoadCallback(function() {
           bold: false
       },
       chartArea: {
-          right: 0,
+          right: 10,
           bottom: 0,
           width: '60%',
-          height: '85%'
+          height: '88%'
       },
       legend: {
         position: "none"
@@ -100,7 +100,8 @@ google.charts.setOnLoadCallback(function() {
           height: '85%'
       },
       legend: {
-        alignment: 'center'
+        alignment: 'center',
+      // position: 'bottom'
       }
   });
 

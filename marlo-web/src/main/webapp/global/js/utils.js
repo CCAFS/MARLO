@@ -293,6 +293,11 @@ function isPOWBSection() {
   return url.includes("/powb/");
 }
 
+function isAnnualReportSection() {
+  var url = window.location.href;
+  return url.includes("/annualReport/");
+}
+
 /**
  * Search from url that has GET parameters
  */

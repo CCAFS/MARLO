@@ -285,6 +285,11 @@ public class IndicatorsAction extends BaseAction {
   }
 
 
+  public Integer getTotalParticipantFormalTraining() {
+    return totalParticipantFormalTraining;
+  }
+
+
   public Double getTotalParticipants() {
     return totalParticipants;
   }
@@ -293,7 +298,6 @@ public class IndicatorsAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -330,6 +334,7 @@ public class IndicatorsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
