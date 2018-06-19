@@ -80,7 +80,7 @@ google.charts.setOnLoadCallback(function() {
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
-  // Chart #4
+  // Chart #4 - Partnerships by Geographic Scope
   var $chart4 = $('#chart4');
   var data4 = google.visualization.arrayToDataTable(getChartDataArray($chart4));
   var chart4 = new google.visualization.PieChart(document.getElementById($chart4[0].id));
@@ -104,18 +104,33 @@ google.charts.setOnLoadCallback(function() {
       }
   });
 
-  // Chart #5
+  // Chart #5 - Partnerships by phase
   var $chart5 = $('#chart5');
   var data5 = new google.visualization.arrayToDataTable(getChartDataArray($chart5));
-  var chart5 = new google.charts.Bar(document.getElementById($chart5[0].id));
-  chart5.draw(data5, google.charts.Bar.convertOptions({
-      chart: {
-        title: "Partnerships by phase"
+  var view5 = new google.visualization.DataView(data5);
+  var chart5 = new google.visualization.BarChart(document.getElementById($chart5[0].id));
+  chart5.draw(view5, google.charts.Bar.convertOptions({
+      title: 'Partnerships by phase',
+      titleTextStyle: {
+          color: '#5f5e5e',
+          fontName: 'Roboto',
+          fontSize: 16,
+          bold: false
+      },
+      chartArea: {
+          right: 0,
+          bottom: 0,
+          width: '60%'
+      },
+      vAxis: {
+        textStyle: {
+            color: '#8c8c8c',
+            fontName: 'Roboto'
+        }
       },
       legend: {
         position: "none"
       },
-      colors: '#e67e22',
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 

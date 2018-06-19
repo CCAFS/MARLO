@@ -156,12 +156,16 @@
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart5.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC2.chart5.1" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
                     </li>
                     [#list partnershipsByPhaseDTO as data]
                       [#if data.projectPartnerPartnerships?has_content]
                       <li>
                         <span>${data.repIndPhaseResearchPartnership.name}</span>
                         <span class="number">${data.projectPartnerPartnerships?size}</span>
+                        <span>#e67e22</span>
+                        <span>${data.projectPartnerPartnerships?size}</span>
                       </li>
                       [/#if]
                     [/#list]
@@ -197,30 +201,21 @@
           <div class="borderBox">
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC3C4.title" /]</h4>
             <div class="form-group row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 [#-- Total of participants estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.totalParticipants" /]</label><br />
                   <span class="animated infinite bounce">556</span>
                 </div>
               </div>
-              <div class="col-md-6">
-                [#-- Percentage of female  estimated/counted --]
+              <div class="col-md-4">
+                [#-- Percentage of female estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageFemale" /]</label><br />
                   <span>556</span>
                 </div>
               </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-6">
-                [#-- Percentage of Youth estimated/counted --]
-                <div id="" class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorC3C4.percentageYouth" /]</label><br />
-                  <span>556</span>
-                </div>
-              </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 [#-- Formal training estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.formalTraining" /]</label><br />
@@ -382,7 +377,7 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id">[@s.text name="${customLabel}.partnershipsTable.projectID" /]</th>
+        <th id="tb-id">[@s.text name="${customLabel}.partnershipsTable.partner" /]</th>
         <th id="tb-title">[@s.text name="${customLabel}.partnershipsTable.researchPhase" /]</th>
         <th id="tb-type">[@s.text name="${customLabel}.partnershipsTable.partnerType" /]</th>
         <th id="tb-organization-type">[@s.text name="${customLabel}.partnershipsTable.geoScope" /]</th>
@@ -393,43 +388,47 @@
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
+        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(item.projectPartner.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- Title of Innovation --]
           <td class="tb-id text-center">
-            [#if item.crp?has_content]
-              ${item.title}
+            <a href="${URL}" target="_blank">
+              [#-- Partner Name --]
+              ${(item.projectPartner.institution.acronymName)!'--'}
+              [#-- Project ID --]
+              <br /><i><small>(From P${(item.projectPartner.project.id)!''})</small></i>
+            </a>
+          </td>
+          [#-- Phase of research --]
+          <td class="">
+            [#if item.partnershipResearchPhases?has_content]
+              [#list item.partnershipResearchPhases as reseacrhPhase]
+                <span>${reseacrhPhase.repIndPhaseResearchPartnership.name}</span><br />
+              [/#list]
             [#else]
               <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
             [/#if]
           </td>
-          [#-- Stage of Innovation --]
+          [#-- Partner Type --]
           <td class="">
-          [#if item.crp?has_content]
-            ${item.title}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
+            [#if item.projectPartner.institution.institutionType.repIndOrganizationType?has_content]
+              ${item.projectPartner.institution.institutionType.repIndOrganizationType.name}
+            [#else]
+              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+            [/#if]
           </td>
-          [#-- Degree of Innovation --]
           <td class="">
-          [#if item.type?has_content]
-            ${item.type}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-          [#-- Contribution of CRP--]
-          <td class="text-center">
-          [#if item.type?has_content]
-            ${item.type}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
           [#-- Geographic scope --]
-          <td class="text-center">
-          [#if item.stage?has_content]
-            ${item.stage}
+          [#if item.geographicScope?has_content]
+            ${item.geographicScope.name}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Main Area --]
+          <td class="">
+          [#if item.mainArea?has_content]
+            ${item.mainArea}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
