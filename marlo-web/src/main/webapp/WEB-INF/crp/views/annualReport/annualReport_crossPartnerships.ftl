@@ -69,7 +69,7 @@
                 [#-- Hidden: Global Unit list for Select2 widget --]
                 <ul style="display:none">
                   [#list globalUnitList as globalUnit]
-                    <li id="globalUnit-${globalUnit.id!}">
+                    <li id="globalUnit-${(globalUnit.id)!}">
                       <strong>${(globalUnit.acronym)!}</strong>
                       <span class="pull-right"><i>(${(globalUnit.globalUnitType.name)!})</i> </span>
                       <p>${(globalUnit.name)!}</p>
@@ -98,7 +98,7 @@
 </section>
 
 [#--  Program collaboration Template --]
-[@flagshipCollaborationMacro element={} name="list" index=-1 template=true /]
+[@flagshipCollaborationMacro element={} name="${customName}.collaborations" index=-1 template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -123,19 +123,21 @@
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-7">
-        [@customForm.input name="${customName}.crpProgram.id" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
+        [@customForm.input name="${customName}.crpProgramText" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
       </div>
     </div>
     
     [#-- Collaboration type --]
     <div class="form-group row">
       <div class="col-md-7">
-        <label>[@s.text name="${customLabel}.repIndCollaborationType.id" /]:[@customForm.req required=editable  /]</label><br />
+        <label>[@s.text name="${customLabel}.collaboration.type" /]:[@customForm.req required=editable  /]</label><br />
+        [#local collaborationTypeSelected = (element.repIndCollaborationType.id)!-1]
+        
         [#list (collaborationList)![] as collaboration]
-        [@customForm.radioFlat id="${customName}-type-1" name="${customName}.collaborationType" label="Contribution to"     value="1" checked=(element.collaborationType == "1")!false editable=isEditable cssClass="" cssClassLabel="font-normal"/]
+          [@customForm.radioFlat id="${customName}-collaboration-${collaboration_index}" name="${customName}.repIndCollaborationType.id" label="${collaboration.name}" value="${collaboration.id}" checked=(collaborationTypeSelected == collaboration.id)!false editable=isEditable cssClass="" cssClassLabel="font-normal"/]
         [/#list]
-        [#local collaborationTypeSelected = ((element.collaborationType == "1")!false) || ((element.collaborationType == "2")!false) || ((element.collaborationType == "3")!false)]
-        [#if !editable && !collaborationTypeSelected][@s.text name="form.values.fieldEmpty"/][/#if]
+        
+        [#if !editable && (collaborationTypeSelected == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
       </div>
       
       [#-- Status --]
