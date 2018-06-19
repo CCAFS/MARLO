@@ -430,13 +430,6 @@ public class POISummary {
     int headerIndex = 0;
     for (List<POIField> poiParameters : sHeaders) {
 
-      // Condition for table b cell color in fields 5 and 6
-      if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
-        TABLE_HEADER_FONT_COLOR = "DEEAF6";
-      } else {
-        TABLE_HEADER_FONT_COLOR = "FFF2CC";
-      }
-
       // Setting the Header
       XWPFTableRow tableRowHeader;
       if (headerIndex == 0) {
@@ -445,6 +438,14 @@ public class POISummary {
         tableRowHeader = table.createRow();
       }
       for (POIField poiParameter : poiParameters) {
+
+        // Condition for table b cell color in fields 5 and 6
+        if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+          TABLE_HEADER_FONT_COLOR = "DEEAF6";
+        } else {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        }
+
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
@@ -498,12 +499,14 @@ public class POISummary {
 
     for (List<POIField> poiParameters : sData) {
       record = 0;
+
       // Condition for table b cell color in fields 5 and 6
       if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
         TABLE_HEADER_FONT_COLOR = "DEEAF6";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFF2CC";
       }
+
       XWPFTableRow dataRow = table.createRow();
       for (POIField poiParameter : poiParameters) {
 
@@ -526,6 +529,14 @@ public class POISummary {
             paragraphRun.setBold(poiParameter.getBold());
           } else {
             paragraphRun.setBold(true);
+          }
+
+          // Condition for table b cell color in fields 5 and 6
+          if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+            TABLE_HEADER_FONT_COLOR = "DEEAF6";
+            dataRow.getCell(record).setColor("DEEAF6");
+          } else {
+            TABLE_HEADER_FONT_COLOR = "FFF2CC";
           }
         } else {
           if (highlightFirstColumn && record == 0) {
