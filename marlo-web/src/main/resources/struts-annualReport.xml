@@ -84,7 +84,7 @@
     </action>
     
 		<!--  2.4 Cross-CGIAR Partnerships (other CRPs and Platforms)  -->
-		<action name="{crp}/crossPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/crossPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrossCgiarPartnershipAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_crossPartnerships.ftl</result>
       <result name="success" type="redirectAction">

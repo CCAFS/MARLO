@@ -11,10 +11,13 @@ import com.google.gson.annotations.Expose;
 public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
   implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -7242774805983782350L;
+
 
   @Expose
   private GlobalUnit globalUnit;
+
 
   @Expose
   private ReportSynthesisCrossCgiar reportSynthesisCrossCgiar;
@@ -26,15 +29,13 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
   private RepIndCollaborationType repIndCollaborationType;
 
   @Expose
-  private Boolean status;
+  private Integer status;
 
   @Expose
   private String description;
 
-
   public ReportSynthesisCrossCgiarCollaboration() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -68,6 +69,7 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
     return description;
   }
 
+
   public GlobalUnit getGlobalUnit() {
     return globalUnit;
   }
@@ -80,7 +82,6 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
     return sb.toString();
   }
 
-
   public RepIndCollaborationType getRepIndCollaborationType() {
     return repIndCollaborationType;
   }
@@ -90,13 +91,16 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
     return reportSynthesisCrossCgiar;
   }
 
-  public Boolean getStatus() {
+
+  public Integer getStatus() {
     return status;
   }
+
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -110,13 +114,12 @@ public class ReportSynthesisCrossCgiarCollaboration extends MarloAuditableEntity
     this.repIndCollaborationType = repIndCollaborationType;
   }
 
-
   public void setReportSynthesisCrossCgiar(ReportSynthesisCrossCgiar reportSynthesisCrossCgiar) {
     this.reportSynthesisCrossCgiar = reportSynthesisCrossCgiar;
   }
 
 
-  public void setStatus(Boolean status) {
+  public void setStatus(Integer status) {
     this.status = status;
   }
 

@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "annualReport.${currentStage}" /]
+[#assign customName= "reportSynthesis.reportSynthesisCrossCgiar" /]
 [#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
@@ -46,21 +46,17 @@
           
             [#-- Summarize highlights, value added and points to improve/learning points from this year on Cross-CGIAR partnerships --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.summarize" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
             </div>
             
             [#-- (Flagship Form) Table H: Status of Internal (CGIAR) Collaborations ... --]
             [#if flagship]
               <div class="form-group">
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.collaboration.title" /]</h4>
-                <div class="listProgramCollaborations">
-                
-                 [#-- REMOVE TEMPORAL LIST ASSIGN --]
-                 [#assign list=[{},{},{},{}] /]
-                 
-                 [#if list?has_content]
-                  [#list list as item]
-                    [@flagshipCollaborationMacro element=item name="list" index=item_index  isEditable=editable/]
+                <div class="listProgramCollaborations">                 
+                 [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]
+                  [#list reportSynthesis.reportSynthesisCrossCgiar.collaborations as item]
+                    [@flagshipCollaborationMacro element=item name="${customName}.collaborations" index=item_index  isEditable=editable/]
                   [/#list]
                  [/#if]
                 </div>
@@ -68,14 +64,11 @@
                 <div class="text-right">
                   <div class="addProgramCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaboration"/]</div>
                 </div> 
-                [/#if]
-                
-               [#-- REMOVE TEMPORAL LIST ASSIGN --]
-               [#assign globalUnits=[{},{},{},{}] /]
+                [/#if]      
                 
                 [#-- Hidden: Global Unit list for Select2 widget --]
                 <ul style="display:none">
-                  [#list globalUnits as globalUnit]
+                  [#list globalUnitList as globalUnit]
                     <li id="globalUnit-${globalUnit.id!}">
                       <strong>${(globalUnit.acronym)!}</strong>
                       <span class="pull-right"><i>(${(globalUnit.globalUnitType.name)!})</i> </span>
@@ -89,8 +82,7 @@
             [#-- Flagships - Table H: Status of Internal(CGIAR) Collaborations --]
             [#if PMU]
             <div class="form-group margin-panel">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /]</h4>
-              
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /]</h4>              
               <hr />
               [@tableHMacro list=[{},{},{},{}] /]
             </div>
@@ -127,22 +119,21 @@
     <div class="form-group row">
       [#-- CRP/Platform --] 
       <div class="col-md-5">
-        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="${customLabel}.collaboration.crp" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
+        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="${customLabel}.collaboration.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-7">
-        [@customForm.input name="${customName}.flagship" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
+        [@customForm.input name="${customName}.crpProgram.id" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
       </div>
     </div>
     
     [#-- Collaboration type --]
     <div class="form-group row">
       <div class="col-md-7">
-        <label>[@s.text name="${customLabel}.collaboration.type" /]:[@customForm.req required=editable  /]</label><br />
+        <label>[@s.text name="${customLabel}.repIndCollaborationType.id" /]:[@customForm.req required=editable  /]</label><br />
+        [#list (collaborationList)![] as collaboration]
         [@customForm.radioFlat id="${customName}-type-1" name="${customName}.collaborationType" label="Contribution to"     value="1" checked=(element.collaborationType == "1")!false editable=isEditable cssClass="" cssClassLabel="font-normal"/]
-        [@customForm.radioFlat id="${customName}-type-2" name="${customName}.collaborationType" label="Service needed from" value="2" checked=(element.collaborationType == "2")!false editable=isEditable cssClass="" cssClassLabel="font-normal"/]
-        [@customForm.radioFlat id="${customName}-type-3" name="${customName}.collaborationType" label="Both"                value="3" checked=(element.collaborationType == "3")!false editable=isEditable cssClass="" cssClassLabel="font-normal"/]
-        
+        [/#list]
         [#local collaborationTypeSelected = ((element.collaborationType == "1")!false) || ((element.collaborationType == "2")!false) || ((element.collaborationType == "3")!false)]
         [#if !editable && !collaborationTypeSelected][@s.text name="form.values.fieldEmpty"/][/#if]
       </div>
@@ -155,7 +146,7 @@
     
     [#-- Brief Description --] 
     <div class="form-group"> 
-      [@customForm.textArea name="${customName}.brief" i18nkey="${customLabel}.collaboration.description" className="" required=true editable=isEditable /]
+      [@customForm.textArea name="${customName}.descriptions" i18nkey="${customLabel}.collaboration.description" className="" required=true editable=isEditable /]
     </div>
     
   </div>
