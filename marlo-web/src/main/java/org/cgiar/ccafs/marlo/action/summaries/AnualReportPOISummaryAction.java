@@ -798,32 +798,32 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       for (int i = 0; i < projectExpectedStudyList.size(); i++) {
 
 
-        if (false) {
-          data = new ArrayList<>();
-          // projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId()
-          // == 1
-          try {
-            title = projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
-            // if (projectExpectedStudyList.get(i).getSubIdos() != null && !projectExpectedStudyList.isEmpty()) {
+        if (projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
 
+          if (projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+            && projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType()
+              .getId() == 1) {
 
-            projectExpectedStudyList.get(i)
-              .setSubIdos(new ArrayList<>(projectExpectedStudyList.get(i).getProjectExpectedStudySubIdos().stream()
-                .filter(s -> s.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList())));
+            data = new ArrayList<>();
 
-            System.out.println("subIdo " + projectExpectedStudyList.get(i).getSrfSubIdo() + "subIdoListSize "
-              + projectExpectedStudyList.get(i).getSubIdos().size());
+            try {
+              title = projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
 
-            for (int j = 0; j < projectExpectedStudyList.get(i).getSubIdos().size(); j++) {
-              subIdo = projectExpectedStudyList.get(i).getSubIdos().get(i).getSrfSubIdo().getDescription();
+              projectExpectedStudyList.get(i)
+                .setSubIdos(new ArrayList<>(projectExpectedStudyList.get(i).getProjectExpectedStudySubIdos().stream()
+                  .filter(s -> s.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList())));
+
+              System.out.println("subIdo " + projectExpectedStudyList.get(i).getSrfSubIdo() + "subIdoListSize "
+                + projectExpectedStudyList.get(i).getSubIdos().size());
+
+              for (int j = 0; j < projectExpectedStudyList.get(i).getSubIdos().size(); j++) {
+                subIdo = projectExpectedStudyList.get(i).getSubIdos().get(i).getSrfSubIdo().getDescription();
+              }
+
+            } catch (Exception e) {
+              System.out.println(e);
             }
-            // }
-
-
-          } catch (Exception e) {
-            System.out.println(e);
           }
-
 
           Boolean bold = false;
           String blackColor = "000000";
