@@ -360,6 +360,11 @@ public class CrossCgiarPartnershipAction extends BaseAction {
       }
     }
 
+    collaborationList = new ArrayList<>(repIndCollaborationTypeManager.findAll().stream().collect(Collectors.toList()));
+    globalUnitList = crpManager.findAll().stream()
+      .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+      .collect(Collectors.toList());
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
