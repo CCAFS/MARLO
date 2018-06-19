@@ -260,6 +260,8 @@ table.financial-report .row-title {
   background: url(../../../global/images/saving.gif) no-repeat;
   background-position: 50%;
   /* height: 500px; */
+  padding: 1em;
+  padding-top: 0;
   margin: 0;
   color: #8c8c8c;
 }

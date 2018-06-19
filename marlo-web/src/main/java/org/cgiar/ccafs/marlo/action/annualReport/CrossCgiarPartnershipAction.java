@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndCollaborationType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar;
@@ -48,8 +49,10 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,7 +75,6 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
-
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
@@ -112,13 +114,22 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
 
   private Long liaisonInstitutionID;
+
+
   private Long synthesisID;
+
+
   private LiaisonInstitution liaisonInstitution;
+
+
   private GlobalUnit loggedCrp;
+
+
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<GlobalUnit> globalUnitList;
   private List<RepIndCollaborationType> collaborationList;
   private Map<Integer, String> statuses;
+  private List<ReportSynthesisCrossCgiarCollaboration> flagshipCollaborations;
 
   @Inject
   public CrossCgiarPartnershipAction(APConfig config, GlobalUnitManager crpManager,
@@ -164,9 +175,14 @@ public class CrossCgiarPartnershipAction extends BaseAction {
     return collaborationList;
   }
 
+  public List<ReportSynthesisCrossCgiarCollaboration> getFlagshipCollaborations() {
+    return flagshipCollaborations;
+  }
+
   public List<GlobalUnit> getGlobalUnitList() {
     return globalUnitList;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -317,12 +333,6 @@ public class CrossCgiarPartnershipAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      // Fill Flagship Information
-      if (this.isFlagship()) {
-        // TODO
-      }
-
-
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -360,6 +370,17 @@ public class CrossCgiarPartnershipAction extends BaseAction {
       }
     }
 
+    // Getting The list
+    statuses = new HashMap<>();
+    List<ProjectStatusEnum> listStatus = Arrays.asList(ProjectStatusEnum.values());
+    for (ProjectStatusEnum globalStatusEnum : listStatus) {
+      statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
+    }
+    collaborationList = new ArrayList<>(repIndCollaborationTypeManager.findAll().stream().collect(Collectors.toList()));
+    globalUnitList = crpManager.findAll().stream()
+      .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+      .collect(Collectors.toList());
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -368,7 +389,8 @@ public class CrossCgiarPartnershipAction extends BaseAction {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     if (this.isPMU()) {
-      // TODO
+      flagshipCollaborations =
+        reportSynthesisCrossCgiarCollaborationManager.getFlagshipCollaborations(liaisonInstitutions, phase.getId());
     }
 
     // ADD PMU as liasion Institution too
@@ -469,61 +491,51 @@ public class CrossCgiarPartnershipAction extends BaseAction {
           ReportSynthesisCrossCgiarCollaboration collaborationSave = new ReportSynthesisCrossCgiarCollaboration();
 
           collaborationSave.setReportSynthesisCrossCgiar(crossCgiarDB);
+          if (collaboration.getGlobalUnit() != null && collaboration.getGlobalUnit().getId() != -1) {
+            GlobalUnit globalUnit = crpManager.getGlobalUnitById(collaboration.getGlobalUnit().getId());
+            collaborationSave.setGlobalUnit(globalUnit);
+          }
 
-          GlobalUnit globalUnit = crpManager.getGlobalUnitById(collaboration.getGlobalUnit().getId());
-          collaborationSave.setGlobalUnit(globalUnit);
-
-          CrpProgram crpProgram = crpProgramManager.getCrpProgramById(collaboration.getCrpProgram().getId());
-          collaborationSave.setCrpProgram(crpProgram);
-
-          RepIndCollaborationType repIndCollaborationType = repIndCollaborationTypeManager
-            .getRepIndCollaborationTypeById(collaboration.getRepIndCollaborationType().getId());
-          collaborationSave.setRepIndCollaborationType(repIndCollaborationType);
+          if (collaboration.getRepIndCollaborationType() != null
+            && collaboration.getRepIndCollaborationType().getId() != -1) {
+            RepIndCollaborationType repIndCollaborationType = repIndCollaborationTypeManager
+              .getRepIndCollaborationTypeById(collaboration.getRepIndCollaborationType().getId());
+            collaborationSave.setRepIndCollaborationType(repIndCollaborationType);
+          }
 
           collaborationSave.setStatus(collaboration.getStatus());
           collaborationSave.setDescription(collaboration.getDescription());
+          collaborationSave.setFlagship(collaboration.getFlagship());
 
           reportSynthesisCrossCgiarCollaborationManager.saveReportSynthesisCrossCgiarCollaboration(collaborationSave);
         } else {
 
-          boolean hasChanges = false;
-
           ReportSynthesisCrossCgiarCollaboration collaborationPrev = reportSynthesisCrossCgiarCollaborationManager
             .getReportSynthesisCrossCgiarCollaborationById(collaboration.getId());
 
-          if (!collaborationPrev.getDescription().equals(collaboration.getDescription())) {
-            hasChanges = true;
-            collaborationPrev.setDescription(collaboration.getDescription());
+
+          collaborationPrev.setDescription(collaboration.getDescription());
+
+
+          collaborationPrev.setFlagship(collaboration.getFlagship());
+
+          if (collaboration.getGlobalUnit() != null && collaboration.getGlobalUnit().getId() != -1) {
+            GlobalUnit globalUnit = crpManager.getGlobalUnitById(collaboration.getGlobalUnit().getId());
+            collaborationPrev.setGlobalUnit(globalUnit);
           }
 
-          if (!collaborationPrev.getStatus().equals(collaboration.getStatus())) {
-            hasChanges = true;
-            collaborationPrev.setStatus(collaboration.getStatus());
-          }
-
-          if (!collaborationPrev.getRepIndCollaborationType().getId()
-            .equals(collaboration.getRepIndCollaborationType().getId())) {
-            hasChanges = true;
+          if (collaboration.getRepIndCollaborationType() != null
+            && collaboration.getRepIndCollaborationType().getId() != -1) {
             RepIndCollaborationType repIndCollaborationType = repIndCollaborationTypeManager
               .getRepIndCollaborationTypeById(collaboration.getRepIndCollaborationType().getId());
             collaborationPrev.setRepIndCollaborationType(repIndCollaborationType);
           }
 
-          if (!collaborationPrev.getCrpProgram().getId().equals(collaboration.getCrpProgram().getId())) {
-            hasChanges = true;
-            CrpProgram crpProgram = crpProgramManager.getCrpProgramById(collaboration.getCrpProgram().getId());
-            collaborationPrev.setCrpProgram(crpProgram);
-          }
+          collaborationPrev.setStatus(collaboration.getStatus());
 
-          if (!collaborationPrev.getGlobalUnit().getId().equals(collaboration.getGlobalUnit().getId())) {
-            hasChanges = true;
-            GlobalUnit globalUnit = crpManager.getGlobalUnitById(collaboration.getGlobalUnit().getId());
-            collaborationPrev.setGlobalUnit(globalUnit);
-          }
 
-          if (hasChanges) {
-            reportSynthesisCrossCgiarCollaborationManager.saveReportSynthesisCrossCgiarCollaboration(collaborationPrev);
-          }
+          reportSynthesisCrossCgiarCollaborationManager.saveReportSynthesisCrossCgiarCollaboration(collaborationPrev);
+
         }
       }
     }
@@ -534,6 +546,11 @@ public class CrossCgiarPartnershipAction extends BaseAction {
   public void setCollaborationList(List<RepIndCollaborationType> collaborationList) {
     this.collaborationList = collaborationList;
   }
+
+  public void setFlagshipCollaborations(List<ReportSynthesisCrossCgiarCollaboration> flagshipCollaborations) {
+    this.flagshipCollaborations = flagshipCollaborations;
+  }
+
 
   public void setGlobalUnitList(List<GlobalUnit> globalUnitList) {
     this.globalUnitList = globalUnitList;
@@ -570,6 +587,13 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, reportSynthesis, true);
+    }
   }
 
 }

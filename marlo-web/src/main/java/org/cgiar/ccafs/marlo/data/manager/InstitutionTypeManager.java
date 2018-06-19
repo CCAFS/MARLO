@@ -15,8 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByInstitutionTypeDTO;
 
 import java.util.List;
 
@@ -61,15 +59,6 @@ public interface InstitutionTypeManager {
    * @return a InstitutionType object.
    */
   public InstitutionType getInstitutionTypeById(long institutionTypeID);
-
-  /**
-   * This method gets a list of ReportSynthesisPartnershipsByInstitutionTypeDTO that are active:
-   * List of Partnerships grouped by InstitutionType
-   * 
-   * @return a list from ReportSynthesisPartnershipsByInstitutionTypeDTO null if no exist records
-   */
-  public List<ReportSynthesisPartnershipsByInstitutionTypeDTO>
-    getPartnershipsByInstitutionTypeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships);
 
   /**
    * This method saves the information of the given institutionType
