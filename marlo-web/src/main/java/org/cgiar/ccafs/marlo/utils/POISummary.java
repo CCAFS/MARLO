@@ -53,7 +53,7 @@ public class POISummary {
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
   private final static Integer TABLE_TEXT_FONT_SIZE = 10;
-  private final static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
+  private static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
 
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
     if (text.contains("\n")) {
@@ -429,6 +429,14 @@ public class POISummary {
     int record = 0;
     int headerIndex = 0;
     for (List<POIField> poiParameters : sHeaders) {
+
+      // Condition for table b cell color in fields 5 and 6
+      if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+        TABLE_HEADER_FONT_COLOR = "DEEAF6";
+      } else {
+        TABLE_HEADER_FONT_COLOR = "FFF2CC";
+      }
+
       // Setting the Header
       XWPFTableRow tableRowHeader;
       if (headerIndex == 0) {
@@ -490,6 +498,12 @@ public class POISummary {
 
     for (List<POIField> poiParameters : sData) {
       record = 0;
+      // Condition for table b cell color in fields 5 and 6
+      if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+        TABLE_HEADER_FONT_COLOR = "DEEAF6";
+      } else {
+        TABLE_HEADER_FONT_COLOR = "FFF2CC";
+      }
       XWPFTableRow dataRow = table.createRow();
       for (POIField poiParameter : poiParameters) {
 
@@ -504,18 +518,29 @@ public class POISummary {
         }
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
-        if (highlightFirstColumn && record == 0) {
-          dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+
+        // highlight and bold first and SecondColumn for table D1
+        if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1)) {
+          dataRow.getCell(record).setColor("DEEAF6");
           if (poiParameter.getBold() != null) {
             paragraphRun.setBold(poiParameter.getBold());
           } else {
             paragraphRun.setBold(true);
           }
         } else {
-          if (poiParameter.getBold() != null) {
-            paragraphRun.setBold(poiParameter.getBold());
+          if (highlightFirstColumn && record == 0) {
+            dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
           } else {
-            paragraphRun.setBold(false);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(false);
+            }
           }
         }
         record++;
@@ -551,8 +576,11 @@ public class POISummary {
       case "tableCAnnualReport":
         this.tableGStyle(table);
         break;
-      case "tableDAnnualReport":
-        this.tableFStyle(table);
+      case "tableD1AnnualReport":
+        this.tableAStyle(table);
+        break;
+      case "tableD2AnnualReport":
+        this.tableAStyle(table);
         break;
       case "tableEAnnualReport":
         this.tableGStyle(table);
