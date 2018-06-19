@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.dao.RepIndOrganizationTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 
 import java.util.ArrayList;
@@ -87,6 +89,41 @@ public class RepIndOrganizationTypeManagerImpl implements RepIndOrganizationType
 
     return studiesByOrganizationTypeDTOs.stream().sorted((o1, o2) -> new Integer(o2.getProjectExpectedStudies().size())
       .compareTo(new Integer(o1.getProjectExpectedStudies().size()))).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO>
+    getPartnershipsByRepIndOrganizationTypeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships) {
+    List<ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO> partnershipsByRepIndOrganizationTypeDTOs =
+      new ArrayList<>();
+
+    List<RepIndOrganizationType> organizationTypes = this.findAll().stream().collect(Collectors.toList());
+    if (organizationTypes != null && !organizationTypes.isEmpty()) {
+      for (RepIndOrganizationType repIndOrganizationType : organizationTypes) {
+
+        ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO partnershipsByRepIndOrganizationTypeDTO =
+          new ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO();
+        partnershipsByRepIndOrganizationTypeDTO.setRepIndOrganizationType(repIndOrganizationType);
+        if (projectPartnerPartnerships != null && !projectPartnerPartnerships.isEmpty()) {
+          partnershipsByRepIndOrganizationTypeDTO.setProjectPartnerPartnerships(projectPartnerPartnerships.stream()
+            .filter(ppp -> ppp.getProjectPartner() != null && ppp.getProjectPartner().getInstitution() != null
+              && ppp.getProjectPartner().getInstitution().getInstitutionType() != null
+              && ppp.getProjectPartner().getInstitution().getInstitutionType().getRepIndOrganizationType() != null
+              && ppp.getProjectPartner().getInstitution().getInstitutionType().getRepIndOrganizationType()
+                .equals(repIndOrganizationType))
+            .collect(Collectors.toList()));
+        } else {
+          partnershipsByRepIndOrganizationTypeDTO
+            .setProjectPartnerPartnerships(new ArrayList<ProjectPartnerPartnership>());
+        }
+        partnershipsByRepIndOrganizationTypeDTOs.add(partnershipsByRepIndOrganizationTypeDTO);
+
+      }
+    }
+    return partnershipsByRepIndOrganizationTypeDTOs.stream()
+      .sorted((d1, d2) -> new Integer(d2.getProjectPartnerPartnerships().size())
+        .compareTo(new Integer(d1.getProjectPartnerPartnerships().size())))
+      .collect(Collectors.toList());
   }
 
   @Override

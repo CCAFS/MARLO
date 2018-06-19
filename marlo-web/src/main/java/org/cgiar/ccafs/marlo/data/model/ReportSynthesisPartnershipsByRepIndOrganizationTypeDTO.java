@@ -5,21 +5,16 @@ import java.util.List;
 /**
  * @author Andres Valencia - CIAT/CCAFS
  */
-public class ReportSynthesisPartnershipsByInstitutionTypeDTO implements java.io.Serializable {
+public class ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO implements java.io.Serializable {
 
   private static final long serialVersionUID = 5982869469556880508L;
 
-  private InstitutionType institutionType;
+  private RepIndOrganizationType repIndOrganizationType;
 
   private List<ProjectPartnerPartnership> projectPartnerPartnerships;
 
 
-  public ReportSynthesisPartnershipsByInstitutionTypeDTO() {
-  }
-
-
-  public InstitutionType getInstitutionType() {
-    return institutionType;
+  public ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO() {
   }
 
 
@@ -28,8 +23,8 @@ public class ReportSynthesisPartnershipsByInstitutionTypeDTO implements java.io.
   }
 
 
-  public void setInstitutionType(InstitutionType institutionType) {
-    this.institutionType = institutionType;
+  public RepIndOrganizationType getRepIndOrganizationType() {
+    return repIndOrganizationType;
   }
 
 
@@ -38,9 +33,14 @@ public class ReportSynthesisPartnershipsByInstitutionTypeDTO implements java.io.
   }
 
 
+  public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
+    this.repIndOrganizationType = repIndOrganizationType;
+  }
+
+
   @Override
   public String toString() {
-    return "ReportSynthesisPartnershipsByInstitutionTypeDTO [institutionType=" + institutionType
+    return "ReportSynthesisPartnershipsByInstitutionTypeDTO [repIndOrganizationType=" + repIndOrganizationType
       + ", projectPartnerPartnerships=" + projectPartnerPartnerships + "]";
   }
 
