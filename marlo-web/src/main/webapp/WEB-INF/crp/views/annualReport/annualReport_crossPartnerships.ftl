@@ -119,7 +119,7 @@
     <div class="form-group row">
       [#-- CRP/Platform --] 
       <div class="col-md-5">
-        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="${customLabel}.collaboration.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
+        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.collaboration.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-7">

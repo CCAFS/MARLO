@@ -3,7 +3,7 @@ $(document).ready(init);
 function init() {
 
   // Add Select2
-  $('form select').select2({
+  $('form select.globalUnitSelect').select2({
       width: '100%',
       templateResult: formatSelect2Result
   });
@@ -29,8 +29,9 @@ function addProgramCollaboration() {
   $list.append($item);
 
   // Add select
-  $item.find('select').select2({
-    width: '100%'
+  $item.find('select.globalUnitSelect').select2({
+      width: '100%',
+      templateResult: formatSelect2Result
   });
 
   // Add auto complete
@@ -75,6 +76,7 @@ function formatSelect2Result(item) {
   if(item.loading) {
     return item.text;
   }
+  console.log(item.id);
   var $item = $('#globalUnit-' + item.id).clone();
   return $item;
 }
