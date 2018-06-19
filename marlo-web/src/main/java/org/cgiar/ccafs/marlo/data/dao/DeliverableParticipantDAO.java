@@ -56,10 +56,17 @@ public interface DeliverableParticipantDAO {
    */
   public List<DeliverableParticipant> findAll();
 
-
   public List<DeliverableParticipant> findDeliverableParticipantByDeliverableAndPhase(Long deliverableID, Long phaseID);
 
+
   public DeliverableParticipant findDeliverableParticipantByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
+
+  /**
+   * This method gets a list of DeliverableParticipant that are active by a given phase
+   * 
+   * @return a list from DeliverableParticipant null if no exist records
+   */
+  public List<DeliverableParticipant> getDeliverableParticipantByPhase(Phase phase);
 
   /**
    * This method saves the information of the given deliverableParticipant
