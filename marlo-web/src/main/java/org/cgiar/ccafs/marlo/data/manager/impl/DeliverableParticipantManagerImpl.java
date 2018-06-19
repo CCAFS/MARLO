@@ -97,6 +97,11 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
   }
 
   @Override
+  public List<DeliverableParticipant> getDeliverableParticipantByPhase(Phase phase) {
+    return deliverableParticipantDAO.getDeliverableParticipantByPhase(phase);
+  }
+
+  @Override
   public DeliverableParticipant saveDeliverableParticipant(DeliverableParticipant deliverableParticipant) {
     DeliverableParticipant deliverableParticipantResult = deliverableParticipantDAO.save(deliverableParticipant);;
     // Phase currentPhase = phaseDAO.find(deliverableParticipantResult.getPhase().getId());
