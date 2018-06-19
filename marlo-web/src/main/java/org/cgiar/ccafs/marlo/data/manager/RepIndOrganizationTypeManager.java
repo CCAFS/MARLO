@@ -15,7 +15,9 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 
 import java.util.List;
@@ -61,6 +63,15 @@ public interface RepIndOrganizationTypeManager {
    * @return a list from reportSynthesisOrganizationTypeByStudiesDTO null if no exist records
    */
   public List<ReportSynthesisStudiesByOrganizationTypeDTO> getOrganizationTypesByStudies(Phase phase);
+
+  /**
+   * This method gets a list of ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO that are active:
+   * List of Partnerships grouped by RepIndOrganizationType
+   * 
+   * @return a list from ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO null if no exist records
+   */
+  public List<ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO>
+    getPartnershipsByRepIndOrganizationTypeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships);
 
   /**
    * This method gets a repIndOrganizationType object by a given repIndOrganizationType identifier.

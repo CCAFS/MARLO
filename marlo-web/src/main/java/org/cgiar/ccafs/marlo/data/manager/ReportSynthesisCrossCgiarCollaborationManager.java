@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
 
 import java.util.List;
@@ -53,22 +54,37 @@ public interface ReportSynthesisCrossCgiarCollaborationManager {
 
 
   /**
-   * This method gets a reportSynthesisCrossCgiarCollaboration object by a given reportSynthesisCrossCgiarCollaboration identifier.
+   * Shows to the pmu the Flagship Collaborations (Table H)
+   * 
+   * @param lInstitutions
+   * @param phaseID
+   * @return
+   */
+  public List<ReportSynthesisCrossCgiarCollaboration> getFlagshipCollaborations(List<LiaisonInstitution> lInstitutions,
+    long phaseID);
+
+  /**
+   * This method gets a reportSynthesisCrossCgiarCollaboration object by a given reportSynthesisCrossCgiarCollaboration
+   * identifier.
    * 
    * @param reportSynthesisCrossCgiarCollaborationID is the reportSynthesisCrossCgiarCollaboration identifier.
    * @return a ReportSynthesisCrossCgiarCollaboration object.
    */
-  public ReportSynthesisCrossCgiarCollaboration getReportSynthesisCrossCgiarCollaborationById(long reportSynthesisCrossCgiarCollaborationID);
+  public ReportSynthesisCrossCgiarCollaboration
+    getReportSynthesisCrossCgiarCollaborationById(long reportSynthesisCrossCgiarCollaborationID);
 
   /**
    * This method saves the information of the given reportSynthesisCrossCgiarCollaboration
    * 
-   * @param reportSynthesisCrossCgiarCollaboration - is the reportSynthesisCrossCgiarCollaboration object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisCrossCgiarCollaboration was
+   * @param reportSynthesisCrossCgiarCollaboration - is the reportSynthesisCrossCgiarCollaboration object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisCrossCgiarCollaboration was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisCrossCgiarCollaboration saveReportSynthesisCrossCgiarCollaboration(ReportSynthesisCrossCgiarCollaboration reportSynthesisCrossCgiarCollaboration);
+  public ReportSynthesisCrossCgiarCollaboration saveReportSynthesisCrossCgiarCollaboration(
+    ReportSynthesisCrossCgiarCollaboration reportSynthesisCrossCgiarCollaboration);
 
 
 }

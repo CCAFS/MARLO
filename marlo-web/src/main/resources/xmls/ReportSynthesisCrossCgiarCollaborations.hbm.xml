@@ -19,18 +19,18 @@
         </many-to-one>
         <many-to-one name="reportSynthesisCrossCgiar" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar" fetch="select">
             <column name="report_synthesis_cross_cgiar_id" />
-        </many-to-one>
-        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
-            <column name="crp_program_id" />
-        </many-to-one>
+        </many-to-one> 
         <many-to-one name="repIndCollaborationType" class="org.cgiar.ccafs.marlo.data.model.RepIndCollaborationType" fetch="select">
             <column name="rep_ind_collaboration_type_id" />
         </many-to-one>
-        <property name="status" type="java.lang.Boolean">
+        <property name="status" type="java.lang.Integer">
             <column name="status" precision="1" scale="0" />
         </property>
         <property name="description" type="string">
             <column name="description" length="65535" />
+        </property>
+          <property name="flagship" type="string">
+            <column name="flagship" length="65535" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />

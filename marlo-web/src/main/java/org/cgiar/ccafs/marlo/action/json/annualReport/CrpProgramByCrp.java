@@ -78,7 +78,7 @@ public class CrpProgramByCrp extends BaseAction {
       for (CrpProgram crpPr : crpProgramList) {
         crpProgram = new HashMap<>();
         crpProgram.put("id", crpPr.getId());
-        crpProgram.put("name", crpPr.getName());
+        crpProgram.put("description", crpPr.getName());
         crpProgram.put("acronym", crpPr.getAcronym());
         crpPrograms.add(crpProgram);
       }

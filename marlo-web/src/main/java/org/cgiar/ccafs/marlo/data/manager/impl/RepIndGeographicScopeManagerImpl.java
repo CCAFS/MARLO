@@ -88,7 +88,10 @@ public class RepIndGeographicScopeManagerImpl implements RepIndGeographicScopeMa
 
       }
     }
-    return partnershipsByGeographicScopeDTO;
+    return partnershipsByGeographicScopeDTO.stream()
+      .sorted((d1, d2) -> new Integer(d2.getProjectPartnerPartnerships().size())
+        .compareTo(new Integer(d1.getProjectPartnerPartnerships().size())))
+      .collect(Collectors.toList());
   }
 
   @Override
