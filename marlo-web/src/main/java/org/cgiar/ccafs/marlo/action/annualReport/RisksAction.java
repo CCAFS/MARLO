@@ -64,7 +64,7 @@ public class RisksAction extends BaseAction {
   private static final long serialVersionUID = 8243817438610716341L;
 
 
-  // Managers
+  // Managers //
   private GlobalUnitManager crpManager;
 
 
