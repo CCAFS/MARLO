@@ -2,8 +2,7 @@ svg > g > g:last-child {
   pointer-events: none
 }
 
-table {
-}
+table {}
 
 .annualReport-table {
   display: inline-block;
@@ -189,7 +188,7 @@ tfoot {
   position: absolute;
   bottom: 0;
   left: 1px;
-  width: 99.8%;
+  width: 99.5%;
   /* margin: 2px 1px 0 1px; */
   cursor: pointer;
   padding: 16px 7px 0px 0;
@@ -201,7 +200,7 @@ tfoot {
   background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 70%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 80%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 
