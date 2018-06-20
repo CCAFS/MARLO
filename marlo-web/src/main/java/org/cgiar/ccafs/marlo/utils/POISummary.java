@@ -585,7 +585,7 @@ public class POISummary {
         this.tableBAnnualReportStyle(table);
         break;
       case "tableCAnnualReport":
-        this.tableGStyle(table);
+        this.tableCStyle(table);
         break;
       case "tableD1AnnualReport":
         this.tableAStyle(table);
