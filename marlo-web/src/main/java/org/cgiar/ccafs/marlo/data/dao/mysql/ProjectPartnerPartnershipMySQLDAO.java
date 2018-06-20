@@ -83,10 +83,12 @@ public class ProjectPartnerPartnershipMySQLDAO extends AbstractMarloDAO<ProjectP
     query.append("project_partner_partnerships AS ppp ");
     query.append("INNER JOIN project_partners AS pp ON pp.id = ppp.project_partner ");
     query.append("INNER JOIN projects AS p ON p.id = pp.project_id ");
+    query.append("INNER JOIN projects_info AS pi ON p.id = pi.project_id ");
     query.append("WHERE ppp.is_active = 1 AND ");
     query.append("pp.is_active = 1 AND ");
     query.append("pp.has_partnerships = 1 AND ");
     query.append("p.is_active = 1 AND ");
+    query.append("pi.`id_phase` =" + phase.getId() + " AND ");
     query.append("pp.`id_phase` =" + phase.getId());
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());

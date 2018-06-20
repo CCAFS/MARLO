@@ -86,6 +86,7 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
     query.append("INNER JOIN project_expected_study_info AS si ON si.project_expected_study_id = s.id ");
     query.append("INNER JOIN rep_ind_organization_types ot ON ot.id = si.rep_ind_organization_type_id ");
     query.append("WHERE s.is_active = 1 AND ");
+    query.append("s.`year` =" + phase.getYear() + " AND ");
     query.append("si.`id_phase` =" + phase.getId() + " AND ");
     query.append("si.`is_contribution` = 1 AND ");
     query.append("ot.`id` =" + repIndOrganizationType.getId());
@@ -114,6 +115,7 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
     query.append("INNER JOIN project_expected_study_info AS si ON si.project_expected_study_id = s.id ");
     query.append("WHERE s.is_active = 1 AND ");
     query.append("si.`is_contribution` = 1 AND ");
+    query.append("s.`year` =" + phase.getYear() + " AND ");
     query.append("si.`id_phase` =" + phase.getId());
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
