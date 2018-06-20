@@ -580,6 +580,11 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
+  @Override
+  public String toString() {
+    return "ProjectExpectedStudy [id=" + id + "]";
+  }
+
 
 }
 
