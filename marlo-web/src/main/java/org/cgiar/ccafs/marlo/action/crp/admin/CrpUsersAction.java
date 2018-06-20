@@ -324,8 +324,10 @@ public class CrpUsersAction extends BaseAction {
               c -> c.getContactType().equals(role.getAcronym()) && c.getProjectPartner().isActive() && c.isActive())
             .collect(Collectors.toList())) {
             if (phasesProjects.contains(projectPartnerPerson.getProjectPartner().getProject())) {
-              if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              if (projectPartnerPerson.getProjectPartner().getProject()
+                .getProjecInfoPhase(this.getActualPhase()) != null
+                && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                 || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
                   .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                 users.add(userRole);
