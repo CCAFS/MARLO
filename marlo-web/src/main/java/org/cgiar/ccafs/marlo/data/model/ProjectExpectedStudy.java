@@ -497,7 +497,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   @Override
   public String toString() {
-    return "ProjectExpectedStudy [id=" + id + "]";
+    return "ProjectExpectedStudy [id=" + this.getId() + "]";
   }
 
 

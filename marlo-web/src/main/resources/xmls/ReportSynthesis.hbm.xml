@@ -66,6 +66,9 @@
 		<one-to-one name="reportSynthesisCrossCgiar"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar"
 			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisMelia"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia"
+			cascade="save-update"></one-to-one>
 		<set name="sectionStatuses" table="section_statuses" inverse="true"
 			lazy="true" fetch="select">
 			<key>
