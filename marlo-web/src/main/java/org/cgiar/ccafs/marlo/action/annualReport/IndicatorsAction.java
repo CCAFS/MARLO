@@ -658,7 +658,11 @@ public class IndicatorsAction extends BaseAction {
             } else {
               totalLimited++;
             }
+          } else {
+            totalLimited++;
           }
+        } else {
+          totalLimited++;
         }
 
         // Load Publications
@@ -675,7 +679,11 @@ public class IndicatorsAction extends BaseAction {
             } else {
               totalNoIsis++;
             }
+          } else {
+            totalNoIsis++;
           }
+        } else {
+          totalNoIsis++;
         }
 
         // Load Partnerships
