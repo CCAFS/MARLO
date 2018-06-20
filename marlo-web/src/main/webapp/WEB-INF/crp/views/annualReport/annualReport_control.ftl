@@ -219,7 +219,7 @@
                 [#-- Formal training estimated/counted --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC3C4.formalTraining" /]</label><br />
-                  <span>${(totalParticipantFormalTraining)!0}</span>
+                  <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
                 </div>
               </div>
             </div>
@@ -457,6 +457,7 @@
         <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.activityEvent" /]</th>
         <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>
         <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
+        <th id="tb-type">Number of females</th>
         <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.typeParticipants" /]</th>
         <th id="tb-stage">[@s.text name="${customLabel}.activitiesEventsTable.scope" /]</th>
       </tr>
@@ -489,11 +490,11 @@
           </td>
           [#-- Total Participants --]
           <td class="text-center">
-          [#if item.participants?has_content]
-            ${item.participants}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
+            ${(item.participants?number?string(",##0"))!0}
+          </td>
+          [#-- Number of females --]
+          <td class="text-center">
+            ${(item.females?number?string(",##0"))!0}
           </td>
           [#-- Type of participants --]
           <td class="text-center">

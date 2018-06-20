@@ -129,7 +129,7 @@ public class IndicatorsAction extends BaseAction {
   private List<DeliverableParticipant> deliverableParticipants;
   private Double totalParticipants = new Double(0);
   private Double percentageFemales = new Double(0);
-  private Integer totalParticipantFormalTraining = new Integer(0);
+  private Double totalParticipantFormalTraining = new Double(0);
 
 
   @Inject
@@ -285,7 +285,7 @@ public class IndicatorsAction extends BaseAction {
   }
 
 
-  public Integer getTotalParticipantFormalTraining() {
+  public Double getTotalParticipantFormalTraining() {
     return totalParticipantFormalTraining;
   }
 
@@ -591,7 +591,7 @@ public class IndicatorsAction extends BaseAction {
         // Total Formal Training
         if (deliverableParticipant.getRepIndTypeActivity() != null && deliverableParticipant.getRepIndTypeActivity()
           .getName().contains(APConstants.REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING)) {
-          totalParticipantFormalTraining++;
+          totalParticipantFormalTraining += deliverableParticipant.getParticipants();
         }
       }
       // Percentage female
