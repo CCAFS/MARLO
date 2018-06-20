@@ -528,7 +528,7 @@
       [/#list]
     [#else]
       <tr>
-        <td class="text-center" colspan="5">
+        <td class="text-center" colspan="6">
           <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>
@@ -553,7 +553,8 @@
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
-        [#if (item.deliverable.project.id??)!false]
+        [#local hasProject = (item.deliverable.project.id??)!false ]
+        [#if hasProject]
           [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         [#else]
           [#local URL][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
@@ -568,12 +569,17 @@
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
               [#-- Deliverable ID --]
-              <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''} [#if (item.deliverable.project.id??)!false], P${(item.deliverable.project.id)!''}[/#if])</small></i>
+              <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''} [#if hasProject], P${(item.deliverable.project.id)!''}[/#if])</small></i>
             </a>
           </td>
           [#-- Deliverable Status --]
           <td>
-            ${(item.getStatusName(actualPhase))!''}
+            [#local statusName = item.getStatusName(actualPhase) ]
+            [#if statusName?has_content]
+              ${statusName}
+            [#else]
+              [#if !hasProject]Complete[/#if]
+            [/#if]
           </td>
           [#-- Responsable --]
           <td class="">
