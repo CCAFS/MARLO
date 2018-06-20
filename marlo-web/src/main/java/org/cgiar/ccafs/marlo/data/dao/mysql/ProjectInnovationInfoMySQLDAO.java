@@ -86,6 +86,7 @@ public class ProjectInnovationInfoMySQLDAO extends AbstractMarloDAO<ProjectInnov
     query.append("WHERE pi.is_active = 1 AND ");
     query.append("p.is_active = 1 AND ");
     query.append("pii.`id_phase` =" + phase.getId() + " AND ");
+    query.append("pii.`year` =" + phase.getYear() + " AND ");
     query.append("si.`id` =" + repIndStageInnovation.getId());
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
@@ -112,7 +113,8 @@ public class ProjectInnovationInfoMySQLDAO extends AbstractMarloDAO<ProjectInnov
     query.append("INNER JOIN projects AS p ON p.id = pi.project_id ");
     query.append("WHERE pi.is_active = 1 AND ");
     query.append("p.is_active = 1 AND ");
-    query.append("pii.`id_phase` =" + phase.getId());
+    query.append("pii.`id_phase` =" + phase.getId() + " AND ");
+    query.append("pii.`year` =" + phase.getYear());
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<ProjectInnovationInfo> projectInnovationInfos = new ArrayList<>();
