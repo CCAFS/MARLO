@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,10 +83,13 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     query.append("INNER JOIN deliverables AS d ON d.id = di.deliverable_id ");
     query.append("WHERE d.is_active = 1 AND ");
     query.append("di.is_active = 1 AND ");
-    query.append("( di.`year` =" + phase.getYear() + " OR ");
-    query.append("di.`new_expected_year` =" + phase.getYear() + " ) AND ");
     query.append("di.`type_id` =" + deliverableType.getId() + " AND ");
-    query.append("di.`id_phase` =" + phase.getId());
+    query.append("di.`id_phase` =" + phase.getId() + " AND ");
+    query.append("di.`status` !=" + ProjectStatusEnum.Cancelled.getStatusId() + " AND ");
+    query.append("(( di.status = " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`new_expected_year` ="
+      + phase.getYear() + " ) OR ");
+    query.append(
+      "( di.status != " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`year` =" + phase.getYear() + " ))");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<DeliverableInfo> deliverableInfos = new ArrayList<>();
