@@ -197,7 +197,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !project.projectInfo.administrative && !phaseOne]
+            [#if !((project.projectInfo.administrative)!false) && !phaseOne]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
