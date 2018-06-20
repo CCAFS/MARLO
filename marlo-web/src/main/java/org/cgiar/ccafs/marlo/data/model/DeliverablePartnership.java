@@ -72,6 +72,10 @@ public class DeliverablePartnership extends MarloAuditableEntity implements java
     return true;
   }
 
+  public String getComposedName() {
+    return this.getProjectPartnerPerson().getComposedCompleteName();
+  }
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
