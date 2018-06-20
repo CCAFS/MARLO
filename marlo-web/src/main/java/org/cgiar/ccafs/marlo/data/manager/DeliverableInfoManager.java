@@ -15,6 +15,8 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -58,6 +60,13 @@ public interface DeliverableInfoManager {
    * @return a DeliverableInfo object.
    */
   public DeliverableInfo getDeliverableInfoById(long deliverableInfoID);
+
+  /**
+   * This method gets a list of DeliverableInfo that are active by a given phase and type
+   * 
+   * @return a list from DeliverableInfo null if no exist records
+   */
+  public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType);
 
   /**
    * This method saves the information of the given deliverableInfo

@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
@@ -34,7 +36,13 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -106,6 +114,8 @@ public class IndicatorsAction extends BaseAction {
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
   private DeliverableParticipantManager deliverableParticipantManager;
+  private DeliverableInfoManager deliverableInfoManager;
+  private DeliverableTypeManager deliverableTypeManager;
   // Variables
   private String transaction;
   private InfluenceValidator influenceValidator;
@@ -130,6 +140,11 @@ public class IndicatorsAction extends BaseAction {
   private Double totalParticipants = new Double(0);
   private Double percentageFemales = new Double(0);
   private Double totalParticipantFormalTraining = new Double(0);
+  private List<DeliverableInfo> deliverableInfos;
+  private Integer totalOpenAccess = 0;
+  private Integer totalLimited = 0;
+  private Integer totalIsis = 0;
+  private Integer totalNoIsis = 0;
 
 
   @Inject
@@ -145,7 +160,8 @@ public class IndicatorsAction extends BaseAction {
     ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager,
     RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
-    DeliverableParticipantManager deliverableParticipantManager) {
+    DeliverableParticipantManager deliverableParticipantManager, DeliverableInfoManager deliverableInfoManager,
+    DeliverableTypeManager deliverableTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -165,7 +181,10 @@ public class IndicatorsAction extends BaseAction {
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.repIndPhaseResearchPartnershipManager = repIndPhaseResearchPartnershipManager;
     this.deliverableParticipantManager = deliverableParticipantManager;
+    this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableTypeManager = deliverableTypeManager;
   }
+
 
   @Override
   public String cancel() {
@@ -207,6 +226,11 @@ public class IndicatorsAction extends BaseAction {
   }
 
 
+  public List<DeliverableInfo> getDeliverableInfos() {
+    return deliverableInfos;
+  }
+
+
   public List<DeliverableParticipant> getDeliverableParticipants() {
     return deliverableParticipants;
   }
@@ -216,21 +240,17 @@ public class IndicatorsAction extends BaseAction {
     return innovationsByStageDTO;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -240,7 +260,6 @@ public class IndicatorsAction extends BaseAction {
   public List<ReportSynthesisStudiesByOrganizationTypeDTO> getOrganizationTypeByStudiesDTOs() {
     return organizationTypeByStudiesDTOs;
   }
-
 
   public List<ReportSynthesisPartnershipsByGeographicScopeDTO> getPartnershipsByGeographicScopeDTO() {
     return partnershipsByGeographicScopeDTO;
@@ -256,9 +275,11 @@ public class IndicatorsAction extends BaseAction {
     return partnershipsByRepIndOrganizationTypeDTOs;
   }
 
+
   public Double getPercentageFemales() {
     return percentageFemales;
   }
+
 
   public List<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
@@ -285,10 +306,28 @@ public class IndicatorsAction extends BaseAction {
   }
 
 
+  public Integer getTotalIsis() {
+    return totalIsis;
+  }
+
+
+  public Integer getTotalLimited() {
+    return totalLimited;
+  }
+
+
+  public Integer getTotalNoIsis() {
+    return totalNoIsis;
+  }
+
+
+  public Integer getTotalOpenAccess() {
+    return totalOpenAccess;
+  }
+
   public Double getTotalParticipantFormalTraining() {
     return totalParticipantFormalTraining;
   }
-
 
   public Double getTotalParticipants() {
     return totalParticipants;
@@ -298,6 +337,7 @@ public class IndicatorsAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -313,6 +353,7 @@ public class IndicatorsAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -324,6 +365,7 @@ public class IndicatorsAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -597,6 +639,55 @@ public class IndicatorsAction extends BaseAction {
       // Percentage female
       percentageFemales = Math.round(((totalFemales * 100) / totalParticipants) * 100) / 100.0;
 
+      // Deliverables of Journal Articles type
+      DeliverableType deliverableType = deliverableTypeManager.getDeliverableTypeById(63);
+      deliverableInfos = deliverableInfoManager.getDeliverablesInfoByType(phase, deliverableType);
+
+      for (DeliverableInfo deliverableInfo : deliverableInfos) {
+        // Load Disseminations
+        List<DeliverableDissemination> deliverableDisseminations =
+          deliverableInfo.getDeliverable().getDeliverableDisseminations().stream()
+            .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(phase))
+            .collect(Collectors.toList());
+        if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+          deliverableInfo.getDeliverable().setDissemination(deliverableDisseminations.get(0));
+          if (deliverableInfo.getDeliverable().getDissemination().getIsOpenAccess() != null) {
+            // Journal Articles by Open Access
+            if (deliverableInfo.getDeliverable().getDissemination().getIsOpenAccess()) {
+              totalOpenAccess++;
+            } else {
+              totalLimited++;
+            }
+          }
+        }
+
+        // Load Publications
+        List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
+          deliverableInfo.getDeliverable().getDeliverablePublicationMetadatas().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase))
+            .collect(Collectors.toList());
+        if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
+          deliverableInfo.getDeliverable().setPublication(deliverablePublicationMetadatas.get(0));
+          // Journal Articles by ISI status
+          if (deliverableInfo.getDeliverable().getPublication().getIsiPublication() != null) {
+            if (deliverableInfo.getDeliverable().getPublication().getIsiPublication()) {
+              totalIsis++;
+            } else {
+              totalNoIsis++;
+            }
+          }
+        }
+
+        // Load Partnerships
+        List<DeliverablePartnership> deliverablePartnerships =
+          deliverableInfo.getDeliverable().getDeliverablePartnerships().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase)
+              && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+            .collect(Collectors.toList());
+        if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
+          deliverableInfo.getDeliverable().setResponsiblePartner(deliverablePartnerships.get(0));
+        }
+      }
     }
 
     // Base Permission
@@ -613,6 +704,7 @@ public class IndicatorsAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -662,6 +754,7 @@ public class IndicatorsAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Synthesis Indicators
@@ -715,14 +808,18 @@ public class IndicatorsAction extends BaseAction {
 
   }
 
+  public void setDeliverableInfos(List<DeliverableInfo> deliverableInfos) {
+    this.deliverableInfos = deliverableInfos;
+  }
+
   public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
   }
 
-
   public void setInnovationsByStageDTO(List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO) {
     this.innovationsByStageDTO = innovationsByStageDTO;
   }
+
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
@@ -740,6 +837,7 @@ public class IndicatorsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void
     setOrganizationTypeByStudiesDTOs(List<ReportSynthesisStudiesByOrganizationTypeDTO> organizationTypeByStudiesDTOs) {
     this.organizationTypeByStudiesDTOs = organizationTypeByStudiesDTOs;
@@ -754,7 +852,6 @@ public class IndicatorsAction extends BaseAction {
     this.partnershipsByPhaseDTO = partnershipsByPhaseDTO;
   }
 
-
   public void setPartnershipsByRepIndOrganizationTypeDTOs(
     List<ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO> partnershipsByRepIndOrganizationTypeDTOs) {
     this.partnershipsByRepIndOrganizationTypeDTOs = partnershipsByRepIndOrganizationTypeDTOs;
@@ -764,16 +861,13 @@ public class IndicatorsAction extends BaseAction {
     this.percentageFemales = percentageFemales;
   }
 
-
   public void setProjectExpectedStudies(List<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
   }
 
-
   public void setProjectInnovationInfos(List<ProjectInnovationInfo> projectInnovationInfos) {
     this.projectInnovationInfos = projectInnovationInfos;
   }
-
 
   public void setProjectPartnerPartnerships(List<ProjectPartnerPartnership> projectPartnerPartnerships) {
     this.projectPartnerPartnerships = projectPartnerPartnerships;
@@ -784,9 +878,33 @@ public class IndicatorsAction extends BaseAction {
     this.reportSynthesis = reportSynthesis;
   }
 
-
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+
+  public void setTotalIsis(Integer totalIsis) {
+    this.totalIsis = totalIsis;
+  }
+
+
+  public void setTotalLimited(Integer totalLimited) {
+    this.totalLimited = totalLimited;
+  }
+
+
+  public void setTotalNoIsis(Integer totalNoIsis) {
+    this.totalNoIsis = totalNoIsis;
+  }
+
+
+  public void setTotalOpenAccess(Integer totalOpenAccess) {
+    this.totalOpenAccess = totalOpenAccess;
+  }
+
+
+  public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
+    this.totalParticipantFormalTraining = totalParticipantFormalTraining;
   }
 
   public void setTotalParticipants(Double totalParticipants) {
