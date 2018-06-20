@@ -308,6 +308,9 @@
     <mapping resource="xmls/ReportSynthesisExternalPartnershipProjects.hbm.xml"/>
     <mapping resource="xmls/RepIndCollaborationType.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisCrossCgiar.hbm.xml"/>
-    <mapping resource="xmls/ReportSynthesisCrossCgiarCollaborations.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisCrossCgiarCollaborations.hbm.xml"/> 
+    <mapping resource="xmls/ReportSynthesisMelia.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisMeliaEvaluations.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisMeliaStudies.hbm.xml"/>    
 	</session-factory>
 </hibernate-configuration>
