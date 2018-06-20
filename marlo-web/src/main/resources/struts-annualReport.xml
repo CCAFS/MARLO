@@ -97,7 +97,7 @@
     </action>
     
 		<!--  2.5 Monitoring, Evaluation, Impact Assessment and Learning (MELIA)  -->
-		<action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+		<action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.MeliaAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport/annualReport_melia.ftl</result>
       <result name="success" type="redirectAction">
