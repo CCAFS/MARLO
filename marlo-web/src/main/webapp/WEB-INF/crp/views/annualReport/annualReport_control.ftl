@@ -250,8 +250,8 @@
                 [#-- Chart 6 --]
                 <div id="chart6" class="chartBox simpleBox">
                   [#assign chartData = [
-                      {"name":"Open Acess",   "value": "71"},
-                      {"name":"Limited",      "value": "6"}
+                      {"name":"Open Acess",   "value": "${totalOpenAccess}"},
+                      {"name":"Limited",      "value": "${totalLimited}"}
                     ] 
                   /] 
                   <ul class="chartData" style="display:none">
@@ -269,8 +269,8 @@
                 [#-- Chart 7 --]
                 <div id="chart7" class="chartBox simpleBox">
                   [#assign chartData = [
-                      {"name":"Yes",   "value": "36"},
-                      {"name":"No",    "value": "28"}
+                      {"name":"Yes",   "value": "${totalIsis}"},
+                      {"name":"No",    "value": "${totalNoIsis}"}
                     ] 
                   /] 
                   <ul class="chartData" style="display:none">
@@ -283,6 +283,16 @@
                     [/#list]
                   </ul>
                 </div>
+              </div>
+            </div>
+
+            [#-- Journal Articles  --]
+            <div class="form-group">
+              <h4 class="subTitle headTitle">[@customForm.text name="${customLabel}.journalArticlesTable.title" param="${currentCycleYear}"/]</h4>
+              <hr />
+              <div class="viewMoreSyntesis-block" >
+                [@tableJournalArticlesMacro list=(deliverableInfos)![] /]
+                <div class="viewMoreSyntesis closed"></div>
               </div>
             </div>
             
@@ -323,13 +333,15 @@
         <tr>
           [#-- Title of Innovation --]
           <td class="">
-            [#if item.title?has_content]
-              <a href="${URL}" target="_blank">${item.title}</a>
-            [#else]
-              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-            [/#if]
-            [#-- Project ID --]
-            [#if (item.projectInnovation.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(item.projectInnovation.project.id)!})</i> [/#if]
+            <a href="${URL}" target="_blank">
+              [#if item.title?has_content]
+                ${item.title}
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+              [#-- Project ID --]
+              [#if (item.projectInnovation.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(item.projectInnovation.project.id)!})</i> [/#if]
+            </a>
           </td>
           [#-- Stage of Innovation --]
           <td class="">
@@ -399,7 +411,7 @@
               [#-- Partner Name --]
               ${(item.projectPartner.institution.acronymName)!'--'}
               [#-- Project ID --]
-              <br /><i><small>(From P${(item.projectPartner.project.id)!''})</small></i>
+              <br /><i style="opacity:0.5"><small>(From P${(item.projectPartner.project.id)!''})</small></i>
             </a>
           </td>
           [#-- Phase of research --]
@@ -477,7 +489,7 @@
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
               [#-- Deliverable ID --]
-              <br /><i><small>(From D${(item.deliverable.id)!''})</small></i>
+              <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''})</small></i>
             </a>
           </td>
           [#-- Activity Type --]
@@ -511,6 +523,77 @@
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
+          </td>
+        </tr>
+      [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro tableJournalArticlesMacro list ]
+  <table class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th id="">Title</th>
+        <th id="">Status</th>
+        <th id="">Responsable</th>
+        <th id="">Journal</th>
+        <th id="">Open Access</th>
+        <th id="">ISI Journal</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        [#if (item.deliverable.project.id??)!false]
+          [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#else]
+          [#local URL][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [/#if]
+        <tr>
+          [#-- Title --]
+          <td class="">
+            <a href="${URL}" target="_blank">
+              [#if item.title?has_content]
+                ${item.title}
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+              [#-- Deliverable ID --]
+              <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''} [#if (item.deliverable.project.id??)!false], P${(item.deliverable.project.id)!''}[/#if])</small></i>
+            </a>
+          </td>
+          [#-- Deliverable Status --]
+          <td>
+            ${(item.getStatusName(actualPhase))!''}
+          </td>
+          [#-- Responsable --]
+          <td class="">
+          [#if item.deliverable.responsiblePartner?has_content]
+            ${(item.deliverable.responsiblePartner.composedName)!}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Journal  --]
+          <td>
+            ${(item.deliverable.publication.journal?string)!''}
+          </td>
+          [#-- Open Access --]
+          <td class="text-center">
+            <img src="${baseUrl}/global/images/openAccess-${(item.deliverable.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
+          </td>
+          [#-- Journal ISI --]
+          <td class="text-center">
+            <img src="${baseUrl}/global/images/checked-${(item.deliverable.publication.isiPublication?string)!'false'}.png" alt="" />
           </td>
         </tr>
       [/#list]
