@@ -328,8 +328,10 @@ public class CrpUsersAction extends BaseAction {
                 .getProjecInfoPhase(this.getActualPhase()) != null
                 && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
                   .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                || projectPartnerPerson.getProjectPartner().getProject()
+                  .getProjecInfoPhase(this.getActualPhase()) != null
+                  && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                 users.add(userRole);
               }
 
