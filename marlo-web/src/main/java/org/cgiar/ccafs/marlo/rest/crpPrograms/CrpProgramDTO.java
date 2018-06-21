@@ -22,13 +22,13 @@ import javax.validation.constraints.NotNull;
  */
 public class CrpProgramDTO {
 
-  @NotNull
+
   private Long id;
 
   @NotNull
   private String name;
 
-
+  @NotNull
   private String acronym;
 
 

@@ -119,7 +119,7 @@ public class InstitutionController {
   // HttpStatus.CREATED);
   // }
 
-  // Temporally Disable This service.
+
   // @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
   // @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.DELETE,
   // produces = MediaType.APPLICATION_JSON_VALUE)
