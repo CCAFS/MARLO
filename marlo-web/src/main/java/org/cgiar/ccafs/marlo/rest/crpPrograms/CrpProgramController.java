@@ -73,6 +73,13 @@ public class CrpProgramController {
     this.userManager = userManager;
   }
 
+  /**
+   * Create a CGIAR Structure Flagship
+   * 
+   * @param CGIARStructure
+   * @param crpProgramDTO
+   * @return
+   */
   @RequiresPermissions(Permission.CRP_PROGRAM_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/setFlagship", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -100,6 +107,36 @@ public class CrpProgramController {
     // away.
     return new ResponseEntity<CrpProgramDTO>(crpProgramMapper.crpProgramToCrpProgramDTO(crpProgram),
       HttpStatus.CREATED);
+  }
+
+  /**
+   * Delete a CGIAR Structure Flagship
+   * 
+   * @param CGIARStructure
+   * @param id
+   * @return
+   */
+  @RequiresPermissions(Permission.CRP_PROGRAM_DELETE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIARStructure}/deleteFlagship/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> deleteInstitution(@PathVariable String CGIARStructure, @PathVariable Long id) {
+    LOG.debug("Delete Flagship with id: {}", id);
+
+    GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);
+    CrpProgram crpProgram = crpProgramManager.getCrpProgramById(id);
+
+    // If The program is not a Flagship
+    if (crpProgram.getProgramType() != ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    // If the program does not belong the CGIAR Structure
+    if (!crpProgram.getCrp().getId().equals(globalUnitEntity.getId())) {
+      return ResponseEntity.notFound().build();
+    }
+
+    crpProgramManager.deleteCrpProgram(crpProgram.getId());
+    return ResponseEntity.ok().build();
   }
 
 
