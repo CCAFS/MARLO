@@ -33,7 +33,7 @@
             <key>
                 <column name="report_synhtesis_melia_id" />
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudies" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy" />
         </set>
         <set name="reportSynthesisMeliaEvaluations" table="report_synthesis_melia_evaluations" inverse="true" lazy="true" fetch="select">
             <key>
