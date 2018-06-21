@@ -54,10 +54,7 @@
             [#-- Flagships - Monitoring, Evaluation, Impact Assessment and Learning Synthesis --]
             [#if PMU]
             <div class="form-group margin-panel">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
-              
-              <hr />
-              [@tableFlagshipsMacro list=flagshipMeliaProgress /]
+              [@tableFlagshipSynthesis tableName="meliaSummarytable" list=flagshipMeliaProgress columns=["summary"] /]
             </div>
             [/#if]
             
@@ -68,7 +65,7 @@
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableI.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               </div>
               <hr />
-              [@tableIMacro list=flagshipPlannedList /]
+              [@tableIMacro list=(studiesList)![] /]
             </div>
             [/#if]
             
@@ -77,15 +74,9 @@
               <div class="form-group">
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evaluation.title" /]</h4>
                 <div class="listEvaluations">
-                
-                 [#-- REMOVE TEMPORAL LIST ASSIGN --]
-                 [#assign list=fpSynthesisTable /]
-                 
-                 [#if list?has_content]
-                  [#list list as item]
-                    [@relevantEvaluationMacro element=item name="list" index=item_index  isEditable=editable/]
+                  [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item]
+                    [@relevantEvaluationMacro element=item name="${customName}.evaluations" index=item_index  isEditable=editable/]
                   [/#list]
-                 [/#if]
                 </div>
                 [#if canEdit && editable]
                 <div class="text-right">
@@ -105,44 +96,44 @@
 </section>
 
 [#--  Relevant Evaluation Form template --]
-[@relevantEvaluationMacro element={} name="list" index=-1 template=true /]
+[@relevantEvaluationMacro element={} name="${customName}.evaluations" index=-1 template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro tableFlagshipsMacro list ]
-  <div class="">
-    <table class="annual-report-table table table-bordered">
+[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
+  <div class="form-group">
+    <h4 class="simpleTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
+    <table class="table table-bordered">
       <thead>
-        <tr class="subHeader">
-          <th width="20%" > [@s.text name="${customLabel}.table.flagship" /] </th>
-          <th width="80%" > [@s.text name="${customLabel}.table.summary" /] </th>
+        <tr>
+          <th class="col-md-1 text-center"> FP </th>
+          [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
             <tr>
-              [#-- Flagship --]
               <td>
-                [#if item.liaisonInstitution?has_content]
-                <span class="programTag" style="border-color:${(item.liaisonInstitution.crpProgram.color)!'#fff'}">${item.liaisonInstitution.crpProgram.acronym!''}</span>
-                [/#if]
+                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
               </td>
-              [#-- Summary on any highlights of MELIA this year --]
-              <td class="text-center">
-              [#if item.summary?has_content] 
-                ${item.summary!''} 
-              [#else]
-                <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-              [/#if]
-              </td>
+              [#list columns as column]
+                <td>
+                  [#if (item[column]?has_content)!false] 
+                    ${item[column]} 
+                  [#else]
+                    <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                  [/#if]
+                </td>
+              [/#list]
             </tr>
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="3"><i>[@s.text name="${customLabel}.table.void" /]</i></td>
+            <td class="text-center" colspan="3"><i>No flagships loaded...</i></td>
           </tr>
         [/#if]
       </tbody>

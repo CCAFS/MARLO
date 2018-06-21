@@ -1,34 +1,34 @@
 [#ftl]
 
 [#assign menus= [
-  { 'title': '1.  Key Results', 'show': true,
+  { 'title': '1. Key Results', 'show': true,
     'items': [
-    { 'slug': 'crpProgress',          'name': 'powb.menu.crpProgress',          'action': 'crpProgress',        'active': true },
-    { 'slug': 'flagshipProgress',     'name': 'powb.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
-    { 'slug': 'ccDimensions',         'name': 'powb.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
+    { 'slug': 'crpProgress',          'name': 'annualReport.menu.crpProgress',          'action': 'crpProgress',        'active': true },
+    { 'slug': 'flagshipProgress',     'name': 'annualReport.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
+    { 'slug': 'ccDimensions',         'name': 'annualReport.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
     ]
   },
   { 'title': '2. CRP Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'plannedVariance',        'name': 'powb.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'fundingUse',             'name': 'powb.menu.fundingUse',           'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
-    { 'slug': 'externalPartnerships',   'name': 'powb.menu.externalPartnerships', 'action': 'externalPartnerships',   'active': true },
-    { 'slug': 'crossPartnerships',      'name': 'powb.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true },
-    { 'slug': 'melia',                  'name': 'powb.menu.melia',                'action': 'melia',                  'active': true },
-    { 'slug': 'efficiency',             'name': 'powb.menu.efficiency',           'action': 'efficiency',             'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'plannedVariance',        'name': 'annualReport.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'fundingUse',             'name': 'annualReport.menu.fundingUse',           'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'externalPartnerships',   'name': 'annualReport.menu.externalPartnerships', 'action': 'externalPartnerships',   'active': true },
+    { 'slug': 'crossPartnerships',      'name': 'annualReport.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true },
+    { 'slug': 'melia',                  'name': 'annualReport.menu.melia',                'action': 'melia',                  'active': true },
+    { 'slug': 'efficiency',             'name': 'annualReport.menu.efficiency',           'action': 'efficiency',             'active': true, 'onlyPMU': !PMU }
     ]
   },
-  { 'title': '3.  CRP Management', 'show': true,
+  { 'title': '3. CRP Management', 'show': true,
     'items': [
-    { 'slug': 'governance',   'name': 'powb.menu.governance',   'action': 'governance',   'active': true, 'onlyPMU': !PMU }
-    { 'slug': 'risks',        'name': 'powb.menu.risks',        'action': 'risks',        'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'financial',    'name': 'powb.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'governance',   'name': 'annualReport.menu.governance',   'action': 'governance',   'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'risks',        'name': 'annualReport.menu.risks',        'action': 'risks',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'financial',    'name': 'annualReport.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
     ]
   },
-  { 'title': 'CRP Indicators', 'show': true,
+  { 'title': '4. Reporting Indicators', 'show': true,
     'items': [
-    { 'slug': 'influence',    'name': 'powb.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'control',      'name': 'powb.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'influence',    'name': 'annualReport.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'control',      'name': 'annualReport.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
     ]
   }
 ]/]
