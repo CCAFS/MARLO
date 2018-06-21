@@ -50,9 +50,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-public class CrpProgramController {
+public class CrpFlagships {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CrpProgramController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CrpFlagships.class);
 
 
   private final CrpProgramMapper crpProgramMapper;
@@ -64,7 +64,7 @@ public class CrpProgramController {
   private UserManager userManager;
 
   @Inject
-  public CrpProgramController(CrpProgramMapper crpProgramMapper, GlobalUnitManager globalUnitManager,
+  public CrpFlagships(CrpProgramMapper crpProgramMapper, GlobalUnitManager globalUnitManager,
     CrpProgramManager crpProgramManager, UserManager userManager) {
     super();
     this.crpProgramMapper = crpProgramMapper;
