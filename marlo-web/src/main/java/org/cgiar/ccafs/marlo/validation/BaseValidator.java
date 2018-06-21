@@ -683,7 +683,7 @@ public class BaseValidator {
     BaseAction action) {
     // Reporting missing fields into the database.
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByPowbSynthesis(reportSynthesis.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle, year, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
