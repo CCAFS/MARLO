@@ -56,7 +56,7 @@
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableJ.title" /]</h4>
               </div>
               <hr />
-              [#list reportSynthesis.reportSynthesisFinancialSummary.budgets as item]
+              [#list (reportSynthesis.reportSynthesisFinancialSummary.budgets)![] as item]
                 [@tableJMacro name="${customName}.budgets" element=item element_index=item_index editable=editable && PMU /]
               [/#list]
             </div>
@@ -115,7 +115,7 @@
           [#-- Planned Budget  --]
           <tr>
             [#-- Title --]
-            <td class="row-title"><b> [@s.text name="${customLabel}.tableJ.budget" /]: </b></td>
+            <td class="row-title"><b> [@customForm.text name="${customLabel}.tableJ.budget" param="${actualPhase.year}" /]: </b></td>
             [#-- Amount --]
             [#list budgetTypesList as budgetType]
               <td class="text-center">
