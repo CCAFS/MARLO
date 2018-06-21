@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -76,13 +78,24 @@ public class FundingUseValidator extends BaseValidator {
   public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (reportSynthesis != null) {
+      action.setInvalidFields(new HashMap<>());
       if (!saving) {
         Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
         if (path.toFile().exists()) {
           action.addMissingField("draft");
         }
       }
-
+      if (!this.isValidString(reportSynthesis.getReportSynthesisFundingUseSummary().getMainArea())) {
+        action.addMessage(action.getText("annualReport.fundingUse.summarize"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFundingUseSummary.mainArea",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      int i = 0;
+      for (ReportSynthesisFundingUseExpendituryArea fundingUseExpendituryArea : reportSynthesis
+        .getReportSynthesisFundingUseSummary().getExpenditureAreas()) {
+        this.validateFundingUseExpendituryArea(fundingUseExpendituryArea, action, i);
+        i++;
+      }
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -90,8 +103,26 @@ public class FundingUseValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus(), action);
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FUNDING_USE.getStatus(), action);
+    }
+
+  }
+
+
+  private void validateFundingUseExpendituryArea(ReportSynthesisFundingUseExpendituryArea fundingUseExpendituryArea,
+    BaseAction action, int i) {
+    if (fundingUseExpendituryArea.getW1w2Percentage() != null && fundingUseExpendituryArea.getW1w2Percentage() < 0) {
+      action.addMissingField(action.getText("annualReport.fundingUse.tableF.percentage") + "[" + i + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas[" + i + "].w1w2Percentage",
+        InvalidFieldsMessages.INVALID_NUMBER);
+    }
+    if (!(this.isValidString(fundingUseExpendituryArea.getComments()))) {
+      action.addMessage(action.getText("annualReport.fundingUse.tableF.comments") + "[" + i + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas[" + i + "].comments",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
