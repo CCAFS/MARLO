@@ -15,23 +15,33 @@
 
 package org.cgiar.ccafs.marlo.rest.crpPrograms;
 
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,22 +57,65 @@ public class CrpProgramController {
 
   private final CrpProgramMapper crpProgramMapper;
 
+  private final CrpProgramManager crpProgramManager;
+
   private final GlobalUnitManager globalUnitManager;
 
+  private UserManager userManager;
+
   @Inject
-  public CrpProgramController(CrpProgramMapper crpProgramMapper, GlobalUnitManager globalUnitManager) {
+  public CrpProgramController(CrpProgramMapper crpProgramMapper, GlobalUnitManager globalUnitManager,
+    CrpProgramManager crpProgramManager, UserManager userManager) {
     super();
     this.crpProgramMapper = crpProgramMapper;
     this.globalUnitManager = globalUnitManager;
+    this.crpProgramManager = crpProgramManager;
+    this.userManager = userManager;
   }
 
-  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/flagships", method = RequestMethod.GET,
+  @RequiresPermissions(Permission.CRP_PROGRAM_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIARStructure}/setFlagship", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<CrpProgramDTO> getAllFlagships(@PathVariable String globalUnit) {
+  public ResponseEntity<CrpProgramDTO> createFlagship(@PathVariable String CGIARStructure,
+    @Valid @RequestBody CrpProgramDTO crpProgramDTO) {
+    LOG.debug("Create a new Crp Program (Flagship) with : {}", crpProgramDTO);
+
+    GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);
+
+    CrpProgram crpProgram = crpProgramMapper.crpProgramDTOToCrpProgram(crpProgramDTO);
+
+    crpProgram.setActive(true);
+    crpProgram.setCreatedBy(this.getCurrentUser());
+    crpProgram.setModifiedBy(this.getCurrentUser());
+    crpProgram.setActiveSince(new Date());
+    crpProgram.setModificationJustification("");
+
+    crpProgram.setProgramType(ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    crpProgram.setCrp(globalUnitEntity);
+
+    crpProgram = crpProgramManager.saveCrpProgram(crpProgram);
+
+
+    // Return an institutionDTO with a blank id - so that the user doesn't try and look up the institution straight
+    // away.
+    return new ResponseEntity<CrpProgramDTO>(crpProgramMapper.crpProgramToCrpProgramDTO(crpProgram),
+      HttpStatus.CREATED);
+  }
+
+
+  /**
+   * Get all The flagships with specific CGIAR Structure (Crp/Platform)
+   * 
+   * @param CGIARStructure
+   * @return
+   */
+  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIARStructure}/flagships", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<CrpProgramDTO> getAllFlagships(@PathVariable String CGIARStructure) {
     LOG.debug("REST request to get Flagships");
 
-    GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(globalUnit);
+    GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);
 
     List<CrpProgram> flagships = new ArrayList<>(globalUnitEntity.getCrpPrograms().stream()
       .filter(fg -> fg.isActive() && fg.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -72,6 +125,13 @@ public class CrpProgramController {
       flagships.stream().map(crpProgramEntity -> crpProgramMapper.crpProgramToCrpProgramDTO(crpProgramEntity))
         .collect(Collectors.toList());
     return crpProgramDTOs;
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = userManager.getUser(principal);
+    return user;
   }
 
 
