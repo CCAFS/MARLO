@@ -396,7 +396,15 @@ public class MeliaAction extends BaseAction {
 
 
     if (this.isPMU()) {
-      // TODO
+      // Table I-1 PMU Information
+      flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutions, phase.getId(),
+        loggedCrp, this.liaisonInstitution);
+
+      // Table I-2 Evaluations
+      fpSynthesisTable = reportSynthesisMeliaManager.flagshipSynthesisEvaluation(liaisonInstitutions, phase.getId());
+
+      // Flagships Synthesis Progress
+      flagshipMeliaProgress = reportSynthesisMeliaManager.getFlagshipMelia(liaisonInstitutions, phase.getId());
     }
 
     // ADD PMU as liasion Institution too

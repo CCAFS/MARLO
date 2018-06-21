@@ -39,8 +39,6 @@ public class ReportSynthesisManagerImpl implements ReportSynthesisManager {
   @Inject
   public ReportSynthesisManagerImpl(ReportSynthesisDAO reportSynthesisDAO) {
     this.reportSynthesisDAO = reportSynthesisDAO;
-
-
   }
 
   @Override

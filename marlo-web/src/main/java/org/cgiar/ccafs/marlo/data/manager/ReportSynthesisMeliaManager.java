@@ -14,7 +14,11 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 
 import java.util.List;
 
@@ -53,6 +57,35 @@ public interface ReportSynthesisMeliaManager {
 
 
   /**
+   * Table I-2
+   * 
+   * @param lInstitutions
+   * @param phaseID
+   * @return
+   */
+  public List<ReportSynthesisMeliaEvaluation> flagshipSynthesisEvaluation(List<LiaisonInstitution> lInstitutions,
+    long phaseID);
+
+  /**
+   * Shows to the pmu the Flagship melia.
+   * 
+   * @param lInstitutions - List of Crp Flagships
+   * @param phaseID - The Current phase
+   * @return list of ReportSynthesisCrpProgress
+   */
+  public List<ReportSynthesisMelia> getFlagshipMelia(List<LiaisonInstitution> lInstitutions, long phaseID);
+
+  /**
+   * Shows to the pmu the Flagship Melia Case Studies that included in this annual report synthesis
+   * 
+   * @param lInstitutions - List of Crp Flagships
+   * @param phaseID - The Current pahse
+   * @return PowbEvidencePlannedStudyDTO studies information
+   */
+  List<PowbEvidencePlannedStudyDTO> getMeliaPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID,
+    GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU);
+
+  /**
    * This method gets a reportSynthesisMelia object by a given reportSynthesisMelia identifier.
    * 
    * @param reportSynthesisMeliaID is the reportSynthesisMelia identifier.
@@ -69,6 +102,5 @@ public interface ReportSynthesisMeliaManager {
    *         or -1 is some error occurred.
    */
   public ReportSynthesisMelia saveReportSynthesisMelia(ReportSynthesisMelia reportSynthesisMelia);
-
 
 }

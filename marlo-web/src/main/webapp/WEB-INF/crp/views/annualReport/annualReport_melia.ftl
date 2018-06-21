@@ -39,7 +39,7 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
+          [#assign customName= "reportSynthesis.reportSynthesisMelia" /]
           [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
@@ -57,7 +57,7 @@
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table.title" /]</h4>
               
               <hr />
-              [@tableFlagshipsMacro list=[{},{},{},{}] /]
+              [@tableFlagshipsMacro list=flagshipMeliaProgress /]
             </div>
             [/#if]
             
@@ -68,7 +68,7 @@
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableI.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               </div>
               <hr />
-              [@tableIMacro list=[{},{},{},{}] /]
+              [@tableIMacro list=flagshipPlannedList /]
             </div>
             [/#if]
             
@@ -79,7 +79,7 @@
                 <div class="listEvaluations">
                 
                  [#-- REMOVE TEMPORAL LIST ASSIGN --]
-                 [#assign list=[{},{},{},{}] /]
+                 [#assign list=fpSynthesisTable /]
                  
                  [#if list?has_content]
                   [#list list as item]
@@ -227,7 +227,7 @@
     
     [#-- Name of the evaluation --]
     <div class="form-group">
-      [@customForm.input name="${customName}.name" i18nkey="${customLabel}.evaluation.name" required=true className="" editable=isEditable /]
+      [@customForm.input name="${customName}.nameEvaluation" i18nkey="${customLabel}.evaluation.name" required=true className="" editable=isEditable /]
     </div>
     
     [#-- Recommendation --] 
