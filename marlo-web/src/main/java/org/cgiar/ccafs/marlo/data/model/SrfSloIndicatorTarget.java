@@ -34,6 +34,8 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
   @Expose
   private int year;
 
+  private String targetsIndicator;
+
   @Expose
   private SrfTargetUnit srfTargetUnit;
 
@@ -96,14 +98,19 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
   }
 
 
+  public String getTargetsIndicator() {
+    return targetsIndicator;
+  }
+
+
   public BigDecimal getValue() {
     return value;
   }
 
-
   public int getYear() {
     return year;
   }
+
 
   @Override
   public int hashCode() {
@@ -128,6 +135,10 @@ public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
+  }
+
+  public void setTargetsIndicator(String targetsIndicator) {
+    this.targetsIndicator = targetsIndicator;
   }
 
   public void setValue(BigDecimal value) {

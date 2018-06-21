@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
@@ -66,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
@@ -144,6 +146,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ProjectInnovationManager projectInnovationManager;
   private ProjectManager projectManager;
   private ProjectFocusManager projectFocusManager;
+  private ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -190,7 +193,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager,
     ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager,
     ProjectInnovationManager projectInnovationManager, ProjectManager projectManager,
-    ProjectFocusManager projectFocusManager) {
+    ProjectFocusManager projectFocusManager, ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager) {
 
     super(config, crpManager, phaseManager);
     document = new XWPFDocument();
@@ -212,6 +215,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.projectInnovationManager = projectInnovationManager;
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
+    this.reportSynthesisCrossCgiarManager = reportSynthesisCrossCgiarManager;
   }
 
   private void addAdjustmentDescription() {
@@ -401,6 +405,19 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   }
 
+  private void addCrossPartnerships() {
+    List<ReportSynthesisCrossCgiar> reportSynthesisCrossCgiarList = reportSynthesisCrossCgiarManager.findAll();
+
+    String highlights = "";
+    if (reportSynthesisCrossCgiarList != null) {
+      for (int i = 0; i < reportSynthesisCrossCgiarList.size(); i++) {
+        highlights += reportSynthesisCrossCgiarList.get(i).getHighlights();
+      }
+      poiSummary.textParagraph(document.createParagraph(), highlights);
+    }
+  }
+
+
   private void addCrpStaffing() {
     String staffingDescription = "";
     if (powbSynthesisPMU != null) {
@@ -429,7 +446,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textParagraph(document.createParagraph(), evidenceDescription);
     }
   }
-
 
   private void addExpectedCrp() {
 
@@ -733,7 +749,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String FP, subIDO = "", outcomes;
+    String FP, subIDO = "", outcomes, targetsIndicator = "";
 
     /*
      * Get all crp Progress Targets and compare the slo indicador Target id with the actual slotarget id
@@ -748,7 +764,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       List<ReportSynthesisCrpProgressTarget> listCrpProgressTargets = reportSynthesisCrpProgressTargetManager.findAll();
 
       for (int i = 0; i < sloTargets.size(); i++) {
-
+        try {
+          targetsIndicator = sloTargets.get(i).getTargetsIndicator();
+        } catch (Exception e) {
+          throw e;
+        }
         FP = sloTargets.get(i).getNarrative();
         String synthesisCrpBirefSummaries = "";
         String synthesisCrpTargets = "";
@@ -1577,6 +1597,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       this.addExternalPartnerships();
       this.addCollaboration();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.cross"));
+      this.addCrossPartnerships();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.mel"));
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.effectiveness.efficiency"));
