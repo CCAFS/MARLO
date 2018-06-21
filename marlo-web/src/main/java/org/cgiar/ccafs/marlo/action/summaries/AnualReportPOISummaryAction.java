@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -147,6 +148,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ProjectManager projectManager;
   private ProjectFocusManager projectFocusManager;
   private ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager;
+  private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -193,7 +195,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager,
     ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager,
     ProjectInnovationManager projectInnovationManager, ProjectManager projectManager,
-    ProjectFocusManager projectFocusManager, ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager) {
+    ProjectFocusManager projectFocusManager, ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager,
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager) {
 
     super(config, crpManager, phaseManager);
     document = new XWPFDocument();
@@ -216,6 +219,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.reportSynthesisCrossCgiarManager = reportSynthesisCrossCgiarManager;
+    this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
   }
 
   private void addAdjustmentDescription() {
@@ -411,7 +415,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String highlights = "";
     if (reportSynthesisCrossCgiarList != null) {
       for (int i = 0; i < reportSynthesisCrossCgiarList.size(); i++) {
-        highlights += reportSynthesisCrossCgiarList.get(i).getHighlights();
+        if (reportSynthesisCrossCgiarList.get(i).getHighlights() == null) {
+          highlights += "";
+        } else {
+          highlights += reportSynthesisCrossCgiarList.get(i).getHighlights();
+        }
       }
       poiSummary.textParagraph(document.createParagraph(), highlights);
     }
@@ -1152,6 +1160,132 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
 
+
+  private void createTableETestFinal() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
+      new POIField(
+        this.getText("financialPlan.tableE.plannedBudget", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.CENTER),
+      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan.tableE.comments"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER),
+      new POIField(
+        this.getText("financialPlan.tableE.carryOver", new String[] {String.valueOf(this.getSelectedYear() - 1)}),
+        ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan.tableE.centerFunds"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
+      new POIField(" ", ParagraphAlignment.CENTER)};
+
+    List<POIField> header = Arrays.asList(sHeader);
+    List<POIField> header2 = Arrays.asList(sHeader2);
+    headers.add(header);
+    headers.add(header2);
+
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    powbSynthesisPMU.setPowbFinancialPlannedBudgetList(powbSynthesisPMU.getPowbFinancialPlannedBudget().stream()
+      .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+    // Flagships
+    List<LiaisonInstitution> flagships = this.getFlagships();
+    if (flagships != null && !flagships.isEmpty()) {
+      for (LiaisonInstitution flagship : flagships) {
+        Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, center = 0.0, total = 0.0;
+        String category = "", comments = "";
+        category = flagship.getAcronym();
+        PowbFinancialPlannedBudget powbFinancialPlannedBudget =
+          this.getPowbFinancialPlanBudgetTest(flagship.getId(), true);
+        if (powbFinancialPlannedBudget != null) {
+          w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
+          carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
+          w3Bilateral =
+            powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
+          center =
+            powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
+          total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
+            ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
+          comments = powbFinancialPlannedBudget.getComments() == null
+            || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
+              : powbFinancialPlannedBudget.getComments();
+        }
+        totalCarry += carry;
+        totalw1w2 += w1w2;
+        totalw3Bilateral += w3Bilateral;
+        totalCenter += center;
+        grandTotal += total;
+        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(carry, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
+          new POIField(comments, ParagraphAlignment.LEFT)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+    }
+    // Expenditure areas
+    List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
+    if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
+      for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
+        Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, center = 0.0, total = 0.0;
+        String category = "", comments = "";
+        category = powbExpenditureArea.getExpenditureArea();
+        PowbFinancialPlannedBudget powbFinancialPlannedBudget =
+          this.getPowbFinancialPlanBudgetTest(powbExpenditureArea.getId(), false);
+        if (powbFinancialPlannedBudget != null) {
+          w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
+          carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
+          w3Bilateral =
+            powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
+          center =
+            powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
+          total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
+            ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
+          comments = powbFinancialPlannedBudget.getComments() == null
+            || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
+              : powbFinancialPlannedBudget.getComments();
+        }
+        totalCarry += carry;
+        totalw1w2 += w1w2;
+        totalw3Bilateral += w3Bilateral;
+        totalCenter += center;
+        grandTotal += total;
+        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(carry, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
+          new POIField(comments, ParagraphAlignment.LEFT)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+      }
+    }
+
+    Boolean bold = true;
+    String blackColor = "000000";
+    POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalCarry, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalw3Bilateral, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalCenter, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(grandTotal, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(" ", ParagraphAlignment.LEFT, bold, blackColor)};
+
+    data = Arrays.asList(sData);
+    datas.add(data);
+
+    poiSummary.textTable(document, headers, datas, false, "tableE");
+  }
+
   private void createTableF() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
@@ -1170,14 +1304,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     Double totalEstimatedPercentajeFS = 0.0;
     // Expenditure areas
 
-    List<PowbExpenditureAreas> powbExpenditureAreasList = powbExpenditureAreasManager.findAll();
-    for (int i = 0; i < powbExpenditureAreasList.size(); i++) {
-      if (powbExpenditureAreasList.get(i).isActive() && powbExpenditureAreasList.get(i).getIsExpenditure()) {
+    List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
+      .filter(x -> x.isActive() && !x.getIsExpenditure()).collect(Collectors.toList()));
+    for (int i = 0; i < expAreas.size(); i++) {
+      if (expAreas.get(i).isActive() && expAreas.get(i).getIsExpenditure()) {
 
 
         Double estimatedPercentajeFS = 0.0;
         String expenditureArea = "", commentsSpace = "";
-        expenditureArea = powbExpenditureAreasList.get(i).getExpenditureArea();
+        expenditureArea = expAreas.get(i).getExpenditureArea();
 
         if (reportSynthesisPMU != null) {
           List<ReportSynthesisFundingUseExpendituryArea> reportSynthesisFundingUseExpendituryAreaList =
@@ -1193,8 +1328,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
               ReportSynthesisFundingUseExpendituryArea reportSynthesisFundingUseExpendituryArea =
                 reportSynthesisFundingUseExpendituryAreaList.get(j);
 
-              if (powbExpenditureAreasList.get(i).getId() == reportSynthesisFundingUseExpendituryAreaList.get(j)
-                .getExpenditureArea().getId()) {
+              if (expAreas.get(i).getId() == reportSynthesisFundingUseExpendituryAreaList.get(j).getExpenditureArea()
+                .getId()) {
 
 
                 estimatedPercentajeFS = reportSynthesisFundingUseExpendituryArea.getW1w2Percentage();
@@ -1395,7 +1530,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void createTableJ() {
-    // this.getInformationTableJ();
+    this.getInformationTableJ();
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
       new POIField(
@@ -1426,8 +1561,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     try {
-      powbSynthesisPMU.setPowbFinancialPlannedBudgetList(powbSynthesisPMU.getPowbFinancialPlannedBudget().stream()
-        .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+      reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().stream().filter(fp -> fp.isActive())
+        .collect(Collectors.toList());
       // Flagships
       List<LiaisonInstitution> flagships = this.getFlagships();
       if (flagships != null && !flagships.isEmpty()) {
@@ -1438,7 +1573,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           String category = "";
           category = flagship.getAcronym();
           ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            this.getPowbFinancialPlanBudget(flagship.getId(), true);
+            this.reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(0);
           if (powbFinancialPlannedBudget != null) {
             w1w2 = powbFinancialPlannedBudget.getW1Actual() != null ? powbFinancialPlannedBudget.getW1Actual() : 0.0;
             // carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
@@ -1471,7 +1606,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           category = powbExpenditureArea.getExpenditureArea();
 
           ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            this.getPowbFinancialPlanBudget(powbExpenditureArea.getId(), false);
+            reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(1);
           if (powbFinancialPlannedBudget != null) {
             w1w2 = powbFinancialPlannedBudget.getW1Actual() != null ? powbFinancialPlannedBudget.getW1Actual() : 0.0;
             // carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
@@ -1735,7 +1870,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     return SUCCESS;
   }
 
+
   private void getAssetsList() {
+    List<DeliverableIntellectualAsset> assetsListTemp = deliverableIntellectualAssetManager.findAll();
+    for (int i = 0; i < assetsListTemp.size(); i++) {
+      if (assetsListTemp.get(i).isActive() && assetsListTemp.get(i).getHasPatentPvp()
+        && assetsListTemp.get(i).getPhase().getId() == this.getPhaseID()) {
+        assetsList.add(assetsListTemp.get(i));
+      }
+    }
+
     /*
      * deliverables = new ArrayList<>();
      * innovationsList = new ArrayList<>();
@@ -1798,7 +1942,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   public int getContentLength() {
     return bytesDOC.length;
   }
-
 
   @Override
   public String getContentType() {
@@ -1998,6 +2141,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     return inputStream;
   }
 
+
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
       .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
@@ -2007,6 +2151,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       return new ArrayList<>();
     }
   }
+
 
   /**
    * get the PMU institution
@@ -2027,9 +2172,75 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     return new PowbExpectedCrpProgress();
   }
 
-
-  public ReportSynthesisFinancialSummaryBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID,
-    Boolean isLiaison) {
+  /*
+   * public ReportSynthesisFinancialSummaryBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID,
+   * Boolean isLiaison) {
+   * if (isLiaison) {
+   * LiaisonInstitution liaisonInstitution =
+   * liaisonInstitutionManager.getLiaisonInstitutionById(plannedBudgetRelationID);
+   * if (liaisonInstitution != null) {
+   * List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesisPMU
+   * .getPowbFinancialPlannedBudgetList().stream()
+   * .filter(
+   * p -> p.getLiaisonInstitution() != null && p.getLiaisonInstitution().getId().equals(plannedBudgetRelationID))
+   * .collect(Collectors.toList());
+   * if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
+   * ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
+   * new ReportSynthesisFinancialSummaryBudget();
+   * powbFinancialPlannedBudget.setLiaisonInstitution(pmuInstitution);
+   * // reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().add(powbFinancialPlannedBudget);
+   * if (liaisonInstitution.getCrpProgram() != null) {
+   * powbFinancialPlannedBudget.setW1Actual(liaisonInstitution.getCrpProgram().getW1());
+   * powbFinancialPlannedBudget.setW3Actual(liaisonInstitution.getCrpProgram().getW3());
+   * }
+   * return powbFinancialPlannedBudget;
+   * } else {
+   * ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
+   * new ReportSynthesisFinancialSummaryBudget();
+   * powbFinancialPlannedBudget.setLiaisonInstitution(liaisonInstitution);
+   * if (liaisonInstitution.getCrpProgram() != null) {
+   * powbFinancialPlannedBudget.setW1Actual(new Double(liaisonInstitution.getCrpProgram().getW1()));
+   * powbFinancialPlannedBudget.setW3Actual(liaisonInstitution.getCrpProgram().getW3());
+   * }
+   * return powbFinancialPlannedBudget;
+   * }
+   * } else {
+   * return null;
+   * }
+   * } else {
+   * PowbExpenditureAreas powbExpenditureArea =
+   * powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
+   * if (powbExpenditureArea != null) {
+   * List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
+   * powbSynthesisPMU.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
+   * && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
+   * if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
+   * ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
+   * new ReportSynthesisFinancialSummaryBudget();
+   * if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
+   * this.loadPMU(powbExpenditureArea);
+   * powbFinancialPlannedBudget.setW1Actual(powbExpenditureArea.getW1());
+   * powbFinancialPlannedBudget.setW3Actual(powbExpenditureArea.getW3());
+   * }
+   * return powbFinancialPlannedBudget;
+   * } else {
+   * ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
+   * new ReportSynthesisFinancialSummaryBudget();
+   * powbFinancialPlannedBudget.setExpenditureArea(powbExpenditureArea);
+   * if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
+   * this.loadPMU(powbExpenditureArea);
+   * powbFinancialPlannedBudget.setW1Actual(powbExpenditureArea.getW1());
+   * powbFinancialPlannedBudget.setW3Actual(powbExpenditureArea.getW3());
+   * }
+   * return powbFinancialPlannedBudget;
+   * }
+   * } else {
+   * return null;
+   * }
+   * }
+   * }
+   */
+  public PowbFinancialPlannedBudget getPowbFinancialPlanBudgetTest(Long plannedBudgetRelationID, Boolean isLiaison) {
     if (isLiaison) {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(plannedBudgetRelationID);
@@ -2040,23 +2251,23 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             p -> p.getLiaisonInstitution() != null && p.getLiaisonInstitution().getId().equals(plannedBudgetRelationID))
           .collect(Collectors.toList());
         if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
-          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            new ReportSynthesisFinancialSummaryBudget();
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
 
           if (liaisonInstitution.getCrpProgram() != null) {
-            powbFinancialPlannedBudget.setW1Actual(liaisonInstitution.getCrpProgram().getW1());
-            powbFinancialPlannedBudget.setW3Actual(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getCrpProgram().getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setCenterFunds(liaisonInstitution.getCrpProgram().getCenterFunds());
           }
 
           return powbFinancialPlannedBudget;
         } else {
-          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            new ReportSynthesisFinancialSummaryBudget();
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
           powbFinancialPlannedBudget.setLiaisonInstitution(liaisonInstitution);
 
           if (liaisonInstitution.getCrpProgram() != null) {
-            powbFinancialPlannedBudget.setW1Actual(new Double(liaisonInstitution.getCrpProgram().getW1()));
-            powbFinancialPlannedBudget.setW3Actual(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setW1w2(new Double(liaisonInstitution.getCrpProgram().getW1()));
+            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setCenterFunds(liaisonInstitution.getCrpProgram().getCenterFunds());
           }
 
           return powbFinancialPlannedBudget;
@@ -2073,23 +2284,23 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           powbSynthesisPMU.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
             && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
         if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
-          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            new ReportSynthesisFinancialSummaryBudget();
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
           if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
             this.loadPMU(powbExpenditureArea);
-            powbFinancialPlannedBudget.setW1Actual(powbExpenditureArea.getW1());
-            powbFinancialPlannedBudget.setW3Actual(powbExpenditureArea.getW3());
+            powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
+            powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
           }
           return powbFinancialPlannedBudget;
         } else {
 
-          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            new ReportSynthesisFinancialSummaryBudget();
-          powbFinancialPlannedBudget.setExpenditureArea(powbExpenditureArea);
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
+          powbFinancialPlannedBudget.setPowbExpenditureArea(powbExpenditureArea);
           if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
             this.loadPMU(powbExpenditureArea);
-            powbFinancialPlannedBudget.setW1Actual(powbExpenditureArea.getW1());
-            powbFinancialPlannedBudget.setW3Actual(powbExpenditureArea.getW3());
+            powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
+            powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
           }
           return powbFinancialPlannedBudget;
         }
@@ -2104,6 +2315,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   public String getPowbPath(LiaisonInstitution liaisonInstitution, String actionName) {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitution, actionName).replace('\\', '/');
   }
+
 
   // Method to get the download folder
   private String getPowbSourceFolder(LiaisonInstitution liaisonInstitution, String actionName) {
@@ -2149,14 +2361,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     return deliverables;
   }
 
-
   public boolean isPMU(LiaisonInstitution institution) {
     if (institution.getAcronym().equals("PMU")) {
       return true;
     }
     return false;
   }
-
 
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
     List<ProjectFocus> projects =
