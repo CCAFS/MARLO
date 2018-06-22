@@ -178,6 +178,7 @@ tfoot {
   -moz-transition: height 1s;
   transition: height 1s;
   position: relative;
+  margin-bottom: 30px;
 }
 
 .viewMoreSyntesis {
@@ -296,4 +297,17 @@ table.financial-report .row-title {
 }
 #chart5 {
   height: 180px;
+}
+
+
+.dataTables_scrollBody {
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.dataTables_scrollBody thead tr{
+  height: 3px !important;
+}
+
+.dataTables_scrollBody thead tr th{
+  background-color: #e5edff !important;
 }
