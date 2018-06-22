@@ -199,10 +199,14 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
 
       List<ReportSynthesisExternalPartnershipDTO> removeList = new ArrayList<>();
       for (ReportSynthesisExternalPartnershipDTO dto : partnershipPlannedList) {
-
+        ReportSynthesis reportSynthesisFP = null;
         List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          try {
+            reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          } catch (Exception e) {
+
+          }
           if (reportSynthesisFP != null) {
             if (reportSynthesisFP.getReportSynthesisExternalPartnership() != null) {
 

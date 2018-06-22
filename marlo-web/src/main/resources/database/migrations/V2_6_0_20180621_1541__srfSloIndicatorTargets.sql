@@ -1,0 +1,9 @@
+UPDATE srf_slo_indicator_targets set targets_indicator= '1.1' where id = 1;
+UPDATE srf_slo_indicator_targets set targets_indicator= '1.2' where id = 2;
+UPDATE srf_slo_indicator_targets set targets_indicator= '2.1' where id = 3;
+UPDATE srf_slo_indicator_targets set targets_indicator= '2.2' where id = 4;
+UPDATE srf_slo_indicator_targets set targets_indicator= '2.3' where id = 5;
+UPDATE srf_slo_indicator_targets set targets_indicator= '3.1' where id = 7;
+UPDATE srf_slo_indicator_targets set targets_indicator= '3.2' where id = 8;
+UPDATE srf_slo_indicator_targets set targets_indicator= '3.3' where id = 9;
+UPDATE srf_slo_indicator_targets set targets_indicator= '3.4' where id = 10;
