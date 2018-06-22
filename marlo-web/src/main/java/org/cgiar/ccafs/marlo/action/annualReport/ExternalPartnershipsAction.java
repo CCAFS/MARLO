@@ -445,7 +445,6 @@ public class ExternalPartnershipsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
-
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_EXTERNAL_PARTNERSHIP_BASE_PERMISSION, params));
@@ -538,7 +537,6 @@ public class ExternalPartnershipsAction extends BaseAction {
         .split(",")) {
         stList.add(Long.parseLong(string.trim()));
       }
-
 
       for (Long studyId : studiesIds) {
         int index = stList.indexOf(studyId);
