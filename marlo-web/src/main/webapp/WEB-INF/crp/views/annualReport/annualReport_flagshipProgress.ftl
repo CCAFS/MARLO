@@ -185,7 +185,7 @@
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       
-      [#if !editable && (milestoneStatus = "-1")][@s.text name="form.values.fieldEmpty"/][/#if]
+      [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
     [#-- Provide evidence for completed milestones** or explanation for extended or cancelled --]
