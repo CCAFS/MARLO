@@ -66,7 +66,7 @@
             <div class="form-group margin-panel">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableI.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               [#if flagship]
-                [@tableIMacro name="${customName}.innovationsValue" list=(studiesList)![] /]
+                [@tableIMacro name="${customName}.plannedStudiesValue" list=(studiesList)![] /]
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableIMacro name="" list=(flagshipPlannedList)![] isPMU=PMU /]
