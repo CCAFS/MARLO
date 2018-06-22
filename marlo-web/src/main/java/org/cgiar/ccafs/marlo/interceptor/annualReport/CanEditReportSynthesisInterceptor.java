@@ -154,7 +154,7 @@ public class CanEditReportSynthesisInterceptor extends AbstractInterceptor imple
       canEdit = true;
     } else {
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params))) {
-        if (baseAction.isPlanningActive()) {
+        if (baseAction.isReportingActive()) {
           canEdit = true;
         }
       }

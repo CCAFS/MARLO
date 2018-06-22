@@ -441,6 +441,9 @@ public class MeliaAction extends BaseAction {
           reportSynthesis.getReportSynthesisMelia().setPlannedStudies(new ArrayList<>());
         }
         this.saveStudies(meliaDB);
+
+      } else {
+        this.saveEvaluations(meliaDB);
       }
 
       meliaDB.setSummary(reportSynthesis.getReportSynthesisMelia().getSummary());
