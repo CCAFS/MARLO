@@ -29,10 +29,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
@@ -73,6 +75,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
@@ -149,6 +152,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ProjectFocusManager projectFocusManager;
   private ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager;
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+  private ProjectPartnerManager projectPartnerManager;
+  private ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -172,9 +177,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
   private List<SrfSloIndicatorTarget> sloTargets;
   private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
-  private List<Deliverable> deliverables = new ArrayList<>();
-  private List<ProjectInnovation> innovationsList = new ArrayList<>();
-  private List<DeliverableIntellectualAsset> assetsList = new ArrayList<>();
+  private List<Deliverable> deliverables;
+  private List<ProjectInnovation> innovationsList;
+  private List<DeliverableIntellectualAsset> assetsList;
+  private List<ReportSynthesisExternalPartnership> flagshipExternalPartnerships;
+  private List<ReportSynthesisExternalPartnershipDTO> flagshipExternalPlannedList;
+  private List<LiaisonInstitution> liaisonInstitutions;
 
   // Parameter for tables E and F
   Double totalCarry = 0.0, totalw1w2 = 0.0, totalw3Bilateral = 0.0, totalCenter = 0.0, grandTotal = 0.0;
@@ -196,7 +204,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager,
     ProjectInnovationManager projectInnovationManager, ProjectManager projectManager,
     ProjectFocusManager projectFocusManager, ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager,
-    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager) {
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
+    ProjectPartnerManager projectPartnerManager,
+    ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager) {
 
     super(config, crpManager, phaseManager);
     document = new XWPFDocument();
@@ -220,6 +230,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.projectFocusManager = projectFocusManager;
     this.reportSynthesisCrossCgiarManager = reportSynthesisCrossCgiarManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
+    this.projectPartnerManager = projectPartnerManager;
+    this.reportSynthesisExternalPartnershipManager = reportSynthesisExternalPartnershipManager;
   }
 
   private void addAdjustmentDescription() {
@@ -1373,6 +1385,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private void createTableG() {
     List<List<POIField>> headers = new ArrayList<>();
 
+    List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
+
     POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.field1"), ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
@@ -1382,15 +1399,58 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
+    flagshipExternalPlannedList = new ArrayList<>();
+    flagshipExternalPartnerships = new ArrayList<>();
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
+    String FP = "", stage = "", phase = "", partner = "", geographic = "", mainArea = "";
 
-    POIField[] sData = {new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER)};
-    data = Arrays.asList(sData);
-    datas.add(data);
+    System.out.println("LiaisonInstitutionlist " + liaisonInstitutions.size());
+
+    flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
+      liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+
+    System.out.println("flagshipExternalPlannedList " + flagshipExternalPlannedList.size());
+
+
+    // Flagship External Partnership Synthesis Progress
+    flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager
+      .getFlagshipCExternalPartnership(liaisonInstitutions, this.getActualPhase().getId());
+
+    System.out.println("flagshipExternalPartnerships " + flagshipExternalPartnerships.size());
+
+
+    if (flagshipExternalPartnerships != null && !flagshipExternalPartnerships.isEmpty()) {
+      for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
+        try {
+          if (flagshipExternalPartnerships.get(i).getPartnerPartnerships().get(0).getProjectPartner().getInstitution()
+            .getName() != null
+            && !flagshipExternalPartnerships.get(i).getPartnerPartnerships().get(0).getProjectPartner().getInstitution()
+              .getName().isEmpty()) {
+            partner = flagshipExternalPartnerships.get(i).getPartnerPartnerships().get(0).getProjectPartner()
+              .getInstitution().getName();
+          }
+        } catch (Exception e) {
+        }
+        // stage = flagshipExternalPartnerships.get(i).
+
+        try {
+          if (flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getDescription() != null
+            && !flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getDescription().isEmpty()) {
+            phase = flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getDescription();
+          }
+        } catch (Exception e) {
+        }
+
+        POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
+          new POIField(partner, ParagraphAlignment.CENTER), new POIField(geographic, ParagraphAlignment.CENTER),
+          new POIField(mainArea, ParagraphAlignment.CENTER)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+    }
+
 
     poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
@@ -1872,11 +1932,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
 
   private void getAssetsList() {
+    assetsList = new ArrayList<>();
     List<DeliverableIntellectualAsset> assetsListTemp = deliverableIntellectualAssetManager.findAll();
     for (int i = 0; i < assetsListTemp.size(); i++) {
       if (assetsListTemp.get(i).isActive() && assetsListTemp.get(i).getHasPatentPvp()
         && assetsListTemp.get(i).getPhase().getId() == this.getPhaseID()) {
-        assetsList.add(assetsListTemp.get(i));
+        try {
+          assetsList.add(assetsListTemp.get(i));
+        } catch (Exception e) {
+          throw e;
+        }
       }
     }
 
