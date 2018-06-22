@@ -14,7 +14,11 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 
 import java.util.List;
 
@@ -53,6 +57,23 @@ public interface RepIndOrganizationTypeManager {
 
 
   /**
+   * This method gets a list of ReportSynthesisStudiesByOrganizationTypeDTO that are active:
+   * List of Studies grouped by organization types
+   * 
+   * @return a list from reportSynthesisOrganizationTypeByStudiesDTO null if no exist records
+   */
+  public List<ReportSynthesisStudiesByOrganizationTypeDTO> getOrganizationTypesByStudies(Phase phase);
+
+  /**
+   * This method gets a list of ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO that are active:
+   * List of Partnerships grouped by RepIndOrganizationType
+   * 
+   * @return a list from ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO null if no exist records
+   */
+  public List<ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO>
+    getPartnershipsByRepIndOrganizationTypeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships);
+
+  /**
    * This method gets a repIndOrganizationType object by a given repIndOrganizationType identifier.
    * 
    * @param repIndOrganizationTypeID is the repIndOrganizationType identifier.
@@ -64,11 +85,11 @@ public interface RepIndOrganizationTypeManager {
    * This method saves the information of the given repIndOrganizationType
    * 
    * @param repIndOrganizationType - is the repIndOrganizationType object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndOrganizationType was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndOrganizationType
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public RepIndOrganizationType saveRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType);
-
 
 }

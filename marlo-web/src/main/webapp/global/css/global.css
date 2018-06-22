@@ -3,6 +3,7 @@
 @import url("custom.pickadate.css");
 @import url("custom.bootstrap.css");
 @import url("customLogin.css");
+@import url("customInputsFlat.css");
 
 .mce-widget.mce-tooltip {
   display: none !important;
@@ -2092,7 +2093,7 @@ h3.contentSubTitle {
   font-family: 'Open Sans', sans-serif;
   font-weight: lighter;
   padding-bottom: 5px;
-  border-bottom: 1px solid #a09f9f;
+  /* border-bottom: 1px solid #a09f9f; */
 }
 
 .sectionSubTitle {
@@ -2100,6 +2101,7 @@ h3.contentSubTitle {
   border-bottom: 1px solid #95a5ce;
   color: #95a5ce;
   padding-bottom: 3px;
+  line-height: 20px;
 }
 
 
@@ -6300,6 +6302,8 @@ p.checkDisable:before {
   text-align: center;
   -webkit-transition: all 250ms ease;
   transition: all 250ms ease;
+
+  
 }
 .inputsFlat input[type="checkbox"]:checked + .checkbox-label:before {
   background-color: #3197EE;

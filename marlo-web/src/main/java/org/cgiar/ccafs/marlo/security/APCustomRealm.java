@@ -213,7 +213,7 @@ public class APCustomRealm extends AuthorizingRealm {
       if (user.getUsername() == null) {
         user.setUsername(ldapUser.getLogin().toLowerCase());
         // Save user
-        userManager.saveUser(user, user);
+        userManager.saveUser(user);
       } else {
         user.setUsername(ldapUser.getLogin().toLowerCase());
       }

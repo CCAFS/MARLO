@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -397,8 +396,12 @@ public class OutcomesAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
 
-    outcomeDb.setActiveSince(new Date());
-    outcomeDb.setModifiedBy(this.getCurrentUser());
+    /**
+     * The following is required because we need to update something on the @CenterOutcome if we want a row created
+     * in the auditlog table.
+     */
+    this.setModificationJustification(outcomeDb);
+
     outcomeDb = outcomeService.saveResearchOutcome(outcomeDb, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
@@ -449,10 +452,6 @@ public class OutcomesAction extends BaseAction {
         if (researchMilestone.getId() == null) {
           CenterMilestone milestone = new CenterMilestone();
           milestone.setResearchOutcome(outcomeSave);
-          milestone.setActive(true);
-          milestone.setActiveSince(new Date());
-          milestone.setCreatedBy(this.getCurrentUser());
-          milestone.setModifiedBy(this.getCurrentUser());
           milestone.setImpactPathway(true);
 
           SrfTargetUnit targetUnit =
@@ -512,7 +511,6 @@ public class OutcomesAction extends BaseAction {
 
 
           if (hasChanges) {
-            milestonePrew.setModifiedBy(this.getCurrentUser());
             milestoneService.saveCenterMilestone(milestonePrew);
           }
         }

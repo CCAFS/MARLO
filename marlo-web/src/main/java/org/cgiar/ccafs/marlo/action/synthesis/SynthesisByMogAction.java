@@ -45,7 +45,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -289,7 +288,6 @@ public class SynthesisByMogAction extends BaseAction {
       if (history != null) {
         program = history;
         programID = program.getId();
-        program.setModifiedBy(userManager.getUser(program.getModifiedBy().getId()));
         program.setSynthesis(new ArrayList<>(program.getMogSynthesis()));
 
         currentLiaisonInstitution = IpLiaisonInstitutionManager.findByIpProgram(programID);
@@ -398,9 +396,11 @@ public class SynthesisByMogAction extends BaseAction {
 
 
     program = ipProgramManager.getIpProgramById(program.getId());
-    program.setActiveSince(new Date());
-    program.setModifiedBy(this.getCurrentUser());
-
+    /**
+     * The following is required because we need to update something on the @IpProgram if we want a row
+     * created in the auditlog table.
+     */
+    this.setModificationJustification(program);
     ipProgramManager.save(program, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();

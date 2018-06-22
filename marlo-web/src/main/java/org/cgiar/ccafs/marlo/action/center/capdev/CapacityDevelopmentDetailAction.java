@@ -55,7 +55,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -203,9 +202,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     if (capdev_country != null) {
-      capdev_country.setActive(false);
-      capdev_country.setModifiedBy(this.getCurrentUser());
-      capdevLocationService.saveCapdevLocations(capdev_country);
+
+      capdevLocationService.deleteCapdevLocations(capdev_country.getId());
     }
     return SUCCESS;
   }
@@ -214,13 +212,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
     for (CapdevParticipant obj : listOfParticipants) {
-      obj.setActive(false);
-      obj.setModifiedBy(this.getCurrentUser());
-      capdevParicipantService.saveCapdevParticipant(obj);
+      capdevParicipantService.deleteCapdevParticipant(obj.getId());
       Participant participant = obj.getParticipant();
-      participant.setActive(false);
-      participant.setModifiedBy(this.getCurrentUser());
-      participantService.saveParticipant(participant);
+      participantService.deleteParticipant(participant.getId());
     }
     capdev.setNumParticipants(null);
     capdev.setNumMen(null);
@@ -241,9 +235,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     if (capdev_region != null) {
-      capdev_region.setActive(false);
-      capdev_region.setModifiedBy(this.getCurrentUser());
-      capdevLocationService.saveCapdevLocations(capdev_region);
+      capdevLocationService.deleteCapdevLocations(capdev_region.getId());
     }
     return SUCCESS;
   }
@@ -490,10 +482,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       participant.setEmail((String) data[i][8]);
       participant.setInstitutionsSuggested((String) data[i][9]);
-
-
-      participant.setActive(true);
-      participant.setCreatedBy(currentUser);
 
       participantList.add(participant);
     }
@@ -855,9 +843,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.CAPDEV_LOCATIONS_RELATION);
     relationsName.add(APConstants.CAPDEV_PARTICIPANTS_RELATION);
-    capdev.setActiveSince(new Date());
-    capdev.setModifiedBy(this.getCurrentUser());
 
+    /**
+     * The following is required because we need to update something on the @CapacityDevelopment if we want a row
+     * created in the auditlog table.
+     */
+    this.setModificationJustification(capdev);
 
     capdevService.saveCapacityDevelopment(capdev, this.getActionName(), relationsName);
 
@@ -891,10 +882,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations = new CapdevLocations();
           capdevLocations.setCapacityDevelopment(capdev);
           capdevLocations.setLocElement(iterator.getLocElement());
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(this.getCurrentUser());
-          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
@@ -907,10 +894,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     CapdevParticipant capdevParticipant = new CapdevParticipant();
     capdevParticipant.setCapacityDevelopment(capdev);
     capdevParticipant.setParticipant(participant);
-    capdevParticipant.setActive(true);
-    capdevParticipant.setActiveSince(new Date());
-    capdevParticipant.setCreatedBy(this.getCurrentUser());
-    capdevParticipant.setModifiedBy(this.getCurrentUser());
 
     capdevParicipantService.saveCapdevParticipant(capdevParticipant);
   }
@@ -925,10 +908,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations = new CapdevLocations();
           capdevLocations.setCapacityDevelopment(capdev);
           capdevLocations.setLocElement(iterator.getLocElement());
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(this.getCurrentUser());
-          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
       }
@@ -974,14 +953,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
     }
-    if (participant.getSync() == null) {
-      participant.setSync(null);
-    }
-    participant.setActive(true);
-    participant.setAciveSince(new Date());
-    participant.setCreatedBy(this.getCurrentUser());
-    participant.setModifiedBy(this.getCurrentUser());
-
 
     participantService.saveParticipant(participant);
   }

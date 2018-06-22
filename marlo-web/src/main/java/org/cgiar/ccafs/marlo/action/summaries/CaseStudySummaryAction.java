@@ -256,7 +256,7 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
           owner = "";
           List<Project> projects = new ArrayList<>();
           for (CaseStudyProject caseStudyProject : studyProjects) {
-            if (caseStudyProject.isCreated()) {
+            if (caseStudyProject.isActive()) {
               shared = String.valueOf(caseStudyProject.getProject().getId());
               if (owner.length() == 0) {
                 owner = "P" + caseStudyProject.getProject().getId();

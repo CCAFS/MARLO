@@ -21,26 +21,13 @@ import com.google.gson.annotations.Expose;
  * @date Oct 31, 2017
  * @time 9:56:44 AM: Added acepted and rejected date
  */
-public class PartnerRequest implements java.io.Serializable {
+public class PartnerRequest extends MarloAuditableEntity implements java.io.Serializable {
 
 
   private static final long serialVersionUID = 6550441704130583208L;
 
-
-  @Expose
-  private Long id;
-
   @Expose
   private LocElement locElement;
-
-
-  @Expose
-  private User modifiedBy;
-
-
-  @Expose
-  private User createdBy;
-
 
   @Expose
   private User rejectedBy;
@@ -64,16 +51,7 @@ public class PartnerRequest implements java.io.Serializable {
   private Boolean acepted;
 
   @Expose
-  private boolean active;
-
-  @Expose
-  private String modificationJustification;
-
-  @Expose
   private String rejectJustification;
-
-  @Expose
-  private Date activeSince;
 
   @Expose
   private boolean office;
@@ -103,29 +81,6 @@ public class PartnerRequest implements java.io.Serializable {
   public PartnerRequest() {
   }
 
-  public PartnerRequest(boolean active) {
-    this.active = active;
-  }
-
-  public PartnerRequest(LocElement locElement, User modifiedBy, User createdBy, InstitutionType institutionType,
-    String partnerName, String acronym, String webPage, Boolean acepted, boolean active,
-    String modificationJustification) {
-    this.locElement = locElement;
-    this.modifiedBy = modifiedBy;
-    this.createdBy = createdBy;
-    this.institutionType = institutionType;
-    this.partnerName = partnerName;
-    this.acronym = acronym;
-    this.webPage = webPage;
-    this.acepted = acepted;
-    this.active = active;
-    this.modificationJustification = modificationJustification;
-  }
-
-  public PartnerRequest(PartnerRequest partnerRequest) {
-    this.partnerRequest = partnerRequest;
-  }
-
   public Boolean getAcepted() {
     return acepted;
   }
@@ -138,10 +93,6 @@ public class PartnerRequest implements java.io.Serializable {
     return acronym;
   }
 
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
   public String getCountryInfo() {
     return this.locElement.getName();
   }
@@ -151,18 +102,9 @@ public class PartnerRequest implements java.io.Serializable {
     return this.locElement.getIsoAlpha2();
   }
 
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
 
   public GlobalUnit getCrp() {
     return crp;
-  }
-
-
-  public Long getId() {
-    return id;
   }
 
 
@@ -180,18 +122,9 @@ public class PartnerRequest implements java.io.Serializable {
     return locElement;
   }
 
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
 
   public Boolean getModified() {
     return modified;
-  }
-
-
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
 
@@ -234,10 +167,6 @@ public class PartnerRequest implements java.io.Serializable {
     return webPage;
   }
 
-  public boolean isActive() {
-    return active;
-  }
-
   public boolean isOffice() {
     return office;
   }
@@ -254,28 +183,8 @@ public class PartnerRequest implements java.io.Serializable {
     this.acronym = acronym;
   }
 
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
-
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setInstitution(Institution institution) {
@@ -290,18 +199,8 @@ public class PartnerRequest implements java.io.Serializable {
     this.locElement = locElement;
   }
 
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-
   public void setModified(Boolean modified) {
     this.modified = modified;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
   public void setOffice(boolean office) {

@@ -8,12 +8,10 @@ import java.util.Date;
 
 import com.google.gson.annotations.Expose;
 
-public class DeliverableIntellectualAsset implements java.io.Serializable, IAuditLog {
+public class DeliverableIntellectualAsset extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 7443280243651199690L;
 
-  @Expose
-  private Long id;
   @Expose
   private Deliverable deliverable;
   @Expose
@@ -72,11 +70,11 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
       return false;
     }
     DeliverableIntellectualAsset other = (DeliverableIntellectualAsset) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -135,10 +133,6 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     return hasPatentPvp;
   }
 
-  @Override
-  public Long getId() {
-    return id;
-  }
 
   public String getLink() {
     return link;
@@ -245,7 +239,7 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
@@ -305,14 +299,17 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
     this.hasPatentPvp = hasPatentPvp;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
 
   public void setLink(String link) {
     this.link = link;
   }
+
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
+
+  }
+
 
   public void setPatentStatus(RepIndPatentStatus patentStatus) {
     this.patentStatus = patentStatus;
@@ -356,7 +353,7 @@ public class DeliverableIntellectualAsset implements java.io.Serializable, IAudi
 
   @Override
   public String toString() {
-    return "DeliverableIntellectualAsset [id=" + id + ", deliverable=" + deliverable + ", phase=" + phase
+    return "DeliverableIntellectualAsset [id=" + this.getId() + ", deliverable=" + deliverable + ", phase=" + phase
       + ", hasPatentPvp=" + hasPatentPvp + ", type=" + this.getTypeName() + "]";
   }
 

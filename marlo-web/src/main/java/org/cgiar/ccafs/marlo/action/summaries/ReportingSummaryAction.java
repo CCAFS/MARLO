@@ -1924,7 +1924,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       List<CaseStudyProject> studyProjects = new ArrayList<>(
         caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
       for (CaseStudyProject caseStudyProjectList : studyProjects) {
-        if (caseStudyProjectList.isCreated()) {
+        if (caseStudyProjectList.isActive()) {
           shared = String.valueOf(caseStudyProjectList.getProject().getId());
         }
         owner = "P" + caseStudyProjectList.getProject().getId();

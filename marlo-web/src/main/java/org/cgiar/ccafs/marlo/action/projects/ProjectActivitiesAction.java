@@ -47,7 +47,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,11 +130,6 @@ public class ProjectActivitiesAction extends BaseAction {
         if (activity.getId() == null || activity.getId() == -1) {
 
           Activity activityNew = new Activity();
-          activityNew.setActive(true);
-          activityNew.setCreatedBy(this.getCurrentUser());
-          activityNew.setModifiedBy(this.getCurrentUser());
-          activityNew.setModificationJustification("");
-          activityNew.setActiveSince(new Date());
 
 
           Project project = projectManager.getProjectById(this.project.getId());
@@ -171,11 +165,6 @@ public class ProjectActivitiesAction extends BaseAction {
               DeliverableActivity deliverableActivityNew = new DeliverableActivity();
 
               deliverableActivityNew.setActivity(activityNew);
-              deliverableActivityNew.setActive(true);
-              deliverableActivityNew.setCreatedBy(this.getCurrentUser());
-              deliverableActivityNew.setModifiedBy(this.getCurrentUser());
-              deliverableActivityNew.setModificationJustification("");
-              deliverableActivityNew.setActiveSince(new Date());
               deliverableActivityNew.setPhase(this.getActualPhase());
               Deliverable deliverable =
                 deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
@@ -190,11 +179,6 @@ public class ProjectActivitiesAction extends BaseAction {
         } else {
 
           Activity activityUpdate = activityManager.getActivityById(activity.getId());
-          activityUpdate.setActive(true);
-          activityUpdate.setCreatedBy(this.getCurrentUser());
-          activityUpdate.setModifiedBy(this.getCurrentUser());
-          activityUpdate.setModificationJustification("");
-          activityUpdate.setActiveSince(new Date());
           activityUpdate.setPhase(this.getActualPhase());
           activityUpdate.setTitle(activity.getTitle());
           activityUpdate.setDescription(activity.getDescription());
@@ -218,7 +202,7 @@ public class ProjectActivitiesAction extends BaseAction {
           }
 
 
-          activityUpdate = activityManager.saveActivity(activityUpdate);
+          // activityUpdate = activityManager.saveActivity(activityUpdate);
 
           if (activity.getDeliverables() != null) {
 
@@ -238,11 +222,6 @@ public class ProjectActivitiesAction extends BaseAction {
                 DeliverableActivity deliverableActivityNew = new DeliverableActivity();
 
                 deliverableActivityNew.setActivity(activityUpdate);
-                deliverableActivityNew.setActive(true);
-                deliverableActivityNew.setCreatedBy(this.getCurrentUser());
-                deliverableActivityNew.setModifiedBy(this.getCurrentUser());
-                deliverableActivityNew.setModificationJustification("");
-                deliverableActivityNew.setActiveSince(new Date());
                 deliverableActivityNew.setPhase(this.getActualPhase());
 
                 Deliverable deliverable =
@@ -444,8 +423,6 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         for (Activity activity : project.getProjectActivities()) {
-
-          activity.setActive(true);
           if (activity.getDeliverables() != null) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
               if (deliverableActivity.getId() == -1) {
@@ -457,20 +434,6 @@ public class ProjectActivitiesAction extends BaseAction {
             }
           }
         }
-
-        /*
-         * for (Activity activity : project.getClosedProjectActivities()) {
-         * if (activity.getDeliverables() != null) {
-         * for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-         * if (deliverableActivity.getId() == -1) {
-         * Deliverable deliverable =
-         * deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-         * deliverableActivity.setDeliverable(deliverable);
-         * }
-         * }
-         * }
-         * }
-         */
 
         this.setDraft(true);
       } else {
@@ -489,21 +452,7 @@ public class ProjectActivitiesAction extends BaseAction {
             }
           }
         }
-        /*
-         * project
-         * .setClosedProjectActivities(
-         * new ArrayList<Activity>(project.getActivities().stream()
-         * .filter(a -> a.isActive()
-         * && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-         * || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-         * .collect(Collectors.toList())));
-         * if (project.getClosedProjectActivities() != null) {
-         * for (Activity closedActivity : project.getClosedProjectActivities()) {
-         * closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(closedActivity.getDeliverableActivities()
-         * .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
-         * }
-         * }
-         */
+
       }
 
       status = new HashMap<>();
@@ -584,11 +533,6 @@ public class ProjectActivitiesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
-
       this.activitiesPreviousData(project.getProjectActivities(), true);
       this.activitiesNewData(project.getProjectActivities());
       /*
@@ -599,8 +543,11 @@ public class ProjectActivitiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 

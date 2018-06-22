@@ -17,11 +17,14 @@
 package org.cgiar.ccafs.marlo.data.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 public class CrossCuttingDimensionTableDTO implements Serializable {
 
+
   private static final long serialVersionUID = -1392933273584642611L;
+
 
   public static long getSerialversionuid() {
     return serialVersionUID;
@@ -65,11 +68,11 @@ public class CrossCuttingDimensionTableDTO implements Serializable {
 
   private double total;
 
+  List<DeliverableInfo> deliverableList;
 
   public int getCapDevPrincipal() {
     return capDevPrincipal;
   }
-
 
   public int getCapDevScored() {
     return capDevScored;
@@ -78,6 +81,11 @@ public class CrossCuttingDimensionTableDTO implements Serializable {
 
   public int getCapDevSignificant() {
     return capDevSignificant;
+  }
+
+
+  public List<DeliverableInfo> getDeliverableList() {
+    return deliverableList;
   }
 
 
@@ -173,6 +181,11 @@ public class CrossCuttingDimensionTableDTO implements Serializable {
 
   public void setCapDevSignificant(int capDevSignificant) {
     this.capDevSignificant = capDevSignificant;
+  }
+
+
+  public void setDeliverableList(List<DeliverableInfo> deliverableList) {
+    this.deliverableList = deliverableList;
   }
 
 

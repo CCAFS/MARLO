@@ -25,14 +25,10 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverableType implements java.io.Serializable, IAuditLog {
+public class DeliverableType extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 2591192504126616140L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private DeliverableType deliverableCategory;
@@ -63,16 +59,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   private Set<DeliverableTypeRule> deliverableTypeRules = new HashSet<DeliverableTypeRule>(0);
 
   public DeliverableType() {
-  }
-
-  public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
-    Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
-    this.deliverableCategory = deliverableType;
-    this.name = name;
-    this.description = description;
-    this.timeline = timeline;
-    this.deliverableTypes = deliverableTypes;
-    this.deliverables = deliverables;
   }
 
   public Boolean getAdminType() {
@@ -110,11 +96,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public Boolean getFair() {
     return fair;
-  }
-
-  @Override
-  public Long getId() {
-    return this.id;
   }
 
   @Override
@@ -188,8 +169,9 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.fair = fair;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
   }
 
   public void setName(String name) {
@@ -202,7 +184,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "DeliverableType [id=" + id + ", deliverableCategory=" + deliverableCategory + ", name=" + name
+    return "DeliverableType [id=" + this.getId() + ", deliverableCategory=" + deliverableCategory + ", name=" + name
       + ", description=" + description + ", timeline=" + timeline + ", fair=" + fair + ", crp=" + crp + "]";
   }
 

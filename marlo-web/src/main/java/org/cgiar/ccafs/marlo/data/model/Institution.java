@@ -24,14 +24,10 @@ import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
-public class Institution implements java.io.Serializable, IAuditLog {
+public class Institution extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 3635585962414755020L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private InstitutionType institutionType;
@@ -81,30 +77,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public Institution() {
   }
 
-  public Institution(InstitutionType institutionType, String name, Date added) {
-    this.institutionType = institutionType;
-    this.name = name;
-    this.added = added;
-  }
-
-
-  public Institution(InstitutionType institutionType, String name, String acronym, String websiteLink, Long programId,
-    Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, Set<ProjectPartnerPerson> projectPartnerPersons,
-    Set<FundingSource> fundingSourcesOriginalDonor, Set<FundingSource> fundingSourcesDirectDonor) {
-    this.institutionType = institutionType;
-    this.name = name;
-    this.acronym = acronym;
-
-    this.websiteLink = websiteLink;
-    this.programId = programId;
-    this.added = added;
-    this.crpPpaPartners = crpPpaPartners;
-
-    this.projectPartnerPersons = projectPartnerPersons;
-    this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
-    this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -114,11 +86,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
       return false;
     }
     Institution other = (Institution) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -200,11 +172,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public Set<GlobalUnit> getGlobalUnits() {
     return globalUnits;
-  }
-
-  @Override
-  public Long getId() {
-    return this.id;
   }
 
   public Set<InstitutionLocation> getInstitutionsLocations() {
@@ -303,7 +270,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
@@ -350,11 +317,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.globalUnits = globalUnits;
   }
 
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setInstitutionsLocations(Set<InstitutionLocation> institutionsLocations) {
     this.institutionsLocations = institutionsLocations;
   }
@@ -370,6 +332,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setLocations(List<InstitutionLocation> locations) {
     this.locations = locations;
+  }
+
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
   }
 
   public void setName(String name) {
@@ -398,8 +365,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "Institution [id=" + id + ", institutionType=" + institutionType + ", name=" + name + ", acronym=" + acronym
-      + ", programId=" + programId + "]";
+    return "Institution [id=" + this.getId() + ", institutionType=" + institutionType + ", name=" + name + ", acronym="
+      + acronym + ", programId=" + programId + "]";
   }
 }
 

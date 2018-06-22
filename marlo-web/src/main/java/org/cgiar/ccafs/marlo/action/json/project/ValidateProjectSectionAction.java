@@ -1,4 +1,3 @@
-
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -352,6 +351,7 @@ public class ValidateProjectSectionAction extends BaseAction {
         section = new HashMap<String, Object>();
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
+
         List<ProjectInnovation> innovations =
           project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         for (ProjectInnovation projectInnovation : innovations) {

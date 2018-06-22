@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,13 +68,6 @@ public class GlobalUnitController {
     @Valid @RequestBody GlobalUnitDTO globalUnitDTO) {
     LOG.debug("Create a new globalUnit with : {}", globalUnitDTO);
     GlobalUnit newGlobalUnit = globalUnitMapper.globalUnitDTOToGlobalUnit(globalUnitDTO);
-
-    // These audit fields should be automatically created via a Hibernate post-insert/update listener!
-    newGlobalUnit.setCreatedBy(this.getCurrentUser());
-    // This should not be a non-nullable field in the database, as when created it should be null.
-    newGlobalUnit.setModifiedBy(this.getCurrentUser());
-    newGlobalUnit.setActiveSince(new Date());
-
     newGlobalUnit = globalUnitManager.saveGlobalUnit(newGlobalUnit);
 
     return new ResponseEntity<GlobalUnitDTO>(globalUnitMapper.globalUnitToGlobalUnitDTO(newGlobalUnit),
@@ -131,9 +123,6 @@ public class GlobalUnitController {
     GlobalUnit existingGlobalUnit = globalUnitManager.getGlobalUnitById(globalUnitDTO.getId());
 
     existingGlobalUnit = globalUnitMapper.updateGlobalUnitFromGlobalUnitDto(globalUnitDTO, existingGlobalUnit);
-
-    // Auditing information should be done in a hibernate post-update/insert listener.
-    existingGlobalUnit.setModifiedBy(this.getCurrentUser());
 
     // Now update the existingGlobalUnit with the updated values.
     existingGlobalUnit = globalUnitManager.saveGlobalUnit(existingGlobalUnit);

@@ -113,9 +113,11 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
         Long.parseLong(parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(
-          user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-            && lu.getLiaisonInstitution().getCrp().getId() == crp.getId()).collect(Collectors.toList()));
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+            && lu.getLiaisonInstitution().getCrp().getId() == crp.getId()
+            && lu.getLiaisonInstitution().getInstitution() == null)
+          .collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
           LiaisonUser liaisonUser = new LiaisonUser();
           liaisonUser = liaisonUsers.get(0);
@@ -134,6 +136,11 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
       powbSynthesisID = Long.parseLong(parameters.get(APConstants.POWB_SYNTHESIS_ID).getMultipleValues()[0]);
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     } catch (Exception e) {
+      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+      // If the LiaisonInstitution is not a PMU or Flagship.
+      if (liaisonInstitution.getInstitution() != null) {
+        throw new NullPointerException();
+      }
       Phase phase = baseAction.getActualPhase();
       powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
       if (powbSynthesis == null) {

@@ -99,7 +99,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,6 +111,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,39 +128,39 @@ public class PublicationAction extends BaseAction {
   private final Logger LOG = LoggerFactory.getLogger(PublicationAction.class);
 
   // Managers
-  private GlobalUnitManager crpManager;
-  private DeliverableCrpManager deliverableCrpManager;
-  private IpProgramManager ipProgramManager;
-  private DeliverableManager deliverableManager;
-  private DeliverableDisseminationManager deliverableDisseminationManager;
-  private DeliverableGenderLevelManager deliverableGenderLevelManager;
-  private DeliverableMetadataElementManager deliverableMetadataElementManager;
-  private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
-  private DeliverableUserManager deliverableUserManager;
-  private DeliverableLeaderManager deliverableLeaderManager;
-  private DeliverableProgramManager deliverableProgramManager;
-  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-  private AuditLogManager auditLogManager;
-  private GenderTypeManager genderTypeManager;
-  private DeliverableTypeManager deliverableTypeManager;
-  private RepositoryChannelManager repositoryChannelManager;
-  private DeliverableInfoManager deliverableInfoManager;
-  private InstitutionManager institutionManager;
-  private CrpProgramManager crpProgramManager;
-  private FundingSourceManager fundingSourceManager;
-  private CrossCuttingScoringManager crossCuttingManager;
-  private DeliverableFundingSourceManager deliverableFundingSourceManager;
-  private MetadataElementManager metadataElementManager;
-  private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
-  private DeliverableParticipantManager deliverableParticipantManager;
-  private RepIndTypeActivityManager repIndTypeActivityManager;
-  private RepIndTypeParticipantManager repIndTypeParticipantManager;
-  private RepIndGeographicScopeManager repIndGeographicScopeManager;
-  private RepIndRegionManager repIndRegionManager;
-  private LocElementManager locElementManager;
-  private DeliverableParticipantLocationManager deliverableParticipantLocationManager;
-  private RepIndFillingTypeManager repIndFillingTypeManager;
-  private RepIndPatentStatusManager repIndPatentStatusManager;
+  private final GlobalUnitManager crpManager;
+  private final DeliverableCrpManager deliverableCrpManager;
+  private final IpProgramManager ipProgramManager;
+  private final DeliverableManager deliverableManager;
+  private final DeliverableDisseminationManager deliverableDisseminationManager;
+  private final DeliverableGenderLevelManager deliverableGenderLevelManager;
+  private final DeliverableMetadataElementManager deliverableMetadataElementManager;
+  private final DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
+  private final DeliverableUserManager deliverableUserManager;
+  private final DeliverableLeaderManager deliverableLeaderManager;
+  private final DeliverableProgramManager deliverableProgramManager;
+  private final CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+  private final AuditLogManager auditLogManager;
+  private final GenderTypeManager genderTypeManager;
+  private final DeliverableTypeManager deliverableTypeManager;
+  private final RepositoryChannelManager repositoryChannelManager;
+  private final DeliverableInfoManager deliverableInfoManager;
+  private final InstitutionManager institutionManager;
+  private final CrpProgramManager crpProgramManager;
+  private final FundingSourceManager fundingSourceManager;
+  private final CrossCuttingScoringManager crossCuttingManager;
+  private final DeliverableFundingSourceManager deliverableFundingSourceManager;
+  private final MetadataElementManager metadataElementManager;
+  private final DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+  private final DeliverableParticipantManager deliverableParticipantManager;
+  private final RepIndTypeActivityManager repIndTypeActivityManager;
+  private final RepIndTypeParticipantManager repIndTypeParticipantManager;
+  private final RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private final RepIndRegionManager repIndRegionManager;
+  private final LocElementManager locElementManager;
+  private final DeliverableParticipantLocationManager deliverableParticipantLocationManager;
+  private final RepIndFillingTypeManager repIndFillingTypeManager;
+  private final RepIndPatentStatusManager repIndPatentStatusManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -194,6 +194,7 @@ public class PublicationAction extends BaseAction {
   private List<RepIndFillingType> repIndFillingTypes;
   private List<RepIndPatentStatus> repIndPatentStatuses;
   private Map<String, String> statuses;
+
 
   @Inject
   public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
@@ -300,7 +301,6 @@ public class PublicationAction extends BaseAction {
   private void deleteParticipantLocations(List<DeliverableParticipantLocation> locationsDB) {
     if (locationsDB != null) {
       for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
-        deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
         deliverableParticipantLocationManager
           .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
       }
@@ -1034,7 +1034,11 @@ public class PublicationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
-      deliverablePrew.setActiveSince(new Date());
+      /**
+       * The following is required because we need to update something on the @Deliverable if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(deliverablePrew);
       deliverableManager.saveDeliverable(deliverablePrew, this.getActionName(), relationsName, deliverable.getPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -1113,18 +1117,12 @@ public class PublicationAction extends BaseAction {
         if (deliverableGenderLevel.getId() == null || deliverableGenderLevel.getId() == -1) {
 
           deliverableGenderLevel.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableGenderLevel.setActive(true);
-          deliverableGenderLevel.setCreatedBy(this.getCurrentUser());
-          deliverableGenderLevel.setModifiedBy(this.getCurrentUser());
-          deliverableGenderLevel.setModificationJustification("");
-          deliverableGenderLevel.setActiveSince(new Date());
           deliverableGenderLevel.setPhase(deliverable.getPhase());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevel);
 
         } else {
           DeliverableGenderLevel deliverableGenderLevelDB =
             deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableGenderLevel.getId());
-          deliverableGenderLevelDB.setModifiedBy(this.getCurrentUser());
           deliverableGenderLevelDB.setGenderLevel(deliverableGenderLevel.getGenderLevel());
           deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
         }
@@ -1432,11 +1430,6 @@ public class PublicationAction extends BaseAction {
         participant.setId(null);
         participant.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
         participant.setPhase(deliverable.getPhase());
-        participant.setActiveSince(new Date());
-        participant.setCreatedBy(this.getCurrentUser());
-        participant.setModificationJustification("");
-        participant.setModifiedBy(this.getCurrentUser());
-        participant.setActive(true);
         participant = deliverableParticipantManager.saveDeliverableParticipant(participant);
       }
 
@@ -1530,18 +1523,12 @@ public class PublicationAction extends BaseAction {
                 locationParticipant.setDeliverableParticipant(participant);
                 locationsSave.add(locationParticipant);
                 if (!locationsDB.contains(locationParticipant)) {
-                  locationParticipant.setActive(true);
-                  locationParticipant.setActiveSince(new Date());
-                  locationParticipant.setCreatedBy(this.getCurrentUser());
-                  locationParticipant.setModificationJustification("");
-                  locationParticipant.setModifiedBy(this.getCurrentUser());
                   deliverableParticipantLocationManager.saveDeliverableParticipantLocation(locationParticipant);
                 }
               }
             }
             for (DeliverableParticipantLocation deliverableParticipantLocation : locationsDB) {
               if (!locationsSave.contains(deliverableParticipantLocation)) {
-                deliverableParticipantLocation.setModifiedBy(this.getCurrentUser());
                 deliverableParticipantLocationManager
                   .deleteDeliverableParticipantLocation(deliverableParticipantLocation.getId());
               }
@@ -1553,7 +1540,6 @@ public class PublicationAction extends BaseAction {
           participant.setRepIndRegion(null);
           this.deleteParticipantLocations(locationsDB);
         }
-        participant.setActive(true);
       } else {
         participant.setEventActivityName(null);
         participant.setRepIndTypeActivity(null);
@@ -1567,16 +1553,12 @@ public class PublicationAction extends BaseAction {
         participant.setRepIndGeographicScope(null);
         participant.setRepIndRegion(null);
         this.deleteParticipantLocations(locationsDB);
-        participant.setActive(true);
       }
 
-
-      participant.setModifiedBy(this.getCurrentUser());
-      participant.setActiveSince(new Date());
-      participant.setModificationJustification("");
       deliverableParticipantManager.saveDeliverableParticipant(participant);
 
     }
+
   }
 
 
@@ -1641,6 +1623,8 @@ public class PublicationAction extends BaseAction {
             .collect(Collectors.toList()).isEmpty()) {
             deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
           }
+        } else {
+          Log.debug("No regional programs can be found in String : " + programID);
         }
       }
     }
@@ -1723,12 +1707,6 @@ public class PublicationAction extends BaseAction {
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
-
-
-  public void setDeliverableTypeManager(DeliverableTypeManager deliverableTypeManager) {
-    this.deliverableTypeManager = deliverableTypeManager;
-  }
-
 
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
@@ -1817,11 +1795,6 @@ public class PublicationAction extends BaseAction {
 
 
           deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableFundingSource.setActive(true);
-          deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-          deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-          deliverableFundingSource.setModificationJustification("");
-          deliverableFundingSource.setActiveSince(new Date());
           deliverableFundingSource.setPhase(deliverable.getPhase());
           deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
 
@@ -1926,7 +1899,6 @@ public class PublicationAction extends BaseAction {
     }
 
     deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
-    deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
     return deliverableBase;

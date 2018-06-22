@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
@@ -16,6 +16,9 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+
+[#assign customName= "reportSynthesis.reportSynthesisGovernance" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
@@ -34,19 +37,21 @@
       [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      
-        [#assign customName= "annualReport.${currentStage}" /]
-        [#assign customLabel= "annualReport.${currentStage}" /]
         
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
         <div class="borderBox">
-        
-          [#-- Please describe any major changes to management, governance arrangements and practices --]
+          [#-- Describe any major changes to management, governance arrangements and practices --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="${customName}.describe" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            [#if PMU]
+              [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
+            [#else]
+              <div class="textArea">
+                <label for="">[@customForm.text name="${customLabel}.describe" readText=true /]:</label>
+                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+              </div>
+            [/#if]
           </div>
-        
         </div>
         [#-- Section Buttons & hidden inputs--]
         [#if PMU]

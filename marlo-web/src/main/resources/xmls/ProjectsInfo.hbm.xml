@@ -23,13 +23,13 @@
             <column name="project_id" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="title" type="string">
-            <column name="title" length="65535" />
+            <column name="title" sql-type="TEXT" />
         </property>
         <property name="summary" type="string">
-            <column name="summary" length="65535" />
+            <column name="summary" sql-type="TEXT" />
         </property>
         <property name="startDate" type="date">
             <column name="start_date" length="10" />
@@ -38,16 +38,16 @@
             <column name="end_date" length="10" />
         </property>
         <property name="type" type="string">
-            <column name="type" length="65535" />
+            <column name="type" sql-type="TEXT" />
         </property>
         <property name="cofinancing" type="boolean">
             <column name="is_cofinancing" not-null="true" />
         </property>
         <property name="leaderResponsabilities" type="string">
-            <column name="leader_responsabilities" length="65535" />
+            <column name="leader_responsabilities" sql-type="TEXT" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
         <property name="projectEditLeader" type="java.lang.Boolean">
             <column name="is_project_leader_edit" />
@@ -71,10 +71,10 @@
             <column name="status" />
         </property>
         <property name="statusJustification" type="string">
-            <column name="status_justification" length="65535" />
+            <column name="status_justification" sql-type="TEXT" />
         </property>
         <property name="genderAnalysis" type="string">
-            <column name="gender_analysis" length="65535" />
+            <column name="gender_analysis" sql-type="TEXT" />
         </property>
         <property name="crossCuttingGender" type="java.lang.Boolean">
             <column name="cross_cutting_gender" />
@@ -89,7 +89,7 @@
             <column name="cross_cutting_na" />
         </property>
         <property name="dimension" type="string">
-            <column name="dimension" length="65535" />
+            <column name="dimension" sql-type="TEXT" />
         </property>
         <property name="administrative" type="java.lang.Boolean">
             <column name="administrative" />
@@ -98,10 +98,19 @@
             <column name="reporting" />
         </property>
         <property name="newPartnershipsPlanned" type="string">
-            <column name="new_partnerships_planned" length="65535" />
+            <column name="new_partnerships_planned" sql-type="TEXT" />
         </property>
         <property name="partnerOverall" type="string">
-            <column name="partner_overall" length="65535" />
+            <column name="partner_overall" sql-type="TEXT" />
+        </property>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+          <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="active" type="boolean">
+          <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+          <column name="active_since" length="19" not-null="true" />
         </property>
     </class>
 </hibernate-mapping>

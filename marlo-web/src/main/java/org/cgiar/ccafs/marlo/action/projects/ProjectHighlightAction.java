@@ -52,7 +52,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -524,10 +523,7 @@ public class ProjectHighlightAction extends BaseAction {
 
       // projectHighlightInfoManager.saveProjectHighlightInfo(projectHighlightInfo)
       // highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
-      highlight.setActiveSince(new Date());
-      highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
-      highlight.setCreatedBy(highlightDB.getCreatedBy());
       if (file != null) {
         highlight.getProjectHighlightInfo(this.getActualPhase())
           .setFile(this.getFileDB(highlightDB.getProjectHighlightInfo(this.getActualPhase()).getFile(), file,
@@ -542,7 +538,6 @@ public class ProjectHighlightAction extends BaseAction {
         }
       }
 
-      highlight.setActive(true);
 
       // for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
       // .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
@@ -629,7 +624,11 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.getProjectHighlightInfo().setProjectHighlight(highlight);
 
       projectHighlightInfoManager.saveProjectHighlightInfo(highlight.getProjectHighlightInfo());
-
+      /**
+       * The following is required because we need to update something on the @ProjectHighlight if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(highlight);
       projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName,
         this.getActualPhase());
 

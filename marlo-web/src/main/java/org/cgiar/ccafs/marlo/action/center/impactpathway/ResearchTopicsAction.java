@@ -386,10 +386,6 @@ public class ResearchTopicsAction extends BaseAction {
     for (CenterTopic researchTopic : topics) {
       if (researchTopic.getId() == null || researchTopic.getId() == -1) {
         CenterTopic newResearchTopic = new CenterTopic();
-        newResearchTopic.setActive(true);
-        newResearchTopic.setActiveSince(new Date());
-        newResearchTopic.setCreatedBy(this.getCurrentUser());
-        newResearchTopic.setModifiedBy(this.getCurrentUser());
         newResearchTopic.setResearchTopic(researchTopic.getResearchTopic().trim());
         newResearchTopic.setColor("#ecf0f1");
         newResearchTopic.setResearchProgram(selectedProgram);
@@ -419,7 +415,6 @@ public class ResearchTopicsAction extends BaseAction {
         }
 
         if (hasChanges) {
-          researchTopicPrew.setModifiedBy(this.getCurrentUser());
           researchTopicPrew.setModificationJustification("Modified on " + new Date().toString());
           researchTopicService.saveResearchTopic(researchTopicPrew);
         }
@@ -430,8 +425,12 @@ public class ResearchTopicsAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.RESEARCH_PROGRAM_TOPIC_RELATION);
     selectedProgram = programService.getCrpProgramById(crpProgramID);
-    selectedProgram.setActiveSince(new Date());
-    selectedProgram.setModifiedBy(this.getCurrentUser());
+    /**
+     * The following is required because we need to update something on the @CrpProgram if we want a row created
+     * in the auditlog table.
+     */
+    this.setModificationJustification(selectedProgram);
+
     programService.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
     Path path = this.getAutoSaveFilePath();

@@ -42,7 +42,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,24 +178,17 @@ public class ProjectLeveragesAction extends BaseAction {
     for (ProjectLeverage projectLeverage : projectLeverages) {
       if (projectLeverage != null) {
         if (projectLeverage.getId() == null || projectLeverage.getId() == -1) {
-          projectLeverage.setActive(true);
-          projectLeverage.setCreatedBy(this.getCurrentUser());
-          projectLeverage.setModifiedBy(this.getCurrentUser());
           projectLeverage.setModificationJustification(this.getJustification());
-          projectLeverage.setActiveSince(new Date());
           projectLeverage.setYear(this.getCurrentCycleYear());
           projectLeverage.setProject(project);
           projectLeverage.setPhase(this.getActualPhase());
 
         } else {
           ProjectLeverage projectLeverageDB = projectLeverageManager.getProjectLeverageById(projectLeverage.getId());
-          projectLeverage.setActive(true);
-          projectLeverage.setCreatedBy(projectLeverageDB.getCreatedBy());
-          projectLeverage.setModifiedBy(this.getCurrentUser());
+
           projectLeverage.setModificationJustification(this.getJustification());
           projectLeverage.setYear(projectLeverageDB.getYear());
           projectLeverage.setProject(project);
-          projectLeverage.setActiveSince(projectLeverageDB.getActiveSince());
           projectLeverage.setPhase(this.getActualPhase());
 
         }
@@ -388,19 +380,17 @@ public class ProjectLeveragesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
-
       this.leveragesPreviousData(project.getLeverages(), true);
       this.leveragesNewData(project.getLeverages());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_LEVERAGES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 

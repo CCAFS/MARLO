@@ -62,7 +62,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,11 +172,6 @@ public class ClusterActivitiesAction extends BaseAction {
       .collect(Collectors.toList());
 
     if (userCrp == null || userCrp.isEmpty()) {
-      crpUser.setActive(true);
-      crpUser.setActiveSince(new Date());
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
   }
@@ -311,10 +305,6 @@ public class ClusterActivitiesAction extends BaseAction {
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
         config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
-
-      // Saving the new user configuration.
-      // user.setActive(true);
-      // userManager.saveUser(user, this.getCurrentUser());
 
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
@@ -673,7 +663,6 @@ public class ClusterActivitiesAction extends BaseAction {
             selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
             clusterofActivities = selectedProgram.getClusterofActivities();
             selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
-            selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
             selectedProgram.setCrp(loggedCrp);
             if (clusterofActivities == null) {
               clusterofActivities = new ArrayList<>();
@@ -776,12 +765,6 @@ public class ClusterActivitiesAction extends BaseAction {
         CrpClusterOfActivity db = null;
         if (crpClusterOfActivity.getId() == null) {
           db = new CrpClusterOfActivity();
-          db.setActive(true);
-
-          db.setCreatedBy(this.getCurrentUser());
-          db.setModifiedBy(this.getCurrentUser());
-          db.setModificationJustification("");
-          db.setActiveSince(new Date());
 
         } else {
           db = crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
@@ -838,12 +821,7 @@ public class ClusterActivitiesAction extends BaseAction {
         if (crpClusterOfActivity.getLeaders() != null) {
           for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getLeaders()) {
             if (crpClusterActivityLeader.getId() == null) {
-              crpClusterActivityLeader.setActive(true);
               crpClusterActivityLeader.setCrpClusterOfActivity(db);
-              crpClusterActivityLeader.setCreatedBy(this.getCurrentUser());
-              crpClusterActivityLeader.setModifiedBy(this.getCurrentUser());
-              crpClusterActivityLeader.setModificationJustification("");
-              crpClusterActivityLeader.setActiveSince(new Date());
               CrpClusterOfActivity crpClusterPreview = crpClusterOfActivity;
 
               if (crpClusterPreview.getCrpClusterActivityLeaders().stream()
@@ -895,13 +873,7 @@ public class ClusterActivitiesAction extends BaseAction {
           for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
             if (crpClusterKeyOutput.getId() == null) {
               crpClusterKeyOutputPrev = new CrpClusterKeyOutput();
-              crpClusterKeyOutputPrev.setCreatedBy(this.getCurrentUser());
-
-              crpClusterKeyOutputPrev.setActiveSince(new Date());
-
               crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
-              crpClusterKeyOutputPrev.setModifiedBy(this.getCurrentUser());
-              crpClusterKeyOutputPrev.setModificationJustification("");
               crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
 
 
@@ -914,7 +886,6 @@ public class ClusterActivitiesAction extends BaseAction {
             crpClusterKeyOutputPrev.setContribution(crpClusterKeyOutput.getContribution());
             crpClusterKeyOutputPrev.setKeyOutput(crpClusterKeyOutput.getKeyOutput());
             crpClusterKeyOutputPrev.setComposeID(crpClusterKeyOutput.getComposeID());
-            crpClusterKeyOutputPrev.setActive(true);
             crpClusterKeyOutputPrev = crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutputPrev);
 
             /*
@@ -940,24 +911,17 @@ public class ClusterActivitiesAction extends BaseAction {
               for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
 
                 if (crpClusterKeyOutputOutcome != null) {
-                  if (crpClusterKeyOutputOutcome.getId() == null) {
-                    crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
-
-                    crpClusterKeyOutputOutcome.setActiveSince(new Date());
-                    crpClusterKeyOutputOutcome.setActive(true);
-                  } else {
+                  if (crpClusterKeyOutputOutcome.getId() != null) {
                     CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
                       .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
-                    crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
-                    crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
-                    crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
+                    crpClusterKeyOutputOutcomePrev.setContribution(crpClusterKeyOutputOutcome.getContribution());
+                    crpClusterKeyOutputOutcomePrev.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
+                    crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcomePrev);
+                  } else {
 
+                    crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
+                    crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
                   }
-
-                  crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
-                  crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
-                  crpClusterKeyOutputOutcome.setModificationJustification("");
-                  crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
                 }
 
               }
@@ -969,12 +933,16 @@ public class ClusterActivitiesAction extends BaseAction {
 
       }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      selectedProgram.setActiveSince(new Date());
-      selectedProgram.setModifiedBy(this.getCurrentUser());
-      selectedProgram.setModificationJustification(this.getJustification());
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
+
+      /**
+       * The following is required because we need to update something on the @CrpProgram if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(selectedProgram);
+
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
       this.addUsers();
 

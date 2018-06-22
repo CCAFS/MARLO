@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,12 +50,7 @@ public class ProjectLeverageManagerImpl implements ProjectLeverageManager {
   }
 
   private void cloneLeverage(ProjectLeverage projectLeverageAdd, ProjectLeverage projectLeverage, Phase phase) {
-    projectLeverageAdd.setActive(true);
-    projectLeverageAdd.setActiveSince(new Date());
     projectLeverageAdd.setComposeID(projectLeverage.getComposeID());
-    projectLeverageAdd.setCreatedBy(projectLeverage.getCreatedBy());
-    projectLeverageAdd.setModificationJustification(projectLeverage.getModificationJustification());
-    projectLeverageAdd.setModifiedBy(projectLeverage.getCreatedBy());
     projectLeverageAdd.setPhase(phase);
     projectLeverageAdd.setProject(projectDAO.find(projectLeverage.getProject().getId()));
     projectLeverageAdd.setTitle(projectLeverage.getTitle());

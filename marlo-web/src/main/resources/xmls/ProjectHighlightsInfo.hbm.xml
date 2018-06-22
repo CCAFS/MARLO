@@ -18,10 +18,10 @@
             <column name="project_highlight_id" />
         </many-to-one>
         <property name="title" type="string">
-            <column name="title" length="65535" not-null="true" />
+            <column name="title" sql-type="TEXT" not-null="true" />
         </property>
         <property name="author" type="string">
-            <column name="author" length="65535" not-null="true" />
+            <column name="author" sql-type="TEXT" not-null="true" />
         </property>
         <property name="startDate" type="date">
             <column name="start_date" length="10" />
@@ -30,31 +30,31 @@
             <column name="end_date" length="10" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="results" type="string">
-            <column name="results" length="65535" />
+            <column name="results" sql-type="TEXT" />
         </property>
         <property name="global" type="boolean">
             <column name="is_global" not-null="true" />
         </property>
         <property name="publisher" type="string">
-            <column name="publisher" length="65535" />
+            <column name="publisher" sql-type="TEXT" />
         </property>
         <property name="objectives" type="string">
-            <column name="objectives" length="65535" />
+            <column name="objectives" sql-type="TEXT" />
         </property>
         <property name="partners" type="string">
-            <column name="partners" length="65535" />
+            <column name="partners" sql-type="TEXT" />
         </property>
         <property name="links" type="string">
-            <column name="links" length="65535" />
+            <column name="links" sql-type="TEXT" />
         </property>
         <property name="keywords" type="string">
-            <column name="keywords" length="65535" />
+            <column name="keywords" sql-type="TEXT" />
         </property>
         <property name="subject" type="string">
-            <column name="subject" length="65535" />
+            <column name="subject" sql-type="TEXT" />
         </property>
         <property name="year" type="java.lang.Long">
             <column name="year" />

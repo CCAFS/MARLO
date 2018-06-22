@@ -31,7 +31,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,26 +79,15 @@ public class ResearchManagementAction extends BaseAction {
         // Check if is a new one
         if (centerArea.getId() == null || centerArea.getId() == -1) {
           CenterArea newCenterArea = new CenterArea();
-
-          newCenterArea.setActive(true);
-          newCenterArea.setCreatedBy(this.getCurrentUser());
-          newCenterArea.setModifiedBy(this.getCurrentUser());
-          newCenterArea.setActiveSince(new Date());
           newCenterArea.setName(centerArea.getName());
           newCenterArea.setAcronym(centerArea.getAcronym());
           newCenterArea.setResearchCenter(loggedCenter);
-          newCenterArea.setModificationJustification("");
           centerAreaService.save(newCenterArea);
           // save area leaders
           List<CenterLeader> areaLeaders = centerArea.getLeaders();
           if (areaLeaders != null) {
             for (CenterLeader areaLeader : areaLeaders) {
               CenterLeader newareaLeader = new CenterLeader();
-              newareaLeader.setActive(true);
-              newareaLeader.setActiveSince(new Date());
-              newareaLeader.setCreatedBy(this.getCurrentUser());
-              newareaLeader.setModificationJustification("");
-              newareaLeader.setModifiedBy(this.getCurrentUser());
               newareaLeader.setResearchArea(newCenterArea);
               newareaLeader.setResearchCenter(loggedCenter);
               newareaLeader.setType(
@@ -115,13 +103,9 @@ public class ResearchManagementAction extends BaseAction {
             for (CrpProgram CrpProgram : newCrpPrograms) {
               CrpProgram newCrpProgram = new CrpProgram();
               // Save center program
+
               newCrpProgram.setAcronym(CrpProgram.getAcronym());
               newCrpProgram.setName(CrpProgram.getName());
-              newCrpProgram.setActive(true);
-              newCrpProgram.setActiveSince(new Date());
-              newCrpProgram.setCreatedBy(this.getCurrentUser());
-              newCrpProgram.setModificationJustification("");
-              newCrpProgram.setModifiedBy(this.getCurrentUser());
               // newCrpProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
               // Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
               // newCrpProgram.setResearchArea(newCenterArea);
@@ -158,8 +142,6 @@ public class ResearchManagementAction extends BaseAction {
             hasChanges = true;
           }
           if (hasChanges) {
-            centerAreaDB.setActive(true);
-            centerAreaDB.setModifiedBy(this.getCurrentUser());
             centerAreaService.save(centerAreaDB);
           }
 
@@ -170,11 +152,6 @@ public class ResearchManagementAction extends BaseAction {
               // check new area leader
               if (areaLeader.getId() == null || areaLeader.getId() == -1) {
                 CenterLeader newareaLeader = new CenterLeader();
-                newareaLeader.setActive(true);
-                newareaLeader.setActiveSince(new Date());
-                newareaLeader.setCreatedBy(this.getCurrentUser());
-                newareaLeader.setModificationJustification("");
-                newareaLeader.setModifiedBy(this.getCurrentUser());
                 newareaLeader.setResearchArea(centerAreaDB);
                 newareaLeader.setResearchCenter(loggedCenter);
                 newareaLeader.setType(centerAllTypesService
@@ -194,11 +171,6 @@ public class ResearchManagementAction extends BaseAction {
                 // Save center program
                 newCrpProgram.setAcronym(CrpProgram.getAcronym());
                 newCrpProgram.setName(CrpProgram.getName());
-                newCrpProgram.setActive(true);
-                newCrpProgram.setActiveSince(new Date());
-                newCrpProgram.setCreatedBy(this.getCurrentUser());
-                newCrpProgram.setModificationJustification("");
-                newCrpProgram.setModifiedBy(this.getCurrentUser());
                 // newCrpProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
                 // Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
                 // newCrpProgram.setResearchArea(centerArea);

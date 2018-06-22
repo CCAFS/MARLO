@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,16 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.RepIndGeographicScopeDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByGeographicScopeDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -62,6 +66,35 @@ public class RepIndGeographicScopeManagerImpl implements RepIndGeographicScopeMa
   }
 
   @Override
+  public List<ReportSynthesisPartnershipsByGeographicScopeDTO>
+    getPartnershipsByGeographicScopeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships) {
+    List<ReportSynthesisPartnershipsByGeographicScopeDTO> partnershipsByGeographicScopeDTO = new ArrayList<>();
+
+    List<RepIndGeographicScope> repIndGeographicScopes = this.findAll().stream().collect(Collectors.toList());
+    if (repIndGeographicScopes != null && !repIndGeographicScopes.isEmpty()) {
+      for (RepIndGeographicScope geographicScope : repIndGeographicScopes) {
+
+        ReportSynthesisPartnershipsByGeographicScopeDTO partnershipsByInstitutionTypeDTO =
+          new ReportSynthesisPartnershipsByGeographicScopeDTO();
+        partnershipsByInstitutionTypeDTO.setRepIndGeographicScope(geographicScope);
+        if (projectPartnerPartnerships != null && !projectPartnerPartnerships.isEmpty()) {
+          partnershipsByInstitutionTypeDTO.setProjectPartnerPartnerships(projectPartnerPartnerships.stream()
+            .filter(ppp -> ppp.getGeographicScope() != null && ppp.getGeographicScope().equals(geographicScope))
+            .collect(Collectors.toList()));
+        } else {
+          partnershipsByInstitutionTypeDTO.setProjectPartnerPartnerships(new ArrayList<ProjectPartnerPartnership>());
+        }
+        partnershipsByGeographicScopeDTO.add(partnershipsByInstitutionTypeDTO);
+
+      }
+    }
+    return partnershipsByGeographicScopeDTO.stream()
+      .sorted((d1, d2) -> new Integer(d2.getProjectPartnerPartnerships().size())
+        .compareTo(new Integer(d1.getProjectPartnerPartnerships().size())))
+      .collect(Collectors.toList());
+  }
+
+  @Override
   public RepIndGeographicScope getRepIndGeographicScopeById(long repIndGeographicScopeID) {
 
     return repIndGeographicScopeDAO.find(repIndGeographicScopeID);
@@ -72,6 +105,5 @@ public class RepIndGeographicScopeManagerImpl implements RepIndGeographicScopeMa
 
     return repIndGeographicScopeDAO.save(repIndGeographicScope);
   }
-
 
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 20, 2018 1:50:26 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia" table="report_synthesis_melia" optimistic-lock="none">
+        <id name="id" type="long">
+            <column name="id" />
+            <generator class="foreign">
+                <param name="property">reportSynthesis</param>
+            </generator>
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <one-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" constrained="true"></one-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <property name="summary" type="string">
+            <column name="summary" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+        <set name="reportSynthesisMeliaStudies" table="report_synthesis_melia_studies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synhtesis_melia_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy" />
+        </set>
+        <set name="reportSynthesisMeliaEvaluations" table="report_synthesis_melia_evaluations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synhtesis_melia_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -520,11 +520,7 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INNOVATION_CRP_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_CRP_RELATION);
 
-      innovation.setActiveSince(new Date());
-      innovation.setModifiedBy(this.getCurrentUser());
       innovation.setModificationJustification(this.getJustification());
-      innovation.setCreatedBy(innovationDB.getCreatedBy());
-      innovation.setActive(true);
 
       // Save the Countries List (ProjectInnovationcountry)
       if (innovation.getCountriesIds() != null || !innovation.getCountriesIds().isEmpty()) {
@@ -620,6 +616,11 @@ public class ProjectInnovationAction extends BaseAction {
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
+      /**
+       * The following is required because we need to update something on the @ProjectInnovation if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(innovation);
       projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName,
         this.getActualPhase());
 

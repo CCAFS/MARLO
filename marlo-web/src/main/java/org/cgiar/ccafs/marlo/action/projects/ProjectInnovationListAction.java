@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,12 +89,7 @@ public class ProjectInnovationListAction extends BaseAction {
   public String add() {
     ProjectInnovation projectInnovation = new ProjectInnovation();
 
-    projectInnovation.setModifiedBy(this.getCurrentUser());
-    projectInnovation.setActiveSince(new Date());
-    projectInnovation.setCreatedBy(this.getCurrentUser());
-    projectInnovation.setActive(true);
     projectInnovation.setProject(project);
-    projectInnovation.setModificationJustification("");
 
     projectInnovation = projectInnovationManager.saveProjectInnovation(projectInnovation);
 

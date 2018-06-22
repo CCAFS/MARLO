@@ -795,6 +795,14 @@
         <param name="includeProperties">success</param>
       </result>
     </action>
+    
+    <action name="annualCrpProgramByCrp"
+      class="org.cgiar.ccafs.marlo.action.json.annualReport.CrpProgramByCrp">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
        
 	</package>
 

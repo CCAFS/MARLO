@@ -313,8 +313,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locElements = projectDB
-      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
+    List<ProjectLocation> locElements = projectDB.getProjectLocations()
+      .stream().filter(c -> c.isActive() && c.getLocElement() != null
         && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
@@ -433,7 +433,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
 
     for (CaseStudyProject caseStudyProject : caseStudies) {
-      if (caseStudyProject.isCreated()
+      if (caseStudyProject.isActive()
         && caseStudyProject.getCaseStudy().getYear() == action.getActualPhase().getYear()) {
 
         caseStudyProject.getCaseStudy().setIndicators(

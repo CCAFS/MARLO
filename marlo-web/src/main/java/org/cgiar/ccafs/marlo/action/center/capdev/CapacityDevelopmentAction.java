@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,10 +76,6 @@ public class CapacityDevelopmentAction extends BaseAction {
     CapacityDevelopment capacityDevelopmentDB = new CapacityDevelopment();
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
-    capdev.setActive(true);
-    capdev.setActiveSince(new Date());
-    capdev.setCreatedBy(this.getCurrentUser());
-    capdev.setModifiedBy(this.getCurrentUser());
 
     /*
      * projectID allows verified if the request to create a CapDev come from projects/capdev section or capacity
@@ -119,10 +114,8 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   @Override
   public String delete() {
-    capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    capdev.setActive(false);
-    capdev.setModifiedBy(this.getCurrentUser());
-    capdevService.saveCapacityDevelopment(capdev);
+
+    capdevService.deleteCapacityDevelopment(capdevID);
 
     if (projectID > 0) {
 

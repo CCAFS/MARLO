@@ -623,13 +623,12 @@ public class DeliverableValidator extends BaseValidator {
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
       if (deliverableMetadataElement != null) {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
-          switch (deliverableMetadataElement.getMetadataElement().getId()) {
-            case 8:
-              if ((this.isValidString(deliverableMetadataElement.getElementValue())
-                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
-                description = true;
-              }
-              break;
+          if (8L == deliverableMetadataElement.getMetadataElement().getId().longValue()) {
+            if ((this.isValidString(deliverableMetadataElement.getElementValue())
+              && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+              description = true;
+            }
+            break;
 
           }
         }

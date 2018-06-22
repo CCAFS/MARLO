@@ -60,7 +60,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,11 +243,6 @@ public class EvidencesAction extends BaseAction {
 
 
         if (!powbEvidencePlannedStudies.contains(evidencePlannedStudyNew)) {
-          evidencePlannedStudyNew.setActive(true);
-          evidencePlannedStudyNew.setActiveSince(new Date());
-          evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
-          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-          evidencePlannedStudyNew.setModificationJustification("");
           evidencePlannedStudyNew =
             powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
         }
@@ -271,11 +265,6 @@ public class EvidencesAction extends BaseAction {
 
 
         if (!powbEvidencePlannedStudies.contains(evidencePlannedStudyNew)) {
-          evidencePlannedStudyNew.setActive(true);
-          evidencePlannedStudyNew.setActiveSince(new Date());
-          evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
-          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-          evidencePlannedStudyNew.setModificationJustification("");
           evidencePlannedStudyNew =
             powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
         }
@@ -314,13 +303,12 @@ public class EvidencesAction extends BaseAction {
     flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies =
-        new ArrayList<>(
-          projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase() == phaseID && ps.getProject().getGlobalUnitProjects().stream()
-              .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-              .collect(Collectors.toList()).size() > 0)
-            .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
@@ -549,9 +537,11 @@ public class EvidencesAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(
-            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getInstitution() == null)
+            .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -653,11 +643,6 @@ public class EvidencesAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getPowbEvidence() == null) {
           PowbEvidence evidence = new PowbEvidence();
-          evidence.setActive(true);
-          evidence.setActiveSince(new Date());
-          evidence.setCreatedBy(this.getCurrentUser());
-          evidence.setModifiedBy(this.getCurrentUser());
-          evidence.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setPowbEvidence(evidence);
           evidence.setPowbSynthesis(powbSynthesis);
@@ -744,9 +729,12 @@ public class EvidencesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
 
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
 

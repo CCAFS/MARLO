@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 
 import java.util.List;
 
@@ -56,10 +58,25 @@ public interface ProjectInnovationInfoDAO {
 
 
   /**
+   * This method gets a list of ProjectInnovationInfo that are active by a given StageInnovation and phase
+   * 
+   * @return a list from ProjectInnovationInfo null if no exist records
+   */
+  public List<ProjectInnovationInfo> getInnovationsByStage(RepIndStageInnovation repIndStageInnovation, Phase phase);
+
+  /**
+   * This method gets a list of ProjectInnovationInfo that are active by a given phase
+   * 
+   * @return a list from ProjectInnovationInfo null if no exist records
+   */
+  public List<ProjectInnovationInfo> getProjectInnovationInfoByPhase(Phase phase);
+
+  /**
    * This method saves the information of the given projectInnovationInfo
    * 
    * @param projectInnovationInfo - is the projectInnovationInfo object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationInfo was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationInfo
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

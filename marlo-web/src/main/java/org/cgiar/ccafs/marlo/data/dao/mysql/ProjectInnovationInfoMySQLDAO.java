@@ -17,9 +17,13 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationInfoDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -70,6 +74,62 @@ public class ProjectInnovationInfoMySQLDAO extends AbstractMarloDAO<ProjectInnov
   }
 
   @Override
+  public List<ProjectInnovationInfo> getInnovationsByStage(RepIndStageInnovation repIndStageInnovation, Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("pii.id as id ");
+    query.append("FROM ");
+    query.append("project_innovation_info AS pii ");
+    query.append("INNER JOIN project_innovations AS pi ON pi.id = pii.project_innovation_id ");
+    query.append("INNER JOIN projects AS p ON p.id = pi.project_id ");
+    query.append("INNER JOIN rep_ind_stage_innovations si ON si.id = pii.stage_innovation_id ");
+    query.append("WHERE pi.is_active = 1 AND ");
+    query.append("p.is_active = 1 AND ");
+    query.append("pii.`id_phase` =" + phase.getId() + " AND ");
+    query.append("pii.`year` =" + phase.getYear() + " AND ");
+    query.append("si.`id` =" + repIndStageInnovation.getId());
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectInnovationInfo> projectInnovationInfos = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectInnovationInfo projectInnovationInfo = this.find(Long.parseLong(map.get("id").toString()));
+        projectInnovationInfos.add(projectInnovationInfo);
+      }
+    }
+
+    return projectInnovationInfos;
+  }
+
+  @Override
+  public List<ProjectInnovationInfo> getProjectInnovationInfoByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("pii.id as id ");
+    query.append("FROM ");
+    query.append("project_innovation_info AS pii ");
+    query.append("INNER JOIN project_innovations AS pi ON pi.id = pii.project_innovation_id ");
+    query.append("INNER JOIN projects AS p ON p.id = pi.project_id ");
+    query.append("WHERE pi.is_active = 1 AND ");
+    query.append("p.is_active = 1 AND ");
+    query.append("pii.`id_phase` =" + phase.getId() + " AND ");
+    query.append("pii.`year` =" + phase.getYear());
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectInnovationInfo> projectInnovationInfos = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectInnovationInfo projectInnovationInfo = this.find(Long.parseLong(map.get("id").toString()));
+        projectInnovationInfos.add(projectInnovationInfo);
+      }
+    }
+
+    return projectInnovationInfos;
+  }
+
+  @Override
   public ProjectInnovationInfo save(ProjectInnovationInfo projectInnovationInfo) {
     if (projectInnovationInfo.getId() == null) {
       super.saveEntity(projectInnovationInfo);
@@ -80,6 +140,5 @@ public class ProjectInnovationInfoMySQLDAO extends AbstractMarloDAO<ProjectInnov
 
     return projectInnovationInfo;
   }
-
 
 }

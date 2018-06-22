@@ -21,13 +21,13 @@ import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -73,11 +73,7 @@ public class TargetUnitAction extends BaseAction {
       SrfTargetUnit targetUnit = new SrfTargetUnit();
 
       targetUnit.setName(queryParameter);
-      targetUnit.setActive(true);
-      targetUnit.setActiveSince(new Date());
-      targetUnit.setCreatedBy(this.getCurrentUser());
       targetUnit.setModificationJustification("Create by : " + this.getCurrentUser().getComposedCompleteName());
-      targetUnit.setModifiedBy(this.getCurrentUser());
 
 
       targetUnit = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);

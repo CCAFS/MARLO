@@ -17,22 +17,16 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.Date;
-
 import com.google.gson.annotations.Expose;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProjectLocation implements java.io.Serializable, IAuditLog {
+public class ProjectLocation extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 7097495494769482469L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private LocElement locElement;
@@ -41,46 +35,17 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
   private Project project;
 
   @Expose
-  private boolean active;
-
-
-  @Expose
   private boolean scope;
 
 
   @Expose
   private LocElementType locElementType;
-  @Expose
-  private Date activeSince;
-
-  @Expose
-  private User createdBy;
 
   @Expose
   private Phase phase;
 
 
-  @Expose
-  private User modifiedBy;
-
-
-  @Expose
-  private String modificationJustification;
-
-
   public ProjectLocation() {
-  }
-
-
-  public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, User createdBy,
-    User modifiedBy, String modificationJustification) {
-    this.locElement = locElement;
-    this.project = project;
-    this.active = active;
-    this.activeSince = activeSince;
-    this.createdBy = createdBy;
-    this.modifiedBy = modifiedBy;
-    this.modificationJustification = modificationJustification;
   }
 
 
@@ -94,7 +59,7 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     }
 
     ProjectLocation other = (ProjectLocation) obj;
-    if (id == null) {
+    if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
       }
@@ -102,21 +67,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
       return false;
     }
     return true;
-  }
-
-
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
-
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
-  @Override
-  public Long getId() {
-    return id;
   }
 
 
@@ -139,17 +89,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
-  }
-
   public Phase getPhase() {
     return phase;
   }
@@ -158,31 +97,10 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
   public boolean isScope() {
     return scope;
   }
 
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
@@ -193,15 +111,6 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
     this.locElementType = locElementType;
   }
 
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -218,8 +127,8 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "ProjectLocation [id=" + id + ", locElement=" + locElement + ", project=" + project + ", scope=" + scope
-      + ", locElementType=" + locElementType + "]";
+    return "ProjectLocation [id=" + this.getId() + ", locElement=" + locElement + ", project=" + project + ", scope="
+      + scope + ", locElementType=" + locElementType + "]";
   }
 
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 18, 2018 8:59:00 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar" table="report_synthesis_cross_cgiar" optimistic-lock="none">
+        <id name="id" type="long">
+            <column name="id" />
+            <generator class="foreign">
+                <param name="property">reportSynthesis</param>
+            </generator>
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <one-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" constrained="true"></one-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" />
+        </many-to-one>
+        <property name="highlights" type="string">
+            <column name="highlights" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" />
+        </property>
+        <set name="reportSynthesisCrossCgiarCollaborations" table="report_synthesis_cross_cgiar_collaborations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_cross_cgiar_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration" />
+        </set>
+    </class>
+</hibernate-mapping>

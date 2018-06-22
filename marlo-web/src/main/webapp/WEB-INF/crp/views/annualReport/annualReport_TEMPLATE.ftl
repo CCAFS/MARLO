@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Annual Report" /]
-[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${powbSynthesisID}" /]
+[#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ ] /]
@@ -21,28 +21,32 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
-  
-  <div class="row">
-    [#-- POWB Menu --]
-    <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
-    </div> 
-    <div class="col-md-9">
-      [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
-      
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        [#-- Title --]
-        <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
-        <div class="borderBox">
+  [#if !reportingActive]
+    <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
+  [#else]
+    [#-- Program (Flagships and PMU) --]
+    [#include "/WEB-INF/crp/views/annualReport/submenu-annualReport.ftl" /]
+    
+    <div class="row">
+      [#-- POWB Menu --]
+      <div class="col-md-3">
+        [#include "/WEB-INF/crp/views/annualReport/menu-annualReport.ftl" /]
+      </div> 
+      <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
-        </div>
-        [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
-      [/@s.form] 
-    </div> 
-  </div> 
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          [#-- Title --]
+          <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
+          <div class="borderBox">
+          
+          </div>
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/crp/views/annualReport/buttons-annualReport.ftl" /]
+        [/@s.form] 
+      </div> 
+    </div>
+  [/#if] 
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]

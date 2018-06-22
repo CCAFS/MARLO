@@ -78,9 +78,33 @@ public class Permission {
   public static final String POWB_SYNTHESIS_MANAGE_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage";
   public static final String POWB_SYNTHESIS_SUBMISSION_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage:canSubmmit";
 
+  // Report Synthesis
+  public static final String REPORT_SYNTHESIS_PERMISSION = "crp:{0}:reportSynthesis:{1}:canEdit";
+  public static final String REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:crpProgress";
+  public static final String REPORT_SYNTHESIS_MELIA_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:melia";
+  public static final String REPORT_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:governance";
+  public static final String REPORT_SYNTHESIS_FINANCIAL_SUMMARY_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:financial";
+  public static final String REPORT_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:risks";
+  public static final String REPORT_SYNTHESIS_CROSS_CUTTING_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:ccDimensions";
+  public static final String REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:flagshipProgress";
+  public static final String REPORT_SYNTHESIS_PROGRAM_VARIANCE_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:plannedVariance";
+  public static final String REPORT_SYNTHESIS_FUNDING_USE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:fundingUse";
+  public static final String REPORT_SYNTHESIS_EFFICIENCY_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:efficiency";
+  public static final String REPORT_SYNTHESIS_EXTERNAL_PARTNERSHIP_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:externalPartnerships";
+  public static final String REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:influence";
+  public static final String REPORT_SYNTHESIS_CONTROL_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:control";
+
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
 
+  public static final String REPORT_SYNTHESIS_CROSS_CGIAR_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:crossPartnerships";
 
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
 

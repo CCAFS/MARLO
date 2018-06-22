@@ -13,7 +13,7 @@
 			<column name="range" length="45" />
 		</property>
 		<property name="active" type="boolean">
-			<column name="is_active" />
+			<column name="is_active" not-null="true" />
 		</property>
 	</class>
 </hibernate-mapping>

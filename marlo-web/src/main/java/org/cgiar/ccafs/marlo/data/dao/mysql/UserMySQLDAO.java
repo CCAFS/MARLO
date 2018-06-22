@@ -73,7 +73,6 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
     }
     list = list.stream().filter(c -> c.get("crp_acronym").equals(crpId)).collect(Collectors.toList());
     return list;
-
   }
 
 

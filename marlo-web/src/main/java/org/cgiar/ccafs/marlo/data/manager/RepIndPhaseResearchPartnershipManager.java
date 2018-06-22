@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByPhaseDTO;
 
 import java.util.List;
 
@@ -53,6 +55,15 @@ public interface RepIndPhaseResearchPartnershipManager {
 
 
   /**
+   * This method gets a list of ReportSynthesisPartnershipsByPhaseDTO that are active:
+   * List of Partnerships grouped by Partnership Phase
+   * 
+   * @return a list from ReportSynthesisPartnershipsByPhaseDTO null if no exist records
+   */
+  public List<ReportSynthesisPartnershipsByPhaseDTO>
+    getPartnershipsByPhaseDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships);
+
+  /**
    * This method gets a repIndPhaseResearchPartnership object by a given repIndPhaseResearchPartnership identifier.
    * 
    * @param repIndPhaseResearchPartnershipID is the repIndPhaseResearchPartnership identifier.
@@ -63,12 +74,13 @@ public interface RepIndPhaseResearchPartnershipManager {
   /**
    * This method saves the information of the given repIndPhaseResearchPartnership
    * 
-   * @param repIndPhaseResearchPartnership - is the repIndPhaseResearchPartnership object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndPhaseResearchPartnership was
+   * @param repIndPhaseResearchPartnership - is the repIndPhaseResearchPartnership object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         repIndPhaseResearchPartnership was
    *         updated
    *         or -1 is some error occurred.
    */
-  public RepIndPhaseResearchPartnership saveRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership);
-
-
+  public RepIndPhaseResearchPartnership
+    saveRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership);
 }

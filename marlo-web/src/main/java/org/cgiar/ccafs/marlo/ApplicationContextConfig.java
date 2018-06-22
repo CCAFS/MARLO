@@ -43,12 +43,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @PropertySource({"classpath:config/marlo-${spring.profiles.active:dev}.properties"})
 @ComponentScan({"org.cgiar.ccafs.marlo.utils", "org.cgiar.ccafs.marlo.config", "org.cgiar.ccafs.marlo.ocs",
   "org.cgiar.ccafs.marlo.security", "org.cgiar.ccafs.marlo.web", "org.cgiar.ccafs.marlo.data.dao",
-  "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.validation", "org.cgiar.ccafs.marlo.action"})
+  "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.data.mapper", "org.cgiar.ccafs.marlo.validation",
+  "org.cgiar.ccafs.marlo.action"})
 public class ApplicationContextConfig {
 
   public static final String SPRING_PROFILE_DEVELOPMENT = "dev";
   public static final String SPRING_PROFILE_USERTEST = "test";
   public static final String SPRING_PROFILE_PRODUCTION = "pro";
+  public static final String SPRING_PROFILE_FAST_START = "fast";
 
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {

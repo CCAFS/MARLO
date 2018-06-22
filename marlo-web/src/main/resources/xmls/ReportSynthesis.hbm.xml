@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 21, 2018 2:10:20 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesis"
+		table="report_synthesis" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="id_phase" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="liaisonInstitution"
+			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+			<column name="liaison_institution_id" not-null="true" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<one-to-one name="reportSynthesisCrpProgress"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisFinancialSummary"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisGovernance"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisRisk"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk" cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisCrossCuttingDimension"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisFlagshipProgress"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisProgramVariance"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisFundingUseSummary"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisEfficiency"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisEfficiency"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisIndicatorGeneral"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicatorGeneral"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisExternalPartnership"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisCrossCgiar"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisMelia"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia"
+			cascade="save-update"></one-to-one>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="report_synthesis_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
+	</class>
+</hibernate-mapping>

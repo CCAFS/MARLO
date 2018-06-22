@@ -16,11 +16,14 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public interface FundingSourceDAO {
@@ -61,6 +64,9 @@ public interface FundingSourceDAO {
   public List<Map<String, Object>> getFundingSource(long userId, String crp);
 
 
+  public List<FundingSource> getFundingSourceSummaries(GlobalUnit globalUnit, Phase phaseId, Set<Integer> statusTypes);
+
+
   /**
    * This method saves the information of the given fundingSource
    * 
@@ -71,7 +77,6 @@ public interface FundingSourceDAO {
    */
   public FundingSource save(FundingSource fundingSource);
 
-
   public FundingSource save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase);
 
   /**
@@ -79,9 +84,9 @@ public interface FundingSourceDAO {
    * 
    * @param query - word parameter
    * @param year - the year
-   * @return the list of FundingSource
+   * @return the list of FundingSourceSearchSummary
    */
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSources(String query, int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that use the specific finance code
@@ -94,13 +99,13 @@ public interface FundingSourceDAO {
   /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
-   * @param query - word parameter
+   * @param userInput - word parameter
    * @param institutionID - the institution ID
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
-    long phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
+    int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

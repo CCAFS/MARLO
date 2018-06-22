@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,11 +114,6 @@ public class RequestCountryOfficeAction extends BaseAction {
         partnerRequest.setInstitution(institutionManager.getInstitutionById(institutionID));
         partnerRequest.setRequestSource("Project: (" + projectID + ") - "
           + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
-        partnerRequest.setActive(true);
-        partnerRequest.setActiveSince(new Date());
-        partnerRequest.setCreatedBy(this.getCurrentUser());
-        partnerRequest.setModifiedBy(this.getCurrentUser());
-        partnerRequest.setModificationJustification("");
         partnerRequest.setLocElement(locElementManager.getLocElementByISOCode((string)));
         partnerRequest.setOffice(true);
         partnerRequest.setCrp(loggedCrp);

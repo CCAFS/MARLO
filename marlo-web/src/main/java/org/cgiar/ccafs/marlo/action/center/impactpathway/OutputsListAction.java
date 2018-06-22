@@ -115,12 +115,7 @@ public class OutputsListAction extends BaseAction {
   @Override
   public String add() {
     CenterOutput output = new CenterOutput();
-
-    output.setActive(true);
-    output.setActiveSince(new Date());
     output.setDateAdded(new Date());
-    output.setCreatedBy(this.getCurrentUser());
-    output.setModifiedBy(this.getCurrentUser());
     output = outputService.saveResearchOutput(output);
     output.setCenterProgram(selectedProgram);
     outputID = output.getId();
@@ -145,7 +140,6 @@ public class OutputsListAction extends BaseAction {
 
     if (output != null) {
       output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
-      output.setModifiedBy(this.getCurrentUser());
 
       List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
         output.getCenterOutputsOutcomes().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
