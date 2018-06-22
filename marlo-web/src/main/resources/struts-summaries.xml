@@ -25,7 +25,7 @@
 			</result>
 		</action>
 
-		<action name="{crp}/AnualReportSummary"
+		<action name="{crp}/AnnualReportSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.AnualReportPOISummaryAction">
 			<interceptor-ref name="homeStack" />
 			<result name="success" type="stream">
