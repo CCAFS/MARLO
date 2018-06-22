@@ -1516,10 +1516,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   private void createTableI1() {
 
-    // Table I-1 PMU Information
-    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutions,
-      this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {
       new POIField(
