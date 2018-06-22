@@ -271,7 +271,7 @@
     [#-- Status --]
     <div class="form-group row">
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.evaluation.status" value="${(project.projectInfo.status)!}" listName="statusList"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.evaluation.status" value="${(project.projectInfo.status)!}" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
     
