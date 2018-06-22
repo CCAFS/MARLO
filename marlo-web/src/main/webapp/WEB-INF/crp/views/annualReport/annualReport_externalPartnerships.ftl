@@ -3,8 +3,11 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
-[#assign customJS = [ 
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign customJS = [
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
@@ -58,7 +61,7 @@
             <div class="form-group margin-panel">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tablePartnerships" list=flagshipExternalPartnerships columns=["highlights"] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             [/#if]
@@ -71,7 +74,7 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableGMacro name="" list=flagshipPlannedList isPMU=PMU /]
-                  <div class="viewMoreSyntesis closed"></div>
+                  
                 </div>
               [/#if]
             </div>

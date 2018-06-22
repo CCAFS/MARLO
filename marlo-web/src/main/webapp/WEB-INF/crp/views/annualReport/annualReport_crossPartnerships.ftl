@@ -3,8 +3,14 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "select2", "datatables.net", "datatables.net-bs"  ] /]
+[#assign customJS = [ 
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" 
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -90,8 +96,9 @@
             [#if PMU]
             <div class="form-group margin-panel">
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /] (${(flagshipCollaborations?size)!'0'})</h4>              
-              <hr />
-              [@tableHMacro list=flagshipCollaborations /]
+              <div class="viewMoreSyntesis-block" >
+                [@tableHMacro list=flagshipCollaborations /]
+              </div>
             </div>
             [/#if]
           
@@ -165,45 +172,42 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-flagship" width="8%">[@s.text name="${customLabel}.tableH.flagship" /]</th>
+        <th id="tb-flagship" width="8%">FP</th>
         <th id="tb-crp" width="20%">[@s.text name="${customLabel}.tableH.crp" /]</th>
-        <th id="tb-description" width="36%">[@s.text name="${customLabel}.tableH.description" /]</th>
-        <th id="tb-relevantFP" width="36%">[@s.text name="${customLabel}.tableH.relevantFP" /]</th>
+        <th id="tb-description" width="50%">[@s.text name="${customLabel}.tableH.description" /]</th>
+        <th id="tb-relevantFP" width="20%">[@s.text name="${customLabel}.tableH.relevantFP" /]</th>
       </tr>
     </thead>
     <tbody>
     [#-- Loading --]
     [#if list?has_content]
       [#list list as item]
+        [#local crpProgram = (item.reportSynthesisCrossCgiar.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
         <tr>
           [#-- Flagship --]
           <td class="tb-flagship text-center">
-            [#if item.flagship?has_content]
-              ${item.flagship}
-            [#else]
-              <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-            [/#if]
+            <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
           </td>
           [#-- CRP/Platform --]
           <td class="text-center">
           [#if item.globalUnit?has_content]
-            ${item.globalUnit.name}
+            ${item.globalUnit.acronym}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
           [/#if]
           </td>
           [#-- Description of collaboration --]
-          <td class="text-center">
+          <td class="">
           [#if item.description?has_content]
-            ${item.description}
+            ${item.description?replace('\n', '<br>')}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
           [/#if]
           </td>
           [#-- Relevant FP --]
           <td class="text-center">
-          [#if item.relevant?has_content]
-            ${item.relevant}
+          [#if item.flagship?has_content]
+            ${item.flagship}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
           [/#if]

@@ -3,9 +3,12 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ 
   "https://www.gstatic.com/charts/loader.js",
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
 ] /]
@@ -87,7 +90,7 @@
               <hr />
               <div class="viewMoreSyntesis-block" >
                 [@tableOutcomesMacro list=projectExpectedStudies /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             
@@ -110,7 +113,7 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-title">[@s.text name="${customLabel}.table.studiesTitle" /]</th>
+        <th id="text-left">[@s.text name="${customLabel}.table.studiesTitle" /]</th>
         <th id="tb-type">[@s.text name="${customLabel}.table.policy" /]</th>
         <th id="tb-organization-type">[@s.text name="${customLabel}.table.implementingType" /]</th>
         <th id="tb-stage">[@s.text name="${customLabel}.table.stage" /]</th>
@@ -156,7 +159,7 @@
           [#-- Stage --]
           <td class="text-center">
           [#if item.projectExpectedStudyInfo.repIndStageProcess?has_content]
-            ${item.projectExpectedStudyInfo.repIndStageProcess.name}
+            ${item.projectExpectedStudyInfo.repIndStageProcess.id}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
