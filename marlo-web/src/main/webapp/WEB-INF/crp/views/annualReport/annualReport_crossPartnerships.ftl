@@ -156,7 +156,7 @@
       
       [#-- Status --]
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.collaboration.status" value="${(project.projectInfo.status)!}" listName="statuses"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.collaboration.status" value="${(element.status)!-1}" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
     
