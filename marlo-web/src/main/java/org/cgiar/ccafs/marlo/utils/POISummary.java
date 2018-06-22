@@ -446,6 +446,14 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
 
+        /*
+         * // condition for table d1 cell color in sphere 2
+         * if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
+         * TABLE_HEADER_FONT_COLOR = "E2EFD9";
+         * } else {
+         * TABLE_HEADER_FONT_COLOR = "FFF2CC";
+         * }
+         */
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
@@ -506,9 +514,19 @@ public class POISummary {
       } else {
         TABLE_HEADER_FONT_COLOR = "FFF2CC";
       }
-
+      /*
+       * // condition for table d1 cell color in sphere 2
+       * if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
+       * TABLE_HEADER_FONT_COLOR = "E2EFD9";
+       * } else {
+       * TABLE_HEADER_FONT_COLOR = "FFF2CC";
+       * }
+       */
       XWPFTableRow dataRow = table.createRow();
       for (POIField poiParameter : poiParameters) {
+        if (tableType.equals("tableD1AnnualReport") && (record == 0)) {
+
+        }
 
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
         paragraph.setAlignment(poiParameter.getAlignment());
@@ -522,22 +540,20 @@ public class POISummary {
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
 
+        // Condition for table b cell color in fields 5 and 6
+        if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+          TABLE_HEADER_FONT_COLOR = "DEEAF6";
+          dataRow.getCell(record).setColor("DEEAF6");
+        } else {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        }
+
         // highlight and bold first and SecondColumn for table D1
         if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1)) {
           dataRow.getCell(record).setColor("DEEAF6");
-          if (poiParameter.getBold() != null) {
-            paragraphRun.setBold(poiParameter.getBold());
-          } else {
-            paragraphRun.setBold(true);
-          }
+          paragraphRun.setBold(true);
 
-          // Condition for table b cell color in fields 5 and 6
-          if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
-            TABLE_HEADER_FONT_COLOR = "DEEAF6";
-            dataRow.getCell(record).setColor("DEEAF6");
-          } else {
-            TABLE_HEADER_FONT_COLOR = "FFF2CC";
-          }
+
         } else {
           if (highlightFirstColumn && record == 0) {
             dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
