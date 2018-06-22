@@ -93,7 +93,7 @@
 [/#if]
 
 [#-- Check button --] 
-[#if canEdit && !completed && !submission]
+[#if false && canEdit && !completed && !submission]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${liaisonInstitutionID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
@@ -101,7 +101,7 @@
 
  
 [#-- Submit button --]
-[#if canEdit && canSubmit]
+[#if false && canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
@@ -111,12 +111,22 @@
 [/#if]
 
 [#-- Unsubmit button --]
-[#if (canUnSubmit && submission) && !crpClosed && !reportingActive]
+[#if false && (canUnSubmit && submission) && !crpClosed && !reportingActive]
   <a id="submitProject-${liaisonInstitutionID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='liaisonInstitutionID']${liaisonInstitutionID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
 [/#if]
 
+[#-- Generate WORD Document --]
+[#if !config.production]
+<br />
+<div class="text-center">
+  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]
+  <a class="btn btn-default" href="${documentLink}" target="_blank">
+   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
+  </a>
+</div>
+[/#if]
 
 [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 

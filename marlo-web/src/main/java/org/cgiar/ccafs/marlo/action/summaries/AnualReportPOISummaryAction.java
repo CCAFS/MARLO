@@ -1469,8 +1469,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         datas.add(data);
       }
     }
-
-
     poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
 
@@ -1517,6 +1515,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void createTableI1() {
+
+    // Table I-1 PMU Information
+    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutions,
+      this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {
       new POIField(
@@ -2174,7 +2177,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       reportSynthesisPMU = reportSynthesisManager.saveReportSynthesis(reportSynthesisPMU);
     }
 
-
     if (this.isPMU()) {
       // Flagships Financial Budgets
       if (reportSynthesisPMU.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
@@ -2205,8 +2207,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           financialSummaryBudget.setExpenditureArea(powbExpenditureAreas);
           reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
         }
-
-
       }
     }
   }
