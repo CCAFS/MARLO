@@ -206,8 +206,9 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       }
 
 
-      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
-        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId())
+      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project
+        .getExpectedStudyProjects().stream().filter(px -> px.isActive()
+          && px.getPhase().getId() == this.getActualPhase().getId() && px.getProjectExpectedStudy().isActive())
         .collect(Collectors.toList()));
       for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
         if (!projectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
