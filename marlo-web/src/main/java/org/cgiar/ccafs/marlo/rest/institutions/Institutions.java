@@ -46,9 +46,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class InstitutionController {
+public class Institutions {
 
-  private static final Logger LOG = LoggerFactory.getLogger(InstitutionController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
 
   private final InstitutionManager institutionManager;
 
@@ -65,7 +65,7 @@ public class InstitutionController {
   private final UserManager userManager;
 
   @Inject
-  public InstitutionController(InstitutionManager institutionManager, UserManager userManager,
+  public Institutions(InstitutionManager institutionManager, UserManager userManager,
     InstitutionMapper institutionMapper, InstitutionLocationManager institutionLocationManager,
     PartnerRequestManager partnerRequestManager, GlobalUnitManager globalUnitManager,
     LocElementManager locElementManager) {
@@ -119,7 +119,7 @@ public class InstitutionController {
   // HttpStatus.CREATED);
   // }
 
-  // Temporally Disable This service.
+
   // @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
   // @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.DELETE,
   // produces = MediaType.APPLICATION_JSON_VALUE)

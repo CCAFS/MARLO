@@ -353,7 +353,7 @@ public class FinancialSummaryAction extends BaseAction {
           reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
         }
 
-
+        reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
         if (this.isPMU()) {
           // Flagships Financial Budgets
           if (reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null

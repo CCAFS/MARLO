@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -34,21 +36,23 @@ import javax.inject.Named;
  * @author Andres Valencia - CIAT/CCAFS
  */
 @Named
-public class ControlValidator extends BaseValidator {
+public class IndicatorsValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
 
-  public ControlValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
+  public IndicatorsValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
     this.crpManager = crpManager;
     this.reportSynthesisManager = reportSynthesisManager;
   }
 
 
-  private Path getAutoSaveFilePath(ReportSynthesis reportSynthesis, long crpID, BaseAction baseAction) {
+  private Path getAutoSaveFilePath(ReportSynthesis reportSynthesis, long crpID, BaseAction baseAction,
+    String actionName) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = reportSynthesis.getClass().getSimpleName();
-    String actionFile = ReportSynthesisSectionStatusEnum.CONTROL.getStatus().replace("/", "_");
+    String actionFile = actionName.replace("/", "_");
+
     String autoSaveFile =
       reportSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
@@ -73,14 +77,27 @@ public class ControlValidator extends BaseValidator {
   }
 
 
-  public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving) {
+  public void validate(BaseAction action, ReportSynthesis reportSynthesis, boolean saving, boolean isInfluence) {
     action.setInvalidFields(new HashMap<>());
     if (reportSynthesis != null) {
+      String actionName = "";
+      if (isInfluence) {
+        actionName = ReportSynthesisSectionStatusEnum.INFLUENCE.getStatus();
+      } else {
+        actionName = ReportSynthesisSectionStatusEnum.CONTROL.getStatus();
+      }
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
+        Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action, actionName);
         if (path.toFile().exists()) {
           action.addMissingField("draft");
         }
+      }
+
+      int i = 0;
+      for (ReportSynthesisIndicator synthesisIndicator : reportSynthesis.getReportSynthesisIndicatorGeneral()
+        .getSynthesisIndicators()) {
+        this.validateSynthesisIndicator(synthesisIndicator, action, i);
+        i++;
       }
 
       if (!action.getFieldErrors().isEmpty()) {
@@ -90,10 +107,26 @@ public class ControlValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus(), action);
-    }
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), actionName, action);
 
+    }
+  }
+
+
+  private void validateSynthesisIndicator(ReportSynthesisIndicator synthesisIndicator, BaseAction action, int i) {
+    if (!(this.isValidString(synthesisIndicator.getComment()))) {
+      action.addMessage(action.getText("annualReport.influence.indicatorI3.comments.readText") + "[" + i + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[" + i + "].comment",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+    if (!(this.isValidString(synthesisIndicator.getData()))) {
+      action.addMessage(action.getText("annualReport.influence.indicatorI3.data.readText") + "[" + i + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisIndicatorGeneral.synthesisIndicators[" + i + "].data",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
 }

@@ -365,7 +365,7 @@ public class MeliaAction extends BaseAction {
             && !reportSynthesis.getReportSynthesisMelia().getReportSynthesisMeliaStudies().isEmpty()) {
             for (ReportSynthesisMeliaStudy plannedStudy : reportSynthesis.getReportSynthesisMelia()
               .getReportSynthesisMeliaStudies().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-              reportSynthesis.getReportSynthesisCrpProgress().getExpectedStudies()
+              reportSynthesis.getReportSynthesisMelia().getExpectedStudies()
                 .add(plannedStudy.getProjectExpectedStudy());
             }
           }
@@ -423,7 +423,7 @@ public class MeliaAction extends BaseAction {
       }
 
       if (reportSynthesis.getReportSynthesisMelia().getPlannedStudies() != null) {
-        reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies().clear();
+        reportSynthesis.getReportSynthesisMelia().getPlannedStudies().clear();
       }
 
     }
@@ -437,8 +437,8 @@ public class MeliaAction extends BaseAction {
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisMelia();
 
       if (this.isFlagship()) {
-        if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() == null) {
-          reportSynthesis.getReportSynthesisCrpProgress().setPlannedStudies(new ArrayList<>());
+        if (reportSynthesis.getReportSynthesisMelia().getPlannedStudies() == null) {
+          reportSynthesis.getReportSynthesisMelia().setPlannedStudies(new ArrayList<>());
         }
         this.saveStudies(meliaDB);
       }
@@ -731,4 +731,12 @@ public class MeliaAction extends BaseAction {
 
     }
   }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, reportSynthesis, true);
+    }
+  }
 }
+

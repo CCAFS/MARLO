@@ -186,31 +186,34 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canSwitchProject = true;
       }
 
-
-      if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
-        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-          canEdit = false;
+      if (baseAction
+        .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
+        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            canEdit = false;
+          }
         }
-      }
 
 
-      if (baseAction.isReportingActive()
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getYear() == baseAction.getCurrentCycleYear()) {
-        canEdit = true;
-      }
+        if (baseAction.isReportingActive()
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getYear() == baseAction
+            .getCurrentCycleYear()) {
+          canEdit = true;
+        }
 
-      if (baseAction.isReportingActive()
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear() != null
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() == baseAction
-          .getCurrentCycleYear()) {
-        canEdit = true;
+        if (baseAction.isReportingActive()
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() == baseAction
+            .getCurrentCycleYear()) {
+          canEdit = true;
+        }
       }
 
       if (phase.getProjectPhases().stream()

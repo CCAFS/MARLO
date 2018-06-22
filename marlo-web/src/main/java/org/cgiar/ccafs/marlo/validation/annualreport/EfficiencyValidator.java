@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -82,6 +83,11 @@ public class EfficiencyValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
+      if (!this.isValidString(reportSynthesis.getReportSynthesisEfficiency().getDescription())) {
+        action.addMessage(action.getText("annualReport.efficiency.successes.readText"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisEfficiency.description",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -90,8 +96,8 @@ public class EfficiencyValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.EFFICIENCY.getStatus(), action);
     }
 
   }
