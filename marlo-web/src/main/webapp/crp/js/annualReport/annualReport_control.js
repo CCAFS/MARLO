@@ -24,7 +24,7 @@ google.charts.setOnLoadCallback(function() {
   var view2 = new google.visualization.DataView(data2);
   var chart2 = new google.visualization.BarChart(document.getElementById($chart2[0].id));
   chart2.draw(view2, google.charts.Bar.convertOptions({
-      title: "Innovations by Stage",
+      title: "Innovations by stage",
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',
@@ -54,7 +54,7 @@ google.charts.setOnLoadCallback(function() {
   var view3 = new google.visualization.DataView(data3);
   var chart3 = new google.visualization.BarChart(document.getElementById($chart3[0].id));
   chart3.draw(view3, google.charts.Bar.convertOptions({
-      title: "Partnerships by Partner type",
+      title: "Partnerships by partner type",
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',
@@ -85,7 +85,7 @@ google.charts.setOnLoadCallback(function() {
   var data4 = google.visualization.arrayToDataTable(getChartDataArray($chart4));
   var chart4 = new google.visualization.PieChart(document.getElementById($chart4[0].id));
   chart4.draw(data4, {
-      title: 'Partnerships by Geographic Scope',
+      title: 'Partnerships by geographic scope',
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',
