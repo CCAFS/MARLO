@@ -3367,7 +3367,7 @@ UNION
                                                                                 )
                                                                               WHERE
                                                                                 (
-                                                                                  (`p`.`type` = 1)
+                                                                                  (`p`.`type` = 3)
                                                                                   AND (
                                                                                     `r`.`acronym` IN ('FPL', 'FPM', 'PMU')
                                                                                   )
@@ -3460,7 +3460,7 @@ UNION
                                                                                   )
                                                                                 WHERE
                                                                                   (
-                                                                                    (`p`.`type` = 1)
+                                                                                    (`p`.`type` = 3)
                                                                                     AND (`r`.`acronym` IN('PMU'))
                                                                                     AND (
                                                                                       `cp`.`global_unit_type_id` = 1
