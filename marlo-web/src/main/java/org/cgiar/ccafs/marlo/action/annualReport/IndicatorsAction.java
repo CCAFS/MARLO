@@ -66,8 +66,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.ControlValidator;
-import org.cgiar.ccafs.marlo.validation.annualreport.InfluenceValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.IndicatorsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -118,8 +117,7 @@ public class IndicatorsAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
   // Variables
   private String transaction;
-  private InfluenceValidator influenceValidator;
-  private ControlValidator controlValidator;
+  private IndicatorsValidator indicatorsValidator;
   private ReportSynthesis reportSynthesis;
   private Long liaisonInstitutionID;
   private Long synthesisID;
@@ -151,8 +149,7 @@ public class IndicatorsAction extends BaseAction {
   public IndicatorsAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    InfluenceValidator influenceValidator, ControlValidator controlValidator,
-    RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
+    IndicatorsValidator indicatorsValidator, RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationInfoManager projectInnovationInfoManager,
@@ -169,8 +166,7 @@ public class IndicatorsAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
-    this.influenceValidator = influenceValidator;
-    this.controlValidator = controlValidator;
+    this.indicatorsValidator = indicatorsValidator;
     this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
@@ -926,11 +922,7 @@ public class IndicatorsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      if (isInfluence) {
-        influenceValidator.validate(this, reportSynthesis, true);
-      } else {
-        controlValidator.validate(this, reportSynthesis, true);
-      }
+      indicatorsValidator.validate(this, reportSynthesis, true, isInfluence);
     }
   }
 

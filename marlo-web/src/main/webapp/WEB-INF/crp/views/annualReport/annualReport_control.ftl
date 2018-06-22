@@ -52,7 +52,10 @@
           
           [#-- CGIAR Indicator #C1: Number of Innovations   --]
           <div class="borderBox">
-            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC1.title" /]</h4>
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC1.title" /] 
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1LsVAVX60ALyr95BG0SKlK8J8_wibYz_c/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> Guideline Sheet </a> </small>
+            </h4>
             <div class="form-group row">
               <div class="col-md-4">
                 [#-- Total of CRP Innovations --]
@@ -103,7 +106,10 @@
           
           [#--  CGIAR Indicator #C2: Partnerships --]
           <div class="borderBox">
-            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC2.title" /]</h4>
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC2.title" /]
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1rmVYYuo8yi4P0mq9zC9s_xeqoSurH4vd/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> Guideline Sheet </a> </small>
+            </h4>
             <div class="form-group row">
               <div class="col-md-7">
                 [#-- Chart 3 --]
@@ -199,7 +205,10 @@
           
           [#--  CGIAR Indicator #C3. Number of Direct Participants in CGIAR Activities (Incorporating CGIAR Indicator #C4. Number of People Trained) --]
           <div class="borderBox">
-            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC3C4.title" /]</h4>
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC3C4.title" /]
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1ZuZ-Ka4Bf9Bab42CCGeJvGkzWUYV4ytA/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> Guideline Sheet </a> </small>
+            </h4>
             <div class="form-group row">
               <div class="col-md-4">
                 [#-- Total of participants estimated/counted --]
@@ -244,7 +253,10 @@
           
           [#--  CGIAR Indicator #C5: Number of CGIAR research papers published in peer reviewed journals  --]
           <div class="borderBox">
-            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC5.title" /]</h4>
+            <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC5.title" /]
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1CZU7MLmXIVCBFFtlmB19eHFrldTI-dG4/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> Guideline Sheet </a> </small>
+            </h4>
             <div class="form-group row">
               <div class="col-md-6">
                 [#-- Chart 6 --]
