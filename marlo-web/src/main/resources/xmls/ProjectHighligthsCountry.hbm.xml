@@ -18,6 +18,6 @@
           <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
             <column name="id_country" not-null="true" />
         </many-to-one>
- 
+
     </class>
 </hibernate-mapping>

@@ -45,22 +45,22 @@
             <column name="project_expected_studies_id" />
         </many-to-one>
         <property name="title" type="string">
-            <column name="title" length="65535" />
+            <column name="title" sql-type="TEXT" />
         </property>
         <property name="narrative" type="string">
-            <column name="narrative" length="65535" />
+            <column name="narrative" sql-type="TEXT" />
         </property>
         <property name="evidenceLink" type="string">
-            <column name="evidence_link" length="65535" />
+            <column name="evidence_link" sql-type="TEXT" />
         </property>
         <property name="genderExplaniation" type="string">
-            <column name="gender_explaniation" length="65535" />
+            <column name="gender_explaniation" sql-type="TEXT" />
         </property>
         <property name="youthExplaniation" type="string">
-            <column name="youth_explaniation" length="65535" />
+            <column name="youth_explaniation" sql-type="TEXT" />
         </property>
         <property name="descriptionStage" type="string">
-            <column name="description_stage" length="65535" />
+            <column name="description_stage" sql-type="TEXT" />
         </property>
         <property name="year" type="java.lang.Long">
             <column name="year" />

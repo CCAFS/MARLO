@@ -1,6 +1,6 @@
 [#ftl]
 
-<span id="powbSynthesisID" class="hidden">${(powbSynthesis.id)!}</span>
+<span id="synthesisID" class="hidden">${(reportSynthesis.id)!}</span>
 
 [#if (currentMenuItem.onlyFlagship)!false || (currentMenuItem.onlyPMU)!false]
 <p class="bg-success text-center" style="padding: 18px;">
@@ -22,22 +22,22 @@
       <p>[@s.text name="project.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${powbSynthesis.modifiedBy.composedName?html}</span>[/@s.param]
-          [@s.param]<span>${powbSynthesis.activeSince?datetime}</span>[/@s.param]
+          [@s.param]<span>${reportSynthesis.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${reportSynthesis.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
       [#-- Differences --]
       [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
       [#-- Justification --]
-      <p><i>${(powbSynthesis.modificationJustification)!}</i></p>
+      <p><i>${(reportSynthesis.modificationJustification)!}</i></p>
     [/#if]
   </div>
 [#else]
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      [#assign lastSubmission =action.getPowbSynthesisSubmissions(powbSynthesisID)?last /]
+      [#assign lastSubmission =action.getPowbSynthesisSubmissions(reportSynthesis)?last /]
       <p>[@s.text name="powb.messages.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]

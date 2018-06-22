@@ -63,11 +63,6 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
     newDeliverableParticipantPhase.setRepIndTypeParticipant(deliverableParticipant.getRepIndTypeParticipant());
     newDeliverableParticipantPhase.setRepIndGeographicScope(deliverableParticipant.getRepIndGeographicScope());
     newDeliverableParticipantPhase.setRepIndRegion(deliverableParticipant.getRepIndRegion());
-    newDeliverableParticipantPhase.setActive(deliverableParticipant.isActive());
-    newDeliverableParticipantPhase.setActiveSince(deliverableParticipant.getActiveSince());
-    newDeliverableParticipantPhase.setCreatedBy(deliverableParticipant.getCreatedBy());
-    newDeliverableParticipantPhase.setModifiedBy(deliverableParticipant.getModifiedBy());
-    newDeliverableParticipantPhase.setModificationJustification(deliverableParticipant.getModificationJustification());
   }
 
   @Override
@@ -99,6 +94,11 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
   public DeliverableParticipant getDeliverableParticipantById(long deliverableParticipantID) {
 
     return deliverableParticipantDAO.find(deliverableParticipantID);
+  }
+
+  @Override
+  public List<DeliverableParticipant> getDeliverableParticipantByPhase(Phase phase) {
+    return deliverableParticipantDAO.getDeliverableParticipantByPhase(phase);
   }
 
   @Override

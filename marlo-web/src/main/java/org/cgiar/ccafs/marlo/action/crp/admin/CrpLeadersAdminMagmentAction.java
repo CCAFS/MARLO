@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -160,12 +159,7 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
 
         for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
           if (crpProgramLeader.getId() == null) {
-            crpProgramLeader.setActive(true);
             crpProgramLeader.setCrpProgram(crpProgram);
-            crpProgramLeader.setCreatedBy(this.getCurrentUser());
-            crpProgramLeader.setModifiedBy(this.getCurrentUser());
-            crpProgramLeader.setModificationJustification("");
-            crpProgramLeader.setActiveSince(new Date());
             crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
 
             User user = userManager.getUser(crpProgramLeader.getUser().getId());

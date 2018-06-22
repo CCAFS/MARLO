@@ -52,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -277,9 +276,11 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(
-            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getInstitution() == null)
+            .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -360,11 +361,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
         if (powbSynthesis.getPowbCrossCuttingDimension() == null && this.isPMU()) {
 
           PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
-          crossCutting.setActive(true);
-          crossCutting.setActiveSince(new Date());
-          crossCutting.setCreatedBy(this.getCurrentUser());
-          crossCutting.setModifiedBy(this.getCurrentUser());
-          crossCutting.setModificationJustification("");
 
           // create one to one relation
           powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
@@ -427,8 +423,12 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
+
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 

@@ -1,21 +1,24 @@
-table {
+svg > g > g:last-child {
+  pointer-events: none
 }
 
-.annualReport-table{
+table {}
+
+.annualReport-table {
   display: inline-block;
   margin-bottom: 0;
 }
 
-span.powb-doc.badge{
+span.powb-doc.badge {
   background-color: #0d8dc0;
 }
 
-.label-powb-table{
+.label-powb-table {
   margin-bottom: 5px;
   margin-left: 5px;
 }
 
-.powb-label{
+.powb-label {
   width: 100%;
 }
 
@@ -26,7 +29,7 @@ table tr {
   font-size: 0.95em;
 }
 
-table tr.text-small{
+table tr.text-small {
   font-size: 0.85em;
 }
 
@@ -74,36 +77,37 @@ table ul {
 }
 
 .table > thead > tr > th {
-  vertical-align:middle;
+  vertical-align: middle;
 }
 
 form .form-group.margin-panel {
-  margin-bottom: 40px;
+  /* margin-bottom: 40px; */
 }
 
 .table-border {
   border-collapse: collapse;
 }
+
 .table-border td {
   border: 1px solid rgb(224, 224, 224);
 }
+
 .table-border tr:nth-child(even) {
   background-color: #fcfcfc;
 }
 
 /************* 1.1 ToC Adjustments/Changes ***************/
-
-.table-flagshipsAdjustments .flagship-name, .table-flagshipsAdjustments .narrative{
+.table-flagshipsAdjustments .flagship-name, .table-flagshipsAdjustments .narrative {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
 /************* 1.2 Expected CRP Progress ***************/
-
 .powbOutcome {
   padding-top: 16px;
 }
-.powbMilestone{
+
+.powbMilestone {
   padding-top: 20px;
 }
 
@@ -112,7 +116,6 @@ form .form-group.margin-panel {
 }
 
 /************* 1.3 Evidence ***************/
-
 .evidence-plannedStudies-header .flagship-planned-studies-button {
   position: absolute;
   margin-top: 15px;
@@ -123,11 +126,11 @@ form .form-group.margin-panel {
   cursor: pointer;
 }
 
-.evidence-plannedStudies-header .flagship-planned-studies-button:hover{
+.evidence-plannedStudies-header .flagship-planned-studies-button:hover {
   background-color: #41b9dd;
 }
 
-.label-min-width{
+.label-min-width {
   max-width: 85% !important;
 }
 
@@ -139,12 +142,12 @@ form .form-group.margin-panel {
   padding-left: 12px;
 }
 
-#table-plannedStudies .relevantSubIDO ul li{
+#table-plannedStudies .relevantSubIDO ul li {
   margin-bottom: 3px;
 }
 
 .modal-content {
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .modal-content h3.subTitle.headTitle {
@@ -159,7 +162,7 @@ form .form-group.margin-panel {
   display: table-cell;
 }
 
-.plannedStudiesCheckbox p.checked{
+.plannedStudiesCheckbox p.checked {
   height: 20px;
   margin-left: 15px;
 }
@@ -168,27 +171,29 @@ tfoot {
   font-weight: bold;
 }
 
-
 /* View more */
-
 .viewMoreSyntesis-block {
   overflow: hidden;
   -webkit-transition: height 1s;
   -moz-transition: height 1s;
   transition: height 1s;
   position: relative;
+  margin-bottom: 30px;
 }
 
 .viewMoreSyntesis {
-  color: #6b6b6b;
-  /* border-bottom: 1px solid #dddddd; */
-  position:absolute;
+  color: #2196f3;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+  /* border: 1px solid #dddddd; */
+  border-top: 0;
+  position: absolute;
   bottom: 0;
-  width: 94%;
-  margin: 0 0.5%;
+  left: 1px;
+  width: 99.5%;
+  /* margin: 2px 1px 0 1px; */
   cursor: pointer;
-  padding: 23px 0 0px 0;
-  height: 50px;
+  padding: 16px 7px 0px 0;
+  height: 43px;
   font-weight: 900;
   text-align: center;
   background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
@@ -196,13 +201,17 @@ tfoot {
   background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 70%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 80%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 
-.viewMoreSyntesis:hover{
-  color:#999;
-  text-decoration:underline;
+.viewMoreSyntesis.opened{
+  background: none;
+}
+
+.viewMoreSyntesis:hover {
+  color: #999;
+  text-decoration: underline;
 }
 
 #tableE td {
@@ -224,26 +233,81 @@ tfoot {
 
 .powb-submenuItem.active {
   background-color: #1da5ce;
-  color:#fff;
+  color: #fff;
   border-color: #1c96bb;
 }
 
 .powb-submenuItem img.check {
-  position:absolute;
+  position: absolute;
   right: 3px;
   bottom: 6px;
 }
-
 
 li#menu-melia a, li#menu-plannedVariance a {
   font-size: 0.95em;
 }
 
 /************* 3.3 Financial Summary ***************/
-.expandableBlock .blockTitle.opened{
+.expandableBlock .blockTitle.opened {
   opacity: 1 !important;
 }
 
-table.financial-report .row-title{
+table.financial-report .row-title {
   color: #ceb286;
+}
+
+.chartBox {
+  background: url(../../../global/images/saving.gif) no-repeat;
+  background-position: 50%;
+  /* height: 500px; */
+  padding: 1em;
+  padding-top: 0;
+  margin: 0;
+  color: #8c8c8c;
+}
+
+.chartBox.loaded {
+  background: #fff;
+}
+
+.numberBox {
+  font-family: Roboto;
+}
+
+.numberBox label {
+  font-size: 1.1em;
+  font-weight: normal;
+}
+
+.numberBox span {
+  font-size: 2em;
+}
+
+#chart1 {
+  height: 300px;
+}
+#chart2 {
+  height: 180px;
+}
+#chart3 {
+  height: 280px;
+}
+#chart4 {
+  height: 280px;
+}
+#chart5 {
+  height: 180px;
+}
+
+
+.dataTables_scrollBody {
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.dataTables_scrollBody thead tr{
+  height: 3px !important;
+}
+
+.dataTables_scrollBody thead tr th{
+  background-color: #e5edff !important;
 }

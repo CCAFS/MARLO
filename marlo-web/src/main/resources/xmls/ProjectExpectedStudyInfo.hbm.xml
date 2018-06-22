@@ -54,10 +54,10 @@
             <column name="status" />
         </property>
         <property name="title" type="string">
-            <column name="title" length="65535" />
+            <column name="title" sql-type="TEXT" />
         </property>
         <property name="outcomeImpactStatement" type="string">
-            <column name="outcome_impact_statement" length="65535" />
+            <column name="outcome_impact_statement" sql-type="TEXT" />
         </property>
         <property name="isContribution" type="java.lang.Boolean">
             <column name="is_contribution" />
@@ -66,37 +66,37 @@
             <column name="policy_amount" precision="30" />
         </property>
         <property name="topLevelComments" type="string">
-            <column name="top_level_comments" length="65535" />
+            <column name="top_level_comments" sql-type="TEXT" />
         </property>
         <property name="scopeComments" type="string">
-            <column name="scope_comments" length="65535" />
+            <column name="scope_comments" sql-type="TEXT" />
         </property>
         <property name="elaborationOutcomeImpactStatement" type="string">
-            <column name="elaboration_outcome_impact_statement" length="65535" />
+            <column name="elaboration_outcome_impact_statement" sql-type="TEXT" />
         </property>
         <property name="referencesText" type="string">
-            <column name="references_text" length="65535" />
+            <column name="references_text" sql-type="TEXT" />
         </property>
         <property name="quantification" type="string">
-            <column name="quantification" length="65535" />
+            <column name="quantification" sql-type="TEXT" />
         </property>
         <property name="describeGender" type="string">
-            <column name="describe_gender" length="65535" />
+            <column name="describe_gender" sql-type="TEXT" />
         </property>
         <property name="describeYouth" type="string">
-            <column name="describe_youth" length="65535" />
+            <column name="describe_youth" sql-type="TEXT" />
         </property>
         <property name="describeCapdev" type="string">
-            <column name="describe_capdev" length="65535" />
+            <column name="describe_capdev" sql-type="TEXT" />
         </property>
         <property name="otherCrossCuttingDimensions" type="string">
-            <column name="other_cross_cutting_dimensions" length="65535" />
+            <column name="other_cross_cutting_dimensions" sql-type="TEXT" />
         </property>
         <property name="comunicationsMaterial" type="string">
-            <column name="comunications_material" length="65535" />
+            <column name="comunications_material" sql-type="TEXT" />
         </property>
         <property name="contacts" type="string">
-            <column name="contacts" length="65535" />
+            <column name="contacts" sql-type="TEXT" />
         </property>
     </class>
 </hibernate-mapping>

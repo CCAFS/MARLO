@@ -23,9 +23,9 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -47,15 +47,15 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   private final LocalizedTextProvider localizedTextProvider;
 
-  private CustomParameterManager crpParameterManager;
+  private final CustomParameterManager customParameterManager;
+
 
   @Inject
-  public InternationalitazionFileInterceptor(GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
-    LocalizedTextProvider localizedTextProvider) {
+  public InternationalitazionFileInterceptor(GlobalUnitManager crpManager,
+    CustomParameterManager customParameterManager, LocalizedTextProvider localizedTextProvider) {
     this.crpManager = crpManager;
-    this.crpParameterManager = crpParameterManager;
+    this.customParameterManager = customParameterManager;
     this.localizedTextProvider = localizedTextProvider;
-
   }
 
   @Override
@@ -99,16 +99,20 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     }
 
     GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-    if (crp != null) {
+    if (crp != null && crp.getId() != null) {
       GlobalUnit loggedCrp = crpManager.getGlobalUnitById(crp.getId());
 
       if (this.isCrpRefresh(loggedCrp)) {
-        for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
+
+        List<CustomParameter> customParameters =
+          customParameterManager.getAllCustomParametersByGlobalUnitId(loggedCrp.getId());
+
+        for (CustomParameter parameter : customParameters) {
           if (parameter.isActive()) {
             if (parameter.getParameter().getKey().equals(APConstants.CRP_REFRESH)) {
               session.put(parameter.getParameter().getKey(), "false");
               parameter.setValue("false");
-              crpParameterManager.saveCustomParameter(parameter);
+              customParameterManager.saveCustomParameter(parameter);
             } else {
               session.put(parameter.getParameter().getKey(), parameter.getValue());
             }
@@ -129,10 +133,13 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   public boolean isCrpRefresh(GlobalUnit crp) {
     try {
-      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Boolean.parseBoolean(crpManager.getGlobalUnitById(crp.getId()).getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
-        .getValue());
+
+      // Run a query to get Parameter object with value crp_refresh and check if it true or false.
+      CustomParameter crpRefresh =
+        customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_REFRESH, crp.getId());
+
+      return Boolean.parseBoolean(crpRefresh.getValue());
+
     } catch (Exception e) {
       return false;
     }

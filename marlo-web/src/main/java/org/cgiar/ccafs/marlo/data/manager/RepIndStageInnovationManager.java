@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 
 import java.util.List;
 
@@ -53,6 +55,14 @@ public interface RepIndStageInnovationManager {
 
 
   /**
+   * This method gets a list of ReportSynthesisInnovationsByStageDTO that are active:
+   * List of Innovations grouped by Stage
+   * 
+   * @return a list from reportSynthesisInnovationsByStageDTO null if no exist records
+   */
+  public List<ReportSynthesisInnovationsByStageDTO> getInnovationsByStageDTO(Phase phase);
+
+  /**
    * This method gets a repIndStageInnovation object by a given repIndStageInnovation identifier.
    * 
    * @param repIndStageInnovationID is the repIndStageInnovation identifier.
@@ -64,11 +74,10 @@ public interface RepIndStageInnovationManager {
    * This method saves the information of the given repIndStageInnovation
    * 
    * @param repIndStageInnovation - is the repIndStageInnovation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndStageInnovation was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndStageInnovation
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public RepIndStageInnovation saveRepIndStageInnovation(RepIndStageInnovation repIndStageInnovation);
-
-
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,13 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPartnershipDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -68,10 +69,14 @@ public class ProjectPartnerPartnershipManagerImpl implements ProjectPartnerPartn
   }
 
   @Override
+  public List<ProjectPartnerPartnership> getProjectPartnerPartnershipByPhase(Phase phase) {
+    return projectPartnerPartnershipDAO.getProjectPartnerPartnershipByPhase(phase);
+  }
+
+  @Override
   public ProjectPartnerPartnership saveProjectPartnerPartnership(ProjectPartnerPartnership projectPartnerPartnership) {
 
     return projectPartnerPartnershipDAO.save(projectPartnerPartnership);
   }
-
 
 }

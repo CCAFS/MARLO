@@ -66,11 +66,6 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
       .collect(Collectors.toList());
     if (deliverableFundingSources.isEmpty()) {
       DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
-      deliverableFundingSourceAdd.setActive(true);
-      deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
-      deliverableFundingSourceAdd.setCreatedBy(deliverableFundingSource.getCreatedBy());
-      deliverableFundingSourceAdd.setModificationJustification(deliverableFundingSource.getModificationJustification());
-      deliverableFundingSourceAdd.setModifiedBy(deliverableFundingSource.getModifiedBy());
       deliverableFundingSourceAdd.setPhase(phase);
       deliverableFundingSourceAdd.setDeliverable(deliverableFundingSource.getDeliverable());
       deliverableFundingSourceAdd.setFundingSource(deliverableFundingSource.getFundingSource());
@@ -88,11 +83,6 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   public DeliverableFundingSource copyDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource,
     Phase phase) {
     DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
-    deliverableFundingSourceAdd.setActive(true);
-    deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
-    deliverableFundingSourceAdd.setCreatedBy(deliverableFundingSource.getCreatedBy());
-    deliverableFundingSourceAdd.setModificationJustification(deliverableFundingSource.getModificationJustification());
-    deliverableFundingSourceAdd.setModifiedBy(deliverableFundingSource.getModifiedBy());
     deliverableFundingSourceAdd.setPhase(phase);
     deliverableFundingSourceAdd.setDeliverable(deliverableFundingSource.getDeliverable());
     deliverableFundingSourceAdd.setFundingSource(deliverableFundingSource.getFundingSource());
@@ -105,8 +95,9 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
 
     DeliverableFundingSource deliverableFundingSource =
       this.getDeliverableFundingSourceById(deliverableFundingSourceId);
-    deliverableFundingSource.setActive(false);
-    this.saveDeliverableFundingSource(deliverableFundingSource);
+
+    deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSource.getId());
+
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
     boolean isPublication = deliverableFundingSource.getDeliverable().getIsPublication() != null
       && deliverableFundingSource.getDeliverable().getIsPublication();
@@ -131,9 +122,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
       .collect(Collectors.toList());
 
     for (DeliverableFundingSource deFundingSource : fundingSources) {
-      deFundingSource.setActive(false);
-      deliverableFundingSourceDAO.save(deFundingSource);
-
+      deliverableFundingSourceDAO.deleteDeliverableFundingSource(deFundingSource.getId());
     }
 
     if (phase.getNext() != null) {

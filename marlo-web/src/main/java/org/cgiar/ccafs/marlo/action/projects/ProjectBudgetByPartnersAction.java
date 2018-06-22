@@ -52,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -699,15 +698,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
-      Project projectDB = projectManager.getProjectById(projectID);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -764,7 +765,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       for (ProjectBudget projectBudget : budgets) {
         if (projectBudget != null) {
           if (projectBudget.getYear() >= this.getActualPhase().getYear()) {
-            this.saveBudget(projectBudget);
+            this.saveBudget(projectBudget, projectDB);
           }
 
         }
@@ -774,30 +775,35 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public void saveBudget(ProjectBudget projectBudget) {
+  public void saveBudget(ProjectBudget projectBudget, Project projectDB) {
 
+    /**
+     * If the entity is new we can save it as is.
+     */
     if (projectBudget.getId() == null) {
-      projectBudget.setCreatedBy(this.getCurrentUser());
 
-      projectBudget.setActiveSince(new Date());
-      projectBudget.setActive(true);
-      projectBudget.setProject(project);
-      projectBudget.setModifiedBy(this.getCurrentUser());
-      projectBudget.setModificationJustification("");
+      projectBudget.setProject(projectDB);
       projectBudget.setPhase(this.getActualPhase());
-    } else {
-      ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
-      projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-      projectBudget.setPhase(this.getActualPhase());
-      projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
-      projectBudget.setActive(true);
-      projectBudget.setProject(project);
-      projectBudget.setModifiedBy(this.getCurrentUser());
-      projectBudget.setModificationJustification("");
+
+      projectBudgetManager.saveProjectBudget(projectBudget);
+      return;
     }
+    /**
+     * The entity is existing so we need to retrieve and then update it. This is necessary to make sure we don't try and
+     * persist a projectBudget with no manadatory logging fields.
+     */
+    ProjectBudget projectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
+    projectBudgetDB.setPhase(this.getActualPhase());
+    projectBudgetDB.setProject(projectDB);
+    projectBudgetDB.setAmount(projectBudget.getAmount());
+    projectBudgetDB.setBudgetType(projectBudget.getBudgetType());
+    projectBudgetDB.setFundingSource(projectBudget.getFundingSource());
+    projectBudgetDB.setGenderPercentage(projectBudget.getGenderPercentage());
+    projectBudgetDB.setGenderValue(projectBudget.getGenderValue());
+    projectBudgetDB.setInstitution(projectBudget.getInstitution());
+    projectBudgetDB.setYear(projectBudget.getYear());
 
-
-    projectBudgetManager.saveProjectBudget(projectBudget);
+    projectBudgetManager.saveProjectBudget(projectBudgetDB);
   }
 
 

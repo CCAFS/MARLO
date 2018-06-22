@@ -63,7 +63,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -755,9 +754,6 @@ public class ProjectDescriptionAction extends BaseAction {
       projectDB.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       // Load basic info project to be saved
 
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
       project.setCreateDate(projectDB.getCreateDate());
       project.getProjectInfo().setPresetDate(projectDB.getProjectInfo().getPresetDate());
 
@@ -827,9 +823,7 @@ public class ProjectDescriptionAction extends BaseAction {
           .collect(Collectors.toList());
         for (ProjectFocus projectFocus : fpsPreview) {
           if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-            projectFocus.setActive(false);
-            projectFocusManager.saveProjectFocus(projectFocus);
-            // projectFocusManager.deleteProjectFocus(projectFocus.getId());
+            projectFocusManager.deleteProjectFocus(projectFocus.getId());
           }
         }
         for (String programID : project.getFlagshipValue().trim().split(",")) {
@@ -843,11 +837,6 @@ public class ProjectDescriptionAction extends BaseAction {
               .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue()
                 && c.getPhase().equals(this.getActualPhase()))
               .collect(Collectors.toList()).isEmpty()) {
-              projectFocus.setActive(true);
-              projectFocus.setActiveSince(new Date());
-              projectFocus.setCreatedBy(this.getCurrentUser());
-              projectFocus.setModifiedBy(this.getCurrentUser());
-              projectFocus.setModificationJustification("");
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
             }
@@ -863,9 +852,7 @@ public class ProjectDescriptionAction extends BaseAction {
         .collect(Collectors.toList());
       for (ProjectFocus projectFocus : regionsPreview) {
         if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocus.setActive(false);
-          projectFocusManager.saveProjectFocus(projectFocus);
-          // projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
       if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
@@ -880,11 +867,6 @@ public class ProjectDescriptionAction extends BaseAction {
               .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
                 && c.getCrpProgram().getId().longValue() == program.getId().longValue())
               .collect(Collectors.toList()).isEmpty()) {
-              projectFocus.setActive(true);
-              projectFocus.setActiveSince(new Date());
-              projectFocus.setCreatedBy(this.getCurrentUser());
-              projectFocus.setModifiedBy(this.getCurrentUser());
-              projectFocus.setModificationJustification("");
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
             }
@@ -906,8 +888,6 @@ public class ProjectDescriptionAction extends BaseAction {
         if (!project.getClusterActivities().contains(projectClusterActivity)) {
           projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
-          // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
-
           for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
             .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
@@ -920,13 +900,7 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getClusterActivities() != null) {
         for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
           if (projectClusterActivity.getId() == null) {
-            projectClusterActivity.setCreatedBy(this.getCurrentUser());
-
-            projectClusterActivity.setActiveSince(new Date());
-            projectClusterActivity.setActive(true);
             projectClusterActivity.setProject(project);
-            projectClusterActivity.setModifiedBy(this.getCurrentUser());
-            projectClusterActivity.setModificationJustification("");
             projectClusterActivity.setPhase(this.getActualPhase());
             projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
           }
@@ -953,13 +927,7 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getScopes() != null) {
         for (ProjectScope projectLocation : project.getScopes()) {
           if (projectLocation.getId() == null) {
-            projectLocation.setCreatedBy(this.getCurrentUser());
-
-            projectLocation.setActiveSince(new Date());
-            projectLocation.setActive(true);
             projectLocation.setProject(project);
-            projectLocation.setModifiedBy(this.getCurrentUser());
-            projectLocation.setModificationJustification("");
             projectScopeManager.saveProjectScope(projectLocation);
           }
 
@@ -979,8 +947,6 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      project.setActiveSince(new Date());
-      project.getProjectInfo().setModifiedBy(this.getCurrentUser());
       project.getProjectInfo().setPhase(this.getActualPhase());
       project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
@@ -992,7 +958,12 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setModificationJustification(this.getJustification());
 
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
-      project.setModifiedBy(this.getCurrentUser());
+
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in the
+       * auditlog table.
+       */
+      this.setModificationJustification(project);
       projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
 
 

@@ -24,16 +24,16 @@
             <column name="id_phase" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
+            <column name="modified_by" />
         </many-to-one>
         <property name="title" type="string">
-            <column name="title" length="65535" />
+            <column name="title" sql-type="TEXT" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="typeOther" type="string">
-            <column name="type_other" length="65535">
+            <column name="type_other" sql-type="TEXT">
                 <comment>Other type defined by the user.</comment>
             </column>
         </property>
@@ -47,10 +47,10 @@
             <column name="status" />
         </property>
         <property name="statusDescription" type="string">
-            <column name="status_description" length="65535" />
+            <column name="status_description" sql-type="TEXT" />
         </property>
         <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
+            <column name="modification_justification" sql-type="TEXT"  />
         </property>
         <property name="crossCuttingGender" type="java.lang.Boolean">
             <column name="cross_cutting_gender" />
@@ -68,10 +68,10 @@
             <column name="adopted_license" />
         </property>
         <property name="license" type="string">
-            <column name="license" length="65535" />
+            <column name="license" sql-type="TEXT" />
         </property>
         <property name="otherLicense" type="string">
-            <column name="other_license" length="65535" />
+            <column name="other_license" sql-type="TEXT" />
         </property>
         <property name="allowModifications" type="java.lang.Boolean">
             <column name="allow_modifications" />
@@ -84,6 +84,15 @@
         </property>
          <property name="crossCuttingScoreCapacity" type="java.lang.Long">
             <column name="cross_cutting_score_capacity" />
+        </property>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="isLocationGlobal" type="java.lang.Boolean">
             <column name="is_location_global" />

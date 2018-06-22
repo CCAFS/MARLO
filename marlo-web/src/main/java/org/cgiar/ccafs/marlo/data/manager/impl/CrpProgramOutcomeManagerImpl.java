@@ -80,11 +80,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     if (crpProgramOutcome.getIndicators() != null) {
       for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcome.getIndicators()) {
         CrpProgramOutcomeIndicator crpIndicatorAdd = new CrpProgramOutcomeIndicator();
-        crpIndicatorAdd.setActive(true);
-        crpIndicatorAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-        crpIndicatorAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
-        crpIndicatorAdd.setModificationJustification("");
-        crpIndicatorAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
         crpIndicatorAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
         crpIndicatorAdd.setIndicator(crpProgramOutcomeIndicator.getIndicator());
         crpIndicatorAdd.setComposeID(crpProgramOutcomeIndicator.getComposeID());
@@ -112,11 +107,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     if (crpProgramOutcome.getMilestones() != null) {
       for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
         CrpMilestone crpMilestoneAdd = new CrpMilestone();
-        crpMilestoneAdd.setActive(true);
-        crpMilestoneAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-        crpMilestoneAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
-        crpMilestoneAdd.setModificationJustification("");
-        crpMilestoneAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
         crpMilestoneAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
         crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
         crpMilestoneAdd.setTitle(crpMilestone.getTitle());
@@ -148,11 +138,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         && c.getComposeID().equals(outcome.getComposeID())).collect(Collectors.toList());
     if (outcomes.isEmpty()) {
       CrpProgramOutcome outcomeAdd = new CrpProgramOutcome();
-      outcomeAdd.setActive(true);
-      outcomeAdd.setActiveSince(outcome.getActiveSince());
-      outcomeAdd.setCreatedBy(outcome.getCreatedBy());
-      outcomeAdd.setModificationJustification(outcome.getModificationJustification());
-      outcomeAdd.setModifiedBy(outcome.getModifiedBy());
       outcomeAdd.setPhase(phase);
       outcomeAdd.setCrpProgram(outcome.getCrpProgram());
       outcomeAdd.setSrfTargetUnit(outcome.getSrfTargetUnit());
@@ -213,11 +198,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     if (crpProgramOutcome.getSubIdos() != null) {
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
         CrpOutcomeSubIdo crpOutcomeSubIdoAdd = new CrpOutcomeSubIdo();
-        crpOutcomeSubIdoAdd.setActive(true);
-        crpOutcomeSubIdoAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-        crpOutcomeSubIdoAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
-        crpOutcomeSubIdoAdd.setModificationJustification("");
-        crpOutcomeSubIdoAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
         crpOutcomeSubIdoAdd.setContribution(crpOutcomeSubIdo.getContribution());
         crpOutcomeSubIdoAdd.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
         crpOutcomeSubIdoAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
@@ -225,13 +205,8 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           CrpAssumption crpAssumptionAdd = new CrpAssumption();
-          crpAssumptionAdd.setActive(true);
-          crpAssumptionAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-          crpAssumptionAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
           crpAssumptionAdd.setCrpOutcomeSubIdo(crpOutcomeSubIdoAdd);
           crpAssumptionAdd.setDescription(crpAssumption.getDescription());
-          crpAssumptionAdd.setModificationJustification("");
-          crpAssumptionAdd.setModifiedBy(crpProgramOutcome.getModifiedBy());
           crpAssumptionDAO.save(crpAssumptionAdd);
 
         }
@@ -288,8 +263,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       if (programOutcome.getSubIdos() == null || programOutcome.getSubIdos().stream()
         .filter(c -> c.getSrfSubIdo() != null && c.getSrfSubIdo().equals(outcomeSubIdo.getSrfSubIdo()))
         .collect(Collectors.toList()).isEmpty()) {
-        outcomeSubIdo.setActive(false);
-        crpOutcomeSubIdoDAO.save(outcomeSubIdo);
+        crpOutcomeSubIdoDAO.deleteCrpOutcomeSubIdo(outcomeSubIdo.getId());
       }
     }
     if (programOutcome.getSubIdos() != null) {
@@ -301,11 +275,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           CrpOutcomeSubIdo outcomeSubIdoAdd = new CrpOutcomeSubIdo();
 
           outcomeSubIdoAdd.setCrpProgramOutcome(programOutcomePrev);
-          outcomeSubIdoAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
-          outcomeSubIdoAdd.setActive(true);
-          outcomeSubIdoAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          outcomeSubIdoAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
-          outcomeSubIdoAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
           outcomeSubIdoAdd.setContribution(outcomeSubIdo.getContribution());
           outcomeSubIdoAdd.setSrfSubIdo(outcomeSubIdo.getSrfSubIdo());
           crpOutcomeSubIdoDAO.save(outcomeSubIdoAdd);
@@ -327,8 +296,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       if (programOutcome.getIndicators() == null || programOutcome.getIndicators().stream()
         .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpProgramOutcomeIndicator.getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        crpProgramOutcomeIndicator.setActive(false);
-        crpProgramOutcomeIndicatorDAO.save(crpProgramOutcomeIndicator);
+        crpProgramOutcomeIndicatorDAO.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
       }
     }
     if (programOutcome.getIndicators() != null) {
@@ -340,11 +308,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
 
 
           CrpProgramOutcomeIndicator crpIndicatorAdd = new CrpProgramOutcomeIndicator();
-          crpIndicatorAdd.setActive(true);
-          crpIndicatorAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          crpIndicatorAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
-          crpIndicatorAdd.setModificationJustification("");
-          crpIndicatorAdd.setModifiedBy(programOutcomePrev.getCreatedBy());
           crpIndicatorAdd.setCrpProgramOutcome(programOutcomePrev);
           crpIndicatorAdd.setIndicator(crpProgramOutcomeIndicator.getIndicator());
           crpIndicatorAdd.setComposeID(crpProgramOutcomeIndicator.getComposeID());
@@ -382,8 +345,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       if (programOutcome.getMilestones() == null || programOutcome.getMilestones().stream()
         .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpMilestone.getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        crpMilestone.setActive(false);
-        crpMilestoneDAO.save(crpMilestone);
+        crpMilestoneDAO.deleteCrpMilestone(crpMilestone.getId());
       }
     }
     if (programOutcome.getMilestones() != null) {
@@ -395,11 +357,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           CrpMilestone crpMilestoneAdd = new CrpMilestone();
 
           crpMilestoneAdd.setCrpProgramOutcome(programOutcomePrev);
-          crpMilestoneAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
-          crpMilestoneAdd.setActive(true);
-          crpMilestoneAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          crpMilestoneAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
-          crpMilestoneAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           crpMilestoneAdd.setTitle(crpMilestone.getTitle());

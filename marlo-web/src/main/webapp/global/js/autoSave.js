@@ -175,6 +175,13 @@ function validateThisSection() {
     validateService = "/validatePowbSynthesisSection.do";
   }
 
+  // Validate Annual Report Synthesis section
+  if(isAnnualReportSection()) {
+    sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
+    sectionData.synthesisID = $('input[name="synthesisID"]').val() || $('#synthesisID').text();
+    validateService = "/validateAnnualReportSynthesisSection.do";
+  }
+
   $.ajax({
       url: baseURL + validateService,
       data: sectionData,

@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 
 import java.util.List;
@@ -61,14 +62,21 @@ public interface ProjectPartnerPartnershipManager {
   public ProjectPartnerPartnership getProjectPartnerPartnershipById(long projectPartnerPartnershipID);
 
   /**
+   * This method gets a list of ProjectPartnerPartnership that are active by a given phase
+   * 
+   * @return a list from ProjectPartnerPartnership null if no exist records
+   */
+  public List<ProjectPartnerPartnership> getProjectPartnerPartnershipByPhase(Phase phase);
+
+  /**
    * This method saves the information of the given projectPartnerPartnership
    * 
-   * @param projectPartnerPartnership - is the projectPartnerPartnership object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPartnerPartnership was
+   * @param projectPartnerPartnership - is the projectPartnerPartnership object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectPartnerPartnership was
    *         updated
    *         or -1 is some error occurred.
    */
   public ProjectPartnerPartnership saveProjectPartnerPartnership(ProjectPartnerPartnership projectPartnerPartnership);
-
-
 }

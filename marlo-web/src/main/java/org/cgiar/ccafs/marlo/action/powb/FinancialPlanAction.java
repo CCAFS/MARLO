@@ -53,7 +53,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -122,10 +121,6 @@ public class FinancialPlanAction extends BaseAction {
   private void createEmptyFinancialPlan() {
     if (powbSynthesis.getFinancialPlan() == null && this.isPMU()) {
       PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
-      newPowbFinancialPlan.setActive(true);
-      newPowbFinancialPlan.setCreatedBy(this.getCurrentUser());
-      newPowbFinancialPlan.setModifiedBy(this.getCurrentUser());
-      newPowbFinancialPlan.setActiveSince(new Date());
       newPowbFinancialPlan.setFinancialPlanIssues("");
       newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
@@ -676,10 +671,13 @@ public class FinancialPlanAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setActiveSince(new Date());
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
       relationsName.add(APConstants.SYNTHESIS_FINANCIAL_EXPENDITURE_RELATION);
       relationsName.add(APConstants.SYNTHESIS_FINANCIAL_PLANNED_BUDGET_RELATION);
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -702,10 +700,6 @@ public class FinancialPlanAction extends BaseAction {
 
   private void saveNewFinancialExpenditure(PowbFinancialExpenditure powbFinancialExpenditure) {
     PowbFinancialExpenditure newPowbFinancialExpenditure = new PowbFinancialExpenditure();
-    newPowbFinancialExpenditure.setActive(true);
-    newPowbFinancialExpenditure.setCreatedBy(this.getCurrentUser());
-    newPowbFinancialExpenditure.setModifiedBy(this.getCurrentUser());
-    newPowbFinancialExpenditure.setActiveSince(new Date());
     newPowbFinancialExpenditure.setPowbSynthesis(powbSynthesis);
     newPowbFinancialExpenditure.setPowbExpenditureArea(powbFinancialExpenditure.getPowbExpenditureArea());
     if (powbFinancialExpenditure.getW1w2Percentage() != null) {
@@ -721,10 +715,6 @@ public class FinancialPlanAction extends BaseAction {
 
   private void saveNewPlannedBudget(PowbFinancialPlannedBudget powbFinancialPlannedBudget) {
     PowbFinancialPlannedBudget newPowbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
-    newPowbFinancialPlannedBudget.setActive(true);
-    newPowbFinancialPlannedBudget.setCreatedBy(this.getCurrentUser());
-    newPowbFinancialPlannedBudget.setModifiedBy(this.getCurrentUser());
-    newPowbFinancialPlannedBudget.setActiveSince(new Date());
     newPowbFinancialPlannedBudget.setPowbSynthesis(powbSynthesis);
     newPowbFinancialPlannedBudget.setPowbExpenditureArea(powbFinancialPlannedBudget.getPowbExpenditureArea());
     newPowbFinancialPlannedBudget.setLiaisonInstitution(powbFinancialPlannedBudget.getLiaisonInstitution());
@@ -759,9 +749,6 @@ public class FinancialPlanAction extends BaseAction {
   private void saveUpdateFinancialExpenditure(PowbFinancialExpenditure powbFinancialExpenditure) {
     PowbFinancialExpenditure newPowbFinancialExpenditure =
       powbFinancialExpenditureManager.getPowbFinancialExpenditureById(powbFinancialExpenditure.getId());
-    newPowbFinancialExpenditure.setActive(true);
-    newPowbFinancialExpenditure.setModifiedBy(this.getCurrentUser());
-    newPowbFinancialExpenditure.setActiveSince(new Date());
     if (powbFinancialExpenditure.getW1w2Percentage() != null) {
       newPowbFinancialExpenditure.setW1w2Percentage(powbFinancialExpenditure.getW1w2Percentage());
     } else {
@@ -777,8 +764,6 @@ public class FinancialPlanAction extends BaseAction {
     if (powbFinancialPlan.getId() == null) {
       powbFinancialPlan.setId(powbSynthesisID);
     }
-    powbFinancialPlan.setActiveSince(new Date());
-    powbFinancialPlan.setModifiedBy(this.getCurrentUser());
     powbFinancialPlan.setFinancialPlanIssues(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
     powbFinancialPlan = powbFinancialPlanManager.savePowbFinancialPlan(powbFinancialPlan);
   }
@@ -786,9 +771,6 @@ public class FinancialPlanAction extends BaseAction {
   private void saveUpdatePlannedBudget(PowbFinancialPlannedBudget powbFinancialPlannedBudget) {
     PowbFinancialPlannedBudget powbFinancialPlannedBudgetDB =
       powbFinancialPlannedBudgetManager.getPowbFinancialPlannedBudgetById(powbFinancialPlannedBudget.getId());
-    powbFinancialPlannedBudgetDB.setActive(true);
-    powbFinancialPlannedBudgetDB.setModifiedBy(this.getCurrentUser());
-    powbFinancialPlannedBudgetDB.setActiveSince(new Date());
     if (powbFinancialPlannedBudget.getW1w2() != null) {
       powbFinancialPlannedBudgetDB.setW1w2(powbFinancialPlannedBudget.getW1w2());
     } else {

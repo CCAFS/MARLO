@@ -18,8 +18,8 @@
     [#-- History Log --]
     [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [#--[@logHistory.logList list=recordsList itemName="expectedID" itemId=expectedID /]
-      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>--]
+      [@logHistory.logList list=recordsList itemName="expectedID" itemId=expectedID /]
+      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
       [#-- Back Button 

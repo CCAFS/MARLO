@@ -10,7 +10,6 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -93,9 +92,7 @@ public class EditPartnerRequestAction extends BaseAction {
       }
       // If the PartnerRequest is edited, save it
       if (isEdited) {
-        partnerRequest.setModifiedBy(this.getCurrentUser());
         partnerRequest.setModified(true);
-        partnerRequest.setActiveSince(new Date());
         partnerRequestManager.savePartnerRequest(partnerRequest);
       }
     } catch (Exception e) {

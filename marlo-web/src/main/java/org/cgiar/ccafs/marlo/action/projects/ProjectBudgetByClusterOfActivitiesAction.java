@@ -50,7 +50,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -472,8 +471,11 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -522,13 +524,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       for (ProjectBudgetsCluserActvity projectBudgetCluserActivityUI : project.getBudgetsCluserActvities()) {
         if (projectBudgetCluserActivityUI != null) {
           if (projectBudgetCluserActivityUI.getId() == null) {
-            projectBudgetCluserActivityUI.setCreatedBy(this.getCurrentUser());
 
-            projectBudgetCluserActivityUI.setActiveSince(new Date());
-            projectBudgetCluserActivityUI.setActive(true);
             projectBudgetCluserActivityUI.setProject(project);
-            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-            projectBudgetCluserActivityUI.setModificationJustification("");
             projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
 
             if (projectBudgetCluserActivityUI.getCrpClusterOfActivity() != null) {
@@ -537,20 +534,14 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
           } else {
-            ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
+            ProjectBudgetsCluserActvity projectBudgetCluserActivityDB = projectBudgetsCluserActvityManager
               .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
-            ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
-            ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
-            projectBudgetCluserActivityUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-            projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
-            projectBudgetCluserActivityUI.setActiveSince(ProjectBudgetDB.getActiveSince());
-            projectBudgetCluserActivityUI.setActive(true);
-            projectBudgetCluserActivityUI.setProject(project);
-            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-            projectBudgetCluserActivityUI.setModificationJustification("");
-            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-            projectBudgetCluserActivityUI =
-              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
+            projectBudgetCluserActivityDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
+            projectBudgetCluserActivityDB.setAmount(projectBudgetCluserActivityUI.getAmount());
+            projectBudgetCluserActivityDB.setPhase(this.getActualPhase());
+            projectBudgetCluserActivityDB.setProject(project);
+            projectBudgetCluserActivityDB =
+              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityDB);
           }
 
 

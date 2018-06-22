@@ -114,9 +114,6 @@ public class DeliverableListAction extends BaseAction {
 
     deliverable.setProject(project);
     deliverable.setCreateDate(new Date());
-    deliverable.setCreatedBy(this.getCurrentUser());
-    deliverable.setActive(true);
-    deliverable.setActiveSince(new Date());
     deliverable.setPhase(this.getActualPhase());
     deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
@@ -131,7 +128,6 @@ public class DeliverableListAction extends BaseAction {
       deliverableInfo.setPhase(phase);
       deliverableInfo.setYear(this.getCurrentCycleYear());
       deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-      deliverableInfo.setModifiedBy(this.getCurrentUser());
       deliverableInfo.setModificationJustification("New expected deliverable created");
       deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
 
@@ -183,7 +179,6 @@ public class DeliverableListAction extends BaseAction {
     projectID = deliverable.getProject().getId();
 
     if (deliverable != null) {
-      deliverable.setActiveSince(new Date());
       deliverableManager.saveDeliverable(deliverable);
       deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));
@@ -241,14 +236,13 @@ public class DeliverableListAction extends BaseAction {
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
-                .getCurrentCycleYear()
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+          openA.addAll(deliverables.stream().filter(d -> d.isActive()
+            && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
 
           openA.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase())
@@ -312,14 +306,13 @@ public class DeliverableListAction extends BaseAction {
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
 
-          openA.removeAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
-                .getCurrentCycleYear()
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+          openA.removeAll(deliverables.stream().filter(d -> d.isActive()
+            && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
 
           openA.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase())

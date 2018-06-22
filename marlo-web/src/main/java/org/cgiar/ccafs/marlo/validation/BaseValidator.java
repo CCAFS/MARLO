@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -577,6 +578,7 @@ public class BaseValidator {
     action.getMissingFields().setLength(0);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at project Innovation.
    * 
@@ -604,7 +606,6 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project level.
@@ -668,6 +669,41 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
+  }
+
+
+  /**
+   * This method saves the missing fields into the database for a section at annual report synthesis level.
+   * 
+   * @param reportSynthesis is a reportSynthesis.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(ReportSynthesis reportSynthesis, String cycle, int year, String sectionName,
+    BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setReportSynthesis(reportSynthesis);
+      status.setSectionName(sectionName);
+
+    }
+
+    // Validate if the form have missing fileds in project sections issue #1209
+    String sMissingField = action.getMissingFields().toString();
+    if (sMissingField.length() > 0) {
+      status.setMissingFields(sMissingField);
+    } else {
+      status.setMissingFields("");
+    }
+
+    sectionStatusManager.saveSectionStatus(status);
+
   }
 
   /**

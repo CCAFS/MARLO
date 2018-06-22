@@ -1,45 +1,51 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
+<!-- Generated May 21, 2018 2:10:20 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget"
-		table="srf_slo_indicator_targets" optimistic-lock="none">
-		<id name="id" type="java.lang.Long">
-			<column name="id" />
-			<generator class="identity" />
-		</id>
-		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
-				not-null="true" />
-		</property>
-		<property name="activeSince" type="timestamp">
-			<column name="active_since" length="19" not-null="true" />
-		</property>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="false" />
-		</many-to-one>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="modified_by" not-null="true" />
-		</many-to-one>
-		<many-to-one name="srfSloIndicator"
-			class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" fetch="select">
-			<column name="indicador_id" not-null="true" />
-		</many-to-one>
-		<many-to-one name="srfTargetUnit"
-			class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
-			<column name="target_unit_id" not-null="true" />
-		</many-to-one>
-		<property name="value" type="big_decimal">
-			<column name="value" precision="10" not-null="true" />
-		</property>
-		<property name="year" type="int">
-			<column name="year" not-null="true" />
-		</property>
-		<property name="active" type="boolean">
-			<column name="is_active" not-null="true" />
-		</property>
-	</class>
+    <class name="org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget" table="srf_slo_indicator_targets" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by"/>
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="srfSloIndicator" class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" fetch="select">
+            <column name="indicador_id" not-null="true" />
+        </many-to-one>
+        <property name="narrative" type="string">
+            <column name="narrative" length="65535" />
+        </property>
+          <property name="targetsIndicator" type="string">
+            <column name="targets_indicator" length="5" />
+        </property>
+        <property name="value" type="big_decimal">
+            <column name="value" precision="10" />
+        </property>
+        <property name="year" type="int">
+            <column name="year" not-null="true" />
+        </property>
+        <many-to-one name="srfTargetUnit" class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+            <column name="target_unit_id" />
+        </many-to-one>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true"/>
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT" />
+        </property>
+        <set name="reportSynthesisCrpProgressTargets" table="report_synthesis_crp_progress_targets" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="srf_slo_indicator_targets_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget" />
+        </set>
+    </class>
 </hibernate-mapping>

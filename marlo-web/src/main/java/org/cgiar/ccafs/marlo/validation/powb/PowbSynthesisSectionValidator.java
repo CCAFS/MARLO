@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.data.model.PowbToc;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -106,11 +105,6 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     // Check if ToC relation is null -create it
     if (powbSynthesis.getCollaboration() == null) {
       PowbCollaboration powbCollaboration = new PowbCollaboration();
-      powbCollaboration.setActive(true);
-      powbCollaboration.setActiveSince(new Date());
-      powbCollaboration.setCreatedBy(action.getCurrentUser());
-      powbCollaboration.setModifiedBy(action.getCurrentUser());
-      powbCollaboration.setModificationJustification("");
       // create one to one relation
       powbSynthesis.setCollaboration(powbCollaboration);
       powbCollaboration.setPowbSynthesis(powbSynthesis);
@@ -138,11 +132,6 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     if (powbSynthesis.getPowbCrossCuttingDimension() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
 
       PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
-      crossCutting.setActive(true);
-      crossCutting.setActiveSince(new Date());
-      crossCutting.setCreatedBy(action.getCurrentUser());
-      crossCutting.setModifiedBy(action.getCurrentUser());
-      crossCutting.setModificationJustification("");
 
       // create one to one relation
       powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
@@ -181,10 +170,6 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getCrpStaffing() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
-      newPowbCrpStaffing.setActive(true);
-      newPowbCrpStaffing.setCreatedBy(action.getCurrentUser());
-      newPowbCrpStaffing.setModifiedBy(action.getCurrentUser());
-      newPowbCrpStaffing.setActiveSince(new Date());
       newPowbCrpStaffing.setStaffingIssues("");
       powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
       newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
@@ -211,11 +196,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbEvidence() == null) {
       PowbEvidence evidence = new PowbEvidence();
-      evidence.setActive(true);
-      evidence.setActiveSince(new Date());
-      evidence.setCreatedBy(action.getCurrentUser());
-      evidence.setModifiedBy(action.getCurrentUser());
-      evidence.setModificationJustification("");
+
       // create one to one relation
       powbSynthesis.setPowbEvidence(evidence);
       evidence.setPowbSynthesis(powbSynthesis);
@@ -256,10 +237,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getFinancialPlan() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
-      newPowbFinancialPlan.setActive(true);
-      newPowbFinancialPlan.setCreatedBy(action.getCurrentUser());
-      newPowbFinancialPlan.setModifiedBy(action.getCurrentUser());
-      newPowbFinancialPlan.setActiveSince(new Date());
+
       newPowbFinancialPlan.setFinancialPlanIssues("");
       newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
@@ -293,10 +271,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbFlagshipPlans() == null && !this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbFlagshipPlans newPowbFlagshipPlans = new PowbFlagshipPlans();
-      newPowbFlagshipPlans.setActive(true);
-      newPowbFlagshipPlans.setCreatedBy(action.getCurrentUser());
-      newPowbFlagshipPlans.setModifiedBy(action.getCurrentUser());
-      newPowbFlagshipPlans.setActiveSince(new Date());
+
       newPowbFlagshipPlans.setPlanSummary("");
       newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setPowbFlagshipPlans(newPowbFlagshipPlans);
@@ -332,11 +307,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbManagementGovernance() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
-      managementGovernance.setActive(true);
-      managementGovernance.setActiveSince(new Date());
-      managementGovernance.setCreatedBy(action.getCurrentUser());
-      managementGovernance.setModifiedBy(action.getCurrentUser());
-      managementGovernance.setModificationJustification("");
+
       // create one to one relation
       powbSynthesis.setPowbManagementGovernance(managementGovernance);
       managementGovernance.setPowbSynthesis(powbSynthesis);
@@ -357,11 +328,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
     if (powbSynthesis.getPowbManagementRisk() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbManagementRisk managementRisk = new PowbManagementRisk();
-      managementRisk.setActive(true);
-      managementRisk.setActiveSince(new Date());
-      managementRisk.setCreatedBy(action.getCurrentUser());
-      managementRisk.setModifiedBy(action.getCurrentUser());
-      managementRisk.setModificationJustification("");
+
       // create one to one relation
       powbSynthesis.setPowbManagementRisk(managementRisk);
       managementRisk.setPowbSynthesis(powbSynthesis);
@@ -382,11 +349,6 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     // Check if ToC relation is null -create it
     if (powbSynthesis.getPowbMonitoringEvaluationLearning() == null) {
       PowbMonitoringEvaluationLearning monitoringEvaluationLearning = new PowbMonitoringEvaluationLearning();
-      monitoringEvaluationLearning.setActive(true);
-      monitoringEvaluationLearning.setActiveSince(new Date());
-      monitoringEvaluationLearning.setCreatedBy(action.getCurrentUser());
-      monitoringEvaluationLearning.setModifiedBy(action.getCurrentUser());
-      monitoringEvaluationLearning.setModificationJustification("");
 
       // create one to one relation
       powbSynthesis.setPowbMonitoringEvaluationLearning(monitoringEvaluationLearning);
@@ -431,11 +393,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     // Check if ToC relation is null -create it
     if (powbSynthesis.getPowbToc() == null) {
       PowbToc toc = new PowbToc();
-      toc.setActive(true);
-      toc.setActiveSince(new Date());
-      toc.setCreatedBy(action.getCurrentUser());
-      toc.setModifiedBy(action.getCurrentUser());
-      toc.setModificationJustification("");
+
       // create one to one relation
       powbSynthesis.setPowbToc(toc);
       toc.setPowbSynthesis(powbSynthesis);

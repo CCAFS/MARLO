@@ -1,42 +1,42 @@
 [#ftl]
 
 [#assign menus= [
-  { 'title': '1.  Key Results', 'show': true,
+  { 'title': '1. Key Results', 'show': true,
     'items': [
-    { 'slug': 'crpProgress',          'name': 'powb.menu.crpProgress',          'action': 'crpProgress',        'active': true },
-    { 'slug': 'flagshipProgress',     'name': 'powb.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true },
-    { 'slug': 'ccDimensions',         'name': 'powb.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
+    { 'slug': 'crpProgress',          'name': 'annualReport.menu.crpProgress',          'action': 'crpProgress',        'active': true },
+    { 'slug': 'flagshipProgress',     'name': 'annualReport.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
+    { 'slug': 'ccDimensions',         'name': 'annualReport.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
     ]
   },
   { 'title': '2. CRP Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'plannedVariance',        'name': 'powb.menu.plannedVariance',      'action': 'plannedVariance',        'active': true },
-    { 'slug': 'fundingUse',             'name': 'powb.menu.fundingUse',           'action': 'fundingUse',             'active': true }
-    { 'slug': 'externalPartnerships',   'name': 'powb.menu.externalPartnerships', 'action': 'externalPartnerships',   'active': true },
-    { 'slug': 'crossPartnerships',      'name': 'powb.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true },
-    { 'slug': 'melia',                  'name': 'powb.menu.melia',                'action': 'melia',                  'active': true },
-    { 'slug': 'efficiency',             'name': 'powb.menu.efficiency',           'action': 'efficiency',             'active': true }
+    { 'slug': 'plannedVariance',        'name': 'annualReport.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'fundingUse',             'name': 'annualReport.menu.fundingUse',           'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'externalPartnerships',   'name': 'annualReport.menu.externalPartnerships', 'action': 'externalPartnerships',   'active': true },
+    { 'slug': 'crossPartnerships',      'name': 'annualReport.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true },
+    { 'slug': 'melia',                  'name': 'annualReport.menu.melia',                'action': 'melia',                  'active': true },
+    { 'slug': 'efficiency',             'name': 'annualReport.menu.efficiency',           'action': 'efficiency',             'active': true, 'onlyPMU': !PMU }
     ]
   },
-  { 'title': '3.  CRP Management', 'show': true,
+  { 'title': '3. CRP Management', 'show': true,
     'items': [
-    { 'slug': 'governance',   'name': 'powb.menu.governance',   'action': 'governance',   'active': true }
-    { 'slug': 'risks',        'name': 'powb.menu.risks',        'action': 'risks',        'active': true },
-    { 'slug': 'financial',    'name': 'powb.menu.financial',    'action': 'financial',    'active': true }
+    { 'slug': 'governance',   'name': 'annualReport.menu.governance',   'action': 'governance',   'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'risks',        'name': 'annualReport.menu.risks',        'action': 'risks',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'financial',    'name': 'annualReport.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
     ]
   },
-  { 'title': 'CRP Indicators', 'show': true,
+  { 'title': '4. Reporting Indicators', 'show': true,
     'items': [
-    { 'slug': 'influence',    'name': 'powb.menu.influence',    'action': 'influence',  'active': true },
-    { 'slug': 'control',      'name': 'powb.menu.control',      'action': 'control',    'active': true }
+    { 'slug': 'influence',    'name': 'annualReport.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'control',      'name': 'annualReport.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
     ]
   }
 ]/]
 
 
-[#assign submission = (action.isPowbSynthesisSubmitted(powbSynthesisID))!false /]
-[#assign canSubmit = (action.hasPersmissionSubmitPowb(powbSynthesisID))!false /]
-[#assign completed = (action.isCompletePowbSynthesis(powbSynthesisID))!false /]
+[#assign submission = false /]
+[#assign canSubmit = false /]
+[#assign completed = false /]
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]
@@ -51,22 +51,20 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
-            [#assign submitStatus = (action.getPowbSynthesisSectionStatus(item.action, powbSynthesisID))!false /]
-            [#assign hasDraft = (action.getAutoSaveFilePath(powbSynthesis.class.simpleName, item.action, powbSynthesis.id))!false /]
+            [#assign itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
+            [#assign submitStatus = false /]
+            [#assign hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
             [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
                   [@s.text name=item.name/]
-                  [#-- Draft Tag 
-                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
-                  --]
                 </a>
               </li>
               [#-- Set current Item --]
               [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
               [#-- Set sections for checking --]
-              [#if item.active][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
+              [#if item.active && itemRequired][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
             [/#if]
           [/#list] 
         </ul>
@@ -95,7 +93,7 @@
 [/#if]
 
 [#-- Check button --] 
-[#if canEdit && !completed && !submission]
+[#if false && canEdit && !completed && !submission]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${liaisonInstitutionID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
@@ -103,9 +101,9 @@
 
  
 [#-- Submit button --]
-[#if canEdit && canSubmit]
+[#if false && canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
-  <a id="submitProject-${powbSynthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitPowb"][@s.param name='powbSynthesisID']${powbSynthesisID}[/@s.param][/@s.url]" >
+  <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
   </a>
 [#else]
@@ -113,12 +111,22 @@
 [/#if]
 
 [#-- Unsubmit button --]
-[#if (canUnSubmit && submission) && !crpClosed && !reportingActive]
+[#if false && (canUnSubmit && submission) && !crpClosed && !reportingActive]
   <a id="submitProject-${liaisonInstitutionID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='liaisonInstitutionID']${liaisonInstitutionID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
 [/#if]
 
+[#-- Generate WORD Document --]
+[#if !config.production]
+<br />
+<div class="text-center">
+  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]
+  <a class="btn btn-default" href="${documentLink}" target="_blank">
+   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
+  </a>
+</div>
+[/#if]
 
 [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
@@ -131,6 +139,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/powb/powbSubmit.js?20180307", "${baseUrl}/global/js/autoSave.js", "${baseUrl}/global/js/fieldsValidation.js" ]
+[#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrl}/global/js/autoSave.js" --]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js" ]
 /]
 

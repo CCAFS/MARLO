@@ -17,6 +17,10 @@
 		<property name="generate_statistics">false</property>
 		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
 		<property name="hibernate.current_session_context_class">thread</property>
+    <!-- The following property will validate the hibernate hbm.xml files against the schema.
+     This is a recommended setting, but we have an issue where some of our entities are using
+     mysql INT primary keys instead of BIGINT so validation fails.  -->
+<!--     <property name="hibernate.hbm2ddl.auto">validate</property> -->
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
@@ -280,6 +284,33 @@
     <mapping resource="xmls/ProjectPartnerPartnershipResearchPhases.hbm.xml"/>
     <mapping resource="xmls/RepIndContributionOfCrp.hbm.xml"/>
     <mapping resource="xmls/RepIndDegreeInnovation.hbm.xml"/>
-    
+    <mapping resource="xmls/ReportSynthesis.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgress.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressStudies.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressTargets.hbm.xml"/>    
+    <mapping resource="xmls/ReportSynthesisFinancialSummaries.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFinancialSummaryBudgets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisGovernances.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisRisks.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensions.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionInnovations.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionAssets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFlagshipProgress.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressMilestones.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisProgramVariances.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFundingUseSummaries.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFundingUseExpendituryAreas.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisEfficiency.hbm.xml"/>   
+    <mapping resource="xmls/RepIndSynthesisIndicator.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisIndicators.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisIndicatorGenerals.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisExternalPartnerships.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisExternalPartnershipProjects.hbm.xml"/>
+    <mapping resource="xmls/RepIndCollaborationType.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCgiar.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCgiarCollaborations.hbm.xml"/> 
+    <mapping resource="xmls/ReportSynthesisMelia.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisMeliaEvaluations.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisMeliaStudies.hbm.xml"/>    
 	</session-factory>
 </hibernate-configuration>

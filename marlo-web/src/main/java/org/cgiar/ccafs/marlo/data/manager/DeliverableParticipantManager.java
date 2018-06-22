@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -67,6 +68,13 @@ public interface DeliverableParticipantManager {
    */
   public DeliverableParticipant getDeliverableParticipantById(long deliverableParticipantID);
 
+
+  /**
+   * This method gets a list of DeliverableParticipant that are active by a given phase
+   * 
+   * @return a list from DeliverableParticipant null if no exist records
+   */
+  public List<DeliverableParticipant> getDeliverableParticipantByPhase(Phase phase);
 
   /**
    * This method saves the information of the given deliverableParticipant

@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration>
   <contextName>Marlo Activities</contextName>
   <property resource="config/marlo-${spring.profiles.active}.properties" />
 
@@ -90,6 +90,9 @@
     <level value="INFO" />
   </logger>
   <logger name="springfox.documentation">
+    <level value="INFO" />
+  </logger>
+  <logger name="net.sf.ehcache">
     <level value="INFO" />
   </logger>
 

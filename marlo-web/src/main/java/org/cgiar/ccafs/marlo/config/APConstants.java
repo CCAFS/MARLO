@@ -198,6 +198,7 @@ public final class APConstants {
   public static final String PHASE_ID = "phaseID";
   public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
   public static final int PHASE_ONE_YEAR = 2016;
+  public static final String REPORT_SYNTHESIS_ID = "synthesisID";
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
@@ -624,6 +625,10 @@ public final class APConstants {
 
   // Rep_ind constants
   public static final long REP_IND_STAGE_INNOVATION_STAGE4 = 4;
+  public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE = "Influence";
+  public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL = "Control";
+  public static final String REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING = "Formal Training";
+
 
   public static String getFilterBy() {
     return FILTER_BY;

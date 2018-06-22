@@ -25,7 +25,7 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]
+        [#assign isCompleted = project.hasRequiredFields!false /]
         
         <tr>
         [#-- ID --]
@@ -52,7 +52,8 @@
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
-            ${(project.fundingSourceInfo.budgetType.name)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project))!0)?number?string(",##0.00")}</span></small></p>
+            [#--  ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>--]
+            ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${(project.fundingSourceBudgetPerPhase!0)?number?string(",##0.00")}</span></small></p>
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]
@@ -79,7 +80,7 @@
                 [#if institutionLead_index!=0]
                   <hr />
                 [/#if]
-                  <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
+                  <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
                   <div class="clearfix"></div>
               [/#list]
               [#else]
@@ -94,17 +95,17 @@
           
           [#-- Direct Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.directDonor.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.directDonorName)!'Not defined'}
           </td>
           
           [#-- Original Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.originalDonorName)!'Not defined'}
           </td>
           
           [#-- Field Check --]
           <td class=""> 
-            [#if isCompleted]
+            [#if isCompleted && !hasDraft]
               <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="message.fieldsCheck.complete" /]"></span>
             [#else]
               [#if hasDraft]
@@ -157,8 +158,6 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]
-        
         <tr>
         [#-- ID --]
         <td class="projectId">
@@ -203,7 +202,7 @@
                 [#if institutionLead_index!=0]
                   <hr />
                 [/#if]
-                  <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
+                  <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
                   <div class="clearfix"></div>
               [/#list]
               [#else]

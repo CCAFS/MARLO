@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -42,15 +44,18 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
   private static final long serialVersionUID = -3706764472200123669L;
 
   // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-  private CrpUserManager crpUserManager;
+  private final GlobalUnitManager crpManager;
+  private final CrpUserManager crpUserManager;
+  private final CustomParameterManager customParameterManager;
   private GlobalUnit loggedCrp;
 
 
   @Inject
-  public ValidSessionCrpInterceptor(GlobalUnitManager crpManager, CrpUserManager crpUserManager) {
+  public ValidSessionCrpInterceptor(GlobalUnitManager crpManager, CrpUserManager crpUserManager,
+    CustomParameterManager customParameterManager) {
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
+    this.customParameterManager = customParameterManager;
 
   }
 
@@ -73,21 +78,25 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     action.setSwitchSession(false);
     Map<String, Object> session = invocation.getInvocationContext().getSession();
 
+    /**
+     * Interestingly the loggedCrp can exist but with a null id.
+     */
     loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-
 
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
       GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
-        if (crp.equals(loggedCrp)) {
+        if (loggedCrp == null || loggedCrp.getId() == null || crp.equals(loggedCrp)) {
           this.changeSessionSection(session);
           return invocation.invoke();
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
+          List<CustomParameter> customParameters =
+            customParameterManager.getAllCustomParametersByGlobalUnitId(crp.getId());
           if (crpUserManager.existCrpUser(user.getId(), crp.getId())) {
-            for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
+            for (CustomParameter parameter : customParameters) {
               if (parameter.isActive()) {
                 session.remove(parameter.getParameter().getKey());
               }
@@ -98,7 +107,7 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
             session.replace(APConstants.SESSION_CRP, crp);
             session.remove(APConstants.ALL_PHASES);
             // put the global unit parameters in the session
-            for (CustomParameter parameter : crp.getCustomParameters()) {
+            for (CustomParameter parameter : customParameters) {
               if (parameter.isActive()) {
                 session.put(parameter.getParameter().getKey(), parameter.getValue());
               }

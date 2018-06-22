@@ -25,7 +25,6 @@ import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,13 +77,12 @@ public class ManageUsersAction extends BaseAction {
    */
   private boolean addUser() {
     newUser.setModificationJustification("User created in MARLO " + actionName.replace("/", "-"));
-    newUser.setActiveSince(new Date());
-    newUser.setModifiedBy(this.getCurrentUser());
+    // Why is this set to false?
     newUser.setActive(false);
     newUser.setAutoSave(true);
     newUser.setId(null);
 
-    newUser = userManager.saveUser(newUser, this.getCurrentUser());
+    newUser = userManager.saveUser(newUser);
     // If successfully added.
     if (newUser.getId() > 0) {
 

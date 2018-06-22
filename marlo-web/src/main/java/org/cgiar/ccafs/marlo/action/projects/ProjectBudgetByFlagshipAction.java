@@ -49,7 +49,6 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -463,8 +462,11 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -515,13 +517,8 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       for (ProjectBudgetsFlagship budgetsFlagshipUI : project.getBudgetsFlagship()) {
         if (budgetsFlagshipUI != null) {
           if (budgetsFlagshipUI.getId() == null) {
-            budgetsFlagshipUI.setCreatedBy(this.getCurrentUser());
 
-            budgetsFlagshipUI.setActiveSince(new Date());
-            budgetsFlagshipUI.setActive(true);
             budgetsFlagshipUI.setProject(project);
-            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
-            budgetsFlagshipUI.setModificationJustification("");
             budgetsFlagshipUI.setPhase(this.getActualPhase());
 
             if (budgetsFlagshipUI.getCrpProgram() != null) {
@@ -533,14 +530,8 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
             ProjectBudgetsFlagship ProjectBudgetDB =
               projectBudgetsFlagshipManager.getProjectBudgetsFlagshipById(budgetsFlagshipUI.getId());
             ProjectBudgetDB.setAmount(budgetsFlagshipUI.getAmount());
-            budgetsFlagshipUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
             budgetsFlagshipUI.setPhase(this.getActualPhase());
-            budgetsFlagshipUI.setActiveSince(ProjectBudgetDB.getActiveSince());
-            budgetsFlagshipUI.setActive(true);
             budgetsFlagshipUI.setProject(project);
-            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
-            budgetsFlagshipUI.setModificationJustification("");
-            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
             budgetsFlagshipUI = projectBudgetsFlagshipManager.saveProjectBudgetsFlagship(budgetsFlagshipUI);
           }
 

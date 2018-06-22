@@ -10,12 +10,10 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Andres Valencia
  */
-public class DeliverableRule implements java.io.Serializable {
+public class DeliverableRule extends MarloBaseEntity implements java.io.Serializable {
 
   private static final long serialVersionUID = -2007066958617057527L;
 
-  @Expose
-  private Long id;
   @Expose
   private String name;
   @Expose
@@ -26,15 +24,6 @@ public class DeliverableRule implements java.io.Serializable {
 
   public DeliverableRule() {
   }
-
-
-  public DeliverableRule(Long id, String name, String description) {
-    super();
-    this.id = id;
-    this.name = name;
-    this.description = description;
-  }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -67,11 +56,6 @@ public class DeliverableRule implements java.io.Serializable {
   }
 
 
-  public Long getId() {
-    return id;
-  }
-
-
   public String getName() {
     return name;
   }
@@ -81,7 +65,7 @@ public class DeliverableRule implements java.io.Serializable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
@@ -96,11 +80,6 @@ public class DeliverableRule implements java.io.Serializable {
   }
 
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
   public void setName(String name) {
     this.name = name;
   }
@@ -108,7 +87,7 @@ public class DeliverableRule implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "DeliverableRules [id=" + id + ", name=" + name + ", description=" + description + "]";
+    return "DeliverableRules [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
   }
 
 

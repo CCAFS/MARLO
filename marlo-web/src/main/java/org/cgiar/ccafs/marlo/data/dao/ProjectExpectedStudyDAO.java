@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,21 @@ public interface ProjectExpectedStudyDAO {
    */
   public List<ProjectExpectedStudy> findAll();
 
+
+  /**
+   * This method gets a list of projectExpectedStudy that are active by a given organizationType and phase
+   * 
+   * @return a list from ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getStudiesByOrganizationType(RepIndOrganizationType repIndOrganizationType,
+    Phase phase);
+
+  /**
+   * This method gets a list of projectExpectedStudy that are active by a given phase
+   * 
+   * @return a list from ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getStudiesByPhase(Phase phase);
 
   /**
    * This method search the expected Studies that the user can be edit.

@@ -26,17 +26,17 @@
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
-			<column name="modified_by" not-null="true" />
+			<column name="modified_by" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+			fetch="select" update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<property name="composedId" type="string">
 			<column name="composed_id" length="20" />
 		</property>
 		<property name="topicStudy" type="string">
-			<column name="topic_study" length="65535" />
+			<column name="topic_study" sql-type="TEXT" />
 		</property>
 		<property name="scope" type="java.lang.Integer">
 			<column name="scope" />
@@ -45,19 +45,19 @@
 			<column name="type" />
 		</property>
 		<property name="otherType" type="string">
-			<column name="other_type" length="65535" />
+			<column name="other_type" sql-type="TEXT" />
 		</property>
 		<property name="comments" type="string">
-			<column name="comments" length="65535" />
+			<column name="comments" sql-type="TEXT" />
 		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
+			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
 		<set name="expectedStudyProjects" table="expected_study_projects"

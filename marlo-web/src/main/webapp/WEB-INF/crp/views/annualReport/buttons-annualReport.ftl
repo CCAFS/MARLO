@@ -1,11 +1,11 @@
 [#ftl]
 [#-- Hidden Inputs --] 
 <input type="hidden"  name="liaisonInstitutionID" value="${(liaisonInstitutionID)!}" />
-<input type="hidden"  name="powbSynthesisID" value="${(powbSynthesis.id)!}" />
-<input type="hidden"  name="id" value="${(powbSynthesis.id)!}"/>
-<input type="hidden"  name="liaisonInstitutionAcronym" value="${(powbSynthesis.liaisonInstitution.acronym)!}" />
+<input type="hidden"  name="synthesisID" value="${(reportSynthesis.id)!}" />
+<input type="hidden"  name="id" value="${(reportSynthesis.id)!}"/>
+<input type="hidden"  name="liaisonInstitutionAcronym" value="${(reportSynthesis.liaisonInstitution.acronym)!}" />
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
-<input type="hidden"  name="className" value="${(powbSynthesis.class.name)!}"/>
+<input type="hidden"  name="className" value="${(reportSynthesis.class.name)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 
@@ -13,7 +13,7 @@
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
 [#attempt]
-  [#assign recordsList = (action.getListLog(powbSynthesis))!{} /]
+  [#assign recordsList = (action.getListLog(reportSynthesis))!{} /]
 [#recover]
   [#assign recordsList = [] /]
 [/#attempt]

@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,10 +97,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public String add() {
     ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
 
-    projectExpectedStudy.setModifiedBy(this.getCurrentUser());
-    projectExpectedStudy.setActiveSince(new Date());
-    projectExpectedStudy.setCreatedBy(this.getCurrentUser());
-    projectExpectedStudy.setActive(true);
     projectExpectedStudy.setYear(this.getActualPhase().getYear());
 
     if (project != null) {

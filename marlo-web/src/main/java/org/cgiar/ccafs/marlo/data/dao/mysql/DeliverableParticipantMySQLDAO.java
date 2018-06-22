@@ -20,8 +20,12 @@ import org.cgiar.ccafs.marlo.data.dao.DeliverableParticipantDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -98,6 +102,41 @@ public class DeliverableParticipantMySQLDAO extends AbstractMarloDAO<Deliverable
     DeliverableParticipant deliverableParticipantResult = (DeliverableParticipant) findSingleResult;
 
     return deliverableParticipantResult;
+  }
+
+  @Override
+  public List<DeliverableParticipant> getDeliverableParticipantByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("dp.id as id ");
+    query.append("FROM ");
+    query.append("deliverable_participants AS dp ");
+    query.append("INNER JOIN deliverables AS d ON d.id = dp.deliverable_id ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append("WHERE dp.is_active = 1 AND ");
+    query.append("dp.has_participants = 1 AND ");
+    query.append("dp.`phase_id` =" + phase.getId() + " AND ");
+    query.append("d.is_active = 1 AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase.getId() + " AND ");
+    query.append("di.`status` !=" + ProjectStatusEnum.Cancelled.getStatusId() + " AND ");
+    query.append("(( di.status = " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`new_expected_year` ="
+      + phase.getYear() + " ) OR ");
+    query.append(
+      "( di.status != " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`year` =" + phase.getYear() + " ))");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<DeliverableParticipant> deliverableParticipants = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverableParticipant deliverableParticipant = this.find(Long.parseLong(map.get("id").toString()));
+        deliverableParticipants.add(deliverableParticipant);
+      }
+    }
+
+    return deliverableParticipants.stream()
+      .sorted((p1, p2) -> p1.getEventActivityName().compareTo(p2.getEventActivityName())).collect(Collectors.toList());
   }
 
   @Override

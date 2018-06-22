@@ -15,17 +15,26 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSummary;
+import org.cgiar.ccafs.marlo.data.dao.FundingSourceBudgetDAO;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
+import org.cgiar.ccafs.marlo.data.dao.FundingSourceLocationsDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.mapper.FundingSourceSummaryMapper;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -33,22 +42,42 @@ import javax.inject.Inject;
 @Named
 public class FundingSourceManagerImpl implements FundingSourceManager {
 
+  private final FundingSourceDAO fundingSourceDAO;
 
-  private FundingSourceDAO fundingSourceDAO;
+  private final FundingSourceBudgetDAO fundingSourceBudgetDAO;
+
+  private final FundingSourceLocationsDAO fundingSourceLocationsDAO;
+
+  private final FundingSourceSummaryMapper fundingSourceSummaryMapper;
   // Managers
 
 
   @Inject
-  public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO) {
+  public FundingSourceManagerImpl(FundingSourceDAO fundingSourceDAO, FundingSourceBudgetDAO fundingSourceBudgetDAO,
+    FundingSourceLocationsDAO fundingSourceLocationsDAO, FundingSourceSummaryMapper fundingSourceSummaryMapper) {
     this.fundingSourceDAO = fundingSourceDAO;
-
-
+    this.fundingSourceBudgetDAO = fundingSourceBudgetDAO;
+    this.fundingSourceLocationsDAO = fundingSourceLocationsDAO;
+    this.fundingSourceSummaryMapper = fundingSourceSummaryMapper;
   }
 
   @Override
   public void deleteFundingSource(long fundingSourceId) {
 
     fundingSourceDAO.deleteFundingSource(fundingSourceId);
+
+    /**
+     * Because we are not using cascade delete and we need to set the inactive flag on the
+     * entities, we need to do this for all child entities.
+     * At this point in time I am not going to delete many to many relationships e.g. DeliverableFundingSource
+     * and instead look to prevent FundingSources being deleted when there are still deliverables linked
+     * to the funding source.
+     * Note there is a more elegant way of doing soft deletes, see this article for instructions:
+     * https://vladmihalcea.com/the-best-way-to-soft-delete-with-hibernate/
+     */
+    fundingSourceBudgetDAO.deleteAllFundingSourceBudgetForFundingSource(fundingSourceId);
+
+    fundingSourceLocationsDAO.deleteAllFundingSourceLocationsForFundingSource(fundingSourceId);
   }
 
   @Override
@@ -62,6 +91,21 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
 
     return fundingSourceDAO.findAll();
 
+  }
+
+  @Override
+  public List<FundingSourceSummary> getClosedFundingSourceSummaries(GlobalUnit globalUnit, Phase phase) {
+
+    Set<Integer> statusTypes = new HashSet<>();
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Complete.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Cancelled.getStatusId()));
+
+    List<FundingSource> fundingSources = fundingSourceDAO.getFundingSourceSummaries(globalUnit, phase, statusTypes);
+
+    List<FundingSourceSummary> fundingSourceSummaries =
+      fundingSourceSummaryMapper.fundingSourcesToFundingSourceSummaries(fundingSources);
+
+    return fundingSourceSummaries;
   }
 
   @Override
@@ -89,6 +133,24 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  public List<FundingSourceSummary> getOngoingFundingSourceSummaries(GlobalUnit globalUnit, Phase phase) {
+
+    Set<Integer> statusTypes = new HashSet<>();
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Pipeline.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Informally.getStatusId()));
+
+    List<FundingSource> fundingSources = fundingSourceDAO.getFundingSourceSummaries(globalUnit, phase, statusTypes);
+
+    List<FundingSourceSummary> fundingSourceSummaries =
+      fundingSourceSummaryMapper.fundingSourcesToFundingSourceSummaries(fundingSources);
+
+    return fundingSourceSummaries;
+
+  }
+
+  @Override
   public FundingSource saveFundingSource(FundingSource fundingSource) {
 
     return fundingSourceDAO.save(fundingSource);
@@ -102,7 +164,7 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID) {
+  public List<FundingSourceSearchSummary> searchFundingSources(String query, int year, long crpID, long phaseID) {
     return fundingSourceDAO.searchFundingSources(query, year, crpID, phaseID);
   }
 
@@ -112,9 +174,9 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
-    long phaseID) {
-    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year, crpID, phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
+    int year, long crpID, long phaseID) {
+    return fundingSourceDAO.searchFundingSourcesByInstitution(userInput, institutionID, year, crpID, phaseID);
   }
 
   @Override

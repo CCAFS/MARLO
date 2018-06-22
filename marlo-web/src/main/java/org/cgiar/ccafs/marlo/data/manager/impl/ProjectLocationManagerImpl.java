@@ -79,13 +79,8 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
     if (locations.isEmpty()) {
       ProjectLocation projectLocationAdd = new ProjectLocation();
-      projectLocationAdd.setActive(true);
-      projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
-      projectLocationAdd.setCreatedBy(projectLocation.getCreatedBy());
       projectLocationAdd.setLocElement(projectLocation.getLocElement());
       projectLocationAdd.setLocElementType(projectLocation.getLocElementType());
-      projectLocationAdd.setModificationJustification(projectLocation.getModificationJustification());
-      projectLocationAdd.setModifiedBy(projectLocation.getModifiedBy());
       projectLocationAdd.setPhase(phase);
       projectLocationAdd.setProject(projectLocation.getProject());
       projectLocationDAO.save(projectLocationAdd);
@@ -130,13 +125,8 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
     if (locations.isEmpty()) {
       ProjectLocation projectLocationAdd = new ProjectLocation();
-      projectLocationAdd.setActive(true);
-      projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
-      projectLocationAdd.setCreatedBy(projectLocation.getCreatedBy());
       projectLocationAdd.setLocElement(projectLocation.getLocElement());
       projectLocationAdd.setLocElementType(projectLocation.getLocElementType());
-      projectLocationAdd.setModificationJustification(projectLocation.getModificationJustification());
-      projectLocationAdd.setModifiedBy(projectLocation.getModifiedBy());
       projectLocationAdd.setPhase(phase);
       projectLocationAdd.setProject(projectLocation.getProject());
       projectLocationDAO.save(projectLocationAdd);
@@ -158,10 +148,8 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   @Override
   public void deleteProjectLocation(long projectLocationId) {
 
-    // projectLocationDAO.deleteProjectLocation(projectLocationId);
     ProjectLocation projectLocation = this.getProjectLocationById(projectLocationId);
-    projectLocation.setActive(false);
-    projectLocation = projectLocationDAO.save(projectLocation);
+
     Phase currentPhase = phaseMySQLDAO.find(projectLocation.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 
@@ -170,6 +158,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
           projectLocation);
       }
     }
+    projectLocationDAO.deleteProjectLocation(projectLocation.getId());
 
   }
 
@@ -194,8 +183,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
         .collect(Collectors.toList()));
     }
     for (ProjectLocation location : locations) {
-      location.setActive(false);
-      projectLocationDAO.save(location);
+      projectLocationDAO.deleteProjectLocation(location.getId());
     }
 
     if (phase.getNext() != null) {

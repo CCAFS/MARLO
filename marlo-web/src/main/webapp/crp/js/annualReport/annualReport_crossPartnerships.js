@@ -3,7 +3,7 @@ $(document).ready(init);
 function init() {
 
   // Add Select2
-  $('form select').select2({
+  $('form select.globalUnitSelect').select2({
       width: '100%',
       templateResult: formatSelect2Result
   });
@@ -29,8 +29,9 @@ function addProgramCollaboration() {
   $list.append($item);
 
   // Add select
-  $item.find('select').select2({
-      width: '100%'
+  $item.find('select.globalUnitSelect').select2({
+      width: '100%',
+      templateResult: formatSelect2Result
   });
 
   // Add auto complete
@@ -48,7 +49,6 @@ function addProgramCollaboration() {
   $item.show('slow');
   updateIndexes();
 }
-
 
 function removeProgramCollaboration() {
   var $item = $(this).parents('.flagshipCollaboration');
@@ -76,13 +76,14 @@ function formatSelect2Result(item) {
   if(item.loading) {
     return item.text;
   }
+  console.log(item.id);
   var $item = $('#globalUnit-' + item.id).clone();
   return $item;
 }
 
 /**
  * This function initialize the Flagships auto complete
- *
+ * 
  * @returns
  */
 function addFlagshipAutoComplete() {
@@ -105,7 +106,7 @@ function addFlagshipAutoComplete() {
 function searchFlagships(request,response) {
   var selectedUnit = $(this.element).parents('.flagshipCollaboration').find('select.globalUnitSelect').val();
   $.ajax({
-      url: baseURL + '/crpProgramsGlobalUnit.do',
+      url: baseURL + '/annualCrpProgramByCrp.do',
       data: {
           phaseID: phaseID,
           crpID: selectedUnit

@@ -14,7 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByGeographicScopeDTO;
 
 import java.util.List;
 
@@ -53,6 +55,15 @@ public interface RepIndGeographicScopeManager {
 
 
   /**
+   * This method gets a list of ReportSynthesisPartnershipsByGeographicScopeDTO that are active:
+   * List of Partnerships grouped by Geographic Scope
+   * 
+   * @return a list from ReportSynthesisPartnershipsByGeographicScopeDTO null if no exist records
+   */
+  public List<ReportSynthesisPartnershipsByGeographicScopeDTO>
+    getPartnershipsByGeographicScopeDTO(List<ProjectPartnerPartnership> projectPartnerPartnerships);
+
+  /**
    * This method gets a repIndGeographicScope object by a given repIndGeographicScope identifier.
    * 
    * @param repIndGeographicScopeID is the repIndGeographicScope identifier.
@@ -64,11 +75,10 @@ public interface RepIndGeographicScopeManager {
    * This method saves the information of the given repIndGeographicScope
    * 
    * @param repIndGeographicScope - is the repIndGeographicScope object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndGeographicScope was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the repIndGeographicScope
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public RepIndGeographicScope saveRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope);
-
-
 }
