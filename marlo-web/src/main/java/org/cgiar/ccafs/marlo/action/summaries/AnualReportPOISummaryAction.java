@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManage
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -81,6 +82,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
@@ -154,6 +156,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
   private ProjectPartnerManager projectPartnerManager;
   private ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager;
+  private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -206,7 +209,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ProjectFocusManager projectFocusManager, ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager,
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     ProjectPartnerManager projectPartnerManager,
-    ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager) {
+    ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager,
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager) {
 
     super(config, crpManager, phaseManager);
     document = new XWPFDocument();
@@ -232,6 +236,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
     this.projectPartnerManager = projectPartnerManager;
     this.reportSynthesisExternalPartnershipManager = reportSynthesisExternalPartnershipManager;
+    this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
   }
 
   private void addAdjustmentDescription() {
@@ -579,7 +584,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void addFundingSummarize() {
-
     String brieflySummarize = "";
 
     if (reportSynthesisPMU != null) {
@@ -595,7 +599,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     if (brieflySummarize != null && !brieflySummarize.isEmpty()) {
       poiSummary.textParagraph(document.createParagraph(), brieflySummarize);
     }
-
   }
 
   private void addImprovingEfficiency() {
@@ -684,7 +687,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
   }
 
-
   private void addParticipatingCenters() {
     String participantingCenters = "";
     List<CrpPpaPartner> crpPpaPartnerList = this.getLoggedCrp().getCrpPpaPartners().stream()
@@ -711,6 +713,21 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
     poiSummary.textParagraph(document.createParagraph(),
       this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters + ":");
+  }
+
+  public void addReportSynthesisMelia() {
+    List<ReportSynthesisMelia> reportSynthesisMeliaList = reportSynthesisMeliaManager.findAll();
+    String studies = "", status = "", comments = "";
+    if (reportSynthesisMeliaList != null && !reportSynthesisMeliaList.isEmpty()) {
+      for (int i = 0; i < reportSynthesisMeliaList.size(); i++) {
+        if (reportSynthesisMeliaList.get(i).getSummary() != null) {
+          studies += reportSynthesisMeliaList.get(i).getSummary() + "\n";
+        }
+      }
+    }
+    if (studies != null && !studies.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), studies);
+    }
   }
 
   private void addVariancePlanned() {
@@ -769,7 +786,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String FP, subIDO = "", outcomes, targetsIndicator = "";
+    String sloTarget = "", briefSummaries = "", additionalContribution = "", targetsIndicator = "";
 
     /*
      * Get all crp Progress Targets and compare the slo indicador Target id with the actual slotarget id
@@ -784,39 +801,37 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       List<ReportSynthesisCrpProgressTarget> listCrpProgressTargets = reportSynthesisCrpProgressTargetManager.findAll();
 
       for (int i = 0; i < sloTargets.size(); i++) {
-        try {
+
+        if (sloTargets.get(i).getTargetsIndicator() != null && !sloTargets.get(i).getTargetsIndicator().isEmpty()) {
           targetsIndicator = sloTargets.get(i).getTargetsIndicator();
-        } catch (Exception e) {
-          throw e;
         }
-        FP = sloTargets.get(i).getNarrative();
-        String synthesisCrpBirefSummaries = "";
+        sloTarget = targetsIndicator + " " + sloTargets.get(i).getNarrative();
+        String synthesisCrpBriefSummaries = "";
         String synthesisCrpTargets = "";
         for (int j = 0; j < listCrpProgressTargets.size(); j++) {
           if (listCrpProgressTargets.get(j).getSrfSloIndicatorTarget().getId() == sloTargets.get(i).getId()
             && listCrpProgressTargets.get(j).getSrfSloIndicatorTarget().isActive() == true) {
             try {
 
-              synthesisCrpBirefSummaries += listCrpProgressTargets.get(j).getBirefSummary() + "\n";
+              synthesisCrpBriefSummaries += listCrpProgressTargets.get(j).getBirefSummary() + "\n";
               synthesisCrpTargets += listCrpProgressTargets.get(j).getAdditionalContribution() + "\n";
 
             } catch (Exception e) {
 
             }
           }
-
         }
 
-        subIDO = synthesisCrpBirefSummaries;
-        outcomes = synthesisCrpTargets;
+        briefSummaries = synthesisCrpBriefSummaries;
+        additionalContribution = synthesisCrpTargets;
 
         Boolean bold = false;
         String blackColor = "000000";
         String redColor = "c00000";
         String blueColor = "000099";
-        POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(subIDO, ParagraphAlignment.LEFT, bold, blueColor),
-          new POIField(outcomes, ParagraphAlignment.LEFT, bold, blueColor)};
+        POIField[] sData = {new POIField(sloTarget, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(briefSummaries, ParagraphAlignment.LEFT, bold, blueColor),
+          new POIField(additionalContribution, ParagraphAlignment.LEFT, bold, blueColor)};
         data = Arrays.asList(sData);
         datas.add(data);
         flagshipIndex++;
@@ -1058,7 +1073,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String type = "", indicator = "", name = "", description = "", comments = "";
+    String type = "", indicator = "", name = "", description = "", comments = "", lastType = "";
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
@@ -1067,6 +1082,13 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
         data = new ArrayList<>();
         type = listRepIndSynthesis.get(i).getType();
+
+        if (type.equals(lastType)) {
+          type = "";
+        } else {
+          lastType = type;
+        }
+
         indicator = listRepIndSynthesis.get(i).getIndicator();
         description = listRepIndSynthesis.get(i).getDescription();
         name = listRepIndSynthesis.get(i).getName();
@@ -1406,20 +1428,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> data;
     String FP = "", stage = "", phase = "", partner = "", geographic = "", mainArea = "";
 
-    System.out.println("LiaisonInstitutionlist " + liaisonInstitutions.size());
-
     flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
       liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-
-    System.out.println("flagshipExternalPlannedList " + flagshipExternalPlannedList.size());
-
 
     // Flagship External Partnership Synthesis Progress
     flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager
       .getFlagshipCExternalPartnership(liaisonInstitutions, this.getActualPhase().getId());
-
-    System.out.println("flagshipExternalPartnerships " + flagshipExternalPartnerships.size());
-
 
     if (flagshipExternalPartnerships != null && !flagshipExternalPartnerships.isEmpty()) {
       for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
@@ -1432,15 +1446,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
               .getInstitution().getName();
           }
         } catch (Exception e) {
+
         }
-        // stage = flagshipExternalPartnerships.get(i).
+        // stage = flagshipExternalPartnerships.get(i);
 
         try {
-          if (flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getDescription() != null
-            && !flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getDescription().isEmpty()) {
-            phase = flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getDescription();
+          if (flagshipExternalPartnerships.get(i).getPartnerships().get(0).getProjectPartnerPartnership()
+            .getGeographicScope().getName() != null
+            && !flagshipExternalPartnerships.get(i).getPartnerships().get(0).getProjectPartnerPartnership()
+              .getGeographicScope().getName().isEmpty()) {
+            geographic = flagshipExternalPartnerships.get(i).getPartnerships().get(0).getProjectPartnerPartnership()
+              .getGeographicScope().getName();
           }
         } catch (Exception e) {
+
         }
 
         POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
@@ -1794,6 +1813,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.cross"));
       this.addCrossPartnerships();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.mel"));
+      this.addReportSynthesisMelia();
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.effectiveness.efficiency"));
       this.addImprovingEfficiency();
@@ -1857,7 +1877,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       // Table d1
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD1.title"));
       this.createTableD1();
-
       poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD1.footer"));
 
       // Table d2
@@ -2031,12 +2050,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     fileName.append("2017_CRP_AR");
     fileName.append(".docx");
 
-    /*
-     * fileName.append(this.getLoggedCrp().getAcronym() + "-POWBSynthesis-");
-     * fileName.append(this.getSelectedYear() + "_");
-     * fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-     * fileName.append(".docx");
-     */
     return fileName.toString();
   }
 
