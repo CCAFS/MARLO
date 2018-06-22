@@ -1,5 +1,16 @@
 $(document).ready(function() {
-  setViewMores();
+  // setViewMores();
+
+  // Set datatables
+  var $table = $('.viewMoreSyntesis-block table');
+  $table.DataTable({
+      "paging": false,
+      "searching": false,
+      "info": false,
+      "scrollY": "320px",
+      "scrollCollapse": true,
+  });
+
 });
 
 /** View More Synthesis functions * */

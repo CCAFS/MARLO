@@ -3,8 +3,11 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = [ "select2", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ 
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
    ] 
@@ -58,7 +61,9 @@
             [#-- Flagships - Monitoring, Evaluation, Impact Assessment and Learning Synthesis --]
             [#if PMU]
             <div class="form-group margin-panel">
-              [@tableFlagshipSynthesis tableName="meliaSummarytable" list=flagshipMeliaProgress columns=["summary"] /]
+              <div class="viewMoreSyntesis-block">
+                [@tableFlagshipSynthesis tableName="meliaSummarytable" list=flagshipMeliaProgress columns=["summary"] /]
+              </div>
             </div>
             [/#if]
             
@@ -70,7 +75,6 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableIMacro name="" list=(flagshipPlannedList)![] isPMU=PMU /]
-                  <div class="viewMoreSyntesis closed"></div>
                 </div>
               [/#if]
             </div>
@@ -129,7 +133,7 @@
               [#list columns as column]
                 <td>
                   [#if (item[column]?has_content)!false] 
-                    ${item[column]} 
+                    ${item[column]?replace('\n', '<br>')} 
                   [#else]
                     <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                   [/#if]
@@ -213,7 +217,7 @@
           [#-- Comments --]
           <td class="">
           [#if element.projectExpectedStudyInfo.topLevelComments?has_content]
-            ${element.projectExpectedStudyInfo.topLevelComments}
+            ${element.projectExpectedStudyInfo.topLevelComments?replace('\n', '<br>')}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
