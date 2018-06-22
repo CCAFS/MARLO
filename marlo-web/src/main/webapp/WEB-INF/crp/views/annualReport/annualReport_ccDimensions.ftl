@@ -3,9 +3,11 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
-[#assign customJS = [ 
-  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs"  ] /]
+[#assign customJS = [
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js", 
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
@@ -64,7 +66,6 @@
             <div class="form-group">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tableGender" list=flagshipCCDimensions columns=["genderDescription","genderLessons"] /]
-                <div class="viewMoreSyntesis closed"></div>
               </div>
             </div>
             [/#if]
@@ -86,7 +87,7 @@
             <div class="form-group">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tableYouth" list=flagshipCCDimensions columns=["youthDescription","youthLessons"] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             [/#if]
@@ -103,7 +104,7 @@
             <div class="form-group">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tableOther" list=flagshipCCDimensions columns=["otherAspects"] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             [/#if]
@@ -120,7 +121,7 @@
             <div class="form-group">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tableCapDev" list=flagshipCCDimensions columns=["capDev"] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             [/#if]
@@ -150,7 +151,7 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableD2InnovationsList name="${customName}.innovationsValue" list=flagshipPlannedInnovations  isPMU=PMU /]
-                  <div class="viewMoreSyntesis closed"></div>
+                  
                 </div>
               [/#if]
             </div>
@@ -172,7 +173,7 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableEIntellectualAssets name="${customName}.assetsValue" list=flagshipPlannedAssets  isPMU=PMU /]
-                  <div class="viewMoreSyntesis closed"></div>
+                  
                 </div>
               [/#if]
             </div>
@@ -344,10 +345,6 @@
               [/#list]
             </tr>
           [/#list]
-        [#else]
-          <tr>
-            <td class="text-center" colspan="3"><i>No flagships loaded...</i></td>
-          </tr>
         [/#if]
       </tbody>
     </table>
@@ -430,10 +427,6 @@
               [/#if]
             </tr>
           [/#list]
-        [#else]
-          <tr>
-            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
-          </tr>
         [/#if]
       </tbody>
     </table>
@@ -537,10 +530,6 @@
               [/#if]
             </tr>
           [/#list]
-        [#else]
-          <tr>
-            <td class="text-center" colspan="${isPMU?string('7', '8')}"><i>No entries added yet.</i></td>
-          </tr>
         [/#if]
       </tbody>
     </table>

@@ -32,7 +32,7 @@ google.charts.setOnLoadCallback(function() {
       },
       chartArea: {
           right: 0,
-          width: '60%'
+          width: '70%'
       },
       legend: {
         position: "none"
