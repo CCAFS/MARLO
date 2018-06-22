@@ -480,9 +480,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-
         if (expectedStudy.getProjectExpectedStudyInfo() == null) {
-          expectedStudy.getProjectExpectedStudyInfo(phase);
+          expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
         }
 
         // Expected Study Countries List

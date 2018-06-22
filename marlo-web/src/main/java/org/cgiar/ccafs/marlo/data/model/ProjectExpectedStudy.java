@@ -286,7 +286,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     } else {
       List<ProjectExpectedStudyInfo> infos =
         projectExpectedStudyInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
-          && c.getPhase().getId().longValue() == phase.getId()).collect(Collectors.toList());
+          && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
       if (!infos.isEmpty()) {
         this.setProjectExpectedStudyInfo(infos.get(0));
         return this.getProjectExpectedStudyInfo();
