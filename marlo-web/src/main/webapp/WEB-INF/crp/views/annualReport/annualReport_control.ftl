@@ -3,9 +3,12 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ 
   "https://www.gstatic.com/charts/loader.js",
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
 ] /]
@@ -95,7 +98,7 @@
               <hr />
               <div class="viewMoreSyntesis-block" >
                 [@tableD2InnovationsMacro list=(projectInnovationInfos)![] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             
@@ -193,7 +196,7 @@
               <hr />
               <div class="viewMoreSyntesis-block" >
                 [@tableGKeyPartnershipsMacro list=(projectPartnerPartnerships)![] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             
@@ -239,7 +242,7 @@
               <hr />
               <div class="viewMoreSyntesis-block" >
                 [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             
@@ -304,7 +307,7 @@
               <hr />
               <div class="viewMoreSyntesis-block" >
                 [@tableJournalArticlesMacro list=(deliverableInfos)![] /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             
@@ -607,10 +610,12 @@
           </td>
           [#-- Open Access --]
           <td class="text-center">
+            <span style="display:none">${(item.deliverable.dissemination.isOpenAccess?string)!'false'}</span>
             <img src="${baseUrl}/global/images/openAccess-${(item.deliverable.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
           </td>
           [#-- Journal ISI --]
           <td class="text-center">
+            <span style="display:none">${(item.deliverable.publication.isiPublication?string)!'false'}</span>
             <img src="${baseUrl}/global/images/checked-${(item.deliverable.publication.isiPublication?string)!'false'}.png" alt="" />
           </td>
         </tr>

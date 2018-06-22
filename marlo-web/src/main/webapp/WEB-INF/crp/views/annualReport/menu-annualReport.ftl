@@ -51,22 +51,20 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
+            [#assign itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
             [#assign submitStatus = false /]
-            [#assign hasDraft = false /]
+            [#assign hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
             [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
                   [@s.text name=item.name/]
-                  [#-- Draft Tag 
-                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
-                  --]
                 </a>
               </li>
               [#-- Set current Item --]
               [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
               [#-- Set sections for checking --]
-              [#if item.active][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
+              [#if item.active && itemRequired][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
             [/#if]
           [/#list] 
         </ul>

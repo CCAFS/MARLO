@@ -3,8 +3,11 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "components-font-awesome" ] /]
-[#assign customJS = [ 
+[#assign pageLibs = [ "select2", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
+[#assign customJS = [
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
@@ -86,7 +89,7 @@
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
               <div class="viewMoreSyntesis-block" >
                 [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             [/#if]
@@ -104,7 +107,7 @@
               <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
               <div class="viewMoreSyntesis-block" >
                 [@tableCRPProgressMacro list=flagshipCrpProgress /]
-                <div class="viewMoreSyntesis closed"></div>
+                
               </div>
             </div>
             [/#if]
@@ -118,7 +121,7 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableOutcomesCaseStudiesMacro name="" list=flagshipPlannedList isPMU=true /]
-                  <div class="viewMoreSyntesis closed"></div>
+                  
                 </div>
               [/#if]  
             </div>
@@ -247,15 +250,11 @@
             [#local crpProgram = (item.reportSynthesisCrpProgress.reportSynthesis.liaisonInstitution.crpProgram)!false]
             <tr>
               <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>              
-              <td>[#if item.srfSloIndicatorTarget??] ${item.srfSloIndicatorTarget.narrative} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (item.birefSummary?has_content)!false]${item.birefSummary}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (item.additionalContribution?has_content)!false]${item.additionalContribution}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if item.srfSloIndicatorTarget??] ${item.srfSloIndicatorTarget.narrative?replace('\n', '<br>')} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.birefSummary?has_content)!false]${item.birefSummary?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.additionalContribution?has_content)!false]${item.additionalContribution?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
             </tr>
           [/#list]
-        [#else]
-          <tr>
-            <td class="text-center" colspan="4"><i>No flagships loaded..</i></td>
-          </tr>
         [/#if]
       </tbody>
     </table>
@@ -278,8 +277,8 @@
             [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
             <tr>
               <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
-              <td>[#if (item.overallProgress?has_content)!false] ${item.overallProgress} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (item.summaries?has_content)!false] ${item.summaries} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.overallProgress?has_content)!false] ${item.overallProgress?replace('\n', '<br>')} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (item.summaries?has_content)!false] ${item.summaries?replace('\n', '<br>')} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
             </tr>
           [/#list]
         [#else]
