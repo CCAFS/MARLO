@@ -277,12 +277,12 @@
     
     [#-- By whom --]
     <div class="form-group">
-      [@customForm.input name="${customName}.whom" i18nkey="${customLabel}.evaluation.whom" required=true className="" editable=isEditable /]
+      [@customForm.input name="${customName}.textWhom" i18nkey="${customLabel}.evaluation.whom" required=true className="" editable=isEditable /]
     </div>
     
     [#-- By when --]
     <div class="form-group">
-      [@customForm.input name="${customName}.when" i18nkey="${customLabel}.evaluation.when" required=true className="" editable=isEditable /]
+      [@customForm.input name="${customName}.textWhen" i18nkey="${customLabel}.evaluation.when" required=true className="" editable=isEditable /]
     </div>
     
   </div>

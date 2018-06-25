@@ -10,13 +10,17 @@ import com.google.gson.annotations.Expose;
  */
 public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -5287996707368548665L;
+
 
   @Expose
   private ReportSynthesisMelia reportSynthesisMelia;
 
+
   @Expose
   private String nameEvaluation;
+
 
   @Expose
   private String recommendation;
@@ -28,15 +32,13 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   private Integer status;
 
   @Expose
-  private String whom;
+  private String textWhom;
 
   @Expose
-  private String when;
-
+  private String textWhen;
 
   public ReportSynthesisMeliaEvaluation() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -67,7 +69,6 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return sb.toString();
   }
 
-
   public String getManagementResponse() {
     return managementResponse;
   }
@@ -82,7 +83,6 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return recommendation;
   }
 
-
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
@@ -93,21 +93,25 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   }
 
 
-  public String getWhen() {
-    return when;
+  public String getTextWhen() {
+    return textWhen;
   }
 
-  public String getWhom() {
-    return whom;
+
+  public String getTextWhom() {
+    return textWhom;
   }
+
 
   public void setManagementResponse(String managementResponse) {
     this.managementResponse = managementResponse;
   }
 
+
   public void setNameEvaluation(String nameEvaluation) {
     this.nameEvaluation = nameEvaluation;
   }
+
 
   public void setRecommendation(String recommendation) {
     this.recommendation = recommendation;
@@ -121,14 +125,12 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     this.status = status;
   }
 
-
-  public void setWhen(String when) {
-    this.when = when;
+  public void setTextWhen(String textWhen) {
+    this.textWhen = textWhen;
   }
 
-
-  public void setWhom(String whom) {
-    this.whom = whom;
+  public void setTextWhom(String textWhom) {
+    this.textWhom = textWhom;
   }
 
 
