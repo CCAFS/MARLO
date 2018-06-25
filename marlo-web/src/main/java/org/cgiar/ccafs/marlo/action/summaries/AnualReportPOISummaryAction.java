@@ -1177,7 +1177,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> data;
     String title = "", patent = "", applicant = "", aditional = "", registration = "", communication = "";
-
+    System.out.println("assets list " + assetsList.size());
     for (int i = 0; i < assetsList.size(); i++) {
       try {
         title = assetsList.get(i).getTitle();
@@ -1359,46 +1359,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       datas.add(data);
     }
 
-    /*
-     * Double totalEstimatedPercentajeFS = 0.0;
-     * for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreasManager.findAll().stream()
-     * .filter(a -> a.isActive() && a.getIsExpenditure()).collect(Collectors.toList())) {
-     * Double estimatedPercentajeFS = 0.0;
-     * String expenditureArea = "", commentsSpace = "";
-     * expenditureArea = powbExpenditureArea.getExpenditureArea();
-     * if (powbSynthesisPMU != null) {
-     * List<PowbFinancialExpenditure> powbFinancialExpenditureList =
-     * powbExpenditureArea.getPowbFinancialExpenditures().stream()
-     * .filter(f -> f.isActive() && f.getPowbSynthesis().equals(powbSynthesisPMU)).collect(Collectors.toList());
-     * if (powbFinancialExpenditureList != null && !powbFinancialExpenditureList.isEmpty()) {
-     * PowbFinancialExpenditure powbFinancialExpenditure = powbFinancialExpenditureList.get(0);
-     * estimatedPercentajeFS = powbFinancialExpenditure.getW1w2Percentage();
-     * commentsSpace =
-     * powbFinancialExpenditure.getComments() == null || powbFinancialExpenditure.getComments().trim().isEmpty()
-     * ? " " : powbFinancialExpenditure.getComments();
-     * totalEstimatedPercentajeFS += estimatedPercentajeFS;
-     * }
-     * }
-     * if (powbSynthesisPMU != null) {
-     * List<PowbFinancialExpenditure> powbFinancialExpenditureList =
-     * powbExpenditureArea.getPowbFinancialExpenditures().stream()
-     * .filter(f -> f.isActive() && f.getPowbSynthesis().equals(powbSynthesisPMU)).collect(Collectors.toList());
-     * if (powbFinancialExpenditureList != null && !powbFinancialExpenditureList.isEmpty()) {
-     * PowbFinancialExpenditure powbFinancialExpenditure = powbFinancialExpenditureList.get(0);
-     * estimatedPercentajeFS = powbFinancialExpenditure.getW1w2Percentage();
-     * commentsSpace =
-     * powbFinancialExpenditure.getComments() == null || powbFinancialExpenditure.getComments().trim().isEmpty()
-     * ? " " : powbFinancialExpenditure.getComments();
-     * totalEstimatedPercentajeFS += estimatedPercentajeFS;
-     * }
-     * }
-     * POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-     * new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
-     * new POIField(commentsSpace, ParagraphAlignment.LEFT)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * }
-     */
+
     Boolean bold = true;
     String blackColor = "000000";
 
@@ -1438,22 +1399,24 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> data;
     String FP = "", stage = "", phase = "", partner = "", geographic = "", mainArea = "";
 
-    flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
-      liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
 
-    // Flagship External Partnership Synthesis Progress
-    flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager
-      .getFlagshipCExternalPartnership(liaisonInstitutions, this.getActualPhase().getId());
+    flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager.findAll();
 
+    /*
+     * flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
+     * liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+     * Flagship External Partnership Synthesis Progress
+     * flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager
+     * .getFlagshipCExternalPartnership(liaisonInstitutions, this.getActualPhase().getId());
+     */
     if (flagshipExternalPartnerships != null && !flagshipExternalPartnerships.isEmpty()) {
       for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
 
 
         try {
-          if (flagshipExternalPartnerships.get(i).getPartnerships().get(0).getProjectPartnerPartnership()
-            .getGeographicScope().getName() != null
-            && !flagshipExternalPartnerships.get(i).getPartnerships().get(0).getProjectPartnerPartnership()
-              .getGeographicScope().getName().isEmpty()) {
+
+          if (flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getId() == this.getActualPhase()
+            .getId() && flagshipExternalPartnerships.get(i).isActive()) {
             for (int j = 0; j < flagshipExternalPartnerships.get(j).getPartnerships().size(); j++) {
               geographic += flagshipExternalPartnerships.get(i).getPartnerships().get(j).getProjectPartnerPartnership()
                 .getGeographicScope().getName();
@@ -1463,12 +1426,24 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
 
 
-            POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
-              new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
-              new POIField(geographic, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.CENTER)};
-            data = Arrays.asList(sData);
-            datas.add(data);
           }
+          /*
+           * for (int j = 0; j < flagshipExternalPartnerships.get(j).getPartnerships().size(); j++) {
+           * geographic += flagshipExternalPartnerships.get(i).getPartnerships().get(j).getProjectPartnerPartnership()
+           * .getGeographicScope().getName();
+           * partner += flagshipExternalPartnerships.get(i).getPartnerPartnerships().get(j).getProjectPartner()
+           * .getInstitution().getName();
+           * // stage = flagshipExternalPartnerships.get(i);
+           * }
+           */
+
+
+          POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
+            new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
+            new POIField(geographic, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.CENTER)};
+          data = Arrays.asList(sData);
+          datas.add(data);
+
         } catch (Exception e) {
 
         }
@@ -1931,76 +1906,19 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private void getAssetsList() {
     assetsList = new ArrayList<>();
 
-
     List<DeliverableIntellectualAsset> assetsListTemp = deliverableIntellectualAssetManager.findAll();
+    System.out.println(assetsListTemp.size() + " assets list largo " + this.getActualPhase().getId());
     for (int i = 0; i < assetsListTemp.size(); i++) {
-      if (assetsListTemp.get(i).isActive() && assetsListTemp.get(i).getHasPatentPvp()
-        && assetsListTemp.get(i).getPhase().getId() == this.getPhaseID()) {
+      System.out.println(assetsListTemp.get(i).getPhase().getId());
+      if (assetsListTemp.get(i).getPhase().getId() == this.getPhaseID()) {
         try {
           assetsList.add(assetsListTemp.get(i));
+          System.out.println(" Entro + phase " + this.getPhaseID());
         } catch (Exception e) {
           throw e;
         }
       }
     }
-
-
-    /***
-     * deliverables = new ArrayList<>();
-     * innovationsList = new ArrayList<>();
-     * assetsList = new ArrayList<>();
-     * Phase phase = this.getActualPhase();
-     * System.out.println("im here");
-     * if (projectFocusManager.findAll() != null) {
-     * System.out.println("im here 2");
-     * List<ProjectFocus> projectFocus = null;
-     * try {
-     * projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-     * .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == pmuInstitution.getCrpProgram().getId()
-     * && pf.getPhase() != null && pf.getPhase().getId() == this.getActualPhase().getId())
-     * .collect(Collectors.toList()));
-     * } catch (Exception e) {
-     * System.out.println(e);
-     * }
-     * for (ProjectFocus focus : projectFocus) {
-     * Project project = projectManager.getProjectById(focus.getProject().getId());
-     * List<ProjectInnovation> innovations = new ArrayList<>(project.getProjectInnovations().stream()
-     * .filter(in -> in.isActive() && in.getProjectInnovationInfo(phase) != null).collect(Collectors.toList()));
-     * System.out.println("innovations " + innovations.size());
-     * for (ProjectInnovation projectInnovation : innovations) {
-     * if (projectInnovation.getProjectInnovationInfo(phase).getYear() == this.getCurrentCycleYear()) {
-     * innovationsList.add(projectInnovation);
-     * }
-     * }
-     * deliverables.addAll(this.getProjectDeliverables(project, phase));
-     * System.out.println("deliverables " + deliverables.size());
-     * }
-     * // setup project innovations
-     * for (ProjectInnovation projectInnovation : innovationsList) {
-     * if (projectInnovation.getProjectInnovationCrps() != null
-     * && !projectInnovation.getProjectInnovationCrps().isEmpty()) {
-     * projectInnovation.setCrps(new ArrayList<>(projectInnovation.getProjectInnovationCrps().stream()
-     * .filter(s -> s.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
-     * }
-     * }
-     * for (Deliverable deliverable : deliverables) {
-     * // Setup deliverable intellectual assets
-     * if (deliverable.getDeliverableIntellectualAssets() != null
-     * && !deliverable.getDeliverableIntellectualAssets().isEmpty()
-     * && deliverable.getDeliverableIntellectualAssets().size() > 0) {
-     * List<DeliverableIntellectualAsset> list = deliverable.getDeliverableIntellectualAssets().stream()
-     * .filter(i -> i.isActive() && i.getHasPatentPvp() != null && i.getHasPatentPvp())
-     * .collect(Collectors.toList());
-     * if (list != null && !list.isEmpty()) {
-     * DeliverableIntellectualAsset deliverableIntellectualAsset = list.get(0);
-     * if (deliverableIntellectualAsset != null) {
-     * assetsList.add(deliverableIntellectualAsset);
-     * }
-     * }
-     * }
-     * }
-     * }
-     */
   }
 
   @Override
