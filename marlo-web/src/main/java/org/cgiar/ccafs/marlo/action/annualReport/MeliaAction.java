@@ -370,6 +370,8 @@ public class MeliaAction extends BaseAction {
             }
           }
 
+
+        } else {
           if (reportSynthesis.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations() != null
             && !reportSynthesis.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations().isEmpty()) {
             reportSynthesis.getReportSynthesisMelia()
@@ -521,8 +523,8 @@ public class MeliaAction extends BaseAction {
           evaluationSave.setNameEvaluation(evaluation.getNameEvaluation());
           evaluationSave.setRecommendation(evaluation.getRecommendation());
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
-          evaluationSave.setWhom(evaluation.getWhom());
-          evaluationSave.setWhen(evaluation.getWhen());
+          evaluationSave.setTextWhom(evaluation.getTextWhom());
+          evaluationSave.setTextWhen(evaluation.getTextWhen());
 
 
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
@@ -536,8 +538,8 @@ public class MeliaAction extends BaseAction {
           evaluationPrev.setNameEvaluation(evaluation.getNameEvaluation());
           evaluationPrev.setRecommendation(evaluation.getRecommendation());
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
-          evaluationPrev.setWhom(evaluation.getWhom());
-          evaluationPrev.setWhen(evaluation.getWhen());
+          evaluationPrev.setTextWhom(evaluation.getTextWhom());
+          evaluationPrev.setTextWhen(evaluation.getTextWhen());
 
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
 
