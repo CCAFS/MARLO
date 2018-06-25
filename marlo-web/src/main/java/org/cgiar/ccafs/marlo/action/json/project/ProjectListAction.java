@@ -74,7 +74,12 @@ public class ProjectListAction extends BaseSummariesAction {
       for (Project project : allProjects) {
         Map<String, String> projectInfo = new HashMap<String, String>();
         projectInfo.put("id", project.getId().toString());
-        projectInfo.put("description", project.getProjecInfoPhase(this.getSelectedPhase()).getTitle());
+        if (project.getProjecInfoPhase(this.getSelectedPhase()) != null
+          && project.getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+          projectInfo.put("description", project.getProjecInfoPhase(this.getSelectedPhase()).getTitle());
+        } else {
+          projectInfo.put("description", "");
+        }
         projects.add(projectInfo);
       }
     }

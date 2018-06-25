@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 
 import java.util.List;
@@ -56,10 +57,19 @@ public interface ProjectExpectedStudyInfoDAO {
 
 
   /**
+   * This method gets a list of projectExpectedStudyInfo that are active given a phase identifier
+   * 
+   * @return a list from ProjectExpectedStudyInfo null if no exist records
+   */
+  public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase);
+
+  /**
    * This method saves the information of the given projectExpectedStudyInfo
    * 
-   * @param projectExpectedStudyInfo - is the projectExpectedStudyInfo object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyInfo was
+   * @param projectExpectedStudyInfo - is the projectExpectedStudyInfo object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyInfo
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

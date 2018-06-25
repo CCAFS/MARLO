@@ -115,7 +115,7 @@
     </action>
 
     <action name="{crp}/caseStudySummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.CaseStudySummaryAction">
+      class="org.cgiar.ccafs.marlo.action.summaries.StudiesSummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>
