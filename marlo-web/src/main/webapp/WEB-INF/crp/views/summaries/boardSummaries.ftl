@@ -53,8 +53,20 @@
       "description": "summaries.board.report.outcomeCaseStudies.description",
       "namespace": "/projects",
       "action": "${crpSession}/caseStudySummary",
-      "formats": [ "PDF", "Excel" ],
-      "cycles": [ "Reporting" ]
+      "formats": [ "PDF" ],
+      "cycles": [ "Reporting" ],
+      "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Studies Type",
+          "name":   "studyType",
+          "data" : [ 
+            { "label": "All",                 "value": "all"},
+            { "label": "Outcome Case Study",  "value": "outcome_case_study"}, 
+            { "label": "Others",              "value": "others"}
+          ] 
+        }
+      ]
     },
     { "active": true,
       "available": true,
@@ -189,7 +201,7 @@
             <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
               [#-- Temporal Validation (action.canAcessSumaries())--]
               [#list reportType.reportsList as report]
-                [#if report.active][@reportMacro report /][/#if]
+                [#if report.active][@reportMacro report=report index=report_index /][/#if]
               [/#list]
             </div>
           [/#list] 
@@ -202,7 +214,7 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
-[#macro reportMacro report]
+[#macro reportMacro report index]
 
 <div class="summariesFiles simpleBox ${(report.allowProjectID??)?string('allowProjectID','')}">
   [#if !(report.available)]<p class="text-center note">This report is under maintenance and will be available soon.</p>[/#if]
@@ -291,6 +303,19 @@
         <div class="btn btn-danger btn-xs removeAllTags" role="button">Remove all keywords</div>
       </div>
       [/#if]
+      
+      [#-- Components --]
+      [#list (report.components)![] as component]
+        <div class="form-group">
+          [#local customID = "${index}-${component.name}"]
+          <label for="${customID}">${component.label}:</label>
+          [#if component.type == "radio"]
+            [#list (component.data)![] as data]
+              <br />[@customForm.radioFlat id="${customID}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=true /]
+            [/#list]
+          [/#if]
+        </div>
+      [/#list]
       
       [#--  Partner Type --]
       [#if report.partnerType??]
