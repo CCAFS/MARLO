@@ -575,7 +575,7 @@ public final class APConstants {
   public static final String SUMMARY_FORMAT_EXCEL = "Excel";
   public static final String SUMMARY_FORMAT_PDF = "PDF";
   public static final String SUMMARY_PARTNER_TYPE = "partnerType";
-
+  public static final String SUMMARY_STUDY_TYPE = "studyType";
   public static final String SUMMARY_DELIVERABLE_PPA = "ppaPartnerID";
 
   public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =

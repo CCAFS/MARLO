@@ -72,6 +72,11 @@ public class ProjectExpectedStudyInfoManagerImpl implements ProjectExpectedStudy
     return projectExpectedStudyInfoDAO.find(projectExpectedStudyInfoID);
   }
 
+  @Override
+  public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase) {
+    return projectExpectedStudyInfoDAO.getProjectExpectedStudyInfoByPhase(phase);
+  }
+
   /**
    * Reply the information to the next Phases
    * 
