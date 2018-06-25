@@ -538,11 +538,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String restrictedAccess = null;
         Boolean showDelivLicenseModifications = false;
 
-        if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
-          && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
+        if (deliverable.getDeliverableDisseminations().stream()
+          .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList()).size() > 0
+          && deliverable.getDeliverableDisseminations().stream()
+            .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList()).get(0) != null) {
           // Get deliverable dissemination
-          DeliverableDissemination deliverableDissemination =
-            deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0);
+          DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+            .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList()).get(0);
 
           if (deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
@@ -777,12 +782,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (showCompilance) {
 
 
-          if (deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive())
+          if (deliverable.getDeliverableQualityChecks().stream()
+            .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList()).size() > 0
-            && deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive())
+            && deliverable.getDeliverableQualityChecks().stream()
+              .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0) != null) {
             DeliverableQualityCheck deliverableQualityCheck = deliverable.getDeliverableQualityChecks().stream()
-              .filter(qc -> qc.isActive()).collect(Collectors.toList()).get(0);
+              .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList()).get(0);
             // QualityAssurance
             if (deliverableQualityCheck.getQualityAssurance() != null) {
               if (deliverableQualityCheck.getQualityAssurance().getId() == 2) {
@@ -1312,11 +1320,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         Boolean isDisseminated = false;
         Boolean showDelivLicenseModifications = false;
 
-        if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
-          && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
+        if (deliverable.getDeliverableDisseminations().stream()
+          .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList()).size() > 0
+          && deliverable.getDeliverableDisseminations().stream()
+            .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList()).get(0) != null) {
           // Get deliverable dissemination
-          DeliverableDissemination deliverableDissemination =
-            deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0);
+          DeliverableDissemination deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
+            .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList()).get(0);
 
           if (deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {

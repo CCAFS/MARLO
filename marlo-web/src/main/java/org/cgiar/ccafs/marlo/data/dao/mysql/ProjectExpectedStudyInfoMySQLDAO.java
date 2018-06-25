@@ -17,9 +17,12 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyInfoDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -67,6 +70,32 @@ public class ProjectExpectedStudyInfoMySQLDAO extends AbstractMarloDAO<ProjectEx
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("pesi.id as id ");
+    query.append("FROM ");
+    query.append("project_expected_study_info AS pesi ");
+    query.append("INNER JOIN project_expected_studies AS pes ON pes.id = pesi.project_expected_study_id ");
+    query.append("INNER JOIN projects AS p ON p.id = pes.project_id AND p.is_active ");
+    query.append("WHERE pes.is_active = 1 AND ");
+    query.append("pesi.`id_phase` =" + phase.getId());
+    query.append(" ORDER BY p.id,pes.id");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectExpectedStudyInfo projectExpectedStudyInfo = this.find(Long.parseLong(map.get("id").toString()));
+        projectExpectedStudyInfos.add(projectExpectedStudyInfo);
+      }
+    }
+
+    return projectExpectedStudyInfos;
   }
 
   @Override
