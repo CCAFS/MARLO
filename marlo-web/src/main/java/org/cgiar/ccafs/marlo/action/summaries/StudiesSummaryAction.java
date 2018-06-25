@@ -603,8 +603,6 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           studyProjects = String.join("", studyProjectSet);
         }
 
-        System.out
-          .println("P" + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId() + ": " + title);
         model.addRow(new Object[] {id, year, policyAmount, title, status, type, outcomeImpactStatement,
           isContributionText, policyInvestimentType, organizationType, stageProcess, stageStudy, srfTargets, subIdos,
           topLevelComments, geographicScope, region, countries, scopeComments, crps, flagships, regions, institutions,
