@@ -311,7 +311,7 @@
           <label for="${customID}">${component.label}:</label>
           [#if component.type == "radio"]
             [#list (component.data)![] as data]
-              <br />[@customForm.radioFlat id="${customID}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=true /]
+              <br />[@customForm.radioFlat id="${customID}-${data.value}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=true /]
             [/#list]
           [/#if]
         </div>
