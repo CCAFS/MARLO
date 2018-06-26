@@ -17,16 +17,18 @@ package org.cgiar.ccafs.marlo.rest.crpPrograms;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class NewFlagshipDTO {
 
-
+  @ApiModelProperty(notes = "The Flagship program Name")
   @NotNull
   private String name;
 
-
+  @ApiModelProperty(notes = "The Flagship program Acronym")
   @NotNull
   private String acronym;
 
