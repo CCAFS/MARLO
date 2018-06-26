@@ -50,6 +50,7 @@
           <div class="borderBox">
            
             [#-- 1.3.1 Gender --]
+            [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.genderTitle" /]</h5>
             [#-- Describe any important CRP research findings, capacity development or outcomes in 2017 related to Gender issues. --]
             <div class="form-group">
@@ -71,6 +72,7 @@
             [/#if]
             
             [#-- 1.3.2 Youth --]
+            [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youthTitle" /]</h5>
             [#-- Describe any important CRP research findings, capacity development or outcomes in 2017 related to Youth issues. --]
             <div class="form-group">
@@ -87,12 +89,12 @@
             <div class="form-group">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tableYouth" list=flagshipCCDimensions columns=["youthDescription","youthLessons"] /]
-                
               </div>
             </div>
             [/#if]
             
             [#-- 1.3.3 Other Aspects of Equity / “Leaving No-one Behind ” --]
+            [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.otherAspectsTitle" /]</h5>
             [#-- Add information on other aspects of equity and your CRP’s contribution to “leaving no-one behind” --]
             <div class="form-group">
@@ -104,12 +106,12 @@
             <div class="form-group">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tableOther" list=flagshipCCDimensions columns=["otherAspects"] /]
-                
               </div>
             </div>
             [/#if]
             
             [#-- 1.3.4 Capacity Development --]
+            [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDevTitle" /]</h5>
             [#-- Please summarize key achievements and learning points in Capacity Development this year--]
             <div class="form-group">
@@ -128,22 +130,25 @@
             
             [#-- Table C: Cross-cutting Aspect of Outputs (ONLY READ)--]
             [#if PMU]
-            <h4 class="simpleTitle">[@s.text name="${customLabel}.tableCTitle" /]</h4>
-            <div class="form-group">
-              [@tableCMacro /]
-            </div>
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              <h4 class="simpleTitle">[@s.text name="${customLabel}.tableCTitle" /]</h4>
+              <div class="form-group">
+                [@tableCMacro /]
+              </div>
             [/#if]
             
             [#-- 1.3.5 Open Data --]
             [#if PMU]
-            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.openDataTitle" /]</h5>
-            [#-- Please provide a brief summary on CRP progress, challenges, and lessons with implementing the open data commitment. --]
-            <div class="form-group">
-              [@customForm.textArea name="${customName}.openData" i18nkey="${customLabel}.openData" help="${customLabel}.openData.help" className="" helpIcon=false required=true editable=editable /]
-            </div>
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              <h5 class="sectionSubTitle">[@s.text name="${customLabel}.openDataTitle" /]</h5>
+              [#-- Please provide a brief summary on CRP progress, challenges, and lessons with implementing the open data commitment. --]
+              <div class="form-group">
+                [@customForm.textArea name="${customName}.openData" i18nkey="${customLabel}.openData" help="${customLabel}.openData.help" className="" helpIcon=false required=true editable=editable /]
+              </div>
             [/#if]
             
             [#-- Table D-2: List of CRP Innovations in 2017 (From indicator #C1 in Table D-1)  --]
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableD2Title" param="${currentCycleYear}" /]</h4>
             <div class="form-group">
               [#if flagship]
@@ -158,14 +163,16 @@
             
             [#-- 1.3.6 Intellectual Assets --]
             [#if PMU]
-            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.intellectualAssetsTitle" /]</h5>
-            [#-- Please provide a brief summary under the three following headings --]
-            <div class="form-group">
-              [@customForm.textArea name="${customName}.intellectualAssets" i18nkey="${customLabel}.intellectualAssets" help="${customLabel}.intellectualAssets.help" className="" helpIcon=false required=true editable=editable /]
-            </div>
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              <h5 class="sectionSubTitle">[@s.text name="${customLabel}.intellectualAssetsTitle" /]</h5>
+              [#-- Please provide a brief summary under the three following headings --]
+              <div class="form-group">
+                [@customForm.textArea name="${customName}.intellectualAssets" i18nkey="${customLabel}.intellectualAssets" help="${customLabel}.intellectualAssets.help" className="" helpIcon=false required=true editable=editable /]
+              </div>
             [/#if]
             
             [#-- Table E: Intellectual Assets  --]
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             <h4 class="simpleTitle">[@s.text name="${customLabel}.tableETitle" /]</h4>
             <div class="form-group">
               [#if flagship]

@@ -24,6 +24,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis.reportSynthesisMelia" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -45,9 +48,6 @@
         [#include "/WEB-INF/crp/views/annualReport/messages-annualReport.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        
-          [#assign customName= "reportSynthesis.reportSynthesisMelia" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
@@ -55,6 +55,7 @@
           
             [#-- Please provide a summary on any highlights of MELIA this year --]
             <div class="form-group margin-panel">
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
@@ -67,8 +68,11 @@
             </div>
             [/#if]
             
+            <hr />
+            
             [#-- Table I-1: Status of Evaluations, Impact Assessments and other Learning excercises planned --]
             <div class="form-group margin-panel">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableI.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               [#if flagship]
                 [@tableIMacro name="${customName}.plannedStudiesValue" list=(studiesList)![] /]
@@ -82,6 +86,7 @@
             [#-- (PMU Form) Table I-2: Update on actions taken in response to relevant evaluations ... --]
             [#if PMU]
               <div class="form-group">
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evaluation.title" /]</h4>
                 <div class="listEvaluations">
                   [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item]
@@ -264,14 +269,14 @@
     </div>
     
     [#-- Management response --] 
-    <div class="form-group"> 
+    <div class="form-group">
       [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.evaluation.managementResponse" className="" required=true editable=isEditable /]
     </div>
     
     [#-- Status --]
     <div class="form-group row">
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.evaluation.status" value="${(project.projectInfo.status)!}" listName="statuses"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.evaluation.status" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
     

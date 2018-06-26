@@ -111,7 +111,7 @@ public class POISummary {
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
 
-  public void tableAAnnualReportStyle(XWPFTable table) {
+  public void tableA1AnnualReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A */
 
     for (int x = 0; x < table.getNumberOfRows(); x++) {
@@ -592,7 +592,10 @@ public class POISummary {
         break;
 
       case "tableAAnnualReport":
-        this.tableGStyle(table);
+        this.tableBAnnualReportStyle(table);
+        break;
+      case "tableA1AnnualReport":
+        this.tableA1AnnualReportStyle(table);
         break;
       case "tableA2AnnualReport":
         this.tableAStyle(table);

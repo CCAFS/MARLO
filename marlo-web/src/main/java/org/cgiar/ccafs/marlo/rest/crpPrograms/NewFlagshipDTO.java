@@ -15,25 +15,38 @@
 
 package org.cgiar.ccafs.marlo.rest.crpPrograms;
 
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import javax.validation.constraints.NotNull;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Mapper(componentModel = "jsr330")
-public abstract class CrpProgramMapper {
+public class NewFlagshipDTO {
 
-  public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
+  @ApiModelProperty(notes = "The Flagship program Name")
+  @NotNull
+  private String name;
 
-  public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
-
-  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
-
-  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
-    @MappingTarget CrpProgram crpProgram);
+  @ApiModelProperty(notes = "The Flagship program Acronym")
+  @NotNull
+  private String acronym;
 
 
+  public String getAcronym() {
+    return acronym;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

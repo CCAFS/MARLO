@@ -20,23 +20,23 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class InstitutionDTO {
 
-
+  @ApiModelProperty(notes = "The Generated Institution Name")
   private Long id;
-
   @NotNull
   private InstitutionTypeDTO institutionType;
-
+  @ApiModelProperty(notes = "The Institution Name")
   @NotNull
   private String name;
-
+  @ApiModelProperty(notes = "The Institution Acronym")
   private String acronym;
-
+  @ApiModelProperty(notes = "The Institution Website")
   private String websiteLink;
-
+  @ApiModelProperty(notes = "The date that was added the Institution ")
   private Date added;
 
   @NotEmpty

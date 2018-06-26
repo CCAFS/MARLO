@@ -47,6 +47,7 @@
           
             [#-- Summarize the main areas of expenditure of W1/2 --]
             <div class="form-group margin-panel">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               [#if PMU]
                 [@customForm.textArea name="${customName}.mainArea" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
               [#else]
@@ -59,9 +60,8 @@
             
             [#-- Table F: Main Areas of W1/2 Expenditure --]
             <div class="form-group margin-panel">
-              <div class="">
-                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-              </div>
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               <hr />
               [@tableFMacro name="${customName}.expenditureAreas" list=(reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas)![] /]
             </div>
