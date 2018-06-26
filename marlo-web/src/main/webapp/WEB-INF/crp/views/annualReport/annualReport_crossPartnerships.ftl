@@ -52,6 +52,7 @@
 
             [#-- Summarize highlights, value added and points to improve/learning points from this year on Cross-CGIAR partnerships --]
             <div class="form-group margin-panel">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               [#if PMU]
                 [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.summarize" help="${customLabel}.summarize.help" className="" helpIcon=false required=true editable=editable && PMU /]
               [#else]
@@ -62,9 +63,12 @@
               [/#if]
             </div>
             
+            <hr />
+            
             [#-- (Flagship Form) Table H: Status of Internal (CGIAR) Collaborations ... --]
             [#if flagship]
               <div class="form-group">
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.collaboration.title" /]</h4>
                 <div class="listProgramCollaborations">                 
                  [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]
@@ -95,6 +99,7 @@
             [#-- Flagships - Table H: Status of Internal(CGIAR) Collaborations --]
             [#if PMU]
             <div class="form-group margin-panel">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableH.title" /] (${(flagshipCollaborations?size)!'0'})</h4>              
               <div class="viewMoreSyntesis-block" >
                 [@tableHMacro list=flagshipCollaborations /]
