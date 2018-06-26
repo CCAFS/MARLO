@@ -9,11 +9,13 @@
     
     [#-- Data --]
     <div class="form-group margin-panel">
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
       [@customForm.textArea name="${customName}.data" i18nkey="${label}.${id}.data" help="${label}.${id}.data.help" paramText="${(actualPhase.year)!}" fieldEmptyText="global.prefilledByPmu" className="" helpIcon=false required=true editable=editable /]
     </div>
     
     [#-- Comments/Analysis --]
     <div class="form-group margin-panel">
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
       [@customForm.textArea name="${customName}.comment" i18nkey="${label}.${id}.comments" help="${label}.${id}.comments.help" fieldEmptyText="global.prefilledByPmu" className="" helpIcon=false required=true editable=editable /]
     </div>
   </div>

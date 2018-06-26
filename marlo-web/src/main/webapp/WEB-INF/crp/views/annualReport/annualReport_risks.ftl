@@ -17,6 +17,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis.reportSynthesisRisk" /]
+[#assign customLabel= "annualReport.${currentStage}" /]
 [#-- Helptext --]
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
@@ -38,8 +40,6 @@
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#assign customName= "reportSynthesis.reportSynthesisRisk" /]
-          [#assign customLabel= "annualReport.${currentStage}" /]
           
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
@@ -47,6 +47,7 @@
           
             [#-- Brief summary of any encountered risks including any mitigation measures taken --]
             <div class="form-group margin-panel">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               [#if PMU]
                 [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
               [#else]

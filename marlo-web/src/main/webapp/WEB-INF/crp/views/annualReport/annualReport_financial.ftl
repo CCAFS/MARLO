@@ -47,12 +47,21 @@
           
             [#-- Please give a narrative summary on the financial status and health of the CRP --]
             <div class="form-group margin-panel">
-              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              [#if PMU]
+                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="" helpIcon=false required=true editable=editable && PMU /]
+              [#else]
+                <div class="textArea">
+                  <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
+                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                </div>
+              [/#if]
             </div>
             
             [#-- Table J: CRP Financial Report --]
             <div class="form-group margin-panel">
               <div class="evidence-plannedStudies-header">
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 <h4 class="subTitle headTitle">[@s.text name="${customLabel}.tableJ.title" /]</h4>
               </div>
               <hr />

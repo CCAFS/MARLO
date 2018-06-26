@@ -46,6 +46,7 @@
           <div class="borderBox"> 
             [#-- Please describe any successes and points to improve in future, providing numbers where possible --]
             <div class="form-group margin-panel">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               [#if PMU]
                 [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.successes" help="${customLabel}.successes.help" className="" helpIcon=false required=true editable=editable && PMU /]
               [#else]
