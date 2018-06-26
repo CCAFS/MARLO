@@ -84,12 +84,12 @@ public class CrpFlagships {
   @RequestMapping(value = "/{CGIARStructure}/setFlagship", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpProgramDTO> createFlagship(@PathVariable String CGIARStructure,
-    @Valid @RequestBody CrpProgramDTO crpProgramDTO) {
-    LOG.debug("Create a new Crp Program (Flagship) with : {}", crpProgramDTO);
+    @Valid @RequestBody NewFlagshipDTO newFlagshipDTO) {
+    LOG.debug("Create a new Crp Program (Flagship) with : {}", newFlagshipDTO);
 
     GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);
 
-    CrpProgram crpProgram = crpProgramMapper.crpProgramDTOToCrpProgram(crpProgramDTO);
+    CrpProgram crpProgram = crpProgramMapper.newFlagshipDTOToCrpProgram(newFlagshipDTO);
 
     crpProgram.setActive(true);
     crpProgram.setCreatedBy(this.getCurrentUser());
@@ -119,7 +119,7 @@ public class CrpFlagships {
   @RequiresPermissions(Permission.CRP_PROGRAM_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/deleteFlagship/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> deleteInstitution(@PathVariable String CGIARStructure, @PathVariable Long id) {
+  public ResponseEntity<Void> deleteFlagship(@PathVariable String CGIARStructure, @PathVariable Long id) {
     LOG.debug("Delete Flagship with id: {}", id);
 
     GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);

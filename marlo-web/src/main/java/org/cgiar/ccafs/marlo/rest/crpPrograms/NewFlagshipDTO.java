@@ -20,25 +20,19 @@ import javax.validation.constraints.NotNull;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CrpProgramDTO {
-
-
-  private Long id;
+public class NewFlagshipDTO {
 
 
   @NotNull
   private String name;
 
+
   @NotNull
   private String acronym;
 
+
   public String getAcronym() {
     return acronym;
-  }
-
-
-  public Long getId() {
-    return id;
   }
 
 
@@ -46,19 +40,11 @@ public class CrpProgramDTO {
     return name;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
   public void setName(String name) {
     this.name = name;
   }
-
-
 }

@@ -18,22 +18,21 @@ package org.cgiar.ccafs.marlo.rest.crpPrograms;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Mapper(componentModel = "jsr330")
-public interface CrpProgramMapper {
+public abstract class CrpProgramMapper {
 
-  @Mappings({@Mapping(target = "id", ignore = true)})
-  public CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
+  public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
 
-  public CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
+  public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
 
-  public CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
+  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
+
+  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
     @MappingTarget CrpProgram crpProgram);
 
 
