@@ -62,10 +62,8 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
-import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.OtherContribution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -73,7 +71,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
-import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
@@ -97,9 +94,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
-import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
@@ -299,24 +294,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nLocationsPlanningMenu", "3. " + this.getText("projects.menu.locations"));
     if (this.getProject().getProjectInfo().getAdministrative() != null
       && this.getProject().getProjectInfo().getAdministrative() == true) {
+      masterReport.getParameterValues().put("i8nExpectedStudiesPlanningMenu",
+        "4. " + this.getText("projects.menu.expectedStudies"));
       masterReport.getParameterValues().put("i8nDeliverablesPlanningMenu",
-        "4. " + "Expected " + this.getText("projects.menu.deliverables"));
+        "5. " + "Expected " + this.getText("projects.menu.deliverables"));
       if (hasActivities) {
         masterReport.getParameterValues().put("i8nActivitiesPlanningMenu",
-          "5. " + this.getText("projects.menu.activities"));
+          "6. " + this.getText("projects.menu.activities"));
+        masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
+          "7. " + "Project " + this.getText("projects.menu.budget") + " (USD)");
+        masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
+          "7.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
+        masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
+          "7.2 " + this.getText("planning.cluster") + " (USD)");
+      } else {
         masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
           "6. " + "Project " + this.getText("projects.menu.budget") + " (USD)");
         masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
           "6.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
         masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
           "6.2 " + this.getText("planning.cluster") + " (USD)");
-      } else {
-        masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
-          "5. " + "Project " + this.getText("projects.menu.budget") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
-          "5.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
-          "5.2 " + this.getText("planning.cluster") + " (USD)");
       }
     } else {
       masterReport.getParameterValues().put("i8nOutcomesPlanningMenu",
@@ -356,67 +353,28 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nLocationsReportingMenu", "3. " + this.getText("projects.menu.locations"));
     masterReport.getParameterValues().put("i8nOutcomesReportingMenu", "4. " + this.getText("breadCrumb.menu.outcomes"));
 
-    // Phase One
-    if (this.isPhaseOne()) {
-      masterReport.getParameterValues().put("i8nProjectOutcomesReportingMenu",
-        "4.1 " + this.getText("projects.menu.projectOutcomes"));
-      masterReport.getParameterValues().put("i8nCCAFSOutcomesReportingMenu",
-        "4.2 " + this.getText("projects.menu.ccafsOutcomes"));
-      masterReport.getParameterValues().put("i8nOtherContributionsReportingMenu",
-        "4.3 " + this.getText("projects.menu.otherContributions"));
-      masterReport.getParameterValues().put("i8nCaseStudiesReportingMenu",
-        "4.4 " + this.getText("projects.menu.caseStudies"));
+    if (this.getProject().getProjectInfo().getAdministrative() != null
+      && this.getProject().getProjectInfo().getAdministrative() == true) {
+      masterReport.getParameterValues().put("i8nStudiesReportingMenu", "4. " + this.getText("menu.studies"));
     } else {
-      // Phase Two
       masterReport.getParameterValues().put("i8nFlagshipOutcomesReportingMenu",
         "4.1 " + this.getText("projects.menu.contributionsCrpList"));
       masterReport.getParameterValues().put("i8nStudiesReportingMenu", "4.2 " + this.getText("menu.studies"));
     }
-    if (this.getProject().getProjectInfo().getAdministrative() != null
-      && this.getProject().getProjectInfo().getAdministrative() == true) {
-      masterReport.getParameterValues().put("i8nProjectOutputsReportingMenu",
-        "4. " + this.getText("projects.menu.projectOutputs"));
-      masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
-        "4.1 " + this.getText("projects.menu.overviewByMogs"));
-      if (this.isPhaseOne()) {
-        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-          "4.2 " + this.getText("projects.menu.deliverables"));
-      } else {
-        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-          "4.1 " + this.getText("projects.menu.deliverables"));
-        masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
-          "4.2 " + this.getText("projects.menu.innovations"));
-      }
-      masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
-        "4.3 " + this.getText("breadCrumb.menu.projectHighlights"));
-
-
+    masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
+      "5. " + this.getText("projects.menu.deliverables"));
+    masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
+      "6. " + this.getText("projects.menu.innovations"));
+    masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
+      "7. " + this.getText("breadCrumb.menu.projectHighlights"));
+    if (hasActivities) {
       masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
-        "5. " + this.getText("projects.menu.activities"));
+        "8. " + this.getText("projects.menu.activities"));
       masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
-        "6. " + this.getText("breadCrumb.menu.leverage"));
+        "9. " + this.getText("breadCrumb.menu.leverage"));
     } else {
-      masterReport.getParameterValues().put("i8nProjectOutputsReportingMenu",
-        "5. " + this.getText("projects.menu.projectOutputs"));
-      masterReport.getParameterValues().put("i8nOverviewByMOGsReportingMenu",
-        "5.1 " + this.getText("projects.menu.overviewByMogs"));
-      if (this.isPhaseOne()) {
-        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-          "5.2 " + this.getText("projects.menu.deliverables"));
-      } else {
-        masterReport.getParameterValues().put("i8nDeliverablesReportingMenu",
-          "5.1 " + this.getText("projects.menu.deliverables"));
-        masterReport.getParameterValues().put("i8nInnovationsReportingMenu",
-          "5.2 " + this.getText("projects.menu.innovations"));
-      }
-      masterReport.getParameterValues().put("i8nProjectHighlightsReportingMenu",
-        "5.3 " + this.getText("breadCrumb.menu.projectHighlights"));
-
-
-      masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
-        "6. " + this.getText("projects.menu.activities"));
       masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
-        "7. " + this.getText("breadCrumb.menu.leverage"));
+        "8. " + this.getText("breadCrumb.menu.leverage"));
     }
 
 
@@ -587,104 +545,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("projectPartners.lessons.reporting.readText"));
     masterReport.getParameterValues().put("i8nPartnerROverall",
       this.getText("projectPartners.partnershipsOverall.readText"));
-    /*
-     * Reporting Outcomes Phase One
-     * Project Outcomes
-     */
-    masterReport.getParameterValues().put("i8nProjectOutcomesRNoData", this.getText("projectOutcomes.noData"));
-    masterReport.getParameterValues().put("i8nProjectOutcomesRStatement",
-      this.getText("projectOutcomes.statement.readText"));
-    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgress",
-      this.getText("projectOutcomes.annualProgress.readText", new String[] {String.valueOf(this.getSelectedYear())}));
-    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgressCurrent",
-      this.getText("projectOutcomes.annualProgressCurrentReporting.readText",
-        new String[] {String.valueOf(this.getSelectedYear())}));
-    masterReport.getParameterValues().put("i8nProjectOutcomesRComunnicationCurrent",
-      this.getText("projectOutcomes.commEngagementOutcomes.readText"));
-    masterReport.getParameterValues().put("i8nProjectOutcomesREvidence",
-      this.getText("projectOutcomes.uploadSummary.readText"));
-    masterReport.getParameterValues().put("i8nProjectOutcomesRAnnualProgressOutcome",
-      this.getText("projectOutcomes.Annual"));
-    masterReport.getParameterValues().put("i8nProjectOutcomesRLessons",
-      this.getText("projectOutcomes.lessons.readText"));
-    /*
-     * Reporting
-     * CCAFS Outcomes
-     */
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRNoData", this.getText("ccafsOutcomes.noData"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetValue",
-      this.getText("projectCcafsOutcomes.targetValue"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRCumulativeTarget",
-      this.getText("projectCcafsOutcomes.comulativeTarget"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRAchievedTarget",
-      this.getText("projectCcafsOutcomes.achievedTarget"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrative",
-      this.getText("projectCcafsOutcomes.targetNarrative"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrativeAchieved",
-      this.getText("projectCcafsOutcomes.targetNarrativeAchieved"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetNarrativeGenderAchieved",
-      this.getText("projectCcafsOutcomes.targetNarrativeGenderAchieved"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRTargetGender",
-      this.getText("projectCcafsOutcomes.targetGender"));
-    masterReport.getParameterValues().put("i8nCCAFSOutcomesRMogs", this.getText("projectCcafsOutcomes.mogs"));
-    /*
-     * Reporting
-     * Other Contributions
-     */
-    masterReport.getParameterValues().put("i8nOtherContributionsRNoData", this.getText("otherContributions.noData"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRStatement",
-      this.getText("projectOtherContributions.contribution.readText"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRRegion",
-      this.getText("projectOtherContributions.region"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRIndicator",
-      this.getText("projectOtherContributions.indicators"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRContributionTarget",
-      this.getText("otherContributions.contributionTarget"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRTargetValueContrib",
-      this.getText("projectOtherContributions.target.readText"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingCRPS",
-      this.getText("projectOtherContributions.collaboratingCRPs.readText"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRCRPEmpty",
-      this.getText("projectOtherContributions.crpsEmpty"));
-    masterReport.getParameterValues().put("i8nOtherContributionsRColaboratingDescription",
-      this.getText("projectOtherContributions.collaborationNature.readText"));
-
-    /*
-     * Reporting
-     * Case Studies
-     */
-    masterReport.getParameterValues().put("i8nCaseStudiesRNoData", this.getText("caseStudy.noData"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRCaseStudy", this.getText("breadCrumb.menu.caseStudy"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRTitle", this.getText("caseStudy.title"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRYear", this.getText("caseStudy.caseStudyYear"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRProjects", this.getText("caseStudy.projects"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRStatement",
-      this.getText("caseStudy.outcomeStatement.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRResearchOutputs",
-      this.getText("caseStudy.researchOutput.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRResearchPartners",
-      this.getText("caseStudy.researchPartners.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRActivities",
-      this.getText("caseStudy.activitiesContributed.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRNonResearchPartners",
-      this.getText("caseStudy.nonResearchPartners.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesROutputUsers", this.getText("caseStudy.outputUsers.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesREvidence", this.getText("caseStudy.evidence.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesROutputUsers", this.getText("caseStudy.outputUsers.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRReferences", this.getText("caseStudy.references.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRIndicators",
-      this.getText("caseStudy.caseStudyIndicators.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRExplainIndicatorRelation",
-      this.getText("caseStudy.explainIndicatorRelation.readText"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRUploadAnnexes",
-      this.getText("caseStudy.uploadAnnexes.readText"));
-    /*
-     * Reporting
-     * Overview By MOGs
-     */
-    masterReport.getParameterValues().put("i8nOverviewByMOGsRNoData", this.getText("overviewByMOGS.noData"));
-    masterReport.getParameterValues().put("i8nOverviewByMOGsRMogs", this.getText("projectCcafsOutcomes.mogs"));
-
 
     /*
      * Reporting Outcomes Phase Two
@@ -1244,29 +1104,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         args.clear();
         this.fillSubreport((SubReport) hm.get("locations"), "locations", args);
 
+        // Subreport Outcomes
         if (this.getSelectedCycle().equals("Planning")) {
-          // Subreport Outcomes
           args.clear();
           this.fillSubreport((SubReport) hm.get("outcomes"), "outcomes_list", args);
           this.fillSubreport((SubReport) hm.get("expected_studies"), "expected_studies", args);
         } else {
-          // Subreport Project Outcomes
           args.clear();
-          // Outcomes Phase One
-          if (this.isPhaseOne()) {
-            this.fillSubreport((SubReport) hm.get("project_outcomes"), "project_outcomes", args);
-            this.fillSubreport((SubReport) hm.get("other_outcomes"), "other_outcomes", args);
-            this.fillSubreport((SubReport) hm.get("ccafs_outcomes"), "ccafs_outcomes", args);
-            this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
-            this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
-            this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
-            this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
-            this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
-          } else {
-            // outcomes Phase Two
-            this.fillSubreport((SubReport) hm.get("flagship_outcomes"), "flagship_outcomes", args);
-            this.fillSubreport((SubReport) hm.get("studies"), "studies", args);
-          }
+          // Outcomes Phase Two
+          this.fillSubreport((SubReport) hm.get("flagship_outcomes"), "flagship_outcomes", args);
+          this.fillSubreport((SubReport) hm.get("studies"), "studies", args);
         }
 
         // Subreport Deliverables
@@ -1388,33 +1235,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       case "budgets_by_coas_list":
         model = this.getBudgetsbyCoasTableModel();
         break;
-      // Only for reporting
-      // Outcomes Phase One
-      case "project_outcomes":
-        model = this.getProjectOutcomesTableModel();
-        break;
-      case "other_outcomes":
-        model = this.getProjectOtherOutcomesTableModel();
-        break;
-      case "ccafs_outcomes":
-        model = this.getccafsOutcomesTableModel();
-        break;
-      case "other_contributions":
-        model = this.getOtherContributionsTableModel();
-        break;
-      case "other_contributions_detail":
-        model = this.getOtherContributionsDetailTableModel();
-        break;
-      case "other_contributions_crps":
-        model = this.getOtherContributionsCrpsTableModel();
-        break;
-      case "case_studies":
-        model = this.getCaseStudiesTableModel();
-        break;
-      case "overview_by_mogs":
-        model = this.getOverviewByMogsTableModel();
-        break;
-      // Outcomes Phase Two
+      // Reporting Only
       case "flagship_outcomes":
         model = this.getFlagshipOutcomesTableModel();
         break;
@@ -1955,123 +1776,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   public String getCaseStudyUrlPath(String project) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
       + File.separator;
-  }
-
-  private TypedTableModel getccafsOutcomesTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"program_outcome", "program_outcome_description", "indicator", "indicator_description",
-        "ipProjectIndicatoryear", "target_value", "target_cumulative", "target_achieved", "target_narrative",
-        "target_achieved_narrative", "achieved_annual_gender", "annual_gender", "is_current", "showOutcome",
-        "showIndicator", "showOutputs", "outputs"},
-      new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        Boolean.class, Boolean.class, String.class},
-      0);
-    project.setProjectIndicators(
-      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-    // Get list of outcomes
-    Set<IpElement> outcomesList = new HashSet<>();
-    for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream().filter(i -> i.isActive())
-      .collect(Collectors.toList())) {
-      IpElement ipElement = ipElementManager.getIpElementById(ipProjectIndicator.getOutcomeId());
-      outcomesList.add(ipElement);
-    }
-    for (IpElement outcome : outcomesList) {
-      // System.out.println(outcome.getId());
-      Boolean showOutcome = true;
-      // Get list of indicators
-      Set<IpIndicator> indicatorsList = new HashSet<>();
-      for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream()
-        .filter(i -> i.isActive() && i.getOutcomeId() == outcome.getId().intValue()
-          && (i.getYear() == this.getSelectedYear() || i.getYear() == this.getSelectedYear() - 1
-            || i.getYear() == this.getSelectedYear() + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
-        .collect(Collectors.toList())) {
-        IpIndicator ipIndicator = ipProjectIndicator.getIpIndicator();
-        // System.out.println("Current " + ipIndicator.getId());
-        // System.out.println("Final " + this.getFinalIndicator(ipIndicator).getId());
-        indicatorsList.add(this.getFinalIndicator(ipIndicator));
-      }
-      int ultimoIndicator = indicatorsList.size();
-      int ultimoIndicatorCount = 0;
-      Boolean showOutputs = false;
-      int indicatorNumber = 0;
-      for (IpIndicator ipIndicator : indicatorsList) {
-        indicatorNumber++;
-        ultimoIndicatorCount++;
-        Boolean showIndicator = true;
-        int ultimoProjectIndicator = (int) project.getIpProjectIndicators().stream()
-          .filter(
-            i -> i.isActive() && i.getOutcomeId() == outcome.getId().intValue() && i.getIpIndicator() == ipIndicator
-              && (i.getYear() == this.getSelectedYear() || i.getYear() == this.getSelectedYear() - 1
-                || i.getYear() == this.getSelectedYear() + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
-          .count();
-        int ultimoProjectIndicatorCount = 0;
-        for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream()
-          .filter(
-            i -> i.isActive() && i.getOutcomeId() == outcome.getId().intValue() && i.getIpIndicator() == ipIndicator
-              && (i.getYear() == this.getSelectedYear() || i.getYear() == this.getSelectedYear() - 1
-                || i.getYear() == this.getSelectedYear() + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
-          .collect(Collectors.toList())) {
-          ultimoProjectIndicatorCount++;
-          String programOutcome = null, programOutcomeDescription = null, indicator = null, indicatorDescription = null,
-            targetValue = null, targetCumulative = null, targetNarrative = null, targetAchievedNarrative = null,
-            achievedAnnualGender = null, annualGender = null, outputs = "";
-          Integer ipProjectIndicatoryear = null;
-          Double targetAchieved = 0.0;
-          Boolean isCurrent = false;
-          if (outcome.getIpProgram() != null && !outcome.getIpProgram().getAcronym().isEmpty()) {
-            programOutcome = outcome.getIpProgram().getAcronym() + " Outcome " + APConstants.MID_OUTCOME_YEAR;
-          }
-          if (outcome.getDescription() != null && !outcome.getDescription().isEmpty()) {
-            programOutcomeDescription = outcome.getDescription();
-          }
-          if (ipProjectIndicator.getIpIndicator() != null) {
-            indicatorDescription = this.getFinalIndicator(ipProjectIndicator.getIpIndicator()).getDescription();
-            indicator = "Indicator #" + indicatorNumber;
-          }
-          ipProjectIndicatoryear = ipProjectIndicator.getYear();
-          if (ipProjectIndicator.getTarget() != null && !ipProjectIndicator.getTarget().isEmpty()) {
-            targetValue = ipProjectIndicator.getTarget();
-          }
-          targetCumulative = this.calculateAcumulativeTarget(ipProjectIndicator.getYear(), ipProjectIndicator);
-          if (ipProjectIndicator.getArchived() != null) {
-            targetAchieved = ipProjectIndicator.getArchived();
-          }
-          if (ipProjectIndicator.getDescription() != null && !ipProjectIndicator.getDescription().isEmpty()) {
-            targetNarrative = ipProjectIndicator.getDescription();
-          }
-          if (ipProjectIndicator.getNarrativeTargets() != null && !ipProjectIndicator.getNarrativeTargets().isEmpty()) {
-            targetAchievedNarrative = ipProjectIndicator.getNarrativeTargets();
-          }
-          if (ipProjectIndicator.getNarrativeGender() != null && !ipProjectIndicator.getNarrativeGender().isEmpty()) {
-            achievedAnnualGender = ipProjectIndicator.getNarrativeGender();
-          }
-          if (ipProjectIndicator.getGender() != null && !ipProjectIndicator.getGender().isEmpty()) {
-            annualGender = ipProjectIndicator.getGender();
-          }
-          if (ipProjectIndicator.getYear() == this.getSelectedYear()) {
-            isCurrent = true;
-          }
-          if (ultimoProjectIndicatorCount == ultimoProjectIndicator && ultimoIndicatorCount == ultimoIndicator) {
-            showOutputs = true;
-            List<IpElement> outputsList = this.getMidOutcomeOutputs(outcome.getId());
-            for (IpElement ipElement : outputsList) {
-              outputs += "● " + ipElement.getIpProgram().getAcronym() + ": " + ipElement.getDescription() + "<br><br>";
-            }
-          }
-          if (outputs.isEmpty()) {
-            outputs = null;
-          }
-          model.addRow(new Object[] {programOutcome, programOutcomeDescription, indicator, indicatorDescription,
-            ipProjectIndicatoryear, targetValue, targetCumulative, targetAchieved, targetNarrative,
-            targetAchievedNarrative, achievedAnnualGender, annualGender, isCurrent, showOutcome, showIndicator,
-            showOutputs, outputs});
-          showOutcome = false;
-          showIndicator = false;
-        }
-      }
-    }
-    return model;
   }
 
   @Override
@@ -3832,74 +3536,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return outputs;
   }
 
-  private TypedTableModel getOtherContributionsCrpsTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"crp_name", "collaboration_description"},
-      new Class[] {String.class, String.class}, 0);
-    for (ProjectCrpContribution projectCrpContribution : project.getProjectCrpContributions().stream()
-      .filter(pcc -> pcc.isActive()).collect(Collectors.toList())) {
-      String crpName = null, collaborationDescription = null;
-      if (projectCrpContribution.getCrp() != null && !projectCrpContribution.getCrp().getName().isEmpty()) {
-        crpName = projectCrpContribution.getCrp().getName();
-      }
-      if (projectCrpContribution.getCollaborationNature() != null) {
-        if (!projectCrpContribution.getCollaborationNature().isEmpty()) {
-          collaborationDescription = projectCrpContribution.getCollaborationNature();
-        }
-      }
-      model.addRow(new Object[] {crpName, collaborationDescription});
-    }
-    return model;
-  }
-
-  private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
-    for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
-      .collect(Collectors.toList())) {
-      String region = null, indicator = null, contributionDescription = null;
-      Integer targetContribution = null;
-      int otherContributionyear = 0;
-      if (otherContribution.getIpProgram() != null) {
-        if (otherContribution.getIpProgram().getAcronym() != null) {
-          if (!otherContribution.getIpProgram().getAcronym().isEmpty()) {
-            region = otherContribution.getIpProgram().getAcronym();
-          }
-        }
-      }
-      if (otherContribution.getIpIndicator() != null
-        && !otherContribution.getIpIndicator().getComposedName().isEmpty()) {
-        indicator = otherContribution.getIpIndicator().getComposedName();
-      }
-      if (otherContribution.getDescription() != null) {
-        if (!otherContribution.getDescription().isEmpty()) {
-          contributionDescription = otherContribution.getDescription();
-        }
-      }
-      if (otherContribution.getTarget() != null) {
-        targetContribution = otherContribution.getTarget();
-      }
-      otherContributionyear = this.getSelectedYear();
-      model
-        .addRow(new Object[] {region, indicator, contributionDescription, targetContribution, otherContributionyear});
-    }
-
-    return model;
-  }
-
-  private TypedTableModel getOtherContributionsTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"contribution"}, new Class[] {String.class}, 0);
-    String contribution = null;
-    for (ProjectOtherContribution projectOtherContribution : project.getProjectOtherContributions().stream()
-      .filter(poc -> poc.isActive()).collect(Collectors.toList())) {
-      if (projectOtherContribution.getContribution() != null && !projectOtherContribution.getContribution().isEmpty()) {
-        contribution = projectOtherContribution.getContribution();
-      }
-    }
-    model.addRow(new Object[] {contribution});
-    return model;
-  }
-
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
@@ -3967,74 +3603,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-  private TypedTableModel getOverviewByMogsTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"ipProgram", "ipElement", "bullet_points", "summary", "plan", "gender", "output_year",
-        "changeYearTab", "isMidOutcome"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Integer.class,
-        Boolean.class, Boolean.class},
-      0);
-    int controlYear = 0;
-    Boolean changeYearTab = true;
-    Boolean isMidOutcome = false;
-    for (IpProjectContributionOverview ipProjectContributionOverview : project.getIpProjectContributionOverviews()
-      .stream().sorted((co1, co2) -> co2.getYear() - co1.getYear()).filter(co -> co.isActive())
-      .collect(Collectors.toList())) {
-      // System.out.println(ipProjectContributionOverview.getYear());
-      if (ipProjectContributionOverview.getYear() == APConstants.MID_OUTCOME_YEAR) {
-        isMidOutcome = true;
-      } else {
-        isMidOutcome = false;
-      }
-      if (controlYear == 0) {
-        controlYear = ipProjectContributionOverview.getYear();
-      } else {
-        if (controlYear == ipProjectContributionOverview.getYear()) {
-          changeYearTab = false;
-        } else {
-          changeYearTab = true;
-          controlYear = ipProjectContributionOverview.getYear();
-        }
-      }
-      String ipProgram = null;
-      String ipElement = null;
-      String bulletPoints = null;
-      String summary = null;
-      String plan = null;
-      String gender = null;
-      int outputYear = 0;
-      if (ipProjectContributionOverview.getIpElement() != null) {
-        if (!ipProjectContributionOverview.getIpElement().getDescription().isEmpty()) {
-          ipElement = ipProjectContributionOverview.getIpElement().getDescription();
-        }
-        if (ipProjectContributionOverview.getIpElement().getIpProgram() != null) {
-          if (!ipProjectContributionOverview.getIpElement().getIpProgram().getAcronym().isEmpty()) {
-            ipProgram = ipProjectContributionOverview.getIpElement().getIpProgram().getAcronym();
-          }
-        }
-      }
-      if (ipProjectContributionOverview.getAnualContribution() != null
-        && !ipProjectContributionOverview.getAnualContribution().isEmpty()) {
-        bulletPoints = ipProjectContributionOverview.getAnualContribution();
-      }
-      if (ipProjectContributionOverview.getBriefSummary() != null
-        && !ipProjectContributionOverview.getBriefSummary().isEmpty()) {
-        summary = ipProjectContributionOverview.getBriefSummary();
-      }
-      if (ipProjectContributionOverview.getGenderContribution() != null
-        && !ipProjectContributionOverview.getGenderContribution().isEmpty()) {
-        plan = ipProjectContributionOverview.getGenderContribution();
-      }
-      if (ipProjectContributionOverview.getSummaryGender() != null
-        && !ipProjectContributionOverview.getSummaryGender().isEmpty()) {
-        gender = ipProjectContributionOverview.getSummaryGender();
-      }
-      outputYear = ipProjectContributionOverview.getYear();
-      model.addRow(new Object[] {ipProgram, ipElement, bulletPoints, summary, plan, gender, outputYear, changeYearTab,
-        isMidOutcome});
-    }
-    return model;
-  }
 
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model = new TypedTableModel(
@@ -4527,85 +4095,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return projectInfo;
   }
 
-  private TypedTableModel getProjectOtherOutcomesTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"out_statement", "year"}, new Class[] {String.class, Integer.class}, 0);
-    String outStatement = "";
-    int outcomeYear = 0;
-    for (ProjectOutcomePandr projectOutcomePandr : project.getProjectOutcomesPandr().stream()
-      .sorted((p1, p2) -> p1.getYear() - p2.getYear())
-      .filter(pop -> pop.isActive() && pop.getYear() != 2019 && pop.getYear() != this.getSelectedYear())
-      .collect(Collectors.toList())) {
-      outStatement = projectOutcomePandr.getStatement();
-      outcomeYear = projectOutcomePandr.getYear();
-      model.addRow(new Object[] {outStatement, outcomeYear});
-    }
-    return model;
-  }
-
-  private TypedTableModel getProjectOutcomesTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"out_statement", "out_statement_current", "out_progress_current", "communication_current",
-        "current_year", "lessons", "file"},
-      new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, String.class},
-      0);
-    String outStatement = null;
-    String outStatementCurrent = null;
-    String communicationCurrent = null;
-    String outProgressCurrent = null;
-    String file = null;
-    String lessons = null;
-    for (ProjectOutcomePandr projectOutcomePandr : project.getProjectOutcomesPandr().stream()
-      .filter(pop -> pop.isActive()
-        && (pop.getYear() == APConstants.MID_OUTCOME_YEAR || pop.getYear() == this.getSelectedYear()))
-      .collect(Collectors.toList())) {
-      if (projectOutcomePandr.getYear() == APConstants.MID_OUTCOME_YEAR) {
-        if (projectOutcomePandr.getStatement() != null) {
-          if (!projectOutcomePandr.getStatement().isEmpty()) {
-            outStatement = projectOutcomePandr.getStatement();
-          }
-        }
-      }
-      if (projectOutcomePandr.getYear() == this.getSelectedYear()) {
-        if (projectOutcomePandr.getStatement() != null) {
-          if (!projectOutcomePandr.getStatement().isEmpty()) {
-            outStatementCurrent = projectOutcomePandr.getStatement();
-          }
-        }
-        if (projectOutcomePandr.getComunication() != null) {
-          if (!projectOutcomePandr.getComunication().isEmpty()) {
-            communicationCurrent = projectOutcomePandr.getComunication();
-          }
-        }
-        if (projectOutcomePandr.getAnualProgress() != null) {
-          if (!projectOutcomePandr.getAnualProgress().isEmpty()) {
-            outProgressCurrent = projectOutcomePandr.getAnualProgress();
-          }
-        }
-        if (projectOutcomePandr.getFile() != null) {
-          file = (this.getProjectOutcomeUrl() + projectOutcomePandr.getFile().getFileName()).replace(" ", "%20");
-        }
-      }
-    }
-    if (!this.getSelectedCycle().equals("")) {
-      for (ProjectComponentLesson pcl : project.getProjectComponentLessons().stream()
-        .sorted((p1, p2) -> p1.getYear() - p2.getYear())
-        .filter(pcl -> pcl.isActive() && pcl.getComponentName().equals("outcomesPandR")
-          && pcl.getPhase().equals(this.getSelectedPhase()) && pcl.getCycle().equals(this.getSelectedCycle())
-          && pcl.getYear() == this.getSelectedYear())
-        .collect(Collectors.toList())) {
-        if (pcl.getLessons() != null) {
-          if (!pcl.getLessons().isEmpty()) {
-            lessons = pcl.getLessons();
-          }
-        }
-      }
-    }
-    model.addRow(new Object[] {outStatement, outStatementCurrent, outProgressCurrent, communicationCurrent,
-      this.getSelectedYear(), lessons, file});
-    return model;
-  }
-
   public String getProjectOutcomeUrl() {
     return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
   }
@@ -4646,12 +4135,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, Boolean.class, Boolean.class, Boolean.class,
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class},
       0);
+    Set<ProjectExpectedStudy> myStudies = new HashSet<>();
+
     List<ProjectExpectedStudy> projectExpectedStudies = project.getProjectExpectedStudies().stream()
       .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null && p.getYear() != null
         && p.getYear().equals(this.getSelectedYear()))
       .collect(Collectors.toList());
     if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
-      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
+      myStudies.addAll(projectExpectedStudies);
+    }
+    // Shared Studies
+    List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+        && c.getProjectExpectedStudy().getYear() != null
+        && c.getProjectExpectedStudy().getYear() == this.getCurrentCycleYear()
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+      .collect(Collectors.toList());
+
+    if (sharedStudies != null && !sharedStudies.isEmpty()) {
+      for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
+        myStudies.add(expectedStudyProject.getProjectExpectedStudy());
+      }
+    }
+
+    if (myStudies != null && !myStudies.isEmpty()) {
+      for (ProjectExpectedStudy projectExpectedStudy : myStudies.stream()
+        .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList())) {
         ProjectExpectedStudyInfo studyinfo = projectExpectedStudy.getProjectExpectedStudyInfo();
         Long id = null;
         Integer year = null;
@@ -4910,16 +4419,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           contacts = studyinfo.getContacts();
         }
 
-        // Share Study
-
-        List<ExpectedStudyProject> studyProjectList = projectExpectedStudy.getExpectedStudyProjects().stream()
-          .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase()))
+        // Projects
+        List<ExpectedStudyProject> studyProjectList = studyinfo.getProjectExpectedStudy().getExpectedStudyProjects()
+          .stream().filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase()))
+          .sorted((sp1, sp2) -> sp2.getProject().getId().compareTo(sp1.getProject().getId()))
           .collect(Collectors.toList());
         Set<String> studyProjectSet = new HashSet<>();
+        if (studyinfo.getProjectExpectedStudy().getProject() != null) {
+          studyProjectSet
+            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyinfo.getProjectExpectedStudy().getProject().getId());
+        }
         if (studyProjectList != null && studyProjectList.size() > 0) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyProject.getProject().getComposedName());
+            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyProject.getProject().getId());
           }
+        }
+        if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
           studyProjects = String.join("", studyProjectSet);
         }
 
