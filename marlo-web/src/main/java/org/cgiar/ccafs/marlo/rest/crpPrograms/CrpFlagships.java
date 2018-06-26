@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -50,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
+@Api(value = "FlagshipService", description = "Service pertaining to CRP Flagship programs.")
 public class CrpFlagships {
 
   private static final Logger LOG = LoggerFactory.getLogger(CrpFlagships.class);
@@ -80,6 +83,7 @@ public class CrpFlagships {
    * @param crpProgramDTO
    * @return
    */
+  @ApiOperation(value = "Add a CRP Flagship program", response = CrpProgramDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/setFlagship", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -116,6 +120,7 @@ public class CrpFlagships {
    * @param id
    * @return
    */
+  @ApiOperation(value = "Delete a CRP Flagship program")
   @RequiresPermissions(Permission.CRP_PROGRAM_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/deleteFlagship/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -146,6 +151,7 @@ public class CrpFlagships {
    * @param CGIARStructure
    * @return
    */
+  @ApiOperation(value = "View a CRP Flagship programs", response = Iterable.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/flagships", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
