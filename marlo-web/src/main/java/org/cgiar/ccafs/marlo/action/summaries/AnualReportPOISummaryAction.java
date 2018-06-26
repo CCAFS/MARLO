@@ -382,6 +382,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   }
 
+
   private void addCrossCuttingOtherAspects() {
 
     String crossCuttingOtherAspects = "";
@@ -842,7 +843,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       }
     }
 
-    poiSummary.textTable(document, headers, datas, true, "tableAAnnualReport");
+    poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport");
   }
 
   private void createTableA2() {
@@ -930,7 +931,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
      * }
      */
 
-    poiSummary.textTable(document, headers, datas, false, "tableA2AnnualReport");
+    poiSummary.textTable(document, headers, datas, false, "tableA1AnnualReport");
   }
 
   private void createTableB() {
@@ -1177,7 +1178,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> data;
     String title = "", patent = "", applicant = "", aditional = "", registration = "", communication = "";
-    System.out.println("assets list " + assetsList.size());
+
     for (int i = 0; i < assetsList.size(); i++) {
       try {
         title = assetsList.get(i).getTitle();
@@ -1378,6 +1379,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private void createTableG() {
     List<List<POIField>> headers = new ArrayList<>();
 
+
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -1397,50 +1399,43 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
-    String FP = "", stage = "", phase = "", partner = "", geographic = "", mainArea = "";
 
 
-    flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager.findAll();
+    // flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager.findAll();
 
-    /*
-     * flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
-     * liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-     * Flagship External Partnership Synthesis Progress
-     * flagshipExternalPartnerships = reportSynthesisExternalPartnershipManager
-     * .getFlagshipCExternalPartnership(liaisonInstitutions, this.getActualPhase().getId());
-     */
-    if (flagshipExternalPartnerships != null && !flagshipExternalPartnerships.isEmpty()) {
+
+    flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
+      liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+
+
+    if (flagshipExternalPlannedList != null && !flagshipExternalPlannedList.isEmpty()) {
+
       for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
 
+        String FP = "", stage = "", phase = "", partner = "", geographic = "", partnerType = "", mainArea = "";
 
         try {
 
-          if (flagshipExternalPartnerships.get(i).getReportSynthesis().getPhase().getId() == this.getActualPhase()
-            .getId() && flagshipExternalPartnerships.get(i).isActive()) {
-            for (int j = 0; j < flagshipExternalPartnerships.get(j).getPartnerships().size(); j++) {
-              geographic += flagshipExternalPartnerships.get(i).getPartnerships().get(j).getProjectPartnerPartnership()
-                .getGeographicScope().getName();
-              partner += flagshipExternalPartnerships.get(i).getPartnerPartnerships().get(j).getProjectPartner()
-                .getInstitution().getName();
-              // stage = flagshipExternalPartnerships.get(i);
-            }
 
+          geographic = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getGeographicScope().getName();
+          partner = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
+            .getInstitution().getName();
+          for (int j = 0; j < flagshipExternalPlannedList.get(i).getProjectPartnerPartnership()
+            .getPartnershipResearchPhases().size(); j++) {
 
+            stage += flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases()
+              .get(j).getRepIndPhaseResearchPartnership().getName() + "\n";
           }
-          /*
-           * for (int j = 0; j < flagshipExternalPartnerships.get(j).getPartnerships().size(); j++) {
-           * geographic += flagshipExternalPartnerships.get(i).getPartnerships().get(j).getProjectPartnerPartnership()
-           * .getGeographicScope().getName();
-           * partner += flagshipExternalPartnerships.get(i).getPartnerPartnerships().get(j).getProjectPartner()
-           * .getInstitution().getName();
-           * // stage = flagshipExternalPartnerships.get(i);
-           * }
-           */
+          mainArea = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea();
+          partnerType = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
+            .getInstitution().getInstitutionType().getName();
 
+          // partnerType =
+          // flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject().getProjectExpectedStudies(projectExpectedStudies);
 
           POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
             new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
-            new POIField(geographic, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.CENTER)};
+            new POIField(partnerType, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.CENTER)};
           data = Arrays.asList(sData);
           datas.add(data);
 
@@ -1452,6 +1447,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
     poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
+
 
   private void createTableH() {
     List<List<POIField>> headers = new ArrayList<>();
@@ -1490,44 +1486,47 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void createTableI1() {
-    /*
-     * List<List<POIField>> headers = new ArrayList<>();
-     * List<List<POIField>> datas = new ArrayList<>();
-     * List<POIField> data = new ArrayList<>();
-     * POIField[] sHeader = {
-     * new POIField(
-     * this.getText("annualReport.melia.tableI.studies", new String[] {String.valueOf(this.getSelectedYear())}),
-     * ParagraphAlignment.CENTER),
-     * new POIField(this.getText("annualReport.melia.tableI.status"), ParagraphAlignment.CENTER),
-     * new POIField(this.getText("annualReport.melia.tableI.comments"), ParagraphAlignment.CENTER)};
-     * List<POIField> header = Arrays.asList(sHeader);
-     * headers.add(header);
-     * List<ProjectExpectedStudyInfo> ProjectExpectedStudyInfoList = new ArrayList<>();
-     * try {
-     * ProjectExpectedStudyInfoList = projectExpectedStudyInfoManager.findAll();
-     * } catch (Exception e) {
-     * }
-     * try {
-     * if (ProjectExpectedStudyInfoList != null) {
-     * for (int i = 0; i < ProjectExpectedStudyInfoList.size(); i++) {
-     * String studies = "", status = "", comments = "";
-     * if (ProjectExpectedStudyInfoList.get(i).getPhase().getId() == 11
-     * && (ProjectExpectedStudyInfoList.get(i).getTitle() != null
-     * || !ProjectExpectedStudyInfoList.get(i).getTitle().isEmpty())) {
-     * studies = ProjectExpectedStudyInfoList.get(i).getTitle();
-     * status = ProjectExpectedStudyInfoList.get(i).getStatusName();
-     * comments = ProjectExpectedStudyInfoList.get(i).getTopLevelComments();
-     * POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
-     * new POIField(status, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * }
-     * }
-     * }
-     * } catch (Exception e) {
-     * }
-     * poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
-     */
+
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("annualReport.melia.tableI.studies", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.CENTER),
+      new POIField(this.getText("annualReport.melia.tableI.status"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("annualReport.melia.tableI.comments"), ParagraphAlignment.CENTER)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+    List<ProjectExpectedStudyInfo> ProjectExpectedStudyInfoList = projectExpectedStudyInfoManager.findAll();
+
+    if (ProjectExpectedStudyInfoList != null) {
+      for (int i = 0; i < ProjectExpectedStudyInfoList.size(); i++) {
+        String studies = "", status = "", comments = "";
+
+        if (ProjectExpectedStudyInfoList.get(i).getPhase().getId() == this.getActualPhase().getId()) {
+          try {
+            // if (ProjectExpectedStudyInfoList.get(i).getTitle() != null &&
+            // !ProjectExpectedStudyInfoList.get(i).getTitle().isEmpty()) {
+
+            /*
+             * studies = ProjectExpectedStudyInfoList.get(i).getTitle();
+             * status = ProjectExpectedStudyInfoList.get(i).getStatusName();
+             * comments = ProjectExpectedStudyInfoList.get(i).getTopLevelComments();
+             * POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
+             * new POIField(status, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+             * data = Arrays.asList(sData);
+             * datas.add(data);
+             */
+            // }
+          } catch (Exception e) {
+            System.out.println(e);
+          }
+        }
+
+      }
+    }
+    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
   }
 
   private void createTableI2() {
@@ -1907,13 +1906,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     assetsList = new ArrayList<>();
 
     List<DeliverableIntellectualAsset> assetsListTemp = deliverableIntellectualAssetManager.findAll();
-    System.out.println(assetsListTemp.size() + " assets list largo " + this.getActualPhase().getId());
+
     for (int i = 0; i < assetsListTemp.size(); i++) {
-      System.out.println(assetsListTemp.get(i).getPhase().getId());
-      if (assetsListTemp.get(i).getPhase().getId() == this.getPhaseID()) {
+      if (assetsListTemp.get(i).getPhase().getId() == this.getActualPhase().getId() && assetsListTemp.get(i).isActive()
+        && assetsListTemp.get(i).getHasPatentPvp()) {
         try {
           assetsList.add(assetsListTemp.get(i));
-          System.out.println(" Entro + phase " + this.getPhaseID());
         } catch (Exception e) {
           throw e;
         }
