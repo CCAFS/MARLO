@@ -23,7 +23,8 @@
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      <p>[@s.text name="project.message.submittedOn" ][@s.param]${(submission.dateTime)!}[/@s.param][/@s.text]</p>
+      [#assign lastSubmission =action.getProjectSubmissions(projectID)?last /]
+      <p>[@s.text name="project.message.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]
   

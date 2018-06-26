@@ -63,3 +63,9 @@
     <img src="${baseUrl}/global/images/under-construction.png" width="${width!'10px'}" height="${height!'10px'}" />
   </span>
 [/#macro]
+
+[#macro tag label="" tooltip=""]
+  <span class="doc-badge pull-right" title="[@s.text name="${tooltip}" /]">
+    <img src="${baseUrl}/global/images/icons/file-doc.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
+  </span>
+[/#macro]

@@ -83,6 +83,7 @@ public class CrpProgressValidator extends BaseValidator {
         }
       }
 
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {

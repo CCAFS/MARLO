@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -50,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
+@Api(value = "FlagshipService", description = "Service pertaining to CRP Flagship programs.")
 public class CrpFlagships {
 
   private static final Logger LOG = LoggerFactory.getLogger(CrpFlagships.class);
@@ -80,16 +83,17 @@ public class CrpFlagships {
    * @param crpProgramDTO
    * @return
    */
+  @ApiOperation(value = "Add a CRP Flagship program", response = CrpProgramDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/setFlagship", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpProgramDTO> createFlagship(@PathVariable String CGIARStructure,
-    @Valid @RequestBody CrpProgramDTO crpProgramDTO) {
-    LOG.debug("Create a new Crp Program (Flagship) with : {}", crpProgramDTO);
+    @Valid @RequestBody NewFlagshipDTO newFlagshipDTO) {
+    LOG.debug("Create a new Crp Program (Flagship) with : {}", newFlagshipDTO);
 
     GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);
 
-    CrpProgram crpProgram = crpProgramMapper.crpProgramDTOToCrpProgram(crpProgramDTO);
+    CrpProgram crpProgram = crpProgramMapper.newFlagshipDTOToCrpProgram(newFlagshipDTO);
 
     crpProgram.setActive(true);
     crpProgram.setCreatedBy(this.getCurrentUser());
@@ -116,10 +120,11 @@ public class CrpFlagships {
    * @param id
    * @return
    */
+  @ApiOperation(value = "Delete a CRP Flagship program")
   @RequiresPermissions(Permission.CRP_PROGRAM_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/deleteFlagship/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> deleteInstitution(@PathVariable String CGIARStructure, @PathVariable Long id) {
+  public ResponseEntity<Void> deleteFlagship(@PathVariable String CGIARStructure, @PathVariable Long id) {
     LOG.debug("Delete Flagship with id: {}", id);
 
     GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(CGIARStructure);
@@ -146,6 +151,7 @@ public class CrpFlagships {
    * @param CGIARStructure
    * @return
    */
+  @ApiOperation(value = "View a CRP Flagship programs", response = Iterable.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/flagships", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)

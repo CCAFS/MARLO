@@ -17,20 +17,23 @@ package org.cgiar.ccafs.marlo.rest.crpPrograms;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class CrpProgramDTO {
 
-
+  @ApiModelProperty(notes = "The Generated Program ID")
   private Long id;
 
+  @ApiModelProperty(notes = "The Flagship program Name")
   @NotNull
   private String name;
 
+  @ApiModelProperty(notes = "The Flagship program Acronym")
   @NotNull
   private String acronym;
-
 
   public String getAcronym() {
     return acronym;
@@ -46,8 +49,13 @@ public class CrpProgramDTO {
     return name;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
 
