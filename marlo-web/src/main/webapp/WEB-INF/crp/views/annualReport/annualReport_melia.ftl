@@ -264,14 +264,14 @@
     </div>
     
     [#-- Management response --] 
-    <div class="form-group"> 
+    <div class="form-group">
       [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.evaluation.managementResponse" className="" required=true editable=isEditable /]
     </div>
     
     [#-- Status --]
     <div class="form-group row">
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.evaluation.status" value="${(project.projectInfo.status)!}" listName="statuses"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.evaluation.status" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
     

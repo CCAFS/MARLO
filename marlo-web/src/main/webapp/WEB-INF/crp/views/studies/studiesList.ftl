@@ -23,7 +23,7 @@
     <div class="col-md-12">
     
       [#-- Studies not directly linked to a Project (My Studies) --]
-      <h3 class="headTitle text-center">[@s.text name="studiesList.yourStudies"/] [@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /] <br /> <small>([@s.text name="studiesList.yourStudies.help" /])</small></h3>
+      <h3 class="headTitle text-center">[@s.text name="studiesList.yourStudies"/] <br /> <small>([@s.text name="studiesList.yourStudies.help" /])</small></h3>
       <div class="loadingBlock"></div>
       <div style="display:none">[@studiesList elements=myNonProjectStudies canValidate=true canEdit=true namespace="/studies" defaultAction="${(crpSession)!}/study" /]</div>
   
