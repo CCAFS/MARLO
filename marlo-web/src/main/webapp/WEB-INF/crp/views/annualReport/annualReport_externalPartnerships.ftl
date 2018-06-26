@@ -53,6 +53,7 @@
           
             [#-- Summarize highlights, value added and points to improve/learning points from this year on external partnerships --]
             <div class="form-group margin-panel">
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.summarizeHighlights" help="${customLabel}.summarizeHighlights.help" className="" helpIcon=false required=true editable=editable /]
             </div>
             
@@ -61,12 +62,12 @@
             <div class="form-group margin-panel">
               <div class="viewMoreSyntesis-block" >
                 [@tableFlagshipSynthesis tableName="tablePartnerships" list=flagshipExternalPartnerships columns=["highlights"] /]
-                
               </div>
             </div>
             [/#if]
   
             [#-- Table G: Projects Key Partnerships --]
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             <h4 class="simpleTitle">[@customForm.text name="${customLabel}.tableG.title" param="${currentCycleYear}" /] ([#if PMU]${flagshipPlannedList?size}[#else]${partnerShipList?size}[/#if])</h4>
             <div class="form-group margin-panel">
               [#if flagship]
@@ -74,7 +75,6 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableGMacro name="" list=flagshipPlannedList isPMU=PMU /]
-                  
                 </div>
               [/#if]
             </div>

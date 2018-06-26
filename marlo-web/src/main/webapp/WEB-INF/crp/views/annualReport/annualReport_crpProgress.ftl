@@ -55,16 +55,25 @@
             
             [#-- Overall CRP progress towards SLOs --]
             <div class="form-group">
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="" helpIcon=false required=true editable=editable /]
             </div>
+            
+            [#if PMU]
+              <div class="form-group">
+                <div class="viewMoreSyntesis-block" >
+                  [@tableFlagshipSynthesis tableName="tableOverallProgress" list=flagshipCrpProgress columns=["overallProgress"] /]
+                </div>
+              </div>
+            [/#if]
             <hr />
             
             [#-- Table A-1: Evidence on progress towards the SLOs (sphere of interest)  --]
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             [#if flagship]
             <div class="form-group">
               <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
               [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
-              
               <div class="block-selectedSLOs">
                 <div class="form-group sloTargetsList">
                   [#if reportSynthesis.reportSynthesisCrpProgress.sloTargets?has_content]
@@ -89,7 +98,6 @@
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
               <div class="viewMoreSyntesis-block" >
                 [@tableSLOSynthesisProgressMacro list=fpSynthesisTable /]
-                
               </div>
             </div>
             [/#if]
@@ -98,22 +106,22 @@
             
             [#-- Summaries of outcome case studies --]
             <div class="form-group">
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.summaries" i18nkey="${customLabel}.summariesOutcomes" help="${customLabel}.summariesOutcomes.help" className="" helpIcon=false required=true editable=editable /]
             </div>
           
             [#-- Flagships - Synthesis  --]
             [#if PMU]
             <div class="form-group">
-              <h4 class="subTitle headTitle">Flagships - Synthesis progress towards SLOs and Outcome</h4>
               <div class="viewMoreSyntesis-block" >
-                [@tableCRPProgressMacro list=flagshipCrpProgress /]
-                
+                [@tableFlagshipSynthesis tableName="tableSummaries" list=flagshipCrpProgress columns=["summaries"] /]
               </div>
             </div>
             [/#if]
             
             [#-- Table A-2: List of New Outcome Case Studies from This Reporting Year (Sphere of Influence)  --]
             <div class="form-group">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOutcomes" /]</h4>
               [@customForm.helpLabel name="${customLabel}.listOutcomes.help" showIcon=false editable=editable/]
               [#if flagship]
@@ -121,7 +129,6 @@
               [#else]
                 <div class="viewMoreSyntesis-block" >
                   [@tableOutcomesCaseStudiesMacro name="" list=flagshipPlannedList isPMU=true /]
-                  
                 </div>
               [/#if]  
             </div>
@@ -285,6 +292,41 @@
           <tr>
             <td class="text-center" colspan="3"><i>No flagships loaded..</i></td>
           </tr>
+        [/#if]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
+  <div class="form-group">
+    <h4 class="simpleTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="col-md-1 text-center"> FP </th>
+          [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
+        </tr>
+      </thead>
+      <tbody>
+        [#if list?has_content]
+          [#list list as item]
+            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
+            <tr>
+              <td>
+                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
+              </td>
+              [#list columns as column]
+                <td>
+                  [#if (item[column]?has_content)!false] 
+                    ${item[column]} 
+                  [#else]
+                    <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                  [/#if]
+                </td>
+              [/#list]
+            </tr>
+          [/#list]
         [/#if]
       </tbody>
     </table>

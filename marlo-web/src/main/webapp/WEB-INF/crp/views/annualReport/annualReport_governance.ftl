@@ -43,6 +43,7 @@
         <div class="borderBox">
           [#-- Describe any major changes to management, governance arrangements and practices --]
           <div class="form-group margin-panel">
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             [#if PMU]
               [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="" helpIcon=false required=true editable=editable && PMU /]
             [#else]

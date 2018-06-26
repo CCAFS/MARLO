@@ -47,6 +47,7 @@
             [#-- Flagship summary of major results achieved in the past reporting period --]
             [#if flagship]
               <div class="form-group">
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.flagshipSummary" help="${customLabel}.flagshipSummary.help" className="" helpIcon=false required=true editable=editable /]
               </div>
               <hr />
@@ -54,6 +55,7 @@
             
             [#-- Table B: Status of Planned Milestones --]
             <div class="form-group">
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               [#if PMU]
                 [#-- Modal Large --]
                 <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
