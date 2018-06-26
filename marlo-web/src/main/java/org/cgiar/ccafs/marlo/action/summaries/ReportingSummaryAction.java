@@ -575,7 +575,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
      * Studies
      */
     masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
-    masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
+    masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.projectStudy"));
     masterReport.getParameterValues().put("i8nStudiesRTitle", this.getText("summaries.study.title"));
     masterReport.getParameterValues().put("i8nStudiesRYear", this.getText("summaries.study.year"));
     masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.status"));
