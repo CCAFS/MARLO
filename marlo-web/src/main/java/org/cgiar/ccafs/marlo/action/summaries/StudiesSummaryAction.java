@@ -587,16 +587,16 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         List<ExpectedStudyProject> studyProjectList =
           projectExpectedStudyInfo.getProjectExpectedStudy().getExpectedStudyProjects().stream()
             .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase()))
-            .sorted((sp1, sp2) -> sp1.getProject().getId().compareTo(sp2.getProject().getId()))
+            .sorted((sp1, sp2) -> sp2.getProject().getId().compareTo(sp1.getProject().getId()))
             .collect(Collectors.toList());
         Set<String> studyProjectSet = new HashSet<>();
         if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
-          studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
-            + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getComposedName());
+          studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P"
+            + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId());
         }
         if (studyProjectList != null && studyProjectList.size() > 0) {
           for (ExpectedStudyProject studyProject : studyProjectList) {
-            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyProject.getProject().getComposedName());
+            studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● P" + studyProject.getProject().getId());
           }
         }
         if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
