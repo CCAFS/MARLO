@@ -439,31 +439,23 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           } else {
             // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
             if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-              .getId() == 3
+              .getId().equals(action.getReportingIndGeographicScopeMultiNational())
               || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                .getRepIndGeographicScope().getId() == 4
+                .getRepIndGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
               || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                .getRepIndGeographicScope().getId() == 5) {
+                .getRepIndGeographicScope().getId().equals(action.getReportingIndGeographicScopeSubNational())) {
               // Validate Countries
-              if (projectExpectedStudy.getCountries() == null || projectExpectedStudy.getCountries().isEmpty()) {
+              if (projectExpectedStudy.getCountriesIds() == null || projectExpectedStudy.getCountriesIds().isEmpty()) {
                 action.addMessage(action.getText("countries"));
                 action.addMissingField("study.countries");
                 action.getInvalidFields().put("input-expectedStudy.countriesIds",
                   action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
-              } else {
-                if (projectExpectedStudy.getCountriesIds() == null
-                  || projectExpectedStudy.getCountriesIds().isEmpty()) {
-                  action.addMessage(action.getText("countries"));
-                  action.addMissingField("study.countries");
-                  action.getInvalidFields().put("input-expectedStudy.countriesIds",
-                    action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
-                }
               }
             }
 
             // Validate if Scope is Regional and review if The innovation has a region
             if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-              .getId() == 2) {
+              .getId().equals(action.getReportingIndGeographicScopeRegional())) {
               // Validate Region
               if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
                 .getRepIndRegion() != null) {
