@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -111,6 +112,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -143,6 +145,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private PowbSynthesisManager powbSynthesisManager;
+  private CrpProgramManager crpProgramManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager;
@@ -170,6 +173,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private LiaisonInstitution pmuInstitution;
   private PowbSynthesis powbSynthesisPMU;
   private ReportSynthesis reportSynthesisPMU;
+  private ReportSynthesis reportSynthesis;
   private long startTime;
   private XWPFDocument document;
   private List<DeliverableInfo> deliverableList;
@@ -191,6 +195,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private List<ReportSynthesisExternalPartnershipDTO> flagshipExternalPlannedList;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ReportSynthesisMelia> reportSynthesisMeliaList;
+  private LiaisonInstitution liaisonInstitution;
+  private String pmuText;
+  private Long liaisonInstitutionID;
 
   // Parameter for tables E and F
   Double totalCarry = 0.0, totalw1w2 = 0.0, totalw3Bilateral = 0.0, totalCenter = 0.0, grandTotal = 0.0;
@@ -217,7 +224,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager,
     ReportSynthesisMeliaManager reportSynthesisMeliaManager,
     ReportSynthesisCrossCgiarCollaborationManager reportSynthesisCrossCgiarCollaborationManager,
-    ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager) {
+    ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, CrpProgramManager crpProgramManager) {
 
     super(config, crpManager, phaseManager);
     document = new XWPFDocument();
@@ -246,6 +253,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
     this.reportSynthesisCrossCgiarCollaborationManager = reportSynthesisCrossCgiarCollaborationManager;
     this.reportSynthesisMeliaEvaluationManager = reportSynthesisMeliaEvaluationManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
   private void addAdjustmentDescription() {
@@ -489,11 +497,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       String synthesisCrpSummaries = "";
 
       synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress();
-      synthesisCrpSummaries = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getSummary();
+
       // CRP Progress
       List<ReportSynthesisCrpProgress> reportSynthesisCrpProgressList = null;
-      // reportSysthesisPMU.getReportSynthesisCrpProgress().stream().filter(e ->
-      // e.isActive()).collect(Collectors.toList());
 
       if (reportSynthesisCrpProgressList != null && !reportSynthesisCrpProgressList.isEmpty()) {
         ReportSynthesisCrpProgress reportSynthesisCrpProgress = reportSynthesisCrpProgressList.get(0);
@@ -502,8 +508,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             ? reportSynthesisCrpProgress.getOverallProgress() : "";
       }
       poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
-
-      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
     }
   }
 
@@ -1587,9 +1591,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void createTableJ() {
-    System.out.println("test a");
-    this.getInformationTableJ();
-    System.out.println("test b");
+    System.out.println("Holaaa");
+    // this.getInformationTableJ();
+
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
       new POIField(
@@ -1620,22 +1624,40 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     try {
-      reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().stream().filter(fp -> fp.isActive())
-        .collect(Collectors.toList());
+      System.out.println("Hola pre pre");
+      /*
+       * reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().stream().filter(fp -> fp.isActive())
+       * .collect(Collectors.toList());
+       */
+      System.out.println("Hola pre");
       // Flagships
       List<LiaisonInstitution> flagships = this.getFlagships();
-      System.out.println("test x");
       if (flagships != null && !flagships.isEmpty()) {
-        System.out.println("Hola prueba 1");
         for (LiaisonInstitution flagship : flagships) {
-          System.out.println("Hola prueba 2");
           Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, total = 0.0;
           String category = "";
+          System.out.println("Hola prueba 1");
+
           category = flagship.getAcronym();
-          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            this.reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(0);
+          System.out.println("Hola prueba 2");
+          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget = null;
+          try {
+            powbFinancialPlannedBudget = this.reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().get(1);
+            System.out.println(powbFinancialPlannedBudget.getW1Actual() + " powbFinancialPlannedBudget 1");
+          } catch (Exception e) {
+
+          }
+
+          try {
+            powbFinancialPlannedBudget = this.reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().get(0);
+            System.out.println(powbFinancialPlannedBudget.getW1Actual() + " powbFinancialPlannedBudget 2");
+          } catch (Exception e) {
+
+          }
+
+
           if (powbFinancialPlannedBudget != null) {
-            System.out.println("powbFinancialPlannedBudget");
+
             w1w2 = powbFinancialPlannedBudget.getW1Actual() != null ? powbFinancialPlannedBudget.getW1Actual() : 0.0;
             // carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
             w3Bilateral =
@@ -1661,14 +1683,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
       if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
         for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
-
+          System.out.println(powbExpenditureAreas.size() + " largo powbExpenditureAreas");
           Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, total = 0.0;
           String category = "";
           category = powbExpenditureArea.getExpenditureArea();
 
+
           ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(1);
+            reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(0);
           if (powbFinancialPlannedBudget != null) {
+            System.out.println("entro aqui");
             w1w2 = powbFinancialPlannedBudget.getW1Actual() != null ? powbFinancialPlannedBudget.getW1Actual() : 0.0;
             // carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
             w3Bilateral =
@@ -2031,6 +2055,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
 
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
+
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
       .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
     if (plannedBudgetAreasList != null) {
@@ -2180,6 +2205,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
 
     return deliverables;
+  }
+
+  public boolean isFlagship() {
+    boolean isFP = false;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() != null) {
+        CrpProgram crpProgram =
+          crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
+        if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+          isFP = true;
+        }
+      }
+    }
+    return isFP;
   }
 
   public boolean isPMU(LiaisonInstitution institution) {
@@ -2560,7 +2599,91 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       tableC.setPercentageCapDevPrincipal(dCapDevPrincipal);
       tableC.setPercentageCapDevSignificant(dCapDevSignificant);
       tableC.setPercentageCapDevNotScored(dCapDevNa);
+      /*
+       * liaisonInstitutionID =
+       * Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
+       */
+      if (reportSynthesis == null) {
+        // reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
+        System.out.println("im here now");
+      }
 
+      // Check if relation is null -create it
+      try {
+        if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
+          ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
+          // create one to one relation
+          reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);
+          fundingUseSummary.setReportSynthesis(reportSynthesis);
+        }
+      } catch (Exception e) {
+
+      }
+      if (this.isPMU()) {
+        Long synthesisID;
+        synthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
+        reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+
+        // Flagships Funding Expenditure Areas
+        if (reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas() != null
+          && !reportSynthesis.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+            .isEmpty()) {
+          reportSynthesis.getReportSynthesisFundingUseSummary()
+            .setExpenditureAreas(new ArrayList<>(reportSynthesis.getReportSynthesisFundingUseSummary()
+              .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
+              .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
+        } else {
+          reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
+          List<PowbExpenditureAreas> expAreas = new ArrayList<>(
+            powbExpenditureAreasManager.findAll().stream().filter(x -> x.isActive() && x.getIsExpenditure())
+              .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList()));
+          for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
+            ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
+              new ReportSynthesisFundingUseExpendituryArea();
+            fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
+            reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas().add(fundingUseExpenditureArea);
+          }
+        }
+      }
+
+      // Get the list of liaison institutions Flagships and PMU.
+      liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+      // ADD PMU as liasion Institution too
+      liaisonInstitutions.addAll(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()));
+
+      // Informative table to Flagships
+      if (this.isFlagship()) {
+        if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null
+          && reportSynthesisPMU.getReportSynthesisFundingUseSummary()
+            .getReportSynthesisFundingUseExpendituryAreas() != null
+          && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
+            .isEmpty()) {
+          pmuText = reportSynthesisPMU.getReportSynthesisFundingUseSummary().getMainArea();
+          reportSynthesis.getReportSynthesisFundingUseSummary()
+            .setExpenditureAreas(new ArrayList<>(reportSynthesisPMU.getReportSynthesisFundingUseSummary()
+              .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
+              .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
+        } else {
+          reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
+          List<PowbExpenditureAreas> expAreas = new ArrayList<>(
+            powbExpenditureAreasManager.findAll().stream().filter(x -> x.isActive() && x.getIsExpenditure())
+              .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList()));
+          for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
+            ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
+              new ReportSynthesisFundingUseExpendituryArea();
+            fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
+            reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas().add(fundingUseExpenditureArea);
+          }
+        }
+      }
     }
 
   }
