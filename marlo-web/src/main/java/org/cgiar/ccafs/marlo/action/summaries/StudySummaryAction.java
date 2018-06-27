@@ -301,15 +301,16 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "isReporting", "id", "type"},
-      new Class[] {String.class, String.class, String.class, Boolean.class, Long.class, String.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "year", "isReporting", "id", "type", "cycle"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Long.class, String.class, String.class});
     String type = null;
     // Type
     if (projectExpectedStudyInfo.getStudyType() != null) {
       type = projectExpectedStudyInfo.getStudyType().getName();
     }
     model.addRow(new Object[] {center, date, year, this.getSelectedPhase().isReporting(),
-      projectExpectedStudyInfo.getProjectExpectedStudy().getId(), type});
+      projectExpectedStudyInfo.getProjectExpectedStudy().getId(), type, this.getSelectedCycle()});
     return model;
   }
 
