@@ -224,7 +224,7 @@
                 [#if additional?has_content ]${additional}[#else]<i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
               </td>
               <td class="text-center">
-                [#local linkEvidenceURL][@s.url namespace="/projects" action="${(crpSession)!}/studySummary"][@s.param name='studyID']${(projectExpectedStudy.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                [#local linkEvidenceURL][@s.url namespace="/projects" action="${(crpSession)!}/studySummary"][@s.param name='studyID']${(projectExpectedStudy.id)!''}[/@s.param][@s.param name='cycle']${(actualPhase.description)!''}[/@s.param][@s.param name='year']${(actualPhase.year)!''}[/@s.param][/@s.url][/#local]
                 <a href="${linkEvidenceURL}" target="_blank"><i class="fas fa-link" style="color: #2196F3;"></i></a>
               </td>
               [#if !isPMU]
