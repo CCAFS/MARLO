@@ -682,9 +682,9 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "isReporting", "cycle"},
+      new Class[] {String.class, String.class, String.class, Boolean.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.getSelectedPhase().isReporting(), this.getSelectedCycle()});
     return model;
   }
 

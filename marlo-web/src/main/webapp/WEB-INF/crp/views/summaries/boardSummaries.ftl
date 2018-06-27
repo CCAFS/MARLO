@@ -54,7 +54,7 @@
       "namespace": "/projects",
       "action": "${crpSession}/caseStudySummary",
       "formats": [ "PDF" ],
-      "cycles": [ "Reporting" ],
+      "cycles": [ "Planning", "Reporting" ],
       "components" : [
         { 
           "type" :  "radio",
