@@ -335,8 +335,6 @@ public class ValidateProjectSectionAction extends BaseAction {
         for (ProjectExpectedStudy projectExpectedStudy : myStudies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
             cycle, this.getActualPhase().getYear(), sectionName);
-          section = new HashMap<String, Object>();
-          section.put("sectionName", sectionStatus.getSectionName());
           if (sectionStatus == null) {
             sectionStatus = new SectionStatus();
             sectionStatus.setMissingFields("No section");
@@ -357,7 +355,6 @@ public class ValidateProjectSectionAction extends BaseAction {
         for (ProjectInnovation projectInnovation : innovations) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(), cycle,
             this.getActualPhase().getYear(), sectionName);
-          section = new HashMap<String, Object>();
           section.put("sectionName", sectionStatus.getSectionName());
           if (sectionStatus == null) {
             sectionStatus = new SectionStatus();
@@ -383,7 +380,6 @@ public class ValidateProjectSectionAction extends BaseAction {
         for (ProjectHighlight highlight : highlights) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle,
             this.getActualPhase().getYear(), sectionName);
-          section = new HashMap<String, Object>();
           if (sectionStatus == null) {
 
             sectionStatus = new SectionStatus();
