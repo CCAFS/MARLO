@@ -158,6 +158,7 @@
           <th> [@s.text name="${customLabel}.table.outcomeCaseStudy" /] </th>
           <th> [@s.text name="${customLabel}.table.subIDO" /] </th>
           <th class="col-md-3"> [@s.text name="${customLabel}.table.crossCuttingIssues" /] </th>
+          <th> Links to evidence </th>
           [#if !isPMU]<th class="col-md-1"> [@s.text name="${customLabel}.table.includeAR" /] </th>[/#if]
         </tr>
       </thead>
@@ -222,7 +223,10 @@
                 [/#local]
                 [#if additional?has_content ]${additional}[#else]<i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
               </td>
-              [#-- <td class="text-center"><a href="#"><i class="fas fa-link"></i></a></td> --]
+              <td class="text-center">
+                [#local linkEvidenceURL][@s.url namespace="/projects" action="${(crpSession)!}/studySummary"][@s.param name='studyID']${(projectExpectedStudy.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                <a href="${linkEvidenceURL}" target="_blank"><i class="fas fa-link" style="color: #2196F3;"></i></a>
+              </td>
               [#if !isPMU]
               <td class="text-center">
                 [@customForm.checkmark id="studyCheck-${item_index}" name="${customName}" label="" value="${projectExpectedStudy.id}" editable=editable checked=(!reportSynthesis.reportSynthesisCrpProgress.studiesIds?seq_contains(projectExpectedStudy.id))!false cssClass="" /]

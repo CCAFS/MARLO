@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome" ] /]
 [#assign customJS = [ 
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -117,6 +117,7 @@
         <th id="tb-organization-type">[@s.text name="${customLabel}.table.implementingType" /]</th>
         <th id="tb-stage">[@s.text name="${customLabel}.table.stage" /]</th>
         <th id="tb-geoScope">[@s.text name="${customLabel}.table.geoScope" /]</th>
+        <th id=""> Links to evidence </th>
       </tr>
     </thead>
     <tbody>
@@ -170,6 +171,10 @@
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
+          </td>
+          <td class="text-center">
+            [#local linkEvidenceURL][@s.url namespace="/projects" action="${(crpSession)!}/studySummary"][@s.param name='studyID']${(item.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <a href="${linkEvidenceURL}" target="_blank"><i class="fas fa-link" style="color: #2196F3;"></i></a>
           </td>
         </tr>
       [/#list]
