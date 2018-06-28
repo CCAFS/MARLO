@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -199,6 +200,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nGender", this.getText("summaries.gender"));
     masterReport.getParameterValues().put("i8nYouth", this.getText("summaries.youth"));
     masterReport.getParameterValues().put("i8nCap", this.getText("summaries.capacityDevelopment"));
+    masterReport.getParameterValues().put("i8nKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
 
     /*
      * Reporting
@@ -327,7 +331,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private TypedTableModel getDeliverablesDataReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
-        "key_output", "leader", "funding_sources", "deliv_new_year", "deliv_new_year_justification",
+        "keyOutput", "outcomes", "leader", "funding_sources", "deliv_new_year", "deliv_new_year_justification",
         "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access", "deliv_license", "titleMetadata",
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing", "qualityAssurance",
@@ -336,12 +340,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
         "phaseID", "gender", "youth", "cap"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
-        String.class, String.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Long.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class, String.class, String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
@@ -391,6 +395,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
         Integer delivYear = null;
         String keyOutput = "";
+        String outcomes = "";
         String leader = null;
         String othersResponsibles = null;
         String fundingSources = "";
@@ -454,8 +459,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (deliverable.getDeliverableInfo().getYear() != 0) {
           delivYear = deliverable.getDeliverableInfo().getYear();
         }
+
         if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() != null) {
-          keyOutput += "● ";
+          keyOutput += "• ";
 
           if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getCrpClusterOfActivity()
             .getCrpProgram() != null) {
@@ -463,10 +469,23 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               .getCrpProgram().getAcronym() + " - ";
           }
           keyOutput += deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getKeyOutput();
+          // Get Outcomes Related to the KeyOutput
+          for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverable.getDeliverableInfo()
+            .getCrpClusterKeyOutput().getCrpClusterKeyOutputOutcomes().stream()
+            .filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null).collect(Collectors.toList())) {
+            outcomes += " • ";
+            if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
+              && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
+              outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym() + " Outcome: ";
+            }
+            outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getDescription() + "\n";
+          }
         }
-
         if (keyOutput.isEmpty()) {
           keyOutput = null;
+        }
+        if (outcomes.isEmpty()) {
+          outcomes = null;
         }
 
         // Get partner responsible and institution
@@ -1208,7 +1227,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         model.addRow(new Object[] {deliverable.getId(),
           deliverable.getDeliverableInfo().getTitle().trim().isEmpty() ? null
             : deliverable.getDeliverableInfo().getTitle(),
-          delivType, delivSubType, delivStatus, delivYear, keyOutput, leader, fundingSources, delivNewYear,
+          delivType, delivSubType, delivStatus, delivYear, keyOutput, outcomes, leader, fundingSources, delivNewYear,
           delivNewYearJustification, delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense,
           titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata,
           citationMetadata, HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary,
@@ -1227,12 +1246,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap"},
+        "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, Long.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, Long.class, String.class, String.class, String.class,
+        String.class, String.class},
       0);
 
 
@@ -1254,7 +1274,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           keywordsMetadata = null, citationMetadata = null, HandleMetadata = null, DOIMetadata = null,
           creatorAuthors = "", F = null, A = null, I = null, R = null, restrictedAccess = null,
           delivLicenseModifications = null, volume = null, issue = null, pages = null, journal = null,
-          journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null;
+          journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null,
+          keyOutput = "", outcomes = "";
         publicationId = deliverable.getId();
         title = deliverable.getDeliverableInfo().getTitle();
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
@@ -1852,12 +1873,40 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             cap = "0-Not Targeted";
           }
         }
-        model
-          .addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader, delivDisseminationChannel,
-            delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata, descriptionMetadata, dateMetadata,
-            languageMetadata, countryMetadata, keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata,
-            creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal,
-            journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID, gender, youth, cap});
+
+        if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() != null) {
+          keyOutput += "• ";
+
+          if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getCrpClusterOfActivity()
+            .getCrpProgram() != null) {
+            keyOutput += deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getCrpClusterOfActivity()
+              .getCrpProgram().getAcronym() + " - ";
+          }
+          keyOutput += deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getKeyOutput();
+          // Get Outcomes Related to the KeyOutput
+          for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverable.getDeliverableInfo()
+            .getCrpClusterKeyOutput().getCrpClusterKeyOutputOutcomes().stream()
+            .filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null).collect(Collectors.toList())) {
+            outcomes += " • ";
+            if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
+              && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
+              outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym() + " Outcome: ";
+            }
+            outcomes += crpClusterKeyOutputOutcome.getCrpProgramOutcome().getDescription() + "\n";
+          }
+        }
+        if (keyOutput.isEmpty()) {
+          keyOutput = null;
+        }
+        if (outcomes.isEmpty()) {
+          outcomes = null;
+        }
+        model.addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader,
+          delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
+          descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
+          HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
+          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID,
+          gender, youth, cap, keyOutput, outcomes});
       }
     }
     return model;

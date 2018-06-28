@@ -703,6 +703,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (keyOutput.isEmpty()) {
           keyOutput = null;
         }
+        if (outcomes.isEmpty()) {
+          outcomes = null;
+        }
 
         String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
           && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
