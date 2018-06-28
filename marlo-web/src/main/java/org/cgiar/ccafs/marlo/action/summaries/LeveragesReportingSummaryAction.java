@@ -219,15 +219,11 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
         Long.class},
       0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
-      .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
-        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null && pl.getPhase() != null
-        && pl.getPhase().equals(this.getSelectedPhase())
-        && pl.getProject().getGlobalUnitProjects().stream()
-          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
-        && pl.getProject().isActive() && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
-      .collect(Collectors.toList())) {
-
+      .filter(
+        pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear() && pl.getProject() != null
+          && pl.getProject().isActive() && pl.getPhase() != null && pl.getPhase().equals(this.getSelectedPhase())
+          && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null)
+      .sorted((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId())).collect(Collectors.toList())) {
 
       String title = null, partnerName = null, flagship = null;
       Long projectID = null, phaseID = null;
