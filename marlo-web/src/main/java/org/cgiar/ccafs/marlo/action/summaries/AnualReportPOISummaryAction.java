@@ -204,7 +204,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private Long synthesisID;
 
   // Parameter for tables E and F
-  Double totalCarry = 0.0, totalw1w2 = 0.0, totalCenter = 0.0, grandTotal = 0.0;
+  Double totalw1w2 = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0, totalW3Actual = 0.0,
+    totalW3Bilateral = 0.0, totalW3Planned = 0.0, grandTotalPlanned = 0.0, grandTotalActual = 0.0;
   // Streams
   private InputStream inputStream;
 
@@ -1465,7 +1466,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     reportSynthesisFinancialSummaryList = reportSynthesisFinancialSummaryManager.findAll();
     reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
 
-
     List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetListTemp = new ArrayList<>();
     if (reportSynthesisFinancialSummaryList != null) {
       for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
@@ -1473,10 +1473,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
           if (reportSynthesisFinancialSummaryList != null) {
             for (int j = 0; j < reportSynthesisFinancialSummaryList.size(); j++) {
+
               if (reportSynthesisFinancialSummaryBudgetList.get(j).getReportSynthesisFinancialSummary()
                 .getId() == reportSynthesisFinancialSummaryList.get(i).getId()) {
                 /* filling the budget list temp with the buggets with the same id of actual financial summary */
                 reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
+
               }
               reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
             }
@@ -1484,7 +1486,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         }
       }
     }
-
 
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
@@ -1512,70 +1513,73 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> header2 = Arrays.asList(sHeader2);
     headers.add(header);
     headers.add(header2);
-    double totalw3Bilateral = 0.0;
+
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
+    double totalW1w2Difference = 0.0, totalW3BilaterialDiference = 0.0, grandTotalDifference = 0.0;
     try {
-      Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, total = 0.0, bilateralPlanned = 0.0;
-      for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
-
-        String category = "";
-
-        if (reportSynthesisFinancialSummaryList.get(i).getBudgets() != null) {
-          for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
-            w1w2 = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Actual();
-            totalw3Bilateral = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
-            bilateralPlanned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
-          }
-        }
-
-        totalCarry += carry;
-        totalw1w2 += w1w2;
-        totalw3Bilateral += w3Bilateral;
-        grandTotal += total;
-        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER)};
-
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-
-
-      // Expenditure areas
       List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
       if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
         for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
-
           String category = "";
           category = powbExpenditureArea.getExpenditureArea();
 
+          Double w1w2Planned = 0.0, w3Planned = 0.0, w3Bilateral = 0.0, w1w2Actual = 0.0, w3Actual = 0.0,
+            bilateralActual = 0.0, bilateralPlanned = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0,
+            w3BilateralDifference = 0.0, totalDifference = 0.0;
+          for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
 
-          ReportSynthesisFinancialSummaryBudget powbFinancialPlannedBudget =
-            reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(0);
-          if (powbFinancialPlannedBudget != null) {
-            w1w2 = powbFinancialPlannedBudget.getW1Actual() != null ? powbFinancialPlannedBudget.getW1Actual() : 0.0;
-            // carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
-            w3Bilateral =
-              powbFinancialPlannedBudget.getW3Actual() != null ? powbFinancialPlannedBudget.getW3Actual() : 0.0;
-            // total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
-            // ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
+            if (reportSynthesisFinancialSummaryList.get(i).getBudgets() != null) {
+              for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
+                w1w2Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Planned();
+                w3Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Planned();
+                bilateralPlanned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
+                totalPlanned = w1w2Planned + w3Planned;
+
+                w1w2Actual = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Actual();
+                w3Actual = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Actual();
+                bilateralActual = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralActual();
+                totalActual = w1w2Actual + w3Actual;
+
+                w1w2Difference = w1w2Planned - w1w2Actual;
+                w3BilateralDifference = w3Planned - w3Actual;
+                totalDifference = totalPlanned - totalActual;
+
+                totalw1w2 += w1w2Planned;
+                totalw1w2Actual += w1w2Actual;
+                totalW3Bilateral += w3Bilateral;
+
+                totalW3Actual += w3Actual;
+                totalW3Planned += w3Planned;
+                grandTotalPlanned += totalPlanned;
+                grandTotalActual += totalActual;
+
+                totalW1w2Difference += w1w2Difference;
+                totalW3BilaterialDiference += w3BilateralDifference;
+                grandTotalDifference += totalDifference;
+
+
+                POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(w3Planned, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(totalPlanned, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(w1w2Actual, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(w3Actual, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(totalActual, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(w1w2Difference, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(w3BilateralDifference, 2)), ParagraphAlignment.CENTER),
+                  new POIField(currencyFormat.format(round(totalDifference, 2)), ParagraphAlignment.CENTER)};
+
+                data = Arrays.asList(sData);
+                datas.add(data);
+
+              }
+            }
+
           }
-          totalCarry += carry;
-          totalw1w2 += w1w2;
-          totalw3Bilateral += w3Bilateral;
-          grandTotal += total;
-          POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-            new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
-            new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
-            new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER)};
-
-          data = Arrays.asList(sData);
-          datas.add(data);
-
         }
       }
+
     } catch (Exception e) {
     }
     Boolean bold = true;
@@ -1583,8 +1587,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
 
       new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalw3Bilateral, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotal, 2)), ParagraphAlignment.CENTER, bold, blackColor),};
+      new POIField(currencyFormat.format(round(totalW3Planned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(grandTotalPlanned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalw1w2Actual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalW3Actual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(grandTotalActual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalW1w2Difference, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalW3BilaterialDiference, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(grandTotalDifference, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),};
 
     data = Arrays.asList(sData);
     datas.add(data);
