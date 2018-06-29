@@ -690,7 +690,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           keyOutput += deliverableInfo.getCrpClusterKeyOutput().getKeyOutput();
           // Get Outcomes Related to the KeyOutput
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverableInfo.getCrpClusterKeyOutput()
-            .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null)
+            .getCrpClusterKeyOutputOutcomes().stream()
+            .filter(
+              ko -> ko.isActive() && ko.getCrpProgramOutcome() != null && ko.getCrpProgramOutcome().getPhase() != null
+                && ko.getCrpProgramOutcome().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             outcomes += " • ";
             if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
