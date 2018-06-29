@@ -377,19 +377,21 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
-      deliverables.sort((p1, p2) -> p1.getDeliverableInfo().isRequieriedReporting(this.getSelectedYear())
-        .compareTo(p2.getDeliverableInfo().isRequieriedReporting(this.getSelectedYear())));
 
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
       deliverablesHL.addAll(deliverables);
       deliverables.clear();
       deliverables.addAll(deliverablesHL);
-      int i = 0;
-      for (Deliverable deliverable : deliverables.stream().sorted((d1, d2) -> d1.getId().compareTo(d2.getId()))
-        .collect(Collectors.toList())) {
-        i++;
-        // System.out.println(deliverable.getId());
-        // System.out.println("#" + i);
+      deliverables.sort((d1, d2) -> {
+        if (d1.getProject().getId().compareTo(d2.getProject().getId()) == 0) {
+          return d1.getId().compareTo(d2.getId());
+        } else {
+          return d1.getProject().getId().compareTo(d2.getProject().getId());
+        }
+      });
+
+      for (Deliverable deliverable : deliverables) {
+
         String delivType = null;
         String delivSubType = null;
         String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
@@ -456,7 +458,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (delivStatus.equals("")) {
           delivStatus = null;
         }
-        if (deliverable.getDeliverableInfo().getYear() != 0) {
+        if (deliverable.getDeliverableInfo().getYear() != -1) {
           delivYear = deliverable.getDeliverableInfo().getYear();
         }
 
@@ -472,7 +474,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           // Get Outcomes Related to the KeyOutput
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverable.getDeliverableInfo()
             .getCrpClusterKeyOutput().getCrpClusterKeyOutputOutcomes().stream()
-            .filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null).collect(Collectors.toList())) {
+            .filter(
+              ko -> ko.isActive() && ko.getCrpProgramOutcome() != null && ko.getCrpProgramOutcome().getPhase() != null
+                && ko.getCrpProgramOutcome().getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
             outcomes += " • ";
             if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
               && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
@@ -527,7 +532,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (deliverable.getDeliverableInfo().getStatus() != null) {
           // Extended
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && deliverable.getDeliverableInfo().getNewExpectedYear() != null
+            && deliverable.getDeliverableInfo().getNewExpectedYear().intValue() != -1) {
             delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
             delivNewYearJustification = deliverable.getDeliverableInfo().getStatusDescription();
             newExceptedFlag = "nd";
@@ -535,9 +542,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           // Complete
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
             delivNewYearJustification = "<Not applicable>";
-            newExceptedFlag = "nd";
           }
           // Canceled
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
@@ -1886,7 +1891,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           // Get Outcomes Related to the KeyOutput
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverable.getDeliverableInfo()
             .getCrpClusterKeyOutput().getCrpClusterKeyOutputOutcomes().stream()
-            .filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null).collect(Collectors.toList())) {
+            .filter(
+              ko -> ko.isActive() && ko.getCrpProgramOutcome() != null && ko.getCrpProgramOutcome().getPhase() != null
+                && ko.getCrpProgramOutcome().getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
             outcomes += " • ";
             if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
               && !crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym().isEmpty()) {
