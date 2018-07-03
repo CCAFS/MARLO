@@ -141,6 +141,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
@@ -839,11 +840,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
         FundingSource fundingSource =
           fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-        List<DeliverableFundingSource> deliverableFundingSources = fundingSource.getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
-            && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
-          .collect(Collectors.toList());
+        List<DeliverableFundingSource> deliverableFundingSources =
+          fundingSource.getDeliverableFundingSources().stream()
+            .filter(
+              c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
+                && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
+                  .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
+            .collect(Collectors.toList());
 
         List<Deliverable> onDeliverables =
           this.getDeliverableRelationsProject(id, ProjectBudget.class.getName(), projectBudget.getProject().getId());
@@ -2904,6 +2907,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return returnValue;
   }
 
+
   public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     List<Submission> submissions = powbSynthesis.getSubmissions()
@@ -2915,7 +2919,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return submissions;
   }
-
 
   public List<CrpPpaPartner> getPpaPartners() {
     List<CrpPpaPartner> crpPpaPartners = phaseManager.getPhaseById(this.getActualPhase().getId()).getCrpPpaPartner()
@@ -3035,11 +3038,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         List<ProjectPartner> partners =
           crpPpaPartner.getInstitution().getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null
-              && c.getPhase().getId().equals(this.getActualPhase().getId())
-              && c.getProject().getGlobalUnitProjects().stream()
-                .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCrpID()))
-                .collect(Collectors.toList()).size() > 0)
+            .filter(
+              c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
+                && c.getProject().getGlobalUnitProjects().stream()
+                  .filter(
+                    gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCrpID()))
+                  .collect(Collectors.toList()).size() > 0)
             .collect(Collectors.toList());
         Set<Project> projectsSet = new HashSet<>();
         for (ProjectPartner projectPartner : partners) {
@@ -3082,6 +3086,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return projects;
 
   }
+
 
   /**
    * Green checks in Projects Menu
@@ -3224,14 +3229,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
 
-          openA.addAll(deliverables.stream().filter(d -> d.isActive()
-            && d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+          openA.addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                .getCurrentCycleYear()
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
         }
 
@@ -3494,6 +3500,81 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+  }
+
+  /**
+   * Check the annual report Section Status
+   * 
+   * @param section
+   * @return
+   */
+  public boolean getReportSynthesisSectionStatus(String sectionName, long synthesisID) {
+
+    boolean returnValue = false;
+    SectionStatus sectionStatus;
+
+    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+
+    if (ReportSynthesisSectionStatusEnum.value(sectionName.toUpperCase()) == null) {
+      return false;
+    }
+
+    switch (ReportSynthesisSectionStatusEnum.value(sectionName.toUpperCase())) {
+      case FLAGSHIP_PROGRESS:
+        if (this.isPowbFlagship(reportSynthesis.getLiaisonInstitution())) {
+
+          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+            this.getCurrentCycle(), reportSynthesis.getPhase().getYear(), sectionName);
+
+          if (sectionStatus == null) {
+            return false;
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          returnValue = true;
+
+        }
+        break;
+
+      case VARIANCE:
+      case FUNDING_USE:
+      case EFFICIENCY:
+      case GOVERNANCE:
+      case RISKS:
+      case FINANCIAL_SUMMARY:
+      case INFLUENCE:
+      case CONTROL:
+        if (this.isPowbPMU(reportSynthesis.getLiaisonInstitution())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+            this.getCurrentCycle(), reportSynthesis.getPhase().getYear(), sectionName);
+
+          if (sectionStatus == null) {
+            return false;
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          returnValue = true;
+        }
+
+        break;
+
+      default:
+        sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
+          this.getCurrentCycle(), reportSynthesis.getPhase().getYear(), sectionName);
+        if (sectionStatus == null) {
+          return false;
+        }
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
+        returnValue = true;
+        break;
+    }
+
+    return returnValue;
   }
 
   public HttpServletRequest getRequest() {
@@ -4093,6 +4174,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   /**
    * Check if all the powb Synthesis Sections by Liaison Institution is completed
    * 
@@ -4112,6 +4194,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
+  /**
+   * Check if all the annual Synthesis Sections by Liaison Institution is completed
+   * 
+   * @param liaisonInstitutionID
+   * @return
+   */
+  public boolean isCompleteLiaisonSectionReport(long liaisonInstitutionID) {
+    Phase phase = this.getActualPhase();
+
+    ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+
+    if (reportSynthesis != null) {
+      return this.isCompleteReportSynthesis(reportSynthesis.getId());
+    } else {
+      return false;
+    }
+
+  }
+
 
   /**
    * Check if the powb synthesis is complete by the flagships or the PMU.
@@ -4281,7 +4383,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * This function is now handled from Front-End and is not used anymore. It was a decision of Andres valencia and
    * Sebastian Amariles the 2018/5/18 17:12
@@ -4323,13 +4424,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
           .collect(Collectors.toList()));
-        openA.addAll(deliverables.stream()
-          .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-          .collect(Collectors.toList()));
+        openA
+          .addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                .getCurrentCycleYear()
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
       }
 
       for (Deliverable deliverable : openA) {
@@ -4614,6 +4717,135 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+
+  }
+
+
+  /**
+   * Check if the annual Report is complete by the flagships or the PMU.
+   * 
+   * @param phaseID
+   * @return
+   */
+  public boolean isCompleteReportSynthesis(long synthesisID) {
+
+    int secctions = 0;
+    if (sectionStatusManager.findAll() == null) {
+      return false;
+    }
+
+    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+
+    if (reportSynthesis.getSectionStatuses() != null) {
+      List<SectionStatus> sections = new ArrayList<>(reportSynthesis.getSectionStatuses());
+      for (SectionStatus sectionStatus : sections) {
+        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+          switch (ReportSynthesisSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+            case CRP_PROGRESS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case FLAGSHIP_PROGRESS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case CROSS_CUTTING:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case VARIANCE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case FUNDING_USE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case EXTERNAL_PARTNERSHIP:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case CROSS_CGIAR:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case MELIA:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case EFFICIENCY:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case GOVERNANCE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case RISKS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case FINANCIAL_SUMMARY:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case INFLUENCE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case CONTROL:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+          }
+        }
+      }
+    } else {
+      return false;
+    }
+
+    if (this.isPowbFlagship(reportSynthesis.getLiaisonInstitution())) {
+      if (secctions != 6) {
+        return false;
+      }
+    }
+
+    if (this.isPowbPMU(reportSynthesis.getLiaisonInstitution())) {
+      if (secctions != 13) {
+        return false;
+      }
+    }
+    return true;
 
   }
 

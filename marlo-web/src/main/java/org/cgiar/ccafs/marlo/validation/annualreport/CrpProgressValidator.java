@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -77,23 +79,74 @@ public class CrpProgressValidator extends BaseValidator {
     action.setInvalidFields(new HashMap<>());
     if (reportSynthesis != null) {
       if (!saving) {
+
         Path path = this.getAutoSaveFilePath(reportSynthesis, action.getCrpID(), action);
         if (path.toFile().exists()) {
           action.addMissingField("draft");
         }
       }
 
-
-      if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
-      } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      // Validate Overall CRP Progress Towars SLOs
+      if (!this.isValidString(reportSynthesis.getReportSynthesisCrpProgress().getOverallProgress())) {
+        action.addMessage(action.getText("annualReport.crpProgress.overallProgress"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrpProgress.overallProgress",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+      // Validate Summaries of Outcomes
+      if (!this.isValidString(reportSynthesis.getReportSynthesisCrpProgress().getSummaries())) {
+        action.addMessage(action.getText("annualReport.crpProgress.summariesOutcomes"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrpProgress.summaries",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (!this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+
+        // Validate Slo Targets
+        if (reportSynthesis.getReportSynthesisCrpProgress().getSloTargets() != null
+          || !reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().isEmpty()) {
+          for (int i = 0; i < reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().size(); i++) {
+            this.validateTargets(action, reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().get(i), i);
+          }
+        } else {
+          action.addMessage(action.getText("SLO Targets"));
+          action.addMissingField("annualReport.crpProgress");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisCrpProgress.sloTargets",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+        }
+      }
     }
+
+    if (!action.getFieldErrors().isEmpty()) {
+      action.addActionError(action.getText("saving.fields.required"));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
+
+    this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ReportSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+
+  }
+
+  public void validateTargets(BaseAction action, ReportSynthesisCrpProgressTarget target, int i) {
+
+    // Validate BriefSummary
+    if (!this.isValidString(target.getBirefSummary())) {
+      action.addMessage(action.getText("annualReport.crpProgress.overallProgress"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisCrpProgress.sloTargets[" + i + "].birefSummary",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Additional Contribution
+    if (!this.isValidString(target.getAdditionalContribution())) {
+      action.addMessage(action.getText("annualReport.crpProgress.overallProgress"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisCrpProgress.sloTargets[" + i + "].additionalContribution",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
 
   }
 

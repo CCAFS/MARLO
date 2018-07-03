@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -83,6 +85,30 @@ public class MeliaValidator extends BaseValidator {
         }
       }
 
+      // Validate Summary
+      if (!this.isValidString(reportSynthesis.getReportSynthesisMelia().getSummary())) {
+        action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.summary"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.summary",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+
+        // Validate Collaborations
+        if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+          || !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+          for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
+            this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
+          }
+        } else {
+          action.addMessage(action.getText("Evaluations"));
+          action.addMissingField("reportSynthesis.reportSynthesisMelia.evaluations");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisMelia.evaluations",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evaluations"}));
+        }
+
+      }
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -90,8 +116,57 @@ public class MeliaValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.MELIA.getStatus(), action);
+
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.MELIA.getStatus(), action);
+    }
+
+  }
+
+  public void validateEvaluations(BaseAction action, ReportSynthesisMeliaEvaluation evaluation, int i) {
+
+    // Validate Name Evaluation
+    if (!this.isValidString(evaluation.getNameEvaluation())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].nameEvaluation"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].nameEvaluation",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Recommendation
+    if (!this.isValidString(evaluation.getRecommendation())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].recommendation"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].recommendation",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Manage Response
+    if (!this.isValidString(evaluation.getManagementResponse())) {
+      action
+        .addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].managementResponse"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].managementResponse",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Status
+    if (evaluation.getStatus() == null || evaluation.getStatus() == -1) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].status"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].status",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Whom
+    if (!this.isValidString(evaluation.getTextWhom())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].whom"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].whom",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate When
+    if (!this.isValidString(evaluation.getTextWhen())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].when"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].when",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
