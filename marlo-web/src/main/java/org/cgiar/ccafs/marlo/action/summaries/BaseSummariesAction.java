@@ -19,14 +19,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -70,12 +68,16 @@ public class BaseSummariesAction extends BaseAction {
   // Managers
   private GlobalUnitManager crpManager;
   private PhaseManager phaseManager;
+  protected ProjectManager projectManager;
 
-  public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
+  public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ProjectManager projectManager) {
     super(config);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+    this.projectManager = projectManager;
   }
+
 
   /**
    * Method to return a set of FS filtered by active with status On-Going/Extended/Pipeline/informally into the
@@ -115,37 +117,15 @@ public class BaseSummariesAction extends BaseAction {
   }
 
   /**
-   * Method to return a set of Projects filtered by active with status On-Going/Extended into the
-   * selectedYear()
+   * This method gets a list of project that are active by a given Phase and statuses identifier. With the start and end
+   * date of the project within the given year
+   * year = 0 ignore year filter
+   * status = empty ignore status filter
    * 
    * @return set of active projects
    */
-  protected Set<Project> getActiveProjectsOnPhase() {
-    Set<Project> activeProjects = new HashSet<>();
-    List<GlobalUnitProject> globalUnitProjectList = this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(g -> g.getProject() != null && g.getProject().isActive() && g.getProject().getProjectPhases() != null
-        && g.getProject().getProjectPhases().size() > 0
-        && g.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && g.getProject().getProjectInfo().isActive() && g.getProject().getProjectInfo().getStatus() != null
-        && g.getProject().getProjectInfo().getStartDate() != null
-        && g.getProject().getProjectInfo().getEndDate() != null
-        && (g.getProject().getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || g.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList());
-    if (globalUnitProjectList != null && globalUnitProjectList.size() > 0) {
-      for (GlobalUnitProject globalUnitProject : globalUnitProjectList) {
-        ProjectInfo projectInfo = globalUnitProject.getProject().getProjectInfo();
-        Date endDate = projectInfo.getEndDate();
-        Date startDate = projectInfo.getStartDate();
-        int endYear = this.getIntYearFromDate(endDate);
-        int startYear = this.getIntYearFromDate(startDate);
-        if (startYear <= this.getSelectedYear() && endYear >= this.getSelectedYear()) {
-          activeProjects.add((globalUnitProject.getProject()));
-        }
-      }
-    }
+  protected List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] statuses) {
+    List<Project> activeProjects = projectManager.getActiveProjectsByPhase(phase, year, statuses);
     return activeProjects;
   }
 
@@ -206,7 +186,6 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
-
   protected void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -225,6 +204,7 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
+
   private void getHeaderSubreports(HashMap<String, Element> hm, ReportHeader reportHeader) {
     int elementCount = reportHeader.getElementCount();
     for (int i = 0; i < elementCount; i++) {
@@ -240,7 +220,6 @@ public class BaseSummariesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Method to get a Year from Date
@@ -258,10 +237,10 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public String getSelectedCycle() {
     return selectedCycle;

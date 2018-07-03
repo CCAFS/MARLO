@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -89,8 +90,8 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   @Inject
   public ProjectHighlightsSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager, ResourceManager resourceManager,
-    HTMLParser HTMLParser) {
-    super(config, crpManager, phaseManager);
+    HTMLParser HTMLParser, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.projectHighLightManager = projectHighLightManager;
     this.resourceManager = resourceManager;
     this.HTMLParser = HTMLParser;

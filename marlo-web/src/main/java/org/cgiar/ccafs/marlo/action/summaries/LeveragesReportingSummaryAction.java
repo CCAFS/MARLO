@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -68,8 +69,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Inject
   public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.projectLeverageManager = projectLeverageManager;
     this.resourceManager = resourceManager;
   }
