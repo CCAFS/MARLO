@@ -1467,27 +1467,31 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     }
     List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetListTemp = new ArrayList<>();
-    if (reportSynthesisFinancialSummaryList != null) {
-      for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
-        if (reportSynthesisFinancialSummaryList.get(i).isActive()) {
+    try {
+      if (reportSynthesisFinancialSummaryList != null) {
+        for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
+          if (reportSynthesisFinancialSummaryList.get(i).isActive()) {
 
-          if (reportSynthesisFinancialSummaryList != null) {
-            for (int j = 0; j < reportSynthesisFinancialSummaryList.size(); j++) {
+            if (reportSynthesisFinancialSummaryList != null) {
+              for (int j = 0; j < reportSynthesisFinancialSummaryList.size(); j++) {
 
-              if (reportSynthesisFinancialSummaryBudgetList.get(j).getReportSynthesisFinancialSummary()
-                .getId() == reportSynthesisFinancialSummaryList.get(i).getId()) {
-                /* filling the budget list temp with the buggets with the same id of actual financial summary */
-                reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
+                if (reportSynthesisFinancialSummaryBudgetList.get(j).getReportSynthesisFinancialSummary()
+                  .getId() == reportSynthesisFinancialSummaryList.get(i).getId()) {
+                  /* filling the budget list temp with the buggets with the same id of actual financial summary */
+                  reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
 
+                }
               }
+              reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
+
             }
-            reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
+
 
           }
-
-
         }
       }
+    } catch (Exception e) {
+
     }
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1524,20 +1528,29 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
       if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
         for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
+
+          System.out.println("powbExpenditureAreas " + powbExpenditureAreas.size());
           String category = "";
           category = powbExpenditureArea.getExpenditureArea();
 
           Double w1w2Planned = 0.0, w3Planned = 0.0, w3Bilateral = 0.0, w1w2Actual = 0.0, w3Actual = 0.0,
             bilateralActual = 0.0, bilateralPlanned = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0,
             w3BilateralDifference = 0.0, totalDifference = 0.0;
+          //
           for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
 
             if (reportSynthesisFinancialSummaryList.get(i).getBudgets() != null) {
               for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
 
-                // if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea() ==
-                // powbExpenditureArea) {
+                System.out.println("(reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j)\r\n"
+                  + "                  .getExpenditureArea() "
+                  + reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea());
 
+                System.out.println("powbExpenditureArea " + powbExpenditureArea);
+                /*
+                 * if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j)
+                 * .getExpenditureArea() == powbExpenditureArea) {
+                 */
                 w1w2Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Planned();
                 w3Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Planned();
                 bilateralPlanned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
