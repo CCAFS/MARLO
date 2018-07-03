@@ -133,19 +133,11 @@ public class FlagshipProgressValidator extends BaseValidator {
                   if (expectedCrpProgress != null && expectedCrpProgress.getCrpMilestone() != null
                     && expectedCrpProgress.getCrpMilestone().getId() != null) {
                     int i = this.getIndex(expectedCrpProgress.getCrpMilestone().getId().longValue(), reportSynthesis);
-                    if (!(this.isValidString(expectedCrpProgress.getEvidence()))) {
+                    if (!this.isValidString(expectedCrpProgress.getEvidence())) {
                       action.addMissingField(action
                         .getText("reportSynthesis.reportSynthesisFlagshipProgress.milestones[" + i + "].evidence"));
                       action.getInvalidFields().put(
                         "input-reportSynthesis.reportSynthesisFlagshipProgress.milestones[" + i + "].evidence",
-                        InvalidFieldsMessages.EMPTYFIELD);
-                    }
-
-                    if (expectedCrpProgress.getStatusName() != null) {
-                      action.addMissingField(action
-                        .getText("reportSynthesis.reportSynthesisFlagshipProgress.milestones[" + i + "].statusName"));
-                      action.getInvalidFields().put(
-                        "input-reportSynthesis.reportSynthesisFlagshipProgress.milestones[" + i + "].statusName",
                         InvalidFieldsMessages.EMPTYFIELD);
                     }
                   }
