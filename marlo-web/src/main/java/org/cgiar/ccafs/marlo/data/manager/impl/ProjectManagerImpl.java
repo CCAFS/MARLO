@@ -66,7 +66,11 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
+    return projectDAO.getActiveProjectsByPhase(phase, year, projectStatuses);
+  }
 
+  @Override
   public List<Project> getCompletedProjects(long crpId, long idPhase) {
     return projectDAO.getCompletedProjects(crpId, idPhase);
   }
