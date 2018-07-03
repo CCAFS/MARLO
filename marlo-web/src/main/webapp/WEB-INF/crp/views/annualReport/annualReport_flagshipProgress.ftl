@@ -3,8 +3,11 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${(synthesisID)!}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "components-font-awesome" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "select2", "components-font-awesome", "datatables.net", "datatables.net-bs" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" 
+  ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -135,7 +138,7 @@
                 [#-- Milestone status --]
                 <td>[#if (milestoneProgress.milestonesStatus?has_content)!false]${milestoneProgress.statusName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Explanation --]
-                <td>[#if (milestoneProgress.evidence?has_content)!false]${milestoneProgress.evidence}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td class="urlify">[#if (milestoneProgress.evidence?has_content)!false]${milestoneProgress.evidence?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]

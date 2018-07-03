@@ -112,7 +112,7 @@
               [#list columns as column]
                 <td>
                   [#if (item[column]?has_content)!false] 
-                    ${item[column]} 
+                    ${item[column]?replace('\n', '<br>')} 
                   [#else]
                     <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                   [/#if]
