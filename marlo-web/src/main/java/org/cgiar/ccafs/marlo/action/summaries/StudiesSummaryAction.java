@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
@@ -98,8 +99,9 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
   @Inject
   public StudiesSummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager,
-    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser HTMLParser) {
-    super(config, crpManager, phaseManager);
+    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser HTMLParser,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.HTMLParser = HTMLParser;
@@ -682,9 +684,9 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "isReporting", "cycle"},
+      new Class[] {String.class, String.class, String.class, Boolean.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.getSelectedPhase().isReporting(), this.getSelectedCycle()});
     return model;
   }
 

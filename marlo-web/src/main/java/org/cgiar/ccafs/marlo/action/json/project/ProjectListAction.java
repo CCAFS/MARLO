@@ -19,15 +19,14 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.summaries.BaseSummariesAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -50,8 +49,9 @@ public class ProjectListAction extends BaseSummariesAction {
 
 
   @Inject
-  public ProjectListAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
-    super(config, crpManager, phaseManager);
+  public ProjectListAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
 
@@ -63,14 +63,13 @@ public class ProjectListAction extends BaseSummariesAction {
     projects = new ArrayList<Map<String, String>>();
 
 
-    allProjects = new ArrayList<>();
     if (this.getSelectedPhase() != null && this.getSelectedPhase().getProjectPhases().size() > 0) {
-      for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-        .filter(pf -> pf.isActive() && pf.getProject().isActive())
-        .sorted((pf1, pf2) -> pf1.getProject().getId().compareTo(pf2.getProject().getId()))
-        .collect(Collectors.toList())) {
-        allProjects.add((projectPhase.getProject()));
-      }
+      // Status of projects
+      String[] statuses = null;
+
+      // Get projects with the status defined
+      List<Project> allProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
+
       for (Project project : allProjects) {
         Map<String, String> projectInfo = new HashMap<String, String>();
         projectInfo.put("id", project.getId().toString());

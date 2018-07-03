@@ -807,6 +807,7 @@ public class DeliverableAction extends BaseAction {
       .collect(Collectors.toList())) {
       if (deliverablePartnership.getProjectPartnerPerson() != null
         && deliverablePartnership.getProjectPartnerPerson().isActive()
+        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner() != null
         && deliverablePartnership.getProjectPartnerPerson().getProjectPartner().isActive()) {
         deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
       }

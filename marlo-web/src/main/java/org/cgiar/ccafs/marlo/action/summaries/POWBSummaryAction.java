@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -137,8 +138,9 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, PowbSynthesisManager powbSynthesisManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    ProjectExpectedStudyManager projectExpectedStudyManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -651,9 +653,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin()
-              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -837,13 +838,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   }
 
   private TypedTableModel getTableAContentTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"FP", "subIDO", "outcomes", "milestone", "w1w2", "w3Bilateral", "assessment",
-          "meansVerifications"},
-        new Class[] {String.class, String.class, String.class, String.class, Double.class, Double.class, String.class,
-          String.class},
-        0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"FP", "subIDO", "outcomes", "milestone", "w1w2", "w3Bilateral", "assessment", "meansVerifications"},
+      new Class[] {String.class, String.class, String.class, String.class, Double.class, Double.class, String.class,
+        String.class},
+      0);
     this.loadTablePMU();
     String FP, subIDO = "", outcomes, milestone, assessment, meansVerifications;
     Double w1w2, w3Bilateral;
@@ -1265,8 +1264,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
 
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null
+    for (GlobalUnitProject globalUnitProject : this
+      .getLoggedCrp().getGlobalUnitProjects().stream().filter(p -> p.isActive() && p.getProject() != null
         && p.getProject().isActive() && p.getProject().getProjecInfoPhase(phase) != null && p.getProject()
           .getProjectInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
       .collect(Collectors.toList())) {

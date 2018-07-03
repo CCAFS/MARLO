@@ -86,12 +86,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private Boolean showSheet3;
   private Set<Project> fundingSourceProjectsWithBudgets = new HashSet<>();
   private Set<FundingSource> currentCycleFundingSources = new HashSet<>();
-  private Set<Project> allProjects = new HashSet<>();
+  private List<Project> allProjects = new ArrayList<>();
   private long startTime;
   private Boolean hasW1W2Co;
   // Managers
   private final CrpProgramManager programManager;
-  private final ProjectManager projectManager;
   private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -102,9 +101,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectManager projectManager, PhaseManager phaseManager, ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
-    this.projectManager = projectManager;
     this.resourceManager = resourceManager;
   }
 
@@ -210,7 +208,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
 
       // Add all projects
-      allProjects = this.getActiveProjectsOnPhase();
+      // Status of projects
+      String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId(),
+        ProjectStatusEnum.Extended.getStatusId()};
+      allProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedYear(), statuses);
 
       // delete projects with FS
       for (Project project : fundingSourceProjectsWithBudgets) {
@@ -360,8 +361,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         Long.class},
       0);
     SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
-    for (Project project : allProjects.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId()))
-      .collect(Collectors.toList())) {
+    for (Project project : allProjects) {
       ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
       Long phaseID = this.getSelectedPhase().getId();
       String projectId = project.getId().toString();
@@ -764,7 +764,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       List<String> coasList = new ArrayList<String>();
 
       for (String projectString : s.stream().collect(Collectors.toList())) {
-        Project projectById = this.projectManager.getProjectById(Long.parseLong(projectString));
+        Project projectById = projectManager.getProjectById(Long.parseLong(projectString));
         Boolean isAdministrative = true;
         int countAdministrative = 0;
         if (countAdministrative == 0) {

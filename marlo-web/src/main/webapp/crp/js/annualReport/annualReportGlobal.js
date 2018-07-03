@@ -10,6 +10,11 @@ $(document).ready(function() {
       "scrollCollapse": true,
   });
 
+  $('.urlify').each(function(i,e) {
+    var text = $(e).html();
+    $(e).html(urlify(text));
+  });
+
 });
 
 /**

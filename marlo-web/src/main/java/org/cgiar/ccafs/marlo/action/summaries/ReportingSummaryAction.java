@@ -197,7 +197,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
   // Managers
-  private final ProjectManager projectManager;
   private final CrpProgramManager programManager;
   private final GenderTypeManager genderTypeManager;
   private final InstitutionManager institutionManager;
@@ -218,8 +217,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
     CrossCuttingScoringManager crossCuttingScoringManager, DeliverablePartnershipManager deliverablePartnershipManager,
     ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
-    this.projectManager = projectManager;
+    super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
     this.projectBudgetManager = projectBudgetManager;
@@ -575,7 +573,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
      * Studies
      */
     masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
-    masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
+    masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.projectStudy"));
     masterReport.getParameterValues().put("i8nStudiesRTitle", this.getText("summaries.study.title"));
     masterReport.getParameterValues().put("i8nStudiesRYear", this.getText("summaries.study.year"));
     masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.status"));
