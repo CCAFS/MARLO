@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -83,6 +84,14 @@ public class ExternalPartnershipsValidator extends BaseValidator {
         }
       }
 
+      // Validate Highlights
+      if (!this.isValidString(reportSynthesis.getReportSynthesisExternalPartnership().getHighlights())) {
+        action.addMessage(action.getText("reportSynthesis.reportSynthesisExternalPartnership.highlights"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisExternalPartnership.highlights",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -90,8 +99,8 @@ public class ExternalPartnershipsValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.EXTERNAL_PARTNERSHIP.getStatus(), action);
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.EXTERNAL_PARTNERSHIP.getStatus(), action);
     }
 
   }
