@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -83,6 +85,32 @@ public class CrossCgiarPartnershipValidator extends BaseValidator {
         }
       }
 
+      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+        // Validate highlights
+        if (!this.isValidString(reportSynthesis.getReportSynthesisCrossCgiar().getHighlights())) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCgiar.highlights"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCgiar.highlights",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+
+        // Validate Collaborations
+        if (reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations() != null
+          || !reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations().isEmpty()) {
+          for (int i = 0; i < reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().size(); i++) {
+            this.validateCollaborations(action,
+              reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations().get(i), i);
+          }
+        } else {
+          action.addMessage(action.getText("Collaborations"));
+          action.addMissingField("reportSynthesis.reportSynthesisCrossCgiar.collaborations");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisCrossCgiar.collaborations",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Collaborations"}));
+        }
+
+      }
+
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -90,9 +118,59 @@ public class CrossCgiarPartnershipValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.CROSS_CGIAR.getStatus(), action);
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.CROSS_CGIAR.getStatus(), action);
     }
+
+
+  }
+
+  public void validateCollaborations(BaseAction action, ReportSynthesisCrossCgiarCollaboration collaboration, int i) {
+
+    // Validate Crps
+    if (collaboration.getGlobalUnit() == null || collaboration.getGlobalUnit().getId() == -1) {
+      action
+        .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].globalUnit"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].globalUnit",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Flagship
+    if (!this.isValidString(collaboration.getFlagship())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].flagship"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].flagship",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    // Validate Collaboration Type
+    if (collaboration.getRepIndCollaborationType() == null
+      || collaboration.getRepIndCollaborationType().getId() == -1) {
+      action.addMessage(
+        action.getText("reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].repIndCollaborationType"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].repIndCollaborationType",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Status
+    if (collaboration.getStatus() == null || collaboration.getStatus() == -1) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].status"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].status",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Description
+    if (!this.isValidString(collaboration.getDescription())) {
+      action
+        .addMessage(action.getText("reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].description"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisCrossCgiar.collaborations[" + i + "].description",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
 
   }
 

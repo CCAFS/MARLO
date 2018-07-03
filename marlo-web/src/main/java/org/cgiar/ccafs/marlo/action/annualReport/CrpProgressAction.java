@@ -481,6 +481,22 @@ public class CrpProgressAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         reportSynthesis = (ReportSynthesis) autoSaveReader.readFromJson(jReader);
         synthesisID = reportSynthesis.getId();
+
+        if (this.isFlagship()) {
+          if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudiesValue() != null) {
+            String[] studyValues = reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudiesValue().split(",");
+            reportSynthesis.getReportSynthesisCrpProgress().setExpectedStudies(new ArrayList<>());
+
+
+            for (int i = 0; i < studyValues.length; i++) {
+
+              ProjectExpectedStudy study =
+                projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyValues[i]));
+              reportSynthesis.getReportSynthesisCrpProgress().getExpectedStudies().add(study);
+            }
+          }
+        }
+
         this.setDraft(true);
       } else {
 
