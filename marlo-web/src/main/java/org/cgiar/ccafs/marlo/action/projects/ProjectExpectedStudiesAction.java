@@ -60,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -78,6 +79,7 @@ import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectExpectedStudiesValidator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -287,7 +289,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return institutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -296,8 +297,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return myProjects;
   }
 
+
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return organizationTypes;
+  }
+
+  public String getPath() {
+    return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
   }
 
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
@@ -316,10 +322,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return regionList;
   }
 
-
   public List<RepIndRegion> getRegions() {
     return regions;
   }
+
 
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
@@ -329,9 +335,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return stageStudies;
   }
 
-
   public Map<Integer, String> getStatuses() {
     return statuses;
+  }
+
+
+  private String getStudiesSourceFolder() {
+    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
+      .concat(File.separator).concat(this.getCrpSession() + "_")
+      .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
 
   public List<StudyType> getStudyTypes() {
