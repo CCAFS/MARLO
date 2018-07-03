@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
@@ -275,13 +276,13 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         "quantification", "genderRelevance", "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions",
         "comunicationsMaterial", "comunicationsFile", "contacts", "studyProjects", "isContribution",
         "isBudgetInvestment", "isStage1", "isRegional", "isNational", "hasreferencesFile", "hasCommunicationFile",
-        "isOutcomeCaseStudy"},
+        "isOutcomeCaseStudy", "referenceURL", "communicationsURL"},
       new Class[] {Long.class, Integer.class, Double.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, Boolean.class, Boolean.class, Boolean.class,
-        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class},
+        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class},
       0);
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
     if (studyType.equals("all")) {
@@ -317,7 +318,8 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           countries = null, scopeComments = null, crps = null, flagships = null, regions = null, institutions = null,
           elaborationOutcomeImpactStatement = null, referenceText = null, referencesFile = null, quantification = null,
           genderRelevance = null, youthRelevance = null, capacityRelevance = null, otherCrossCuttingDimensions = null,
-          comunicationsMaterial = null, comunicationsFile = null, contacts = null, studyProjects = null;
+          comunicationsMaterial = null, comunicationsFile = null, contacts = null, studyProjects = null,
+          referenceURL = null, communicationsURL = null;
 
         Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
           isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false;
@@ -520,6 +522,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         if (projectExpectedStudyInfo.getReferencesFile() != null) {
           hasreferencesFile = true;
           referencesFile = projectExpectedStudyInfo.getReferencesFile().getFileName();
+          referenceURL = this.getPath() + referencesFile;
         }
 
         // Quantification
@@ -577,6 +580,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         if (projectExpectedStudyInfo.getOutcomeFile() != null) {
           hasCommunicationFile = true;
           comunicationsFile = projectExpectedStudyInfo.getOutcomeFile().getFileName();
+          communicationsURL = this.getPath() + comunicationsFile;
         }
 
         // Contact person
@@ -611,21 +615,12 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           elaborationOutcomeImpactStatement, referenceText, referencesFile, quantification, genderRelevance,
           youthRelevance, capacityRelevance, otherCrossCuttingDimensions, comunicationsMaterial, comunicationsFile,
           contacts, studyProjects, isContribution, isBudgetInvestment, isStage1, isRegional, isNational,
-          hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy});
+          hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy, referenceURL, communicationsURL});
       }
     }
 
     return model;
 
-  }
-
-  public String getCaseStudyUrl(String project) {
-    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
-  }
-
-  public String getCaseStudyUrlPath(String project) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
-      + File.separator;
   }
 
   @Override
@@ -637,7 +632,6 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
     }
   }
 
-
   @Override
   public String getContentType() {
     if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
@@ -648,6 +642,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
 
   }
 
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -655,6 +650,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -690,8 +686,19 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
     return model;
   }
 
+
+  public String getPath() {
+    return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
+  }
+
   public String getSelectedFormat() {
     return selectedFormat;
+  }
+
+  private String getStudiesSourceFolder() {
+    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
+      .concat(File.separator).concat(this.getCrpSession() + "_")
+      .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
 
   @Override

@@ -210,7 +210,7 @@
             name="${customName}.projectExpectedStudyInfo.referencesFile.id" 
             label="study.referencesCitedAttach" 
             dataUrl="${baseUrl}/uploadStudies.do" 
-            path="${(action.getPath(expectedID))!}"
+            path="${(action.getPath())!}"
             isEditable=editable
             labelClass="label-min-width"
             required=false
@@ -300,7 +300,7 @@
             name="${customName}.projectExpectedStudyInfo.outcomeFile.id" 
             label="study.communicationMaterialsAttach" 
             dataUrl="${baseUrl}/uploadStudies.do" 
-            path="${(action.getPath(expectedID))!}"
+            path="${(action.getPath())!}"
             isEditable=editable
             labelClass="label-min-width"
           /]
