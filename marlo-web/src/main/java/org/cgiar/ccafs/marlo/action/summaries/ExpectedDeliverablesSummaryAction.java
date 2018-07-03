@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -125,8 +126,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
     CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    ResourceManager resourceManager, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
