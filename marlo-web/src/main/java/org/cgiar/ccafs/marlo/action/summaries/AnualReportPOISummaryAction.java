@@ -1460,32 +1460,38 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<ReportSynthesisFinancialSummary> reportSynthesisFinancialSummaryList = new ArrayList<>();
     List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList = new ArrayList<>();
     List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
+    try {
+      reportSynthesisFinancialSummaryList = reportSynthesisFinancialSummaryManager.findAll();
+      reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
+    } catch (Exception e) {
 
-    reportSynthesisFinancialSummaryList = reportSynthesisFinancialSummaryManager.findAll();
-    reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
-
+    }
     List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetListTemp = new ArrayList<>();
-    if (reportSynthesisFinancialSummaryList != null) {
-      for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
-        if (reportSynthesisFinancialSummaryList.get(i).isActive()) {
+    try {
+      if (reportSynthesisFinancialSummaryList != null) {
+        for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
+          if (reportSynthesisFinancialSummaryList.get(i).isActive()) {
 
-          if (reportSynthesisFinancialSummaryList != null) {
-            for (int j = 0; j < reportSynthesisFinancialSummaryList.size(); j++) {
+            if (reportSynthesisFinancialSummaryList != null) {
+              for (int j = 0; j < reportSynthesisFinancialSummaryList.size(); j++) {
 
-              if (reportSynthesisFinancialSummaryBudgetList.get(j).getReportSynthesisFinancialSummary()
-                .getId() == reportSynthesisFinancialSummaryList.get(i).getId()) {
-                /* filling the budget list temp with the buggets with the same id of actual financial summary */
-                reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
+                if (reportSynthesisFinancialSummaryBudgetList.get(j).getReportSynthesisFinancialSummary()
+                  .getId() == reportSynthesisFinancialSummaryList.get(i).getId()) {
+                  /* filling the budget list temp with the buggets with the same id of actual financial summary */
+                  reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
 
+                }
               }
+              reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
+
             }
-            reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
+
 
           }
-
-
         }
       }
+    } catch (Exception e) {
+
     }
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1522,21 +1528,29 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
       if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
         for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
+
+          System.out.println("powbExpenditureAreas " + powbExpenditureAreas.size());
           String category = "";
           category = powbExpenditureArea.getExpenditureArea();
 
           Double w1w2Planned = 0.0, w3Planned = 0.0, w3Bilateral = 0.0, w1w2Actual = 0.0, w3Actual = 0.0,
             bilateralActual = 0.0, bilateralPlanned = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0,
             w3BilateralDifference = 0.0, totalDifference = 0.0;
+          //
           for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
 
             if (reportSynthesisFinancialSummaryList.get(i).getBudgets() != null) {
               for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
 
-                // if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea() ==
-                // powbExpenditureArea) {
+                System.out.println("(reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j)\r\n"
+                  + "                  .getExpenditureArea() "
+                  + reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea());
 
-
+                System.out.println("powbExpenditureArea " + powbExpenditureArea);
+                /*
+                 * if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j)
+                 * .getExpenditureArea() == powbExpenditureArea) {
+                 */
                 w1w2Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Planned();
                 w3Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Planned();
                 bilateralPlanned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
@@ -1584,67 +1598,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
           }
 
-          /*
-           * if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
-           * for (int i = 0; i < reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().size(); i++) {
-           * System.out.println("Hola largo " +
-           * reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i)
-           * .getExpenditureArea().getExpenditureArea());
-           * // for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
-           * String category = "";
-           * category = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getExpenditureArea()
-           * .getExpenditureArea();
-           * Double w1w2Planned = 0.0, w3Planned = 0.0, w3Bilateral = 0.0, w1w2Actual = 0.0, w3Actual = 0.0,
-           * bilateralActual = 0.0, bilateralPlanned = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0,
-           * w3BilateralDifference = 0.0, totalDifference = 0.0;
-           * // for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
-           * if (reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets() != null) {
-           * // for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
-           * // if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea() ==
-           * // powbExpenditureArea) {
-           * // reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW1Planned()
-           * w1w2Planned = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW1Planned();
-           * w3Planned = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW3Planned();
-           * bilateralPlanned =
-           * reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getBilateralPlanned();
-           * totalPlanned = w1w2Planned + w3Planned;
-           * w1w2Actual = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW1Actual();
-           * w3Actual = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW3Actual();
-           * bilateralActual =
-           * reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getBilateralActual();
-           * totalActual = w1w2Actual + w3Actual;
-           * w1w2Difference = w1w2Planned - w1w2Actual;
-           * w3BilateralDifference = w3Planned - w3Actual;
-           * totalDifference = totalPlanned - totalActual;
-           * totalw1w2 += w1w2Planned;
-           * totalw1w2Actual += w1w2Actual;
-           * totalW3Bilateral += w3Bilateral;
-           * totalW3Actual += w3Actual;
-           * totalW3Planned += w3Planned;
-           * grandTotalPlanned += totalPlanned;
-           * grandTotalActual += totalActual;
-           * totalW1w2Difference += w1w2Difference;
-           * totalW3BilaterialDiference += w3BilateralDifference;
-           * grandTotalDifference += totalDifference;
-           * // }
-           * POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(w3Planned, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(totalPlanned, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(w1w2Actual, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(w3Actual, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(totalActual, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(w1w2Difference, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(w3BilateralDifference, 2)), ParagraphAlignment.CENTER),
-           * new POIField(currencyFormat.format(round(totalDifference, 2)), ParagraphAlignment.CENTER)};
-           * data = Arrays.asList(sData);
-           * datas.add(data);
-           * // }
-           * }
-           * // }
-           * }
-           * }
-           */
         }
       }
 
