@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
@@ -94,8 +95,8 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   @Inject
   public StudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    HTMLParser HTMLParser) {
-    super(config, crpManager, phaseManager);
+    HTMLParser HTMLParser, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.HTMLParser = HTMLParser;

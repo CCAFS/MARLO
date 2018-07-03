@@ -156,7 +156,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager;
   private ProjectInnovationManager projectInnovationManager;
-  private ProjectManager projectManager;
   private ProjectFocusManager projectFocusManager;
   private ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager;
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
@@ -234,7 +233,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager) {
 
-    super(config, crpManager, phaseManager);
+    super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
     currencyFormat = NumberFormat.getCurrencyInstance();
@@ -252,7 +251,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.reportSynthesisFundingUseExpendituryAreaManager = reportSynthesisFundingUseExpendituryAreaManager;
     this.projectInnovationManager = projectInnovationManager;
-    this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.reportSynthesisCrossCgiarManager = reportSynthesisCrossCgiarManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
@@ -1461,7 +1459,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFinancialSummaryBudget financialSummaryBudget = new ReportSynthesisFinancialSummaryBudget();
     List<ReportSynthesisFinancialSummary> reportSynthesisFinancialSummaryList = new ArrayList<>();
     List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList = new ArrayList<>();
-
+    List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
 
     reportSynthesisFinancialSummaryList = reportSynthesisFinancialSummaryManager.findAll();
     reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
@@ -1480,9 +1478,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
 
               }
-              reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
             }
+            reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
+
           }
+
+
         }
       }
     }
@@ -1518,7 +1519,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> data;
     double totalW1w2Difference = 0.0, totalW3BilaterialDiference = 0.0, grandTotalDifference = 0.0;
     try {
-      List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
+
       if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
         for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
           String category = "";
@@ -1531,6 +1532,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
             if (reportSynthesisFinancialSummaryList.get(i).getBudgets() != null) {
               for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
+
+                // if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea() ==
+                // powbExpenditureArea) {
+
+
                 w1w2Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Planned();
                 w3Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Planned();
                 bilateralPlanned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
@@ -1557,7 +1563,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 totalW1w2Difference += w1w2Difference;
                 totalW3BilaterialDiference += w3BilateralDifference;
                 grandTotalDifference += totalDifference;
-
+                // }
 
                 POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
                   new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
@@ -1577,10 +1583,74 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
 
           }
+
+          /*
+           * if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
+           * for (int i = 0; i < reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().size(); i++) {
+           * System.out.println("Hola largo " +
+           * reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i)
+           * .getExpenditureArea().getExpenditureArea());
+           * // for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
+           * String category = "";
+           * category = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getExpenditureArea()
+           * .getExpenditureArea();
+           * Double w1w2Planned = 0.0, w3Planned = 0.0, w3Bilateral = 0.0, w1w2Actual = 0.0, w3Actual = 0.0,
+           * bilateralActual = 0.0, bilateralPlanned = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0,
+           * w3BilateralDifference = 0.0, totalDifference = 0.0;
+           * // for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
+           * if (reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets() != null) {
+           * // for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
+           * // if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea() ==
+           * // powbExpenditureArea) {
+           * // reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW1Planned()
+           * w1w2Planned = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW1Planned();
+           * w3Planned = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW3Planned();
+           * bilateralPlanned =
+           * reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getBilateralPlanned();
+           * totalPlanned = w1w2Planned + w3Planned;
+           * w1w2Actual = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW1Actual();
+           * w3Actual = reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getW3Actual();
+           * bilateralActual =
+           * reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().get(i).getBilateralActual();
+           * totalActual = w1w2Actual + w3Actual;
+           * w1w2Difference = w1w2Planned - w1w2Actual;
+           * w3BilateralDifference = w3Planned - w3Actual;
+           * totalDifference = totalPlanned - totalActual;
+           * totalw1w2 += w1w2Planned;
+           * totalw1w2Actual += w1w2Actual;
+           * totalW3Bilateral += w3Bilateral;
+           * totalW3Actual += w3Actual;
+           * totalW3Planned += w3Planned;
+           * grandTotalPlanned += totalPlanned;
+           * grandTotalActual += totalActual;
+           * totalW1w2Difference += w1w2Difference;
+           * totalW3BilaterialDiference += w3BilateralDifference;
+           * grandTotalDifference += totalDifference;
+           * // }
+           * POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(w3Planned, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(totalPlanned, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(w1w2Actual, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(w3Actual, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(totalActual, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(w1w2Difference, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(w3BilateralDifference, 2)), ParagraphAlignment.CENTER),
+           * new POIField(currencyFormat.format(round(totalDifference, 2)), ParagraphAlignment.CENTER)};
+           * data = Arrays.asList(sData);
+           * datas.add(data);
+           * // }
+           * }
+           * // }
+           * }
+           * }
+           */
         }
       }
 
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
     }
     Boolean bold = true;
     String blackColor = "000000";
