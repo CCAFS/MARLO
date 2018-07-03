@@ -173,6 +173,44 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   }
 
   @Override
+  public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select distinct p.id as projectId,pi.id as info from projects p inner join projects_info pi on pi.project_id=p.id");
+    query.append(" where p.is_active");
+    query.append(" and pi.is_active");
+    if (year != 0) {
+      query.append(" and YEAR(pi.start_date) <= " + year);
+      query.append(" and YEAR(pi.end_date) >= " + year);
+    }
+    query.append(" and pi.id_phase =" + phase.getId());
+    if (projectStatuses != null && projectStatuses.length > 0) {
+      int size = projectStatuses.length;
+      if (size == 1) {
+        query.append(" and pi.status = " + projectStatuses[0]);
+      } else {
+
+        for (int i = 0; i < size; i++) {
+          projectStatuses[i] = "pi.status=" + projectStatuses[i];
+        }
+        query.append(" and (");
+        query.append(String.join(" or ", projectStatuses));
+        query.append(" )");
+      }
+    }
+    query.append(" ORDER BY p.id ASC");
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<Project> projects = new ArrayList<Project>();
+    for (Map<String, Object> map : list) {
+      Project project = this.find(Long.parseLong(map.get("projectId").toString()));
+      project.setProjectInfo(projectInfoDAO.find(Long.parseLong(map.get("info").toString())));
+      projects.add(project);
+    }
+    return projects;
+  }
+
+  @Override
   public List<Project> getCompletedProjects(long crpId, long phaseID) {
     StringBuilder query = new StringBuilder();
     query.append(

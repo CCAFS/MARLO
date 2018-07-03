@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -101,8 +102,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   @Inject
   public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager, ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.resourceManager = resourceManager;
@@ -553,15 +555,15 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       // date format for star and end dates
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
-      List<Project> projects = new ArrayList<>();
       if (this.getSelectedPhase() != null) {
 
-        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-          .sorted((f1, f2) -> Long.compare(f1.getProject().getId(), f2.getProject().getId()))
-          .filter(f -> f.getProject() != null && f.getProject().isActive()).collect(Collectors.toList())) {
-          projects.add((projectPhase.getProject()));
-        }
-        for (Project project : projects) {
+        // Status of projects
+        String[] statuses = null;
+
+        // Get projects with the status defined
+        List<Project> activeProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
+
+        for (Project project : activeProjects) {
           ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
           String title = projectInfo.getTitle();
           String summary = projectInfo.getSummary();
