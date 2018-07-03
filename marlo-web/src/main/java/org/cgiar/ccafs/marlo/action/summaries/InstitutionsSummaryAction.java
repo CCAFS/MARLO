@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -105,8 +105,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
   @Inject
   public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    ResourceManager resourceManager, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
   }
 
@@ -141,16 +141,17 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   }
 
   private void createIntitutionsProjectsList() {
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && (p.getProject().getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList())) {
 
-      List<ProjectPartner> projectPartnerList = globalUnitProject.getProject().getProjectPartners().stream()
+    // Status of projects
+    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId()};
+
+    // Get projects with the status defined
+    List<Project> projectList =
+      this.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedYear(), statuses);
+
+    for (Project project : projectList) {
+
+      List<ProjectPartner> projectPartnerList = project.getProjectPartners().stream()
         .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList());
 
@@ -169,7 +170,6 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
       for (ProjectPartner projectPartner : projectPartnerList) {
         if (projectPartner.getInstitution() != null) {
-          Project project = projectPartner.getProject();
           Institution institution = projectPartner.getInstitution();
           InstitutionType institutionType = institution.getInstitutionType();
           List<InstitutionLocation> institutionLocation = institution.getInstitutionsLocations().stream()

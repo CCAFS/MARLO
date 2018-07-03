@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -68,8 +69,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Inject
   public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
+    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.projectLeverageManager = projectLeverageManager;
     this.resourceManager = resourceManager;
   }
@@ -219,15 +221,11 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
         Long.class},
       0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
-      .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
-        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null && pl.getPhase() != null
-        && pl.getPhase().equals(this.getSelectedPhase())
-        && pl.getProject().getGlobalUnitProjects().stream()
-          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
-        && pl.getProject().isActive() && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
-      .collect(Collectors.toList())) {
-
+      .filter(
+        pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear() && pl.getProject() != null
+          && pl.getProject().isActive() && pl.getPhase() != null && pl.getPhase().equals(this.getSelectedPhase())
+          && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null)
+      .sorted((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId())).collect(Collectors.toList())) {
 
       String title = null, partnerName = null, flagship = null;
       Long projectID = null, phaseID = null;

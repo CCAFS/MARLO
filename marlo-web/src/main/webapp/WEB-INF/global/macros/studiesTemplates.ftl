@@ -48,7 +48,7 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Policy/Investment Type --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="study.reportingIndicatorThree.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true /]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="study.reportingIndicatorThree.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
             </div>
             <div class="col-md-6 block-budgetInvestment" style="display:${isBudgetInvestment?string('block', 'none')}">
               [#-- Amount (Only for Budget or Investment) --]
@@ -58,11 +58,11 @@
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Implementing Organization Type --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndOrganizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true /]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndOrganizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true  editable=editable/]
             </div>
             <div class="col-md-6">
               [#-- Stage in Process --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageProcess.id" className="setSelect2 stageProcess" i18nkey="study.reportingIndicatorThree.stage" listName="stageProcesses" keyFieldName="id"  displayFieldName="composedName" required=true  /]
+              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageProcess.id" className="setSelect2 stageProcess" i18nkey="study.reportingIndicatorThree.stage" listName="stageProcesses" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
             </div>
           </div>
         </div>
