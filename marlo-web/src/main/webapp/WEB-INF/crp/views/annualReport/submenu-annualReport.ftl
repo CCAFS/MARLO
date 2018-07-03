@@ -6,7 +6,7 @@
     [#assign itemSizePercentage = (98)/liaisonInstitutions?size /]
     [#list liaisonInstitutions as institution]
       [#assign isActive = (institution.id == liaisonInstitutionID)/]
-      [#assign isCompleted = (action.isCompleteLiaisonSection(institution.id))!false /]
+      [#assign isCompleted = (action.isCompleteLiaisonSectionReport(institution.id))!false /]
       [#assign hasPermission = false/]
       [#assign itemURL][@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
       <a class="powb-submenuItem  ${isActive?string('active','')} ${isCompleted?string('completed','')}" style="width:${(itemSizePercentage)}%;" href="${itemURL}">
