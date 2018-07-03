@@ -156,7 +156,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private ReportSynthesisFundingUseExpendituryAreaManager reportSynthesisFundingUseExpendituryAreaManager;
   private ProjectInnovationManager projectInnovationManager;
-  private ProjectManager projectManager;
   private ProjectFocusManager projectFocusManager;
   private ReportSynthesisCrossCgiarManager reportSynthesisCrossCgiarManager;
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
@@ -234,7 +233,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager) {
 
-    super(config, crpManager, phaseManager);
+    super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
     currencyFormat = NumberFormat.getCurrencyInstance();
@@ -252,7 +251,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.reportSynthesisFundingUseExpendituryAreaManager = reportSynthesisFundingUseExpendituryAreaManager;
     this.projectInnovationManager = projectInnovationManager;
-    this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.reportSynthesisCrossCgiarManager = reportSynthesisCrossCgiarManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;

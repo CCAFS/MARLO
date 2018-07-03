@@ -197,7 +197,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
   // Managers
-  private final ProjectManager projectManager;
   private final CrpProgramManager programManager;
   private final GenderTypeManager genderTypeManager;
   private final InstitutionManager institutionManager;
@@ -218,8 +217,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
     CrossCuttingScoringManager crossCuttingScoringManager, DeliverablePartnershipManager deliverablePartnershipManager,
     ResourceManager resourceManager) {
-    super(config, crpManager, phaseManager);
-    this.projectManager = projectManager;
+    super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
     this.projectBudgetManager = projectBudgetManager;
