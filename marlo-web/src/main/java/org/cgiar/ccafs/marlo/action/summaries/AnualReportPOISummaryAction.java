@@ -103,14 +103,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -120,9 +123,14 @@ import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1466,33 +1474,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     } catch (Exception e) {
 
     }
-    List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetListTemp = new ArrayList<>();
-    try {
-      if (reportSynthesisFinancialSummaryList != null) {
-        for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
-          if (reportSynthesisFinancialSummaryList.get(i).isActive()) {
-
-            if (reportSynthesisFinancialSummaryList != null) {
-              for (int j = 0; j < reportSynthesisFinancialSummaryList.size(); j++) {
-
-                if (reportSynthesisFinancialSummaryBudgetList.get(j).getReportSynthesisFinancialSummary()
-                  .getId() == reportSynthesisFinancialSummaryList.get(i).getId()) {
-                  /* filling the budget list temp with the buggets with the same id of actual financial summary */
-                  reportSynthesisFinancialSummaryBudgetListTemp.add(reportSynthesisFinancialSummaryBudgetList.get(j));
-
-                }
-              }
-              reportSynthesisFinancialSummaryList.get(i).setBudgets(reportSynthesisFinancialSummaryBudgetListTemp);
-
-            }
-
-
-          }
-        }
-      }
-    } catch (Exception e) {
-
-    }
 
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
@@ -1523,83 +1504,64 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    double totalW1w2Difference = 0.0, totalW3BilaterialDiference = 0.0, grandTotalDifference = 0.0;
+    double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
     try {
+      for (int i = 0; i < reportSynthesisFinancialSummaryBudgetList.size(); i++) {
 
-      if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
-        for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
+        String category = "";
+        Double w1w2Planned = 0.0, w3Planned = 0.0, bilateralPlanned = 0.0, bilateralActual = 0.0, w1w2Actual = 0.0,
+          w3Actual = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0, w3Difference = 0.0,
+          totalDifference = 0.0;
 
-          System.out.println("powbExpenditureAreas " + powbExpenditureAreas.size());
-          String category = "";
-          category = powbExpenditureArea.getExpenditureArea();
-
-          Double w1w2Planned = 0.0, w3Planned = 0.0, w3Bilateral = 0.0, w1w2Actual = 0.0, w3Actual = 0.0,
-            bilateralActual = 0.0, bilateralPlanned = 0.0, totalPlanned = 0.0, totalActual = 0.0, w1w2Difference = 0.0,
-            w3BilateralDifference = 0.0, totalDifference = 0.0;
-          //
-          for (int i = 0; i < reportSynthesisFinancialSummaryList.size(); i++) {
-
-            if (reportSynthesisFinancialSummaryList.get(i).getBudgets() != null) {
-              for (int j = 0; j < reportSynthesisFinancialSummaryList.get(i).getBudgets().size(); j++) {
-
-                System.out.println("(reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j)\r\n"
-                  + "                  .getExpenditureArea() "
-                  + reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getExpenditureArea());
-
-                System.out.println("powbExpenditureArea " + powbExpenditureArea);
-                /*
-                 * if (reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j)
-                 * .getExpenditureArea() == powbExpenditureArea) {
-                 */
-                w1w2Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Planned();
-                w3Planned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Planned();
-                bilateralPlanned = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralPlanned();
-                totalPlanned = w1w2Planned + w3Planned;
-
-                w1w2Actual = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW1Actual();
-                w3Actual = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getW3Actual();
-                bilateralActual = reportSynthesisFinancialSummaryList.get(i).getBudgets().get(j).getBilateralActual();
-                totalActual = w1w2Actual + w3Actual;
-
-                w1w2Difference = w1w2Planned - w1w2Actual;
-                w3BilateralDifference = w3Planned - w3Actual;
-                totalDifference = totalPlanned - totalActual;
-
-                totalw1w2 += w1w2Planned;
-                totalw1w2Actual += w1w2Actual;
-                totalW3Bilateral += w3Bilateral;
-
-                totalW3Actual += w3Actual;
-                totalW3Planned += w3Planned;
-                grandTotalPlanned += totalPlanned;
-                grandTotalActual += totalActual;
-
-                totalW1w2Difference += w1w2Difference;
-                totalW3BilaterialDiference += w3BilateralDifference;
-                grandTotalDifference += totalDifference;
-                // }
-
-                POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(w3Planned, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(totalPlanned, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(w1w2Actual, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(w3Actual, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(totalActual, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(w1w2Difference, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(w3BilateralDifference, 2)), ParagraphAlignment.CENTER),
-                  new POIField(currencyFormat.format(round(totalDifference, 2)), ParagraphAlignment.CENTER)};
-
-                data = Arrays.asList(sData);
-                datas.add(data);
-
-              }
-            }
-
-          }
-
+        /** Getting category name **/
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution() != null) {
+          category = reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution().getName();
+        } else {
+          category = reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea();
         }
+
+        w1w2Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned();
+        w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned();
+        totalPlanned = w1w2Planned + w3Planned;
+
+        w1w2Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual();
+        w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual();
+        totalActual = w1w2Actual + w3Actual;
+
+        bilateralPlanned = reportSynthesisFinancialSummaryBudgetList.get(i).getBilateralPlanned();
+        bilateralActual = reportSynthesisFinancialSummaryBudgetList.get(i).getBilateralActual();
+
+        w1w2Difference = w1w2Planned - w1w2Actual;
+        w3Difference = w3Planned - w3Actual;
+        totalDifference = totalPlanned - totalActual;
+
+        totalw1w2 += w1w2Planned;
+        totalW3Planned += w3Planned;
+        grandTotalPlanned += totalPlanned;
+
+        totalw1w2Actual += w1w2Actual;
+        totalW3Actual += w3Actual;
+        grandTotalActual += totalActual;
+
+        totalW1w2Difference += w1w2Difference;
+        totalW3Difference += w3Difference;
+        grandTotalDifference += totalDifference;
+
+        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Planned, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(totalPlanned, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2Actual, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Actual, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(totalActual, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2Difference, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Difference, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(totalDifference, 2)), ParagraphAlignment.CENTER)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
       }
+
 
     } catch (
 
@@ -1616,8 +1578,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       new POIField(currencyFormat.format(round(totalW3Actual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(grandTotalActual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalW1w2Difference, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalW3BilaterialDiference, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
+      new POIField(currencyFormat.format(round(totalW3Difference, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(grandTotalDifference, 2)), ParagraphAlignment.CENTER, bold,
         blackColor),};
 
@@ -1630,6 +1591,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   @Override
   public String execute() throws Exception {
     try {
+
+      CTDocument1 doc = document.getDocument();
+      CTBody body = doc.getBody();
+
       poiSummary.pageHeader(document, this.getText("summaries.annualReport.header"));
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -1720,6 +1685,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.management"));
       this.addManagement();
+
+      /* Create a landscape text Section */
+      XWPFParagraph para = document.createParagraph();
+      CTSectPr sectionTable = body.getSectPr();
+      CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+      CTP ctpTable = para.getCTP();
+      CTPPr brTable = ctpTable.addNewPPr();
+      brTable.setSectPr(sectionTable);
+      /* standard Letter page size */
+      pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
+      pageSizeTable.setW(BigInteger.valueOf(842 * 20));
+      pageSizeTable.setH(BigInteger.valueOf(595 * 20));
+
+      XWPFParagraph paragraph = document.createParagraph();
 
 
       this.loadTablePMU();
@@ -1870,9 +1849,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
+    String crp = this.getLoggedCrp().getAcronym();
+    Date date = new Date();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-    // this.getLoggedCrp().getAcronym()
-    fileName.append("2017_CRP_AR");
+    fileName.append("2017_" + crp + "_AR_" + sdf.format(date));
     fileName.append(".docx");
 
     return fileName.toString();
@@ -2357,7 +2338,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
 
-
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
         && (p.getProject().getProjecInfoPhase(phase) != null
@@ -2492,34 +2472,23 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       /*
        * if (reportSynthesis == null) {
        * try {
-       * System.out.println("test pre1");
        * reportSynthesis = this.createReportSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-       * System.out.println("test 1");
        * synthesisID = reportSynthesis.getId();
-       * System.out.println("test 2");
        * liaisonInstitutionID = liaisonInstitutions.get(0).getId();
-       * System.out.println("test 3");
        * liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-       * System.out.println("test 4");
        * } catch (Exception e) {
-       * System.out.println("error 1" + e);
        * }
        * }
        * // Check if relation is null -create it
        * try {
        * if (reportSynthesis.getReportSynthesisFinancialSummary() == null) {
-       * System.out.println("test pre1");
        * ReportSynthesisFinancialSummary financialSummary = new ReportSynthesisFinancialSummary();
-       * System.out.println("test 1");
        * // create one to one relation
        * reportSynthesis.setReportSynthesisFinancialSummary(financialSummary);;
-       * System.out.println("test 2");
        * financialSummary.setReportSynthesis(reportSynthesis);
-       * System.out.println("test 3");
        * }
        * reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
        * } catch (Exception e) {
-       * System.out.println("error 2" + e);
        * }
        * if (this.isPMU()) {
        * // synthesisID =
