@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
@@ -90,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
@@ -178,6 +180,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager;
   private ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager;
   private ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager;
+  private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -243,7 +246,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
-    ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager) {
+    ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
+    ReportSynthesisIndicatorManager reportSynthesisIndicatorManager) {
 
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -276,6 +280,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisFinancialSummaryManager = reportSynthesisFinancialSummaryManager;
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
     this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
+    this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
   }
 
   private void addAdjustmentDescription() {
@@ -1102,21 +1107,28 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.LEFT)};
     List<RepIndSynthesisIndicator> listRepIndSynthesis = null;
+    List<ReportSynthesisIndicator> reportSynthesisIndicatorList = null;
     try {
       listRepIndSynthesis = repIndSynthesisIndicatorManager.findAll();
+      reportSynthesisIndicatorList = reportSynthesisIndicatorManager.findAll();
     } catch (Exception e) {
 
     }
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String type = "", indicator = "", name = "", description = "", comments = "", lastType = "";
+    String type = "", indicator = "", name = "", dataRep = "", comments = "", lastType = "";
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     if (listRepIndSynthesis != null && !listRepIndSynthesis.isEmpty()) {
       for (int i = 0; i < listRepIndSynthesis.size(); i++) {
-
+        type = "";
+        indicator = "";
+        name = "";
+        dataRep = "";
+        comments = "";
+        lastType = "";
         data = new ArrayList<>();
         type = listRepIndSynthesis.get(i).getType();
 
@@ -1126,8 +1138,17 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           lastType = type;
         }
 
+        if (reportSynthesisIndicatorList != null) {
+          for (int j = 0; j < reportSynthesisIndicatorList.size(); j++) {
+            if (reportSynthesisIndicatorList.get(j).getRepIndSynthesisIndicator().getId() == listRepIndSynthesis.get(i)
+              .getId()) {
+              dataRep = reportSynthesisIndicatorList.get(j).getData();
+              comments = reportSynthesisIndicatorList.get(j).getComment();
+            }
+          }
+        }
+
         indicator = listRepIndSynthesis.get(i).getIndicator();
-        description = listRepIndSynthesis.get(i).getDescription();
         name = listRepIndSynthesis.get(i).getName();
 
         Boolean bold = false;
@@ -1135,8 +1156,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         String redColor = "c00000";
         POIField[] sData = {new POIField(type, ParagraphAlignment.CENTER, bold, blackColor),
           new POIField(indicator + "." + name, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(description, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(comments, ParagraphAlignment.CENTER, bold, redColor)};
+          new POIField(dataRep, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(comments, ParagraphAlignment.CENTER, bold, blackColor)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1404,7 +1425,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     headers.add(header);
     List<ProjectExpectedStudyInfo> ProjectExpectedStudyInfoList = projectExpectedStudyInfoManager.findAll();
 
-
     if (ProjectExpectedStudyInfoList != null) {
       for (int i = 0; i < ProjectExpectedStudyInfoList.size(); i++) {
         String studies = "", status = "", comments = "";
@@ -1427,7 +1447,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
               datas.add(data);
 
             }
-
           }
         } catch (Exception e) {
 
