@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -83,6 +85,24 @@ public class FinancialSummaryValidator extends BaseValidator {
         }
       }
 
+
+      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+
+        // Validate Budgets
+        if (reportSynthesis.getReportSynthesisFinancialSummary().getBudgets() != null
+          || !reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().isEmpty()) {
+          for (int i = 0; i < reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().size(); i++) {
+            this.validateBudgets(action, reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().get(i), i);
+          }
+        } else {
+          action.addMessage(action.getText("Budgets"));
+          action.addMissingField("reportSynthesis.reportSynthesisFinancialSummary.budgets");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisFinancialSummary.budgets",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
+        }
+
+      }
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -90,10 +110,62 @@ public class FinancialSummaryValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus(), action);
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus(), action);
     }
 
+  }
+
+  public void validateBudgets(BaseAction action, ReportSynthesisFinancialSummaryBudget budget, int i) {
+
+
+    // Validate W1 Planned
+    if (!this.isValidNumber(String.valueOf(budget.getW1Planned()))) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate W3 Planned
+    if (!this.isValidNumber(String.valueOf(budget.getW3Planned()))) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Bilateral Planned
+    if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned()))) {
+      action.addMessage(
+        action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate W1 Actual
+    if (!this.isValidNumber(String.valueOf(budget.getW1Actual()))) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate W3 Actual
+    if (!this.isValidNumber(String.valueOf(budget.getW3Actual()))) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Bilateral Actual
+    if (!this.isValidNumber(String.valueOf(budget.getBilateralActual()))) {
+      action.addMessage(
+        action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
 }

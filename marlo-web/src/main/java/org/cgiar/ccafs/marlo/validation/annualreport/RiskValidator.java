@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -83,6 +84,15 @@ public class RiskValidator extends BaseValidator {
         }
       }
 
+      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+        // Validate Brief Summary
+        if (!this.isValidString(reportSynthesis.getReportSynthesisRisk().getBriefSummary())) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisRisk.briefSummary"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisGovernance.briefSummary",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -90,8 +100,8 @@ public class RiskValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      // this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-      // action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.RISKS.getStatus(), action);
+      this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.RISKS.getStatus(), action);
     }
 
   }

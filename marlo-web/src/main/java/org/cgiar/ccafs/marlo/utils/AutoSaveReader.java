@@ -77,14 +77,14 @@ public class AutoSaveReader {
       }
     }
 
+    if (!oneToOne.isEmpty()) {
+      jsonNew.putAll(this.getOneToOneList(gson.toJson(oneToOne)));
+    }
 
     if (!onetoMany.isEmpty()) {
       jsonNew.putAll(this.getOneToMany(gson.toJson(onetoMany)));
     }
 
-    if (!oneToOne.isEmpty()) {
-      jsonNew.putAll(this.getOneToOneList(gson.toJson(oneToOne)));
-    }
 
     result = gson.fromJson(jobj, LinkedTreeMap.class);
     Set<String> listNames = new HashSet<>();
