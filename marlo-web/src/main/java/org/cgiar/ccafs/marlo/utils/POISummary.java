@@ -647,18 +647,12 @@ public class POISummary {
         this.tableEStyle(table);
         break;
     }
+    if (tableType.contains("AnnualReport")) {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13200));
+    } else {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
+    }
 
-    table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
-
-    /*
-     * if (tableType.contains("AnnualReport")) {
-     * table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9100));
-     * } else if (tableType.contains("AnnualReport")) {
-     * table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9500));
-     * } else {
-     * table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
-     * }
-     */
   }
 
 }
