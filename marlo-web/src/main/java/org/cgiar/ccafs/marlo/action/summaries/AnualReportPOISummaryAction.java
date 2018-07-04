@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
@@ -69,9 +70,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -181,6 +180,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager;
   private ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager;
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
+  private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -247,7 +247,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
-    ReportSynthesisIndicatorManager reportSynthesisIndicatorManager) {
+    ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
+    ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager) {
 
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -281,6 +282,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
     this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
+    this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
   }
 
   private void addAdjustmentDescription() {
@@ -907,53 +909,53 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       new POIField(this.getText("summaries.annualReport.tableA2.field2"), ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableA2.field3"), ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableA2.field4"), ParagraphAlignment.LEFT)};
-    List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = null;
-    List<ProjectExpectedStudy> projectExpectedStudyList = null;
-    List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList = null;
 
-    projectExpectedStudyList = projectExpectedStudyManager.findAll();
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String title = "", subIdo = "", describeGender = "";
+    String title = "", subIdo = "", describeGender = "", describeYouth = "", describeCapDev = "", additional = "";
 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
-    if (projectExpectedStudyList != null && !projectExpectedStudyList.isEmpty()) {
-      for (int i = 0; i < projectExpectedStudyList.size(); i++) {
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      for (int i = 0; i < flagshipPlannedList.size(); i++) {
 
-        if (projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+        if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo() != null) {
+          data = new ArrayList<>();
 
-          if (projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
-            && projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType()
-              .getId() == 1) {
+          try {
 
-            data = new ArrayList<>();
+            title = flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
 
-            try {
-              title = projectExpectedStudyList.get(i).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
-              /*
-               * projectExpectedStudyList.get(i)
-               * .setSubIdos(new ArrayList<>(projectExpectedStudyList.get(i).getProjectExpectedStudySubIdos().stream()
-               * .filter(s -> s.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList())));
-               */
-              for (int j = 0; j < projectExpectedStudyList.get(i).getProjectExpectedStudySubIdos().size(); j++) {
-                if (projectExpectedStudyList.get(i).getSubIdos().get(j).getPhase().getId() == this.getActualPhase()
-                  .getId()) {
-                  subIdo += projectExpectedStudyList.get(i).getSubIdos().get(j).getSrfSubIdo().getDescription() + "\n";
-                }
-              }
-
-            } catch (Exception e) {
+            for (int j = 0; j < flagshipPlannedList.get(i).getProjectExpectedStudy().getSubIdos().size(); j++) {
+              subIdo += "\n •" + flagshipPlannedList.get(i).getProjectExpectedStudy().getSubIdos().get(j).getSrfSubIdo()
+                .getDescription();
             }
+            if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+              .getDescribeGender() != null) {
+              describeGender =
+                flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getDescribeGender();
+            }
+            if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+              .getDescribeYouth() != null) {
+              describeYouth =
+                flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getDescribeYouth();
+            }
+            if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+              .getDescribeCapdev() != null) {
+              describeCapDev =
+                flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getDescribeCapdev();
+            }
+            additional = "Gender: " + describeGender + "\n Youth: " + describeYouth + " \n CapDev: " + describeCapDev;
+          } catch (Exception e) {
           }
 
           Boolean bold = false;
           String blackColor = "000000";
           String redColor = "c00000";
           POIField[] sData =
-            {new POIField(title, ParagraphAlignment.LEFT), new POIField(subIdo, ParagraphAlignment.CENTER),
-              new POIField(describeGender, ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER)};
+            {new POIField(title, ParagraphAlignment.LEFT), new POIField(subIdo, ParagraphAlignment.LEFT),
+              new POIField("", ParagraphAlignment.LEFT), new POIField(additional, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -1061,7 +1063,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
-    this.tableCInfo(this.getSelectedPhase());
+    this.tableCInfo(this.getActualPhase());
 
     if (tableC != null) {
       POIField[] sData = {new POIField("Gender", ParagraphAlignment.LEFT),
@@ -2339,6 +2341,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
         this.getSelectedPhase().getId(), this.getLoggedCrp(), this.pmuInstitution);
 
+      System.out.println("flagshipPlannedList " + flagshipPlannedList.size());
       // Table A-1 Evidence on Progress
       fpSynthesisTable =
         reportSynthesisMeliaManager.flagshipSynthesisEvaluation(liaisonInstitutionsList, this.getActualPhase().getId());
@@ -2403,6 +2406,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       for (Deliverable deliverable : deliverables) {
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
         if (deliverableInfo.isActive()) {
+
           deliverableList.add(deliverableInfo);
           boolean bGender = false;
           boolean bYouth = false;
@@ -2466,7 +2470,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           }
         }
       }
-      tableC = new CrossCuttingDimensionTableDTO();
+      tableC = reportSynthesisCrossCuttingDimensionManager.getTableC(this.getActualPhase(), this.getLoggedCrp());
+      // tableC = new CrossCuttingDimensionTableDTO();
       int iDeliverableCount = deliverableList.size();
 
       tableC.setTotal(iDeliverableCount);
