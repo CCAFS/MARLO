@@ -1408,27 +1408,30 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     if (ProjectExpectedStudyInfoList != null) {
       for (int i = 0; i < ProjectExpectedStudyInfoList.size(); i++) {
         String studies = "", status = "", comments = "";
+        try {
+          if (ProjectExpectedStudyInfoList.get(i).getPhase().getId() == this.getActualPhase().getId()
+            && ProjectExpectedStudyInfoList.get(i).getStudyType().getId() != 1) {
 
-        if (ProjectExpectedStudyInfoList.get(i).getPhase().getId() == this.getActualPhase().getId()) {
+            if (ProjectExpectedStudyInfoList.get(i).getTitle() != null
+              && !ProjectExpectedStudyInfoList.get(i).getTitle().isEmpty()) {
 
-          if (ProjectExpectedStudyInfoList.get(i).getTitle() != null
-            && !ProjectExpectedStudyInfoList.get(i).getTitle().isEmpty()) {
+              studies = ProjectExpectedStudyInfoList.get(i).getTitle();
+              status = ProjectExpectedStudyInfoList.get(i).getStatusName();
+              if (ProjectExpectedStudyInfoList.get(i).getTopLevelComments() != null) {
+                comments = ProjectExpectedStudyInfoList.get(i).getTopLevelComments();
+              }
 
-            studies = ProjectExpectedStudyInfoList.get(i).getTitle();
-            status = ProjectExpectedStudyInfoList.get(i).getStatusName();
-            if (ProjectExpectedStudyInfoList.get(i).getTopLevelComments() != null) {
-              comments = ProjectExpectedStudyInfoList.get(i).getTopLevelComments();
+              POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
+                new POIField(status, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+              data = Arrays.asList(sData);
+              datas.add(data);
+
             }
 
-            POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
-              new POIField(status, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
-            data = Arrays.asList(sData);
-            datas.add(data);
-
           }
+        } catch (Exception e) {
 
         }
-
       }
     }
     poiSummary.textTable(document, headers, datas, false, "tableIAnnualReport");
