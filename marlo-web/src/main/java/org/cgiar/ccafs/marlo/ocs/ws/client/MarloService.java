@@ -18,7 +18,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  */
 @WebServiceClient(name = "MarloService", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/",
-  wsdlLocation = "")
+  wsdlLocation = "https://isa.ciat.cgiar.org/abwws/MarloPort?WSDL")
 public class MarloService extends Service {
 
   private final static URL MARLOSERVICE_WSDL_LOCATION;
@@ -29,8 +29,7 @@ public class MarloService extends Service {
     URL url = null;
     WebServiceException e = null;
     try {
-      url = new URL("Malformed on purpose - use a different constructor");
-
+      url = new URL("https://isa.ciat.cgiar.org/abwws/MarloPort?WSDL");
     } catch (MalformedURLException ex) {
       e = new WebServiceException(ex);
     }
