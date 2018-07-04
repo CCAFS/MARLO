@@ -94,9 +94,9 @@ public class MeliaValidator extends BaseValidator {
 
       if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
 
-        // Validate Collaborations
+        // Validate Evaluations
         if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
-          || !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+          && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
           for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
             this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
           }

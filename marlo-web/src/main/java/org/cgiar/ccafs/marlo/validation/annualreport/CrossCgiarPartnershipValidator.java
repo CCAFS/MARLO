@@ -96,7 +96,7 @@ public class CrossCgiarPartnershipValidator extends BaseValidator {
 
         // Validate Collaborations
         if (reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations() != null
-          || !reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations().isEmpty()) {
+          && !reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations().isEmpty()) {
           for (int i = 0; i < reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations().size(); i++) {
             this.validateCollaborations(action,
               reportSynthesis.getReportSynthesisCrossCgiar().getCollaborations().get(i), i);

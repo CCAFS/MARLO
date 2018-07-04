@@ -104,7 +104,7 @@ public class CrpProgressValidator extends BaseValidator {
 
         // Validate Slo Targets
         if (reportSynthesis.getReportSynthesisCrpProgress().getSloTargets() != null
-          || !reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().isEmpty()) {
+          && !reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().isEmpty()) {
           for (int i = 0; i < reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().size(); i++) {
             this.validateTargets(action, reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().get(i), i);
           }

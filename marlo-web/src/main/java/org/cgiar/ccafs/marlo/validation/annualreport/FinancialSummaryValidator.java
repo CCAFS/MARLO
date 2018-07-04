@@ -90,7 +90,7 @@ public class FinancialSummaryValidator extends BaseValidator {
 
         // Validate Budgets
         if (reportSynthesis.getReportSynthesisFinancialSummary().getBudgets() != null
-          || !reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().isEmpty()) {
+          && !reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().isEmpty()) {
           for (int i = 0; i < reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().size(); i++) {
             this.validateBudgets(action, reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().get(i), i);
           }
