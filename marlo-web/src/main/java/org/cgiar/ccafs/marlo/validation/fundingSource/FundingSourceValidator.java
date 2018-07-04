@@ -71,7 +71,8 @@ public class FundingSourceValidator extends BaseValidator {
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         fundingSourceInstitution
           .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
-        if (fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
+        if (fundingSourceInstitution.getInstitution().getAcronym() != null
+          && fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
           return true;
         }
       }
