@@ -1154,13 +1154,15 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         projectExpectedStudy.getProject()
           .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()));
         dto.setProjectExpectedStudy(projectExpectedStudy);
-        if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+        if (projectExpectedStudy.getProject().getProjectInfo() != null
+          && projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
           && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
           dto.setLiaisonInstitutions(new ArrayList<>());
           dto.getLiaisonInstitutions().add(this.pmuInstitution);
         } else {
           List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+            .stream().filter(pf -> pf.isActive() && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+            .collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
