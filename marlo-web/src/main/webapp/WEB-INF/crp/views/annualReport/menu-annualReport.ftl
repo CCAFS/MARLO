@@ -36,7 +36,7 @@
 
 [#assign submission = false /]
 [#assign canSubmit = false /]
-[#assign completed = false /]
+[#assign completed = (action.isCompleteReportSynthesis(synthesisID))!false /]
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]
@@ -52,7 +52,7 @@
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
             [#assign itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
-            [#assign submitStatus = false /]
+            [#assign submitStatus = (action.getReportSynthesisSectionStatus(item.action, synthesisID))!false /]
             [#assign hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
@@ -93,7 +93,7 @@
 [/#if]
 
 [#-- Check button --] 
-[#if false && canEdit && !completed && !submission]
+[#if canEdit && !completed && !submission]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${liaisonInstitutionID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
@@ -140,6 +140,6 @@
 
 [#-- Project Submit JS --]
 [#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrl}/global/js/autoSave.js" --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js" ]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js"]
 /]
 
