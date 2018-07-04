@@ -125,6 +125,7 @@ public class WsThread implements Runnable {
 
     MarloService service;
     try {
+      System.out.println("***************" + apConfig.getOcsLink());
       service = new MarloService(new URL(apConfig.getOcsLink()));
     } catch (MalformedURLException e) {
       String msg = "OCSLINK property is not a valid URL";
