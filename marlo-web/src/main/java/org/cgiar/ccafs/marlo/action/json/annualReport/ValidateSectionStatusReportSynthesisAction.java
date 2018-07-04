@@ -115,7 +115,7 @@ public class ValidateSectionStatusReportSynthesisAction extends BaseAction {
           reportSynthesisSectionValidator.validateCrossCuttingDimensions(this, reportSynthesis);
           break;
         case MELIA:
-          reportSynthesisSectionValidator.validateCrpProgress(this, reportSynthesis);
+          reportSynthesisSectionValidator.validateMelia(this, reportSynthesis);
           break;
         case EFFICIENCY:
           reportSynthesisSectionValidator.validateEfficency(this, reportSynthesis);
