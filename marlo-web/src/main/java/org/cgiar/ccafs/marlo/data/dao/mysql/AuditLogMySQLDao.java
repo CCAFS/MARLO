@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.utils.DoubleTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.FloatTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
+import org.cgiar.ccafs.marlo.utils.StringTypeAdapter;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -218,12 +219,16 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
         .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
         .registerTypeAdapter(Float.class, new FloatTypeAdapter())
         .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
+        .registerTypeAdapter(String.class, new StringTypeAdapter())
         .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
 
       Class<?> classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
       IAuditLog iAuditLog = (IAuditLog) gson.fromJson(auditlog.getEntityJson(), classToCast);
-
-      iAuditLog.setModifiedBy(userDao.getUser(iAuditLog.getModifiedBy().getId()));
+      if (iAuditLog.getModifiedBy() != null && iAuditLog.getModifiedBy().getId() != null) {
+        iAuditLog.setModifiedBy(userDao.getUser(iAuditLog.getModifiedBy().getId()));
+      } else {
+        iAuditLog.setModifiedBy(userDao.getUser(new Long(3)));
+      }
 
       return iAuditLog;
     } catch (JsonSyntaxException e) {
