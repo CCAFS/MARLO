@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipMana
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFundingUseExpendituryAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
@@ -85,6 +86,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
@@ -175,6 +177,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager;
   private ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager;
+  private ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -239,7 +242,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, CrpProgramManager crpProgramManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFinancialSummaryManager reportSynthesisFinancialSummaryManager,
-    ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager) {
+    ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
+    ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager) {
 
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -271,6 +275,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFinancialSummaryManager = reportSynthesisFinancialSummaryManager;
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
+    this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
   }
 
   private void addAdjustmentDescription() {
@@ -963,10 +968,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableB.field5"), ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport.tableB.field6"), ParagraphAlignment.LEFT)};
-
+    List<ReportSynthesisFlagshipProgressMilestone> reportSynthesisFlagshipProgressMilestoneList = new ArrayList<>();
+    reportSynthesisFlagshipProgressMilestoneList = reportSynthesisFlagshipProgressMilestoneManager.findAll();
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String FP = "", outcomes = "", milestone = "", assessment = "", subIDO = "", meansVerifications = "";
+    String FP = "", outcomes = "", milestone = "", assessment = "", subIDO = "", meansVerifications = "", status = "",
+      evidence = "";
 
     List<List<POIField>> datas = new ArrayList<>();
 
@@ -1010,13 +1017,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             outcomes = " ";
           }
           milestone = crpMilestone.getComposedName();
+          // evidence = ;
 
           PowbExpectedCrpProgress milestoneProgress =
             this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
 
+          for (int i = 0; i < reportSynthesisFlagshipProgressMilestoneList.size(); i++) {
+            if (reportSynthesisFlagshipProgressMilestoneList.get(i).getCrpMilestone().getId() == crpMilestone.getId()) {
+              evidence = reportSynthesisFlagshipProgressMilestoneList.get(i).getEvidence();
+            }
+          }
+
           POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
             new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-            new POIField("", ParagraphAlignment.LEFT), new POIField("", ParagraphAlignment.LEFT)};
+            new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
 
