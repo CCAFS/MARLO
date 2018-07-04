@@ -11,8 +11,8 @@
 
 <div class="buttons">
   <div class="buttons-content">
-    [#-- History Log --]
-    [#if action.getListLog(fundingSource)?has_content]
+    [#-- History Log TODO: Fix history --]
+    [#if false && action.getListLog(fundingSource)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=action.getListLog(fundingSource) itemName="fundingSourceID" itemId=fundingSource.id /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>

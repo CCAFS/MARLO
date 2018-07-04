@@ -1695,8 +1695,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       tableC.setPercentageCapDevPrincipal(dCapDevPrincipal);
       tableC.setPercentageCapDevSignificant(dCapDevSignificant);
       tableC.setPercentageCapDevNotScored(dCapDevNa);
-
-
     }
 
   }
