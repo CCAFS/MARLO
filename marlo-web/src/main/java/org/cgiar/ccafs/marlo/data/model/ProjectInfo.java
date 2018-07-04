@@ -194,8 +194,9 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   @Override
   public String getLogDeatil() {
-
-    return null;
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
   }
 
 
