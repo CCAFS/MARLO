@@ -648,7 +648,7 @@ public class POISummary {
         break;
     }
     if (tableType.contains("AnnualReport")) {
-      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13200));
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13300));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
