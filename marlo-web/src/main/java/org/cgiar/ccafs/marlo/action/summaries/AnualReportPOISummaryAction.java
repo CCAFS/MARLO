@@ -103,14 +103,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -120,9 +123,14 @@ import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1553,9 +1561,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         data = Arrays.asList(sData);
         datas.add(data);
       }
-      /*****/
-      /*** cut ****/
-      /*******/
 
 
     } catch (
@@ -1586,6 +1591,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   @Override
   public String execute() throws Exception {
     try {
+
+      CTDocument1 doc = document.getDocument();
+      CTBody body = doc.getBody();
+
       poiSummary.pageHeader(document, this.getText("summaries.annualReport.header"));
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -1676,6 +1685,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.management"));
       this.addManagement();
+
+      /* Create a landscape text Section */
+      XWPFParagraph para = document.createParagraph();
+      CTSectPr sectionTable = body.getSectPr();
+      CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+      CTP ctpTable = para.getCTP();
+      CTPPr brTable = ctpTable.addNewPPr();
+      brTable.setSectPr(sectionTable);
+      /* standard Letter page size */
+      pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
+      pageSizeTable.setW(BigInteger.valueOf(842 * 20));
+      pageSizeTable.setH(BigInteger.valueOf(595 * 20));
+
+      XWPFParagraph paragraph = document.createParagraph();
 
 
       this.loadTablePMU();
@@ -1826,9 +1849,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
+    String crp = this.getLoggedCrp().getAcronym();
+    Date date = new Date();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-    // this.getLoggedCrp().getAcronym()
-    fileName.append("2017_CRP_AR");
+    fileName.append("2017_" + crp + "_AR_" + sdf.format(date));
     fileName.append(".docx");
 
     return fileName.toString();
@@ -2313,7 +2338,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
 
-
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
         && (p.getProject().getProjecInfoPhase(phase) != null
@@ -2448,34 +2472,23 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       /*
        * if (reportSynthesis == null) {
        * try {
-       * System.out.println("test pre1");
        * reportSynthesis = this.createReportSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-       * System.out.println("test 1");
        * synthesisID = reportSynthesis.getId();
-       * System.out.println("test 2");
        * liaisonInstitutionID = liaisonInstitutions.get(0).getId();
-       * System.out.println("test 3");
        * liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-       * System.out.println("test 4");
        * } catch (Exception e) {
-       * System.out.println("error 1" + e);
        * }
        * }
        * // Check if relation is null -create it
        * try {
        * if (reportSynthesis.getReportSynthesisFinancialSummary() == null) {
-       * System.out.println("test pre1");
        * ReportSynthesisFinancialSummary financialSummary = new ReportSynthesisFinancialSummary();
-       * System.out.println("test 1");
        * // create one to one relation
        * reportSynthesis.setReportSynthesisFinancialSummary(financialSummary);;
-       * System.out.println("test 2");
        * financialSummary.setReportSynthesis(reportSynthesis);
-       * System.out.println("test 3");
        * }
        * reportSynthesis.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
        * } catch (Exception e) {
-       * System.out.println("error 2" + e);
        * }
        * if (this.isPMU()) {
        * // synthesisID =
