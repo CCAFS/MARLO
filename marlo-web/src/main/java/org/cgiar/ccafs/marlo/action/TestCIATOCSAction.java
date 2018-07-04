@@ -54,7 +54,6 @@ public class TestCIATOCSAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    System.out.println("**********************************Ejecute********************************");
     // Check the fail parameter
     if (!fail) {
       // Search an existing OCS code.
