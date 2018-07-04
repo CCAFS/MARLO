@@ -581,7 +581,6 @@ public class CrpProgressAction extends BaseAction {
       if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() != null) {
         reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies().clear();
       }
-
     }
   }
 
