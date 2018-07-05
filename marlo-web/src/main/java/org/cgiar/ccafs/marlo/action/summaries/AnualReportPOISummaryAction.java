@@ -1302,32 +1302,36 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       new POIField(this.getText("annualReport.melia.tableI.comments"), ParagraphAlignment.CENTER)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = projectExpectedStudyInfoManager.findAll();
 
-    if (projectExpectedStudyInfoList != null && !projectExpectedStudyInfoList.isEmpty()) {
-      for (int i = 0; i < projectExpectedStudyInfoList.size(); i++) {
+    List<LiaisonInstitution> liaisonInstitutionsList =
+      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      for (int i = 0; i < flagshipPlannedList.size(); i++) {
         String studies = "", status = "", comments = "";
-        if (projectExpectedStudyInfoList.get(i).getPhase().getId() == this.getActualPhase().getId()
-          && projectExpectedStudyInfoList.get(i).getStudyType() != null
-          && projectExpectedStudyInfoList.get(i).getStudyType().getId() != 1) {
-
-          if (projectExpectedStudyInfoList.get(i).getTitle() != null
-            && !projectExpectedStudyInfoList.get(i).getTitle().isEmpty()) {
-
-            studies = projectExpectedStudyInfoList.get(i).getTitle();
-            status = projectExpectedStudyInfoList.get(i).getStatusName();
-            if (projectExpectedStudyInfoList.get(i).getTopLevelComments() != null) {
-              comments = projectExpectedStudyInfoList.get(i).getTopLevelComments();
-            }
-
-            POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
-              new POIField(status, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
-            data = Arrays.asList(sData);
-            datas.add(data);
-          }
+        studies = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
+        status = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatusName();
+        if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+          .getTopLevelComments() != null) {
+          comments = flagshipPlannedList.get(i).getProjectExpectedStudy()
+            .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
         }
+
+        POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
+          new POIField(status, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+        data = Arrays.asList(sData);
+        datas.add(data);
       }
     }
+
     poiSummary.textTable(document, headers, datas, false, "tableIAnnualReport");
   }
 
@@ -2018,8 +2022,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus()
-              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d
