@@ -1483,8 +1483,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
       poiSummary.textParagraph(document.createParagraph(),
         this.getText("summaries.annualReport.unitName") + ": " + unitName);
-      poiSummary.textParagraph(document.createParagraph(),
-        this.getText("summaries.annualReport.LeadCenter") + ": " + " name ");
+      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.annualReport.LeadCenter") + ":");
       this.addParticipatingCenters();
 
       // section 1 - key results
