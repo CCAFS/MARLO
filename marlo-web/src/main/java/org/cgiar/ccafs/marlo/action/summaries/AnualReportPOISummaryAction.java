@@ -1173,27 +1173,49 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
 
         String FP = "", stage = "", partner = "", partnerType = "", mainArea = "";
+        if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership() != null) {
+          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+            .getFlagships() != null
+            && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+              .getFlagships().isEmpty()) {
 
-        FP = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-          .getFlagships().get(0).getAcronym();
-        partner = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
-          .getName();
-        for (int j = 0; j < flagshipExternalPlannedList.get(i).getProjectPartnerPartnership()
-          .getPartnershipResearchPhases().size(); j++) {
+            if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+              .getFlagships().get(0).getAcronym() != null
+              && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+                .getFlagships().get(0).getAcronym().isEmpty()) {
+              FP = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+                .getFlagships().get(0).getAcronym();
+            }
+          }
+          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
+            .getName() != null
+            && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
+              .getName().isEmpty()) {
+            partner = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
+              .getInstitution().getName();
+          }
+          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases() != null
+            && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases()
+              .isEmpty()) {
+            for (int j = 0; j < flagshipExternalPlannedList.get(i).getProjectPartnerPartnership()
+              .getPartnershipResearchPhases().size(); j++) {
 
-          stage += flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases()
-            .get(j).getRepIndPhaseResearchPartnership().getName() + "\n";
+              stage += flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases()
+                .get(j).getRepIndPhaseResearchPartnership().getName() + "\n";
+            }
+          }
+          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea() != null) {
+            mainArea = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea();
+          }
+          partnerType = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
+            .getInstitution().getInstitutionType().getName();
+
+          POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
+            new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
+            new POIField(partnerType, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.CENTER)};
+          data = Arrays.asList(sData);
+          datas.add(data);
         }
-        mainArea = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea();
-        partnerType = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
-          .getInstitution().getInstitutionType().getName();
-
-        POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
-          new POIField(partner, ParagraphAlignment.CENTER), new POIField(partnerType, ParagraphAlignment.CENTER),
-          new POIField(mainArea, ParagraphAlignment.CENTER)};
-        data = Arrays.asList(sData);
-        datas.add(data);
-
       }
     }
     poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
