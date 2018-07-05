@@ -216,9 +216,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private Long liaisonInstitutionID;
   private Long synthesisID;
 
-  // Parameter for tables E and F
-  Double totalw1w2 = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0, totalW3Actual = 0.0,
-    totalW3Bilateral = 0.0, totalW3Planned = 0.0, grandTotalPlanned = 0.0, grandTotalActual = 0.0;
+
+  Double totalw1w2 = 0.0, totalw1w2Planned = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0,
+    totalW3Actual = 0.0, totalW3Bilateral = 0.0, totalW3Planned = 0.0, grandTotalPlanned = 0.0, grandTotalActual = 0.0;
   // Streams
   private InputStream inputStream;
 
@@ -912,13 +912,27 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String title = "", subIdo = "", describeGender = "", describeYouth = "", describeCapDev = "", additional = "";
+    String title = "", subIdo = "", describeGender = "", describeYouth = "", describeCapDev = "", additional = "",
+      link = "";
 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
     if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
       for (int i = 0; i < flagshipPlannedList.size(); i++) {
+        title = "";
+        subIdo = "";
+        describeGender = "";
+        describeYouth = "";
+        describeCapDev = "";
+        additional = "";
+        link = "";
+
+        /** creating download link **/
+        String year = flagshipPlannedList.get(i).getProjectExpectedStudy().getYear() + "";
+        String cycle = this.getCurrentCycle();
+        String study = flagshipPlannedList.get(i).getProjectExpectedStudy().getId() + "";
+        link = "/studyID=" + study + "&cycle=" + cycle + "&year=" + year;
 
         if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo() != null) {
           data = new ArrayList<>();
@@ -933,8 +947,18 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
             if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
               .getDescribeGender() != null) {
-              describeGender =
-                flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getDescribeGender();
+              describeGender = flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+                .getGenderLevel().getName() + "\n"
+                + flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getGenderLevel()
+                  .getDefinition();
+            } else {
+              describeGender = flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+                .getGenderLevel().getName()
+                + "\n"
+                + flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getGenderLevel()
+                  .getDefinition()
+                + "\n" + flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+                  .getDescribeGender();
             }
             if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
               .getDescribeYouth() != null) {
@@ -946,16 +970,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
               describeCapDev =
                 flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getDescribeCapdev();
             }
-            additional = "Gender: " + describeGender + "\n Youth: " + describeYouth + " \n CapDev: " + describeCapDev;
           } catch (Exception e) {
           }
-
-          Boolean bold = false;
-          String blackColor = "000000";
-          String redColor = "c00000";
+          additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
           POIField[] sData =
             {new POIField(title, ParagraphAlignment.LEFT), new POIField(subIdo, ParagraphAlignment.LEFT),
-              new POIField("", ParagraphAlignment.LEFT), new POIField(additional, ParagraphAlignment.LEFT)};
+              new POIField(link, ParagraphAlignment.LEFT), new POIField(additional, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -1024,14 +1044,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             outcomes = " ";
           }
           milestone = crpMilestone.getComposedName();
-          // evidence = ;
 
           PowbExpectedCrpProgress milestoneProgress =
             this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
 
           for (int i = 0; i < reportSynthesisFlagshipProgressMilestoneList.size(); i++) {
             if (reportSynthesisFlagshipProgressMilestoneList.get(i).getCrpMilestone().getId() == crpMilestone.getId()) {
+              evidence = "";
               evidence = reportSynthesisFlagshipProgressMilestoneList.get(i).getEvidence();
+              status = reportSynthesisFlagshipProgressMilestoneList.get(i).getStatusName();
+
             }
           }
 
@@ -1073,7 +1095,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           ParagraphAlignment.CENTER),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 4)),
           ParagraphAlignment.CENTER),
-        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.LEFT)};
+        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData);
       datas.add(data);
       POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.LEFT),
@@ -1276,7 +1298,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     Double totalEstimatedPercentajeFS = 0.0;
     if (reportSynthesisFundingUseExpendituryAreaList != null) {
 
-
       for (int i = 0; i < reportSynthesisFundingUseExpendituryAreaList.size(); i++) {
         String expenditureArea = "", commentsSpace = "";
         Double estimatedPercentajeFS = 0.0;
@@ -1292,10 +1313,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         datas.add(data);
       }
     }
+
     Boolean bold = true;
     String blackColor = "000000";
 
-    POIField[] sData = {new POIField("Total Funding (Amount)", ParagraphAlignment.LEFT, bold, blackColor),
+    POIField[] sData = {new POIField("TOTAL FUNDING (AMOUNT)", ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(currencyFormat.format(round((totalw1w2 * totalEstimatedPercentajeFS) / 100, 2)),
         ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(" ", ParagraphAlignment.LEFT, bold, blackColor)};
@@ -1573,7 +1595,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         w3Difference = w3Planned - w3Actual;
         totalDifference = totalPlanned - totalActual;
 
-        totalw1w2 += w1w2Planned;
+        totalw1w2Planned += w1w2Planned;
         totalW3Planned += w3Planned;
         grandTotalPlanned += totalPlanned;
 
@@ -1609,7 +1631,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String blackColor = "000000";
     POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
 
-      new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(totalw1w2Planned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalW3Planned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(grandTotalPlanned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalw1w2Actual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
@@ -2238,7 +2260,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       double percentageB = 0;
       double percentageCenterFunds = 0;
 
-
       percentageW1 = 100;
       percentageW3 = 100;
       percentageB = 100;
@@ -2279,7 +2300,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        /* Change requested by htobon: Show outcomes without milestones for table A1 */
+
         // if (!crpProgram.getMilestones().isEmpty()) {
         validOutcomes.add(crpProgramOutcome);
         // }
@@ -2341,7 +2362,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
         this.getSelectedPhase().getId(), this.getLoggedCrp(), this.pmuInstitution);
 
-      System.out.println("flagshipPlannedList " + flagshipPlannedList.size());
       // Table A-1 Evidence on Progress
       fpSynthesisTable =
         reportSynthesisMeliaManager.flagshipSynthesisEvaluation(liaisonInstitutionsList, this.getActualPhase().getId());
@@ -2471,6 +2491,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         }
       }
       tableC = reportSynthesisCrossCuttingDimensionManager.getTableC(this.getActualPhase(), this.getLoggedCrp());
+      deliverableList = tableC.getDeliverableList();
       // tableC = new CrossCuttingDimensionTableDTO();
       int iDeliverableCount = deliverableList.size();
 
