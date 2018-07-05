@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisEfficiencyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
@@ -159,6 +160,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
   private ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager;
+  private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -211,7 +213,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
-    ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager) {
+    ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager,
+    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager) {
 
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -239,6 +242,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
     this.reportSynthesisEfficiencyManager = reportSynthesisEfficiencyManager;
+    this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
   }
 
   private void addAdjustmentDescription() {
@@ -749,8 +753,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
     liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
-      this.getSelectedPhase().getId(), this.getLoggedCrp(), this.pmuInstitution);
+    flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutionsList,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
     if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
       for (int i = 0; i < flagshipPlannedList.size(); i++) {
         title = "";
@@ -760,7 +764,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         describeCapDev = "";
         additional = "";
         link = "";
-        String base = "";
 
         /** creating download link **/
         String year = flagshipPlannedList.get(i).getProjectExpectedStudy().getYear() + "";
@@ -772,7 +775,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
          * }
          */
         link =
-          base + "/marlo-web/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
+          this.getBaseUrl() + "/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
 
         if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo() != null) {
           ProjectExpectedStudyInfo projectExpectedStudyInfo =
@@ -1151,7 +1154,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
         totalEstimatedPercentajeFS += estimatedPercentajeFS;
         POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
+          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 1000, 4)), ParagraphAlignment.CENTER),
           new POIField(commentsSpace, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1336,6 +1339,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void createTableI2() {
+    ProjectStatusEnum projectStatusEnum = null;
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField(this.getText("annualReport.melia.evaluation.name"), ParagraphAlignment.CENTER),
       new POIField(this.getText("annualReport.melia.evaluation.recommendation"), ParagraphAlignment.CENTER),
@@ -1360,7 +1364,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           response = reportSynthesisMeliaEvaluationList.get(i).getManagementResponse();
           whom = reportSynthesisMeliaEvaluationList.get(i).getTextWhom();
           when = reportSynthesisMeliaEvaluationList.get(i).getTextWhen();
-          status = reportSynthesisMeliaEvaluationList.get(i).getStatus().toString();
+          int temp = Integer.parseInt(reportSynthesisMeliaEvaluationList.get(i).getStatus().toString());
+          status = ProjectStatusEnum.getValue(temp).getStatus();
 
           POIField[] sData = {new POIField(nameEvaluation, ParagraphAlignment.CENTER),
             new POIField(recommendation, ParagraphAlignment.LEFT), new POIField(response, ParagraphAlignment.LEFT),
@@ -1378,15 +1383,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   private void createTableJ() {
     this.getInformationTableJ();
-    List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList = new ArrayList<>();
-    reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
+    List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList =
+      reportSynthesisFinancialSummaryBudgetManager.findAll();
 
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
-      new POIField(
-        this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER), new POIField(
+      this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())}) + "*",
+      ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+      new POIField("", ParagraphAlignment.CENTER),
       new POIField(this.getText("annualReport.financial.tableJ.expenditure"), ParagraphAlignment.CENTER),
       new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
       new POIField(this.getText("annualReport.financial.tableJ.difference"), ParagraphAlignment.CENTER),
@@ -1410,8 +1414,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
+
     double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
-    if (reportSynthesisFinancialSummaryBudgetList != null && reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
+    if (reportSynthesisFinancialSummaryBudgetList != null && !reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
       for (int i = 0; i < reportSynthesisFinancialSummaryBudgetList.size(); i++) {
 
         String category = "";
@@ -1421,18 +1426,27 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         /** Getting category name **/
         if (reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution() != null) {
           category = reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution().getName();
-        } else {
+        } else if (reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea() != null) {
           category = reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea();
         }
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned() != null) {
+          w1w2Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned();
+        }
 
-        w1w2Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned();
-        w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned();
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned() != null) {
+          w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned();
+        }
+
         totalPlanned = w1w2Planned + w3Planned;
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual() != null) {
+          w1w2Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual();
+        }
 
-        w1w2Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual();
-        w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual();
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual() != null) {
+          w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual();
+        }
+
         totalActual = w1w2Actual + w3Actual;
-
 
         w1w2Difference = w1w2Planned - w1w2Actual;
         w3Difference = w3Planned - w3Actual;
@@ -1470,15 +1484,21 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String blackColor = "000000";
     POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
 
-      new POIField(currencyFormat.format(round(totalw1w2Planned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalW3Planned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotalPlanned, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalw1w2Actual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalW3Actual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotalActual, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalW1w2Difference, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(totalW3Difference, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotalDifference, 2)), ParagraphAlignment.CENTER, bold,
+      new POIField(currencyFormat.format(round(totalw1w2Planned / 1000, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(totalW3Planned / 1000, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(grandTotalPlanned / 1000, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(totalw1w2Actual / 1000, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(totalW3Actual / 1000, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round(grandTotalActual / 1000, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(totalW1w2Difference / 1000, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(totalW3Difference / 1000, 2)), ParagraphAlignment.CENTER, bold,
+        blackColor),
+      new POIField(currencyFormat.format(round(grandTotalDifference / 1000, 2)), ParagraphAlignment.CENTER, bold,
         blackColor),};
 
     data = Arrays.asList(sData);
@@ -1671,8 +1691,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableJ.title"));
       this.createTableJ();
-      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableJ.description.help"));
+      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableJ.description.help2"));
 
+      poiSummary.textNotes(document.createParagraph(),
+        "*" + this.getText("summaries.annualReport.tableJ.description.help"));
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
@@ -1962,7 +1984,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     reportSysthesisList =
       this.getSelectedPhase().getReportSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
 
-    LiaisonInstitution pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
+    pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
     reportSynthesisPMU = reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), pmuInstitution.getId());
