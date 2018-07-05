@@ -92,22 +92,22 @@ public class MeliaValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
-
-        // Validate Evaluations
-        if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
-          && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
-          for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
-            this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
-          }
-        } else {
-          action.addMessage(action.getText("Evaluations"));
-          action.addMissingField("reportSynthesis.reportSynthesisMelia.evaluations");
-          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisMelia.evaluations",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evaluations"}));
-        }
-
-      }
+      // if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+      //
+      // // Validate Evaluations
+      // if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+      // && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+      // for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
+      // this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
+      // }
+      // } else {
+      // action.addMessage(action.getText("Evaluations"));
+      // action.addMissingField("reportSynthesis.reportSynthesisMelia.evaluations");
+      // action.getInvalidFields().put("list-reportSynthesis.reportSynthesisMelia.evaluations",
+      // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evaluations"}));
+      // }
+      //
+      // }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
