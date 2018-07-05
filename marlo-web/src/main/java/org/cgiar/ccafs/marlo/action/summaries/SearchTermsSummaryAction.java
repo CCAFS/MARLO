@@ -183,7 +183,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         if (parameters.isEmpty()) {
           // Empty keys
         } else {
-          keys = Arrays.asList(parameters.split(","));
+          String parametersNotEspecialChar = parameters.replaceAll("[^a-zA-Z0-9]+", "");
+          keys = Arrays.asList(parametersNotEspecialChar.split(","));
         }
       }
       // Set Main_Query
