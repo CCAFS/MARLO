@@ -88,6 +88,13 @@ public class FinancialSummaryValidator extends BaseValidator {
 
       if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
 
+        // Validate Narrative
+        if (!this.isValidString(reportSynthesis.getReportSynthesisFinancialSummary().getNarrative())) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.narrative"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.narrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
         // Validate Budgets
         if (reportSynthesis.getReportSynthesisFinancialSummary().getBudgets() != null
           && !reportSynthesis.getReportSynthesisFinancialSummary().getBudgets().isEmpty()) {
@@ -165,6 +172,55 @@ public class FinancialSummaryValidator extends BaseValidator {
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
         InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Differences
+    // Difference W1
+    if (this.isValidNumber(String.valueOf(budget.getW1Planned()))
+      && this.isValidNumber(String.valueOf(budget.getW1Actual()))) {
+
+      if (budget.getW1Planned() + budget.getW1Actual() <= 0) {
+        action.addMessage(action.getText("budgets[" + i + "]  W1 Difference"));
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned",
+          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+    }
+
+    // Difference W3
+    if (this.isValidNumber(String.valueOf(budget.getW3Planned()))
+      && this.isValidNumber(String.valueOf(budget.getW3Actual()))) {
+
+      if (budget.getW3Planned() + budget.getW3Actual() <= 0) {
+        action.addMessage(action.getText("budgets[" + i + "]  W3 Difference"));
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned",
+          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+    }
+
+    // Difference Bilateral
+    if (this.isValidNumber(String.valueOf(budget.getBilateralPlanned()))
+      && this.isValidNumber(String.valueOf(budget.getBilateralActual()))) {
+
+      if (budget.getW3Planned() + budget.getW3Actual() <= 0) {
+        action.addMessage(action.getText("budgets[" + i + "]  Bilateral Difference"));
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
+          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put(
+          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
     }
   }
 
