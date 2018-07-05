@@ -1412,9 +1412,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> data;
 
     double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
-    System.out.println("reportSynthesisFinancialSummaryBudgetList " + reportSynthesisFinancialSummaryBudgetList.size());
     if (reportSynthesisFinancialSummaryBudgetList != null && !reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
-      System.out.println("entro aqui");
       for (int i = 0; i < reportSynthesisFinancialSummaryBudgetList.size(); i++) {
 
         String category = "";
