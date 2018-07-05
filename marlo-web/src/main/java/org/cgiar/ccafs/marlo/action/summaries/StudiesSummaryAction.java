@@ -322,7 +322,8 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           referenceURL = null, communicationsURL = null;
 
         Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
-          isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false;
+          isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false,
+          isPolicyStrategyType = false;
 
         Long id = null;
         // Id
@@ -364,6 +365,9 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
                 if (projectExpectedStudyInfo.getPolicyAmount() != null) {
                   policyAmount = projectExpectedStudyInfo.getPolicyAmount();
                 }
+              }
+              if (projectExpectedStudyInfo.getRepIndPolicyInvestimentType().getId().equals(1l)) {
+                isPolicyStrategyType = true;
               }
             }
             // organizationType
@@ -609,13 +613,21 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           studyProjects = String.join("", studyProjectSet);
         }
 
-        model.addRow(new Object[] {id, year, policyAmount, title, status, type, outcomeImpactStatement,
-          isContributionText, policyInvestimentType, organizationType, stageProcess, stageStudy, srfTargets, subIdos,
-          topLevelComments, geographicScope, region, countries, scopeComments, crps, flagships, regions, institutions,
-          elaborationOutcomeImpactStatement, referenceText, referencesFile, quantification, genderRelevance,
-          youthRelevance, capacityRelevance, otherCrossCuttingDimensions, comunicationsMaterial, comunicationsFile,
-          contacts, studyProjects, isContribution, isBudgetInvestment, isStage1, isRegional, isNational,
-          hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy, referenceURL, communicationsURL});
+        // Control variable for OutcomeCaseStudies with policy type= "Policy or Strategy" and stage="Stage 1"
+        boolean addStudy = true;
+        if (isStage1 && isPolicyStrategyType) {
+          addStudy = false;
+        }
+
+        if (addStudy) {
+          model.addRow(new Object[] {id, year, policyAmount, title, status, type, outcomeImpactStatement,
+            isContributionText, policyInvestimentType, organizationType, stageProcess, stageStudy, srfTargets, subIdos,
+            topLevelComments, geographicScope, region, countries, scopeComments, crps, flagships, regions, institutions,
+            elaborationOutcomeImpactStatement, referenceText, referencesFile, quantification, genderRelevance,
+            youthRelevance, capacityRelevance, otherCrossCuttingDimensions, comunicationsMaterial, comunicationsFile,
+            contacts, studyProjects, isContribution, isBudgetInvestment, isStage1, isRegional, isNational,
+            hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy, referenceURL, communicationsURL});
+        }
       }
     }
 
