@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisEfficiencyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
@@ -159,6 +160,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
   private ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager;
+  private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -211,7 +213,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
-    ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager) {
+    ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager,
+    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager) {
 
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -239,6 +242,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
     this.reportSynthesisEfficiencyManager = reportSynthesisEfficiencyManager;
+    this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
   }
 
   private void addAdjustmentDescription() {
@@ -749,8 +753,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
     liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
-      this.getSelectedPhase().getId(), this.getLoggedCrp(), this.pmuInstitution);
+    flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutionsList,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
     if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
       for (int i = 0; i < flagshipPlannedList.size(); i++) {
         title = "";
@@ -760,7 +764,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         describeCapDev = "";
         additional = "";
         link = "";
-        String base = "";
 
         /** creating download link **/
         String year = flagshipPlannedList.get(i).getProjectExpectedStudy().getYear() + "";
@@ -772,7 +775,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
          * }
          */
         link =
-          base + "/marlo-web/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
+          this.getBaseUrl() + "/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
 
         if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo() != null) {
           ProjectExpectedStudyInfo projectExpectedStudyInfo =
@@ -1958,7 +1961,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     reportSysthesisList =
       this.getSelectedPhase().getReportSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
 
-    LiaisonInstitution pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
+    pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
     reportSynthesisPMU = reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), pmuInstitution.getId());
