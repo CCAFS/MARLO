@@ -1154,7 +1154,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
         totalEstimatedPercentajeFS += estimatedPercentajeFS;
         POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
+          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 1000, 4)), ParagraphAlignment.CENTER),
           new POIField(commentsSpace, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1377,15 +1377,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   private void createTableJ() {
     this.getInformationTableJ();
-    List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList = new ArrayList<>();
-    reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
+    List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList =
+      reportSynthesisFinancialSummaryBudgetManager.findAll();
 
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
-      new POIField(
-        this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER), new POIField(
+      this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())}) + "*",
+      ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+      new POIField("", ParagraphAlignment.CENTER),
       new POIField(this.getText("annualReport.financial.tableJ.expenditure"), ParagraphAlignment.CENTER),
       new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
       new POIField(this.getText("annualReport.financial.tableJ.difference"), ParagraphAlignment.CENTER),
@@ -1409,8 +1408,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
+
     double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
-    if (reportSynthesisFinancialSummaryBudgetList != null && reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
+    System.out.println("reportSynthesisFinancialSummaryBudgetList " + reportSynthesisFinancialSummaryBudgetList.size());
+    if (reportSynthesisFinancialSummaryBudgetList != null && !reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
+      System.out.println("entro aqui");
       for (int i = 0; i < reportSynthesisFinancialSummaryBudgetList.size(); i++) {
 
         String category = "";
@@ -1420,18 +1422,27 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         /** Getting category name **/
         if (reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution() != null) {
           category = reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution().getName();
-        } else {
+        } else if (reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea() != null) {
           category = reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea();
         }
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned() != null) {
+          w1w2Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned();
+        }
 
-        w1w2Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Planned();
-        w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned();
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned() != null) {
+          w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned();
+        }
+
         totalPlanned = w1w2Planned + w3Planned;
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual() != null) {
+          w1w2Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual();
+        }
 
-        w1w2Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW1Actual();
-        w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual();
+        if (reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual() != null) {
+          w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual();
+        }
+
         totalActual = w1w2Actual + w3Actual;
-
 
         w1w2Difference = w1w2Planned - w1w2Actual;
         w3Difference = w3Planned - w3Actual;
@@ -1670,8 +1681,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableJ.title"));
       this.createTableJ();
-      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableJ.description.help"));
+      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableJ.description.help2"));
 
+      poiSummary.textNotes(document.createParagraph(),
+        "*" + this.getText("summaries.annualReport.tableJ.description.help"));
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
