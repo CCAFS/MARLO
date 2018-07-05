@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarCollaboration
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrpProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisEfficiencyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
@@ -66,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisEfficiency;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
@@ -156,6 +158,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager;
   private ReportSynthesisIndicatorManager reportSynthesisIndicatorManager;
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
+  private ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -207,7 +210,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
-    ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager) {
+    ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
+    ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager) {
 
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -234,6 +238,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
     this.reportSynthesisIndicatorManager = reportSynthesisIndicatorManager;
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
+    this.reportSynthesisEfficiencyManager = reportSynthesisEfficiencyManager;
   }
 
   private void addAdjustmentDescription() {
@@ -488,20 +493,24 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   private void addImprovingEfficiency() {
 
-    String improvingEfficiencyDescription = "";
+    String reportSysnthesisEfficiency = "";
 
-    if (reportSynthesisPMU != null) {
+    List<ReportSynthesisEfficiency> reportSynthesisEfficiencyList = reportSynthesisEfficiencyManager.findAll();
 
-      if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
-        ReportSynthesisFundingUseSummary funding = reportSynthesisPMU.getReportSynthesisFundingUseSummary();
-        if (funding != null) {
-          improvingEfficiencyDescription = funding.getMainArea();
+    if (reportSynthesisEfficiencyList != null && !reportSynthesisEfficiencyList.isEmpty()) {
+
+      for (int i = 0; i < reportSynthesisEfficiencyList.size(); i++) {
+        if (reportSynthesisEfficiencyList.get(i).getId() == 5) {
+          if (reportSynthesisEfficiencyList.get(i).getDescription() != null
+            && !reportSynthesisEfficiencyList.isEmpty()) {
+            reportSysnthesisEfficiency = reportSynthesisEfficiencyList.get(i).getDescription();
+          }
         }
       }
-    }
 
-    if (improvingEfficiencyDescription != null && !improvingEfficiencyDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), improvingEfficiencyDescription);
+      if (reportSysnthesisEfficiency != null && !reportSysnthesisEfficiency.isEmpty()) {
+        poiSummary.textParagraph(document.createParagraph(), reportSysnthesisEfficiency);
+      }
     }
   }
 
@@ -589,11 +598,18 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String studies = "";
     if (reportSynthesisMeliaList != null && !reportSynthesisMeliaList.isEmpty()) {
       for (int i = 0; i < reportSynthesisMeliaList.size(); i++) {
-        if (reportSynthesisMeliaList.get(i).getSummary() != null) {
-          studies += reportSynthesisMeliaList.get(i).getSummary() + "\n";
+
+        if (studies != null && !studies.isEmpty()) {
+          if (reportSynthesisMeliaList.get(i).getId() == 5) {
+            if (reportSynthesisMeliaList.get(i).getSummary() != null) {
+              studies = reportSynthesisMeliaList.get(i).getSummary();
+            }
+          }
         }
+
       }
     }
+
     if (studies != null && !studies.isEmpty()) {
       poiSummary.textParagraph(document.createParagraph(), studies);
     }
@@ -724,8 +740,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String title = "", subIdo = "", describeGender = "", describeYouth = "", describeCapDev = "", additional = "",
       link = "";
 
-    List<List<POIField>> datas = new ArrayList<>();
-
+    List<List<POIField>> datas = new ArrayList<>();;
     List<POIField> data;
     // Get liaison institution list
     List<LiaisonInstitution> liaisonInstitutionsList =
@@ -745,12 +760,19 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         describeCapDev = "";
         additional = "";
         link = "";
+        String base = "";
 
         /** creating download link **/
         String year = flagshipPlannedList.get(i).getProjectExpectedStudy().getYear() + "";
         String cycle = this.getCurrentCycle();
         String study = flagshipPlannedList.get(i).getProjectExpectedStudy().getId() + "";
-        link = "/studyID=" + study + "&cycle=" + cycle + "&year=" + year;
+        /*
+         * if (baseAction.getBaseUrl() != null && !baseAction.getBaseUrl().isEmpty()) {
+         * base = baseAction.getBaseUrl();
+         * }
+         */
+        link =
+          base + "/marlo-web/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
 
         if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo() != null) {
           ProjectExpectedStudyInfo projectExpectedStudyInfo =
@@ -879,9 +901,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
           }
 
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
-            new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-            new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
+          POIField[] sData =
+            {new POIField(FP + "  ", ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
+              new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+              new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
 
@@ -963,6 +986,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
+    lastType = "";
     if (listRepIndSynthesis != null && !listRepIndSynthesis.isEmpty()) {
       for (int i = 0; i < listRepIndSynthesis.size(); i++) {
         type = "";
@@ -970,7 +994,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         name = "";
         dataRep = "";
         comments = "";
-        lastType = "";
+
         data = new ArrayList<>();
         type = listRepIndSynthesis.get(i).getType();
 
@@ -1044,14 +1068,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             geographicScope = projectInnovationInfo.getRepIndGeographicScope().getName();
           }
 
-          POIField[] sData =
-            {new POIField(title, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
-              new POIField(degree, ParagraphAlignment.LEFT), new POIField(contribution, ParagraphAlignment.LEFT),
-              new POIField(geographicScope, ParagraphAlignment.LEFT)};
+          if (title != null && stage != null && degree != null && contribution != null && geographicScope != null) {
+            POIField[] sData =
+              {new POIField(title, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
+                new POIField(degree, ParagraphAlignment.LEFT), new POIField(contribution, ParagraphAlignment.LEFT),
+                new POIField(geographicScope, ParagraphAlignment.LEFT)};
 
-          data = Arrays.asList(sData);
-          datas.add(data);
-
+            data = Arrays.asList(sData);
+            datas.add(data);
+          }
         }
       }
     }
@@ -1088,7 +1113,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       communication = assetsList.get(i).getPublicCommunication();
 
       POIField[] sData =
-        {new POIField(title, ParagraphAlignment.CENTER), new POIField(applicant, ParagraphAlignment.LEFT),
+        {new POIField(title, ParagraphAlignment.LEFT), new POIField(applicant, ParagraphAlignment.LEFT),
           new POIField(patent, ParagraphAlignment.LEFT), new POIField(aditional, ParagraphAlignment.LEFT),
           new POIField(registration, ParagraphAlignment.CENTER), new POIField(communication, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);

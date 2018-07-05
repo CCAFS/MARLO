@@ -462,14 +462,14 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
 
-        /*
-         * // condition for table d1 cell color in sphere 2
-         * if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
-         * TABLE_HEADER_FONT_COLOR = "E2EFD9";
-         * } else {
-         * TABLE_HEADER_FONT_COLOR = "FFF2CC";
-         * }
-         */
+
+        // condition for table d1 cell color in sphere 2
+        if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
+          TABLE_HEADER_FONT_COLOR = "E2EFD9";
+        } else {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        }
+
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
@@ -484,6 +484,13 @@ public class POISummary {
             }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+            if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
+              TABLE_HEADER_FONT_COLOR = "E2EFD9";
+            } else {
+              TABLE_HEADER_FONT_COLOR = "FFF2CC";
+            }
+
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           } else {
             XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
@@ -498,6 +505,13 @@ public class POISummary {
             }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+            if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
+              TABLE_HEADER_FONT_COLOR = "E2EFD9";
+            } else {
+              TABLE_HEADER_FONT_COLOR = "FFF2CC";
+            }
+
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           }
         } else {
@@ -513,6 +527,13 @@ public class POISummary {
           }
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+          if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
+            TABLE_HEADER_FONT_COLOR = "E2EFD9";
+          } else {
+            TABLE_HEADER_FONT_COLOR = "FFF2CC";
+          }
+
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
         }
         record++;
@@ -530,14 +551,7 @@ public class POISummary {
       } else {
         TABLE_HEADER_FONT_COLOR = "FFF2CC";
       }
-      /*
-       * // condition for table d1 cell color in sphere 2
-       * if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
-       * TABLE_HEADER_FONT_COLOR = "E2EFD9";
-       * } else {
-       * TABLE_HEADER_FONT_COLOR = "FFF2CC";
-       * }
-       */
+
       XWPFTableRow dataRow = table.createRow();
       for (POIField poiParameter : poiParameters) {
         if (tableType.equals("tableD1AnnualReport") && (record == 0)) {
