@@ -240,12 +240,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<ReportSynthesisFlagshipProgress> reportSynthesisFlagshipProgressManagerList = null;
     reportSynthesisFlagshipProgressManagerList = reportSynthesisFlagshipProgressManager.findAll();
 
-    if (reportSynthesisFlagshipProgressManagerList != null) {
+    if (reportSynthesisFlagshipProgressManagerList != null && !reportSynthesisFlagshipProgressManagerList.isEmpty()) {
 
       for (int i = 0; i < reportSynthesisFlagshipProgressManagerList.size(); i++) {
         String summary = "";
         if (reportSynthesisFlagshipProgressManagerList.get(i).getSummary() != null
-          || !reportSynthesisFlagshipProgressManagerList.get(i).getSummary().isEmpty()) {
+          && !reportSynthesisFlagshipProgressManagerList.get(i).getSummary().isEmpty()) {
           summary = reportSynthesisFlagshipProgressManagerList.get(i).getSummary() + "\n";
           poiSummary.textParagraph(document.createParagraph(), summary);
 
