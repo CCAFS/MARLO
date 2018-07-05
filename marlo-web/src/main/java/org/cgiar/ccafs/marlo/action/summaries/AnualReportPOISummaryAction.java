@@ -302,7 +302,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
           }
         } catch (Exception e) {
-
+          LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
         }
       }
     }
@@ -819,8 +819,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+
     }
   }
 
@@ -872,7 +872,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 synthesisCrpTargets += listCrpProgressTargets.get(j).getAdditionalContribution() + "\n";
 
               } catch (Exception e) {
-
+                LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
               }
             }
           }
@@ -971,6 +971,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getDescribeCapdev();
             }
           } catch (Exception e) {
+            LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
           }
           additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
           POIField[] sData =
@@ -1136,7 +1137,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       listRepIndSynthesis = repIndSynthesisIndicatorManager.findAll();
       reportSynthesisIndicatorList = reportSynthesisIndicatorManager.findAll();
     } catch (Exception e) {
-
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
 
     List<POIField> header = Arrays.asList(sHeader);
@@ -1229,6 +1230,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           data = Arrays.asList(sData);
           datas.add(data);
         } catch (Exception e) {
+          LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
         }
       }
     }
@@ -1272,7 +1274,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         data = Arrays.asList(sData);
         datas.add(data);
       } catch (Exception e) {
-
+        LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
       }
     }
     poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
@@ -1389,7 +1391,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           datas.add(data);
 
         } catch (Exception e) {
-
+          LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
         }
 
       }
@@ -1473,7 +1475,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
           }
         } catch (Exception e) {
-
+          LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
         }
       }
     }
@@ -1532,6 +1534,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       reportSynthesisFinancialSummaryList = reportSynthesisFinancialSummaryManager.findAll();
       reportSynthesisFinancialSummaryBudgetList = reportSynthesisFinancialSummaryBudgetManager.findAll();
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
 
     }
 
@@ -1622,11 +1625,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         datas.add(data);
       }
 
-
-    } catch (
-
-    Exception e) {
+    } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
+
     Boolean bold = true;
     String blackColor = "000000";
     POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
@@ -1856,7 +1858,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       document.close();
     } catch (Exception e) {
       LOG.error("Error generating POWB Summary " + e.getMessage());
-      throw e;
     }
 
     // Calculate time of generation
@@ -1880,7 +1881,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         try {
           assetsList.add(assetsListTemp.get(i));
         } catch (Exception e) {
-          throw e;
+          LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
         }
       }
     }
@@ -2371,6 +2372,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         this.getSelectedPhase().getId());
 
     } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
 
   }
