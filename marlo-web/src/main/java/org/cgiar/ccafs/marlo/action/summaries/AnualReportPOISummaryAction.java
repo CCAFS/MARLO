@@ -1164,8 +1164,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     Boolean bold = true;
     String blackColor = "000000";
 
+    totalw1w2 = reportSynthesisFinancialSummaryBudgetManager.getTotalW1W2ActualExpenditure(reportSynthesisPMU.getId());
+
     POIField[] sData = {new POIField("TOTAL FUNDING (AMOUNT)", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(currencyFormat.format(round((totalw1w2 * totalEstimatedPercentajeFS) / 100, 2)),
+      new POIField(currencyFormat.format(round((totalw1w2 * totalEstimatedPercentajeFS) / 1000, 2)),
         ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(" ", ParagraphAlignment.LEFT, bold, blackColor)};
 
@@ -1465,15 +1467,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         grandTotalDifference += totalDifference;
 
         POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Planned, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Planned, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalPlanned, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Actual, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Actual, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalActual, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Difference, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Difference, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalDifference, 2)), ParagraphAlignment.CENTER)};
+          new POIField(currencyFormat.format(round(w1w2Planned / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Planned / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(totalPlanned / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2Actual / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Actual / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(totalActual / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w1w2Difference / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(w3Difference / 1000, 2)), ParagraphAlignment.CENTER),
+          new POIField(currencyFormat.format(round(totalDifference / 1000, 2)), ParagraphAlignment.CENTER)};
 
         data = Arrays.asList(sData);
         datas.add(data);
@@ -2044,8 +2046,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d
