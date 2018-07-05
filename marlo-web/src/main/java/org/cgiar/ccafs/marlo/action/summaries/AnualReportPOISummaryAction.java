@@ -239,14 +239,20 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private void addAdjustmentDescription() {
     List<ReportSynthesisFlagshipProgress> reportSynthesisFlagshipProgressManagerList = null;
     reportSynthesisFlagshipProgressManagerList = reportSynthesisFlagshipProgressManager.findAll();
+    String acronym = "";
 
     if (reportSynthesisFlagshipProgressManagerList != null && !reportSynthesisFlagshipProgressManagerList.isEmpty()) {
 
       for (int i = 0; i < reportSynthesisFlagshipProgressManagerList.size(); i++) {
         String summary = "";
+        if (reportSynthesisFlagshipProgressManagerList.get(i).getReportSynthesis().getLiaisonInstitution()
+          .getAcronym() != null && !reportSynthesisFlagshipProgressManagerList.isEmpty()) {
+          acronym =
+            reportSynthesisFlagshipProgressManagerList.get(i).getReportSynthesis().getLiaisonInstitution().getAcronym();
+        }
         if (reportSynthesisFlagshipProgressManagerList.get(i).getSummary() != null
           && !reportSynthesisFlagshipProgressManagerList.get(i).getSummary().isEmpty()) {
-          summary = reportSynthesisFlagshipProgressManagerList.get(i).getSummary() + "\n";
+          summary = acronym + ": " + reportSynthesisFlagshipProgressManagerList.get(i).getSummary() + "\n";
           poiSummary.textParagraph(document.createParagraph(), summary);
 
         }
@@ -1687,7 +1693,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     StringBuffer fileName = new StringBuffer();
     String crp = this.getLoggedCrp().getAcronym();
     Date date = new Date();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
 
     fileName.append("2017_" + crp + "_AR_" + sdf.format(date));
     fileName.append(".docx");
