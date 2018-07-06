@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -156,6 +157,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
   private ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager;
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
+  private CrpProgramManager crpProgramManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -201,7 +203,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     ReportSynthesisIndicatorManager reportSynthesisIndicatorManager,
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
     ReportSynthesisEfficiencyManager reportSynthesisEfficiencyManager,
-    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager) {
+    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager, CrpProgramManager crpProgramManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -226,6 +228,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
     this.reportSynthesisEfficiencyManager = reportSynthesisEfficiencyManager;
     this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
   private void addAdjustmentDescription() {
@@ -767,13 +770,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 + projectExpectedStudyInfo.getDescribeCapdev();
             }
           }
-          Boolean underlined = true;
-          String blueColor = "000099";
+          Boolean bold = false;
+          String blueColor = "0000EE";
           additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
-          POIField[] sData =
-            {new POIField(title, ParagraphAlignment.LEFT), new POIField(subIdo, ParagraphAlignment.LEFT),
-              new POIField(link, ParagraphAlignment.LEFT, underlined, blueColor),
-              new POIField(additional, ParagraphAlignment.LEFT)};
+          POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
+            new POIField(subIdo, ParagraphAlignment.LEFT), new POIField(link, ParagraphAlignment.LEFT, bold, blueColor),
+            new POIField(additional, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -1077,7 +1079,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           status =
             ProjectStatusEnum.getValue(assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus()).getStatus();
         }
-        year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
+        if (status.equals(ProjectStatusEnum.Extended.getStatus())) {
+          year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
+        } else {
+          year = assetsList.get(i).getDeliverable().getDeliverableInfo().getNewExpectedYear() + "";
+        }
       }
 
 
@@ -1185,31 +1191,30 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
       liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
 
+
     if (flagshipExternalPlannedList != null && !flagshipExternalPlannedList.isEmpty()) {
 
       for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
 
         String FP = "", stage = "", partner = "", partnerType = "", mainArea = "";
         if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership() != null) {
-          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-            .getFlagships() != null
-            && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-              .getFlagships().isEmpty()) {
 
+          // **Getting flagships **/
 
-            for (int j = 0; j < flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
-              .getProject().getFlagships().size(); j++) {
-
-              if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-                .getFlagships().get(0).getAcronym() != null
-                && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-                  .getFlagships().get(0).getAcronym().isEmpty()) {
-                FP += flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-                  .getFlagships().get(0).getAcronym() + "\n";
-              }
-
+          for (ProjectFocus projectFocuses : flagshipExternalPlannedList.get(i).getProjectPartnerPartnership()
+            .getProjectPartner().getProject().getProjectFocuses().stream()
+            .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
+            if (FP != "") {
+              FP += ", ";
             }
+            FP += crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+
           }
+
           if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
             .getName() != null
             && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()

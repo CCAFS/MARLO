@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
-import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
@@ -639,11 +638,7 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
 
-        if (tableType.equals("tableA2AnnualReport") && (record == 3)) {
-          paragraphRun.setUnderline(UnderlinePatterns.SINGLE);
-        }
         // highlight and bold first and SecondColumn for table D1
-
         if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
           dataRow.getCell(record).setColor("DEEAF6");
           paragraphRun.setBold(true);
