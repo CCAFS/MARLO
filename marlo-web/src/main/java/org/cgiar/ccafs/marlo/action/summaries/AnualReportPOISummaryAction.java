@@ -906,7 +906,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> data;
     this.tableCInfo(this.getActualPhase());
-
+    // Setup Table C
+    tableC = reportSynthesisCrossCuttingDimensionManager.getTableC(this.getSelectedPhase(), this.getLoggedCrp());
     if (tableC != null) {
       POIField[] sData = {new POIField("Gender", ParagraphAlignment.LEFT),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderPrincipal() / 100, 4)),
