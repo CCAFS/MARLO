@@ -80,7 +80,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
-import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -168,7 +167,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private DecimalFormat percentageFormat;
   private List<CrpProgram> flagships;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
-  private List<SrfSloIndicatorTarget> sloTargets;
   private List<DeliverableIntellectualAsset> assetsList;
   private List<ReportSynthesisExternalPartnershipDTO> flagshipExternalPlannedList;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
@@ -839,7 +837,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
           Boolean isOutcomeRow = (milestone_index == 0);
           if (isFlagshipRow) {
-            FP = flagship.getAcronym();
+            FP = "  " + flagship.getAcronym() + " ";
           } else {
             FP = " ";
           }
@@ -862,10 +860,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             }
           }
 
-          POIField[] sData =
-            {new POIField(FP + "  ", ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
-              new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-              new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
+          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
+            new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+            new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
 
@@ -1068,7 +1065,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     for (int i = 0; i < assetsList.size(); i++) {
 
-      year = assetsList.get(i).getDateFilling() + "";
+      year = assetsList.get(i).getDateRegistration() + "";
       if (assetsList.get(i).getApplicant() != null) {
         applicant = assetsList.get(i).getApplicant();
       }
