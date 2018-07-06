@@ -7,7 +7,7 @@
 [#if (deliverable??)!false]
   [#assign auditObject = deliverable ]
   [#assign auditObjectID = deliverableID ]
-  [#assign auditObjectName = "capdevID" ]
+  [#assign auditObjectName = "deliverableID" ]
 [/#if]
 
 [#-- Hidden Inputs --] 
