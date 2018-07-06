@@ -64,6 +64,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiar;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingInnovationDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisEfficiency;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
@@ -171,6 +172,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private List<ReportSynthesisExternalPartnershipDTO> flagshipExternalPlannedList;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
   private List<ReportSynthesisMelia> reportSynthesisMeliaList;
+  private List<ReportSynthesisCrossCuttingInnovationDTO> flagshipPlannedInnovations;
 
 
   Double totalw1w2 = 0.0, totalw1w2Planned = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0,
@@ -629,11 +631,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   public void createTableA1() {
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {
-      new POIField(this.getText("annualReport.crpProgress.selectSLOTarget") + "\n"
-        + this.getText("summaries.annualReport.tableA1.targetTitle2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.LEFT),};
+    POIField[] sHeader =
+      {new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.LEFT),};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -711,6 +712,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutionsList,
       this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+
     if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
       for (int i = 0; i < flagshipPlannedList.size(); i++) {
         title = "";
@@ -998,14 +1000,25 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
 
+    List<LiaisonInstitution> liaisonInstitutionsList =
+      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+
+    flagshipPlannedInnovations = reportSynthesisCrossCuttingDimensionManager.getPlannedInnovationList(
+      liaisonInstitutionsList, this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+
+
     List<ProjectInnovation> projectInnovationList = projectInnovationManager.findAll();
 
-    if (projectInnovationList != null && !projectInnovationList.isEmpty()) {
-      for (int i = 0; i < projectInnovationList.size(); i++) {
+    if (flagshipPlannedInnovations != null && !flagshipPlannedInnovations.isEmpty()) {
+      for (int i = 0; i < flagshipPlannedInnovations.size(); i++) {
         String title = " ", stage = "", degree = " ", contribution = " ", geographicScope = " ";
-        if (projectInnovationList.get(i).getProjectInnovationInfo(this.getActualPhase()) != null) {
+        if (flagshipPlannedInnovations.get(i).getProjectInnovation()
+          .getProjectInnovationInfo(this.getActualPhase()) != null) {
           ProjectInnovationInfo projectInnovationInfo =
-            projectInnovationList.get(i).getProjectInnovationInfo(this.getActualPhase());
+            flagshipPlannedInnovations.get(i).getProjectInnovation().getProjectInnovationInfo(this.getActualPhase());
           title = projectInnovationInfo.getTitle();
           if (projectInnovationInfo.getRepIndStageInnovation() != null) {
             stage = projectInnovationInfo.getRepIndStageInnovation().getName();
@@ -1125,7 +1138,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
         totalEstimatedPercentajeFS += estimatedPercentajeFS;
         POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-          new POIField(percentageFormat.format(round(estimatedPercentajeFS, 4)), ParagraphAlignment.CENTER),
+          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
           new POIField(commentsSpace, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1138,8 +1151,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     totalw1w2 = reportSynthesisFinancialSummaryBudgetManager.getTotalW1W2ActualExpenditure(reportSynthesisPMU.getId());
 
     POIField[] sData = {new POIField("TOTAL FUNDING (AMOUNT)***", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(currencyFormat.format(round((totalw1w2) / 1000, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(" ", ParagraphAlignment.LEFT, bold, blackColor)};
+      new POIField(currencyFormat.format(round(((totalw1w2) * totalEstimatedPercentajeFS / 100) / 1000, 2)),
+        ParagraphAlignment.CENTER, bold, blackColor)};
 
     data = Arrays.asList(sData);
     datas.add(data);
@@ -1303,7 +1316,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
         }
 
-        POIField[] sData = {new POIField(studies, ParagraphAlignment.CENTER),
+        POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
           new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
         datas.add(data);
