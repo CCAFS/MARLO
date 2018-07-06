@@ -113,7 +113,7 @@ public class POISummary {
   }
 
   public void tableA1AnnualReportStyle(XWPFTable table) {
-    /* horizontal merge, From format tables A */
+    /* horizontal merge, From format tables A1 */
 
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       XWPFTableRow row = table.getRow(x);
@@ -169,7 +169,7 @@ public class POISummary {
   }
 
   public void tableBAnnualReportStyle(XWPFTable table) {
-    /* Horizontal merge, From format tables A */
+    /* Horizontal merge, From format tables B */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
 
@@ -208,6 +208,7 @@ public class POISummary {
     }
   }
 
+
   public void tableCStyle(XWPFTable table) {
     /* Vertical merge, From format tables C */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
@@ -240,6 +241,45 @@ public class POISummary {
     }
   }
 
+  public void tableD1AnnualReportStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables D1 Annual report */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        for (int y = 0; y < 2; y++) {
+          XWPFTableCell cell = row.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+  }
 
   public void tableEStyle(XWPFTable table) {
     /* Horizontal merge, From format tables E */
@@ -328,7 +368,7 @@ public class POISummary {
   }
 
   public void tableIAnnualReportStyle(XWPFTable table) {
-    /* horizontal merge, From format tables A */
+    /* horizontal merge, From format tables I */
 
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       XWPFTableRow row = table.getRow(x);
@@ -339,6 +379,54 @@ public class POISummary {
         CTTcPr pr = cell.getCTTc().addNewTcPr();
         // pr.addNewNoWrap();
         cellWidth.setW(BigInteger.valueOf(100));
+      }
+    }
+  }
+
+  public void tableJAnnualReportStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables J */
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    for (int y = 0; y < numberOfCell - 1; y++) {
+      XWPFTableCell cell = row.getCell(y);
+
+      if (cell.getCTTc() == null) {
+        ((CTTc) cell).addNewTcPr();
+      }
+
+      if (cell.getCTTc().getTcPr() == null) {
+        cell.getCTTc().addNewTcPr();
+      }
+      if (y > 0 && y < numberOfCell) {
+        if (cell.getText().trim().length() > 0) {
+          hMerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setHMerge(hMerge);
+        } else {
+          hMerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setHMerge(hMerge1);
+        }
+      }
+    }
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 1) {
+        XWPFTableRow rowCom = table.getRow(x);
+        XWPFTableCell cell = rowCom.getCell(6);
+
+        if (cell.getCTTc() == null) {
+          ((CTTc) cell).addNewTcPr();
+        }
+
+        if (cell.getCTTc().getTcPr() == null) {
+          cell.getCTTc().addNewTcPr();
+        }
+
+        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+
       }
     }
   }
@@ -615,7 +703,7 @@ public class POISummary {
         this.tableCStyle(table);
         break;
       case "tableD1AnnualReport":
-        this.tableAStyle(table);
+        this.tableD1AnnualReportStyle(table);
         break;
       case "tableD2AnnualReport":
         count = 0;
@@ -637,7 +725,7 @@ public class POISummary {
         this.tableIAnnualReportStyle(table);
         break;
       case "tableJAnnualReport":
-        this.tableEStyle(table);
+        this.tableJAnnualReportStyle(table);
         break;
     }
     if (tableType.contains("AnnualReport")) {
