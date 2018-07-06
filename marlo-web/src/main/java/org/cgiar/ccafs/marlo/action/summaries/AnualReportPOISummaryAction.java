@@ -409,14 +409,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   }
 
   private void addExpectedCrp() {
-
-    if (reportSynthesisPMU != null) {
-      String synthesisCrpDescription = "";
-
-      synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress();
-      if (synthesisCrpDescription != null) {
-        poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
-      }
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpProgress() != null
+      && reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() != null) {
+      String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress();
+      poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
     }
   }
 
@@ -560,19 +556,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     if (crpPpaPartnerList != null && !crpPpaPartnerList.isEmpty()) {
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerList) {
         if (participantingCenters.isEmpty()) {
-          if (crpPpaPartner.getInstitution().getAcronym() != null
-            && !crpPpaPartner.getInstitution().getAcronym().trim().isEmpty()) {
-            participantingCenters = crpPpaPartner.getInstitution().getAcronym();
-          } else {
-            participantingCenters = crpPpaPartner.getInstitution().getName();
-          }
+          participantingCenters = crpPpaPartner.getInstitution().getAcronymName();
         } else {
-          if (crpPpaPartner.getInstitution().getAcronym() != null
-            && !crpPpaPartner.getInstitution().getAcronym().trim().isEmpty()) {
-            participantingCenters += ", " + crpPpaPartner.getInstitution().getAcronym();
-          } else {
-            participantingCenters += ", " + crpPpaPartner.getInstitution().getName();
-          }
+          participantingCenters += ", " + crpPpaPartner.getInstitution().getAcronymName();
         }
       }
     }
@@ -1217,7 +1203,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             mainArea = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea();
           }
           partnerType = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
-            .getInstitution().getInstitutionType().getName();
+            .getInstitution().getInstitutionType().getRepIndOrganizationType().getName();
 
           POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
             new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
