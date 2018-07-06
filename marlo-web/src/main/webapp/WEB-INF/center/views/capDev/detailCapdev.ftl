@@ -10,7 +10,8 @@
 [#assign pageLibs = ["select2","flat-flags"] /]
 
 [#assign customJS = [
-  "${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -84,7 +85,9 @@
   
 </div>
 
-
+[#-- Search users Interface --]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[@usersForm.searchUsers/]
 
 
 <!-- country list template-->
@@ -134,16 +137,18 @@
   </div>
   [#-- type and contact Person --]
   <div class="form-group row">
-      <!-- type-->
+      [#-- type--]
       <div class="col-md-6" > 
         [@customForm.select name="capdev.capdevType.id" listName="capdevTypes" keyFieldName="id" displayFieldName="name" help="capdev.help.type" i18nkey="capdev.form.type"  placeholder="capdev.select" required=true editable=editable disabled=!editable/]
       </div>
-      <!-- Contact person -->
-      <div class="col-md-6 contactField" style="display:${((capdev.category == 2)!false)?string('block','none')};">
-        [@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  readOnly=true   editable=editable /]
+      [#-- Contact person --]
+      <div class="col-md-6 contactField userField" style="display:${((capdev.category == 2)!false)?string('block','none')};">
+        [@customForm.input name="contact" value="${(capdev.ctFirstName)!} ${(capdev.ctLastName)!}" className='userName' type="text" disabled=!canEdit i18nkey="capdev.form.contactPerson" required=true readOnly=true editable=editable /]
+        <input class="userId"     type="hidden" name="capdev.user.id"     value="${(capdev.user.id)!}" />   
         <input class="ctFirsName" type="hidden" name="capdev.ctFirstName" value="${(capdev.ctFirstName)!}" /> 
-        <input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
-        <input class="ctEmail" type="hidden" name="capdev.ctEmail" value="${(capdev.ctEmail)!}" /> 
+        <input class="ctLastName" type="hidden" name="capdev.ctLastName"  value="${(capdev.ctLastName)!}" /> 
+        <input class="ctEmail"    type="hidden" name="capdev.ctEmail"     value="${(capdev.ctEmail)!}" />
+        [#if editable]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
       </div>
   </div>
   [#-- dates --]
