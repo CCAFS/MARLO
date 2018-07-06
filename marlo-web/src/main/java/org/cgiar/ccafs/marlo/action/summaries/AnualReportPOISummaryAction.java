@@ -555,6 +555,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String participantingCenters = "";
     List<CrpPpaPartner> crpPpaPartnerList = this.getLoggedCrp().getCrpPpaPartners().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .sorted((c1, c2) -> c1.getInstitution().getAcronymName().compareTo(c2.getInstitution().getAcronymName()))
       .collect(Collectors.toList());
     if (crpPpaPartnerList != null && !crpPpaPartnerList.isEmpty()) {
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerList) {
