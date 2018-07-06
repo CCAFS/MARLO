@@ -828,7 +828,8 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         for (String programID : project.getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
-            CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+            CrpProgram program =
+              programManager.getCrpProgramById(Long.parseLong(programID.trim().replaceAll("[^0-9]", "")));
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
             projectFocus.setProject(project);
