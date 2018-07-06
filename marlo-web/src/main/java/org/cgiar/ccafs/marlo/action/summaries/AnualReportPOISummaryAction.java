@@ -1064,20 +1064,32 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
-    String title = "", patent = "", applicant = "", aditional = "", registration = "", communication = "";
+    String year = "", patent = "", applicant = "", aditional = "", registration = "", communication = "";
 
     for (int i = 0; i < assetsList.size(); i++) {
-      title = assetsList.get(i).getTitle();
-      applicant = assetsList.get(i).getApplicant();
-      patent = assetsList.get(i).getApplicant();
-      aditional = assetsList.get(i).getAdditionalInformation();
-      registration = assetsList.get(i).getLink();
-      communication = assetsList.get(i).getPublicCommunication();
 
-      POIField[] sData =
-        {new POIField(title, ParagraphAlignment.LEFT), new POIField(applicant, ParagraphAlignment.LEFT),
-          new POIField(patent, ParagraphAlignment.LEFT), new POIField(aditional, ParagraphAlignment.LEFT),
-          new POIField(registration, ParagraphAlignment.CENTER), new POIField(communication, ParagraphAlignment.LEFT)};
+      year = assetsList.get(i).getDateFilling() + "";
+      if (assetsList.get(i).getApplicant() != null) {
+        applicant = assetsList.get(i).getApplicant();
+      }
+      if (assetsList.get(i).getPatentTypeName() != null) {
+        patent = assetsList.get(i).getPatentTypeName();
+      }
+      if (assetsList.get(i).getAdditionalInformation() != null) {
+        aditional = assetsList.get(i).getAdditionalInformation();
+      }
+
+      if (assetsList.get(i).getLink() != null) {
+        registration = assetsList.get(i).getLink();
+      }
+
+      if (assetsList.get(i).getPublicCommunication() != null) {
+        communication = assetsList.get(i).getPublicCommunication();
+      }
+
+      POIField[] sData = {new POIField(year, ParagraphAlignment.LEFT), new POIField(applicant, ParagraphAlignment.LEFT),
+        new POIField(patent, ParagraphAlignment.LEFT), new POIField(aditional, ParagraphAlignment.LEFT),
+        new POIField(registration, ParagraphAlignment.CENTER), new POIField(communication, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
