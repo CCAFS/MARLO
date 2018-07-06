@@ -66,6 +66,9 @@
           <span class="contact name">{composedName}</span>  
           <span class="listButton select">[@s.text name="form.buttons.select" /]</span>
           <span class="contactId" style="display:none">{userId}</span>
+          <span class="userFName" style="display:none">{userFName}</span>
+          <span class="userLName" style="display:none">{userLName}</span>
+          <span class="userEmail" style="display:none">{userEmail}</span>
         </li> 
       </ul>  
       

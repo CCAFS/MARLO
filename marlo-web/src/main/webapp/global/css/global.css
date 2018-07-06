@@ -2425,6 +2425,7 @@ a.button-blue:hover{
 }
 
 input.userName {
+  background-color: #f7f7f7 !important;
   cursor: pointer;
 }
 
