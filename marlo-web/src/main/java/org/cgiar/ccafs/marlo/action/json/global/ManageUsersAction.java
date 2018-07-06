@@ -92,6 +92,8 @@ public class ManageUsersAction extends BaseAction {
       userMap.put("composedName", newUser.getComposedName());
       userMap.put("name", newUser.getComposedCompleteName());
       userMap.put("email", newUser.getEmail());
+      userMap.put("fName", newUser.getFirstName());
+      userMap.put("lName", newUser.getLastName());
       this.users.add(userMap);
 
       return true;
@@ -239,6 +241,8 @@ public class ManageUsersAction extends BaseAction {
       userMap.put("roles", user.getUserRoles().toString());
       userMap.put("name", user.getComposedCompleteName());
       userMap.put("email", user.getEmail());
+      userMap.put("fName", user.getFirstName());
+      userMap.put("lName", user.getLastName());
       userMap.put("isActive", user.isActive());
       userMap.put("autoSaveActive", user.isAutoSave());
       userMap.put("lastLogin", user.getLastLogin());
