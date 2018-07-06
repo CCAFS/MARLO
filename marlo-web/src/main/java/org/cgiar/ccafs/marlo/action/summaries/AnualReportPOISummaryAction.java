@@ -783,7 +783,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       }
     }
 
-    poiSummary.textTable(document, headers, datas, false, "tableA1AnnualReport");
+    poiSummary.textTable(document, headers, datas, false, "tableA2AnnualReport");
   }
 
   private void createTableB() {
