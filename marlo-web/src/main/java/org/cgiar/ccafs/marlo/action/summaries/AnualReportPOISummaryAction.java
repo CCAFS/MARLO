@@ -793,7 +793,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.LEFT),
+    POIField[] sHeader = {new POIField(" " + this.getText("expectedProgress.tableA.fp") + " ", ParagraphAlignment.LEFT),
       new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.LEFT),
       new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.LEFT),
       new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.LEFT),
@@ -1158,11 +1158,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader =
+      {new POIField(" " + this.getText("summaries.annualReport.tableG.field1") + " ", ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -1171,10 +1172,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
 
-
     flagshipExternalPlannedList = reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(
       liaisonInstitutions, this.getActualPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-
 
     if (flagshipExternalPlannedList != null && !flagshipExternalPlannedList.isEmpty()) {
 
@@ -1187,12 +1186,18 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
               .getFlagships().isEmpty()) {
 
-            if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-              .getFlagships().get(0).getAcronym() != null
-              && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-                .getFlagships().get(0).getAcronym().isEmpty()) {
-              FP = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
-                .getFlagships().get(0).getAcronym();
+
+            for (int j = 0; j < flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
+              .getProject().getFlagships().size(); j++) {
+
+              if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+                .getFlagships().get(0).getAcronym() != null
+                && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+                  .getFlagships().get(0).getAcronym().isEmpty()) {
+                FP += flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getProject()
+                  .getFlagships().get(0).getAcronym() + "\n";
+              }
+
             }
           }
           if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
