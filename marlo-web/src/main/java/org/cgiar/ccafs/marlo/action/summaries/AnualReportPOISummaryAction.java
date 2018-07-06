@@ -1058,10 +1058,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     for (int i = 0; i < assetsList.size(); i++) {
 
-      status =
-        ProjectStatusEnum.getValue(assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus()).getStatus();
+      if (assetsList.get(i).getDeliverable().getDeliverableInfo() != null) {
+        if (assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus() != null
+          && assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus() != -1) {
+          status =
+            ProjectStatusEnum.getValue(assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus()).getStatus();
+        }
+        year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
+      }
 
-      year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
 
       if (assetsList.get(i).getApplicant() != null) {
         applicant = assetsList.get(i).getApplicant();

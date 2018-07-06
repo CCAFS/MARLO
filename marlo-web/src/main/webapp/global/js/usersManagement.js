@@ -71,10 +71,18 @@ $(document)
 
           // Event when the user select the contact person
           $dialogContent.find("span.select, span.name").on("click", function() {
-            var userId = $(this).parent().find(".contactId").text();
-            var composedName = $(this).parent().find(".name").text();
+            var $parent = $(this).parent()
+
+            var user = {
+                id: $parent.find(".contactId").text(),
+                composedName: $parent.find(".name").text(),
+                fName: $parent.find(".userFName").text(),
+                lName: $parent.find(".userLName").text(),
+                email: $parent.find(".userEmail").text()
+            }
+
             // Add user
-            addUser(composedName, userId);
+            addUser(user.composedName, user.id, user);
           });
 
           // Event to find an user according to search field
@@ -145,7 +153,8 @@ $(document)
                                 if(data.message) {
                                   $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
                                 } else {
-                                  addUser(data.users[0].composedName, data.users[0].id);
+                                  var user = data.users[0];
+                                  addUser(user.composedName, user.id, user);
                                   addUserMessage($('#created-message').val());
                                 }
                               },
@@ -176,13 +185,12 @@ $(document)
             $dialogContent.find(".search-loader").fadeOut("slow");
           }
 
-          addUser =
-              function(composedName,userId) {
-                $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass(
-                    'animated flash');
-                $elementSelected.parents('.userField ').find("input.userId").val(userId);
-                dialog.dialog("close");
-              }
+          addUser = function(composedName,userId,user) {
+            var $userField = $elementSelected.parents('.userField ');
+            $userField.find("input.userName").val(composedName).addClass('animated flash');
+            $userField.find("input.userId").val(userId);
+            dialog.dialog("close");
+          }
 
           addUserMessage =
               function(message) {
@@ -228,6 +236,9 @@ $(document)
                       var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
                       $item.find('.name').html(escapeHtml(user.composedName));
                       $item.find('.contactId').html(user.id);
+                      $item.find('.userFName').html(user.fName);
+                      $item.find('.userLName').html(user.lName);
+                      $item.find('.userEmail').html(user.email);
                       if(i == usersFound - 1) {
                         $item.addClass('last');
                       }
