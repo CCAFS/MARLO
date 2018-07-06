@@ -1338,8 +1338,13 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           response = reportSynthesisMeliaEvaluationList.get(i).getManagementResponse();
           whom = reportSynthesisMeliaEvaluationList.get(i).getTextWhom();
           when = reportSynthesisMeliaEvaluationList.get(i).getTextWhen();
-          int temp = Integer.parseInt(reportSynthesisMeliaEvaluationList.get(i).getStatus().toString());
-          status = ProjectStatusEnum.getValue(temp).getStatus();
+
+
+          if (reportSynthesisMeliaEvaluationList.get(i).getStatus() != null
+            && reportSynthesisMeliaEvaluationList.get(i).getStatus() != -1) {
+            int temp = Integer.parseInt(reportSynthesisMeliaEvaluationList.get(i).getStatus().toString());
+            status = ProjectStatusEnum.getValue(temp).getStatus();
+          }
 
           POIField[] sData = {new POIField(nameEvaluation, ParagraphAlignment.CENTER),
             new POIField(recommendation, ParagraphAlignment.LEFT), new POIField(response, ParagraphAlignment.LEFT),
