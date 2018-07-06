@@ -1061,11 +1061,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
-    String year = "", patent = "", applicant = "", aditional = "", registration = "", communication = "";
+    String year = "", patent = "", applicant = "", aditional = "", registration = "", communication = "", status = "";
 
     for (int i = 0; i < assetsList.size(); i++) {
 
-      year = assetsList.get(i).getDateRegistration() + "";
+      status =
+        ProjectStatusEnum.getValue(assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus()).getStatus();
+
+      year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
+
       if (assetsList.get(i).getApplicant() != null) {
         applicant = assetsList.get(i).getApplicant();
       }
@@ -1402,7 +1406,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         }
 
         if (reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned() != null) {
-          w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned();
+          w3Planned = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Planned()
+            + reportSynthesisFinancialSummaryBudgetList.get(i).getBilateralPlanned();
         }
 
         totalPlanned = w1w2Planned + w3Planned;
@@ -1411,7 +1416,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         }
 
         if (reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual() != null) {
-          w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual();
+          w3Actual = reportSynthesisFinancialSummaryBudgetList.get(i).getW3Actual()
+            + reportSynthesisFinancialSummaryBudgetList.get(i).getBilateralActual();
         }
 
         totalActual = w1w2Actual + w3Actual;
