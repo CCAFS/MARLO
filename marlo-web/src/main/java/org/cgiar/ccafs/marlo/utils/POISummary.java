@@ -54,6 +54,7 @@ public class POISummary {
   private final static String TEXT_FONT_COLOR = "000000";
   private final static Integer TABLE_TEXT_FONT_SIZE = 10;
   private static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
+  private int count = 0;
 
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
     if (text.contains("\n")) {
@@ -440,7 +441,6 @@ public class POISummary {
 
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
     Boolean highlightFirstColumn, String tableType) {
-
     XWPFTable table = document.createTable();
     int record = 0;
     int headerIndex = 0;
@@ -462,14 +462,6 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
 
-
-        // condition for table d1 cell color in sphere 2
-        if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
-          TABLE_HEADER_FONT_COLOR = "E2EFD9";
-        } else {
-          TABLE_HEADER_FONT_COLOR = "FFF2CC";
-        }
-
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
@@ -485,12 +477,6 @@ public class POISummary {
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
 
-            if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
-              TABLE_HEADER_FONT_COLOR = "E2EFD9";
-            } else {
-              TABLE_HEADER_FONT_COLOR = "FFF2CC";
-            }
-
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           } else {
             XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
@@ -505,12 +491,6 @@ public class POISummary {
             }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
-
-            if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
-              TABLE_HEADER_FONT_COLOR = "E2EFD9";
-            } else {
-              TABLE_HEADER_FONT_COLOR = "FFF2CC";
-            }
 
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           }
@@ -528,11 +508,6 @@ public class POISummary {
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
 
-          if (tableType.equals("tableD1AnnualReport") && (record > 2)) {
-            TABLE_HEADER_FONT_COLOR = "E2EFD9";
-          } else {
-            TABLE_HEADER_FONT_COLOR = "FFF2CC";
-          }
 
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
         }
@@ -554,10 +529,7 @@ public class POISummary {
 
       XWPFTableRow dataRow = table.createRow();
       for (POIField poiParameter : poiParameters) {
-        if (tableType.equals("tableD1AnnualReport") && (record == 0)) {
-
-        }
-
+        count++;
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
         paragraph.setAlignment(poiParameter.getAlignment());
         XWPFRun paragraphRun = paragraph.createRun();
@@ -579,10 +551,13 @@ public class POISummary {
         }
 
         // highlight and bold first and SecondColumn for table D1
-        if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1)) {
+
+        if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
           dataRow.getCell(record).setColor("DEEAF6");
           paragraphRun.setBold(true);
-
+        } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
+          dataRow.getCell(record).setColor("E2EFD9");
+          paragraphRun.setBold(true);
 
         } else {
           if (highlightFirstColumn && record == 0) {
@@ -600,8 +575,10 @@ public class POISummary {
             }
           }
         }
+
         record++;
       }
+
     }
 
     switch (tableType) {
@@ -634,12 +611,14 @@ public class POISummary {
         this.tableBAnnualReportStyle(table);
         break;
       case "tableCAnnualReport":
+        count = 0;
         this.tableCStyle(table);
         break;
       case "tableD1AnnualReport":
         this.tableAStyle(table);
         break;
       case "tableD2AnnualReport":
+        count = 0;
         this.tableAStyle(table);
         break;
       case "tableEAnnualReport":
