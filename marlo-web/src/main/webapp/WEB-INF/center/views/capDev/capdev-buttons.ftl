@@ -1,20 +1,30 @@
 [#ftl]
+
+[#assign auditObject = (capdev)!{} ]
+[#assign auditObjectID = capdevID ]
+[#assign auditObjectName = "capdevID" ]
+
+[#if (deliverable??)!false]
+  [#assign auditObject = deliverable ]
+  [#assign auditObjectID = deliverableID ]
+  [#assign auditObjectName = "capdevID" ]
+[/#if]
+
 [#-- Hidden Inputs --] 
-<input type="hidden"  name="id" value="${(capdev.id)!}"/>
-<input type="hidden"  name="className" value="${(capdev.class.name)!}"/>
+<input type="hidden"  name="id" value="${(auditObjectID)!}"/>
+<input type="hidden"  name="className" value="${(auditObject.class.name)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
+<input type="hidden"  name="deliverableID" value="${(deliverable.id)!}" /> 
+<input type="hidden"  name="capdevID" value="${(capdev.id)!}" />
+<input type="hidden"  name="category" value="${(capdev.category)!}" />
+<input type="hidden"  name="projectID" value="${(projectID)!}" />
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
-
-<input type="hidden" name="capdevID" value="${(capdev.id)!}" />
-<input type="hidden" name="category" value="${(capdev.category)!}" />
-<input type="hidden" name="projectID" value="${projectID}" />
-
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
 [#attempt]
-  [#assign recordsList = (action.getListLog(capdev))!{} /]
+  [#assign recordsList = (action.getListLog(auditObjectID))!{} /]
 [#recover]
   [#assign recordsList = [] /]
 [/#attempt]
@@ -24,7 +34,7 @@
     [#-- History Log --]
     [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=recordsList itemName="capdevID" itemId=capdevID /]
+      [@logHistory.logList list=recordsList itemName="${auditObjectName}" itemId=auditObjectID /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
@@ -32,7 +42,7 @@
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> <span class="saveText">[@s.text name="form.buttons.save" /]</span> [/@s.submit]
     [#elseif canEdit]
       [#-- Edit Button --]
-      <a href="[@s.url][@s.param name="capdevID" value=capdevID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+      <a href="[@s.url][@s.param name="${auditObjectName}" value=auditObjectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
     [/#if]
   </div>
 </div>
