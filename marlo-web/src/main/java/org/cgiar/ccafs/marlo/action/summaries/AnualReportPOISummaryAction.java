@@ -1074,16 +1074,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     for (int i = 0; i < assetsList.size(); i++) {
 
-      if (assetsList.get(i).getDeliverable().getDeliverableInfo() != null) {
+      if (assetsList.get(i).getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null) {
         if (assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus() != null
           && assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus() != -1) {
           status =
             ProjectStatusEnum.getValue(assetsList.get(i).getDeliverable().getDeliverableInfo().getStatus()).getStatus();
         }
         if (status.equals(ProjectStatusEnum.Extended.getStatus())) {
-          year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
-        } else {
           year = assetsList.get(i).getDeliverable().getDeliverableInfo().getNewExpectedYear() + "";
+        } else {
+          year = assetsList.get(i).getDeliverable().getDeliverableInfo().getYear() + "";
         }
       }
 
@@ -1092,8 +1092,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         applicant = assetsList.get(i).getApplicant();
       }
 
-      if (assetsList.get(i).getPatentTypeName() != null) {
-        patent = assetsList.get(i).getPatentTypeName();
+      if (assetsList.get(i).getType() != null) {
+        patent = assetsList.get(i).getTypeName();
       }
       if (assetsList.get(i).getAdditionalInformation() != null) {
         aditional = assetsList.get(i).getAdditionalInformation();
@@ -1107,9 +1107,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         communication = assetsList.get(i).getPublicCommunication();
       }
 
-      POIField[] sData = {new POIField(year, ParagraphAlignment.LEFT), new POIField(applicant, ParagraphAlignment.LEFT),
-        new POIField(patent, ParagraphAlignment.LEFT), new POIField(aditional, ParagraphAlignment.LEFT),
-        new POIField(registration, ParagraphAlignment.CENTER), new POIField(communication, ParagraphAlignment.LEFT)};
+      POIField[] sData =
+        {new POIField(year, ParagraphAlignment.CENTER), new POIField(applicant, ParagraphAlignment.LEFT),
+          new POIField(patent, ParagraphAlignment.CENTER), new POIField(aditional, ParagraphAlignment.LEFT),
+          new POIField(registration, ParagraphAlignment.LEFT), new POIField(communication, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
