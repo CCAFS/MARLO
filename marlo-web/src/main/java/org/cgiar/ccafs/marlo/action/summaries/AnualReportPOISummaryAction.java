@@ -725,11 +725,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         String year = flagshipPlannedList.get(i).getProjectExpectedStudy().getYear() + "";
         String cycle = this.getCurrentCycle();
         String study = flagshipPlannedList.get(i).getProjectExpectedStudy().getId() + "";
-        /*
-         * if (baseAction.getBaseUrl() != null && !baseAction.getBaseUrl().isEmpty()) {
-         * base = baseAction.getBaseUrl();
-         * }
-         */
+
         link =
           this.getBaseUrl() + "/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
 
@@ -747,39 +743,35 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           }
           if (projectExpectedStudyInfo.getGenderLevel() != null) {
             if (projectExpectedStudyInfo.getDescribeGender() == null) {
-              describeGender = projectExpectedStudyInfo.getGenderLevel().getName() + "\n"
-                + projectExpectedStudyInfo.getGenderLevel().getDefinition();
+              describeGender = projectExpectedStudyInfo.getGenderLevel().getName() + "\n";
             } else {
               describeGender = projectExpectedStudyInfo.getGenderLevel().getName() + "\n"
-                + projectExpectedStudyInfo.getGenderLevel().getDefinition() + "\n"
                 + projectExpectedStudyInfo.getDescribeGender();
             }
           }
           if (projectExpectedStudyInfo.getYouthLevel() != null) {
             if (projectExpectedStudyInfo.getDescribeYouth() == null) {
-              describeYouth = projectExpectedStudyInfo.getYouthLevel().getName() + "\n"
-                + projectExpectedStudyInfo.getYouthLevel().getDefinition();
+              describeYouth = projectExpectedStudyInfo.getYouthLevel().getName();
             } else {
-              describeYouth = projectExpectedStudyInfo.getYouthLevel().getName() + "\n"
-                + projectExpectedStudyInfo.getYouthLevel().getDefinition() + "\n"
-                + projectExpectedStudyInfo.getDescribeYouth();
+              describeYouth =
+                projectExpectedStudyInfo.getYouthLevel().getName() + "\n" + projectExpectedStudyInfo.getDescribeYouth();
             }
           }
           if (projectExpectedStudyInfo.getCapdevLevel() != null) {
             if (projectExpectedStudyInfo.getDescribeCapdev() == null) {
-              describeCapDev = projectExpectedStudyInfo.getCapdevLevel().getName() + "\n"
-                + projectExpectedStudyInfo.getCapdevLevel().getDefinition();
+              describeCapDev = projectExpectedStudyInfo.getCapdevLevel().getName();
             } else {
               describeCapDev = projectExpectedStudyInfo.getCapdevLevel().getName() + "\n"
-                + projectExpectedStudyInfo.getCapdevLevel().getDefinition() + "\n"
                 + projectExpectedStudyInfo.getDescribeCapdev();
             }
           }
-
+          Boolean underlined = true;
+          String blueColor = "000099";
           additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
           POIField[] sData =
             {new POIField(title, ParagraphAlignment.LEFT), new POIField(subIdo, ParagraphAlignment.LEFT),
-              new POIField(link, ParagraphAlignment.LEFT), new POIField(additional, ParagraphAlignment.LEFT)};
+              new POIField(link, ParagraphAlignment.LEFT, underlined, blueColor),
+              new POIField(additional, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -793,7 +785,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(" " + this.getText("expectedProgress.tableA.fp") + " ", ParagraphAlignment.LEFT),
+    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.LEFT),
       new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.LEFT),
       new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.LEFT),
       new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.LEFT),
@@ -930,10 +922,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   public void createTableD1() {
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader =
+      {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER)};
     List<RepIndSynthesisIndicator> listRepIndSynthesis = null;
     List<ReportSynthesisIndicator> reportSynthesisIndicatorList = null;
     listRepIndSynthesis = repIndSynthesisIndicatorManager.findAll();
@@ -981,7 +974,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         POIField[] sData = {new POIField(type, ParagraphAlignment.CENTER, bold, blackColor),
           new POIField(indicator + "." + name, ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(dataRep, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(comments, ParagraphAlignment.CENTER, bold, blackColor)};
+          new POIField(comments, ParagraphAlignment.LEFT, bold, blackColor)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1030,8 +1023,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           if (title != null && stage != null && degree != null && contribution != null && geographicScope != null) {
             POIField[] sData =
               {new POIField(title, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
-                new POIField(degree, ParagraphAlignment.LEFT), new POIField(contribution, ParagraphAlignment.LEFT),
-                new POIField(geographicScope, ParagraphAlignment.LEFT)};
+                new POIField(degree, ParagraphAlignment.CENTER), new POIField(contribution, ParagraphAlignment.CENTER),
+                new POIField(geographicScope, ParagraphAlignment.CENTER)};
 
             data = Arrays.asList(sData);
             datas.add(data);
@@ -1073,6 +1066,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       if (assetsList.get(i).getApplicant() != null) {
         applicant = assetsList.get(i).getApplicant();
       }
+
       if (assetsList.get(i).getPatentTypeName() != null) {
         patent = assetsList.get(i).getPatentTypeName();
       }
@@ -1126,7 +1120,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
         totalEstimatedPercentajeFS += estimatedPercentajeFS;
         POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 1000, 4)), ParagraphAlignment.CENTER),
+          new POIField(percentageFormat.format(round(estimatedPercentajeFS, 4)), ParagraphAlignment.CENTER),
           new POIField(commentsSpace, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1139,8 +1133,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     totalw1w2 = reportSynthesisFinancialSummaryBudgetManager.getTotalW1W2ActualExpenditure(reportSynthesisPMU.getId());
 
     POIField[] sData = {new POIField("TOTAL FUNDING (AMOUNT)***", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(currencyFormat.format(round((totalw1w2 * totalEstimatedPercentajeFS) / 1000, 2)),
-        ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField(currencyFormat.format(round((totalw1w2) / 1000, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(" ", ParagraphAlignment.LEFT, bold, blackColor)};
 
     data = Arrays.asList(sData);
@@ -1158,12 +1151,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
-    POIField[] sHeader =
-      {new POIField(" " + this.getText("summaries.annualReport.tableG.field1") + " ", ParagraphAlignment.LEFT),
-        new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.field1"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -1641,7 +1633,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
       poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help2017"));
       poiSummary.textNotes(document.createParagraph(),
-        "***" + this.getText("summaries.annualReport.tableJ.description.help2"));
+        "**" + this.getText("summaries.annualReport.tableJ.description.help2"));
 
 
       // Table g

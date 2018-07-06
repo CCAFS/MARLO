@@ -23,6 +23,7 @@ public class POIField {
   private ParagraphAlignment alignment;
   private Boolean bold;
   private String fontColor;
+  private Boolean underlined;
 
 
   public POIField(String text, ParagraphAlignment alignment) {
@@ -61,6 +62,11 @@ public class POIField {
   }
 
 
+  public Boolean getUnderlined() {
+    return underlined;
+  }
+
+
   public void setAlignment(ParagraphAlignment alignment) {
     this.alignment = alignment;
   }
@@ -78,6 +84,11 @@ public class POIField {
 
   public void setText(String text) {
     this.text = text;
+  }
+
+
+  public void setUnderlined(Boolean underlined) {
+    this.underlined = underlined;
   }
 
 }
