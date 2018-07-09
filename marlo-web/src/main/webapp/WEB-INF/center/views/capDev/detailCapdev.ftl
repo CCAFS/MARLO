@@ -247,7 +247,7 @@
     [/#if]
   [/#if]
 
-  <!-- num participants, num men and num women -->
+  [#-- num participants, num men and num women --]
   <div class="form-group row">
     <div class="col-md-12 ">
       <div class="col-md-4 group individual">
@@ -279,9 +279,9 @@
   </div>
   <div class="individualparticipantForm" style="display:none;">
     <input type="hidden" name="capdev.participant.id" value="${(capdev.participant.id)!}" class="genderInput"/>
-    <!-- participant code -->
+    [#-- Participant code --]
     <div class="form-group row">
-      <div class="col-md-9">
+      <div class="col-md-4">
         [@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
       </div>
       [#if editable]
