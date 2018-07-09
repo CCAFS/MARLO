@@ -40,6 +40,7 @@ public class FinancialSummaryValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
+  boolean missingFiled;
 
   public FinancialSummaryValidator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
     this.crpManager = crpManager;
@@ -125,48 +126,60 @@ public class FinancialSummaryValidator extends BaseValidator {
 
   public void validateBudgets(BaseAction action, ReportSynthesisFinancialSummaryBudget budget, int i) {
 
+    if (i == 0) {
+      missingFiled = false;
+    }
+    if (!missingFiled) {
+      // Validate W1 Planned
+      if (!this.isValidNumber(String.valueOf(budget.getW1Planned())) && budget.getW1Planned() > 0) {
+        missingFiled = true;
+      }
 
-    // Validate W1 Planned
-    if (!this.isValidNumber(String.valueOf(budget.getW1Planned()))) {
+      // Validate W3 Planned
+      if (!this.isValidNumber(String.valueOf(budget.getW3Planned())) && budget.getW3Planned() > 0) {
+        missingFiled = true;
+      }
+
+      // Validate Bilateral Planned
+      if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned())) && budget.getBilateralPlanned() > 0) {
+        missingFiled = true;
+      }
+
+      // Validate W1 Actual
+      if (!this.isValidNumber(String.valueOf(budget.getW1Actual())) && budget.getW1Actual() > 0) {
+        missingFiled = true;
+      }
+
+      // Validate W3 Actual
+      if (!this.isValidNumber(String.valueOf(budget.getW3Actual())) && budget.getW3Actual() > 0) {
+        missingFiled = true;
+      }
+
+      // Validate Bilateral Actual
+      if (!this.isValidNumber(String.valueOf(budget.getBilateralActual())) && budget.getBilateralActual() > 0) {
+        missingFiled = true;
+      }
+    }
+    if (missingFiled) {
       action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned"));
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned",
         InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate W3 Planned
-    if (!this.isValidNumber(String.valueOf(budget.getW3Planned()))) {
       action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned"));
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned",
         InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Bilateral Planned
-    if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned()))) {
       action.addMessage(
         action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned"));
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
         InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate W1 Actual
-    if (!this.isValidNumber(String.valueOf(budget.getW1Actual()))) {
       action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual"));
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual",
         InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate W3 Actual
-    if (!this.isValidNumber(String.valueOf(budget.getW3Actual()))) {
       action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual"));
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual",
         InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Bilateral Actual
-    if (!this.isValidNumber(String.valueOf(budget.getBilateralActual()))) {
       action.addMessage(
         action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual"));
       action.getInvalidFields().put(
@@ -174,54 +187,6 @@ public class FinancialSummaryValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Differences
-    // Difference W1
-    if (this.isValidNumber(String.valueOf(budget.getW1Planned()))
-      && this.isValidNumber(String.valueOf(budget.getW1Actual()))) {
-
-      if (budget.getW1Planned() + budget.getW1Actual() <= 0) {
-        action.addMessage(action.getText("budgets[" + i + "]  W1 Difference"));
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned",
-          InvalidFieldsMessages.EMPTYFIELD);
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-    }
-
-    // Difference W3
-    if (this.isValidNumber(String.valueOf(budget.getW3Planned()))
-      && this.isValidNumber(String.valueOf(budget.getW3Actual()))) {
-
-      if (budget.getW3Planned() + budget.getW3Actual() <= 0) {
-        action.addMessage(action.getText("budgets[" + i + "]  W3 Difference"));
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned",
-          InvalidFieldsMessages.EMPTYFIELD);
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-    }
-
-    // Difference Bilateral
-    if (this.isValidNumber(String.valueOf(budget.getBilateralPlanned()))
-      && this.isValidNumber(String.valueOf(budget.getBilateralActual()))) {
-
-      if (budget.getW3Planned() + budget.getW3Actual() <= 0) {
-        action.addMessage(action.getText("budgets[" + i + "]  Bilateral Difference"));
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
-          InvalidFieldsMessages.EMPTYFIELD);
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-    }
   }
 
 }
