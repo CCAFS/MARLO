@@ -11,7 +11,7 @@
   "${baseUrlMedia}/js/capDev/capdevDescription.js",
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
-  ] 
+  ]
 /]
 
 [#assign currentSection = "capdev" /]

@@ -30,12 +30,8 @@ function init() {
   $('.participant-code').integerInput();
   $('.capdevDuration').integerInput();
 
-  datePickerConfig({
-      "startDate": "#capdev\\.startDate",
-      "endDate": "#capdev\\.endDate",
-      "publicationStartDate": "#deliverable\\.startDate",
-      "publicationEndDate": "#deliverable\\.endDate"
-  });
+  // Set Date pickers
+  setDatePickers();
 
   // Display individual or group intervention form
   (function() {
@@ -425,88 +421,6 @@ function updateOutComesList(block) {
   }
 }
 
-function datePickerConfig(element) {
-  date($(element.startDate), $(element.endDate), $(element.publicationStartDate), $(element.publicationEndDate));
-}
-
-function date(start,end,publicationStartDate,publicationEndDate) {
-  var dateFormat = "yy-mm-dd";
-  var from = $(start).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(end).datepicker("option", "minDate", selectedDate);
-        }
-      }
-  });
-
-  var to = $(end).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(start).datepicker("option", "maxDate", selectedDate);
-        }
-      }
-  });
-
-  var to = $(publicationStartDate).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(start).datepicker("option", "maxDate", selectedDate);
-        }
-      }
-  });
-
-  var to = $(publicationEndDate).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2010-01-01',
-      maxDate: '2030-12-31',
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(start).datepicker("option", "maxDate", selectedDate);
-        }
-      }
-  });
-
-  function getDate(element) {
-    var date;
-    try {
-      date = $.datepicker.parseDate(dateFormat, element.value);
-    } catch(error) {
-      date = null;
-    }
-
-    return date;
-  }
-}
-
 /** COUNTRIES SELECT FUNCTIONS * */
 // Add a new country element
 function addCountry(option) {
@@ -860,4 +774,40 @@ function checkParticipantCode() {
     $("#syncBoton").css("pointer-events", "");
     $("#syncBoton").css("background", " #7FB06F");
   }
+}
+
+function setDatePickers() {
+  var datePickerOptions = {
+      format: "mmm d, yyyy",
+      formatSubmit: "yyyy-mm-dd",
+      hiddenName: true,
+      selectYears: true,
+      selectMonths: true
+  }
+
+  $('.datePickersBlock').each(function(i,e) {
+    var $startDate = $(e).find('.startDate');
+    var $endDate = $(e).find('.endDate');
+    var startDatePicker, endDatePicker;
+
+    // Set date pickers
+    $startDate.pickadate(datePickerOptions);
+    $endDate.pickadate(datePickerOptions);
+
+    // Instance picker component
+    startDatePicker = $startDate.pickadate('picker');
+    endDatePicker = $endDate.pickadate('picker');
+
+    // Set parameters an events
+    startDatePicker.set('max', endDatePicker.get());
+    startDatePicker.on('close', function() {
+      endDatePicker.set('min', startDatePicker.get());
+    });
+
+    endDatePicker.set('min', startDatePicker.get());
+    endDatePicker.on('close', function() {
+      startDatePicker.set('max', endDatePicker.get());
+    })
+
+  });
 }

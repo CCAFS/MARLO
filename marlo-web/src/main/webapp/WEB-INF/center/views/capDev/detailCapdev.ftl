@@ -1,14 +1,11 @@
 [#ftl]
 [#assign title = "Capacity Development" /]
-
+[#assign pageLibs = ["select2","flat-flags", "pickadate"] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
-
-[#assign pageLibs = ["select2","flat-flags"] /]
-
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
@@ -113,12 +110,6 @@
 </ul>
 
 
-
-
-[#include "/WEB-INF/center/views/capDev/searchContactPerson.ftl" /]
-
-
-
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro interventionInfo]
@@ -151,18 +142,16 @@
         [#if editable]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
       </div>
   </div>
-  [#-- dates --]
-  <div class="form-group row ">
-    <!-- <div class="col-md-12 newCapdevField"> -->
-      <!-- Strart date-->
-      <div class="col-md-6 ">
-        [@customForm.input name="capdev.startDate" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" required=true  editable=editable className="capdevstartDate"/]
-      </div>
-      <!-- end date-->
-      <div class="col-md-6 ">
-        [@customForm.input name="capdev.endDate" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate" editable=editable /]
-      </div>
-    <!-- </div> -->
+  [#-- Dates --]
+  <div class="form-group row datePickersBlock">
+    [#-- Start date--]
+    <div class="col-md-6 ">
+      [@customForm.input name="capdev.startDate" value="${(capdev.startDate?string.medium)!}" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" editable=editable className="startDate datePicker"/]
+    </div>
+    [#-- End date--]
+    <div class="col-md-6 ">
+      [@customForm.input name="capdev.endDate" value="${(capdev.endDate?string.medium)!}" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate"  editable=editable className="endDate datePicker" /]
+    </div>
   </div>
   [#-- Duration --]
   <div class="form-group row ">

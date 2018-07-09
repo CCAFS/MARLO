@@ -1,12 +1,10 @@
 [#ftl]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs", "select2", "flat-flags", "pickadate"] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
-
-[#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
-
 [#assign customJS = [
   "${baseUrlMedia}/js/capDev/supportingDocuments.js",
   "${baseUrl}/global/js/fieldsValidation.js", 
@@ -107,12 +105,12 @@
           </div>
         </div>
 
-        <div class="form-group row">  
+        <div class="form-group row datePickersBlock">  
           <div class="col-md-6">
-            [@customForm.input name="deliverable.startDate" i18nkey="Start date" type="text" disabled=!editable  required=true editable=editable /]
+            [@customForm.input name="deliverable.startDate" value="${(deliverable.startDate?string.medium)!}" i18nkey="Start date" type="text" disabled=!editable required=true editable=editable className="startDate datePicker" /]
           </div> 
           <div class="col-md-6">
-            [@customForm.input name="deliverable.endDate" i18nkey="End date" type="text" disabled=!editable required=false editable=editable /]
+            [@customForm.input name="deliverable.endDate" value="${(deliverable.endDate?string.medium)!}" i18nkey="End date" type="text" disabled=!editable required=false editable=editable className="endDate datePicker" /]
           </div>
         </div>
           
