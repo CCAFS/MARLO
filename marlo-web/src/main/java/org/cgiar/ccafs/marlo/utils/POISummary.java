@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
-import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
@@ -496,9 +495,9 @@ public class POISummary {
     ctr.setTArray(new CTText[] {ctText});
     ctr.addNewRPr().addNewColor().setVal("0000FF");
     ctr.addNewRPr().addNewU().setVal(STUnderline.SINGLE);
+    ctr.addNewRPr().addNewRFonts().setAscii(FONT_TYPE);
     // Insert the linked text into the link
     cLink.setRArray(new CTR[] {ctr});
-
 
   }
 
@@ -621,53 +620,55 @@ public class POISummary {
         count++;
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
         paragraph.setAlignment(poiParameter.getAlignment());
-        XWPFRun paragraphRun = paragraph.createRun();
-        this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
-        if (poiParameter.getFontColor() != null) {
-          paragraphRun.setColor(poiParameter.getFontColor());
+        // Hyperlink
+        if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty()) {
+          this.textHyperlink(poiParameter.getUrl(), poiParameter.getText(), paragraph);
         } else {
-          paragraphRun.setColor(TEXT_FONT_COLOR);
-        }
-        paragraphRun.setFontFamily(FONT_TYPE);
-        paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
-
-        // Condition for table b cell color in fields 5 and 6
-        if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
-          TABLE_HEADER_FONT_COLOR = "DEEAF6";
-          dataRow.getCell(record).setColor("DEEAF6");
-        } else {
-          TABLE_HEADER_FONT_COLOR = "FFF2CC";
-        }
-
-        if (tableType.equals("tableA2AnnualReport") && (record == 2)) {
-          paragraphRun.setUnderline(UnderlinePatterns.SINGLE);
-        } else
-
-        // highlight and bold first and SecondColumn for table D1
-        if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
-          dataRow.getCell(record).setColor("DEEAF6");
-          paragraphRun.setBold(true);
-        } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
-          dataRow.getCell(record).setColor("E2EFD9");
-          paragraphRun.setBold(true);
-
-        } else {
-          if (highlightFirstColumn && record == 0) {
-            dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-            if (poiParameter.getBold() != null) {
-              paragraphRun.setBold(poiParameter.getBold());
-            } else {
-              paragraphRun.setBold(true);
-            }
+          XWPFRun paragraphRun = paragraph.createRun();
+          this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
+          if (poiParameter.getFontColor() != null) {
+            paragraphRun.setColor(poiParameter.getFontColor());
           } else {
-            if (poiParameter.getBold() != null) {
-              paragraphRun.setBold(poiParameter.getBold());
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+          }
+          paragraphRun.setFontFamily(FONT_TYPE);
+          paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+          // Condition for table b cell color in fields 5 and 6
+          if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+            TABLE_HEADER_FONT_COLOR = "DEEAF6";
+            dataRow.getCell(record).setColor("DEEAF6");
+          } else {
+            TABLE_HEADER_FONT_COLOR = "FFF2CC";
+          }
+
+          // highlight and bold first and SecondColumn for table D1
+          if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
+            dataRow.getCell(record).setColor("DEEAF6");
+            paragraphRun.setBold(true);
+          } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
+            dataRow.getCell(record).setColor("E2EFD9");
+            paragraphRun.setBold(true);
+
+          } else {
+            if (highlightFirstColumn && record == 0) {
+              dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+              if (poiParameter.getBold() != null) {
+                paragraphRun.setBold(poiParameter.getBold());
+              } else {
+                paragraphRun.setBold(true);
+              }
             } else {
-              paragraphRun.setBold(false);
+              if (poiParameter.getBold() != null) {
+                paragraphRun.setBold(poiParameter.getBold());
+              } else {
+                paragraphRun.setBold(false);
+              }
             }
           }
-        }
 
+
+        }
         record++;
       }
 
