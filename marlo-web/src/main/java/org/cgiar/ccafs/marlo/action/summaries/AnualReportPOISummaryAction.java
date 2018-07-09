@@ -702,8 +702,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String title = "", subIdo = "", describeGender = "", describeYouth = "", describeCapDev = "", additional = "",
-      link = "";
+
 
     List<List<POIField>> datas = new ArrayList<>();;
     List<POIField> data;
@@ -719,20 +718,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
       for (int i = 0; i < flagshipPlannedList.size(); i++) {
-        title = "";
-        subIdo = "";
-        describeGender = "";
-        describeYouth = "";
-        describeCapDev = "";
-        additional = "";
-        link = "";
+        String title = "", outcomeReportLink = "", subIdo = "", describeGender = "", describeYouth = "",
+          describeCapDev = "", additional = "", linkToEvidence = "";
 
         /** creating download link **/
         String year = flagshipPlannedList.get(i).getProjectExpectedStudy().getYear() + "";
         String cycle = this.getCurrentCycle();
         String study = flagshipPlannedList.get(i).getProjectExpectedStudy().getId() + "";
 
-        link =
+        outcomeReportLink =
           this.getBaseUrl() + "/projects/CCAFS/studySummary.do?studyID=" + study + "&cycle=" + cycle + "&year=" + year;
 
         if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo() != null) {
@@ -747,6 +741,15 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 .getDescription();
             }
           }
+
+          if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo()
+            .getReferencesText() != null
+            && !flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText()
+              .isEmpty()) {
+            linkToEvidence =
+              flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo().getReferencesText();
+          }
+
           if (projectExpectedStudyInfo.getGenderLevel() != null) {
             if (projectExpectedStudyInfo.getDescribeGender() == null) {
               describeGender = projectExpectedStudyInfo.getGenderLevel().getName() + "\n";
@@ -771,11 +774,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
                 + projectExpectedStudyInfo.getDescribeCapdev();
             }
           }
+
           Boolean bold = false;
           String blueColor = "0000EE";
           additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
-          POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
-            new POIField(subIdo, ParagraphAlignment.LEFT), new POIField(link, ParagraphAlignment.LEFT, bold, blueColor),
+          POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, bold, blueColor, outcomeReportLink),
+            new POIField(subIdo, ParagraphAlignment.LEFT), new POIField(linkToEvidence, ParagraphAlignment.LEFT),
             new POIField(additional, ParagraphAlignment.LEFT)};
           data = Arrays.asList(sData);
           datas.add(data);
@@ -1621,7 +1625,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA2.title"));
       this.createTableA2();
-      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableA2.footer"));
 
       // Table b
       poiSummary.textLineBreak(document, 1);
