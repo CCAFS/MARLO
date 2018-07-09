@@ -49,7 +49,7 @@
     <h4 class="form-group headTitle" >Supporting Documents</h4>
     <div class="col-md-12 form-group "> 
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      <div  class="fullForm borderBox" >
+      <div  class="fullForm" >
         [#-- Supporting documents --]
         <div>[@deliverableList.deliverableList deliverables=deliverables canValidate=true canEdit=true namespace="/capdev" defaultAction="${(centerSession)!}/detailSupportingDoc" /]</div>
           [#if editable]
