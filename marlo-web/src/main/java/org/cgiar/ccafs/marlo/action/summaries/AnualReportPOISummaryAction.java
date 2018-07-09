@@ -657,7 +657,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<ReportSynthesisCrpProgressTarget> listCrpProgressTargets = reportSynthesisCrpProgressTargetManager
       .flagshipSynthesis(flagshipLiaisonInstitutions, this.getSelectedPhase().getId());
     if (listCrpProgressTargets != null && !listCrpProgressTargets.isEmpty()) {
-      for (ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget : listCrpProgressTargets) {
+      for (ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget : listCrpProgressTargets.stream()
+        .filter(c -> c.getSrfSloIndicatorTarget().getTargetsIndicator() != null)
+        .sorted((c1, c2) -> c1.getSrfSloIndicatorTarget().getTargetsIndicator()
+          .compareTo(c2.getSrfSloIndicatorTarget().getTargetsIndicator()))
+        .collect(Collectors.toList())) {
         String sloTarget = "", briefSummaries = "", additionalContribution = "";
         if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget() != null) {
           if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator() != null
