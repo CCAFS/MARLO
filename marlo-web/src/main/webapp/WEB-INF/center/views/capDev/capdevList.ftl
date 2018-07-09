@@ -30,7 +30,7 @@
    <div class="download-template-button">
      <a href="[@s.url action='${centerSession}/downloadFile' /]" >
         <button type="button" class="capdevButtons downloadButtonHome" title="Download template to upload the list of participants">
-          [@s.text name="capdev.downloadTemplate" /]
+          <span class="glyphicon glyphicon-download-alt"></span> [@s.text name="capdev.downloadTemplate" /]
         </button>
       </a>
     </div>
