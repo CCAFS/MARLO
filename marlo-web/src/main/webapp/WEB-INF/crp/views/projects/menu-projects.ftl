@@ -65,12 +65,6 @@
 
 [#assign sectionsForChecking = [] /]
 
-[#-- Phase Select 
-<div class="form-group">
-  [@customForm.select name="actualPhase" className="phaseSelect" value="actualPhase.id"   i18nkey="actual.cycle"   listName="phases" keyFieldName="id"  displayFieldName="composedName" /]
-</div>
---]
-
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
   <p>[@s.text name="projects.menu.project" /]<br />
@@ -79,7 +73,7 @@
     ${(project.projectInfo.phase.crp.acronym)!}
     [#-- Project Type --]
     [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]
-    </small> 
+    </small>
   </p> 
   <ul>
     [#assign sectionsChecked = 0 /]
@@ -96,9 +90,6 @@
                   [#-- Name --]
                   [@s.text name=item.name/]
                   [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /][/#if]
-                  [#-- Draft Tag 
-                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
-                  --]
                 </a>
               </li>
               [#if item.active]

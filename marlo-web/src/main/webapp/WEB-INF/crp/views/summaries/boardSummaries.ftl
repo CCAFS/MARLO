@@ -17,9 +17,9 @@
 
 [#assign reportsTypes = [
   [#-- PROJECT REPORTS --]
-  { "slug": "projects", "title":"summaries.board.options.projects", "reportsList": [
+  { "slug": "projects", "active": true, "title":"summaries.board.options.projects", "reportsList": [
     { "active": true,
-      "available": true,
+      "available": !centerGlobalUnit,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
       "namespace": "/projects",
@@ -28,7 +28,7 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.genderContributionSummary", 
       "description": "summaries.board.report.genderContributionSummary.description",
@@ -38,7 +38,7 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowKeyWords": true
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.impactPathwayContributionsSummary", 
       "description": "summaries.board.report.impactPathwayContributionsSummary.description",
@@ -47,7 +47,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning","Reporting" ]
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
       "description": "summaries.board.report.outcomeCaseStudies.description",
@@ -68,7 +68,7 @@
         }
       ]
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.projectHighlights", 
       "description": "summaries.board.report.projectHighlights.description",
@@ -77,7 +77,7 @@
       "formats": [ "PDF", "Excel" ],
       "cycles": [ "Reporting" ]
     },
-    { "active": action.hasSpecificities("crp_leverages_module"),
+    { "active": action.hasSpecificities("crp_leverages_module") && !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.leverages", 
       "description": "summaries.board.report.leverages.description",
@@ -87,7 +87,7 @@
       "cycles": [ "Reporting" ]
     },
     { "active": true,
-      "available": true,
+      "available": !centerGlobalUnit,
       "title": "summaries.board.report.projectsList", 
       "description": "summaries.board.report.projectsList.description",
       "namespace": "/projects",
@@ -97,7 +97,7 @@
     }
   ]},
   [#-- PARTNERS REPORTS --]
-  { "slug": "partners", "title":"summaries.board.options.partners", "reportsList": [
+  { "slug": "partners", "active": !centerGlobalUnit, "title":"summaries.board.options.partners", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.leadProjectInstitutionsSummary", 
@@ -120,7 +120,7 @@
     }
   ]},
   [#-- DELIVERABLES REPORTS --]
-  { "slug": "deliverables", "title":"summaries.board.options.deliverables", "reportsList": [
+  { "slug": "deliverables", "active": !centerGlobalUnit, "title":"summaries.board.options.deliverables", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.expectedDeliverables", 
@@ -142,7 +142,7 @@
     }
   ]},
   [#-- BUDGET REPORTS --]
-  { "slug": "budget", "title":"summaries.board.options.budget", "reportsList": [
+  { "slug": "budget", "active": !centerGlobalUnit, "title":"summaries.board.options.budget", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.powb", 
@@ -171,6 +171,18 @@
       "cycles": [ "Planning" ]
     }
   ]}
+  [#-- CAP DEV --]
+  { "slug": "capdev", "active": centerGlobalUnit, "title":"summaries.board.options.capdev", "reportsList": [
+    { "active": true,
+      "available": false,
+      "title": "summaries.board.report.capdevInterventions", 
+      "description": "summaries.board.report.capdevInterventions.description", 
+      "namespace": "/projects",
+      "action": "${crpSession}/generarReportCapdevByArea",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning" ]
+    }
+  ]}
 ]/]
 
 
@@ -183,30 +195,33 @@
 <section class="container">
   <article id="" class="">
     
-    
-      [#--  Reports Tabs --]
-      <div class="summariesButtons col-md-3">
-        [#list reportsTypes as reportType]
+    [#--  Reports Tabs --]
+    <div class="summariesButtons col-md-3">
+      [#list reportsTypes as reportType]
+        [#if reportType.active]
           <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
             <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
           </div>
-        [/#list]
-      </div>
-      [#--  Reports Content --]
-      <div class="summariesContent col-md-9" style="min-height:550px;">
-        <h3 class="headTitle text-center">Summaries</h3>
-        <div class="loading" style="display:none"></div>
-        <div class="summariesOptions">
-          [#list reportsTypes as reportType]
+        [/#if]
+      [/#list]
+    </div>
+    [#--  Reports Content --]
+    <div class="summariesContent col-md-9" style="min-height:550px;">
+      <h3 class="headTitle text-center">Summaries</h3>
+      <div class="loading" style="display:none"></div>
+      <div class="summariesOptions">
+        [#list reportsTypes as reportType]
+          [#if reportType.active]
             <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
               [#-- Temporal Validation (action.canAcessSumaries())--]
               [#list reportType.reportsList as report]
                 [#if report.active][@reportMacro report=report index=report_index /][/#if]
               [/#list]
             </div>
-          [/#list] 
-        </div>
+          [/#if]
+        [/#list] 
       </div>
+    </div>
       
   </article>
 </section>

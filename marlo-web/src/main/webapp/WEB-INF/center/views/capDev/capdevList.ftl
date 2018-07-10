@@ -55,12 +55,10 @@
     <div class="itemName">
       <div class="col-md-1"> Annexes:</div>
       <div class="col-md-2">
-        <img src="${baseUrl}/center/images/capdev/participants.png" class="capDevIconConvention" />
-        <div>Lista of participants</div>
+        <span class="icon-20 outcomesCont"></span> List of participants
       </div>
       <div class="col-md-2">
-        <img src="${baseUrl}/center/images/capdev/deliverable.png" class="capDevIconConvention" />
-        <div>Supporting documents</div>
+        <span class="icon-20 deliverable "></span> Supporting documents
       </div>
       <div class="col-md-7">
         If an icon is highlighted, it means that the capacity development intervention has any of those: list of participants or supporting documents, or has both.

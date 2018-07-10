@@ -463,19 +463,19 @@
 							<skipMerge>true</skipMerge>
 							<verbose>true</verbose>
 							<!-- CSS -->
-							<cssSourceDir>./</cssSourceDir>
+							<cssSourceDir>global</cssSourceDir>
 							<cssSourceIncludes>
-								<cssSourceInclude>crp/css/**/*.css</cssSourceInclude>
-								<cssSourceInclude>center/css/**/*.css</cssSourceInclude>
-								<cssSourceInclude>global/css/**/*.css</cssSourceInclude>
+								<!--<cssSourceInclude>crp/css/**/*.css</cssSourceInclude>-->
+								<!--<cssSourceInclude>center/css/**/*.css</cssSourceInclude>-->
+								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
 
 							<!-- Javascript -->
-							<jsSourceDir>./</jsSourceDir>
+							<jsSourceDir>global</jsSourceDir>
 							<jsSourceIncludes>
-								<jsSourceInclude>crp/js/**/*.js</jsSourceInclude>
-								<jsSourceInclude>center/js/**/*.js</jsSourceInclude>
-								<jsSourceInclude>global/js/**/*.js</jsSourceInclude>
+								<!-- <jsSourceInclude>crp/js/**/*.js</jsSourceInclude>-->
+								<!-- <jsSourceInclude>center/js/**/*.js</jsSourceInclude>-->
+								<jsSourceInclude>js/**/*.js</jsSourceInclude>
 							</jsSourceIncludes>
 
 						</configuration>
