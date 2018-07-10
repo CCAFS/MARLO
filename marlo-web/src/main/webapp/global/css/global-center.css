@@ -182,8 +182,9 @@ ul.horizontalSubMenu li.active {
 }
 
 .missingSelect{
-  border: 1px solid #F44;
-  border-bottom: 1px solid #F44;
+  /* border: 1px solid #F44; */
+  /* border-bottom: 1px solid #F44; */
+  /* border-radius: 6px; */
 }
 
 span.errorTag {
@@ -246,4 +247,17 @@ span.errorTag {
 
 #secondaryMenu > p small {
   color: #6ccc9f;
+}
+
+
+.picker__day--highlighted:hover, .picker--focused .picker__day--highlighted {
+  background: #68bb93;
+}
+
+.picker__day--infocus:hover, .picker__day--outfocus:hover {
+  background: #68bb93;
+}
+
+.picker__day--highlighted {
+  border-color: #58a580;
 }

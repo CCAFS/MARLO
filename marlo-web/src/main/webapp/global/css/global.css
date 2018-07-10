@@ -5949,6 +5949,7 @@ span.errorTag {
 
 .missingSelect{
   border-bottom: 1px solid #F44;
+  border-radius: 6px;
 }
 
 .missingSelect .select2-container--default .select2-selection--single{

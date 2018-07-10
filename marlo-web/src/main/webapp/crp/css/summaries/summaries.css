@@ -151,6 +151,14 @@
   background-position: -92px -173px;
 }
 
+#capdev.summariesSection span {
+  background-position: 5px -125px;
+}
+
+#capdev.summariesSection.current span {
+  background-position: -93px -126px;
+}
+
 .headerBlock {
   margin-top: 5px;
 }
