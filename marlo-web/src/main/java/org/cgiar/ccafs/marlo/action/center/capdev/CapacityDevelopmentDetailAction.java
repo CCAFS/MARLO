@@ -753,16 +753,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setHighestDegree(capdev.getParticipant().getHighestDegree());
 
       capdevDB.setNumParticipants(1);
-      if (capdev.getParticipant().getGender().equals("Male")) {
-        capdevDB.setNumMen(1);
+      if (capdev.getParticipant().getGender() != null) {
+        if (capdev.getParticipant().getGender().equals("Male")) {
+          capdevDB.setNumMen(1);
+        }
+        if (capdev.getParticipant().getGender().equals("Female")) {
+          capdevDB.setNumWomen(1);
+        }
+        if (capdev.getParticipant().getGender().equals("Other")) {
+          capdevDB.setNumOther(1);
+        }
       }
-      if (capdev.getParticipant().getGender().equals("Female")) {
-        capdevDB.setNumWomen(1);
-      }
-      if (capdev.getParticipant().getGender().equals("Other")) {
-        capdevDB.setNumOther(1);
-      }
-
 
       this.saveParticipant(capdev.getParticipant());
 
