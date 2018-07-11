@@ -290,7 +290,7 @@
       </div>
       [/#if]
     </div>
-    <!-- participant name and middle name -->
+    [#-- Participant name and middle name --]
     <div class="form-group row">
       <div class="col-md-6">
         [@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" className="participant-name" required=true editable=editable/]
@@ -299,7 +299,7 @@
         [@customForm.input name="capdev.participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
       </div>
     </div>
-    <!-- participant last name and gender -->
+    [#-- participant last name and gender --]
     <div class="form-group row ">
       <div class="form-group col-md-6">
         [@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" className="participant-lastname"  required=true editable=editable/]
@@ -310,23 +310,20 @@
       </div>
     </div>
 
-    <!-- age -->
+    [#-- Age --]
     <div class="form-group row">
       <div class="col-md-6">
         [@customForm.select name="capdev.participant.age.id"  listName="rangeAgeList" keyFieldName="id" displayFieldName="range" help="" i18nkey="Range age"  placeholder="capdev.select" required=false editable=editable className=""/]
       </div>
     </div>
     
-    <!-- participant citizenship and highest degree -->
+    [#-- Participant citizenship and highest degree  --]
     <div class="form-group row">
       <div class="col-md-6 pCitizenshipcountriesList">
         [@customForm.select name="capdev.participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true editable=editable/]
-      </div>
-      <div class="col-md-6">
-        [@customForm.select name="capdev.participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  editable=editable/]
-      </div>
+      </div> 
     </div>
-    <!-- participant personal email and job email -->
+    [#-- Participant personal email and job email --]
     <div class="form-group row  ">
       <div class="col-md-6">
         [@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" className="participant-pEmail"  required=true editable=editable/]
@@ -335,7 +332,7 @@
         [@customForm.input name="capdev.participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
       </div>
     </div>
-    <!-- intitucion and country of institution -->
+    [#-- intitucion and country of institution  --]
     <div class="form-group row">
       <div class="col-md-6">
         [@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="composedName" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
