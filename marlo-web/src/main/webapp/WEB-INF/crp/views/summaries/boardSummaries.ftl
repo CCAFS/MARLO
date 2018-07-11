@@ -86,8 +86,8 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
-    { "active": true,
-      "available": !centerGlobalUnit,
+    { "active": !centerGlobalUnit,
+      "available": true,
       "title": "summaries.board.report.projectsList", 
       "description": "summaries.board.report.projectsList.description",
       "namespace": "/projects",
@@ -170,15 +170,27 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     }
-  ]}
+  ]},
+  [#-- MONITORING --]
+  { "slug": "monitoring", "active": centerGlobalUnit, "title":"summaries.board.options.monitoring", "reportsList": [
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.monitoringOutcome", 
+      "description": "summaries.board.report.monitoringOutcome.description", 
+      "namespace": "/centerSummaries",
+      "action": "${crpSession}/centerMonitoringOutcomes",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning" ]
+    }
+  ]},
   [#-- CAP DEV --]
   { "slug": "capdev", "active": centerGlobalUnit, "title":"summaries.board.options.capdev", "reportsList": [
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.capdevInterventions", 
       "description": "summaries.board.report.capdevInterventions.description", 
-      "namespace": "/projects",
-      "action": "${crpSession}/generarReportCapdevByArea",
+      "namespace": "/centerSummaries",
+      "action": "${crpSession}/leadProjectInstitutionsSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     }
@@ -194,7 +206,7 @@
     
 <section class="container">
   <article id="" class="">
-    
+  
     [#--  Reports Tabs --]
     <div class="summariesButtons col-md-3">
       [#list reportsTypes as reportType]
@@ -252,7 +264,7 @@
   [#if report.available]
   <div class="extraOptions" style="display: none;">
     <hr />
-    [@s.form  target="_blank" action=report.action  method="GET" namespace=report.namespace cssClass=""]
+    [@s.form  target="_blank" action="${report.action}"  method="GET" namespace="${report.namespace}" cssClass=""]
       [#-- Parameters --]
       <div class="form-group row">
         [#-- Cycles (Planning/Reporting) --]

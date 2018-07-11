@@ -21,11 +21,11 @@
               <td>
                 <a href="${capdevUrl}">C${i.id}</a></td>
               <td>
-               <a href="${capdevUrl}">
-                  [#-- Tags --]
-                  [#if i.category == 1]<span class="label label-success">[@s.text name="Individual" /]</span>[/#if]
-                  [#if i.category == 2]<span class="label label-primary">[@s.text name="Grupal" /]</span>[/#if]
-                  [#-- Title --]
+                [#-- Tags --]
+                [#if i.category == 1]<span class="label label-success">[@s.text name="Individual" /]</span>[/#if]
+                [#if i.category == 2]<span class="label label-primary">[@s.text name="Grupal" /]</span>[/#if]
+                [#-- Title --]
+                <a href="${capdevUrl}">
                   [#if i.title?has_content]${i.title}[#else]Not defined[/#if]
                 </a>
               </td> 
@@ -36,11 +36,11 @@
                 [#if i.createdBy??]${i.createdBy.composedCompleteName}[#else]Not defined[/#if]
               </td>
               <td class="text-center">
-                [#if ((i.capdevParticipant?size > 1)!false) || ((i.deliverables?has_content)!false)]
+                [#if ((i.capdevParticipants?size > 1)!false) || ((i.deliverables?has_content)!false)]
                   [#-- Number of Participants --]
-                  [#if (i.capdevParticipant?size > 1)!false]
+                  [#if (i.capdevParticipants?size > 1)!false]
                     <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-participants-${i_index}">
-                      <span class="icon-20 outcomesCont"></span> <strong>${i.capdevParticipant?size}</strong>
+                      <span class="icon-20 outcomesCont"></span> <strong>${i.capdevParticipants?size}</strong>
                     </button>
                   [/#if]
                   [#-- Number of Deliverables --]
