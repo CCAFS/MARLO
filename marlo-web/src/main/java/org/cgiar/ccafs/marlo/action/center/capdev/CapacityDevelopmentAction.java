@@ -22,8 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -91,15 +89,16 @@ public class CapacityDevelopmentAction extends BaseAction {
       projectID = -1;
       projectDB = null;
     }
-    if (projectDB != null) {
-      capdev.setProject(projectDB);
-      CenterProgram program = projectDB.getResearchProgram();
-      CenterArea researchArea = program.getResearchArea();
-
-      capdev.setResearchArea(researchArea);
-      capdev.setResearchProgram(program);
-
-    }
+    // TODO Adjust when CAPDEV prject is Online
+    // if (projectDB != null) {
+    // capdev.setProject(projectDB);
+    // CrpProgram program = projectDB.getResearchProgram();
+    // CenterArea researchArea = program.getResearchArea();
+    //
+    // capdev.setResearchArea(researchArea);
+    // capdev.setResearchProgram(program);
+    //
+    // }
     capacityDevelopmentDB = capdevService.saveCapacityDevelopment(capdev);
     capdevID = capacityDevelopmentDB.getId();
     if (capdevID > 0) {

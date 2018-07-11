@@ -35,7 +35,7 @@
 			<column name="crp" />
 		</many-to-one>
 		<many-to-one name="researchProgram"
-			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
 			<column name="research_program" />
 		</many-to-one>
 		<property name="title" type="string">

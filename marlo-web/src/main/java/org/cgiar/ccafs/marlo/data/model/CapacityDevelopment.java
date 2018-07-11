@@ -25,14 +25,16 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   @Expose
   private CenterProject project;
 
+
   @Expose
   private CenterArea researchArea;
+
 
   @Expose
   private GlobalUnit crp;
 
   @Expose
-  private CenterProgram researchProgram;
+  private CrpProgram researchProgram;
 
   @Expose
   private String title;
@@ -118,7 +120,9 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   private List<CapdevLocations> capDevRegions;
 
   private Set<CapdevDiscipline> capdevDiscipline = new HashSet<CapdevDiscipline>(0);
+
   private List<CapdevDiscipline> capdevDisciplineList;
+
   private Set<CapdevTargetgroup> capdevTargetgroup = new HashSet<CapdevTargetgroup>(0);
   private List<CapdevTargetgroup> capdevTargetGroupList;
   private Set<CapdevParticipant> capdevParticipant = new HashSet<CapdevParticipant>(0);
@@ -133,7 +137,6 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   public CapacityDevelopment() {
   }
 
-
   public List<CapdevLocations> getCapDevCountries() {
     return capDevCountries;
   }
@@ -147,19 +150,19 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return capdevDisciplineList;
   }
 
-
   public Set<CapdevLocations> getCapdevLocations() {
     return capdevLocations;
   }
+
 
   public Set<CapdevOutputs> getCapdevOutputs() {
     return capdevOutputs;
   }
 
+
   public List<CapdevOutputs> getCapdevOutputsList() {
     return capdevOutputsList;
   }
-
 
   public Set<CapdevParticipant> getCapdevParticipant() {
     return capdevParticipant;
@@ -168,6 +171,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   public Set<CapdevPartners> getCapdevPartners() {
     return capdevPartners;
   }
+
 
   public List<CapdevPartners> getCapdevPartnersList() {
     return capdevPartnersList;
@@ -181,11 +185,9 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return capdevSupportingDocs;
   }
 
-
   public Set<CapdevTargetgroup> getCapdevTargetgroup() {
     return capdevTargetgroup;
   }
-
 
   public List<CapdevTargetgroup> getCapdevTargetGroupList() {
     return capdevTargetGroupList;
@@ -206,6 +208,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return crp;
   }
 
+
   public String getCtEmail() {
     return this.ctEmail;
   }
@@ -218,6 +221,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   public String getCtLastName() {
     return this.ctLastName;
   }
+
 
   public Set<CenterDeliverable> getDeliverables() {
     return deliverables;
@@ -253,7 +257,6 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return global;
   }
 
-
   @Override
   public String getLogDeatil() {
     final StringBuilder sb = new StringBuilder();
@@ -261,10 +264,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return sb.toString();
   }
 
-
   public Integer getNumMen() {
     return numMen;
   }
+
 
   public Integer getNumOther() {
     return numOther;
@@ -275,10 +278,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return this.numParticipants;
   }
 
-
   public Integer getNumWomen() {
     return numWomen;
   }
+
 
   public String getOtherDiscipline() {
     return otherDiscipline;
@@ -288,7 +291,6 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   public String getOtherPartner() {
     return otherPartner;
   }
-
 
   public String getOtherTargetGroup() {
     return otherTargetGroup;
@@ -320,8 +322,8 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   }
 
 
-  public CenterProgram getResearchProgram() {
-    return this.researchProgram;
+  public CrpProgram getResearchProgram() {
+    return researchProgram;
   }
 
 
@@ -395,10 +397,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     this.capdevOutputs = capdevOutputs;
   }
 
+
   public void setCapdevOutputsList(List<CapdevOutputs> capdevOutputsList) {
     this.capdevOutputsList = capdevOutputsList;
   }
-
 
   public void setCapdevParticipant(Set<CapdevParticipant> capdevParticipant) {
     this.capdevParticipant = capdevParticipant;
@@ -509,10 +511,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     this.numParticipants = numParticipants;
   }
 
+
   public void setNumWomen(Integer numWomen) {
     this.numWomen = numWomen;
   }
-
 
   public void setOtherDiscipline(String otherDiscipline) {
     this.otherDiscipline = otherDiscipline;
@@ -554,7 +556,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   }
 
 
-  public void setResearchProgram(CenterProgram researchProgram) {
+  public void setResearchProgram(CrpProgram researchProgram) {
     this.researchProgram = researchProgram;
   }
 
