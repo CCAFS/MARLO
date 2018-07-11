@@ -1432,7 +1432,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
         /** Getting category name **/
         if (reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution() != null) {
-          category = reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution().getName();
+          category = reportSynthesisFinancialSummaryBudgetList.get(i).getLiaisonInstitution().getComposedName();
         } else if (reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea() != null) {
           category = reportSynthesisFinancialSummaryBudgetList.get(i).getExpenditureArea().getExpenditureArea();
         }

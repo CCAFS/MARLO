@@ -391,7 +391,7 @@ public class POISummary {
 
     XWPFTableRow row = table.getRow(0);
     int numberOfCell = row.getTableCells().size();
-    for (int y = 0; y < numberOfCell - 1; y++) {
+    for (int y = 0; y < numberOfCell; y++) {
       XWPFTableCell cell = row.getCell(y);
 
       if (cell.getCTTc() == null) {
@@ -401,7 +401,7 @@ public class POISummary {
       if (cell.getCTTc().getTcPr() == null) {
         cell.getCTTc().addNewTcPr();
       }
-      if (y > 0 && y < numberOfCell) {
+      if (y > 0 && y <= numberOfCell) {
         if (cell.getText().trim().length() > 0) {
           hMerge.setVal(STMerge.RESTART);
           cell.getCTTc().getTcPr().setHMerge(hMerge);
