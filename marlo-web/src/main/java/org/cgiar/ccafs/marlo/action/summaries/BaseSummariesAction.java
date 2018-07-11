@@ -65,9 +65,14 @@ public class BaseSummariesAction extends BaseAction {
   private int selectedYear;
   private String selectedCycle;
   private Phase selectedPhase;
+  private String downloadByUser;
+
   // Managers
   private GlobalUnitManager crpManager;
+
+
   private PhaseManager phaseManager;
+
   protected ProjectManager projectManager;
 
   public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
@@ -77,7 +82,6 @@ public class BaseSummariesAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.projectManager = projectManager;
   }
-
 
   /**
    * Method to return a set of FS filtered by active with status On-Going/Extended/Pipeline/informally into the
@@ -128,6 +132,7 @@ public class BaseSummariesAction extends BaseAction {
     List<Project> activeProjects = projectManager.getActiveProjectsByPhase(phase, year, statuses);
     return activeProjects;
   }
+
 
   /**
    * Get all subreports and store then in a hash map.
@@ -186,6 +191,10 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
+  public String getDownloadByUser() {
+    return downloadByUser;
+  }
+
   protected void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -204,7 +213,6 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
-
   private void getHeaderSubreports(HashMap<String, Element> hm, ReportHeader reportHeader) {
     int elementCount = reportHeader.getElementCount();
     for (int i = 0; i < elementCount; i++) {
@@ -220,6 +228,7 @@ public class BaseSummariesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Method to get a Year from Date
@@ -237,22 +246,26 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public String getSelectedCycle() {
     return selectedCycle;
   }
 
-
   public Phase getSelectedPhase() {
     return selectedPhase;
   }
 
+
   public int getSelectedYear() {
     return selectedYear;
+  }
+
+  public void setDownloadByUser(String downloadByUser) {
+    this.downloadByUser = downloadByUser;
   }
 
   public void setGeneralParameters() {
@@ -261,6 +274,12 @@ public class BaseSummariesAction extends BaseAction {
       this.setLoggedCrp(crpManager.getGlobalUnitById(loggedCrp.getId()));
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+      // Get CRP by action name
+      String[] actionParts = this.getActionName().split("/");
+      if (actionParts.length > 0) {
+        String crpAcronym = actionParts[0];
+        this.setLoggedCrp(crpManager.findGlobalUnitByAcronym(crpAcronym));
+      }
     }
     // Get parameters from URL
     // Get year
@@ -285,6 +304,13 @@ public class BaseSummariesAction extends BaseAction {
     // Get phase
     this.setSelectedPhase(
       phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), loggedCrp.getId().longValue()));
+
+    // Get current user
+    if (this.getCurrentUser() != null) {
+      this.setDownloadByUser(this.getCurrentUser().getComposedCompleteName());
+    } else {
+      this.setDownloadByUser("unLoggedUser");
+    }
   }
 
 

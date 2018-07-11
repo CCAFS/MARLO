@@ -168,6 +168,13 @@
 				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<interceptor-stack name="unloggedStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 
 			<interceptor-stack name="crpAdminStack">
 				<interceptor-ref name="i18nFile" />
