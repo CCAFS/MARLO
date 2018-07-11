@@ -339,11 +339,12 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevOutputs = new ArrayList<>();
 
     try {
-
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
-      capdevID = -1;
+      if (capdevID <= 0) {
+        capdevID = -1;
+      }
       projectID = -1;
     }
 
