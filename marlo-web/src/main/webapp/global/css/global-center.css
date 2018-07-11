@@ -261,3 +261,8 @@ span.errorTag {
 .picker__day--highlighted {
   border-color: #58a580;
 }
+
+.approachesList ul {
+  margin: 0;
+  padding: 0;
+}

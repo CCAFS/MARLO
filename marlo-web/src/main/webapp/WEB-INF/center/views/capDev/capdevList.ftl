@@ -1,8 +1,9 @@
 [#ftl]
 
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css", 
-					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = [
+   "${baseUrl}/global/css/customDataTable.css", 
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
 
 [#assign customJS = [
  	"${baseUrlMedia}/js/capDev/capdevList.js"] 

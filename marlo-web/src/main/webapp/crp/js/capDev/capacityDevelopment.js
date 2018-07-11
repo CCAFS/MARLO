@@ -104,35 +104,6 @@ function init() {
     }
   })();
 
-  // set value for duartion unit field
-  (function() {
-    var durationUnit = $(".durationUnitaInput").val();
-
-    console.log(durationUnit)
-    $(".durationUnitSelect select option").each(function() {
-      if($(this).val() === durationUnit) {
-        $(this).attr("selected", true);
-      }
-    });
-
-    // set value for duration unit when is hostory is active
-    var p = $(".durationUnitSelect .selectList p");
-    if(durationUnit != "") {
-      p.html(durationUnit)
-    }
-
-  })();
-
-  // disable the duration unit field
-  (function() {
-    var duration = $(".capdevDuration").val();
-    if(!duration) {
-      $(".dUnitSelect").attr('disabled', 'disabled');
-    } else {
-      $('.dUnitSelect').removeAttr('disabled');
-    }
-  })();
-
   (function() {
     if($('input[type="checkbox"][name="capdev.participant.otherInstitution"]').is(":checked")) {
       $(".suggestInstitution").show();
@@ -145,16 +116,6 @@ function init() {
   $(".participant-code").on("keyup", checkParticipantCode);
   $(".participant-code").on("change", checkParticipantCode);
 }
-
-// enable the duration unit field when user press a key
-$(".capdevDuration").on('keyup', function() {
-  var query = $(this).val();
-  if(query.length > 0) {
-    $('.dUnitSelect').removeAttr('disabled');
-  } else {
-    $(".dUnitSelect").attr('disabled', 'disabled');
-  }
-})
 
 // display suggest text area
 $('input[type="checkbox"][name="capdev.participant.otherInstitution"]').change(function() {

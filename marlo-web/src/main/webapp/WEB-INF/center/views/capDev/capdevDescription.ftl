@@ -56,19 +56,10 @@
     <h3 class="headTitle"> Capacity Development Description</h3>    
     <div class="form-group "> 
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-      <!-- Radio Buttons-->
-      <div style="display: none;">
-        <div class="radio">
-          <label><input  id="individual" type="radio" hidden="true" name="capdev.category" class="radioButton" value="${(capdev.category)!}"  /></label>
-        </div>
-        <div class="radio">
-          <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${(capdev.category)!}" /> </label>
-        </div>
-      </div>
-
+    
       <div  class="fullForm borderBox" >
 
-        <!-- Disciplines-->
+        [#-- Disciplines --]
         <label>[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]</label>
         <div class="simpleBox" listname="capdev.disciplines">
           <div class="form-group approachesListContainer listSelectBlock" >
@@ -79,19 +70,15 @@
               <ul class="list">
                 [#if (capdev.capdevDisciplineList?has_content)!false]
                   [#list capdev.capdevDisciplineList as discipline]
-                  <li id="" class="discipline">
-                    [#if editable]
-                      <a class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline" href="[@s.url action='${centerSession}/deleteDiscipline'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevDiscipline" value=discipline.id /][/@s.url]"></a>
-                    [/#if]
-                    <input class="id" type="hidden"  value="${(discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].id" />
-                    <input class="disciplineId" type="hidden"  value="${(discipline.discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].discipline.id" />
-                    
-                    <span class="name"> ${discipline.discipline.name}</span>
-                    
-                  </li>
-                [#else]
-
-                [/#list]
+                    <li id="" class="discipline">
+                      [#if editable]
+                        <a class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline" href="[@s.url action='${centerSession}/deleteDiscipline'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevDiscipline" value=discipline.id /][/@s.url]"></a>
+                      [/#if]
+                      <input class="id" type="hidden"  value="${(discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].id" />
+                      <input class="disciplineId" type="hidden"  value="${(discipline.discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].discipline.id" />
+                      <span class="name"> ${discipline.discipline.name}</span>
+                    </li>
+                  [/#list]
                 [#else]
                 
                    
@@ -114,7 +101,7 @@
           [/#if]
         </div>
 
-        <!-- Targeted public-->
+        [#-- Targeted public--]
         <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.targetgroup">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
@@ -157,28 +144,20 @@
         </div>
 
         <div class="simpleBox">
-          <!-- research Area-->
+          [#-- Research Area --]
           <div class="form-group row">
             <div class="col-md-6  newCapdevField " listname="capdev.researcharea">
               [@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
             </div>
-            <!-- research program-->
+            [#-- Research program --]
             <div class="col-md-6 researchProgram ">
               [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
             </div>
-          </div>
-          
-          <!-- CRP -->
+          </div> 
+          [#-- CRP --]
           <div class="form-group row">
             <div class="col-md-6">
               [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
-            </div>
-          </div>
-
-          <!-- project-->
-          <div class="form-group newCapdevField ">
-            <div class="project" listname="capdev.project">
-              [@customForm.select name="capdev.project.id" listName="projects" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.project" placeholder="capdev.select" className="capdevProject" help="capdev.help.project" editable=editable /]
             </div>
           </div>
           
@@ -258,16 +237,9 @@
           </div>
         </div>
 
-        <div style="display: none;">
-            [@customForm.input name="capdevID" i18nkey="capdev.id" value="${(capdev.id)!}"  type="text"  /]
-            [@customForm.input name="category" i18nkey="capdev.category" value="${(capdev.category)!}"  type="text"  /]
-            [@customForm.input name="projectID" i18nkey="capdev.id" value="${projectID}"  type="text"  /]
-        </div>
-
-
       </div>
       
-      <!-- buttons -->
+      [#-- buttons --]
       [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
 
     </div>
