@@ -411,6 +411,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     }
   }
 
+  private void addCrpProgressOutcomes() {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpProgress() != null
+      && reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null) {
+      String synthesisCrpSummaries = reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries();
+      poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
+    }
+  }
+
   private void addExpectedCrp() {
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpProgress() != null
       && reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() != null) {
@@ -1555,6 +1563,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.keyResults.crpProgress"));
       this.addExpectedCrp();
+      this.addCrpProgressOutcomes();
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("summaries.annualReport.keyResults.progressFlagships"));
       this.addAdjustmentDescription();
@@ -1677,7 +1686,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableG.title"));
       this.createTableG();
-      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableG.description.help"));
 
       // Table h
       poiSummary.textLineBreak(document, 1);
