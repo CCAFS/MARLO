@@ -259,8 +259,8 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   }
 
   public String getCaseStudyUrlPath(String project) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
-      + File.separator;
+    return config.getProjectsBaseFolder(this.getLoggedCrp().getAcronym()) + File.separator + project + File.separator
+      + "caseStudy" + File.separator;
   }
 
   @Override
@@ -320,8 +320,8 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   }
 
   private String getStudiesSourceFolder() {
-    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(File.separator).concat(this.getCrpSession() + "_")
+    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getLoggedCrp().getAcronym())
+      .concat(File.separator).concat(File.separator).concat(this.getLoggedCrp().getAcronym() + "_")
       .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
 
