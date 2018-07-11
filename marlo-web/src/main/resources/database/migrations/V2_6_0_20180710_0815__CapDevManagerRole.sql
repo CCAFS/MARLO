@@ -1,4 +1,4 @@
-INSERT INTO Roles (description, acronym, `order`, global_unit_id)
+INSERT INTO roles (description, acronym, `order`, global_unit_id)
 SELECT 'CapDev Manager', 'CD', 19, gu.id from global_units gu
 WHERE gu.is_marlo = 1;
 
