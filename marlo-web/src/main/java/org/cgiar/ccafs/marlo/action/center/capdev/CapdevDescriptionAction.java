@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.dao.ICenterProgramDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevDisciplineService;
@@ -39,11 +39,12 @@ import org.cgiar.ccafs.marlo.data.model.CapdevPartners;
 import org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Discipline;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.TargetGroup;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -80,12 +81,15 @@ public class CapdevDescriptionAction extends BaseAction {
 
   private final CapDevDescriptionValidator validator;
 
+
   private long capdevID;
+
   private long projectID;
+
   private List<Discipline> disciplines;
   private List<TargetGroup> targetGroups;
   private List<CenterArea> researchAreas;
-  private List<CenterProgram> researchPrograms;
+  private List<CrpProgram> researchPrograms;
   private List<CenterProject> projects;
   private List<Map<String, Object>> jsonProjects;
   private List<Map<String, Object>> json;
@@ -100,8 +104,8 @@ public class CapdevDescriptionAction extends BaseAction {
   private List<Long> capdevPartners;
   private List<Long> capdevOutputs;
   private final ICapacityDevelopmentService capdevService;
+  private final CrpProgramManager crpProgramManager;
   private final ICenterAreaManager researchAreaService;
-  private final ICenterProgramDAO researchProgramSercive;
   private final ICenterProjectManager projectService;
   private final GlobalUnitManager crpService;
   private final InstitutionManager institutionService;
@@ -118,15 +122,15 @@ public class CapdevDescriptionAction extends BaseAction {
 
   @Inject
   public CapdevDescriptionAction(APConfig config, ICenterAreaManager researchAreaService,
-    ICenterProgramDAO researchProgramSercive, ICenterProjectManager projectService, GlobalUnitManager crpService,
-    IDisciplineService disciplineService, ITargetGroupService targetGroupService,
-    ICapacityDevelopmentService capdevService, ICapdevDisciplineService capdevDisciplineService,
-    ICapdevTargetgroupService capdevTargetgroupService, InstitutionManager institutionService,
-    ICenterOutputManager researchOutputService, ICapdevPartnersService capdevPartnerService,
-    ICapdevOutputsService capdevOutputService, CapDevDescriptionValidator validator, AuditLogManager auditLogService) {
+    ICenterProjectManager projectService, GlobalUnitManager crpService, IDisciplineService disciplineService,
+    ITargetGroupService targetGroupService, ICapacityDevelopmentService capdevService,
+    ICapdevDisciplineService capdevDisciplineService, ICapdevTargetgroupService capdevTargetgroupService,
+    InstitutionManager institutionService, ICenterOutputManager researchOutputService,
+    ICapdevPartnersService capdevPartnerService, ICapdevOutputsService capdevOutputService,
+    CapDevDescriptionValidator validator, AuditLogManager auditLogService, CrpProgramManager crpProgramManager) {
     super(config);
+
     this.researchAreaService = researchAreaService;
-    this.researchProgramSercive = researchProgramSercive;
     this.projectService = projectService;
     this.crpService = crpService;
     this.disciplineService = disciplineService;
@@ -140,6 +144,7 @@ public class CapdevDescriptionAction extends BaseAction {
     this.capdevOutputService = capdevOutputService;
     this.validator = validator;
     this.auditLogService = auditLogService;
+    this.crpProgramManager = crpProgramManager;
   }
 
   @Override
@@ -171,7 +176,6 @@ public class CapdevDescriptionAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public String deleteOutput() {
     long capdevoutputID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevOutput")));
     capdevOutputService.deleteCapdevOutputs(capdevoutputID);
@@ -183,6 +187,7 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevPartnerService.deleteCapdevPartners(capdevpartnerID);
     return SUCCESS;
   }
+
 
   public String deleteTargetGroup() {
     long capdevtargetgroupID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevTargetGroup")));
@@ -202,11 +207,9 @@ public class CapdevDescriptionAction extends BaseAction {
     return capdev;
   }
 
-
   public List<Long> getCapdevdisciplines() {
     return capdevdisciplines;
   }
-
 
   public long getCapdevID() {
     return capdevID;
@@ -252,6 +255,7 @@ public class CapdevDescriptionAction extends BaseAction {
     return otherDiscipline;
   }
 
+
   public String getOtherPartner() {
     return otherPartner;
   }
@@ -260,7 +264,6 @@ public class CapdevDescriptionAction extends BaseAction {
   public String getOtherTargetGroup() {
     return otherTargetGroup;
   }
-
 
   public List<CenterOutput> getOutputs() {
     return outputs;
@@ -271,22 +274,24 @@ public class CapdevDescriptionAction extends BaseAction {
     return partners;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<CenterProject> getProjects() {
     return projects;
   }
 
-
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
 
-  public List<CenterProgram> getResearchPrograms() {
+  public List<CrpProgram> getResearchPrograms() {
     return researchPrograms;
   }
+
 
   public List<TargetGroup> getTargetGroups() {
     return targetGroups;
@@ -304,8 +309,8 @@ public class CapdevDescriptionAction extends BaseAction {
     researchAreas = researchAreaService.findAll().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
     Collections.sort(researchAreas, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
-    researchPrograms =
-      researchProgramSercive.findAll().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
+    researchPrograms = crpProgramManager.findAll().stream().filter(rl -> rl.isActive() && rl.getResearchArea() != null
+      && rl.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()).collect(Collectors.toList());
     Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     if (projectService.findAll() != null) {
@@ -664,10 +669,10 @@ public class CapdevDescriptionAction extends BaseAction {
     this.json = json;
   }
 
+
   public void setJsonProjects(List<Map<String, Object>> jsonProjects) {
     this.jsonProjects = jsonProjects;
   }
-
 
   public void setOtherDiscipline(String otherDiscipline) {
     this.otherDiscipline = otherDiscipline;
@@ -709,7 +714,7 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void setResearchPrograms(List<CenterProgram> researchPrograms) {
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
   }
 

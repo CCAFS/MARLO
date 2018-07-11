@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.action.center.json.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.dao.ICenterProgramDAO;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
@@ -28,10 +28,10 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -65,7 +65,7 @@ public class FilterListsAction extends BaseAction {
   private List<Map<String, Object>> jsonCapdevList;
   private List<Map<String, Object>> jsonDeliverableSubtypes;
 
-  private final ICenterProgramDAO researchProgramSercive;
+  private final CrpProgramManager researchProgramSercive;
   private final ICenterProjectManager projectService;
   private final ICenterProjectPartnerManager projectPartnerService;
   private final ICenterProjectOutputManager projectOutputService;
@@ -81,7 +81,7 @@ public class FilterListsAction extends BaseAction {
   private final ReadExcelFile reader = new ReadExcelFile();
 
   @Inject
-  public FilterListsAction(APConfig config, ICenterProgramDAO researchProgramSercive,
+  public FilterListsAction(APConfig config, CrpProgramManager researchProgramSercive,
     ICenterProjectManager projectService, ICenterProjectPartnerManager projectPartnerService,
     ICenterProjectOutputManager projectOutputService, InstitutionManager institutionService,
     ICenterOutputManager researchOutputService, ICapacityDevelopmentService capdevService,
@@ -298,16 +298,17 @@ public class FilterListsAction extends BaseAction {
     final long researchAreaID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
     this.jsonResearchPrograms = new ArrayList<>();
-    List<CenterProgram> researchPrograms = new ArrayList<>();
+    List<CrpProgram> researchPrograms = new ArrayList<>();
     if (researchAreaID > 0) {
       researchPrograms = researchProgramSercive.findAll().stream()
-        .filter(le -> le.isActive() && (le.getResearchArea().getId() == researchAreaID)).collect(Collectors.toList());
+        .filter(le -> le.isActive() && (le.getResearchArea() != null && le.getResearchArea().getId() == researchAreaID))
+        .collect(Collectors.toList());
       Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
     } else {
       researchPrograms = researchProgramSercive.findAll();
     }
 
-    for (final CenterProgram researchProgram : researchPrograms) {
+    for (final CrpProgram researchProgram : researchPrograms) {
       final Map<String, Object> rpMap = new HashMap<String, Object>();
       rpMap.put("rpID", researchProgram.getId());
       rpMap.put("rpName", researchProgram.getName());
