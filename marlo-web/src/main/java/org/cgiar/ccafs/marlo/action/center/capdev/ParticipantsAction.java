@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.CapdevHighestDegreeManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree;
-import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -130,22 +129,16 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       FileInputStream fileInput = new FileInputStream(path_);
       XSSFWorkbook wb = new XSSFWorkbook(fileInput);
 
-      DataValidation dataValidationCountryOfInstitutions = null;
-
       DataValidationConstraint constraintCountries = null;
-      DataValidationConstraint constraintInstitutions = null;
-      DataValidationConstraint constraintCountryOfInstitutions = null;
       DataValidationConstraint constraintHighestDegree = null;
       DataValidationHelper validationHelper = null;
 
       Sheet sheet1 = wb.getSheetAt(0);
       XSSFSheet sheet2 = wb.getSheet("countries");
-      XSSFSheet sheet3 = wb.getSheet("institutions");
-      XSSFSheet sheet4 = wb.getSheet("highest_degree");
+      XSSFSheet sheet3 = wb.getSheet("highest_degree");
 
 
       String dataValidationCountryName = "countriesLis";
-      String dataValidationInstitutionName = "institutionsList";
       String dataValidationHighestDegreeName = "highestDegreeList";
 
 
@@ -160,16 +153,6 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       String[] countries = new String[countryList.size()];
       for (int i = 0; i < countryList.size(); i++) {
         countries[i] = countryList.get(i).getName() + " - " + countryList.get(i).getIsoAlpha2();
-      }
-
-      List<Institution> institutionsList =
-        new ArrayList<>(institutionService.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList()));
-      Collections.sort(institutionsList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
-
-      // arreglo usado para escribir la data de institutions al template
-      String[] institutions = new String[institutionsList.size()];
-      for (int i = 0; i < institutionsList.size(); i++) {
-        institutions[i] = institutionsList.get(i).getName() + " - " + institutionsList.get(i).getId();
       }
 
       List<CapdevHighestDegree> highestDegreeList = new ArrayList<>(
@@ -187,36 +170,17 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       validationHelper = sheet1.getDataValidationHelper();
 
       // se configuran las coordenas donde se desea pegar el data validator en la sheet1 del template
-      CellRangeAddressList addressListCountry = new CellRangeAddressList(10, 1000, 4, 4);
-      CellRangeAddressList addressListInstitution = new CellRangeAddressList(10, 1000, 6, 6);
-      CellRangeAddressList addressListHighestDegree = new CellRangeAddressList(10, 1000, 5, 5);
-
-
-      CellRangeAddressList addressListCountryOfInstitution = new CellRangeAddressList(10, 1000, 7, 7);
-
-      constraintCountryOfInstitutions = validationHelper.createFormulaListConstraint(dataValidationCountryName);
-      dataValidationCountryOfInstitutions =
-        validationHelper.createValidation(constraintCountryOfInstitutions, addressListCountryOfInstitution);
-      dataValidationCountryOfInstitutions.setSuppressDropDownArrow(true);
-      if (dataValidationCountryOfInstitutions instanceof XSSFDataValidation) {
-        dataValidationCountryOfInstitutions.setSuppressDropDownArrow(true);
-        dataValidationCountryOfInstitutions.setShowErrorBox(true);
-      } else {
-        dataValidationCountryOfInstitutions.setSuppressDropDownArrow(false);
-      }
+      CellRangeAddressList addressListCountry = new CellRangeAddressList(10, 1000, 3, 3);
+      CellRangeAddressList addressListHighestDegree = new CellRangeAddressList(10, 1000, 4, 4);
 
       // se crean cada uno de los data validator
       this.createDataValidator(wb, sheet2, countries, dataValidationCountryName);
-      this.createDataValidator(wb, sheet3, institutions, dataValidationInstitutionName);
-      this.createDataValidator(wb, sheet4, highestDegree, dataValidationHighestDegreeName);
+      this.createDataValidator(wb, sheet3, highestDegree, dataValidationHighestDegreeName);
 
 
       // se configuran y pegan cada uno de los data validator
       DataValidation dataValidationCountry =
         this.setDataValidator(dataValidationCountryName, validationHelper, addressListCountry, constraintCountries);
-
-      DataValidation dataValidationInstitutions = this.setDataValidator(dataValidationInstitutionName, validationHelper,
-        addressListInstitution, constraintInstitutions);
 
       DataValidation dataValidationHigehestDegree = this.setDataValidator(dataValidationHighestDegreeName,
         validationHelper, addressListHighestDegree, constraintHighestDegree);
@@ -224,8 +188,6 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
       // set de cada data davilidator al sheet1 del template
       sheet1.addValidationData(dataValidationCountry);
-      sheet1.addValidationData(dataValidationInstitutions);
-      sheet1.addValidationData(dataValidationCountryOfInstitutions);
       sheet1.addValidationData(dataValidationHigehestDegree);
 
 
