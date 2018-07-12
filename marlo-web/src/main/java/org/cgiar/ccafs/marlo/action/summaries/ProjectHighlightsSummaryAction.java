@@ -314,7 +314,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
         highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null,
-        image = null, imageurl = null, imageName = null;
+        image = "", imageurl = null, imageName = null;
       Long yearReported = null;
       int width = 244;
       int heigth = 163;
