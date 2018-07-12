@@ -112,18 +112,17 @@
             <div id="targetGroupsList" class=" newCapdevField" >
               <ul class="list">
                 [#if (capdev.capdevTargetGroupList?has_content)!false]
-                [#list capdev.capdevTargetGroupList as targetGroup]
-                  <li id="" class="targetGroup clearfix col-md-3">
-                    [#if editable]
-                      <a class=" removeTargetGroup removeIcon" title="Remove targetGroup" href="[@s.url action='${centerSession}/deleteTargetGroup'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevTargetGroup" value=targetGroup.id /][/@s.url]"></a>
-                    [/#if]
-                    <input class="id" type="hidden"  value="${(targetGroup.id)!}" name="capdev.capdevTargetGroupList[${targetGroup_index}].id" />
-                    <input class="tgId" type="hidden"  value="${(targetGroup.targetGroups.id)!-1}" name="capdev.capdevTargetGroupList[${targetGroup_index}].targetGroups.id" />
-                    <span class="name">${targetGroup.targetGroups.name}</span>
-                    <div class="clearfix"></div>
-                  </li>
-                [/#list]
-                [#else]
+                  [#list capdev.capdevTargetGroupList as targetGroup]
+                    <li id="" class="targetGroup clearfix col-md-3">
+                      [#if editable]
+                        <a class=" removeTargetGroup removeIcon" title="Remove targetGroup" href="[@s.url action='${centerSession}/deleteTargetGroup'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevTargetGroup" value=targetGroup.id /][/@s.url]"></a>
+                      [/#if]
+                      <input class="id" type="hidden"  value="${(targetGroup.id)!}" name="capdev.capdevTargetGroupList[${targetGroup_index}].id" />
+                      <input class="tgId" type="hidden"  value="${(targetGroup.targetGroups.id)!-1}" name="capdev.capdevTargetGroupList[${targetGroup_index}].targetGroups.id" />
+                      <span class="name">${targetGroup.targetGroups.name}</span>
+                      <div class="clearfix"></div>
+                    </li>
+                  [/#list]
                 [/#if]
                 <p class="emptyText"> [@s.text name="capdev.notTargetGroups" /]</p> 
               </ul>

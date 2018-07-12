@@ -415,3 +415,15 @@ img.capDevIconDisable{
 .listSelectBlock {
   padding-left: 8px;
 }
+
+.buttons-field {
+  width: 40%;
+  float: right;
+  /* margin-top: 22px; */
+  text-align: center;
+}
+
+.url-field {
+  width: 59%;
+  float: left;
+}
