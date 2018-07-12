@@ -85,6 +85,7 @@
         <th class="name">Highlight Name</th>
         <th class="type">Author</th>
         <th class="year">Year</th>
+        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
         <th class="removeHighlight">Remove</th> 
       </tr>
     </thead>
@@ -102,6 +103,12 @@
             </td>
             <td class="type">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.author}[#else]Not defined[/#if]</td>
             <td class="year">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.year}[#else]Not defined[/#if]</td>
+            [#-- Summary PDF download --]
+          <td>
+            <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectHighlightSummary'][@s.param name='highlightID']${hl.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
+              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>            
+          </td>
             <td class="removeHighlight-row text-center">
               [#if canEdit  && (hl.projectHighlightInfo.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${hl.id}" class="removeHighlight" href="#" title="" >
