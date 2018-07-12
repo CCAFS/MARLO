@@ -9,6 +9,7 @@
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
+  "${baseUrlMedia}/js/capDev/syncParticipants.js",
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -275,58 +276,96 @@
 [#macro induvidualParticipant]
   <div class="loading syncBlock" style="display:none"></div>
   <div class="note  individualparticipantForm">
-    <p>Please complete the information of the trainee who received the individual capdev intervention. <br /> For visiting researchers or practicum students enter the CIAT employee number and press the green button to syncronize information</p>
+    <p><small>[@s.text name="capdev.help.participant.helpText" /]</small></p>
   </div>
   <div class="individualparticipantForm" style="display:none;">
     <input type="hidden" name="capdev.participant.id" value="${(capdev.participant.id)!}" class="genderInput"/>
-    [#-- Participant code --]
-    <div class="form-group row">
-      <div class="col-md-4">
-        [@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
-      </div>
-      [#if editable]
-      <div class="col-md-2">
-        <div id="syncBoton" class="checkButton syncParticipant" style="margin-top:21px;">[@s.text name="capdev.participant.code.sync" /]</div>
-      </div>
-      [/#if]
-    </div>
-    [#-- Participant name and middle name --]
+    
+    [#-- Finance code module --]
+    [#if capdev.participant?has_content]
+      [#assign isSynced = (capdev.participant.sync)!false ]
+    [#else]
+      [#assign isSynced =false ]
+    [/#if]
+   
+    <label for="" class="editable">[@s.text name="capdev.participant"/]: <span class="red requiredTag" style="display:none;">*</span></label>
+    [@customForm.helpLabel name="capdev.help.participant.code" paramText="" showIcon=false editable=editable/]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" className="participant-name" required=true editable=editable/]
+        <div class="url-field">
+          <div class="">
+            [#if editable]
+              [#-- Finance Input --]
+              <input type="text" name="capdev.participant.code" value="${(capdev.participant.code)!}" class="form-control input-sm financeCode participant-code optional" [#if isSynced]readonly="readonly"[/#if] placeholder="">
+            [#else]
+              <input type="hidden" class="financeCode" name="capdev.participant.code" value="${(capdev.participant.code)!}"/>
+              <small >${(capdev.participant.code)!} </small>
+            [/#if]
+          </div>
+          <span class="financeCode-message"></span>
+        </div>
+        <div class="buttons-field">
+          <input type="hidden" id="isSynced" name="capdev.participant.sync" value="${isSynced?string}" />
+          [#if editable]
+            <div id="fillMetadata">
+              [#-- Sync Button --]
+              <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+              <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+                [#-- Update Button --]
+                <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+                [#-- Unsync Button --]
+                <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+              </div>
+            </div>
+          [/#if]
+        </div>
+        <div id="metadata-output row">
+          <p class="lastDaySync" style="display:${(!isSynced)?string('none', 'block')}">Last sync was made on <span>${(capdev.participant.syncedDate?date)!}</span></p>
+        </div>
+        <input type="hidden" class="fundingSourceSyncedDate" name="capdev.participant.syncedDate" value="${(capdev.participant.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
       </div>
-      <div class=" col-md-6">
+    </div>
+    
+    
+    [#-- Participant name and middle name --]
+    <div class="form-group row">
+      <div class="col-md-6 metadataElement-firstName">
+        [@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" className="participant-name metadataValue" required=true readOnly=isSynced editable=editable/]
+      </div>
+      <div class=" col-md-6 ">
         [@customForm.input name="capdev.participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
       </div>
     </div>
     [#-- participant last name and gender --]
     <div class="form-group row ">
-      <div class="form-group col-md-6">
-        [@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" className="participant-lastname"  required=true editable=editable/]
+      <div class="form-group col-md-6 metadataElement-lastName">
+        [@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" className="participant-lastname metadataValue" required=true readOnly=isSynced editable=editable/]
       </div>
-      <div class="form-group col-md-6 genderSelect">
+      <div class="form-group col-md-6 genderSelect metadataElement-gender">
         <input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
-        [@customForm.select name="capdev.participant.gender" value="'${(capdev.participant.gender)!}'" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
+        [@customForm.select name="capdev.participant.gender" value="'${(capdev.participant.gender)!}'" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" disabled=isSynced required=true editable=editable className="metadataValue"/]
+        [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="capdev.participant.gender" value="${(capdev.participant.gender)!}" />[/#if]
       </div>
     </div>
 
     [#-- Age --]
     <div class="form-group row">
       <div class="col-md-6">
-        [@customForm.select name="capdev.participant.age.id"  listName="rangeAgeList" keyFieldName="id" displayFieldName="range" help="" i18nkey="Range age"  placeholder="capdev.select" required=false editable=editable className=""/]
+        [@customForm.select name="capdev.participant.age.id"  listName="rangeAgeList" keyFieldName="id" displayFieldName="range" help="" i18nkey="Range age"  placeholder="capdev.select" required=true editable=editable className=""/]
       </div>
     </div>
     
-    [#-- Participant citizenship and highest degree  --]
+    [#-- Participant citizenship    --]
     <div class="form-group row">
-      <div class="col-md-6 pCitizenshipcountriesList">
-        [@customForm.select name="capdev.participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true editable=editable/]
+      <div class="col-md-6 pCitizenshipcountriesList metadataElement-countryID">
+        [@customForm.select name="capdev.participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="countrieSelect metadataValue" disabled=isSynced  placeholder="capdev.select" required=true editable=editable/]
+        [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="capdev.participant.locElementsByCitizenship.id" value="${(capdev.participant.locElementsByCitizenship.id)!}" />[/#if]
       </div> 
     </div>
     [#-- Participant personal email and job email --]
     <div class="form-group row  ">
-      <div class="col-md-6">
-        [@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" className="participant-pEmail"  required=true editable=editable/]
+      <div class="col-md-6 metadataElement-email">
+        [@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" className="participant-pEmail metadataValue"  required=true readOnly=isSynced editable=editable/]
       </div>
       <div class="col-md-6">
         [@customForm.input name="capdev.participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
@@ -334,12 +373,13 @@
     </div>
     [#-- intitucion and country of institution  --]
     <div class="form-group row">
-      <div class="col-md-6">
+      <div class="col-md-6 metadataElement-institucion">
         [@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="composedName" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
-
+        <span class="text-warning metadataSuggested"></span> 
         [#if editable]
+        
           <div class="note participantMessage">
-            <p>If you cannot find the institution you are looking for, suggest another one by clicking on the box <b>"Other"</b></p>
+            <p><small>If you cannot find the institution you are looking for, suggest another one by clicking on the box <b>"Other"</b></small></p>
           </div>
         [/#if]
 
@@ -350,14 +390,15 @@
         </div>
 
       </div>
-      <div class="col-md-6 pcountryOfInstitucionList">
+      <div class="col-md-6 pcountryOfInstitucionList ">
         [@customForm.select name="capdev.participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" editable=editable /]
+        
       </div>
     </div>
-    <!-- supervisor and funding type -->
+    [#-- Supervisor and funding type --]
     <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" className="participant-supervisor"  required=true editable=editable/]
+      <div class="col-md-6 metadataElement-supervisor1">
+        [@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" className="participant-supervisor metadataValue"  required=true readOnly=isSynced editable=editable/]
       </div>
       <div class="col-md-6">
         <!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->
