@@ -43,7 +43,17 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
-
+    
+    <!-- Projects Summaries -->
+    <action name="{crp}/projectHighlightSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightSummaryAction">
+      <interceptor-ref name="unloggedStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
 	</package>
 
 </struts>
