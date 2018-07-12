@@ -328,7 +328,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumMenParticipants(Object[][] data) {
     int numMen = 0;
     for (Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("Male")) {
+      if (((String) element[2]).equalsIgnoreCase("Male")) {
         numMen++;
       }
     }
@@ -343,7 +343,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumOtherGender(Object[][] data) {
     int numOther = 0;
     for (Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("Other")) {
+      if (((String) element[2]).equalsIgnoreCase("Other")) {
         numOther++;
 
       }
@@ -359,7 +359,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumWomenParticipants(Object[][] data) {
     int numWomen = 0;
     for (Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("Female")) {
+      if (((String) element[2]).equalsIgnoreCase("Female")) {
         numWomen++;
 
       }
@@ -444,45 +444,27 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     for (int i = 0; i < reader.getTotalRows(); i++) {
       Participant participant = new Participant();
-      participant.setCode(Math.round((double) data[i][0]));
-      participant.setName((String) data[i][1]);
-      participant.setLastName((String) data[i][2]);
-      participant.setGender((String) data[i][3]);
+      participant.setName((String) data[i][0]);
+      participant.setLastName((String) data[i][1]);
+      participant.setGender((String) data[i][2]);
 
-      if (reader.sustraerID((String) data[i][4]) != null) {
-        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])) != null) {
+      if (reader.sustraerID((String) data[i][3]) != null) {
+        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][3])) != null) {
           participant.setLocElementsByCitizenship(
-            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])));
+            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][3])));
         }
 
       }
-      if (reader.sustraerId((String) data[i][5]) != null) {
+      if (reader.sustraerId((String) data[i][4]) != null) {
         if (capdevHighestDegreeService
-          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))) != null) {
+          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][4]))) != null) {
           participant.setHighestDegree(capdevHighestDegreeService
-            .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
-        }
-
-      }
-      if (reader.sustraerID((String) data[i][6]) != null) {
-        if (institutionService
-          .getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))) != null) {
-          participant.setInstitutions(
-            institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))));
-        }
-
-      }
-      if (reader.sustraerID((String) data[i][7]) != null) {
-        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])) != null) {
-          participant.setLocElementsByCountryOfInstitucion(
-            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])));
+            .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][4]))));
         }
 
       }
 
-      participant.setEmail((String) data[i][8]);
-      participant.setInstitutionsSuggested((String) data[i][9]);
-
+      participant.setEmail((String) data[i][5]);
       participantList.add(participant);
     }
 
