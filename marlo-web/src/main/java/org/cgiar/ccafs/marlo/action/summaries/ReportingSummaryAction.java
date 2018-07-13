@@ -2973,6 +2973,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     fileName.append("FullProjectReportSummary-");
     fileName.append(globalUnitProject.getGlobalUnit().getAcronym() + "-");
     fileName.append("P" + projectID + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");

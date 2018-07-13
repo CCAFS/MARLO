@@ -201,6 +201,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

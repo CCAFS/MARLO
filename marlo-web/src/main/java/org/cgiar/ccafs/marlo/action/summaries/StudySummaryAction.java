@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
@@ -92,6 +93,7 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   private long startTime;
   private Long projectExpectedStudyID;
   private ProjectExpectedStudyInfo projectExpectedStudyInfo;
+  private String studyProjects = null;
 
   @Inject
   public StudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
@@ -285,7 +287,20 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("StudySummary-");
+    fileName.append("OutcomesCaseStudySummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    try {
+      if (studyProjects != null && !studyProjects.isEmpty()) {
+        fileName.append(studyProjects.replaceAll("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● ", "") + "-");
+      } else if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
+        fileName.append(projectExpectedStudyInfo.getProjectExpectedStudy().getProject()
+          .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
+      }
+    } catch (Exception e) {
+      LOG.info("Error getting project(s) for study: " + projectExpectedStudyID);
+    }
+    fileName.append("OICS" + projectExpectedStudyID + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
@@ -352,8 +367,8 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
       scopeComments = null, crps = null, flagships = null, regions = null, institutions = null,
       elaborationOutcomeImpactStatement = null, referenceText = null, referencesFile = null, quantification = null,
       genderRelevance = null, youthRelevance = null, capacityRelevance = null, otherCrossCuttingDimensions = null,
-      comunicationsMaterial = null, comunicationsFile = null, contacts = null, studyProjects = null,
-      referenceURL = null, communicationsURL = null;
+      comunicationsMaterial = null, comunicationsFile = null, contacts = null, referenceURL = null,
+      communicationsURL = null;
 
     Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
       isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false;

@@ -501,6 +501,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("SearchTermsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

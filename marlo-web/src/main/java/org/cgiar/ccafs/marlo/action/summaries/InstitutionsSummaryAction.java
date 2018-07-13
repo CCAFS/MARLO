@@ -390,6 +390,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     } else {
       fileName.append("ProjectLeadingInstitutionsSummary-");
     }
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

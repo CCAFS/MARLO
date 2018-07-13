@@ -1118,7 +1118,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append(this.getLoggedCrp().getAcronym() + "-POWBSynthesis-");
+    fileName.append("POWBSynthesisSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");
