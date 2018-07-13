@@ -1764,10 +1764,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     String crp = this.getLoggedCrp().getAcronym();
     Date date = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
-
-    fileName.append("2017_" + crp + "_AR_" + sdf.format(date));
+    fileName.append("AnnualReportSummary-");
+    fileName.append(crp + "-");
+    fileName.append(this.getSelectedYear() + "_");
+    fileName.append(sdf.format(date));
     fileName.append(".docx");
-
     return fileName.toString();
   }
 

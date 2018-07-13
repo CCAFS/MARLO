@@ -244,6 +244,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectHighlightsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {

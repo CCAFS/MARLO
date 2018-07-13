@@ -267,6 +267,7 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetByCoAsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

@@ -237,6 +237,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ImpactPathWayContributionsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "_");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

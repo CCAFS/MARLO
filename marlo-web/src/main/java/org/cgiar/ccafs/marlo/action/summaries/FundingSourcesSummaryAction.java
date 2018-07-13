@@ -342,6 +342,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("FundingSourcesSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

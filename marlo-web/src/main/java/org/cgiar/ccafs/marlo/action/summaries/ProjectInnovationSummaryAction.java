@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
@@ -233,6 +234,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectInnovationSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    try {
+      if (projectInnovationInfo != null && projectInnovationInfo.getProjectInnovation().getProject() != null) {
+        fileName.append(projectInnovationInfo.getProjectInnovation().getProject()
+          .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
+      }
+    } catch (Exception e) {
+      LOG.info("Error getting project for innovation: " + projectInnovationID);
+    }
+    fileName.append("I" + projectInnovationID + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");

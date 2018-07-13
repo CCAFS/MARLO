@@ -668,6 +668,8 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("OutcomesCaseStudiesSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {

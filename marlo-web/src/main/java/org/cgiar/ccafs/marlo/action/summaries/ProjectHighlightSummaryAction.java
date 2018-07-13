@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -223,6 +224,17 @@ public class ProjectHighlightSummaryAction extends BaseSummariesAction implement
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectHighlightSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    try {
+      if (projectHighlightInfo != null && projectHighlightInfo.getProjectHighlight().getProject() != null) {
+        fileName.append(projectHighlightInfo.getProjectHighlight().getProject()
+          .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
+      }
+    } catch (Exception e) {
+      LOG.info("Error getting project for highlight: " + projectHighlightID);
+    }
+
+    fileName.append("H" + projectHighlightID + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");

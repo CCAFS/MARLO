@@ -722,6 +722,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
