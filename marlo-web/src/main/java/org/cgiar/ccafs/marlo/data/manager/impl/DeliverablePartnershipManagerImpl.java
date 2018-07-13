@@ -174,10 +174,12 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     List<DeliverablePartnership> deliverablePartnerships =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
         projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
-
-    for (DeliverablePartnership dePartnership : deliverablePartnerships) {
-      deliverablePartnershipDAO.deleteDeliverablePartnership(dePartnership.getId());
+    if (deliverablePartnerships != null) {
+      for (DeliverablePartnership dePartnership : deliverablePartnerships) {
+        deliverablePartnershipDAO.deleteDeliverablePartnership(dePartnership.getId());
+      }
     }
+
 
     if (phase.getNext() != null) {
       this.deleteDeliverablePartnership(phase.getNext(), deliverableID, deliverablePartnership);
