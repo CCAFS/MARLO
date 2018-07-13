@@ -45,9 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
@@ -899,9 +897,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     List<List<POIField>> datas = new ArrayList<>();
-
     List<POIField> data;
-    this.tableCInfo(this.getActualPhase());
     // Setup Table C
     tableC = reportSynthesisCrossCuttingDimensionManager.getTableC(this.getSelectedPhase(), this.getLoggedCrp());
     if (tableC != null) {
@@ -2009,197 +2005,6 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
-  }
-
-  /**
-   * List all the deliverables of the Crp to make the calculations in the Cross Cutting Socores.
-   * 
-   * @param pashe - The phase that get the deliverable information.
-   */
-  public void tableCInfo(Phase phase) {
-    List<Deliverable> deliverables = new ArrayList<>();
-    List<DeliverableInfo> deliverableList = new ArrayList<>();
-    int iGenderPrincipal = 0;
-    int iGenderSignificant = 0;
-    int iGenderNa = 0;
-    int iYouthPrincipal = 0;
-    int iYouthSignificant = 0;
-    int iYouthNa = 0;
-    int iCapDevPrincipal = 0;
-    int iCapDevSignificant = 0;
-    int iCapDevNa = 0;
-
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && (p.getProject().getProjecInfoPhase(phase) != null
-          && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjecInfoPhase(phase) != null && p.getProject().getProjectInfo().getStatus()
-            .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList())) {
-
-      for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
-        && d.getDeliverableInfo(phase) != null
-        && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
-          || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus()
-              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && d.getDeliverableInfo().getNewExpectedYear() != null
-            && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
-          || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d
-            .getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
-        .collect(Collectors.toList())) {
-        deliverables.add(deliverable);
-      }
-
-    }
-
-    if (deliverables != null && !deliverables.isEmpty()) {
-      for (Deliverable deliverable : deliverables) {
-        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-        if (deliverableInfo.isActive()) {
-
-          deliverableList.add(deliverableInfo);
-          boolean bGender = false;
-          boolean bYouth = false;
-          boolean bCapDev = false;
-          if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
-            iGenderNa++;
-            iYouthNa++;
-            iCapDevNa++;
-          } else {
-            // Gender
-            if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
-              bGender = true;
-              if (deliverableInfo.getCrossCuttingScoreGender() != null
-                && deliverableInfo.getCrossCuttingScoreGender() == 1) {
-                iGenderSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreGender() != null
-                && deliverableInfo.getCrossCuttingScoreGender() == 2) {
-                iGenderPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreGender() == null) {
-                iGenderNa++;
-              }
-            }
-
-            // Youth
-            if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
-              bYouth = true;
-              if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
-                iYouthSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
-                iYouthPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreYouth() == null) {
-                iYouthNa++;
-              }
-            }
-
-            // CapDev
-            if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
-              bCapDev = true;
-              if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
-                iCapDevSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
-                iCapDevPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreCapacity() == null) {
-                iCapDevNa++;
-              }
-            }
-
-            if (!bGender) {
-              iGenderNa++;
-            }
-            if (!bYouth) {
-              iYouthNa++;
-            }
-            if (!bCapDev) {
-              iCapDevNa++;
-            }
-          }
-        }
-      }
-      tableC = reportSynthesisCrossCuttingDimensionManager.getTableC(this.getActualPhase(), this.getLoggedCrp());
-      deliverableList = tableC.getDeliverableList();
-      // tableC = new CrossCuttingDimensionTableDTO();
-      int iDeliverableCount = deliverableList.size();
-
-      tableC.setTotal(iDeliverableCount);
-
-      double dGenderPrincipal = (iGenderPrincipal * 100.0) / iDeliverableCount;
-      double dGenderSignificant = (iGenderSignificant * 100.0) / iDeliverableCount;
-      double dGenderNa = (iGenderNa * 100.0) / iDeliverableCount;
-      double dYouthPrincipal = (iYouthPrincipal * 100.0) / iDeliverableCount;
-      double dYouthSignificant = (iYouthSignificant * 100.0) / iDeliverableCount;
-      double dYouthNa = (iYouthNa * 100.0) / iDeliverableCount;
-      double dCapDevPrincipal = (iCapDevPrincipal * 100.0) / iDeliverableCount;
-      double dCapDevSignificant = (iCapDevSignificant * 100.0) / iDeliverableCount;
-      double dCapDevNa = (iCapDevNa * 100.0) / iDeliverableCount;
-
-      // Gender
-      tableC.setGenderPrincipal(iGenderPrincipal);
-      tableC.setGenderSignificant(iGenderSignificant);
-      tableC.setGenderScored(iGenderNa);
-
-      tableC.setPercentageGenderPrincipal(dGenderPrincipal);
-      tableC.setPercentageGenderSignificant(dGenderSignificant);
-      tableC.setPercentageGenderNotScored(dGenderNa);
-      // Youth
-      tableC.setYouthPrincipal(iYouthPrincipal);
-      tableC.setYouthSignificant(iYouthSignificant);
-      tableC.setYouthScored(iYouthNa);
-
-      tableC.setPercentageYouthPrincipal(dYouthPrincipal);
-      tableC.setPercentageYouthSignificant(dYouthSignificant);
-      tableC.setPercentageYouthNotScored(dYouthNa);
-      // CapDev
-      tableC.setCapDevPrincipal(iCapDevPrincipal);
-      tableC.setCapDevSignificant(iCapDevSignificant);
-      tableC.setCapDevScored(iCapDevNa);
-
-      tableC.setPercentageCapDevPrincipal(dCapDevPrincipal);
-      tableC.setPercentageCapDevSignificant(dCapDevSignificant);
-      tableC.setPercentageCapDevNotScored(dCapDevNa);
-
-      // Get the list of liaison institutions Flagships and PMU.
-      flagshipLiaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      flagshipLiaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-      // ADD PMU as liasion Institution too
-      flagshipLiaisonInstitutions.addAll(this.getLoggedCrp().getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
-        .collect(Collectors.toList()));
-
-      // Informative table to Flagships
-      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null
-        && reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-          .getReportSynthesisFundingUseExpendituryAreas() != null
-        && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-          .isEmpty()) {
-        reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-          .setExpenditureAreas(new ArrayList<>(reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-            .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
-            .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
-      } else {
-        reportSynthesisPMU.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
-        List<PowbExpenditureAreas> expAreas = new ArrayList<>(
-          powbExpenditureAreasManager.findAll().stream().filter(x -> x.isActive() && x.getIsExpenditure())
-            .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList()));
-        for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
-          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
-            new ReportSynthesisFundingUseExpendituryArea();
-          fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
-          reportSynthesisPMU.getReportSynthesisFundingUseSummary().getExpenditureAreas().add(fundingUseExpenditureArea);
-        }
-      }
-    }
-
   }
 
 
