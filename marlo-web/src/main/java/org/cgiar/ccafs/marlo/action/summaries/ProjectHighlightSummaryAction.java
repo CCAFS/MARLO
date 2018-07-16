@@ -374,7 +374,7 @@ public class ProjectHighlightSummaryAction extends BaseSummariesAction implement
       double pageHeigth = 792 * 0.4;
       double imageWidth = 244;
       double imageHeigth = 163;
-      image = this.getHighlightsImagesUrl(projectHighlightInfo.getProjectHighlight().getProject().getId().toString())
+      image = this.getHightlightImagePath(projectHighlightInfo.getProjectHighlight().getProject().getId())
         + projectHighlightInfo.getFile().getFileName();
       imageurl = this.getHighlightsImagesUrl(projectHighlightInfo.getProjectHighlight().getProject().getId().toString())
         + projectHighlightInfo.getFile().getFileName();
