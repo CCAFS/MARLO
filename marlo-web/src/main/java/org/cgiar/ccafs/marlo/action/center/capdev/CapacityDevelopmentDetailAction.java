@@ -78,7 +78,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public enum DurationUnits {
-    Hours, Days, Weeks, Years
+    Hours, Days, Weeks, Months, Years
   }
 
   public enum Genders {
@@ -455,16 +455,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
 
       }
-      if (reader.sustraerId((String) data[i][4]) != null) {
-        if (capdevHighestDegreeService
-          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][4]))) != null) {
-          participant.setHighestDegree(capdevHighestDegreeService
-            .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][4]))));
-        }
 
-      }
-
-      participant.setEmail((String) data[i][5]);
+      participant.setEmail((String) data[i][4]);
       participantList.add(participant);
     }
 

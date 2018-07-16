@@ -19,6 +19,7 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
 
   private static final long serialVersionUID = 1756645330425186871L;
 
+
   @Expose
   private CenterProjectStatus projectStatus;
 
@@ -29,21 +30,23 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
   @Expose
   private CapacityDevelopment capdev;
 
+
   @Expose
   private Boolean capdevD;
 
-
   @Expose
   private CenterDeliverableType deliverableType;
-
 
   @Expose
   private String name;
 
 
   @Expose
-  private Date startDate;
+  private String description;
 
+
+  @Expose
+  private Date startDate;
 
   @Expose
   private Date endDate;
@@ -55,10 +58,11 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
   @Expose
   private CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme;
 
-
   private Set<CenterDeliverableOutput> deliverableOutputs = new HashSet<CenterDeliverableOutput>(0);
 
+
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
+
 
   private Set<CenterDeliverableDocument> deliverableDocuments = new HashSet<CenterDeliverableDocument>(0);
 
@@ -95,7 +99,6 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
     return capdev;
   }
 
-
   public Date getDateCreated() {
     return dateCreated;
   }
@@ -103,6 +106,7 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
   public CenterDeliverableCrosscutingTheme getDeliverableCrosscutingTheme() {
     return deliverableCrosscutingTheme;
   }
+
 
   public Set<CenterDeliverableDocument> getDeliverableDocuments() {
     return deliverableDocuments;
@@ -116,6 +120,10 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
     return deliverableType;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
   public List<CenterDeliverableDocument> getDocuments() {
     return documents;
   }
@@ -123,7 +131,6 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
   public Date getEndDate() {
     return endDate;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -137,19 +144,19 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
     return name;
   }
 
+
   public List<CenterDeliverableOutput> getOutputs() {
     return outputs;
   }
-
 
   public CenterProject getProject() {
     return project;
   }
 
+
   public CenterProjectStatus getProjectStatus() {
     return projectStatus;
   }
-
 
   public Set<CenterSectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -179,23 +186,24 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
     this.capdev = capdev;
   }
 
+
   public void setCapdevD(Boolean capdevD) {
     this.capdevD = capdevD;
   }
-
 
   public void setDateCreated(Date dateCreated) {
     this.dateCreated = dateCreated;
   }
 
+
   public void setDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
     this.deliverableCrosscutingTheme = deliverableCrosscutingTheme;
   }
 
-
   public void setDeliverableDocuments(Set<CenterDeliverableDocument> deliverableDocuments) {
     this.deliverableDocuments = deliverableDocuments;
   }
+
 
   public void setDeliverableOutputs(Set<CenterDeliverableOutput> deliverableOutputs) {
     this.deliverableOutputs = deliverableOutputs;
@@ -203,6 +211,10 @@ public class CenterDeliverable extends MarloAuditableEntity implements java.io.S
 
   public void setDeliverableType(CenterDeliverableType deliverableType) {
     this.deliverableType = deliverableType;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 

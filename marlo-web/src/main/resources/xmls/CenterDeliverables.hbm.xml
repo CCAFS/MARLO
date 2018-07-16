@@ -42,6 +42,9 @@
 		<property name="name" type="string">
 			<column name="name" sql-type="TEXT" />
 		</property>
+		<property name="description" type="string">
+      <column name="description" sql-type="TEXT" />
+    </property>
 		<property name="dateCreated" type="timestamp">
 			<column name="date_created" length="19" />
 		</property>
