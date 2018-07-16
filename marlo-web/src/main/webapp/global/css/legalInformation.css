@@ -5,3 +5,7 @@ li, p{
 #draggable-button p{
     text-align: inherit;
 }
+
+ol {
+  padding: 0 1em;
+}
