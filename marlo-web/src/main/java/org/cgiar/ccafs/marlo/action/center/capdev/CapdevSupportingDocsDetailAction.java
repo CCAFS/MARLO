@@ -362,6 +362,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   public String save() {
 
     supportingDocDB.setName(deliverable.getName());
+    supportingDocDB.setDescription(deliverable.getDescription());
 
     if (deliverable.getDeliverableType() == null) {
       supportingDocDB.setDeliverableType(null);

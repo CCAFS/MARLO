@@ -59,6 +59,13 @@
           </div>
           
         </div>
+        [#-- supporting documents --]
+        <div class="form-group row ">
+          <div class="col-md-12">
+            [@customForm.textArea name="deliverable.description" i18nkey="capdev.supportingDocs.description" type="text" help="" editable=editable   required=true /]
+          </div>
+          
+        </div>
         <div class="form-group row ">
           [#-- supporting docs type --]
           <div class="col-md-6">

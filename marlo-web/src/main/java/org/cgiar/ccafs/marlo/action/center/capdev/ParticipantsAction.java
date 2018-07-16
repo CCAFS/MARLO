@@ -113,7 +113,6 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
     reference = sheet.getSheetName() + "!$A$1:$A$" + data.length; // area de referencia
     namedCountry.setRefersToFormula(reference);
 
-
   }
 
   public String dowmloadTemplate() {
@@ -135,11 +134,8 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
       Sheet sheet1 = wb.getSheetAt(0);
       XSSFSheet sheet2 = wb.getSheet("countries");
-      XSSFSheet sheet3 = wb.getSheet("highest_degree");
-
 
       String dataValidationCountryName = "countriesLis";
-      String dataValidationHighestDegreeName = "highestDegreeList";
 
 
       // se traen los datos desde la DB con los que se desean crear las listas para los data validator y se rellenan los
@@ -175,21 +171,14 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
       // se crean cada uno de los data validator
       this.createDataValidator(wb, sheet2, countries, dataValidationCountryName);
-      this.createDataValidator(wb, sheet3, highestDegree, dataValidationHighestDegreeName);
 
 
       // se configuran y pegan cada uno de los data validator
       DataValidation dataValidationCountry =
         this.setDataValidator(dataValidationCountryName, validationHelper, addressListCountry, constraintCountries);
 
-      DataValidation dataValidationHigehestDegree = this.setDataValidator(dataValidationHighestDegreeName,
-        validationHelper, addressListHighestDegree, constraintHighestDegree);
-
-
       // set de cada data davilidator al sheet1 del template
       sheet1.addValidationData(dataValidationCountry);
-      sheet1.addValidationData(dataValidationHigehestDegree);
-
 
       ByteArrayOutputStream fileOut = new ByteArrayOutputStream();
       wb.write(fileOut);
