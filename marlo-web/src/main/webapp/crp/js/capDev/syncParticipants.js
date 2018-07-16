@@ -26,8 +26,6 @@ function syncMetadata() {
 function setMetadata(data) {
   console.log(data);
   
-  
-
   // Clear inputs hidden from selects disabled
   $('input.selectHiddenInput').remove();
 
