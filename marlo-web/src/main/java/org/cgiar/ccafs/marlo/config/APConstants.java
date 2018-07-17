@@ -629,6 +629,10 @@ public final class APConstants {
   public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL = "Control";
   public static final String REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING = "Formal Training";
 
+  // Capdev Parameters
+  public static final String CRP_CD_ROLE = "crp_cd_role";
+  public static final String CRP_CD_ROLE_ACRONYM = "CD";
+  public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   public static String getFilterBy() {
     return FILTER_BY;

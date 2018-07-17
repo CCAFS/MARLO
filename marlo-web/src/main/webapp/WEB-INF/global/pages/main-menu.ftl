@@ -37,7 +37,7 @@
     ]
   },
   [#-- Cap Dev - CENTER --]
-  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': logged && centerGlobalUnit, 'active': config.debug}, [#-- action.centerCapDevActive() --]
+  { 'slug': 'capdev', 'name': 'menu.capdev',      'namespace': '/capdev',       'action': '${(centerSession)!}/capdev',    'visible': logged && centerGlobalUnit, 'active': action.centerCapDevActive()}, 
   [#-- SUMMARIES - ALL --]
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
 
