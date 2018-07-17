@@ -68,6 +68,7 @@
         [#if projectID??]<input type="hidden" name="projectID" value="${projectID}"/>[/#if]
         [#if fundingSourceID??]<input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>[/#if]
         [#if expectedID??]<input type="hidden" name="expectedID" value="${expectedID}"/>[/#if]
+        [#if capdevID??]<input type="hidden" name="capdevID" value="${capdevID}"/>[/#if]
         <input type="hidden" name="phaseID" value="${actualPhase.id}"/>
         <div class="clearfix"></div>
         <br />
