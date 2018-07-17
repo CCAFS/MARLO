@@ -201,6 +201,11 @@ public class Permission {
   public static final String CENTER_PROJECT_SUBMISSION_PERMISSION =
     "center:{0}:area:{1}:program:{2}:project:{3}:submitProject";
 
+
+  // CapDev
+  public static final String CAP_DEV_FULL_PERMISSION = "crp:{0}:capDev:*";
+  public static final String CAP_DEV_PERMISSION = "crp:{0}:capDev";
+
   /**
    * REST API Permissions
    */
