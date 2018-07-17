@@ -8,6 +8,9 @@ $(document).ready(init);
 
 function init() {
 
+  // Activate Popup
+  popups();
+
   addUser = function(composedName,userId,user) {
     console.log(user);
     var $userField = $elementSelected.parents('.userField');

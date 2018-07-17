@@ -376,19 +376,24 @@
       <div class="col-md-6 metadataElement-institucion">
         [@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="composedName" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
         <span class="text-warning metadataSuggested"></span> 
+           
+        [#-- Request partner adition --]
         [#if editable]
-        
-          <div class="note participantMessage">
-            <p><small>If you cannot find the institution you are looking for, suggest another one by clicking on the box <b>"Other"</b></small></p>
-          </div>
+        <p id="addPartnerText" class="helpMessage">
+          <small>If you cannot find the institution you are looking for, please 
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='capdevID']${(capdevID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
+          </a>
+          </small>
+        </p> 
         [/#if]
-
+        [#-- 
         <div>
           <label>Other <input type="checkbox" name="capdev.participant.otherInstitution" class="otherInstcheck"   [#if (capdev.participant.otherInstitution)??]
           [#if (capdev.participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(capdev.participant.otherInstitution)!}"[/#if]  [#if !editable] disabled="true"[/#if] > </label>
           <div class="suggestInstitution" style="display: none;">[@customForm.textArea name="capdev.participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea" editable=editable /]</div>
         </div>
-
+         --]
       </div>
       <div class="col-md-6 pcountryOfInstitucionList ">
         [@customForm.select name="capdev.participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" editable=editable /]
