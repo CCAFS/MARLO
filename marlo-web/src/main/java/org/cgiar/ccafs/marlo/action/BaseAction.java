@@ -1134,7 +1134,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean centerCapDevActive() {
     try {
       final boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_CAPDEV_ACTIVE).toString());
+        Boolean.parseBoolean(this.getSession().get(APConstants.CRP_CAP_DEV_ACTIVE).toString());
       return sectionActive;
     } catch (final Exception e) {
       return false;

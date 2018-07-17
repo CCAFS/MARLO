@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
+import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -82,6 +84,7 @@ public class PartnersSaveAction extends BaseAction {
   private FundingSourceManager fundingSourceManager;
   private PartnerRequestManager partnerRequestManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ICapacityDevelopmentService capacityDevelopmentManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private final SendMailS sendMail;
@@ -113,7 +116,7 @@ public class PartnersSaveAction extends BaseAction {
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
     ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
     FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager, SendMailS sendMail,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager, ICapacityDevelopmentService capacityDevelopmentManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -125,16 +128,18 @@ public class PartnersSaveAction extends BaseAction {
     this.crpManager = crpManager;
     this.sendMail = sendMail;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.capacityDevelopmentManager = capacityDevelopmentManager;
   }
 
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(fundingSourceID);
     message.append("Capdev: (");
     message.append(capdevID);
     message.append(") - ");
-    message.append("CAPDEV_TITLE_HERE");
-    partnerRequest.setRequestSource("Capdev: (" + capdevID + ") - " + "CAPDEV_TITLE_HERE");
-    partnerRequestModifications.setRequestSource("Capdev: (" + capdevID + ") - " + "CAPDEV_TITLE_HERE");
+    message.append(capacityDevelopment.getTitle());
+    partnerRequest.setRequestSource("Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle());
+    partnerRequestModifications.setRequestSource("Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle());
   }
 
 
