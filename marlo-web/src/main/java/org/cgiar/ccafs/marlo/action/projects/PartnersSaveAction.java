@@ -29,11 +29,13 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -100,6 +102,9 @@ public class PartnersSaveAction extends BaseAction {
   private int fundingSourceID;
   private int expectedID;
   private int activityID;
+  private int capdevID;
+
+
   private String pageRequestName;
 
 
@@ -122,30 +127,38 @@ public class PartnersSaveAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
-  public void addFunginMessage(StringBuilder message, PartnerRequest partnerRequest,
+  public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    message.append("Funding Source: (");
-    message.append(fundingSourceID);
+    message.append("Capdev: (");
+    message.append(capdevID);
     message.append(") - ");
-    message.append(fundingSourceManager.getFundingSourceById(fundingSourceID)
-      .getFundingSourceInfo(this.getActualPhase()).getTitle());
-    partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fundingSourceManager
-      .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
-    partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fundingSourceManager
-      .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
+    message.append("CAPDEV_TITLE_HERE");
+    partnerRequest.setRequestSource("Capdev: (" + capdevID + ") - " + "CAPDEV_TITLE_HERE");
+    partnerRequestModifications.setRequestSource("Capdev: (" + capdevID + ") - " + "CAPDEV_TITLE_HERE");
   }
 
 
+  public void addFunginMessage(StringBuilder message, PartnerRequest partnerRequest,
+    PartnerRequest partnerRequestModifications) {
+    FundingSourceInfo fsInfo =
+      fundingSourceManager.getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase());
+    message.append("Funding Source: (");
+    message.append(fundingSourceID);
+    message.append(") - ");
+    message.append(fsInfo.getTitle());
+    partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle());
+    partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle());
+  }
+
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
+    ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
     message.append("Project: (");
     message.append(projectID);
     message.append(") - ");
-    message.append(projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
-    partnerRequest.setRequestSource("Project: (" + projectID + ") - "
-      + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
-    partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - "
-      + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+    message.append(projectInfo.getTitle());
+    partnerRequest.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
+    partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
   }
 
   public void addStudyMessage(StringBuilder message, PartnerRequest partnerRequest,
@@ -161,12 +174,17 @@ public class PartnersSaveAction extends BaseAction {
       .getProjectExpectedStudyById(expectedID).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
   }
 
+
   public int getActivityID() {
     return activityID;
   }
 
   public ActivityPartner getActivityPartner() {
     return activityPartner;
+  }
+
+  public int getCapdevID() {
+    return capdevID;
   }
 
   public List<LocElement> getCountriesList() {
@@ -185,19 +203,19 @@ public class PartnersSaveAction extends BaseAction {
     return institutions;
   }
 
-
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
   }
+
 
   public long getLocationId() {
     return locationId;
   }
 
-
   public int getProjectID() {
     return projectID;
   }
+
 
   public boolean isMessageSent() {
     return messageSent;
@@ -233,6 +251,15 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), expectedID);
     }
 
+    // Take the CapDev id only the first time the page loads
+    if (this.getRequest().getParameter(APConstants.CAPDEV_ID) != null
+      && Integer.parseInt(this.getRequest().getParameter(APConstants.CAPDEV_ID)) != 0) {
+      capdevID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      pageRequestName = "capdev";
+      LOG.info("The user {} load the request partner section related to the Capdev {}.",
+        this.getCurrentUser().getEmail(), capdevID);
+    }
+
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList =
@@ -249,7 +276,6 @@ public class PartnersSaveAction extends BaseAction {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
   }
-
 
   @Override
   public String save() {
@@ -346,6 +372,10 @@ public class PartnersSaveAction extends BaseAction {
         this.addStudyMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
+      case "capdev":
+        this.addCapDevMessage(message, partnerRequest, partnerRequestModifications);
+        break;
+
     }
 
     partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -382,12 +412,17 @@ public class PartnersSaveAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void setActivityID(int activityID) {
     this.activityID = activityID;
   }
 
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
+  }
+
+  public void setCapdevID(int capdevID) {
+    this.capdevID = capdevID;
   }
 
   public void setExpectedID(int expectedID) {
