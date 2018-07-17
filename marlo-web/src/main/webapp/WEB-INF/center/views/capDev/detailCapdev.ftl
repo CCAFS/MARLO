@@ -99,7 +99,7 @@
     </li>
 </ul>
 
-<!-- region list template-->
+<!-- Region list template-->
 <ul style="display:none">
   <li id="capdevRegionTemplate" class="capdevRegion clearfix col-md-4">
       <div class="removeRegion removeIcon" title="Remove region"></div>
