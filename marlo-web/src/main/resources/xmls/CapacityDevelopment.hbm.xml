@@ -41,6 +41,9 @@
 		<property name="title" type="string">
 			<column name="title" length="500" />
 		</property>
+		<property name="otherFunding" type="string">
+      <column name="other_funding" length="500" />
+    </property>
 		<property name="category" type="int">
 			<column name="category" />
 		</property>
