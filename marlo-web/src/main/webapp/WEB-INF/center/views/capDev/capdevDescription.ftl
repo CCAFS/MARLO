@@ -156,7 +156,7 @@
           
         </div>
         
-        <!-- Partners-->
+        [#-- Partners --]
         <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
@@ -184,7 +184,17 @@
               </ul>
             </div>
           </div>
+          [#-- Request partner adition --]
           [#if editable]
+          <p id="addPartnerText" class="helpMessage">
+            <small>If you cannot find the institution you are looking for, please 
+            <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='capdevID']${(capdevID)!}[/@s.param][@s.param name='context']${(actionName)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
+            </a>
+            </small>
+          </p> 
+          [/#if]
+          [#--  --if editable]
             <div class="row grupsParticipantsForm">
               <div class="note participantMessage">
                 <p>If you cannot find the partner you are looking for, suggest another one by clicking below on the box <b>"Other"</b></p>
@@ -195,7 +205,7 @@
               [#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
               <div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
             </div>
-          [/#if]
+          [/#if --]
         </div>
 
         <!-- OutPuts-->
