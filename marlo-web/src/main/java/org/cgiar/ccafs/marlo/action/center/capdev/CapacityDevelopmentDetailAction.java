@@ -702,8 +702,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
     capdevDB.setTitle(capdev.getTitle());
-    capdevDB.setOtherFunding(capdev.getOtherFunding());
-
 
     if (capdev.getCapdevType() != null) {
       if (capdev.getCapdevType().getId() != -1) {
@@ -927,6 +925,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
+    }
+
+    if (participant.getOtherFunding() == null) {
+      participant.setOtherFunding(null);
     }
 
     participantService.saveParticipant(participant);

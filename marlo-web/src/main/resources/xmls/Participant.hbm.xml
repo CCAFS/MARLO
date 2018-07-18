@@ -35,6 +35,9 @@
 		<property name="name" type="string">
 			<column name="name" length="200" />
 		</property>
+		<property name="otherFunding" type="string">
+      <column name="other_funding" length="200" />
+    </property>
 		<property name="middleName" type="string">
 			<column name="middle_name" length="200" />
 		</property>
