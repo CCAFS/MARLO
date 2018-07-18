@@ -90,13 +90,8 @@
           [#if editable]
             <div class="">
               <div class="note participantMessage">
-                <p>If you cannot find the discipline you are looking for, suggest another one by clicking on the box <b>"Other"</b> </p>
+                <p>If you cannot find the discipline you are looking for, suggest another one by sending a e-mail to <a href="mailto:MARLOSupport@cgiar.org?Subject=MARLO - CapDev suggest Discipline" target="_top">MARLOSupport@cgiar.org</a></p>
               </div>
-            </div>
-            <div>
-              <label>Other <input type="checkbox" name="capdev.otherDiscipline" class="otherDisciplinecheck"   [#if (capdev.otherDiscipline)??]
-              [#if (capdev.otherDiscipline) == "1"] checked="checked" [/#if] value="${(capdev.otherDiscipline)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
-              <div class="suggestDiscipline" style="display: none;">[@customForm.textArea name="capdev.disciplineSuggested" i18nkey="Suggest discipline"  className="textarea"  /]</div>
             </div>
           [/#if]
         </div>

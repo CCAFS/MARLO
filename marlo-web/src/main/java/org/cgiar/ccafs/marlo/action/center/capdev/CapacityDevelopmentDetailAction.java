@@ -698,7 +698,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public String save() {
 
     capdevDB.setStartDate(capdev.getStartDate());
-    capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
