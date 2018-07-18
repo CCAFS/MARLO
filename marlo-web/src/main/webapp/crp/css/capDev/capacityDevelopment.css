@@ -427,3 +427,15 @@ img.capDevIconDisable{
   width: 59%;
   float: left;
 }
+
+li.discipline {
+  position: relative;
+}
+
+li.targetGroup {
+  position: relative;
+}
+
+li.capdevPartner {
+  position: relative;
+}
