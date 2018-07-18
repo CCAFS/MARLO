@@ -381,7 +381,7 @@
         [#if editable]
         <p id="addPartnerText" class="helpMessage">
           <small>If you cannot find the institution you are looking for, please 
-          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='capdevID']${(capdevID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='capdevID']${(capdevID)!}[/@s.param][@s.param name='context']${(actionName)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
           </a>
           </small>

@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -99,17 +100,20 @@ public class PartnersSaveAction extends BaseAction {
   // private ActivityPartner activityPartner;
   private boolean messageSent;
   private String partnerWebPage;
+  private String context;
+
 
   private int projectID;
 
+
   private int fundingSourceID;
+
+
   private int expectedID;
+
   private int activityID;
   private int capdevID;
-
-
   private String pageRequestName;
-
 
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
@@ -131,15 +135,14 @@ public class PartnersSaveAction extends BaseAction {
     this.capacityDevelopmentManager = capacityDevelopmentManager;
   }
 
+
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(capdevID);
-    message.append("Capdev: (");
-    message.append(capdevID);
-    message.append(") - ");
-    message.append(capacityDevelopment.getTitle());
-    partnerRequest.setRequestSource("Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle());
-    partnerRequestModifications.setRequestSource("Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle());
+    String sourceMessage = "" + context + " Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
 
@@ -147,38 +150,31 @@ public class PartnersSaveAction extends BaseAction {
     PartnerRequest partnerRequestModifications) {
     FundingSourceInfo fsInfo =
       fundingSourceManager.getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase());
-    message.append("Funding Source: (");
-    message.append(fundingSourceID);
-    message.append(") - ");
-    message.append(fsInfo.getTitle());
-    partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle());
-    partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle());
+    String sourceMessage = "" + context + " Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
-    message.append("Project: (");
-    message.append(projectID);
-    message.append(") - ");
-    message.append(projectInfo.getTitle());
-    partnerRequest.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
-    partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
+    String sourceMessage = "" + context + " Project: (" + projectID + ") - " + projectInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
+
 
   public void addStudyMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    message.append("Study: (");
-    message.append(expectedID);
-    message.append(") - ");
-    message.append(projectExpectedStudyManager.getProjectExpectedStudyById(expectedID)
-      .getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
-    partnerRequest.setRequestSource("Study: (" + expectedID + ") - " + projectExpectedStudyManager
-      .getProjectExpectedStudyById(expectedID).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
-    partnerRequestModifications.setRequestSource("Study: (" + expectedID + ") - " + projectExpectedStudyManager
-      .getProjectExpectedStudyById(expectedID).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
+    ProjectExpectedStudyInfo studyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID)
+      .getProjectExpectedStudyInfo(this.getActualPhase());
+    String sourceMessage = "" + context + " Study: (" + expectedID + ") - " + studyInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
-
 
   public int getActivityID() {
     return activityID;
@@ -188,8 +184,13 @@ public class PartnersSaveAction extends BaseAction {
     return activityPartner;
   }
 
+
   public int getCapdevID() {
     return capdevID;
+  }
+
+  public String getContext() {
+    return context;
   }
 
   public List<LocElement> getCountriesList() {
@@ -212,19 +213,19 @@ public class PartnersSaveAction extends BaseAction {
     return institutionTypesList;
   }
 
-
   public long getLocationId() {
     return locationId;
   }
+
 
   public int getProjectID() {
     return projectID;
   }
 
-
   public boolean isMessageSent() {
     return messageSent;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -417,10 +418,10 @@ public class PartnersSaveAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public void setActivityID(int activityID) {
     this.activityID = activityID;
   }
+
 
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
@@ -428,6 +429,10 @@ public class PartnersSaveAction extends BaseAction {
 
   public void setCapdevID(int capdevID) {
     this.capdevID = capdevID;
+  }
+
+  public void setContext(String context) {
+    this.context = context;
   }
 
   public void setExpectedID(int expectedID) {
