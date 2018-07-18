@@ -702,7 +702,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
     capdevDB.setTitle(capdev.getTitle());
-    capdevDB.setOtherDiscipline(capdev.getOtherDiscipline());
+    capdevDB.setOtherFunding(capdev.getOtherFunding());
 
 
     if (capdev.getCapdevType() != null) {
