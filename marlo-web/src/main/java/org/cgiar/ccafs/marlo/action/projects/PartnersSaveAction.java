@@ -133,7 +133,7 @@ public class PartnersSaveAction extends BaseAction {
 
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(fundingSourceID);
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(capdevID);
     message.append("Capdev: (");
     message.append(capdevID);
     message.append(") - ");
