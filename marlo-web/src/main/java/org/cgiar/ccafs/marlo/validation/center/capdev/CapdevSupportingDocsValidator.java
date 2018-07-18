@@ -66,6 +66,14 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
       }
     }
 
+
+    if (deliverable.getYear() != null) {
+      if (deliverable.getYear() == -1) {
+        baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.year"));
+        baseAction.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
     if (deliverable.getDeliverableType() == null) {
       baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.subtype"));
       baseAction.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
