@@ -36,6 +36,15 @@ function init() {
   // Set Date pickers
   setDatePickers();
 
+  // Funding Type
+  $('select.fundingType').on('change', function() {
+    if(this.value == 4) {
+      $('.fundingProvidedBy').show();
+    } else {
+      $('.fundingProvidedBy').hide();
+    }
+  });
+
   // Display individual or group intervention form
   (function() {
     var value = $(".radioButton").val();

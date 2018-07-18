@@ -410,9 +410,11 @@
         [@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" className="participant-supervisor metadataValue"  required=true readOnly=isSynced editable=editable/]
       </div>
       <div class="col-md-6">
-        <!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->
-        [@customForm.select name="capdev.participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select" editable=editable /]
+        [@customForm.select name="capdev.participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select" editable=editable className="fundingType" /]
       </div>
+    </div>
+    <div class="form-group fundingProvidedBy" style="display:${((capdev.participant.fellowship.id == 4)!false)?string('block','none')}">
+      [@customForm.input name="capdev.participant.otherFunding" i18nkey="capdev.participant.otherFunding" type="text" /]
     </div>
   </div>
 [/#macro]
