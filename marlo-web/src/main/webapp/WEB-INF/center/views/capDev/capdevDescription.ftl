@@ -150,7 +150,7 @@
           [#-- CRP --]
           <div class="form-group row">
             <div class="col-md-6">
-              [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="name" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
+              [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="composedName" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
             </div>
           </div>
           

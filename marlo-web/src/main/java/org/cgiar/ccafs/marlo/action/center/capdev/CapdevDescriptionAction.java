@@ -321,7 +321,7 @@ public class CapdevDescriptionAction extends BaseAction {
 
 
     crps = crpService.findAll().stream().filter(out -> out.isActive()).collect(Collectors.toList());
-    Collections.sort(crps, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+    Collections.sort(crps, (r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym()));
 
     partners = institutionService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList());
     Collections.sort(partners, (r1, r2) -> r1.getName().compareTo(r2.getName()));
