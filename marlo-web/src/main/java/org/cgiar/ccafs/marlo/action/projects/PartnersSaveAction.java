@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -138,12 +139,10 @@ public class PartnersSaveAction extends BaseAction {
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(capdevID);
-    message.append("Capdev " + context + ": (");
-    message.append(capdevID);
-    message.append(") - ");
-    message.append(capacityDevelopment.getTitle());
-    partnerRequest.setRequestSource("Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle());
-    partnerRequestModifications.setRequestSource("Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle());
+    String sourceMessage = "" + context + " Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
 
@@ -151,37 +150,30 @@ public class PartnersSaveAction extends BaseAction {
     PartnerRequest partnerRequestModifications) {
     FundingSourceInfo fsInfo =
       fundingSourceManager.getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase());
-    message.append("Funding Source: (");
-    message.append(fundingSourceID);
-    message.append(") - ");
-    message.append(fsInfo.getTitle());
-    partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle());
-    partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle());
+    String sourceMessage = "" + context + " Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
-    message.append("Project: (");
-    message.append(projectID);
-    message.append(") - ");
-    message.append(projectInfo.getTitle());
-    partnerRequest.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
-    partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
+    String sourceMessage = "" + context + " Project: (" + projectID + ") - " + projectInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
 
   public void addStudyMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    message.append("Study: (");
-    message.append(expectedID);
-    message.append(") - ");
-    message.append(projectExpectedStudyManager.getProjectExpectedStudyById(expectedID)
-      .getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
-    partnerRequest.setRequestSource("Study: (" + expectedID + ") - " + projectExpectedStudyManager
-      .getProjectExpectedStudyById(expectedID).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
-    partnerRequestModifications.setRequestSource("Study: (" + expectedID + ") - " + projectExpectedStudyManager
-      .getProjectExpectedStudyById(expectedID).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
+    ProjectExpectedStudyInfo studyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID)
+      .getProjectExpectedStudyInfo(this.getActualPhase());
+    String sourceMessage = "" + context + " Study: (" + expectedID + ") - " + studyInfo.getTitle();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
   public int getActivityID() {
