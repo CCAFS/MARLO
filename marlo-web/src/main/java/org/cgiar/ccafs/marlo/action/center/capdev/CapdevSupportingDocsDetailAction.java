@@ -363,6 +363,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
     supportingDocDB.setName(deliverable.getName());
     supportingDocDB.setDescription(deliverable.getDescription());
+    supportingDocDB.setYear(deliverable.getYear());
 
     if (deliverable.getDeliverableType() == null) {
       supportingDocDB.setDeliverableType(null);
