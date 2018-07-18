@@ -70,7 +70,7 @@
       </result>
     </action>
     
-    <action name="capdevSummaries"
+    <action name="{center}/capdevSummaries"
 			class="org.cgiar.ccafs.marlo.action.center.summaries.CapdevSummaryAction">
 			<result name="success" type="stream">
 				<param name="inputName">inputStream</param>
