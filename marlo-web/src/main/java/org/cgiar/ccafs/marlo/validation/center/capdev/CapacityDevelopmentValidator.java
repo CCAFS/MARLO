@@ -182,62 +182,62 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
       this.validateParticipant(participant, baseAction);
     }
-    if (capdev.getCategory() == 2) {
-
-      if ((capdev.getCtFirstName() == null) || (capdev.getCtLastName() == null) || (capdev.getCtEmail() == null)) {
-        baseAction.addMessage(baseAction.getText("capdev.action.contactPerson"));
-        baseAction.getInvalidFields().put("input-contact", InvalidFieldsMessages.EMPTYFIELD);
-      }
-      if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
-        baseAction.addMessage(baseAction.getText("capdev.action.numParticipants"));
-        baseAction.getInvalidFields().put("list-capdev.uploadFile",
-          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Number of participants or a file "}));
-      }
-      if (uploadFile != null) {
-        if (!uploadFileContentType.equals("application/vnd.ms-excel")
-          && !uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
-          && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-          baseAction.addMessage(baseAction.getText("capdev.action.file"));
-          baseAction.getInvalidFields().put("list-capdev.uploadFile",
-            baseAction.getText(InvalidFieldsMessages.INVALID_FORMAT, new String[] {""}));
-        } else {
-          if (!reader.validarExcelFile(uploadFile)) {
-            baseAction.addMessage(baseAction.getText("capdev.action.file"));
-            baseAction.getInvalidFields().put("list-capdev.uploadFile",
-              baseAction.getText(InvalidFieldsMessages.WRONG_FILE, new String[] {""}));
-          }
-          if (!reader.validarExcelFileData(uploadFile)) {
-            baseAction.addMessage(baseAction.getText("capdev.action.file"));
-            baseAction.getInvalidFields().put("list-capdev.uploadFile",
-              baseAction.getText(InvalidFieldsMessages.EMPTY_FILE, new String[] {""}));
-          }
-        }
-        if (uploadFile.length() > 31457280) {
-          baseAction.addMessage(baseAction.getText("capdev.action.file"));
-          baseAction.getInvalidFields().put("list-capdev.uploadFile",
-            baseAction.getText(InvalidFieldsMessages.FILE_SIZE, new String[] {""}));
-        }
-
-      }
-      if (capdev.getNumParticipants() != null) {
-        if (capdev.getNumMen() == null) {
-          capdev.setNumMen(0);
-        }
-        if (capdev.getNumWomen() == null) {
-          capdev.setNumWomen(0);
-        }
-        if (capdev.getNumOther() == null) {
-          capdev.setNumOther(0);
-        }
-        int totalParticipants = capdev.getNumMen() + capdev.getNumWomen() + capdev.getNumOther();
-        if ((capdev.getNumParticipants() < totalParticipants) || (capdev.getNumParticipants() > totalParticipants)) {
-          baseAction.getInvalidFields().put("input-capdev.numParticipants", "The sum no match");
-          baseAction.getInvalidFields().put("input-capdev.numMen", "The sum no match");
-          baseAction.getInvalidFields().put("input-capdev.numWomen", "The sum no match");
-          baseAction.getInvalidFields().put("input-capdev.numOther", "The sum no match");
-        }
-      }
-    }
+    // if (capdev.getCategory() == 2) {
+    //
+    // if ((capdev.getCtFirstName() == null) || (capdev.getCtLastName() == null) || (capdev.getCtEmail() == null)) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.contactPerson"));
+    // baseAction.getInvalidFields().put("input-contact", InvalidFieldsMessages.EMPTYFIELD);
+    // }
+    // if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.numParticipants"));
+    // baseAction.getInvalidFields().put("list-capdev.uploadFile",
+    // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Number of participants or a file "}));
+    // }
+    // if (uploadFile != null) {
+    // if (!uploadFileContentType.equals("application/vnd.ms-excel")
+    // && !uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
+    // && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.file"));
+    // baseAction.getInvalidFields().put("list-capdev.uploadFile",
+    // baseAction.getText(InvalidFieldsMessages.INVALID_FORMAT, new String[] {""}));
+    // } else {
+    // if (!reader.validarExcelFile(uploadFile)) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.file"));
+    // baseAction.getInvalidFields().put("list-capdev.uploadFile",
+    // baseAction.getText(InvalidFieldsMessages.WRONG_FILE, new String[] {""}));
+    // }
+    // if (!reader.validarExcelFileData(uploadFile)) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.file"));
+    // baseAction.getInvalidFields().put("list-capdev.uploadFile",
+    // baseAction.getText(InvalidFieldsMessages.EMPTY_FILE, new String[] {""}));
+    // }
+    // }
+    // if (uploadFile.length() > 31457280) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.file"));
+    // baseAction.getInvalidFields().put("list-capdev.uploadFile",
+    // baseAction.getText(InvalidFieldsMessages.FILE_SIZE, new String[] {""}));
+    // }
+    //
+    // }
+    // if (capdev.getNumParticipants() != null) {
+    // if (capdev.getNumMen() == null) {
+    // capdev.setNumMen(0);
+    // }
+    // if (capdev.getNumWomen() == null) {
+    // capdev.setNumWomen(0);
+    // }
+    // if (capdev.getNumOther() == null) {
+    // capdev.setNumOther(0);
+    // }
+    // int totalParticipants = capdev.getNumMen() + capdev.getNumWomen() + capdev.getNumOther();
+    // if ((capdev.getNumParticipants() < totalParticipants) || (capdev.getNumParticipants() > totalParticipants)) {
+    // baseAction.getInvalidFields().put("input-capdev.numParticipants", "The sum no match");
+    // baseAction.getInvalidFields().put("input-capdev.numMen", "The sum no match");
+    // baseAction.getInvalidFields().put("input-capdev.numWomen", "The sum no match");
+    // baseAction.getInvalidFields().put("input-capdev.numOther", "The sum no match");
+    // }
+    // }
+    // }
 
   }
 
