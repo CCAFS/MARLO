@@ -190,7 +190,7 @@
       "title": "summaries.board.report.capdevInterventions", 
       "description": "summaries.board.report.capdevInterventions.description", 
       "namespace": "/centerSummaries",
-      "action": "${crpSession}/leadProjectInstitutionsSummary",
+      "action": "${crpSession}/capdevSummaries",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     }
