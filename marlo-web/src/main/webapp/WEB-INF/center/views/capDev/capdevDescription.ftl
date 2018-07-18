@@ -76,7 +76,7 @@
                       [/#if]
                       <input class="id" type="hidden"  value="${(discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].id" />
                       <input class="disciplineId" type="hidden"  value="${(discipline.discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].discipline.id" />
-                      <span class="name"> ${discipline.discipline.name}</span>
+                      <span class="name"> ${(discipline.discipline.name)!}</span>
                     </li>
                   [/#list]
                 [#else]
@@ -90,7 +90,7 @@
           [#if editable]
             <div class="">
               <div class="note participantMessage">
-                <p>If you cannot find the discipline you are looking for, suggest another one by sending a e-mail to <a href="mailto:MARLOSupport@cgiar.org?Subject=MARLO - CapDev suggest Discipline" target="_top">MARLOSupport@cgiar.org</a></p>
+                <small>If you cannot find the discipline you are looking for, suggest another one by sending a e-mail to <a href="mailto:MARLOSupport@cgiar.org?Subject=MARLO - CapDev suggest Discipline" target="_top">MARLOSupport@cgiar.org</a></small>
               </div>
             </div>
           [/#if]
@@ -125,7 +125,7 @@
           [#if editable]
             <div class="grupsParticipantsForm">
               <div class="note participantMessage">
-                <p>If you cannot find the target group you are looking for, suggest another one by clicking on the box <b>"Other"</b> </p>
+                <small>If you cannot find the target group you are looking for, suggest another one by clicking on the box <b>"Other"</b></small>
               </div>
             </div>
             <div class="grupsParticipantsForm">
