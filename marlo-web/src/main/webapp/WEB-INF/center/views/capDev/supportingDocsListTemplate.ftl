@@ -7,7 +7,6 @@
         <th id="ids">[@s.text name="deliverableList.deliverablesids" /]</th>
         <th id="deliverablesName" >[@s.text name="deliverableList.deliverablesName" /]</th>
         <th id="deliverablesType" >[@s.text name="deliverableList.deliverablesType" /]</th>
-        <th id="deliverablesStartDate">[@s.text name="deliverableList.deliverablesStartDate" /]</th>
         <th id="deliverablesEndDate">[@s.text name="deliverableList.deliverablesEndDate" /]</th>
         <th id="deliverableDelete">[@s.text name="deliverableList.deliverablesRemove" /]</th> 
       </tr>
@@ -39,17 +38,10 @@
             [#else][@s.text name="deliverableList.none" /]
             [/#if]
           </td>
-          [#-- start date --]
+          [#-- End date --]
           <td>
-           [#if deliverable.startDate?has_content]${(deliverable.startDate)!""}[#else][@s.text name="deliverableList.none" /][/#if]
+           [#if deliverable.year?has_content]${(deliverable.year)!""}[#else][@s.text name="deliverableList.none" /][/#if]
           </td>
-          [#-- end date --]
-          <td>
-           [#if deliverable.endDate?has_content]${(deliverable.endDate)!""}[#else][@s.text name="deliverableList.none" /][/#if]
-          </td>
-          
-          
-          
           [#-- Delete Deliverable--]
           <td class="text-center">
             [#if editable]
