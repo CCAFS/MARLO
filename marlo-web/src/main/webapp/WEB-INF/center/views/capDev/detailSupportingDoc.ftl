@@ -113,11 +113,16 @@
         </div>
 
         <div class="form-group row datePickersBlock">  
+          [#--  
           <div class="col-md-6">
             [@customForm.input name="deliverable.startDate" value="${(deliverable.startDate?string.medium)!}" i18nkey="Start date" type="text" disabled=!editable required=true editable=editable className="startDate datePicker" /]
           </div> 
           <div class="col-md-6">
             [@customForm.input name="deliverable.endDate" value="${(deliverable.endDate?string.medium)!}" i18nkey="End date" type="text" disabled=!editable required=false editable=editable className="endDate datePicker" /]
+          </div>
+          --]
+          <div class="col-md-3">
+            [@customForm.input name="deliverable.year" i18nkey="Delivery Year" placeholder="e.g ${actualPhase.year +1}" disabled=!editable required=true editable=editable className="deliveryYear" /]
           </div>
         </div>
           
