@@ -99,17 +99,20 @@ public class PartnersSaveAction extends BaseAction {
   // private ActivityPartner activityPartner;
   private boolean messageSent;
   private String partnerWebPage;
+  private String context;
+
 
   private int projectID;
 
+
   private int fundingSourceID;
+
+
   private int expectedID;
+
   private int activityID;
   private int capdevID;
-
-
   private String pageRequestName;
-
 
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
@@ -131,10 +134,11 @@ public class PartnersSaveAction extends BaseAction {
     this.capacityDevelopmentManager = capacityDevelopmentManager;
   }
 
+
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(capdevID);
-    message.append("Capdev: (");
+    message.append("Capdev " + context + ": (");
     message.append(capdevID);
     message.append(") - ");
     message.append(capacityDevelopment.getTitle());
@@ -166,6 +170,7 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - " + projectInfo.getTitle());
   }
 
+
   public void addStudyMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     message.append("Study: (");
@@ -179,7 +184,6 @@ public class PartnersSaveAction extends BaseAction {
       .getProjectExpectedStudyById(expectedID).getProjectExpectedStudyInfo(this.getActualPhase()).getTitle());
   }
 
-
   public int getActivityID() {
     return activityID;
   }
@@ -188,8 +192,13 @@ public class PartnersSaveAction extends BaseAction {
     return activityPartner;
   }
 
+
   public int getCapdevID() {
     return capdevID;
+  }
+
+  public String getContext() {
+    return context;
   }
 
   public List<LocElement> getCountriesList() {
@@ -212,19 +221,19 @@ public class PartnersSaveAction extends BaseAction {
     return institutionTypesList;
   }
 
-
   public long getLocationId() {
     return locationId;
   }
+
 
   public int getProjectID() {
     return projectID;
   }
 
-
   public boolean isMessageSent() {
     return messageSent;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -417,10 +426,10 @@ public class PartnersSaveAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public void setActivityID(int activityID) {
     this.activityID = activityID;
   }
+
 
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
@@ -428,6 +437,10 @@ public class PartnersSaveAction extends BaseAction {
 
   public void setCapdevID(int capdevID) {
     this.capdevID = capdevID;
+  }
+
+  public void setContext(String context) {
+    this.context = context;
   }
 
   public void setExpectedID(int expectedID) {
