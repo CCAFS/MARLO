@@ -399,6 +399,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       for (Deliverable deliverable : deliverables) {
 
         String delivType = null;
+        String title = null;
         String delivSubType = null;
         String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
         Integer delivYear = null;
@@ -422,7 +423,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
-
+        title = (deliverable.getDeliverableInfo().getTitle() != null
+          && !deliverable.getDeliverableInfo().getTitle().isEmpty()) ? deliverable.getDeliverableInfo().getTitle()
+            : null;
 
         if (deliverable.getDeliverableInfo().getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo().getDeliverableType().getName();
@@ -1235,16 +1238,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
-        model.addRow(new Object[] {deliverable.getId(),
-          deliverable.getDeliverableInfo().getTitle().trim().isEmpty() ? null
-            : deliverable.getDeliverableInfo().getTitle(),
-          delivType, delivSubType, delivStatus, delivYear, keyOutput, outcomes, leader, fundingSources, delivNewYear,
-          delivNewYearJustification, delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense,
-          titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata,
-          citationMetadata, HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary,
-          tools, F, A, I, R, disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal,
-          journalIndicator, acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles,
-          newExceptedFlag, phaseID, gender, youth, cap});
+        model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,
+          keyOutput, outcomes, leader, fundingSources, delivNewYear, delivNewYearJustification,
+          delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
+          descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
+          HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary, tools, F, A, I, R,
+          disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
+          acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
+          phaseID, gender, youth, cap});
       }
     }
     return model;
