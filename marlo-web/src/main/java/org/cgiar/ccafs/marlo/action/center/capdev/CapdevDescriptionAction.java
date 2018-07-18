@@ -476,11 +476,8 @@ public class CapdevDescriptionAction extends BaseAction {
   @Override
   public String save() {
 
-
-    capdevDB.setOtherDiscipline(capdev.getOtherDiscipline());
     capdevDB.setOtherTargetGroup(capdev.getOtherTargetGroup());
     capdevDB.setOtherPartner(capdev.getOtherPartner());
-    capdevDB.setDisciplineSuggested(capdev.getDisciplineSuggested());
     capdevDB.setTargetGroupSuggested(capdev.getTargetGroupSuggested());
     capdevDB.setPartnerSuggested(capdev.getPartnerSuggested());
 
