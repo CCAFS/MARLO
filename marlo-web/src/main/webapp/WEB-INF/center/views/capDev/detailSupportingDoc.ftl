@@ -122,7 +122,8 @@
           </div>
           --]
           <div class="col-md-3">
-            [@customForm.input name="deliverable.year" i18nkey="Delivery Year" placeholder="e.g ${actualPhase.year +1}" disabled=!editable required=true editable=editable className="deliveryYear" /]
+            [#--  --@customForm.input name="deliverable.year" i18nkey="Delivery Year" placeholder="e.g ${actualPhase.year +1}" disabled=!editable required=true editable=editable className="deliveryYear" /--]
+            [@customForm.select name="deliverable.year"  listName="allYears" help="" i18nkey="Delivery Year" className="" placeholder="capdev.select" required=true editable=editable /]
           </div>
         </div>
           
