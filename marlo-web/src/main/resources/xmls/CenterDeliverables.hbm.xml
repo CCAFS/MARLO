@@ -32,6 +32,9 @@
 		<property name="capdevD" type="java.lang.Boolean">
 			<column name="is_capdev" />
 		</property>
+		<property name="year" type="java.lang.Integer">
+      <column name="year" />
+    </property>
 		<many-to-one name="deliverableType"
 			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select" >
 			<column name="type_id" />

@@ -151,6 +151,10 @@
     </div>
   </div>
   [#-- Duration --]
+  <div class="note  individualparticipantForm">
+    <p><small>if your training was not full time, what was the real duration?</small></p>
+  </div>
+  
   <div class="form-group row ">
     <div class="col-md-3">
       [@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=editable className="capdevDuration"/] 
