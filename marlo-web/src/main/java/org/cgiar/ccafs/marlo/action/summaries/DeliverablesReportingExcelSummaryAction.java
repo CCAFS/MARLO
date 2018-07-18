@@ -350,7 +350,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
-      // get Reporting deliverables
+      // get Reporting deliverables: added on-going as request of Amanda
       List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
         && d.getProject() != null && d.getProject().isActive()
         && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
@@ -371,11 +371,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
             && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
               || (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
+
+          || (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && (d.getDeliverableInfo().getYear() == this.getSelectedYear())))
         && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
           || d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
           || d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+          || d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))
         .collect(Collectors.toList()));
 
 
