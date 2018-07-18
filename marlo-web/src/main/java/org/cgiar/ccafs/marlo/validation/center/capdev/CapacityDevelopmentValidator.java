@@ -100,9 +100,17 @@ public class CapacityDevelopmentValidator extends BaseValidator {
     if (capdev.getDuration() == null) {
       baseAction.addMessage(baseAction.getText("capdev.action.duration"));
       baseAction.getInvalidFields().put("input-capdev.duration", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (!this.isValidNumber(String.valueOf(capdev.getDuration()))) {
+        baseAction.addMessage(baseAction.getText("capdev.action.duration"));
+        baseAction.getInvalidFields().put("input-capdev.duration", InvalidFieldsMessages.EMPTYFIELD);
+
+        baseAction.addMessage(baseAction.getText("capdev.action.durationUnit"));
+        baseAction.getInvalidFields().put("input-capdev.durationUnit", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
-    if ((capdev.getDuration() != null) && (capdev.getDurationUnit() == null)) {
+    if ((capdev.getDurationUnit() == null) && (capdev.getDurationUnit().equals("-1"))) {
       baseAction.addMessage(baseAction.getText("capdev.action.durationUnit"));
       baseAction.getInvalidFields().put("input-capdev.durationUnit", InvalidFieldsMessages.EMPTYFIELD);
     }
