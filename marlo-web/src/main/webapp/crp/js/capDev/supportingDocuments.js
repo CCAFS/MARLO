@@ -1,84 +1,78 @@
 $(document).ready(init);
 
-function init(){
+function init() {
   block();
 
   $('form select').select2({
     width: "100%"
-    });
+  });
 
+  // Only numeric fields
+  $('.deliveryYear').integerInput();
 
-
-  //event to filter the deliverables subtypes
-$(".capdevDeliverableType").on("change", changeDeliverableType);
+  // event to filter the deliverables subtypes
+  $(".capdevDeliverableType").on("change", changeDeliverableType);
 
 }
-
-
-   
 
 var $supportDocsList = $('table.supportDocsList');
 
 var table = $supportDocsList.DataTable({
-  "bPaginate": true, // This option enable the table pagination
-  "bLengthChange": true, // This option disables the select table size option
-  "bFilter": true, // This option enable the search
-  "bSort": true, // this option enable the sort of contents by columns
-  "bAutoWidth": false, // This option enables the auto adjust columns width
-  "iDisplayLength": 15, // Number of rows to show on the table,
-  aoColumnDefs: [
-      {
-          bSortable: false,
-          aTargets: [
-              -1, 
-          ]
-      }, {
-          sType: "natural",
-          aTargets: [
-            0
-          ]
-      }
-  ]
+    "bPaginate": true, // This option enable the table pagination
+    "bLengthChange": true, // This option disables the select table size option
+    "bFilter": true, // This option enable the search
+    "bSort": true, // this option enable the sort of contents by columns
+    "bAutoWidth": false, // This option enables the auto adjust columns width
+    "iDisplayLength": 15, // Number of rows to show on the table,
+    aoColumnDefs: [
+        {
+            bSortable: false,
+            aTargets: [
+                -1,
+            ]
+        }, {
+            sType: "natural",
+            aTargets: [
+              0
+            ]
+        }
+    ]
 });
 
-//event add link supporting document
-$(".addCapdevsupportDocument").click(function(){
-  
-	var $list = $(".documentList");
-	var $item = $("#document-template").clone(true).removeAttr("id");
-	$list.append($item);
-	$item.show('slow');
-	checkDocsItems($list);
-	updateDocument();
+// event add link supporting document
+$(".addCapdevsupportDocument").click(function() {
+
+  var $list = $(".documentList");
+  var $item = $("#document-template").clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  checkDocsItems($list);
+  updateDocument();
 });
 
-function block(){
-  
+function block() {
+
   var type = $(".capdevDeliverableType").val();
-  
-  if(type == -1){
+
+  if(type == -1) {
     $(".capdevDeliverableSubtype").attr('disabled', 'disabled');
   }
 
 }
 
+// event remove link supporting document
+$(".removeCapdevsupportDocument").click(function() {
 
-//event remove link supporting document
-$(".removeCapdevsupportDocument").click(function(){
-	
-	var $list = $('.documentList');
-	
-	var $item = $(this).parents('.documents');
-	$item.hide(1000, function() {
-	$item.remove();
-	checkDocsItems($list);
-	updateDocument();
+  var $list = $('.documentList');
+
+  var $item = $(this).parents('.documents');
+  $item.hide(1000, function() {
+    $item.remove();
+    checkDocsItems($list);
+    updateDocument();
   });
 
-
-
 })
-
 
 function updateDocument() {
   $(".documentList").find('.documents').each(function(i,e) {
@@ -90,8 +84,6 @@ function updateDocument() {
 function checkDocsItems(block) {
   var items = $(block).find('.documents').length;
 
-  
-  
   if(items == 0) {
     $(block).parent().find('p.inf').fadeIn();
   } else {
@@ -99,13 +91,12 @@ function checkDocsItems(block) {
   }
 }
 
-
-//action remove link supporting document
-$(".removeCapdevsupportDocument-action").click(function(){
+// action remove link supporting document
+$(".removeCapdevsupportDocument-action").click(function() {
   console.log("removeCapdevsupportDocument");
-	var documentID = $(".documentID").val();
+  var documentID = $(".documentID").val();
 
-	$.ajax({
+  $.ajax({
       'url': baseURL + '/delete_document_link.do',
       'data': {
         q: documentID
@@ -118,26 +109,19 @@ $(".removeCapdevsupportDocument-action").click(function(){
       },
       complete: function() {
       }
-    });
+  });
 })
 
-
-
-
-//event to remove supporting document
+// event to remove supporting document
 $('#confirm-delete').on('show.bs.modal', function(e) {
-     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-            
+  $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+
 });
 
-
-
-
-
-function changeDeliverableType(){
-   var deliverableID = $(".capdevDeliverableType").val();
-      if(deliverableID > 0){
-         $.ajax({
+function changeDeliverableType() {
+  var deliverableID = $(".capdevDeliverableType").val();
+  if(deliverableID > 0) {
+    $.ajax({
         'url': baseURL + '/filterDeliverablesSubtypes.do',
         'data': {
           q: deliverableID
@@ -150,22 +134,22 @@ function changeDeliverableType(){
           var length = data.length;
           $('.capdevDeliverableSubtype').empty();
           $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
-          for (var i = 0; i < length; i++) {
-            $('.capdevDeliverableSubtype').append('<option value=' + data[i]['deliberableID'] + '>' + data[i]['deliberableName'] + '</option>');
+          for(var i = 0; i < length; i++) {
+            $('.capdevDeliverableSubtype').append(
+                '<option value=' + data[i]['deliberableID'] + '>' + data[i]['deliberableName'] + '</option>');
           }
         },
         error: function() {
         },
         complete: function() {
-         
-        }
-      })
-    }
-    else{
-       $(".capdevDeliverableSubtype").attr('disabled', 'disabled');
-       $('.capdevDeliverableSubtype').empty();
-       $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
 
-    }
+        }
+    })
+  } else {
+    $(".capdevDeliverableSubtype").attr('disabled', 'disabled');
+    $('.capdevDeliverableSubtype').empty();
+    $('.capdevDeliverableSubtype').append('<option value= -1>select option... </option>');
+
+  }
 
 }

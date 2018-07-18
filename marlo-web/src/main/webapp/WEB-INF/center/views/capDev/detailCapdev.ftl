@@ -145,6 +145,10 @@
   </div>
   [#-- Dates --]
   <div class="form-group row datePickersBlock">
+    [#-- Start date--]
+    <div class="col-md-6 ">
+      [@customForm.input name="capdev.startDate" value="${(capdev.startDate?string.medium)!}" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" editable=editable className="startDate datePicker"/]
+    </div>
     [#-- End date--]
     <div class="col-md-6 ">
       [@customForm.input name="capdev.endDate" value="${(capdev.endDate?string.medium)!}" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate"  editable=editable className="endDate datePicker" /]
@@ -381,7 +385,7 @@
         [#if editable]
         <p id="addPartnerText" class="helpMessage">
           <small>If you cannot find the institution you are looking for, please 
-          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='capdevID']${(capdevID)!}[/@s.param][@s.param name='context']${(actionName)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='capdevID']${(capdevID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
           </a>
           </small>
