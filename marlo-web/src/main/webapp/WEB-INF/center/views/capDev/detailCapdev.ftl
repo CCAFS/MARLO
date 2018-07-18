@@ -124,7 +124,7 @@
   [#-- Title--]
   <div class="form-group row " >
     <div class="col-md-12 "> 
-      [@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title"  required=true disabled=!editable editable=editable /]
+      [@customForm.input name="capdev.title" type="text" help="capdev.help.title" i18nkey="capdev.form.title" helpIcon=false required=true disabled=!editable editable=editable /]
     </div>
   </div>
   [#-- type and contact Person --]
@@ -145,10 +145,6 @@
   </div>
   [#-- Dates --]
   <div class="form-group row datePickersBlock">
-    [#-- Start date--]
-    <div class="col-md-6 ">
-      [@customForm.input name="capdev.startDate" value="${(capdev.startDate?string.medium)!}" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" editable=editable className="startDate datePicker"/]
-    </div>
     [#-- End date--]
     <div class="col-md-6 ">
       [@customForm.input name="capdev.endDate" value="${(capdev.endDate?string.medium)!}" i18nkey="capdev.form.endDate" type="text" help="capdev.help.endDate"  editable=editable className="endDate datePicker" /]
