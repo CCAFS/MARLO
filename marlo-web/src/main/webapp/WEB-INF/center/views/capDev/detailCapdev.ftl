@@ -52,7 +52,7 @@
     </div>
     [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       [#-- Intervencion Information --]
-      <h4 class="form-group headTitle" >Intervencion Information</h4>
+      <h4 class="form-group headTitle" >[@s.text name="capdev.interventionTitle" /]</h4>
       <div  class="fullForm borderBox" >
         [@interventionInfo /]
       </div>
@@ -147,7 +147,7 @@
   <div class="form-group row datePickersBlock">
     [#-- Start date--]
     <div class="col-md-6 ">
-      [@customForm.input name="capdev.startDate" value="${(capdev.startDate?string.medium)!}" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" editable=editable className="startDate datePicker"/]
+      [@customForm.input name="capdev.startDate" value="${(capdev.startDate?string.medium)!}" i18nkey="capdev.form.startDate" type="text"  help="capdev.help.startDate" editable=editable required=true className="startDate datePicker"/]
     </div>
     [#-- End date
     <div class="col-md-6 ">
@@ -155,18 +155,16 @@
     </div>
     --]
   </div>
-  [#-- Duration --]
-  <div class="note  individualparticipantForm">
-    <p><small>if your training was not full time, what was the real duration?</small></p>
-  </div>
   
+  [#-- Duration --]
   <div class="form-group row ">
+    <i class="col-md-12"><small>if your training was not full time, what was the real duration?</small></i>
     <div class="col-md-3">
-      [@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration"   editable=editable className="capdevDuration"/] 
+      [@customForm.input name="capdev.duration" i18nkey="capdev.form.duration" type="text"  help="capdev.help.duration" required=true  editable=editable className="capdevDuration"/] 
     </div>
     <div class="col-md-3 durationUnitSelect">
       <input type="hidden" name="" value="${(capdev.durationUnit)!}" class="durationUnitaInput"/>
-      [@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" value="'${(capdev.durationUnit)!}'" displayFieldName="displayName" help="capdev.help.durationUnit" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select"  editable=editable className="dUnitSelect"/]
+      [@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" value="'${(capdev.durationUnit)!}'" displayFieldName="displayName" help="capdev.help.durationUnit" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select" required=true editable=editable className="dUnitSelect"/]
     </div>
   </div>
 [/#macro]
