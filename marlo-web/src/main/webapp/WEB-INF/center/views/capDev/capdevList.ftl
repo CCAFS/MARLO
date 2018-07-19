@@ -40,6 +40,7 @@
   <h3 class="sectionTitle">Latest CAPDEV Interventions</h3><hr />
   <div>[@capdevList.capdevList capdevs=capDevs canValidate=true canEdit=editable namespace="/capdev" defaultAction="${(centerSession)!}/detailCapdev" /]</div>
   
+  [#if (action.isCapDevManager())!false]
   <div class="row form-group">
     <div class="addButtons botones">
       <div class="buttons-content" >
@@ -50,6 +51,7 @@
       </div>
     </div>
   </div>
+  [/#if]
 
 
   <div class="row form-group conventionContainer">
