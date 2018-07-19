@@ -284,7 +284,6 @@ public class ProgramImpactsAction extends BaseAction {
           crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
-          // TODO crpProgram
           // Check if the User is an Area Leader
           List<CrpProgramLeader> userAreaLeads =
             new ArrayList<>(user.getCrpProgramLeaders().stream()

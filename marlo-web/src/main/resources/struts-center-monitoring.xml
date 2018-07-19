@@ -146,14 +146,14 @@
     
     <action name="{crp}/monitoringOutcomesList"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.outcome.MonitoringOutcomesListAction">
-      <interceptor-ref name="centerSectionStack" />
+      <interceptor-ref name="impactPathwayStack" />
       <result name="input">/WEB-INF/center/views/monitoring/outcomes/outcomeList.ftl
       </result>
     </action>
     
     <action name="{crp}/monitoringOutcome"
       class="org.cgiar.ccafs.marlo.action.center.monitoring.outcome.MonitoringOutcomeAction">
-      <interceptor-ref name="centerImpactPathwayStack" />
+      <interceptor-ref name="impactPathwayStack" />
       <result name="input">/WEB-INF/center/views/monitoring/outcomes/outcomeInfo.ftl
       </result>
       <result name="success" type="redirectAction">
