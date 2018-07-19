@@ -186,7 +186,7 @@
   [#-- CAP DEV --]
   { "slug": "capdev", "active": centerGlobalUnit, "title":"summaries.board.options.capdev", "reportsList": [
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.capdevInterventions", 
       "description": "summaries.board.report.capdevInterventions.description", 
       "namespace": "/centerSummaries",
