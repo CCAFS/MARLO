@@ -114,10 +114,10 @@
           [#-- Delete Deliverable--]
           <td class="text-center">
             [#if isDeliverableNew]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="">
                 <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
-            [#else]
+            [#else] 
               <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
             [/#if]
           </td>
