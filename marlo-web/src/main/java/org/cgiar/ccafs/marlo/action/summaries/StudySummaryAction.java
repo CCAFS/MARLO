@@ -581,7 +581,7 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
     if (projectExpectedStudyInfo.getGenderLevel() != null) {
       genderRelevance = projectExpectedStudyInfo.getGenderLevel().getName();
 
-      if (!(isContribution && isStage1) && !projectExpectedStudyInfo.getGenderLevel().getId().equals(1l)
+      if (!projectExpectedStudyInfo.getGenderLevel().getId().equals(1l)
         && projectExpectedStudyInfo.getDescribeGender() != null
         && !projectExpectedStudyInfo.getDescribeGender().isEmpty()) {
         genderRelevance += "<br>" + this.getText("study.achievementsGenderRelevance.readText") + ": "
@@ -591,7 +591,7 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
     // Youth
     if (projectExpectedStudyInfo.getYouthLevel() != null) {
       youthRelevance = projectExpectedStudyInfo.getYouthLevel().getName();
-      if (!(isContribution && isStage1) && !projectExpectedStudyInfo.getYouthLevel().getId().equals(1l)
+      if (!projectExpectedStudyInfo.getYouthLevel().getId().equals(1l)
         && projectExpectedStudyInfo.getDescribeYouth() != null
         && !projectExpectedStudyInfo.getDescribeYouth().isEmpty()) {
         youthRelevance += "<br>" + this.getText("study.achievementsYouthRelevance.readText") + ": "
@@ -601,7 +601,7 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
     // Capacity Development
     if (projectExpectedStudyInfo.getCapdevLevel() != null) {
       capacityRelevance = projectExpectedStudyInfo.getCapdevLevel().getName();
-      if (!(isContribution && isStage1) && !projectExpectedStudyInfo.getCapdevLevel().getId().equals(1l)
+      if (!projectExpectedStudyInfo.getCapdevLevel().getId().equals(1l)
         && projectExpectedStudyInfo.getDescribeCapdev() != null
         && !projectExpectedStudyInfo.getDescribeCapdev().isEmpty()) {
         capacityRelevance += "<br>" + this.getText("study.achievementsCapDevRelevance.readText") + ": "

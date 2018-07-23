@@ -31,9 +31,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.CaseStudy;
-import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
-import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
@@ -1706,67 +1703,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return bytesPDF;
   }
 
-  private TypedTableModel getCaseStudiesTableModel() {
-    // Code Author: Hermes Jimenez
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
-        "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
-        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year"},
-      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
-      0);
-    Long id = null;
-    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
-      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
-    for (CaseStudyProject caseStudyProject : project
-      .getCaseStudyProjects().stream().filter(csp -> csp.isActive() && csp.getCaseStudy() != null
-        && csp.getCaseStudy().getYear() != null && csp.getCaseStudy().getYear() >= this.getSelectedYear())
-      .collect(Collectors.toList())) {
-      CaseStudy caseStudy = caseStudyProject.getCaseStudy();
-      id = caseStudy.getId();
-      year = String.valueOf(caseStudy.getYear());
-      title = caseStudy.getTitle().trim().isEmpty() ? null : caseStudy.getTitle();
-      outcomeStatement = caseStudy.getOutcomeStatement().trim().isEmpty() ? null : caseStudy.getOutcomeStatement();
-      researchOutputs = caseStudy.getResearchOutputs().trim().isEmpty() ? null : caseStudy.getResearchOutputs();
-      researchPartners = caseStudy.getResearchPartners().trim().isEmpty() ? null : caseStudy.getResearchPartners();
-      activities = caseStudy.getActivities().trim().isEmpty() ? null : caseStudy.getActivities();
-      nonResearchPartneres =
-        caseStudy.getNonResearchPartneres().trim().isEmpty() ? null : caseStudy.getNonResearchPartneres();
-      outputUsers = caseStudy.getOutputUsers().trim().isEmpty() ? null : caseStudy.getOutputUsers();
-      outputUsed = caseStudy.getOutputUsed().trim().isEmpty() ? null : caseStudy.getOutputUsed();
-      evidenceOutcome = caseStudy.getEvidenceOutcome().trim().isEmpty() ? null : caseStudy.getEvidenceOutcome();
-      referencesCase = caseStudy.getReferencesCase().trim().isEmpty() ? null : caseStudy.getReferencesCase();
-      explainIndicatorRelation =
-        caseStudy.getExplainIndicatorRelation().trim().isEmpty() ? null : caseStudy.getExplainIndicatorRelation();
-      List<CaseStudyProject> studyProjects = new ArrayList<>(
-        caseStudy.getCaseStudyProjects().stream().filter(csp -> csp.isActive()).collect(Collectors.toList()));
-      for (CaseStudyProject caseStudyProjectList : studyProjects) {
-        if (caseStudyProjectList.isActive()) {
-          shared = String.valueOf(caseStudyProjectList.getProject().getId());
-        }
-        owner = "P" + caseStudyProjectList.getProject().getId();
-      }
-      List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
-        caseStudy.getCaseStudyIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      StringBuilder indicatorsS = new StringBuilder();
-      for (CaseStudyIndicator caseStudyIndicator : studyIndicators) {
-        if (caseStudyIndicator.isActive()) {
-          indicatorsS.append("● " + caseStudyIndicator.getIpIndicator().getDescription() + "<br>");
-        }
-      }
-      indicators = indicatorsS.toString();
-      if (caseStudy.getFile() != null) {
-        anex = (this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName()).replace(" ", "%20");
-      }
-      model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
-        nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation, anex,
-        owner.trim(), indicators.trim(), shared.trim(), year});
-    }
-    return model;
-  }
-
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
@@ -3097,6 +3033,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
 
+  public String getHighlightsImagesUrl(String projectId) {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
+  }
+
   public String getHighlightsImagesUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "hightlightsImage" + File.separator;
@@ -3104,6 +3044,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
   public String getHighlightsImagesUrlPath(long projectID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
+      + "hightlightsImage" + File.separator;
+  }
+
+  public String getHighlightsImagesUrlPath(String projectId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
 
@@ -3275,6 +3220,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     return model;
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -3601,7 +3547,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
-
 
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model = new TypedTableModel(
@@ -3934,10 +3879,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth", "isGlobal"},
+        "introduction", "results", "partners", "links", "width", "heigth", "isGlobal", "imageurl"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Integer.class, Integer.class, Boolean.class},
+        String.class, String.class, String.class, Integer.class, Integer.class, Boolean.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream()
@@ -3948,7 +3893,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
-        highlightDesc = null, introduction = null, results = null, partners = null, links = null;
+        highlightDesc = null, introduction = null, results = null, partners = null, links = null, imageurl = null;
       Long yearReported = null;
       Boolean isGlobal = false;
       int width = 0;
@@ -4021,6 +3966,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         double imageHeigth = 0;
         image = this.getHightlightImagePath(projectHighlight.getProject().getId())
           + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
+        imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         Image imageFile = null;
         LOG.info("Image name: " + image);
         File url;
@@ -4029,6 +3976,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } catch (Exception e) {
           LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
           url = null;
+          image = "";
+          imageurl = null;
         }
         if (url != null && url.exists()) {
           // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
@@ -4053,10 +4002,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           } catch (MalformedURLException e) {
             LOG.warn("MalformedURLException getting image: " + e.getMessage());
             image = "";
+            imageurl = null;
           } catch (IOException e) {
             LOG.warn("IOException getting image: " + e.getMessage());
             image = "";
+            imageurl = null;
           }
+        } else {
+          image = "";
+          imageurl = null;
         }
       }
       if (projectHighlight.getProjectHighlightInfo().getDescription() != null
@@ -4081,7 +4035,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
-        introduction, results, partners, links, width, heigth, isGlobal});
+        introduction, results, partners, links, width, heigth, isGlobal, imageurl});
     }
     return model;
   }
@@ -4372,8 +4326,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getGenderLevel() != null) {
           genderRelevance = studyinfo.getGenderLevel().getName();
 
-          if (!(isContribution && isStage1) && !studyinfo.getGenderLevel().getId().equals(1l)
-            && studyinfo.getDescribeGender() != null && !studyinfo.getDescribeGender().isEmpty()) {
+          if (!studyinfo.getGenderLevel().getId().equals(1l) && studyinfo.getDescribeGender() != null
+            && !studyinfo.getDescribeGender().isEmpty()) {
             genderRelevance += "<br>" + this.getText("study.achievementsGenderRelevance.readText") + ": "
               + studyinfo.getDescribeGender();
           }
@@ -4381,8 +4335,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Youth
         if (studyinfo.getYouthLevel() != null) {
           youthRelevance = studyinfo.getYouthLevel().getName();
-          if (!(isContribution && isStage1) && !studyinfo.getYouthLevel().getId().equals(1l)
-            && studyinfo.getDescribeYouth() != null && !studyinfo.getDescribeYouth().isEmpty()) {
+          if (!studyinfo.getYouthLevel().getId().equals(1l) && studyinfo.getDescribeYouth() != null
+            && !studyinfo.getDescribeYouth().isEmpty()) {
             youthRelevance +=
               "<br>" + this.getText("study.achievementsYouthRelevance.readText") + ": " + studyinfo.getDescribeYouth();
           }
@@ -4390,8 +4344,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Capacity Development
         if (studyinfo.getCapdevLevel() != null) {
           capacityRelevance = studyinfo.getCapdevLevel().getName();
-          if (!(isContribution && isStage1) && !studyinfo.getCapdevLevel().getId().equals(1l)
-            && studyinfo.getDescribeCapdev() != null && !studyinfo.getDescribeCapdev().isEmpty()) {
+          if (!studyinfo.getCapdevLevel().getId().equals(1l) && studyinfo.getDescribeCapdev() != null
+            && !studyinfo.getDescribeCapdev().isEmpty()) {
             capacityRelevance += "<br>" + this.getText("study.achievementsCapDevRelevance.readText") + ": "
               + studyinfo.getDescribeCapdev();
           }
