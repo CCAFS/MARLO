@@ -33,3 +33,15 @@ SELECT id from parameters where `key` = 'crp_cp_role' and global_unit_type_id=1)
 
 UPDATE custom_parameters set `value`= 'rice' where parameter_id = (
 SELECT id from parameters where `key` = 'crp_custom_file' and global_unit_type_id=1) and global_unit_id = 16;
+
+UPDATE custom_parameters set `value`= 'false' where parameter_id = (
+SELECT id from parameters where `key` = 'crp_reporting_active' and global_unit_type_id=1) and global_unit_id = 16;
+
+UPDATE custom_parameters set `value`= 'true' where parameter_id = (
+SELECT id from parameters where `key` = 'crp_planning_active' and global_unit_type_id=1) and global_unit_id = 16;
+
+UPDATE custom_parameters set `value`= '2018' where parameter_id = (
+SELECT id from parameters where `key` = 'crp_reporting_year' and global_unit_type_id=1) and global_unit_id = 16;
+
+UPDATE custom_parameters set `value`= '2018' where parameter_id = (
+SELECT id from parameters where `key` = 'crp_planning_year' and global_unit_type_id=1) and global_unit_id = 16;
