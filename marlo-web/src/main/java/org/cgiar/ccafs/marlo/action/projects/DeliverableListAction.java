@@ -381,16 +381,16 @@ public class DeliverableListAction extends BaseAction {
 
         if (project.getDeliverables() != null) {
 
-          List<DeliverableInfo> infos = phase
-            .getDeliverableInfos().stream().filter(c -> c.getDeliverable().getProject() != null
-              && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
-            .collect(Collectors.toList());
+          List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
           deliverables = new ArrayList<>();
-          for (DeliverableInfo deliverableInfo : infos) {
-            Deliverable deliverable = deliverableInfo.getDeliverable();
-            deliverable.setDeliverableInfo(deliverableInfo);
-            deliverables.add(deliverable);
+          if (infos != null && !infos.isEmpty()) {
+            for (DeliverableInfo deliverableInfo : infos) {
+              Deliverable deliverable = deliverableInfo.getDeliverable();
+              deliverable.setDeliverableInfo(deliverableInfo);
+              deliverables.add(deliverable);
+            }
           }
+
 
           for (Deliverable deliverable : deliverables) {
             deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));

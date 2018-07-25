@@ -260,12 +260,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
-  @Override
-  public boolean isActive() {
-    return true;
-  }
-
-
   public Boolean isRequieriedReporting(int year) {
 
     if (status == null && this.year <= year) {
