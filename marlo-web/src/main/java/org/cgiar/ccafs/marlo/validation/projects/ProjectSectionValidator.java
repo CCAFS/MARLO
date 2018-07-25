@@ -671,27 +671,30 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     Project project = projectManager.getProjectById(projectID);
 
     List<Deliverable> deliverables = project.getDeliverables().stream()
-      .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()) != null).collect(Collectors.toList());
+      .filter(
+        d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()) != null && d.getDeliverableInfo().isActive())
+      .collect(Collectors.toList());
     List<Deliverable> openA = deliverables.stream()
-      .filter(a -> a.isActive() && ((a.getDeliverableInfo(action.getActualPhase()).getStatus() == null
-        || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
-        || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
+      .filter(a -> a.isActive() && a.getDeliverableInfo().isActive()
+        && ((a.getDeliverableInfo(action.getActualPhase()).getStatus() == null
+          || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
+          || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
       .collect(Collectors.toList());
 
     if (action.isReportingActive()) {
       openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive()
+        .filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
           && d.getDeliverableInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()
           && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
 
-      openA.addAll(deliverables.stream().filter(d -> d.isActive()
+      openA.addAll(deliverables.stream().filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
         && d.getDeliverableInfo(action.getActualPhase()) != null
         && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
         && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()

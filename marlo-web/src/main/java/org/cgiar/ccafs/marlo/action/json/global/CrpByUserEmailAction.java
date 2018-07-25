@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,8 @@ public class CrpByUserEmailAction extends BaseAction {
     crps = new ArrayList<Map<String, Object>>();
     Map<String, Object> crpMap;
     List<GlobalUnit> crps = crpManager.crpUsers(userEmail);
+    crps.sort(Comparator.comparing(GlobalUnit::getAcronym));
+
 
     for (GlobalUnit crp : crps) {
       try {

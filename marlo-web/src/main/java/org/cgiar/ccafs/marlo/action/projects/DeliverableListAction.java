@@ -119,32 +119,38 @@ public class DeliverableListAction extends BaseAction {
 
 
     Phase phase = this.getActualPhase();
-    boolean hasNext = true;
-    while (hasNext) {
-
-      phase = phaseManager.getPhaseById(phase.getId());
-      DeliverableInfo deliverableInfo = new DeliverableInfo();
-      deliverableInfo.setDeliverable(deliverable);
-      deliverableInfo.setPhase(phase);
-      deliverableInfo.setYear(this.getCurrentCycleYear());
-      deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-      deliverableInfo.setModificationJustification("New expected deliverable created");
-      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
-
-
-      if (phase.getNext() != null) {
-        phase = phase.getNext();
-      } else {
-        hasNext = false;
-      }
+    phase = phaseManager.getPhaseById(phase.getId());
+    DeliverableInfo deliverableInfo = new DeliverableInfo();
+    deliverableInfo.setDeliverable(deliverable);
+    deliverableInfo.setPhase(phase);
+    deliverableInfo.setYear(this.getCurrentCycleYear());
+    deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+    deliverableInfo.setModificationJustification("New expected deliverable created");
+    deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+    // Replicate only for Planning
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.addDeliverablePhase(phase.getNext(), deliverable);
     }
-
 
     if (deliverableID > 0) {
       return SUCCESS;
     }
 
     return INPUT;
+  }
+
+  public void addDeliverablePhase(Phase phase, Deliverable deliverable) {
+    phase = phaseManager.getPhaseById(phase.getId());
+    DeliverableInfo deliverableInfo = new DeliverableInfo();
+    deliverableInfo.setDeliverable(deliverable);
+    deliverableInfo.setPhase(phase);
+    deliverableInfo.setYear(this.getCurrentCycleYear());
+    deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+    deliverableInfo.setModificationJustification("New expected deliverable created");
+    deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+    if (phase.getNext() != null) {
+      this.addDeliverablePhase(phase.getNext(), deliverable);
+    }
   }
 
   public boolean canEdit(long deliverableID) {
@@ -375,16 +381,16 @@ public class DeliverableListAction extends BaseAction {
 
         if (project.getDeliverables() != null) {
 
-          List<DeliverableInfo> infos = phase.getDeliverableInfos()
-            .stream().filter(c -> c.getDeliverable().getProject() != null
-              && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
-            .collect(Collectors.toList());
+          List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
           deliverables = new ArrayList<>();
-          for (DeliverableInfo deliverableInfo : infos) {
-            Deliverable deliverable = deliverableInfo.getDeliverable();
-            deliverable.setDeliverableInfo(deliverableInfo);
-            deliverables.add(deliverable);
+          if (infos != null && !infos.isEmpty()) {
+            for (DeliverableInfo deliverableInfo : infos) {
+              Deliverable deliverable = deliverableInfo.getDeliverable();
+              deliverable.setDeliverableInfo(deliverableInfo);
+              deliverables.add(deliverable);
+            }
           }
+
 
           for (Deliverable deliverable : deliverables) {
             deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));

@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
 
@@ -67,6 +68,11 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   public DeliverableInfo getDeliverableInfoById(long deliverableInfoID) {
 
     return deliverableInfoDAO.find(deliverableInfoID);
+  }
+
+  @Override
+  public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project) {
+    return deliverableInfoDAO.getDeliverablesInfoByProjectAndPhase(phase, project);
   }
 
   @Override
