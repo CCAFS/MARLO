@@ -135,8 +135,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   @Override
   public String delete() {
     ProjectExpectedStudy projectExpectedStudyBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
-    for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
-      sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+    if (projectExpectedStudyBD.getSectionStatuses() != null) {
+      for (SectionStatus sectionStatus : projectExpectedStudyBD.getSectionStatuses()) {
+        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+      }
     }
     projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudyBD.getId());
     return SUCCESS;

@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
 
@@ -57,11 +58,19 @@ public interface DeliverableInfoDAO {
 
 
   /**
+   * This method gets a list of DeliverableInfo that are active by a given phase and project
+   * 
+   * @return a list from DeliverableInfo null if no exist records
+   */
+  public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project);
+
+  /**
    * This method gets a list of DeliverableInfo that are active by a given phase and type
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
   public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType);
+
 
   /**
    * This method saves the information of the given deliverableInfo
