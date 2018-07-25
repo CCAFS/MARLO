@@ -2,7 +2,7 @@
 [#assign title = "MARLO Studies" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/studies/studiesList.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/studies/studiesList.js?20180725" ] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css"
   ] 

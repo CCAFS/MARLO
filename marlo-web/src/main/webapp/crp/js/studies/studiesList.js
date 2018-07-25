@@ -125,14 +125,14 @@ function addJustificationPopUp() {
           }
       },
   });
-  // Event to open dialog to remove deliverable
+  // Event to open dialog to remove expected study
   $("a.removeRow").on("click", removeRow);
 }
 
 function removeRow(e) {
   e.preventDefault();
   $dialogContent.find("#justification").val('').removeClass('fieldError');
-  // Getting deliverable ID and setting input hidden to remove that deliverable
-  $dialogContent.find('input[name$=deliverableID]').val($(e.target).parent().attr('id').split('-')[1]);
+  // Getting expected Study ID and setting input hidden to remove that expected study
+  $dialogContent.find('input[name$=expectedID]').val($(e.target).parent().attr('id').split('-')[1]);
   dialog.dialog("open");
 }
