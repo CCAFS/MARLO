@@ -53,7 +53,7 @@
                 <input type="hidden" name="${customName}.next.id" value="${(phase.next.id)!}" />
                 <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />
                 [#-- Title --]
-                <h4> ${(phase.description)!} ${(phase.year)!}</h4><hr />
+                <h4> ${(phase.name)!} ${(phase.year)!}</h4><hr />
                 <div class="form-group row"> 
                   [#-- Visible Phase --]
                   <div class="col-md-6">
