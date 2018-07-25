@@ -22,7 +22,7 @@
   [/#if]
 
   <div class="buttons-content">
-    [#-- History Log TODO: Fix history --]
+    [#-- History Log  --]
     [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=recordsList itemName="projectID" itemId=project.id /]
