@@ -13,20 +13,24 @@
 			class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
 			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
-
+		<property name="name" type="string">
+      <column name="name" sql-type="TEXT" not-null="true" />
+    </property>	
 		<property name="description" type="string">
 			<column name="description" sql-type="TEXT" not-null="true" />
 		</property>
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>
+		<property name="upkeep" type="java.lang.Boolean">
+      <column name="upkeep" not-null="true"/>
+    </property>		
 		<property name="editable" type="java.lang.Boolean">
 			<column name="editable" />
 		</property>
 		<property name="visible" type="java.lang.Boolean">
 			<column name="visible" />
 		</property>
-
 		<property name="startDate" type="date">
 			<column name="start_date" length="10" />
 		</property>
