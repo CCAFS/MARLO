@@ -60,7 +60,7 @@
       <div  class="fullForm borderBox" >
 
         [#-- Disciplines --]
-        <label>[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]</label>
+        <label>[@s.text name="capdev.form.listOfApproaches"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox" listname="capdev.disciplines">
           <div class="form-group approachesListContainer listSelectBlock" >
             <div class=" ">
@@ -97,7 +97,7 @@
         </div>
 
         [#-- Targeted public--]
-        <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]</label>
+        <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.targetgroup">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
             <div class=" newCapdevField ">
@@ -137,7 +137,7 @@
         </div>
 
         [#-- Partners --]
-        <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] [@customForm.req required=editable /]</label>
+        <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
             <div class="newCapdevField ">
@@ -174,21 +174,9 @@
             </small>
           </p> 
           [/#if]
-          [#--  --if editable]
-            <div class="row grupsParticipantsForm">
-              <div class="note participantMessage">
-                <p>If you cannot find the partner you are looking for, suggest another one by clicking below on the box <b>"Other"</b></p>
-              </div>
-            </div>
-            <div class="grupsParticipantsForm">
-              <label>Other <input type="checkbox" name="capdev.otherPartner" class="otherPartnercheck"   [#if (capdev.otherPartner)??]
-              [#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
-              <div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
-            </div>
-          [/#if --]
         </div>
 
-        <!-- OutPuts-->
+        [#-- Outputs --]
         
         <label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
         <div class="simpleBox" listname="capdev.outputs">
@@ -223,7 +211,7 @@
       </div>
       
       [#-- buttons --]
-      [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
+      [#include "/WEB-INF/center/views/capDev/buttons-capdev.ftl" /]
 
     </div>
     
