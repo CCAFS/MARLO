@@ -157,7 +157,7 @@
         </div>
         
         [#-- Partners --]
-        <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
+        <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] [@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
             <div class="newCapdevField ">
