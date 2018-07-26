@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Capacity Development" /]
+[#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flat-flags", "pickadate"] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
@@ -167,6 +168,26 @@
       [@customForm.select name="capdev.durationUnit" listName="durationUnit" keyFieldName="value" value="'${(capdev.durationUnit)!}'" displayFieldName="displayName" help="capdev.help.durationUnit" i18nkey="capdev.form.durationUnit"  placeholder="capdev.select" required=true editable=editable className="dUnitSelect"/]
     </div>
   </div>
+  
+  <hr />
+  
+  [#-- Research Area --]
+  <div class="form-group row">
+    <div class="col-md-6  newCapdevField " listname="capdev.researcharea">
+      [@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
+    </div>
+    [#-- Research program --]
+    <div class="col-md-6 researchProgram ">
+      [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
+    </div>
+  </div> 
+  [#-- CRP --]
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="composedName" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
+    </div>
+  </div>
+  
 [/#macro]
 
 [#macro groupsParticipants]

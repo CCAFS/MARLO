@@ -1,5 +1,5 @@
 [#ftl]
-
+[#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css",
   "${baseUrl}/global/css/customDataTable.css"
@@ -136,26 +136,6 @@
           [/#if]
         </div>
 
-        <div class="simpleBox">
-          [#-- Research Area --]
-          <div class="form-group row">
-            <div class="col-md-6  newCapdevField " listname="capdev.researcharea">
-              [@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
-            </div>
-            [#-- Research program --]
-            <div class="col-md-6 researchProgram ">
-              [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
-            </div>
-          </div> 
-          [#-- CRP --]
-          <div class="form-group row">
-            <div class="col-md-6">
-              [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="composedName" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
-            </div>
-          </div>
-          
-        </div>
-        
         [#-- Partners --]
         <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] [@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
