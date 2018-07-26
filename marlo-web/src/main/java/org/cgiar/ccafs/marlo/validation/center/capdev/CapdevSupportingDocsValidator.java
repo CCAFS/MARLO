@@ -88,11 +88,12 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
     }
 
-
-    if (deliverable.getStartDate() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
-      baseAction.getInvalidFields().put("input-deliverable.startDate", InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (deliverable.getStartDate() == null) {
+     * baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
+     * baseAction.getInvalidFields().put("input-deliverable.startDate", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
     if (deliverable.getDocuments() == null) {
       baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
