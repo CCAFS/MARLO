@@ -93,15 +93,6 @@ public class CapDevDescriptionValidator extends BaseValidator {
     }
 
 
-    if (capdev.getResearchArea() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.researchArea"));
-      baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
-      // baseAction.getInvalidFields().put("list-capdev.researcharea",
-      // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Research Area"}));
-
-    }
-
-
     // if (capdev.getCapdevOutputsList() == null) {
     // baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
     // baseAction.getInvalidFields().put("list-capdev.outputs",

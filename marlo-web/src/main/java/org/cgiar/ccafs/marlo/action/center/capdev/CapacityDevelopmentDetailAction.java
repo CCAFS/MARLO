@@ -23,9 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevFoundingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevHighestDegreeManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevRangeAgeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevLocationsService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevParticipantService;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.IParticipantService;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -36,9 +39,13 @@ import org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree;
 import org.cgiar.ccafs.marlo.data.model.CapdevLocations;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.data.model.CapdevRangeAge;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.ocs.model.ResourceInfoOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -81,19 +88,31 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     Hours, Days, Weeks, Months, Years
   }
 
+
   public enum Genders {
     Male, Female, Other
   }
+
 
   private static final long serialVersionUID = 1L;
 
 
   private long capdevID;
+
+
   private int capdevCategory;
+
+
   private long projectID;
+
+
   private CapacityDevelopment capdev;
+
   private List<LocElement> regionsList;
+
   private List<LocElement> countryList;
+
+
   private List<Institution> institutions;
   private List<CapacityDevelopmentType> capdevTypes;
   private List<CapdevHighestDegree> highestDegrreList;
@@ -124,19 +143,22 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private CapacityDevelopmentValidator validator;
   private ReadExcelFile reader = new ReadExcelFile();
   private CapacityDevelopment capdevDB;
-
-
+  private List<GlobalUnit> crps;
+  private List<CenterArea> researchAreas;
+  private List<CrpProgram> researchPrograms;
   private List<Map<String, Object>> previewList;
   private List<String> previewListHeader;
   private List<Map<String, Object>> previewListContent;
-
   private String transaction;
   private final AuditLogManager auditLogService;
-
+  private final GlobalUnitManager crpService;
+  private final ICenterAreaManager researchAreaService;
+  private final CrpProgramManager crpProgramManager;
   // OCS Agreement Servcie Class
   private MarloOcsClient ocsClient;
-  private ResourceInfoOCS resourceOCS;
 
+
+  private ResourceInfoOCS resourceOCS;
 
   @Inject
   public CapacityDevelopmentDetailAction(APConfig config, ICapacityDevelopmentService capdevService,
@@ -145,7 +167,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     CapdevRangeAgeManager capdevRangeAgeService, ICapdevParticipantService capdevParicipantService,
     CapacityDevelopmentValidator validator, InstitutionManager institutionService,
     CapdevHighestDegreeManager capdevHighestDegreeService, CapdevFoundingTypeManager capdevFoundingTypeService,
-    AuditLogManager auditLogService, MarloOcsClient ocsClient) {
+    AuditLogManager auditLogService, MarloOcsClient ocsClient, GlobalUnitManager crpService,
+    ICenterAreaManager researchAreaService, CrpProgramManager crpProgramManager) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
@@ -160,8 +183,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.capdevFoundingTypeService = capdevFoundingTypeService;
     this.auditLogService = auditLogService;
     this.ocsClient = ocsClient;
+    this.crpService = crpService;
+    this.researchAreaService = researchAreaService;
+    this.crpProgramManager = crpProgramManager;
   }
-
 
   public Boolean bolValue(String value) {
     if ((value == null) || value.isEmpty() || value.toLowerCase().equals("null")) {
@@ -254,21 +279,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return capdev;
   }
 
-
   public int getCapdevCategory() {
     return capdevCategory;
   }
-
 
   public List<Long> getCapdevCountries() {
     return capdevCountries;
   }
 
-
   public long getCapdevID() {
     return capdevID;
   }
-
 
   public List<Long> getCapdevRegions() {
     return capdevRegions;
@@ -287,6 +308,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public List<LocElement> getCountryList() {
     return countryList;
+  }
+
+
+  public List<GlobalUnit> getCrps() {
+    return crps;
   }
 
 
@@ -335,6 +361,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return numMen;
   }
 
+
   /*
    * this method is used to get the number of participants that selected gender like Other in the list of participants.
    * @param data an object array containing the data of participants
@@ -350,6 +377,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     return numOther;
   }
+
 
   /*
    * this method is used to get the number of women in the list of participants.
@@ -382,11 +410,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return participantList;
   }
 
-
   public List<Map<String, Object>> getPreviewList() {
     return previewList;
   }
-
 
   public List<Map<String, Object>> getPreviewListContent() {
     return previewListContent;
@@ -412,6 +438,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return regionsList;
   }
 
+
+  public List<CenterArea> getResearchAreas() {
+    return researchAreas;
+  }
+
+
+  public List<CrpProgram> getResearchPrograms() {
+    return researchPrograms;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -425,7 +462,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public String getUploadFileContentType() {
     return uploadFileContentType;
   }
-
 
   public String getUploadFileName() {
     return uploadFileName;
@@ -515,6 +551,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     // range Age
     rangeAgeList = capdevRangeAgeService.findAll().stream().filter(age -> age.isActive()).collect(Collectors.toList());
+
+    // Crp - CIAT programs
+    crps = crpService.findAll().stream()
+      .filter(out -> out.isActive() && (out.getGlobalUnitType().getId() == 1 || out.getGlobalUnitType().getId() == 3))
+      .collect(Collectors.toList());
+    Collections.sort(crps, (r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym()));
+
+    researchAreas = researchAreaService.findAll().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
+    Collections.sort(researchAreas, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    researchPrograms = crpProgramManager.findAll().stream().filter(rl -> rl.isActive() && rl.getResearchArea() != null
+      && rl.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()).collect(Collectors.toList());
+    Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     participantList = new ArrayList<>();
     capdevCountries = new ArrayList<>();
@@ -668,6 +717,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
+
   /*
    * This method is used to do a preview of excel file uploaded
    * @return previewList is a JSON Object containing the data from excel file
@@ -694,6 +744,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -702,6 +753,36 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
     capdevDB.setTitle(capdev.getTitle());
+
+    if (capdev.getResearchArea() != null) {
+      if (capdev.getResearchArea().getId() != -1) {
+        capdevDB.setResearchArea(capdev.getResearchArea());
+
+        if (capdev.getResearchProgram() != null) {
+          if (capdev.getResearchProgram().getId() != -1) {
+            capdevDB.setResearchProgram(capdev.getResearchProgram());
+          } else {
+            capdevDB.setResearchProgram(null);
+          }
+        }
+        if (capdev.getProject() != null) {
+          if (capdev.getProject().getId() != -1) {
+            capdevDB.setProject(capdev.getProject());
+          } else {
+            capdevDB.setProject(null);
+          }
+        }
+      } else {
+        capdevDB.setResearchArea(null);
+      }
+    }
+
+
+    if (capdev.getCrp().getId() > -1) {
+      capdevDB.setCrp(capdev.getCrp());
+    } else {
+      capdevDB.setCrp(null);
+    }
 
     if (capdev.getCapdevType() != null) {
       if (capdev.getCapdevType().getId() != -1) {
@@ -862,7 +943,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
   }
 
-
   public void saveCapDevParticipan(Participant participant, CapacityDevelopment capdev) {
     CapdevParticipant capdevParticipant = new CapdevParticipant();
     capdevParticipant.setCapacityDevelopment(capdev);
@@ -870,7 +950,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     capdevParicipantService.saveCapdevParticipant(capdevParticipant);
   }
-
 
   public void saveCapDevRegions(List<CapdevLocations> capdevRegions, CapacityDevelopment capdev) {
 
@@ -975,6 +1054,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public void setCrps(List<GlobalUnit> crps) {
+    this.crps = crps;
+  }
+
+
   public void setDurationUnit(List<Map<String, Object>> durationUnit) {
     this.durationUnit = durationUnit;
   }
@@ -1047,6 +1131,16 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setRegionsList(List<LocElement> regionsList) {
     this.regionsList = regionsList;
+  }
+
+
+  public void setResearchAreas(List<CenterArea> researchAreas) {
+    this.researchAreas = researchAreas;
+  }
+
+
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
+    this.researchPrograms = researchPrograms;
   }
 
 

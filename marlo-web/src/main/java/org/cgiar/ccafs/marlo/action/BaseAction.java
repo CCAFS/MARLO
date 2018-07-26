@@ -1605,11 +1605,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public List<CenterSubmission> getCapdevSubmissions(long capDevID) {
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+
+    List<CenterSubmission> submissions = capacityDevelopment.getSubmissions().stream()
+      .filter(c -> c.getYear().intValue() == this.getCurrentCycleYear()).collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
+  }
+
+
   public List<CrpCategoryEnum> getCategories() {
 
     return Arrays.asList(CrpCategoryEnum.values());
   }
-
 
   /**
    * ************************ CENTER METHOD ******************************
@@ -1666,6 +1677,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1688,33 +1700,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
     return this.centerID;
-  }
-
-
-  /**
-   * ***********************CENTER METHOD********************
-   * This method gets the specific section status from the sectionStatuses array for a Outcome.
-   * ********************************************************
-   * 
-   * @param deliverableID is the deliverable ID to be identified.
-   * @param section is the name of some section.
-   * @return a CenterSectionStatus object with the information requested.
-   */
-  public CenterSectionStatus getCenterOutcomeStatus(long outcomeID) {
-
-    CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
-    List<CenterSectionStatus> sectionStatuses;
-    if (outcome.getSectionStatuses() != null) {
-      sectionStatuses = new ArrayList<>(outcome.getSectionStatuses().stream()
-        .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
-    } else {
-      return null;
-    }
-
-    if (!sectionStatuses.isEmpty()) {
-      return sectionStatuses.get(0);
-    }
-    return null;
   }
 
 
@@ -1743,6 +1728,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * }
    */
 
+
+  /**
+   * ***********************CENTER METHOD********************
+   * This method gets the specific section status from the sectionStatuses array for a Outcome.
+   * ********************************************************
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @param section is the name of some section.
+   * @return a CenterSectionStatus object with the information requested.
+   */
+  public CenterSectionStatus getCenterOutcomeStatus(long outcomeID) {
+
+    CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
+    List<CenterSectionStatus> sectionStatuses;
+    if (outcome.getSectionStatuses() != null) {
+      sectionStatuses = new ArrayList<>(outcome.getSectionStatuses().stream()
+        .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
+    } else {
+      return null;
+    }
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
+  }
 
   /**
    * ***********************CENTER METHOD********************
@@ -1798,6 +1809,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Validate the sections of the Impact Pathway *
@@ -1825,7 +1837,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1902,6 +1913,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public CenterSubmission getCenterSubmission() {
     return centerSubmission;
   }
@@ -1923,7 +1935,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // return Calendar.getInstance().get(Calendar.YEAR);
   }
 
-
   public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
@@ -1944,6 +1955,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return clusterOfActivities;
   }
 
+
   public APConfig getConfig() {
     return config;
   }
@@ -1963,7 +1975,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return crpProgramOutcomes;
   }
-
 
   /**
    * Check if the project contributes two or more flagships
@@ -1989,6 +2000,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   /*
    * List a Global Unit depends of the category
@@ -2035,7 +2047,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpID;
   }
-
 
   /**
    * Get the Crp List
@@ -2087,6 +2098,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
+
 
   /**
    * ************************ CENTER METHOD ******************************
@@ -2148,7 +2160,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
-
   public String getCurrentCycle() {
     try {
       if (this.isReportingActive()) {
@@ -2176,6 +2187,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public int getCurrentCycleYear() {
     return this.getActualPhase().getYear();
   }
+
 
   public int getCurrentCycleYearParam() {
     try {
@@ -2224,7 +2236,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return u;
   }
-
 
   /**
    * This method return the Date Format from APConstants class
@@ -2445,6 +2456,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public List<String> getDeliverableTypesByRule(String rule) {
     List<String> rules = new ArrayList<>();
     List<DeliverableTypeRule> deliverableTypeRules = deliverableTypeRuleManager.findDeliverableTypeRuleByRule(rule);
@@ -2503,7 +2515,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * Get the Global Unit Type
    * 
@@ -2516,6 +2527,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return re;
 
   }
+
 
   /**
    * Get the folder path according if the user navigate in center,crp or platform sections.
@@ -2535,7 +2547,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
-
 
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
@@ -2557,10 +2568,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return invalidFields;
   }
 
+
   public String getJustification() {
     return justification;
   }
-
 
   public String getLiasons() {
     String liasonsUsers = "";
@@ -2589,6 +2600,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return globalUnitTypes;
 
   }
+
 
   public List<GlobalUnitType> getListGlobalUnitTypesUser() {
     if (this.getSession().containsKey(APConstants.AVAILABLES_GLOBAL_TYPES)) {
@@ -2638,7 +2650,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Define default locale while we decide to support other languages in the future.
    */
@@ -2647,14 +2658,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
+
   public StringBuilder getMissingFields() {
     return missingFields;
   }
 
-
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
+
 
   /**
    * get the number of users log in in the application
@@ -2712,7 +2724,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -2720,6 +2731,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return ((String[]) paramObj)[0];
   }
+
 
   public Long getPhaseID() {
     return phaseID;
@@ -2743,7 +2755,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return phases;
     }
   }
-
 
   public List<Phase> getPhasesImpact() {
     if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
@@ -2777,6 +2788,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return gson.toJson(phases);
   }
 
+
   /**
    * validate if the list of phases are on session if not, will be find on bd on json format
    * 
@@ -2798,11 +2810,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return gson.toJson(phases);
   }
 
-
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
+
 
   public List<GlobalUnit> getPlatformsList() {
     List<GlobalUnit> centers = new ArrayList<>();
@@ -2919,7 +2931,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submissions;
   }
 
-
   public List<CrpPpaPartner> getPpaPartners() {
     List<CrpPpaPartner> crpPpaPartners = phaseManager.getPhaseById(this.getActualPhase().getId()).getCrpPpaPartner()
       .stream().filter(c -> c.isActive() && c.getCrp().equals(this.getCurrentCrp())).collect(Collectors.toList());
@@ -2930,6 +2941,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<>();
     }
   }
+
 
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
