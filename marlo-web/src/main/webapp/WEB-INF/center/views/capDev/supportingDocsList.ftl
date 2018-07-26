@@ -1,18 +1,15 @@
 [#ftl]
+[#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
-
-
-
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
 [#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js"] /]
-
 [#assign currentSection = "capdev" /]
 [#assign currentStage = "supportingDocuments" /]
-
+[#assign isListSection = true /]
 [#assign breadCrumb = [
   {"label":"capdevList", "nameSpace":"/capdev", "action":"${(centerSession)!}/capdev"},
   {"label":"capdevSupportingDocs", "nameSpace":"/capdev", "action":""}
@@ -36,6 +33,10 @@
   </div>
   
   <div class="col-md-9 ">
+    [#-- Section Messages --]
+    [#include "/WEB-INF/center/views/capDev/messages-capdev.ftl" /]
+    <br />
+    
     <div class="col-md-12">
       <div class="pull-right">
         [#if projectID > 0]
