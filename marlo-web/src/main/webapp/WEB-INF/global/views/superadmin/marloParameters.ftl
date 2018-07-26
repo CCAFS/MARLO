@@ -100,7 +100,7 @@
     <td>
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       <input type="hidden" name="${customName}.parameter.key" value="${(element.parameter.key)!}" />
-            <input type="hidden" name="${customName}.parameter.id" value="${(element.parameter.id)!}" />
+      <input type="hidden" name="${customName}.parameter.id" value="${(element.parameter.id)!}" />
       
       [#if isTemplate]
         [@customForm.input name="${customName}.paramater.description" placeholder="Description" showTitle=false /]
@@ -110,10 +110,10 @@
         <input type="hidden" name="${customName}.parameter.description" value="${(element.parameter.description)!}" />
         <input type="hidden" name="${customName}.paramater.key" value="${(element.parameter.key)!}" />
         <input type="hidden" name="${customName}.parameter.category" value="${(element.parameter.category)!}" />
-        <strong>${(element.parameter.key)!} </strong> <br /> <small><i>(${(element.parameter.description)!})</i></small>
+        <strong>${(element.parameter.key)!} </strong> <br /> <small><i>(${(element.parameter.description?replace('\n', '<br>'))!})</i></small>
       [/#if]
     </td>
-    <td>
+    <td class="col-md-3 text-center">
       [#--  Boolean(1, "Boolean"), Date(2, "Date"), Int(3, "Int"), Text(4, "Text"); --]
       [#if (element.parameter.format == 1)!false]
         <div class="radioFlat radio-inline">
