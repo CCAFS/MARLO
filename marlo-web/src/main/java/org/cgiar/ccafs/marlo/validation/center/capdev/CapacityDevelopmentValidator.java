@@ -92,10 +92,12 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (capdev.getEndDate() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.startDate"));
-      baseAction.getInvalidFields().put("input-capdev.endDate", InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (capdev.getEndDate() == null) {
+     * baseAction.addMessage(baseAction.getText("capdev.action.endDate"));
+     * baseAction.getInvalidFields().put("input-capdev.endDate", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
     if (capdev.getDuration() == null) {
       baseAction.addMessage(baseAction.getText("capdev.action.duration"));
