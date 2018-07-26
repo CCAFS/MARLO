@@ -77,7 +77,7 @@
       </div>
       
       [#-- Buttons --]
-      [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
+      [#include "/WEB-INF/center/views/capDev/buttons-capdev.ftl" /]
     [/@s.form]
 
   </div>
