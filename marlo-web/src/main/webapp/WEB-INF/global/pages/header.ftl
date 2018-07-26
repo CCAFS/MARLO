@@ -59,10 +59,10 @@
       ga('create', 'UA-86349544-1', 'cgiar.org');
       ga('set', 'userId', '${(currentUser.composedID)!"Unknown"}' ); // Set the user ID using signed-in user_id.
       ga('send', 'pageview');
-    
+
     </script>
   </head>
-  <body >
+  <body class="mode-${editable?string('editable', 'readOnly')}">
     [#if !(avoidHeader!false)]
       <header class="clearfix" style="display: ${((includeHeader)??)?string('none','block')}">
         [#-- MARLO Admin Menu --]
