@@ -2,3 +2,11 @@
   padding: 1px 5px;
   /* line-height: 0; */
 }
+
+span.badge.globalUnitTag {
+  background-color: #c1c7c7;
+  font-weight: normal;
+  text-shadow: 1px 1px 2px #a5a4a4;
+  border-radius: 5px;
+  font-size: 0.95em;
+}
