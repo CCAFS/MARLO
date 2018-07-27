@@ -39,17 +39,19 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign isProjectNew = action.isProjectNew(project.id) /]
+        [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
+        [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
         [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
         [#-- ID --]
-        <td class="projectId">
+        <td class="text-center">
           <a href="${projectUrl}"> P${project.id}</a>
+          [#if centerGlobalUnit && isCrpProject ]
+            <span class="badge globalUnitTag"> ${(project.projectInfo.phase.crp.acronym)!} </span>
+          [/#if]
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if centerGlobalUnit && project.crpProject]
-              <span class="label label-warning">${(project.projectInfo.phase.crp.acronym)!}</span>
-            [/#if]
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.projectInfo.title?has_content]
@@ -131,7 +133,7 @@
             [#assign submission = action.isProjectSubmitted(project.id) /]
             
             [#-- CRP Project --]
-            [#if project.crpProject]
+            [#if isCrpProject]
               [#if !project.projectInfo.isProjectEditLeader()]
                 <p>Pre-setting</p>
               [#else]
