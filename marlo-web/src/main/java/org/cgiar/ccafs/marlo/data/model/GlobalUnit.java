@@ -319,6 +319,11 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return this.globalUnitType.getId().intValue() == 4;
   }
 
+  public boolean isCrpType() {
+    // CRP or Platform
+    return this.globalUnitType.getId().intValue() == 1 || this.globalUnitType.getId().intValue() == 3;
+  }
+
   public boolean isHasRegions() {
     return hasRegions;
   }

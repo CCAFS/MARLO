@@ -1088,6 +1088,14 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return false;
   }
 
+  public boolean isCrpProject() {
+    ProjectInfo projectInfo = this.getProjectInfo();
+    if (projectInfo != null) {
+      return projectInfo.getPhase().getCrp().isCrpType();
+    }
+    return false;
+  }
+
 
   public void setActivities(Set<Activity> activities) {
     this.activities = activities;
