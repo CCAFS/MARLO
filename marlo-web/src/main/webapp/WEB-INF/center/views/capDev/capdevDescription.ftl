@@ -1,5 +1,5 @@
 [#ftl]
-
+[#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css",
   "${baseUrl}/global/css/customDataTable.css"
@@ -60,7 +60,7 @@
       <div  class="fullForm borderBox" >
 
         [#-- Disciplines --]
-        <label>[@s.text name="capdev.form.listOfApproaches"][/@s.text] [@customForm.req/]</label>
+        <label>[@s.text name="capdev.form.listOfApproaches"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox" listname="capdev.disciplines">
           <div class="form-group approachesListContainer listSelectBlock" >
             <div class=" ">
@@ -97,7 +97,7 @@
         </div>
 
         [#-- Targeted public--]
-        <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]</label>
+        <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.targetgroup">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
             <div class=" newCapdevField ">
@@ -136,28 +136,8 @@
           [/#if]
         </div>
 
-        <div class="simpleBox">
-          [#-- Research Area --]
-          <div class="form-group row">
-            <div class="col-md-6  newCapdevField " listname="capdev.researcharea">
-              [@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
-            </div>
-            [#-- Research program --]
-            <div class="col-md-6 researchProgram ">
-              [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
-            </div>
-          </div> 
-          [#-- CRP --]
-          <div class="form-group row">
-            <div class="col-md-6">
-              [@customForm.select name="capdev.crp.id" listName="crps" keyFieldName="id" displayFieldName="composedName" i18nkey="capdev.form.crp" placeholder="capdev.select" help="capdev.help.crp" editable=editable /]
-            </div>
-          </div>
-          
-        </div>
-        
         [#-- Partners --]
-        <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
+        <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
             <div class="newCapdevField ">
@@ -194,21 +174,9 @@
             </small>
           </p> 
           [/#if]
-          [#--  --if editable]
-            <div class="row grupsParticipantsForm">
-              <div class="note participantMessage">
-                <p>If you cannot find the partner you are looking for, suggest another one by clicking below on the box <b>"Other"</b></p>
-              </div>
-            </div>
-            <div class="grupsParticipantsForm">
-              <label>Other <input type="checkbox" name="capdev.otherPartner" class="otherPartnercheck"   [#if (capdev.otherPartner)??]
-              [#if (capdev.otherPartner) == "1"] checked="checked" [/#if] value="${(capdev.otherPartner)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
-              <div class="suggestPartner" style="display: none;">[@customForm.textArea name="capdev.partnerSuggested" i18nkey="Suggest Partner"  className="textarea"  /]</div>
-            </div>
-          [/#if --]
         </div>
 
-        <!-- OutPuts-->
+        [#-- Outputs --]
         
         <label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
         <div class="simpleBox" listname="capdev.outputs">
@@ -243,7 +211,7 @@
       </div>
       
       [#-- buttons --]
-      [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
+      [#include "/WEB-INF/center/views/capDev/buttons-capdev.ftl" /]
 
     </div>
     

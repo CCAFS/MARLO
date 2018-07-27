@@ -60,10 +60,17 @@ public class CapDevDescriptionValidator extends BaseValidator {
       }
     }
 
-    if (capdev.getCapdevTargetGroupList() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.targetgroup"));
-      baseAction.getInvalidFields().put("list-capdev.targetgroup",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+    if (capdev.getOtherTargetGroup() == null) {
+      if (capdev.getCapdevTargetGroupList() == null) {
+        baseAction.addMessage(baseAction.getText("capdev.action.targetgroup"));
+        baseAction.getInvalidFields().put("list-capdev.targetgroup",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+      }
+    } else {
+      if (!this.isValidString(capdev.getTargetGroupSuggested())) {
+        baseAction.addMessage(baseAction.getText("capdev.action.targetGroupSuggested"));
+        baseAction.getInvalidFields().put("input-capdev.targetGroupSuggested", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (capdev.getCapdevTargetGroupList() != null) {
@@ -89,15 +96,6 @@ public class CapDevDescriptionValidator extends BaseValidator {
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
 
       }
-
-    }
-
-
-    if (capdev.getResearchArea() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.researchArea"));
-      baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
-      // baseAction.getInvalidFields().put("list-capdev.researcharea",
-      // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Research Area"}));
 
     }
 

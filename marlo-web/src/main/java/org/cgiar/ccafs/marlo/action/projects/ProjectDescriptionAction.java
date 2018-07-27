@@ -495,6 +495,7 @@ public class ProjectDescriptionAction extends BaseAction {
           .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
         project.getProjectInfo()
           .setAdministrative(projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative());
+        project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(this.getActualPhase()).getPhase());
         // load Cluster of activites info
         if (project.getClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {

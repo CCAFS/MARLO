@@ -212,9 +212,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String CANCEL = "cancel";
 
+
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
-
 
   public static final String NEXT = "next";
 
@@ -225,77 +225,78 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String NOT_LOGGED = "401";
 
-  public static final String REDIRECT = "redirect";
 
+  public static final String REDIRECT = "redirect";
 
   public static final String SAVED_STATUS = "savedStatus";
 
   private static final long serialVersionUID = -740360140511380630L;
 
+
   private List<HistoryDifference> differences;
+
   // Years available per CRPs (used in Summaries)
   private ArrayList<String> years;
 
-
   protected boolean add;
-
-
   private Long phaseID;
+
 
   /**
    * Use field injection in BaseAction only. Subclasses should use constructor injection.
    */
   @Inject
   private AuditLogManager auditLogManager;
+
+
   @Inject
   private InstitutionManager institutionManager;
+
   @Inject
   private GlobalUnitTypeManager globalUnitTypeManager;
   private String basePermission;
-
-
   protected boolean cancel;
-
-
   private boolean editStatus = false; // If user is able to edit the form.
 
 
   private boolean canEdit; // If user is able to edit the form.
+
+
   private boolean availabePhase = true; // If user is able to edit the form.
+
+
   private boolean canEditPhase = true; // If user is able to edit the form.
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
-
-
   private boolean switchSession;
-
   protected APConfig config;
+
 
   @Inject
   private PhaseManager phaseManager;
+
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+
   @Inject
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
-
-
   @Inject
   private CrpMilestoneManager crpMilestoneManager;
-
-
   private Long crpID;
+
 
   // Managers
   @Inject
   private GlobalUnitManager crpManager;
 
+
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
+
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
 
   @Inject
   private CrpProgramManager crpProgramManager;
-
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
@@ -314,73 +315,74 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean dataSaved;
 
   private GlobalUnit currentCrp;
+
   protected boolean delete;
 
   @Inject
   private DeliverableManager deliverableManager;
-
   private boolean draft;
 
   @Inject
   private SrfTargetUnitManager targetUnitManager;
+
   @Inject
   private LocElementTypeManager locElementTypeManager;
+
   @Inject
   private ProjectBudgetManager projectBudgetManager;
-
-
   @Inject
   private ProjectPartnerPersonManager partnerPersonManager;
-
   @Inject
   private UserManager userManager;
 
+
   @Inject
   private FileDBManager fileDBManager;
-
 
   private boolean fullEditable; // If user is able to edit all the form.
 
   @Inject
   private FundingSourceManager fundingSourceManager;
 
+
   private HashMap<String, String> invalidFields;
 
   // User actions
   private boolean isEditable; // If user is able to edit the form.
+
   // Justification of the changes
   private String justification;
+
   private boolean lessonsActive;
   @Inject
   private LiaisonUserManager liaisonUserManager;
   protected boolean next;
   private Map<String, Parameter> parameters;
-
-
   private boolean planningActive;
-
   private int planningYear;
+
 
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
+
   @Inject
   private ProjectManager projectManager;
+
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
-
   @Inject
   private PowbSynthesisManager powbSynthesisManager;
-
   @Inject
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
 
   @Inject
   private DeliverableTypeManager deliverableTypeManager;
 
   private boolean reportingActive;
 
+
   private int reportingYear;
+
   protected HttpServletRequest request;
 
   /*********************************************************
@@ -389,7 +391,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   @Inject
   private ICenterTopicManager topicService;
-
   @Inject
   private ICenterImpactManager impactService;
 
@@ -401,20 +402,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private ICenterSectionStatusManager secctionStatusService;
+
   @Inject
   private ICenterCycleManager cycleService;
 
   @Inject
   private ICenterProjectManager projectService;
-
   @Inject
   private ICenterDeliverableManager deliverableService;
+
   @Inject
   private ICenterSectionStatusManager sectionStatusService;
 
   @Inject
   private ICapacityDevelopmentService capacityDevelopmentService;
-
   @Inject
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
@@ -424,25 +425,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private String centerSession;
 
   private Long centerID;
-  private GlobalUnit currentCenter;
-  private CenterSubmission centerSubmission;
 
+  private GlobalUnit currentCenter;
+
+  private CenterSubmission centerSubmission;
   /*********************************************************/
 
   // button actions
   protected boolean save;
-
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
+
   @Inject
   private SectionStatusManager sectionStatusManager;
-
 
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
   private Map<String, Object> session;
+
+
   private Submission submission;
+
   protected boolean submit;
   private String url;
   @Inject
@@ -453,14 +456,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private IpProgramManager ipProgramManager;
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
-
   private List<Map<String, Object>> usersToActive;
   @Inject
   private GlobalUnitProjectManager globalUnitProjectManager;
 
   @Inject
   private ReportSynthesisManager reportSynthesisManager;
-
   private StringBuilder validationMessage = new StringBuilder();
 
   private StringBuilder missingFields = new StringBuilder();
@@ -511,7 +512,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     missingFields.append(field);
   }
 
-
   public void addUsers() {
     if (usersToActive != null) {
       for (Map<String, Object> userMap : usersToActive) {
@@ -531,10 +531,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
+
 
   /**
    * ***********************CENTER METHOD*********************
@@ -552,10 +552,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
+
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
-
 
   public boolean canAcessCrpAdmin() {
     try {
@@ -565,7 +565,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   public boolean canAcessFunding() {
 
@@ -581,6 +580,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessPOWB() {
     String permission = this.generatePermission(Permission.POWB_SYNTHESIS_CAN_VIEW, this.getCrpSession());
@@ -627,6 +627,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAddCoreProject() {
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
@@ -991,7 +992,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
-
   public boolean canProjectSubmited(long projectID) {
     String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
@@ -1216,7 +1216,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public HistoryDifference changedField(String field) {
 
 
@@ -1231,6 +1230,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
 
   }
+
 
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
@@ -1289,6 +1289,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
@@ -1297,7 +1298,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -1342,6 +1342,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
+
   /*
    * public String generatePermission(String permission, Map<String, Object> session, long crpID, String... params) {
    * Phase phase = this.getActualPhase(session, crpID);
@@ -1367,7 +1368,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * ************************ CENTER METHOD ******************************
    * Generate permissions String to Centers
@@ -1379,7 +1379,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.getText(permission, params);
 
   }
-
 
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
@@ -1537,6 +1536,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
   }
 
+
   /**
    * ************************ CENTER METHOD ******************************
    * This method calculates all the years between the start date and the end date.
@@ -1605,11 +1605,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
+  public List<CenterSubmission> getCapdevSubmissions(long capDevID) {
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+
+    List<CenterSubmission> submissions = capacityDevelopment.getSubmissions().stream()
+      .filter(c -> c.getYear().intValue() == this.getCurrentCycleYear()).collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
+  }
+
   public List<CrpCategoryEnum> getCategories() {
 
     return Arrays.asList(CrpCategoryEnum.values());
   }
-
 
   /**
    * ************************ CENTER METHOD ******************************
@@ -1638,6 +1649,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * ***********************CENTER METHOD***************************************************************
@@ -1690,7 +1702,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.centerID;
   }
 
-
   /**
    * ***********************CENTER METHOD********************
    * This method gets the specific section status from the sectionStatuses array for a Outcome.
@@ -1706,6 +1717,34 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<CenterSectionStatus> sectionStatuses;
     if (outcome.getSectionStatuses() != null) {
       sectionStatuses = new ArrayList<>(outcome.getSectionStatuses().stream()
+        .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
+    } else {
+      return null;
+    }
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
+  }
+
+
+  /**
+   * ***********************CENTER METHOD********************
+   * This method gets the specific section status from the sectionStatuses array for a Output.
+   * ************************************************************
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @param section is the name of some section.
+   * @return a CenterSectionStatus object with the information requested.
+   */
+  public CenterSectionStatus getCenterOutputStatus(long outputID) {
+
+    CenterOutput output = outputService.getResearchOutputById(outputID);
+    List<CenterSectionStatus> sectionStatuses;
+
+    if (output.getSectionStatuses() != null) {
+      sectionStatuses = new ArrayList<>(output.getSectionStatuses().stream()
         .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
     } else {
       return null;
@@ -1743,33 +1782,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * }
    */
 
-
-  /**
-   * ***********************CENTER METHOD********************
-   * This method gets the specific section status from the sectionStatuses array for a Output.
-   * ************************************************************
-   * 
-   * @param deliverableID is the deliverable ID to be identified.
-   * @param section is the name of some section.
-   * @return a CenterSectionStatus object with the information requested.
-   */
-  public CenterSectionStatus getCenterOutputStatus(long outputID) {
-
-    CenterOutput output = outputService.getResearchOutputById(outputID);
-    List<CenterSectionStatus> sectionStatuses;
-
-    if (output.getSectionStatuses() != null) {
-      sectionStatuses = new ArrayList<>(output.getSectionStatuses().stream()
-        .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
-    } else {
-      return null;
-    }
-
-    if (!sectionStatuses.isEmpty()) {
-      return sectionStatuses.get(0);
-    }
-    return null;
-  }
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1826,7 +1838,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * validate the sections of the project
@@ -1853,6 +1864,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1906,7 +1918,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return centerSubmission;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * return the actual center year
@@ -1928,6 +1939,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.INSTITUTION_CGIAR;
   }
 
+
   public List<CrpClusterOfActivity> getClusterOutcome(long projectID, long crpProgramID) {
     Project project = projectManager.getProjectById(projectID);
 
@@ -1947,7 +1959,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public APConfig getConfig() {
     return config;
   }
-
 
   public List<CrpProgramOutcome> getContributionsOutcome(long projectID, long crpProgramID) {
     Project project = projectManager.getProjectById(projectID);
@@ -1990,6 +2001,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   /*
    * List a Global Unit depends of the category
    * (TODO change the method Name after test the functionality)
@@ -2001,7 +2013,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     globalUnits.sort((gu1, gu2) -> gu1.getAcronym().compareTo(gu2.getAcronym()));
     return globalUnits;
   }
-
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -2063,6 +2074,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList());
     }
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -2130,7 +2142,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public GlobalUnit getCurrentCrp() {
     if (session != null && !session.isEmpty()) {
       try {
@@ -2161,6 +2172,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public String getCurrentCycleParam() {
     try {
       if (this.isReportingActiveParam()) {
@@ -2188,7 +2200,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return 0;
     }
   }
-
 
   public GlobalUnit getCurrentGlobalUnit() {
     if (session != null && !session.isEmpty()) {
@@ -2234,6 +2245,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getDateFormat() {
     return APConstants.DATE_FORMAT;
   }
+
 
   public String getDeliverableComplianceCheck() {
     return APConstants.DELIVERABLE_RULE_COMPILANCE_CHECK;
@@ -2455,7 +2467,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return rules;
   }
 
-
   public List<HistoryDifference> getDifferences() {
     return differences;
   }
@@ -2517,6 +2528,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * Get the folder path according if the user navigate in center,crp or platform sections.
    * 
@@ -2536,10 +2548,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
+
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
@@ -2561,7 +2573,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
-
   public String getLiasons() {
     String liasonsUsers = "";
     User u = userManager.getUser(this.getCurrentUser().getId());
@@ -2576,6 +2587,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return liasonsUsers;
   }
+
 
   public List<GlobalUnitType> getListGlobalUnitTypes() {
 
@@ -2627,7 +2639,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
@@ -2647,14 +2658,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
+
   public StringBuilder getMissingFields() {
     return missingFields;
   }
 
-
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
+
 
   /**
    * get the number of users log in in the application
@@ -2667,7 +2679,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return 0;
   }
-
 
   public List<Deliverable> getOpenDeliverables(List<Deliverable> deliverables) {
 
@@ -2721,10 +2732,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
   public Long getPhaseID() {
     return phaseID;
   }
-
 
   /**
    * validate if the list of phases are on session if not, will be find on bd
@@ -2758,6 +2769,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return phases;
     }
   }
+
 
   public String getPhasesImpactJson() {
     List<Phase> phases;
@@ -2798,11 +2810,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return gson.toJson(phases);
   }
 
-
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
+
 
   public List<GlobalUnit> getPlatformsList() {
     List<GlobalUnit> centers = new ArrayList<>();
@@ -2824,7 +2836,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList());
     }
   }
-
 
   /**
    * Check the powb Synthesis Section Status
@@ -2931,6 +2942,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
@@ -2943,7 +2955,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
-
 
   public List<Project> getProjectRelationsImpact(Long id, String className) {
     Class<?> clazz;
@@ -3442,6 +3453,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submissions;
   }
 
+
   /**
    ************************ CENTER METHOD *********************
    * return true if the user can view the impactPathway
@@ -3473,6 +3485,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return "---";
   }
+
 
   public long getReportingIndGeographicScopeGlobal() {
     return APConstants.PROJECT_PARTNER_PARTNERSHIP_GLOBAL;
@@ -3600,7 +3613,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext;
   }
 
-
   public Map<String, Object> getSession() {
     return session;
   }
@@ -3609,30 +3621,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submission;
   }
 
+
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
     return display;
   }
 
-
   public String getUrl() {
     return url;
   }
-
 
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
 
+
   public List<Map<String, Object>> getUsersToActive() {
     return usersToActive;
   }
 
+
   public StringBuilder getValidationMessage() {
     return validationMessage;
   }
-
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -3652,7 +3664,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
-
 
   /**
    * Years available per CRPs (used in Summaries)
@@ -3676,6 +3687,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return years;
   }
+
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -3733,6 +3745,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return total;
   }
 
+
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
     if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
       && deliverableInfo.getDeliverableType().getId() != null && deliverableInfo.getDeliverableType().getId() != -1) {
@@ -3773,7 +3786,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * validation base method to check the permission in MARLO centers.
@@ -3796,6 +3808,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
   }
 
+
   public boolean hasPermissionNoBase(String fieldName) {
 
     return securityContext.hasPermission(fieldName);
@@ -3815,7 +3828,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
-
 
   /**
    * TODO
@@ -3858,6 +3870,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * validate if the user can submit the project
@@ -3889,7 +3902,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
-
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
@@ -3907,6 +3919,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * Validate Missing fields in Project Expected Studies
@@ -3943,7 +3956,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return list;
   }
 
-
   public Boolean isA(long deliverableID) {
     try {
       Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -3971,10 +3983,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
+
   public boolean isAvailabePhase() {
     return availabePhase;
   }
-
 
   public boolean isCanEdit() {
     return canEdit;
@@ -3985,6 +3997,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canEditPhase;
   }
 
+
   public boolean isCanSwitchProject() {
     return canSwitchProject;
   }
@@ -3993,7 +4006,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String params[] = {this.getCrpSession()};
     return (this.hasPermission(this.generatePermission(Permission.CAP_DEV_FULL_PERMISSION, params)));
   }
-
 
   public boolean isCenterGlobalUnit() {
     if (this.getCurrentCrp() != null) {
@@ -4046,6 +4058,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * verify if the project is complete
@@ -4083,7 +4096,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
     IpLiaisonInstitution ipLiaisonInstitution =
@@ -4105,6 +4117,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isCompleteImpact(long crpProgramID) {
 
@@ -4179,7 +4192,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * Check if all the powb Synthesis Sections by Liaison Institution is completed
    * 
@@ -4200,6 +4212,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * Check if all the annual Synthesis Sections by Liaison Institution is completed
    * 
@@ -4218,7 +4231,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
   /**
    * Check if the powb synthesis is complete by the flagships or the PMU.
@@ -4329,6 +4341,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
 
   }
+
 
   public boolean isCompletePreProject(long projectID) {
 
@@ -4725,7 +4738,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * Check if the annual Report is complete by the flagships or the PMU.
    * 
@@ -4854,6 +4866,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean isCompleteSynthesys(long program, int type) {
 
     List<SectionStatus> sectionStatus = null;
@@ -4892,7 +4905,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCrpClosed() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
@@ -4918,6 +4930,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -5017,10 +5030,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   public boolean isDraft() {
     return draft;
   }
+
 
   public boolean isEditable() {
     return isEditable;
@@ -5116,7 +5129,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   public Boolean isI(long deliverableID) {
     try {
       Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -5179,6 +5191,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean isLessonsActive() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
   }
@@ -5207,7 +5220,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean isPlanningActive() {
     return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
   }
@@ -5216,6 +5228,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActiveParam() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
   }
+
 
   public boolean isPMU() {
     String roles = this.getRoles();
@@ -5239,7 +5252,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return isFP;
   }
 
-
   public boolean isPowbPMU(LiaisonInstitution liaisonInstitution) {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -5250,6 +5262,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return isFP;
 
   }
+
 
   public boolean isPowbSynthesisSubmitted(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -5464,7 +5477,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Check if the impact pathway is submitted
@@ -5490,6 +5502,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   public boolean isSwitchSession() {
     return switchSession;
@@ -5673,7 +5686,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
@@ -5704,6 +5716,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
   }
+
 
   public void loadLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
@@ -5787,16 +5800,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
-
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -5822,6 +5834,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
+
 
   public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcomeDB, ProjectOutcome projectOutcome) {
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -5892,10 +5905,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public void setActualPhase(Phase phase) {
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
+
 
   public void setAdd(boolean add) {
     this.add = true;
@@ -5909,11 +5922,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.basePermission = basePermission;
   }
 
-
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
-
 
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;

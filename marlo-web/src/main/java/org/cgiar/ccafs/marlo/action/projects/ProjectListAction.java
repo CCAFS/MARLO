@@ -442,42 +442,49 @@ public class ProjectListAction extends BaseAction {
 
     for (GlobalUnit globalUnit : globalUnits) {
 
-      Phase phase = globalUnit.getPhases().stream().filter(p -> p.isActive() && p.getEditable() && p.getVisible())
-        .collect(Collectors.toList()).get(0);
+      List<Phase> phases = globalUnit.getPhases().stream()
+        .filter(p -> p.isActive() && p.getEditable() && p.getVisible()).collect(Collectors.toList());
 
-      List<ProjectInfo> projectInfos =
-        new ArrayList<>(phase.getProjectInfos().stream()
+      if (!phases.isEmpty()) {
+
+        Phase phase = globalUnit.getPhases().stream().filter(p -> p.isActive() && p.getEditable() && p.getVisible())
+          .collect(Collectors.toList()).get(0);
+
+        List<ProjectInfo> projectInfos = new ArrayList<>(phase.getProjectInfos().stream()
           .filter(pi -> pi.isActive() && (pi.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
             || pi.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId())))
           .collect(Collectors.toList()));
 
-      for (ProjectInfo projectInfo : projectInfos) {
+        for (ProjectInfo projectInfo : projectInfos) {
 
-        Project project = projectManager.getProjectById(projectInfo.getProject().getId());
-        project.setProjectInfo(projectInfo);
-        List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
-          .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          Project project = projectManager.getProjectById(projectInfo.getProject().getId());
+          project.setProjectInfo(projectInfo);
+          List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
+            .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-        for (ProjectPartner projectPartner : projectPartners) {
+          for (ProjectPartner projectPartner : projectPartners) {
 
 
-          if (projectPartner.getProjectPartnerPersons() != null) {
-            for (ProjectPartnerPerson person : projectPartner.getProjectPartnerPersons().stream()
-              .filter(pp -> pp.isActive()).collect(Collectors.toList())) {
-              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-                if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
-                  project.setCurrentPhase(phase);
+            if (projectPartner.getProjectPartnerPersons() != null) {
+              for (ProjectPartnerPerson person : projectPartner.getProjectPartnerPersons().stream()
+                .filter(pp -> pp.isActive()).collect(Collectors.toList())) {
+                if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+                  if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
+                    project.setCurrentPhase(phase);
 
-                  centerProjects.add(project);
-                  break;
+                    centerProjects.add(project);
+                    break;
+                  }
                 }
               }
             }
+
+
           }
-
-
         }
+
       }
+
 
     }
 

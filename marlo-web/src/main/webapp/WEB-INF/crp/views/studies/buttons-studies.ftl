@@ -14,8 +14,8 @@
 
 <div class="buttons">
   <div class="buttons-content">
-    [#-- History Log TODO: Fix history --]
-    [#if false && action.getListLog(expectedStudy)?has_content]
+    [#-- History Log  --]
+    [#if action.getListLog(expectedStudy)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=action.getListLog(expectedStudy) itemName="expectedID" itemId=(expectedStudy.id)! /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>

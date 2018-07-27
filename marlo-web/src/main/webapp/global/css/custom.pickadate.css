@@ -8,6 +8,10 @@
   background: #fff url(../../global/images/calendar.png) no-repeat scroll 99% 2px !important;
 }
 
+
+.mode-readOnly .picker__input, .mode-readOnly .picker__holder {
+ display:none;
+}
 /**
  * The month and year selectors.
  */
