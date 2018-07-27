@@ -985,6 +985,10 @@ public class ProjectPartnerAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
 
+        // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
+        Project projectDb = projectManager.getProjectById(project.getId());
+        project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(this.getActualPhase()).getPhase());
+
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 

@@ -107,6 +107,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
@@ -5295,6 +5296,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * Check if the project was created in a Center
+   * 
+   * @param projectID
+   * @return
+   */
+  public boolean isProjectCenter(long projectID) {
+
+    GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(projectID);
+
+    if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4) {
+      return true;
+    }
+
+    return false;
+
+  }
+
+
+  /**
+   * Check if the project was created in a Crp or Platform
+   * 
+   * @param projectID
+   * @return
+   */
+  public boolean isProjectCrpOrPlatform(long projectID) {
+
+    GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(projectID);
+
+    if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 1
+      || globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 3) {
+      return true;
+    }
+
+    return false;
+
+  }
+
   public boolean isProjectDescription() {
     String name = this.getActionName();
     if (name.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())) {
@@ -5477,6 +5516,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Check if the impact pathway is submitted
@@ -5502,7 +5542,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
-
 
   public boolean isSwitchSession() {
     return switchSession;
@@ -5686,6 +5725,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
@@ -5716,7 +5756,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
   }
-
 
   public void loadLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
@@ -5800,15 +5839,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public String next() {
     return NEXT;
   }
-
 
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
+
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -5834,7 +5874,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
-
 
   public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcomeDB, ProjectOutcome projectOutcome) {
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -5905,10 +5944,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void setActualPhase(Phase phase) {
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
-
 
   public void setAdd(boolean add) {
     this.add = true;
@@ -5930,10 +5969,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.canEdit = canEdit;
   }
 
+
   public void setCanEditPhase(boolean canEditPhase) {
     this.canEditPhase = canEditPhase;
   }
-
 
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
@@ -5947,10 +5986,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.centerSession = centerSession;
   }
 
+
   public void setCenterSubmission(CenterSubmission centerSubmission) {
     this.centerSubmission = centerSubmission;
   }
-
 
   public void setConfig(APConfig config) {
     this.config = config;
@@ -5960,10 +5999,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.crpID = crpID;
   }
 
+
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
-
 
   public void setCurrentCenter(GlobalUnit currentCenter) {
     this.currentCenter = currentCenter;
@@ -5972,6 +6011,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
+
 
   public void setDelete(boolean delete) {
     this.delete = delete;
@@ -5982,15 +6022,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.differences = differences;
   }
 
-
   public void setDraft(boolean draft) {
     this.draft = draft;
   }
 
+
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
   }
-
 
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
@@ -6000,6 +6039,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.editStatus = editStatus;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
@@ -6008,7 +6048,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
   }
-
 
   public void setJustification(String justification) {
     this.justification = justification;
@@ -6116,6 +6155,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.validationMessage = validationMessage;
   }
 
+
   public void setYears(ArrayList<String> years) {
     this.years = years;
   }
@@ -6130,7 +6170,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
   public String submit() {
     return SUCCESS;
@@ -6313,6 +6352,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
 
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
