@@ -68,7 +68,7 @@
               [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
             </div>
             
-            [#if project.crpProject]
+            [#if isCrpProject]
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
@@ -83,7 +83,7 @@
               </div> 
             </div>
             [/#if]
-            [#if project.centerProject || (centerGlobalUnit && project.crpProject) ]
+            [#if isCenterProject ]
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
@@ -200,7 +200,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !((project.projectInfo.administrative)!false) && !phaseOne && project.crpProject ]
+            [#if !((project.projectInfo.administrative)!false) && !phaseOne && isCrpProject ]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
