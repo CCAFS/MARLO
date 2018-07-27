@@ -35,7 +35,13 @@
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
       [#assign lastSubmission =action.getProjectSubmissions(audit.id)?last /]
-      <p>[@s.text name="message.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
+      <p>
+        [@s.text name="message.submittedOn" ]
+          [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+          [@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param]
+          [@s.param]Project[/@s.param]
+        [/@s.text]
+      </p>
     </div>
   [/#if]
  
@@ -68,7 +74,11 @@
   [#-- Completed Message--]
   [#if (canSubmit && !submission && completed) && !crpClosed]
     <div class="completed-mode text-center animated flipInX">
-      <p>[@s.text name="message.completed" /]</p>
+      <p>
+        [@s.text name="message.completed"]
+          [@s.param]project[/@s.param]
+        [/@s.text]
+      </p>
     </div>
   [/#if]
   
