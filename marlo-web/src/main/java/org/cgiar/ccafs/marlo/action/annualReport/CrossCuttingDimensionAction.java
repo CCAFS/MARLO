@@ -645,8 +645,12 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
       if (this.isFlagship()) {
 
-        if (reportSynthesis.getReportSynthesisCrpProgress().getPlannedStudies() == null) {
-          reportSynthesis.getReportSynthesisCrpProgress().setPlannedStudies(new ArrayList<>());
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPlannedInnovations() == null) {
+          reportSynthesis.getReportSynthesisCrossCuttingDimension().setPlannedInnovations(new ArrayList<>());
+        }
+
+        if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getPlannedAssets() == null) {
+          reportSynthesis.getReportSynthesisCrossCuttingDimension().setPlannedAssets(new ArrayList<>());
         }
 
         this.saveInnovations(crossCuttingDimensionDB);
