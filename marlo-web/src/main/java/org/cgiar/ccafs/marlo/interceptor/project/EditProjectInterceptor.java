@@ -103,6 +103,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean editParameter = false;
     boolean canSwitchProject = false;
 
+
     // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
 
 

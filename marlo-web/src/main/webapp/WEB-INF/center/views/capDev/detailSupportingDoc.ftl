@@ -1,4 +1,5 @@
 [#ftl]
+[#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-deliverable-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "select2", "flat-flags", "pickadate"] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css", 
@@ -157,7 +158,7 @@
     
     
         [#-- Buttons --]
-        [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
+        [#include "/WEB-INF/center/views/capDev/buttons-capdev.ftl" /]
     
       [/@s.form]
     </div>

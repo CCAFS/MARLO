@@ -483,37 +483,6 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevDB.setTargetGroupSuggested(capdev.getTargetGroupSuggested());
     capdevDB.setPartnerSuggested(capdev.getPartnerSuggested());
 
-    if (capdev.getResearchArea() != null) {
-      if (capdev.getResearchArea().getId() != -1) {
-        capdevDB.setResearchArea(capdev.getResearchArea());
-
-        if (capdev.getResearchProgram() != null) {
-          if (capdev.getResearchProgram().getId() != -1) {
-            capdevDB.setResearchProgram(capdev.getResearchProgram());
-          } else {
-            capdevDB.setResearchProgram(null);
-          }
-        }
-        if (capdev.getProject() != null) {
-          if (capdev.getProject().getId() != -1) {
-            capdevDB.setProject(capdev.getProject());
-          } else {
-            capdevDB.setProject(null);
-          }
-        }
-      } else {
-        capdevDB.setResearchArea(null);
-      }
-    }
-
-
-    if (capdev.getCrp().getId() > -1) {
-      capdevDB.setCrp(capdev.getCrp());
-    } else {
-      capdevDB.setCrp(null);
-    }
-
-
     this.saveCapDevDisciplines(capdev.getCapdevDisciplineList(), capdevDB);
     this.saveCapdevTargetGroups(capdev.getCapdevTargetGroupList(), capdevDB);
     this.saveCapdevPartners(capdev.getCapdevPartnersList(), capdevDB);

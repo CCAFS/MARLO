@@ -92,10 +92,6 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (capdev.getEndDate() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.startDate"));
-      baseAction.getInvalidFields().put("input-capdev.endDate", InvalidFieldsMessages.EMPTYFIELD);
-    }
 
     if (capdev.getDuration() == null) {
       baseAction.addMessage(baseAction.getText("capdev.action.duration"));
@@ -185,6 +181,10 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     }
 
+    if (capdev.getResearchArea() == null) {
+      baseAction.addMessage(baseAction.getText("capdev.action.researchArea"));
+      baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
     if (capdev.getCategory() == 1) {
 

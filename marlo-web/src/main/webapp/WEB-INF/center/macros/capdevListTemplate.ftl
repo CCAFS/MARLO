@@ -4,21 +4,23 @@
   <table class="capDevList" id="capdevs">
     <thead >
       <tr class="header">
-        <th style="width: 3%">ID</th>
+        <th style="width: 2%">ID</th>
         <th style="width: 21%">Title</th> 
         <th style="width: 7%">Type</th>
         <th style="width: 7%">Created By</th>
         <th style="width: 7%">Annexes</th>
+        <th style="width: 7%">Status</th>
         <th style="width: 1%">Remove</th>
       </tr>
     </thead>
     <tbody >
         [#if capdevs?has_content]
           [#list capdevs as i]
+            [#assign submission = action.isSubmitCapDev(i.id) /]
             [#local capdevUrl][@s.url namespace=namespace action=defaultAction][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
             [#if i.active]
             <tr>
-              <td>
+              <td class="text-center">
                 <a href="${capdevUrl}">C${i.id}</a></td>
               <td>
                 [#-- Tags --]
@@ -52,7 +54,13 @@
                 [#else]
                   <p>No Annexes</p>
                 [/#if]
-                
+              </td>
+              <td class="text-center">
+                [#if !submission]
+                  <span>Not Submitted</span>
+                [#else]
+                  <strong title="Submitted">Submitted</strong>
+                [/#if]  
               </td>
               <td class="removeCol">
                 [#if action.centerCanBeDeleted(i.id, i.class.name)!false]
