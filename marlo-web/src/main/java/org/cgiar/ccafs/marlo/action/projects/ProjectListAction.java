@@ -331,7 +331,6 @@ public class ProjectListAction extends BaseAction {
 
       if (this.isCenterGlobalUnit()) {
         projectInfo.setProjectEditLeader(true);
-
       } else {
         projectInfo.setProjectEditLeader(false);
       }
