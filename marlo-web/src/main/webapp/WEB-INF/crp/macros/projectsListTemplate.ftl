@@ -47,7 +47,7 @@
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if centerGlobalUnit && !project.centerProject]
+            [#if centerGlobalUnit && project.crpProject]
               <span class="label label-warning">${(project.projectInfo.phase.crp.acronym)!}</span>
             [/#if]
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
@@ -128,26 +128,26 @@
           [#-- Project Action Status --]
           <td>
             [#assign currentCycleYear= currentCycleYear /]
-            [#assign submission = action.isProjectSubmitted(project.id) /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
-           
-            [#--assign canSubmit = (action.hasPersmissionSubmit(projectID))!false / --]
+            [#assign submission = action.isProjectSubmitted(project.id) /]
             
-            
-            
-            [#if !project.projectInfo.isProjectEditLeader()]
-              <p>Pre-setting</p>
-            [#else]
-              [#if !submission]
-                [#if !reportingActive]<p title="Ready for project leader completion">Ready for PL</p>[/#if]
+            [#-- CRP Project --]
+            [#if project.crpProject]
+              [#if !project.projectInfo.isProjectEditLeader()]
+                <p>Pre-setting</p>
               [#else]
-                <strong title="Submitted">Submitted</strong>
-              [/#if]
-              
-              [#-- Status --]
-              [#if reportingActive]
-                <p>${(project.projectInfo.statusName)!}</p>
+                [#if !submission]
+                  [#if !reportingActive]<p title="Ready for project leader completion">Ready for PL</p>[/#if]
+                [#else]
+                  <strong title="Submitted">Submitted</strong>
+                [/#if]
+                
+                [#-- Status --]
+                [#if reportingActive]
+                  <p>${(project.projectInfo.statusName)!}</p>
+                [/#if]
               [/#if]
             [/#if]
+            
           </td>
           [#-- Summary PDF download --]
           <td>

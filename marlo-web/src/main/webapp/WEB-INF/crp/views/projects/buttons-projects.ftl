@@ -1,14 +1,14 @@
 [#ftl]
-<input name="project.type" type="hidden" value="${(project.type)!}" />
 [#-- Project identifier --]
 <input name="projectID" type="hidden" value="${project.id}" />
 <input type="hidden"  name="className" value="${(project.class.name)!}"/>
 <input type="hidden"  name="id" value="${(project.id)!}"/>
-<input class="projectInfo" type="hidden" name="project.projectInfo.id" value="${(project.projectInfo.id)!}" />
+<input type="hidden"  name="project.projectInfo.id" class="projectInfo" value="${(project.projectInfo.id)!}" />
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
 <input id="redirectionUrl" type="hidden" name="url" value="" />
+<input name="project.type" type="hidden" value="${(project.type)!}" />
 
 [#assign recordsList = (action.getListLog(project))!{} /]
 
@@ -29,12 +29,8 @@
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if (editable || (reportingActive && action.hasPermission("statusDescription")) || (editStatus && action.isProjectDescription())) && !(transaction??)]
-      [#-- Back Button 
-      <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-      --]
       [#-- Discard Button --]
       [@s.submit type="button" cssStyle="display:none" name="cancel" cssClass="button-cancel"]<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> [@s.text name="form.buttons.discard" /] [/@s.submit]
-      
       [#-- Save Button --]
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> <span class="saveText">[@s.text name="form.buttons.save" /]</span> [/@s.submit]
     [#elseif canEdit]

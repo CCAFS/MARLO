@@ -67,10 +67,11 @@
             <div class="form-group">
               [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
             </div>
+            
+            [#if project.crpProject]
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
-               
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
               [#--  Project Owner Contact Person --]
@@ -80,7 +81,16 @@
                 [@customForm.select name="project.projectInfo.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
                 <span id="liaisonUserSelected" style="display:none">${(project.projectInfo.liaisonUser.id)!-1}</span>
               </div> 
-            </div>  
+            </div>
+            [/#if]
+            [#if project.centerProject || (centerGlobalUnit && project.crpProject) ]
+            <div class="form-group row">
+              [#-- CENTER Research program --]
+              <div class="col-md-6 researchProgram ">
+                [@customForm.select name="project.projectInfo.researchProgram.id" listName="researchPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="name" i18nkey="project.researchProgram" className="projectResearchProgram" help="project.researchProgram.help" editable=editable /]
+              </div>
+            </div>
+            [/#if]
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-6">
@@ -91,13 +101,6 @@
                 [@customForm.input name="project.projectInfo.endDate" className="endDate"  i18nkey="project.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
               </div>
             </div>
-            <div class="form-group row">
-              [#-- Project Type 
-              <div class="col-md-6"> 
-                [@customForm.select name="project.projectInfo.type" value="${(project.projectInfo.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
-              </div>
-              --]
-            </div> 
             
             [#-- Project Summary --]
             <div class="form-group">
@@ -197,7 +200,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !((project.projectInfo.administrative)!false) && !phaseOne]
+            [#if !((project.projectInfo.administrative)!false) && !phaseOne && project.crpProject ]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
