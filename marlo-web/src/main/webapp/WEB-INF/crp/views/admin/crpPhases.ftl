@@ -49,6 +49,8 @@
                 [#-- Hidden Inputs --]
                 <input type="hidden" name="${customName}.id" value="${phase.id}" />
                 <input type="hidden" name="${customName}.description" value="${phase.description}" />
+                <input type="hidden" name="${customName}.name" value="${phase.name}" />
+                <input type="hidden" name="${customName}.upkeep" value="${phase.upkeep?string}" />
                 <input type="hidden" name="${customName}.year" value="${phase.year}" />
                 <input type="hidden" name="${customName}.next.id" value="${(phase.next.id)!}" />
                 <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />

@@ -657,6 +657,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   @Override
   public String toString() {
-    return "Phase [id=" + this.getId() + " description=" + description + ", year=" + year + "]";
+    return "Phase [id=" + this.getId() + ", name=" + name + ", description=" + description + ", year=" + year
+      + ", upkeep=" + upkeep + "]";
   }
 }
