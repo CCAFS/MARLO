@@ -189,7 +189,7 @@
                         [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
                       [#else]
                         
-                        [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
+                       [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
                       [/#if]
                     [/#if]
                   </div>

@@ -14,11 +14,15 @@
     cursor: pointer;
 }
 
+.inputContainer .labelText {
+ padding-left:25px;
+}
+
 /* Create a custom checkbox */
 .checkmark {
     position: absolute;
-    top: -10px;
-    left: -10px;
+    /* top: -10px; */
+    /* left: -10px; */
     height: 18px;
     width: 18px;
     background-color: #eee;
