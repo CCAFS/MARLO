@@ -47,7 +47,7 @@
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
+            [#if centerGlobalUnit && !project.centerProject]
               <span class="label label-warning">${(project.projectInfo.phase.crp.acronym)!}</span>
             [/#if]
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
