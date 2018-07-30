@@ -91,7 +91,8 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedId);
 
-    if (projectExpectedStudy != null && projectExpectedStudy.isActive()) {
+    if (projectExpectedStudy != null && projectExpectedStudy.isActive()
+      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null) {
 
       String params[] = new String[2];
       params[0] = crp.getAcronym();

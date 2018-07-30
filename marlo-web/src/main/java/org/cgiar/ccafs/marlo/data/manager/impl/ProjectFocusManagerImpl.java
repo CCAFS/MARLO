@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectFocusDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -44,8 +45,6 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   public ProjectFocusManagerImpl(ProjectFocusDAO projectFocusDAO, PhaseDAO phaseDAO) {
     this.projectFocusDAO = projectFocusDAO;
     this.phaseDAO = phaseDAO;
-
-
   }
 
   public void addProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
@@ -80,9 +79,20 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
 
     projectFocusDAO.deleteProjectFocus(projectFocusId);
     ProjectFocus projectFocus = this.getProjectFocusById(projectFocusId);
-    if (projectFocus.getPhase().getNext() != null) {
+    if (projectFocus.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectFocus.getPhase().getNext() != null) {
       this.deletProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
+
+    if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deletProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
+        }
+      }
+    }
+
   }
 
   public void deletProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
@@ -126,10 +136,21 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   public ProjectFocus saveProjectFocus(ProjectFocus projectFocus) {
 
     ProjectFocus focus = projectFocusDAO.save(projectFocus);
-
-    if (projectFocus.getPhase().getNext() != null) {
+    if (projectFocus.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectFocus.getPhase().getNext() != null) {
       this.addProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
+
+    if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
+        }
+      }
+    }
+
+
     return focus;
   }
 

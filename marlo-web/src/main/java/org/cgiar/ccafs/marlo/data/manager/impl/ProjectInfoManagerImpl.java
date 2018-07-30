@@ -16,14 +16,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.dao.DeliverableActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
@@ -77,12 +75,10 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   private ProjectLocationManager projectLocationManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
   private ProjectOutcomeManager projectOutcomeManager;
-  private DeliverableInfoManager deliverableInfoManager;
   private DeliverableManager deliverableManager;
   private DeliverablePartnershipManager deliverablePartnershipManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
   private DeliverableDAO deliverableDAO;
-  private DeliverableActivityDAO deliverableActivityDAO;
   private ActivityManager activityManager;
   private ProjectBudgetManager projectBudgetManager;
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
@@ -91,11 +87,9 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO, ProjectPhaseDAO projectPhaseDAO,
     ProjectFocusManager projectFocusManager, ProjectClusterActivityManager projectClusterActivityManager,
     ProjectPartnerManager projectPartnerManager, ProjectLocationManager projectLocationManager,
-    ProjectOutcomeManager projectOutcomeManager, DeliverableInfoManager deliverableInfoManager,
-    DeliverablePartnershipManager deliverablePartnershipManager,
+    ProjectOutcomeManager projectOutcomeManager, DeliverablePartnershipManager deliverablePartnershipManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager, DeliverableDAO deliverableDAO,
-    DeliverableActivityDAO deliverableActivityDAO, DeliverableManager deliverableManager,
-    ActivityManager activityManager, ProjectBudgetManager projectBudgetManager,
+    DeliverableManager deliverableManager, ActivityManager activityManager, ProjectBudgetManager projectBudgetManager,
     ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
     this.projectInfoDAO = projectInfoDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
@@ -105,14 +99,11 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     this.projectLocationManager = projectLocationManager;
     this.projectFocusManager = projectFocusManager;
     this.projectOutcomeManager = projectOutcomeManager;
-    this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableManager = deliverableManager;
     this.deliverableDAO = deliverableDAO;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
-    this.deliverableActivityDAO = deliverableActivityDAO;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.activityManager = activityManager;
-    this.deliverableActivityDAO = deliverableActivityDAO;
     this.projectBudgetManager = projectBudgetManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
 
@@ -187,152 +178,145 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
       cal.setTime(projectInfo.getEndDate());
     }
 
-    if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
-      List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
-      if (!projectInfos.isEmpty()) {
-        for (ProjectInfo projectInfoPhase : projectInfos) {
-          projectInfoPhase.updateProjectInfo(projectInfo);
-          projectInfoDAO.save(projectInfoPhase);
+    List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
+    if (!projectInfos.isEmpty()) {
+      for (ProjectInfo projectInfoPhase : projectInfos) {
+        projectInfoPhase.updateProjectInfo(projectInfo);
+        projectInfoDAO.save(projectInfoPhase);
+      }
+    } else {
+      if (projectInfo.getEndDate() != null) {
+
+
+        ProjectInfo projectInfoPhaseAdd = new ProjectInfo();
+        projectInfoPhaseAdd.setProject(projectInfo.getProject());
+        projectInfoPhaseAdd.setPhase(phase);
+        // projectInfoPhaseAdd.setProjectEditLeader(false);
+        projectInfoPhaseAdd.setProjectEditLeader(projectInfo.getProjectEditLeader());
+
+        projectInfoPhaseAdd.updateProjectInfo(projectInfo);
+        projectInfoDAO.save(projectInfoPhaseAdd);
+        ProjectPhase projectPhase = new ProjectPhase();
+        projectPhase.setPhase(phase);
+        projectPhase.setProject(projectInfo.getProject());
+        projectPhaseDAO.save(projectPhase);
+        List<ProjectFocus> projectFocus = projectInfo.getProject().getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (ProjectFocus projectFocusDB : projectFocus) {
+          projectFocusManager.saveProjectFocus(projectFocusDB);
         }
-      } else {
-        if (projectInfo.getEndDate() != null) {
+
+        List<ProjectClusterActivity> projectClusters = projectInfo.getProject().getProjectClusterActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (ProjectClusterActivity projectClusterActivity : projectClusters) {
+          projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+        }
+
+        List<ProjectPartner> projectPartners = projectInfo.getProject().getProjectPartners().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (ProjectPartner projectPartner : projectPartners) {
+          projectPartner.setPartnerPersons(
+            projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
 
-          ProjectInfo projectInfoPhaseAdd = new ProjectInfo();
-          projectInfoPhaseAdd.setProject(projectInfo.getProject());
-          projectInfoPhaseAdd.setPhase(phase);
-          // projectInfoPhaseAdd.setProjectEditLeader(false);
-          projectInfoPhaseAdd.setProjectEditLeader(projectInfo.getProjectEditLeader());
-
-          projectInfoPhaseAdd.updateProjectInfo(projectInfo);
-          projectInfoDAO.save(projectInfoPhaseAdd);
-          ProjectPhase projectPhase = new ProjectPhase();
-          projectPhase.setPhase(phase);
-          projectPhase.setProject(projectInfo.getProject());
-          projectPhaseDAO.save(projectPhase);
-          List<ProjectFocus> projectFocus = projectInfo.getProject().getProjectFocuses().stream()
+          List<ProjectPartnerContribution> partnerContributions = projectPartner.getProjectPartnerContributions()
+            .stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
+            contributors.add(projectPartnerContribution);
+          }
+          projectPartner.setSelectedLocations(new ArrayList<>());
+          for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList())) {
+            projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
+          }
+          projectPartner.setPartnerContributors(contributors);
+          projectPartner.setPartnerPersons(
+            projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          projectPartnerManager.copyPartner(projectPartner, phase);
+        }
+        List<ProjectLocation> projectLocations = projectInfo.getProject().getProjectLocations().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (ProjectLocation projectLocation : projectLocations) {
+          projectLocationManager.copyProjectLocation(projectLocation, phase);
+        }
+        List<Activity> activities = projectInfo.getProject().getActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (Activity activity : activities) {
+          activity.setDeliverables(
+            activity.getDeliverableActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          activityManager.copyActivity(activity, phase);
+        }
+        List<ProjectBudget> budgets = projectInfo.getProject().getProjectBudgets().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (ProjectBudget projectBudget : budgets) {
+          projectBudgetManager.copyProjectBudget(projectBudget, phase);
+        }
+        List<ProjectBudgetsCluserActvity> budgetsCluster =
+          projectInfo.getProject().getProjectBudgetsCluserActvities().stream()
             .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectFocus projectFocusDB : projectFocus) {
-            projectFocusManager.saveProjectFocus(projectFocusDB);
-          }
+        for (ProjectBudgetsCluserActvity projectBudget : budgetsCluster) {
+          projectBudgetsCluserActvityManager.copyProjectBudgetsCluserActvity(projectBudget, phase);
+        }
+        Phase phaseDb = phaseMySQLDAO.find(projectInfo.getPhase().getId());
+        List<Deliverable> deliverableInfos =
+          projectInfo.getProject().getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        for (Deliverable deliverableDB : deliverableInfos) {
+          DeliverableInfo deliverableInfo = deliverableDB.getDeliverableInfo(phaseDb);
 
-          List<ProjectClusterActivity> projectClusters = projectInfo.getProject().getProjectClusterActivities().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectClusterActivity projectClusterActivity : projectClusters) {
-            projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
-          }
+          if (deliverableInfo != null) {
+            Deliverable deliverable = new Deliverable();
+            deliverable = deliverableDAO.find(deliverableDB.getId());
+            deliverableInfo.setDeliverable(deliverable);
+            deliverable.getDeliverableInfo(projectInfo.getPhase());
+            deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, phaseDb));
+            deliverable.setOtherPartners(this.otherPartners(deliverable, phaseDb));
+            deliverableInfo.getDeliverable().setDeliverableInfo(deliverableInfo);
 
-          List<ProjectPartner> projectPartners = projectInfo.getProject().getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectPartner projectPartner : projectPartners) {
-            projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList()));
-            List<ProjectPartnerContribution> contributors = new ArrayList<>();
+            deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
 
-
-            List<ProjectPartnerContribution> partnerContributions = projectPartner.getProjectPartnerContributions()
-              .stream().filter(c -> c.isActive()).collect(Collectors.toList());
-            for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
-              contributors.add(projectPartnerContribution);
-            }
-            projectPartner.setSelectedLocations(new ArrayList<>());
-            for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList())) {
-              projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
-            }
-            projectPartner.setPartnerContributors(contributors);
-            projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList()));
-            projectPartnerManager.copyPartner(projectPartner, phase);
-          }
-          List<ProjectLocation> projectLocations = projectInfo.getProject().getProjectLocations().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectLocation projectLocation : projectLocations) {
-            projectLocationManager.copyProjectLocation(projectLocation, phase);
-          }
-          List<Activity> activities = projectInfo.getProject().getActivities().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (Activity activity : activities) {
-            activity.setDeliverables(
-              activity.getDeliverableActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-            activityManager.copyActivity(activity, phase);
-          }
-          List<ProjectBudget> budgets = projectInfo.getProject().getProjectBudgets().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectBudget projectBudget : budgets) {
-            projectBudgetManager.copyProjectBudget(projectBudget, phase);
-          }
-          List<ProjectBudgetsCluserActvity> budgetsCluster =
-            projectInfo.getProject().getProjectBudgetsCluserActvities().stream()
-              .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectBudgetsCluserActvity projectBudget : budgetsCluster) {
-            projectBudgetsCluserActvityManager.copyProjectBudgetsCluserActvity(projectBudget, phase);
-          }
-          Phase phaseDb = phaseMySQLDAO.find(projectInfo.getPhase().getId());
-          List<Deliverable> deliverableInfos =
-            projectInfo.getProject().getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-          for (Deliverable deliverableDB : deliverableInfos) {
-            DeliverableInfo deliverableInfo = deliverableDB.getDeliverableInfo(phaseDb);
-
-            if (deliverableInfo != null) {
-              Deliverable deliverable = new Deliverable();
-              deliverable = deliverableDAO.find(deliverableDB.getId());
-              deliverableInfo.setDeliverable(deliverable);
-              deliverable.getDeliverableInfo(projectInfo.getPhase());
-              deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, phaseDb));
-              deliverable.setOtherPartners(this.otherPartners(deliverable, phaseDb));
-              deliverableInfo.getDeliverable().setDeliverableInfo(deliverableInfo);
-
-              deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
-
-              if (deliverable.getResponsiblePartner() != null) {
-                deliverablePartnershipManager.copyDeliverablePartnership(deliverable.getResponsiblePartner(), phase);
-              }
-
-
-              for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-                deliverablePartnershipManager.copyDeliverablePartnership(deliverablePartnership, phase);
-
-              }
-              deliverable.setFundingSources(deliverable
-                .getDeliverableFundingSources().stream().filter(c -> c.isActive() && c.getPhase() != null
-                  && c.getPhase().equals(phaseDb) && c.getFundingSource().getFundingSourceInfo(phaseDb) != null)
-                .collect(Collectors.toList()));
-
-              for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
-                deliverableFundingSourceManager.copyDeliverableFundingSource(deliverableFundingSource, phase);
-
-              }
+            if (deliverable.getResponsiblePartner() != null) {
+              deliverablePartnershipManager.copyDeliverablePartnership(deliverable.getResponsiblePartner(), phase);
             }
 
 
-          }
-          List<ProjectOutcome> outcomes = projectInfo.getProject().getProjectOutcomes().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
-          for (ProjectOutcome projectOutcome : outcomes) {
-            projectOutcome.setMilestones(
-              projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+            for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+              deliverablePartnershipManager.copyDeliverablePartnership(deliverablePartnership, phase);
 
-            projectOutcome.setCommunications(projectOutcome.getProjectCommunications().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList()));
-            projectOutcome.setNextUsers(
-              projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+            }
+            deliverable.setFundingSources(deliverable
+              .getDeliverableFundingSources().stream().filter(c -> c.isActive() && c.getPhase() != null
+                && c.getPhase().equals(phaseDb) && c.getFundingSource().getFundingSourceInfo(phaseDb) != null)
+              .collect(Collectors.toList()));
 
-            projectOutcomeManager.copyProjectOutcome(projectOutcome, phase);
+            for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+              deliverableFundingSourceManager.copyDeliverableFundingSource(deliverableFundingSource, phase);
+
+            }
           }
+
+
+        }
+        List<ProjectOutcome> outcomes = projectInfo.getProject().getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+        for (ProjectOutcome projectOutcome : outcomes) {
+          projectOutcome.setMilestones(
+            projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          projectOutcome.setCommunications(
+            projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          projectOutcome.setNextUsers(
+            projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          projectOutcomeManager.copyProjectOutcome(projectOutcome, phase);
         }
       }
-
-
     }
-    if (phase.getNext() != null)
 
-    {
+    if (phase.getNext() != null) {
       this.saveInfoPhase(phase.getNext(), projecID, projectInfo);
     }
-
-
   }
 
   @Override
@@ -342,6 +326,14 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
       if (projectInfo.getPhase().getNext() != null) {
         this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);
+      }
+    }
+    if (projectInfo.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInfo.getPhase().getNext() != null && projectInfo.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInfo.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInfoPhase(upkeepPhase, projectInfo.getProject().getId(), projectInfo);
+        }
       }
     }
     return resultProjectInfo;
