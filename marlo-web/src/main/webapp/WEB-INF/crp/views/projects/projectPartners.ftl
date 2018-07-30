@@ -106,7 +106,7 @@
                   [@projectPartnerMacro element=projectPartner!{} name="project.partners[${projectPartner_index}]" index=projectPartner_index opened=(project.partners?size = 1)/]
                 [/#list]
               [#else]
-                [@projectPartnerMacro element={} name="project.partners[0]" index=0 opened=true /]
+                [@projectPartnerMacro element={} name="project.partners[0]" index=0 opened=true defaultPerson=true /]
                 [#-- 
                 [#if !editable]
                   <p class="center">[@s.text name="projectPartners.empty" /]
@@ -270,7 +270,7 @@
 [#----------------------------------------------------     MACROS     ----------------------------------------------------]
 [#------------------------------------------------------            ------------------------------------------------------]
 
-[#macro projectPartnerMacro element name index=-1 opened=false isTemplate=false]
+[#macro projectPartnerMacro element name index=-1 opened=false defaultPerson=false isTemplate=false]
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
@@ -448,8 +448,8 @@
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
-          [#if isPPA]
-           [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+          [#if isPPA || defaultPerson]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]

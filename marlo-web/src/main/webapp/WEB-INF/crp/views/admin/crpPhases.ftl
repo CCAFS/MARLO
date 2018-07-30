@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "CRP Phases" /]
+[#assign title = "Phases" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["bootstrap-select","jquery-ui", "pickadate"] /]
 [#assign customJS = [ 
@@ -37,7 +37,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
-        <h4 class="sectionTitle">CRP Phases</h4>
+        <h4 class="sectionTitle">Phases</h4>
         <div class="borderBox row ">
           [#if phases??]
             [#list phasesAction as phase]
