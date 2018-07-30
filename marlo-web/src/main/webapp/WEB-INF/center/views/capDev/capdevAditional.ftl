@@ -177,7 +177,6 @@
         </div>
 
         [#-- Outputs --]
-        
         <label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
         <div class="simpleBox" listname="capdev.outputs">
           <div class="form-group outComesContainer listSelectBlock" >

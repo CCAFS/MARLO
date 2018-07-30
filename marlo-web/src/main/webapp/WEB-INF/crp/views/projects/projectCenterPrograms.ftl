@@ -3,6 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
+  "${baseUrlMedia}/js/projects/projectDescription.js", 
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -49,6 +50,8 @@
               </div>
             </div>
             
+            <hr />
+            
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
@@ -58,14 +61,14 @@
 
             <div class="form-group row simpleBox">
               <div class="col-md-6 ">
-                <h4>${currentCrp.acronym} Program(s)</h4>
+                <h4> Additional Program(s)</h4>
                 [#list (programFlagships)![] as element] 
                   [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.composedName}" value="${element.id}" editable=true checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
               </div>
               <div class="col-md-6 ">
-                <h4>${currentCrp.acronym} Regions(s)</h4>
+                <h4> Additional Region(s)</h4>
                 [#list (regionFlagships)![] as element]
                   [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.composedName}" value="${element.id}" editable=true  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
                   <br />
@@ -85,7 +88,7 @@
 [/#if]
 
 
-
+<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
