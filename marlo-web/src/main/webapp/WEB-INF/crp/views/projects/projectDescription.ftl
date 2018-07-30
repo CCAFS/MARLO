@@ -124,17 +124,17 @@
             
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
-              <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions" readText=!editable /]:</h5>
+              <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions${isCenterProject?string('Center','')}" readText=!editable /]:</h5>
             [#else]
               [#-- For those CRPs which do not have Regional programs please phrase this question --]
-              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
+              <h5>[@customForm.text name="projectDescription.projectWorking${isCenterProject?string('Center','')}" readText=!editable /]:</h5>
             [/#if]
             
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
-                  <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
+                  <p><label>[@s.text name="projectDescription.flagships${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
                      
@@ -166,7 +166,7 @@
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}"> 
                 [#if regionFlagships?has_content] 
                   <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
-                    <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
+                    <p><label>[@s.text name="projectDescription.regions${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                       [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]

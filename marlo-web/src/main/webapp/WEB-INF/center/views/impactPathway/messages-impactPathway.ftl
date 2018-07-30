@@ -29,11 +29,17 @@
     [/#if]
   </div>
 [#else]
-
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      <p>[@s.text name="message.submittedOn" ][/@s.text]</p>
+      [#assign lastSubmission = {} /]
+      <p>
+        [@s.text name="message.submittedOn" ]
+          [@s.param] [/@s.param]
+          [@s.param] [/@s.param]
+          [@s.param]Impact Pathway[/@s.param]
+        [/@s.text]
+      </p>
     </div>
   [/#if]
   
@@ -45,7 +51,11 @@
   [#-- Completed Message--]
   [#if canSubmit && !submission && completed]
     <div class="completed-mode text-center animated flipInX">
-      <p>[@s.text name="message.completed" /]</p>
+      <p>
+        [@s.text name="message.completed" ]
+          [@s.param]Impact Pathway[/@s.param]
+        [/@s.text]
+      </p>
     </div>
   [/#if]
   
