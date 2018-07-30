@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        [#if !reportingActive]
+        [#if !reportingActive && !centerGlobalUnit]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
         <th colspan="3">Actions</th> 
@@ -16,13 +16,17 @@
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]
         <th id="projectFlagships">
-          [#if action.hasProgramnsRegions()]
-            [@s.text name="projectsList.projectFlagshipsRegions" /] 
+          [#if centerGlobalUnit]
+            [@s.text name="projectsList.projectPrograms" /]
           [#else]
-             [@s.text name="projectsList.projectFlagships" /]
+            [#if action.hasProgramnsRegions()]
+              [@s.text name="projectsList.projectFlagshipsRegions" /] 
+            [#else]
+               [@s.text name="projectsList.projectFlagships" /]
+            [/#if]
           [/#if]
         </th>
-        [#if !reportingActive]
+        [#if !reportingActive && !centerGlobalUnit]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
@@ -64,7 +68,6 @@
             [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.startDate??)!false) ]
               <p><small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small></p>
             [/#if]
-            
           </td>
           [#-- Project Leader --]
           [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
@@ -82,30 +85,30 @@
           </td>
           [#-- Flagship / Regions --]
           <td>
-          [#if !project.projectInfo.administrative]
-            [#if project.flagships?has_content || project.regions?has_content]
-              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
-            [#else]
-              [@s.text name="projectsList.none" /]
-            [/#if]
-          [#else]
-            [#local li = (project.projectInfo.liaisonInstitution)!{} ]
-            <span class="programTag" style="border-color:#444">
-              [#if (li.crpProgram??)!false]
-                ${(li.crpProgram.acronym)!(li.crpProgram.name)}
-              [#elseif (li.institution??)!false]
-                ${(li.institution.acronym)!(li.institution.name)}
+            [#if !project.projectInfo.administrative]
+              [#if project.flagships?has_content || project.regions?has_content]
+                [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
               [#else]
-                [@s.text name="global.pmu" /]
+                [@s.text name="projectsList.none" /]
               [/#if]
-            </span>
-          [/#if]
+            [#else]
+              [#local li = (project.projectInfo.liaisonInstitution)!{} ]
+              <span class="programTag" style="border-color:#444">
+                [#if (li.crpProgram??)!false]
+                  ${(li.crpProgram.acronym)!(li.crpProgram.name)}
+                [#elseif (li.institution??)!false]
+                  ${(li.institution.acronym)!(li.institution.name)}
+                [#else]
+                  [@s.text name="global.pmu" /]
+                [/#if]
+              </span>
+            [/#if]
           </td>
-          [#if !reportingActive]
+          [#if !reportingActive && !centerGlobalUnit]
           [#-- Budget W1/W2 --]
           <td class="budget"> 
             [#if project.getCoreBudget(currentCycleYear,action.getActualPhase())?has_content]
-              <p id="">US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></p> 
+               <nobr> US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></nobr>
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -113,7 +116,7 @@
           [#-- Budget W3/ Bilateral --]
           <td class="budget"> 
             [#if project.getW3Budget(currentCycleYear,action.getActualPhase())?has_content]
-              <p id="">US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></p> 
+              <nobr>US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></nobr> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -121,7 +124,7 @@
           [#-- Budget Bilateral --]
           <td class="budget"> 
             [#if project.getBilateralBudget(currentCycleYear,action.getActualPhase())?has_content]
-              <p id="">US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></p> 
+              <nobr>US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></nobr> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
