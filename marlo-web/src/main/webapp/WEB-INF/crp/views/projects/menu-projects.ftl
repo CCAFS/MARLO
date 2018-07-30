@@ -121,7 +121,7 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || projectEditLeader) && !crpClosed]
+[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || projectEditLeader) && !crpClosed && !centerGlobalUnit]
   [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
