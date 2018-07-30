@@ -85,6 +85,16 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
       }
     }
 
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deletProjectClusterPhase(upkeepPhase, projectClusterActivity.getProject().getId(),
+            projectClusterActivity);
+        }
+      }
+    }
+
   }
 
   public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {
@@ -134,6 +144,17 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
           projectClusterActivity.getProject().getId(), projectClusterActivity);
       }
     }
+
+
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addProjectClusterPhase(upkeepPhase, projectClusterActivity.getProject().getId(), projectClusterActivity);
+        }
+      }
+    }
+
 
     return projectClusterActivityDB;
   }

@@ -20,9 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
@@ -31,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
@@ -86,27 +83,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
-
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
   // Managers
   private ProjectManager projectManager;
   private ProjectInfoManager projectInfoManagerManager;
-
   private SectionStatusManager sectionStatusManager;
   private ProjectFocusManager projectFocusManager;
-
-  private FileDBManager fileDBManager;
-
   private GlobalUnitManager crpManager;
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
-  private GlobalUnitProjectManager globalUnitProjectManager;
   private AuditLogManager auditLogManager;
-
-  private ProjectScopeManager projectScopeManager;
   private LocElementTypeManager locationTypeManager;
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -115,54 +104,32 @@ public class ProjectDescriptionAction extends BaseAction {
   // Front-end
   private long projectID;
   private GlobalUnit loggedCrp;
-
-  /*
-   * private LiaisonInstitutionManager liaisonInstitutionManager;
-   * private LiaisonUserManager liaisonUserManager;
-   * private UserManager userManager;
-   */
-
   private Project project;
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<CrpClusterOfActivity> clusterofActivites;
   private Project projectDB;
-
   private Map<String, String> projectStatuses;
-
   private List<LiaisonUser> allOwners;
-
-
   private Map<String, String> projectTypes;
-
-
   private Map<String, String> projectScales;
-
   private File file;
   private File fileReporting;
-
-
   private String fileContentType;
-
-
   private String fileFileName;
-
   private String fileReportingFileName;
-
   private ProjectDescriptionValidator validator;
 
   @Inject
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, FileDBManager fileDBManager,
-    AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
-    ProjectClusterActivityManager projectClusterActivityManager,
+    SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
+    ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
-    ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    HistoryComparator historyComparator, ProjectInfoManager projectInfoManagerManager,
+    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -177,14 +144,11 @@ public class ProjectDescriptionAction extends BaseAction {
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.auditLogManager = auditLogManager;
     this.projectClusterActivityManager = projectClusterActivityManager;
-    this.fileDBManager = fileDBManager;
     this.historyComparator = historyComparator;
     // this.liaisonUserManager = liaisonUserManager;
     this.liaisonUserManager = liaisonUserManager;
-    this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
-    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   /**
@@ -751,7 +715,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
     if (this.hasPermission("canEdit")) {
 
-
       projectDB.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       // Load basic info project to be saved
 
@@ -905,32 +868,6 @@ public class ProjectDescriptionAction extends BaseAction {
             projectClusterActivity.setProject(project);
             projectClusterActivity.setPhase(this.getActualPhase());
             projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
-          }
-
-        }
-      }
-
-
-      // Removing Project Scopes
-
-      for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList())) {
-
-        if (project.getScopes() == null) {
-          project.setScopes(new ArrayList<>());
-        }
-        if (!project.getScopes().contains(projectLocation)) {
-          projectScopeManager.deleteProjectScope(projectLocation.getId());
-
-        }
-      }
-      // Add Project Scopes
-
-      if (project.getScopes() != null) {
-        for (ProjectScope projectLocation : project.getScopes()) {
-          if (projectLocation.getId() == null) {
-            projectLocation.setProject(project);
-            projectScopeManager.saveProjectScope(projectLocation);
           }
 
         }
