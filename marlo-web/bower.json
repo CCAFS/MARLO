@@ -43,7 +43,6 @@
     "blueimp-file-upload": "^9.14.1",
     "qtip2": "^2.2.1",
     "jquery-pretty-text-diff": "^1.0.5",
-    "TimelineJS3": "^3.3.9",
     "jquery-tag-editor": "^1.0.20",
     "sly": "https://github.com/darsain/sly.git#^1.6.1",
     "pickadate": "^3.5.6",
