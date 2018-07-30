@@ -83,15 +83,9 @@
           <td class=""> 
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          [#-- Flagship / Regions --]
+          [#-- Flagship / Regions / Programs --]
           <td>
-            [#if !project.projectInfo.administrative]
-              [#if project.flagships?has_content || project.regions?has_content]
-                [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
-              [#else]
-                [@s.text name="projectsList.none" /]
-              [/#if]
-            [#else]
+            [#if project.projectInfo.administrative]
               [#local li = (project.projectInfo.liaisonInstitution)!{} ]
               <span class="programTag" style="border-color:#444">
                 [#if (li.crpProgram??)!false]
@@ -102,6 +96,13 @@
                   [@s.text name="global.pmu" /]
                 [/#if]
               </span>
+            [#else]
+              [#if project.flagships?has_content || project.regions?has_content]
+                [#list (project.flagships)![] as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list]
+                [#list (project.regions)![] as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list]
+              [#else]
+                [@s.text name="projectsList.none" /]
+              [/#if]
             [/#if]
           </td>
           [#if !reportingActive && !centerGlobalUnit]
