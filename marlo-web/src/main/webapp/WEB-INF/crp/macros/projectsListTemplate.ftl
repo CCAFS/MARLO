@@ -85,6 +85,7 @@
           </td>
           [#-- Flagship / Regions / Programs --]
           <td>
+            [#assign tagsNumber = 0 /]
             [#if project.projectInfo.administrative]
               [#local li = (project.projectInfo.liaisonInstitution)!{} ]
               <span class="programTag" style="border-color:#444">
@@ -96,13 +97,19 @@
                   [@s.text name="global.pmu" /]
                 [/#if]
               </span>
+              [#assign tagsNumber = tagsNumber+1 /]
             [#else]
-              [#if project.flagships?has_content || project.regions?has_content]
-                [#list (project.flagships)![] as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list]
-                [#list (project.regions)![] as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list]
-              [#else]
-                [@s.text name="projectsList.none" /]
-              [/#if]
+              [#assign programs = ((project.flagships)![]) + ((project.regions)![])]
+              [#list (programs)![] as element]
+                [#if element.crp.id == actualPhase.crp.id ]
+                  <span class="programTag" style="border-color:${(element.color)!'#fff'}" title="${(element.composedName)}">${(element.acronym)!}</span>
+                  [#assign tagsNumber = tagsNumber+1 /]
+                [/#if]
+              [/#list]
+            [/#if]
+            
+            [#if tagsNumber < 1]
+              [@s.text name="projectsList.none" /]
             [/#if]
           </td>
           [#if !reportingActive && !centerGlobalUnit]

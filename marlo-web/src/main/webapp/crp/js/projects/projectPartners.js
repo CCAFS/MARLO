@@ -78,7 +78,7 @@ function attachEvents() {
    * General
    */
 
-  $('.blockTitle.closed').on('click', function() {
+  $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
       $('.blockTitle').removeClass('opened').addClass('closed');

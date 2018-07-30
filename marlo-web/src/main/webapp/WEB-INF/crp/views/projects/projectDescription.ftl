@@ -137,30 +137,28 @@
                   <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                    [#if programFlagships??]
-                      [#-- Contributions allowed to this flagship --]
-                      [#list programFlagships as element]
-                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
-                        [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
-                        [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
-                        
-                        [#if (totalContributions != 0)] 
-                          <p class="checkDisable"> 
-                             ${element.composedName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
-                            <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
-                          </p>
-                        [#else]
-                          <p class=""> 
-                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
-                          </p>
-                        [/#if]
-                      [/#list]
-                    [/#if]
+                     
+                    [#-- Contributions allowed to this flagship --]
+                    [#list (programFlagships)![] as element]
+                      [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
+                      [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
+                      [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
+                      
+                      [#if (totalContributions != 0)] 
+                        <p class="checkDisable"> 
+                           ${element.composedName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
+                          <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
+                        </p>
+                      [#else]
+                        [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
+                      [/#if]
+                    [/#list]
+                     
                   [#else]
                     [#-- If does no have permissions --]
                     <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
                     [#-- Selected Flagships --]
-                    [#if project.flagships?has_content][#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list][/#if]
+                    [#list (project.flagships)![] as element]<p class="checked">${element.composedName}</p>[/#list]
                   [/#if]
                 </div>
               </div>
@@ -173,11 +171,9 @@
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                       [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]
                       [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
-                      [#if regionFlagships??]
-                        [#list regionFlagships as element]
-                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
-                        [/#list]
-                      [/#if]
+                      [#list (regionFlagships)![] as element]
+                        [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
+                      [/#list]
                        
                     [#else]
                       [#if (project.projectInfo.getNoRegional())!false ]
@@ -185,12 +181,7 @@
                         <p class="checked"> [@s.text name="project.noRegional" /]</p>
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
-                      [#if project.regions?has_content]
-                        [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
-                      [#else]
-                        
-                       [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
-                      [/#if]
+                      [#list (project.regions)![] as element]<p class="checked">${element.composedName}</p>[/#list]
                     [/#if]
                   </div>
                 [/#if]
@@ -218,9 +209,7 @@
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
-                        [#if element.crpClusterOfActivity.leaders??]
-                          [#list element.crpClusterOfActivity.leaders as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
-                        [/#if]
+                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
                       </ul>
                     </li>
                   [/#list]
