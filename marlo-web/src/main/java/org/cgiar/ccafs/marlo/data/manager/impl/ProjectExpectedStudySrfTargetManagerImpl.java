@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudySrfTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
@@ -53,11 +54,22 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
 
     ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget =
       this.getProjectExpectedStudySrfTargetById(projectExpectedStudySrfTargetId);
-
-    if (projectExpectedStudySrfTarget.getPhase().getNext() != null) {
-      this.deleteProjectExpectedStudySrfTargetPhase(projectExpectedStudySrfTarget.getPhase().getNext(),
-        projectExpectedStudySrfTarget.getProjectExpectedStudy().getId(), projectExpectedStudySrfTarget);
+    Phase currentPhase = projectExpectedStudySrfTarget.getPhase();
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudySrfTargetPhase(upkeepPhase,
+            projectExpectedStudySrfTarget.getProjectExpectedStudy().getId(), projectExpectedStudySrfTarget);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudySrfTargetPhase(currentPhase.getNext(),
+          projectExpectedStudySrfTarget.getProjectExpectedStudy().getId(), projectExpectedStudySrfTarget);
+      }
     }
+
 
     projectExpectedStudySrfTargetDAO.deleteProjectExpectedStudySrfTarget(projectExpectedStudySrfTargetId);
   }
@@ -127,12 +139,22 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
   public ProjectExpectedStudySrfTarget
     saveProjectExpectedStudySrfTarget(ProjectExpectedStudySrfTarget projectExpectedStudySrfTarget) {
 
-
     ProjectExpectedStudySrfTarget srfTarget = projectExpectedStudySrfTargetDAO.save(projectExpectedStudySrfTarget);
+    Phase currentPhase = srfTarget.getPhase();
 
-    if (srfTarget.getPhase().getNext() != null) {
-      this.saveExpectedStudySrfTargetPhase(srfTarget.getPhase().getNext(), srfTarget.getProjectExpectedStudy().getId(),
-        projectExpectedStudySrfTarget);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudySrfTargetPhase(upkeepPhase, srfTarget.getProjectExpectedStudy().getId(),
+            projectExpectedStudySrfTarget);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudySrfTargetPhase(currentPhase.getNext(), srfTarget.getProjectExpectedStudy().getId(),
+          projectExpectedStudySrfTarget);
+      }
     }
 
     return srfTarget;

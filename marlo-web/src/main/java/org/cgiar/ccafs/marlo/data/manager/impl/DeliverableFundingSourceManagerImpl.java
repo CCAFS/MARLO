@@ -109,6 +109,16 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
       }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteDeliverableFundingSource(upkeepPhase, deliverableFundingSource.getDeliverable().getId(),
+            deliverableFundingSource);
+        }
+      }
+    }
+
   }
 
   public void deleteDeliverableFundingSource(Phase next, long deliverableID,
@@ -165,6 +175,16 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
       }
     }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addDeliverableFundingSourcePhase(upkeepPhase, deliverableFundingSource.getDeliverable().getId(),
+            deliverableFundingSource);
+        }
+      }
+    }
+
     return deliverableFundingSourceDB;
   }
 

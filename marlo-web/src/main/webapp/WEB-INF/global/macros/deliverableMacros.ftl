@@ -403,7 +403,7 @@
       </div>
       <div class="col-md-8">
         [#if editable]
-          [#list repositoryChannels  as channel]
+          [#list (repositoryChannels)![]  as channel]
             [#if channel.shortName != "other"]
               [#-- Examples & instructions --]
               [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
@@ -416,7 +416,7 @@
   
   [#assign channelsArray = [] /] 
   <ul id="channelsList" style="display:none">
-    [#list repositoryChannels  as channel]
+    [#list (repositoryChannels)![]  as channel]
       [#if channel.shortName != "other"]
         <li>
           [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
@@ -628,7 +628,7 @@
     <hr />
     
     <div class="col-md-4">
-    [#list answers as answer]
+    [#list (answers)![] as answer]
       <div class="radio radio-block">
         [#if editable]
         <label><input type="radio" class="qualityAssurance" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
@@ -669,7 +669,7 @@
     <hr />
     
     <div class="col-md-4">
-    [#list answers as answer]
+    [#list (answers)![] as answer] 
       <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataDictionary" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
@@ -710,7 +710,7 @@
     <hr />
     
     <div class="col-md-4">
-    [#list answers as answer]
+    [#list (answers)![] as answer]
       <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataTools" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>

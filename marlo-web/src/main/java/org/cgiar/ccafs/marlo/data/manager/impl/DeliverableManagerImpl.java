@@ -129,6 +129,15 @@ public class DeliverableManagerImpl implements DeliverableManager {
       this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
         deliverable);
     }
+    if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (deliverable.getDeliverableInfo().getPhase().getNext() != null
+        && deliverable.getDeliverableInfo().getPhase().getNext().getNext() != null && !isPublication) {
+        Phase upkeepPhase = deliverable.getDeliverableInfo().getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverablePhase(upkeepPhase, deliverable.getId(), deliverable);
+        }
+      }
+    }
 
     return resultDeliverable;
   }

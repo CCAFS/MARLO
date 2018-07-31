@@ -109,52 +109,49 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   private static final long serialVersionUID = 597647662288518417L;
 
-
-  private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
-
-
+  // Managers
   private ProjectExpectedStudyManager projectExpectedStudyManager;
-
-
   private AuditLogManager auditLogManager;
-
   private GlobalUnitManager crpManager;
+  private ProjectManager projectManager;
+  private PhaseManager phaseManager;
+  private SrfSloIndicatorManager srfSloIndicatorManager;
+  private SrfSubIdoManager srfSubIdoManager;
+  private CrpProgramManager crpProgramManager;
+  private InstitutionManager institutionManager;
+  private LocElementManager locElementManager;
+  private StudyTypeManager studyTypeManager;
+  private FileDBManager fileDBManager;
+  private RepIndGeographicScopeManager geographicScopeManager;
+  private RepIndRegionManager repIndRegionManager;
+  private RepIndOrganizationTypeManager organizationTypeManager;
+  private RepIndGenderYouthFocusLevelManager focusLevelManager;
+  private RepIndPolicyInvestimentTypeManager investimentTypeManager;
+  private RepIndStageProcessManager stageProcessManager;
+  private RepIndStageStudyManager stageStudyManager;
+  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
+  private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
+  private ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager;
+  private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
+  private ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager;
+  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
-
+  // Variables
+  private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
-
   private Project project;
-
-
   private long projectID;
-
-
   private long expectedID;
-
-
   private ProjectExpectedStudy expectedStudy;
-
-
   private ProjectExpectedStudy expectedStudyDB;
-
-
   private Map<Integer, String> statuses;
-
-
   private List<RepIndGeographicScope> geographicScopes;
-
-
   private List<RepIndRegion> regions;
-
   private List<RepIndOrganizationType> organizationTypes;
-
-
   private List<RepIndGenderYouthFocusLevel> focusLevels;
-
-
   private List<RepIndPolicyInvestimentType> policyInvestimentTypes;
-
-
   private List<RepIndStageProcess> stageProcesses;
   private List<RepIndStageStudy> stageStudies;
   private List<StudyType> studyTypes;
@@ -166,33 +163,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpProgram> regionList;
   private List<Institution> institutions;
   private List<Project> myProjects;
-  private ProjectManager projectManager;
-  private PhaseManager phaseManager;
-  private SrfSloIndicatorManager srfSloIndicatorManager;
-  private SrfSubIdoManager srfSubIdoManager;
-  private CrpProgramManager crpProgramManager;
-  private InstitutionManager institutionManager;
-
-
-  private LocElementManager locElementManager;
-  private StudyTypeManager studyTypeManager;
-  private FileDBManager fileDBManager;
-  private RepIndGeographicScopeManager geographicScopeManager;
-  private RepIndRegionManager repIndRegionManager;
-  private RepIndOrganizationTypeManager organizationTypeManager;
-  private RepIndGenderYouthFocusLevelManager focusLevelManager;
-  private RepIndPolicyInvestimentTypeManager investimentTypeManager;
-
-  private RepIndStageProcessManager stageProcessManager;
-  private RepIndStageStudyManager stageStudyManager;
-  private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
-  private ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager;
-  private ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager;
-  private ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager;
-  private ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager;
-  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
-  private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
-  private ExpectedStudyProjectManager expectedStudyProjectManager;
   private String transaction;
 
   @Inject

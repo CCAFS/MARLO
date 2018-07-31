@@ -19,8 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
@@ -44,7 +42,6 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
@@ -107,7 +104,6 @@ import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -151,7 +147,6 @@ public class DeliverableAction extends BaseAction {
 
   // Managers
   private AuditLogManager auditLogManager;
-  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private GlobalUnitManager crpManager;
   private DeliverableDataSharingFileManager deliverableDataSharingFileManager;
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
@@ -159,7 +154,6 @@ public class DeliverableAction extends BaseAction {
   private DeliverableUserManager deliverableUserManager;
   private DeliverableCrpManager deliverableCrpManager;
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
-  private CrpPandrManager crpPandrManager;
   private DeliverableManager deliverableManager;
   private DeliverableInfoManager deliverableInfoManager;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
@@ -172,7 +166,6 @@ public class DeliverableAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private FileDBManager fileDBManager;
   private GenderTypeManager genderTypeManager;
-  private IpProgramManager ipProgramManager;
   private FundingSourceManager fundingSourceManager;
   private CrossCuttingScoringManager crossCuttingManager;
   private MetadataElementManager metadataElementManager;
@@ -199,7 +192,6 @@ public class DeliverableAction extends BaseAction {
   private ArrayList<CrpProgram> programs;
   private Deliverable deliverable;
   private long deliverableID;
-  private HistoryComparator historyComparator;
   private List<DeliverableType> deliverableSubTypes;
   private Boolean has_specific_management_deliverables;
   private Boolean isManagingPartnerPersonRequerid;
@@ -235,7 +227,7 @@ public class DeliverableAction extends BaseAction {
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableManager deliverableManager,
     GlobalUnitManager crpManager, ProjectManager projectManager,
-    ProjectPartnerPersonManager projectPartnerPersonManager, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager,
     DeliverablePartnershipManager deliverablePartnershipManager, AuditLogManager auditLogManager,
     DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
     FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
@@ -244,13 +236,11 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityAnswerManager deliverableQualityAnswerManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     DeliverableUserManager deliverableUserManager, GenderTypeManager genderTypeManager,
-    HistoryComparator historyComparator, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
-    InstitutionManager institutionManager, MetadataElementManager metadataElementManager,
-    DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
-    IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager,
-    RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager,
-    CrossCuttingScoringManager crossCuttingManager, CrpProgramManager crpProgramManager,
-    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
+    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager, InstitutionManager institutionManager,
+    MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager,
+    PartnerDivisionManager partnerDivisionManager, RepositoryChannelManager repositoryChannelManager,
+    DeliverableInfoManager deliverableInfoManager, CrossCuttingScoringManager crossCuttingManager,
+    CrpProgramManager crpProgramManager, DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     RepIndTypeActivityManager repIndTypeActivityManager, RepIndTypeParticipantManager repIndTypeParticipantManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
     LocElementManager locElementManager, DeliverableParticipantLocationManager deliverableParticipantLocationManager,
@@ -260,7 +250,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
-    this.historyComparator = historyComparator;
     this.deliverableUserManager = deliverableUserManager;
     this.projectManager = projectManager;
     this.deliverableInfoManager = deliverableInfoManager;
@@ -268,7 +257,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
-    this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.auditLogManager = auditLogManager;
     this.deliverableValidator = deliverableValidator;
@@ -284,8 +272,6 @@ public class DeliverableAction extends BaseAction {
     this.metadataElementManager = metadataElementManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
     this.deliverableDisseminationManager = deliverableDisseminationManager;
-    this.crpPandrManager = crpPandrManager;
-    this.ipProgramManager = ipProgramManager;
     this.partnerDivisionManager = partnerDivisionManager;
     this.repositoryChannelManager = repositoryChannelManager;
     this.crossCuttingManager = crossCuttingManager;
@@ -569,8 +555,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
-        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable
+        .getOtherPartners().stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 

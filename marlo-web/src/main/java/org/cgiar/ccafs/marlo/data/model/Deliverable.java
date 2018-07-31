@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +116,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   private String flagshipValue;
   private String regionsValue;
   private List<DeliverableLeader> leaders;
-  private List<MetadataElement> metadata;
+  private List<MetadataElement> metadata = new ArrayList<>();
   private Set<DeliverableCrp> deliverableCrps = new HashSet<DeliverableCrp>(0);
   private List<DeliverableCrp> crps;
   private Set<DeliverableUser> deliverableUsers = new HashSet<DeliverableUser>(0);

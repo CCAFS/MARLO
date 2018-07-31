@@ -158,6 +158,14 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
           projectLocation);
       }
     }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectLocationPhase(upkeepPhase, projectLocation.getProject().getId(), projectLocation);
+        }
+      }
+    }
     projectLocationDAO.deleteProjectLocation(projectLocation.getId());
 
   }
@@ -233,6 +241,15 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
       if (projectLocation.getPhase().getNext() != null) {
         this.addProjectLoactionsDAO(projectLocation.getPhase().getNext(), projectLocation.getProject().getId(),
           projectLocation);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addProjectLoactionsDAO(upkeepPhase, projectLocation.getProject().getId(), projectLocation);
+        }
       }
     }
     return resultProjectLocation;

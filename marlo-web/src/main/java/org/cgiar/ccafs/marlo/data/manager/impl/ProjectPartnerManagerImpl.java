@@ -173,6 +173,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       projectPartnerAdd.setPhase(phase);
       projectPartnerAdd.setResponsibilities(projectPartner.getResponsibilities());
       projectPartnerAdd.setProject(projectPartner.getProject());
+      projectPartnerAdd.setSubDepartment(projectPartner.getSubDepartment());
       projectPartnerAdd = projectPartnerDAO.save(projectPartnerAdd);
 
       if (projectPartnerAdd.getId() != null) {
@@ -186,6 +187,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
       for (ProjectPartner projectPartnerPrev : partners) {
         projectPartnerPrev.setResponsibilities(projectPartner.getResponsibilities());
+        projectPartnerPrev.setSubDepartment(projectPartner.getSubDepartment());
         projectPartnerPrev = projectPartnerDAO.save(projectPartnerPrev);
         this.updateUsers(projectPartnerPrev, projectPartner);
         this.updateLocations(projectPartnerPrev, projectPartner);
@@ -267,6 +269,15 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (projectPartner.getPhase().getNext() != null && projectPartner.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deletProjectPartnerPhase(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
+        }
+      }
+    }
+
 
   }
 
@@ -343,6 +354,17 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartner);
       }
     }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addProjectPartnerDAO(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
+        }
+      }
+    }
+
+
     return resultPartner;
 
   }

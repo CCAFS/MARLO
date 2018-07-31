@@ -76,50 +76,31 @@ public class ProjectLocationAction extends BaseAction {
 
   private static final long serialVersionUID = -3215013554941621274L;
 
+
+  // Managers
   private final AuditLogManager auditLogManager;
-
-
   private final GlobalUnitManager crpManager;
-
-
   private final FundingSourceManager fundingSourceManager;
-  private List<LocationLevel> locationsLevels;
-
-
-  private final ProjectLocationValidator locationValidator;
-
-
   private final LocElementManager locElementManager;
-
   private final LocElementTypeManager locElementTypeManager;
-
   private final LocGeopositionManager locGeopositionManager;
-
-
-  private GlobalUnit loggedCrp;
-
-  private Project project;
-
-
-  private long projectID;
-
   private final ProjectLocationElementTypeManager projectLocationElementTypeManager;
-
   private final ProjectLocationManager projectLocationManager;
-
   private final ProjectManager projectManager;
   private ProjectInfoManager projectInfoManager;
 
+  // Variables
+  private GlobalUnit loggedCrp;
+  private Project project;
+  private long projectID;
   private boolean region;
-
   private List<LocElement> regionLists;
-
   private List<ScopeData> scopeData;
   private List<LocElementType> scopeRegionLists;
-
   private List<LocElementType> scopeRegions;
-
   private String transaction;
+  private List<LocationLevel> locationsLevels;
+  private final ProjectLocationValidator locationValidator;
 
 
   @Inject
@@ -1292,8 +1273,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions = new ArrayList<>(this.getDBLocations()
-      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    List<ProjectLocation> regions = new ArrayList<>(this
+      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()
@@ -1384,8 +1365,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
-    regions = new ArrayList<>(this.getDBLocations()
-      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    regions = new ArrayList<>(this
+      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()

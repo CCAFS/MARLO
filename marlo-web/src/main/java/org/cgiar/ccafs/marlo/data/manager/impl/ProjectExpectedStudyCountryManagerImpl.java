@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyCountryDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -50,17 +51,26 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
   @Override
   public void deleteProjectExpectedStudyCountry(long projectExpectedStudyCountryId) {
 
-
     ProjectExpectedStudyCountry projectExpectedStudyCountry =
       this.getProjectExpectedStudyCountryById(projectExpectedStudyCountryId);
+    Phase currentPhase = projectExpectedStudyCountry.getPhase();
 
-    if (projectExpectedStudyCountry.getPhase().getNext() != null) {
-      this.deleteProjectExpectedStudyCountryPhase(projectExpectedStudyCountry.getPhase().getNext(),
-        projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyCountryPhase(upkeepPhase,
+            projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyCountryPhase(currentPhase.getNext(),
+          projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
+      }
     }
 
     projectExpectedStudyCountryDAO.deleteProjectExpectedStudyCountry(projectExpectedStudyCountryId);
-
   }
 
   public void deleteProjectExpectedStudyCountryPhase(Phase next, long expectedID,
@@ -133,12 +143,21 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
     saveProjectExpectedStudyCountry(ProjectExpectedStudyCountry projectExpectedStudyCountry) {
 
     ProjectExpectedStudyCountry country = projectExpectedStudyCountryDAO.save(projectExpectedStudyCountry);
+    Phase currentPhase = phaseDAO.find(country.getPhase().getId());
 
-    Phase phase = phaseDAO.find(country.getPhase().getId());
-
-    if (country.getPhase().getNext() != null) {
-      this.saveExpectedStudyCountryPhase(country.getPhase().getNext(), country.getProjectExpectedStudy().getId(),
-        projectExpectedStudyCountry);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyCountryPhase(upkeepPhase, country.getProjectExpectedStudy().getId(),
+            projectExpectedStudyCountry);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyCountryPhase(currentPhase.getNext(), country.getProjectExpectedStudy().getId(),
+          projectExpectedStudyCountry);
+      }
     }
 
     return country;

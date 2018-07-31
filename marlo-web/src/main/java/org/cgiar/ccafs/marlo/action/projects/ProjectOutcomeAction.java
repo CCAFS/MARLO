@@ -75,25 +75,22 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectOutcomeAction extends BaseAction {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 4520862722467820286L;
+
   private static final Logger LOG = LoggerFactory.getLogger(ProjectOutcomeAction.class);
 
+  // Managers
   private ProjectManager projectManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private ProjectCommunicationManager projectCommunicationManager;
-  // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-
   private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private AuditLogManager auditLogManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private ProjectNextuserManager projectNextuserManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
+  private CrpMilestoneManager crpMilestoneManager;
 
   // Front-end
   private long projectID;
@@ -102,13 +99,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private Project project;
   private List<CrpMilestone> milestones;
   private List<CrpMilestone> milestonesProject;
-
   private List<SrfTargetUnit> targetUnits;
-
-
   private CrpProgramOutcome crpProgramOutcome;
-
-  private CrpMilestoneManager crpMilestoneManager;
   private ProjectOutcome projectOutcome;
   private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;

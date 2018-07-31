@@ -17,11 +17,9 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -61,40 +59,28 @@ public class DeliverableListAction extends BaseAction {
   private static final long serialVersionUID = -823169163612346982L;
 
 
-  private List<Integer> allYears;
-
+  // Managers
   private GlobalUnitManager crpManager;
-
-
-  private long deliverableID;
-
   private DeliverableManager deliverableManager;
-
-
-  private DeliverableFundingSourceManager deliverableFundingSourceManager;
-  private FundingSourceManager fundingSourceManager;
-  // Front-end
-  private List<Deliverable> deliverables;
-  private List<DeliverableType> deliverablesType;
-
   private PhaseManager phaseManager;
   private DeliverableTypeManager deliverableTypeManager;
-
   private DeliverableInfoManager deliverableInfoManager;
+  private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
+
+  // Front-end
+  private List<Integer> allYears;
+  private long deliverableID;
+  private List<Deliverable> deliverables;
+  private List<DeliverableType> deliverablesType;
   private GlobalUnit loggedCrp;
   private Project project;
-
   private long projectID;
-  // Managers
-  private ProjectManager projectManager;
-
-  private SectionStatusManager sectionStatusManager;
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
-    DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager, FundingSourceManager fundingSourceManager) {
+    DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -103,8 +89,6 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableManager = deliverableManager;
     this.phaseManager = phaseManager;
-    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
-    this.fundingSourceManager = fundingSourceManager;
   }
 
   @Override
@@ -128,9 +112,19 @@ public class DeliverableListAction extends BaseAction {
     deliverableInfo.setModificationJustification("New expected deliverable created");
     deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
     // Replicate only for Planning
-    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
-      this.addDeliverablePhase(phase.getNext(), deliverable);
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addDeliverablePhase(phase.getNext(), deliverable);
+        }
+      }
+    } else {
+      if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+        this.addDeliverablePhase(phase.getNext(), deliverable);
+      }
     }
+
 
     if (deliverableID > 0) {
       return SUCCESS;

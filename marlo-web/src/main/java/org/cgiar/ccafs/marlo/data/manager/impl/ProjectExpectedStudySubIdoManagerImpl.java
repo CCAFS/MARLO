@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudySubIdoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
@@ -53,10 +54,21 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
 
     ProjectExpectedStudySubIdo projectExpectedStudySubIdo =
       this.getProjectExpectedStudySubIdoById(projectExpectedStudySubIdoId);
+    Phase currentPhase = projectExpectedStudySubIdo.getPhase();
 
-    if (projectExpectedStudySubIdo.getPhase().getNext() != null) {
-      this.deleteProjectExpectedStudySubIdoPhase(projectExpectedStudySubIdo.getPhase().getNext(),
-        projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudySubIdoPhase(upkeepPhase,
+            projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudySubIdoPhase(currentPhase.getNext(),
+          projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
+      }
     }
 
     projectExpectedStudySubIdoDAO.deleteProjectExpectedStudySubIdo(projectExpectedStudySubIdoId);
@@ -125,14 +137,25 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
   public ProjectExpectedStudySubIdo
     saveProjectExpectedStudySubIdo(ProjectExpectedStudySubIdo projectExpectedStudySubIdo) {
 
-    ProjectExpectedStudySubIdo SubIdo = projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
+    ProjectExpectedStudySubIdo subIdo = projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
+    Phase currentPhase = subIdo.getPhase();
 
-    if (SubIdo.getPhase().getNext() != null) {
-      this.saveExpectedStudySubIdoPhase(SubIdo.getPhase().getNext(), SubIdo.getProjectExpectedStudy().getId(),
-        projectExpectedStudySubIdo);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudySubIdoPhase(upkeepPhase, subIdo.getProjectExpectedStudy().getId(),
+            projectExpectedStudySubIdo);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudySubIdoPhase(currentPhase.getNext(), subIdo.getProjectExpectedStudy().getId(),
+          projectExpectedStudySubIdo);
+      }
     }
 
-    return SubIdo;
+    return subIdo;
   }
 
 

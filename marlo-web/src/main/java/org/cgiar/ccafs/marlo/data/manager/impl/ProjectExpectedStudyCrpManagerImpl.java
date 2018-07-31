@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyCrpDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
@@ -51,11 +52,22 @@ public class ProjectExpectedStudyCrpManagerImpl implements ProjectExpectedStudyC
   public void deleteProjectExpectedStudyCrp(long projectExpectedStudyCrpId) {
 
     ProjectExpectedStudyCrp projectExpectedStudyCrp = this.getProjectExpectedStudyCrpById(projectExpectedStudyCrpId);
-
-    if (projectExpectedStudyCrp.getPhase().getNext() != null) {
-      this.deleteProjectExpectedStudyCrpPhase(projectExpectedStudyCrp.getPhase().getNext(),
-        projectExpectedStudyCrp.getProjectExpectedStudy().getId(), projectExpectedStudyCrp);
+    Phase currentPhase = projectExpectedStudyCrp.getPhase();
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyCrpPhase(upkeepPhase,
+            projectExpectedStudyCrp.getProjectExpectedStudy().getId(), projectExpectedStudyCrp);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyCrpPhase(currentPhase.getNext(),
+          projectExpectedStudyCrp.getProjectExpectedStudy().getId(), projectExpectedStudyCrp);
+      }
     }
+
 
     projectExpectedStudyCrpDAO.deleteProjectExpectedStudyCrp(projectExpectedStudyCrpId);
   }
@@ -121,14 +133,26 @@ public class ProjectExpectedStudyCrpManagerImpl implements ProjectExpectedStudyC
   @Override
   public ProjectExpectedStudyCrp saveProjectExpectedStudyCrp(ProjectExpectedStudyCrp projectExpectedStudyCrp) {
 
-    ProjectExpectedStudyCrp crp = projectExpectedStudyCrpDAO.save(projectExpectedStudyCrp);
+    ProjectExpectedStudyCrp projectExpectedStudyCrpResult = projectExpectedStudyCrpDAO.save(projectExpectedStudyCrp);
+    Phase currentPhase = projectExpectedStudyCrpResult.getPhase();
 
-    if (crp.getPhase().getNext() != null) {
-      this.saveExpectedStudyCrpPhase(crp.getPhase().getNext(), crp.getProjectExpectedStudy().getId(),
-        projectExpectedStudyCrp);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyCrpPhase(upkeepPhase, projectExpectedStudyCrpResult.getProjectExpectedStudy().getId(),
+            projectExpectedStudyCrp);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyCrpPhase(currentPhase.getNext(),
+          projectExpectedStudyCrpResult.getProjectExpectedStudy().getId(), projectExpectedStudyCrp);
+      }
     }
 
-    return crp;
+
+    return projectExpectedStudyCrpResult;
   }
 
 
