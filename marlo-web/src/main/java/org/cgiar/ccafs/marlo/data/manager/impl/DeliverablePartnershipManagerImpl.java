@@ -185,7 +185,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
         projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
     if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
       for (DeliverablePartnership dePartnership : deliverablePartnerships) {
-        if (dePartnership.getId() != null) {
+        if (dePartnership != null && dePartnership.getId() != null) {
           deliverablePartnershipDAO.deleteDeliverablePartnership(dePartnership.getId());
         }
       }

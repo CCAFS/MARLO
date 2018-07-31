@@ -68,7 +68,7 @@
               [@customForm.textArea name="project.projectInfo.title" i18nkey="project.title" required=true className="project-title limitWords-30" editable=editable && action.hasPermission("title") /]
             </div>
             
-            [#if project.crpProject]
+            [#if isCrpProject]
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
@@ -83,7 +83,7 @@
               </div> 
             </div>
             [/#if]
-            [#if project.centerProject || (centerGlobalUnit && project.crpProject) ]
+            [#if isCenterProject ]
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
@@ -124,43 +124,41 @@
             
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
-              <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions" readText=!editable /]:</h5>
+              <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions${isCenterProject?string('Center','')}" readText=!editable /]:</h5>
             [#else]
               [#-- For those CRPs which do not have Regional programs please phrase this question --]
-              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
+              <h5>[@customForm.text name="projectDescription.projectWorking${isCenterProject?string('Center','')}" readText=!editable /]:</h5>
             [/#if]
             
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
-                  <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
+                  <p><label>[@s.text name="projectDescription.flagships${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                    [#if programFlagships??]
-                      [#-- Contributions allowed to this flagship --]
-                      [#list programFlagships as element]
-                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
-                        [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
-                        [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
-                        
-                        [#if (totalContributions != 0)] 
-                          <p class="checkDisable"> 
-                             ${element.composedName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
-                            <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
-                          </p>
-                        [#else]
-                          <p class=""> 
-                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
-                          </p>
-                        [/#if]
-                      [/#list]
-                    [/#if]
+                     
+                    [#-- Contributions allowed to this flagship --]
+                    [#list (programFlagships)![] as element]
+                      [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
+                      [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
+                      [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
+                      
+                      [#if (totalContributions != 0)] 
+                        <p class="checkDisable"> 
+                           ${element.composedName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
+                          <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
+                        </p>
+                      [#else]
+                        [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
+                      [/#if]
+                    [/#list]
+                     
                   [#else]
                     [#-- If does no have permissions --]
                     <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
                     [#-- Selected Flagships --]
-                    [#if project.flagships?has_content][#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list][/#if]
+                    [#list (project.flagships)![] as element]<p class="checked">${element.composedName}</p>[/#list]
                   [/#if]
                 </div>
               </div>
@@ -168,16 +166,14 @@
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}"> 
                 [#if regionFlagships?has_content] 
                   <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
-                    <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
+                    <p><label>[@s.text name="projectDescription.regions${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                       [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]
                       [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
-                      [#if regionFlagships??]
-                        [#list regionFlagships as element]
-                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
-                        [/#list]
-                      [/#if]
+                      [#list (regionFlagships)![] as element]
+                        [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
+                      [/#list]
                        
                     [#else]
                       [#if (project.projectInfo.getNoRegional())!false ]
@@ -185,12 +181,7 @@
                         <p class="checked"> [@s.text name="project.noRegional" /]</p>
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
-                      [#if project.regions?has_content]
-                        [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
-                      [#else]
-                        
-                        [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
-                      [/#if]
+                      [#list (project.regions)![] as element]<p class="checked">${element.composedName}</p>[/#list]
                     [/#if]
                   </div>
                 [/#if]
@@ -200,7 +191,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !((project.projectInfo.administrative)!false) && !phaseOne && project.crpProject ]
+            [#if !((project.projectInfo.administrative)!false) && !phaseOne && isCrpProject ]
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
@@ -218,9 +209,7 @@
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
-                        [#if element.crpClusterOfActivity.leaders??]
-                          [#list element.crpClusterOfActivity.leaders as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
-                        [/#if]
+                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
                       </ul>
                     </li>
                   [/#list]

@@ -52,7 +52,7 @@
   
   <div class="clearfix"></div>
   [#-- Status and year expected selects --]
-  <div class="${reportingActive?string('fieldFocus','')}">
+  <div class="${reportingActive?string('fieldFocus','simpleBox')}">
     
     <div class="form-group row">
       [#-- Deliverable Status --]
@@ -120,7 +120,7 @@
   </div>
   
   [#-- Key Outputs select --]
-  [#if !project.projectInfo.administrative && !phaseOne]
+  [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
     [#if !(keyOutputs?has_content) && editable]
       <p class="note">The Key outputs list come from the Project Outcomes you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Key output.</p>
     [/#if]

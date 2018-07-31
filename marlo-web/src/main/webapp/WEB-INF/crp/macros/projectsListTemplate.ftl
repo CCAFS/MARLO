@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        [#if !reportingActive]
+        [#if !reportingActive && !centerGlobalUnit]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
         <th colspan="3">Actions</th> 
@@ -16,13 +16,17 @@
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]
         <th id="projectFlagships">
-          [#if action.hasProgramnsRegions()]
-            [@s.text name="projectsList.projectFlagshipsRegions" /] 
+          [#if centerGlobalUnit]
+            [@s.text name="projectsList.projectPrograms" /]
           [#else]
-             [@s.text name="projectsList.projectFlagships" /]
+            [#if action.hasProgramnsRegions()]
+              [@s.text name="projectsList.projectFlagshipsRegions" /] 
+            [#else]
+               [@s.text name="projectsList.projectFlagships" /]
+            [/#if]
           [/#if]
         </th>
-        [#if !reportingActive]
+        [#if !reportingActive && !centerGlobalUnit]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
@@ -39,17 +43,19 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign isProjectNew = action.isProjectNew(project.id) /]
+        [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
+        [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
         [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
         [#-- ID --]
-        <td class="projectId">
+        <td class="text-center">
           <a href="${projectUrl}"> P${project.id}</a>
+          [#if centerGlobalUnit && isCrpProject ]
+            <span class="badge globalUnitTag"> ${(project.projectInfo.phase.crp.acronym)!} </span>
+          [/#if]
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if centerGlobalUnit && project.crpProject]
-              <span class="label label-warning">${(project.projectInfo.phase.crp.acronym)!}</span>
-            [/#if]
             [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
             [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
             [#if project.projectInfo.title?has_content]
@@ -62,7 +68,6 @@
             [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.startDate??)!false) ]
               <p><small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small></p>
             [/#if]
-            
           </td>
           [#-- Project Leader --]
           [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
@@ -78,32 +83,40 @@
           <td class=""> 
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
-          [#-- Flagship / Regions --]
+          [#-- Flagship / Regions / Programs --]
           <td>
-          [#if !project.projectInfo.administrative]
-            [#if project.flagships?has_content || project.regions?has_content]
-              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
+            [#assign tagsNumber = 0 /]
+            [#if project.projectInfo.administrative]
+              [#local li = (project.projectInfo.liaisonInstitution)!{} ]
+              <span class="programTag" style="border-color:#444">
+                [#if (li.crpProgram??)!false]
+                  ${(li.crpProgram.acronym)!(li.crpProgram.name)}
+                [#elseif (li.institution??)!false]
+                  ${(li.institution.acronym)!(li.institution.name)}
+                [#else]
+                  [@s.text name="global.pmu" /]
+                [/#if]
+              </span>
+              [#assign tagsNumber = tagsNumber+1 /]
             [#else]
+              [#assign programs = ((project.flagships)![]) + ((project.regions)![])]
+              [#list (programs)![] as element]
+                [#if element.crp.id == actualPhase.crp.id ]
+                  <span class="programTag" style="border-color:${(element.color)!'#fff'}" title="${(element.composedName)}">${(element.acronym)!}</span>
+                  [#assign tagsNumber = tagsNumber+1 /]
+                [/#if]
+              [/#list]
+            [/#if]
+            
+            [#if tagsNumber < 1]
               [@s.text name="projectsList.none" /]
             [/#if]
-          [#else]
-            [#local li = (project.projectInfo.liaisonInstitution)!{} ]
-            <span class="programTag" style="border-color:#444">
-              [#if (li.crpProgram??)!false]
-                ${(li.crpProgram.acronym)!(li.crpProgram.name)}
-              [#elseif (li.institution??)!false]
-                ${(li.institution.acronym)!(li.institution.name)}
-              [#else]
-                [@s.text name="global.pmu" /]
-              [/#if]
-            </span>
-          [/#if]
           </td>
-          [#if !reportingActive]
+          [#if !reportingActive && !centerGlobalUnit]
           [#-- Budget W1/W2 --]
           <td class="budget"> 
             [#if project.getCoreBudget(currentCycleYear,action.getActualPhase())?has_content]
-              <p id="">US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></p> 
+               <nobr> US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></nobr>
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -111,7 +124,7 @@
           [#-- Budget W3/ Bilateral --]
           <td class="budget"> 
             [#if project.getW3Budget(currentCycleYear,action.getActualPhase())?has_content]
-              <p id="">US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></p> 
+              <nobr>US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></nobr> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -119,7 +132,7 @@
           [#-- Budget Bilateral --]
           <td class="budget"> 
             [#if project.getBilateralBudget(currentCycleYear,action.getActualPhase())?has_content]
-              <p id="">US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></p> 
+              <nobr>US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></nobr> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -131,7 +144,7 @@
             [#assign submission = action.isProjectSubmitted(project.id) /]
             
             [#-- CRP Project --]
-            [#if project.crpProject]
+            [#if isCrpProject]
               [#if !project.projectInfo.isProjectEditLeader()]
                 <p>Pre-setting</p>
               [#else]
