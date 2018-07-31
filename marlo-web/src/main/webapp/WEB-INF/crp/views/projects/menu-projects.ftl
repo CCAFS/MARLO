@@ -1,4 +1,7 @@
 [#ftl]
+[#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
+[#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
+
 [#if !((project.projectInfo.isProjectEditLeader())!false)]
   [#assign menus= [
     { 'title': 'General Information', 'show': true,
@@ -6,7 +9,7 @@
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
       { 'slug': 'budgetByPartners',  'name': 'Budget',  'action': 'budgetByPartners',  'active': true  },
-      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true , 'show': action.getCountProjectFlagships(project.id) && !reportingActive && project.crpProject}
+      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true , 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject}
       ]
     }
     
@@ -20,7 +23,12 @@
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true  }
       ]
     },
-    { 'title': 'Outcomes', 'show': project.crpProject,
+    { 'title': '${currentCrp.acronym} Mapping', 'show': centerGlobalUnit && isCrpProject,
+      'items': [
+      { 'slug': 'centerProgram',  'name': 'projects.menu.centerProgram',  'action': 'centerProgram',  'active': true  }
+      ]
+    },
+    { 'title': 'Outcomes', 'show': isCrpProject,
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && !project.projectInfo.administrative},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative},
@@ -31,10 +39,10 @@
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
-      { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne && project.crpProject },
+      { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne && isCrpProject },
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
-      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': true,'show': reportingActive && project.crpProject  },
-      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive && project.crpProject }
+      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': true,'show': reportingActive && isCrpProject  },
+      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive && isCrpProject }
       ]
     },
     { 'title': 'Activities', 'show': action.hasSpecificities(action.crpActivitesModule()),
@@ -45,9 +53,9 @@
     { 'title': 'Budget', 'show': true,
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show':true },
-      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.projectInfo.administrative && !reportingActive && !phaseOne, 'active': project.crpProject  },
-      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && project.crpProject},
-      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && project.crpProject}
+      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.projectInfo.administrative && !reportingActive && !phaseOne, 'active': isCrpProject  },
+      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject},
+      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject}
 
       ]
     }
@@ -112,7 +120,7 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || projectEditLeader) && !crpClosed]
+[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || projectEditLeader) && !crpClosed && !centerGlobalUnit]
   [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  

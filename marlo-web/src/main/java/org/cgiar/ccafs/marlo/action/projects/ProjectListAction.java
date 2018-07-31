@@ -328,7 +328,13 @@ public class ProjectListAction extends BaseAction {
       projectInfo.setLiaisonInstitution(liaisonInstitution);
       projectInfo.setScale(0);
       projectInfo.setCofinancing(false);
-      projectInfo.setProjectEditLeader(false);
+
+      if (this.isCenterGlobalUnit()) {
+        projectInfo.setProjectEditLeader(true);
+      } else {
+        projectInfo.setProjectEditLeader(false);
+      }
+
       projectInfo.setPresetDate(new Date());
       projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       projectInfo.setAdministrative(new Boolean(admin));

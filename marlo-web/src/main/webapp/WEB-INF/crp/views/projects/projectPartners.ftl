@@ -94,6 +94,7 @@
                   </div>
                 </div>
               [/#if]
+              <div class="clearfix"></div>
             </div>
             [/#if]
           
@@ -102,14 +103,17 @@
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
-                  [@projectPartnerMacro element=projectPartner!{} name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                  [@projectPartnerMacro element=projectPartner!{} name="project.partners[${projectPartner_index}]" index=projectPartner_index opened=(project.partners?size = 1)/]
                 [/#list]
               [#else]
+                [@projectPartnerMacro element={} name="project.partners[0]" index=0 opened=true defaultPerson=true /]
+                [#-- 
                 [#if !editable]
                   <p class="center">[@s.text name="projectPartners.empty" /]
                   <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
                   </p>
                 [/#if]
+                 --]
               [/#if] 
               [#if (editable && canEdit)]
                 <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
@@ -266,7 +270,7 @@
 [#----------------------------------------------------     MACROS     ----------------------------------------------------]
 [#------------------------------------------------------            ------------------------------------------------------]
 
-[#macro projectPartnerMacro element name index=-1 isTemplate=false]
+[#macro projectPartnerMacro element name index=-1 opened=false defaultPerson=false isTemplate=false]
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
@@ -281,7 +285,7 @@
     [/#if]
     
     [#-- Partner Title --]
-    <div class="blockTitle closed">
+    <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
       
@@ -303,7 +307,7 @@
       <div class="clearfix"></div>
     </div>
     
-    <div class="blockContent" style="display:none">
+    <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
@@ -444,8 +448,8 @@
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
-          [#if isPPA]
-           [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+          [#if isPPA || defaultPerson]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]

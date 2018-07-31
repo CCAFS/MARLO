@@ -52,14 +52,18 @@ function init() {
   popups();
   // Attaching listeners
   attachEvents();
-  if(($partnersBlock.find('.projectPartner').length == 0) && editable) {
-    $("a.addProjectPartner").trigger('click');
-    var person = new PartnerPersonObject($partnersBlock.find('.contactPerson'));
-    person.setPartnerType(leaderType);
-    person.changeType();
-    var partner = new PartnerObject($partnersBlock.find('.projectPartner'));
-    partner.changeType();
+
+  // Set the unique person as leader
+  if(editable){
+    var contactPeople = $partnersBlock.find('.projectPartner');
+    if ((contactPeople.length == 1)){
+      var person = new PartnerPersonObject(contactPeople);
+      person.setPartnerType(leaderType);
+      person.changeType();
+    }
   }
+  
+  console.log($partnersBlock.find('.projectPartner').length);
   $('.loadingBlock').hide().next().fadeIn(500, function() {
     // Missing fields in parter person
     $("form .projectPartner ").each(function(i,e) {
@@ -78,7 +82,7 @@ function attachEvents() {
    * General
    */
 
-  $('.blockTitle.closed').on('click', function() {
+  $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
       $('.blockTitle').removeClass('opened').addClass('closed');

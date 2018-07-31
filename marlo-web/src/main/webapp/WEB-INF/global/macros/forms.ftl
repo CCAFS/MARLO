@@ -475,10 +475,13 @@
 [#macro checkmark id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   <label class="inputContainer ${cssClassLabel}"> 
     [#if editable]
-        <input id="${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] >
-        <span class="checkmark"></span>
+      <input id="${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] >
+      <span class="checkmark"></span>
     [#else]
       ${checked?string('Yes', 'No')}
+    [/#if]
+    [#if label?has_content]
+      <span class="labelText ${cssClassLabel}">${label}</span>
     [/#if]
   </label>
 [/#macro]
