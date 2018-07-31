@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ExpectedStudyProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
@@ -50,12 +51,22 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
   @Override
   public void deleteExpectedStudyProject(long expectedStudyProjectId) {
 
-
     ExpectedStudyProject expectedStudyProject = this.getExpectedStudyProjectById(expectedStudyProjectId);
+    Phase currentPhase = expectedStudyProject.getPhase();
 
-    if (expectedStudyProject.getPhase().getNext() != null) {
-      this.deleteExpectedStudyProjectPhase(expectedStudyProject.getPhase().getNext(),
-        expectedStudyProject.getProjectExpectedStudy().getId(), expectedStudyProject);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteExpectedStudyProjectPhase(upkeepPhase, expectedStudyProject.getProjectExpectedStudy().getId(),
+            expectedStudyProject);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.deleteExpectedStudyProjectPhase(currentPhase.getNext(),
+          expectedStudyProject.getProjectExpectedStudy().getId(), expectedStudyProject);
+      }
     }
 
     expectedStudyProjectDAO.deleteExpectedStudyProject(expectedStudyProjectId);
@@ -101,11 +112,23 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
   public ExpectedStudyProject saveExpectedStudyProject(ExpectedStudyProject expectedStudyProject) {
 
     ExpectedStudyProject expectedStudy = expectedStudyProjectDAO.save(expectedStudyProject);
+    Phase currentPhase = expectedStudy.getPhase();
 
-    if (expectedStudy.getPhase().getNext() != null) {
-      this.saveExpectedStudyProjectPhase(expectedStudy.getPhase().getNext(),
-        expectedStudy.getProjectExpectedStudy().getId(), expectedStudyProject);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyProjectPhase(upkeepPhase, expectedStudy.getProjectExpectedStudy().getId(),
+            expectedStudyProject);
+        }
+      }
+    } else {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyProjectPhase(currentPhase.getNext(), expectedStudy.getProjectExpectedStudy().getId(),
+          expectedStudyProject);
+      }
     }
+
 
     return expectedStudy;
   }

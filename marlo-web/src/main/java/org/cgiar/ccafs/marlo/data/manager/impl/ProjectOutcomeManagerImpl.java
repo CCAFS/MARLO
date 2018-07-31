@@ -310,6 +310,15 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deletProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
+        }
+      }
+    }
+
   }
 
   public void deletProjectOutcomePhase(Phase next, long projecID, ProjectOutcome projectOutcome) {
@@ -360,6 +369,15 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       if (projectOutcome.getPhase().getNext() != null) {
         this.addProjectOutcomePhase(projectOutcome.getPhase().getNext(), projectOutcome.getProject().getId(),
           projectOutcome);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
+        }
       }
     }
     return resultProjectOutcome;

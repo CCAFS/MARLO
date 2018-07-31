@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipResearchPhaseManager;
@@ -142,17 +141,13 @@ public class ProjectPartnerAction extends BaseAction {
     return baos.toByteArray();
   }
 
+  // Managers
   private final ProjectPartnerManager projectPartnerManager;
-
   private final ProjectPartnerPersonManager projectPartnerPersonManager;
-
   private DeliverablePartnershipManager deliverablePartnershipManager;
-
   private final ProjectPartnerContributionManager projectPartnerContributionManager;
   private final ProjectPartnerPartnershipManager projectPartnerPartnershipManager;
   private final ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager;
-
-  private final ProjectPartnerOverallManager projectPartnerOverallManager;
   private final InstitutionManager institutionManager;
   private final InstitutionTypeManager institutionTypeManager;
   private final LocElementManager locationManager;
@@ -171,19 +166,18 @@ public class ProjectPartnerAction extends BaseAction {
   private final RepIndGeographicScopeManager repIndGeographicScopeManager;
   private final RepIndRegionManager repIndRegionManager;
   private final ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager;
+  private final AuditLogManager auditLogManager;
 
 
+  // Variables
   private final ProjectPartnersValidator projectPartnersValidator;
-
   private long projectID;
   private GlobalUnit loggedCrp;
   private Project project;
-
   // Model for the view
   private List<InstitutionType> intitutionTypes;
   private Map<String, String> partnerPersonTypes; // List of partner person types (CP, PL, PC).
   private List<LocElement> countries;
-
   private List<Institution> allInstitutions; // Is used to list all the partner institutions that have the system.
   private List<Institution> allPPAInstitutions; // Is used to list all the PPA partners institutions
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
@@ -191,18 +185,9 @@ public class ProjectPartnerAction extends BaseAction {
   private List<RepIndPhaseResearchPartnership> allRepIndResearchPhases;
   private List<RepIndGeographicScope> allRepIndGeographicScope;
   private List<RepIndRegion> allRepIndRegions;
-
-
   private Role plRole;
-
   private Role pcRole;
-  private ProjectPartnerOverall partnerOverall;
-
-  private final AuditLogManager auditLogManager;
-
-
   private String transaction;
-
   private final HistoryComparator historyComparator;
   // Util
   private final SendMailS sendMail;
@@ -210,8 +195,7 @@ public class ProjectPartnerAction extends BaseAction {
   @Inject
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
     InstitutionManager institutionManager, LocElementManager locationManager, ProjectManager projectManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, GlobalUnitManager crpManager,
-    ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
+    CrpPpaPartnerManager crpPpaPartnerManager, GlobalUnitManager crpManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMailS sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
@@ -240,7 +224,6 @@ public class ProjectPartnerAction extends BaseAction {
     this.crpManager = crpManager;
     this.institutionLocationManager = institutionLocationManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
-    this.projectPartnerOverallManager = projectPartnerOverallManager;
     this.sendMail = sendMail;
     this.roleManager = roleManager;
     this.projectPartnerContributionManager = projectPartnerContributionManager;
@@ -946,8 +929,6 @@ public class ProjectPartnerAction extends BaseAction {
         if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
           project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         }
-        int k = 0;
-
 
         this.setDifferences(differences);
 
@@ -1291,8 +1272,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
 
-
         } else {
+
           // Check to see if the user has priviliges for this crp
           Institution inst = institutionManager.getInstitutionById(previouslyEnteredPartner.getInstitution().getId());
           if (!inst.getCrpPpaPartners().stream()
@@ -1359,7 +1340,6 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }
 
-          // projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
 
           this.removeProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
@@ -1858,57 +1838,6 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
     }
-    /*
-     * else if (previousPartnerPerson != null && partnerPerson == null) {
-     * List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
-     * if (rolesUser != null) {
-     * rolesUser =
-     * rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-     * if (!rolesUser.isEmpty()) {
-     * if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
-     * .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-     * .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
-     * .collect(Collectors.toList()).size() == 0) {
-     * userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-     * this.checkCrpUserByRole(previousPartnerPerson.getUser());
-     * }
-     * }
-     * }
-     * // Notifying user that is not the project leader anymore
-     * this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
-     * } else if (previousPartnerPerson != null && partnerPerson != null) {
-     * if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
-     * UserRole userRole = new UserRole();
-     * userRole.setRole(role);
-     * userRole.setUser(partnerPerson.getUser());
-     * role = roleManager.getRoleById(role.getId());
-     * if (!role.getUserRoles().contains(userRole)) {
-     * userRoleManager.saveUserRole(userRole);
-     * this.addCrpUser(partnerPerson.getUser());
-     * }
-     * // Notifying user is assigned as Project Leader/Coordinator.
-     * this.notifyRoleAssigned(partnerPerson.getUser(), role);
-     * // Deleting role.
-     * List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
-     * if (rolesUser != null) {
-     * rolesUser =
-     * rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-     * if (!rolesUser.isEmpty()) {
-     * if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
-     * .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-     * .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
-     * .collect(Collectors.toList()).size() == 0) {
-     * userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-     * this.checkCrpUserByRole(previousPartnerPerson.getUser());
-     * }
-     * }
-     * }
-     * // Notifying user that is not the project leader anymore
-     * this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
-     * }
-     * }
-     */
-    // this.clearPermissionsCache();
   }
 
 

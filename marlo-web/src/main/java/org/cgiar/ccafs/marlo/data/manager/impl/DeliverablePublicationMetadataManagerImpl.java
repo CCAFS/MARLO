@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePublicationMetadataDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
@@ -38,15 +37,13 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
   // Managers
   private DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO;
   private PhaseDAO phaseDAO;
-  private DeliverableManager deliverableManager;
 
 
   @Inject
   public DeliverablePublicationMetadataManagerImpl(DeliverablePublicationMetadataDAO deliverablePublicationMetadataDAO,
-    PhaseDAO phaseDAO, DeliverableManager deliverableManager) {
+    PhaseDAO phaseDAO) {
     this.deliverablePublicationMetadataDAO = deliverablePublicationMetadataDAO;
     this.phaseDAO = phaseDAO;
-    this.deliverableManager = deliverableManager;
   }
 
   private void cloneDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata,

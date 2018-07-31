@@ -50,34 +50,20 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   // Managers
   private SectionStatusManager sectionStatusManager;
-
   private ProjectManager projectManager;
-
-
   private ProjectExpectedStudyManager projectExpectedStudyManager;
-
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
-
-
   private StudyTypeManager studyTypeManager;
-
-  private List<ProjectExpectedStudy> nonProjectStudies;
-
-
-  private List<ProjectExpectedStudy> myNonProjectStudies;
-
-
-  private List<ProjectExpectedStudy> projectStudies;
 
 
   // Parameters or Variables
+  private List<ProjectExpectedStudy> nonProjectStudies;
+  private List<ProjectExpectedStudy> myNonProjectStudies;
+  private List<ProjectExpectedStudy> projectStudies;
   private Project project;
-
   private List<Integer> allYears;
-
   private long projectID;
   private long expectedID;
-
   private GlobalUnit loggedCrp;
 
   @Inject
