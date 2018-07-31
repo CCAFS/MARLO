@@ -323,7 +323,7 @@
     </action>
 
     <action name="{crp}/centerProgram"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectCenterMappingAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/crp/views/projects/projectCenterPrograms.ftl
       </result>
