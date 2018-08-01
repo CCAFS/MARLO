@@ -108,6 +108,8 @@ public class Permission {
 
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
 
+  public static final String SHARED_PROJECT_BASE_PERMISSION = "crp:{0}:sharedProjects";
+  public static final String SHARED_PROJECT_PERMISSION = "crp:{0}:sharedProjects:canEdit";
 
   public static final String PROJECT__SWITCH = "crp:{0}:project:{1}:projectSwitch";
   public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:canEdit";

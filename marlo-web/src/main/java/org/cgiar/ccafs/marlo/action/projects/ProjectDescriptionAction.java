@@ -85,6 +85,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
+
   // Managers
   private ProjectManager projectManager;
   private ProjectInfoManager projectInfoManagerManager;
@@ -100,8 +101,11 @@ public class ProjectDescriptionAction extends BaseAction {
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private LiaisonUserManager liaisonUserManager;
-  private HistoryComparator historyComparator;
+
   // Front-end
+  private HistoryComparator historyComparator;
+  private List<CrpProgram> centerPrograms;
+  private List<CrpProgram> regionPrograms;
   private long projectID;
   private GlobalUnit loggedCrp;
   private Project project;
@@ -121,6 +125,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private String fileReportingFileName;
   private ProjectDescriptionValidator validator;
 
+
   @Inject
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
@@ -135,7 +140,6 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectInfoManagerManager = projectInfoManagerManager;
     this.programManager = programManager;
     this.crpManager = crpManager;
-    // this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
@@ -145,11 +149,11 @@ public class ProjectDescriptionAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.projectClusterActivityManager = projectClusterActivityManager;
     this.historyComparator = historyComparator;
-    // this.liaisonUserManager = liaisonUserManager;
     this.liaisonUserManager = liaisonUserManager;
     this.locationTypeManager = locationManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
   }
+
 
   /**
    * In this method it is checked if there is a draft file and it is eliminated
@@ -243,6 +247,10 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getBilateralProjectContractProposalFolder() + File.separator;
   }
 
+  public List<CrpProgram> getCenterPrograms() {
+    return centerPrograms;
+  }
+
   public List<CrpClusterOfActivity> getClusterofActivites() {
     return clusterofActivites;
   }
@@ -262,7 +270,6 @@ public class ProjectDescriptionAction extends BaseAction {
   public File getFileReporting() {
     return fileReporting;
   }
-
 
   public String getFileReportingFileName() {
     return fileReportingFileName;
@@ -287,7 +294,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return null;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -297,10 +303,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<CrpProgram> getProgramFlagships() {
     return programFlagships;
   }
+
 
   public Project getProject() {
     return project;
@@ -311,10 +317,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectID;
   }
 
+
   public Map<String, String> getProjectScales() {
     return projectScales;
   }
-
 
   public Map<String, String> getProjectStatuses() {
     return projectStatuses;
@@ -325,9 +331,13 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectTypes;
   }
 
-
   public List<CrpProgram> getRegionFlagships() {
     return regionFlagships;
+  }
+
+
+  public List<CrpProgram> getRegionPrograms() {
+    return regionPrograms;
   }
 
 
@@ -361,6 +371,7 @@ public class ProjectDescriptionAction extends BaseAction {
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
+
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -562,7 +573,8 @@ public class ProjectDescriptionAction extends BaseAction {
         List<CrpProgram> programs = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
           if (project.getFlagshipValue().isEmpty()) {
@@ -577,7 +589,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
           if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
@@ -635,6 +648,11 @@ public class ProjectDescriptionAction extends BaseAction {
     // load the flaghsips an regions
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
+    centerPrograms = new ArrayList<>();
+    // The same list (test)
+    centerPrograms.addAll(loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
@@ -773,7 +791,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
           .collect(Collectors.toList())) {
 
           if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
@@ -783,7 +802,8 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
           .collect(Collectors.toList());
         for (ProjectFocus projectFocus : fpsPreview) {
           if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
@@ -813,7 +833,8 @@ public class ProjectDescriptionAction extends BaseAction {
       // Saving the regions
       List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+          && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
         .collect(Collectors.toList());
       for (ProjectFocus projectFocus : regionsPreview) {
         if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
@@ -962,24 +983,28 @@ public class ProjectDescriptionAction extends BaseAction {
     this.allOwners = allOwners;
   }
 
+  public void setCenterPrograms(List<CrpProgram> centerPrograms) {
+    this.centerPrograms = centerPrograms;
+  }
+
 
   public void setClusterofActivites(List<CrpClusterOfActivity> clusterofActivites) {
     this.clusterofActivites = clusterofActivites;
   }
 
+
   public void setFile(File file) {
     this.file = file;
   }
-
 
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
 
+
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
-
 
   public void setFileReporting(File fileReporting) {
     this.fileReporting = fileReporting;
@@ -1030,8 +1055,13 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectTypes = projectTypes;
   }
 
+
   public void setRegionFlagships(List<CrpProgram> regionFlagships) {
     this.regionFlagships = regionFlagships;
+  }
+
+  public void setRegionPrograms(List<CrpProgram> regionPrograms) {
+    this.regionPrograms = regionPrograms;
   }
 
 
