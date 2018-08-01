@@ -63,35 +63,22 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -7931655721857302103L;
 
 
+  // Manager
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
-
-
   private BudgetTypeManager budgetTypeManager;
-
-
   private ProjectManager projectManager;
-
-
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
-
-
   private GlobalUnitManager crpManager;
+  private AuditLogManager auditLogManager;
 
-
+  // Variables
   private long projectID;
-
-
   private GlobalUnit loggedCrp;
   private Project project;
   private String transaction;
-  private AuditLogManager auditLogManager;
   private ProjectBudgetsCoAValidator validator;
   private List<BudgetType> budgetTypesList;
 
@@ -434,14 +421,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
     if (this.isHttpPost()) {
 
-
-      // if (project.getCrpActivities() != null) {
-      // project.getCrpActivities().clear();
-      // }
-      //
-      // if (project.getBudgetsCluserActvities() != null) {
-      // project.getBudgetsCluserActvities().clear();
-      // }
       if (project.getBudgetsCluserActvities() != null) {
         project.getBudgetsCluserActvities().clear();
       }

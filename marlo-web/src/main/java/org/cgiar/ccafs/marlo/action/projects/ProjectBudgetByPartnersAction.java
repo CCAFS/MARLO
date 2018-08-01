@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
@@ -68,37 +67,24 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private static final long serialVersionUID = 7833194831832715444L;
 
-
+  // Managers
   private InstitutionManager institutionManager;
-
-
   private BudgetTypeManager budgetTypeManager;
-  private HistoryComparator historyComparator;
-
-
   private ProjectManager projectManager;
-
   private FundingSourceManager fundingSourceManager;
   private ProjectBudgetManager projectBudgetManager;
   private ProjectPartnerManager projectPartnerManager;
   private PhaseManager phaseManager;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-  private ProjectBudgetsValidator projectBudgetsValidator;
-
-  // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private AuditLogManager auditLogManager;
 
-
+  // Variables
+  private ProjectBudgetsValidator projectBudgetsValidator;
   private long projectID;
-
   private GlobalUnit loggedCrp;
-
   private Project project;
   private String transaction;
-  private AuditLogManager auditLogManager;
   // Pre-loaded List to Bilateral Co-funded Projects Service.
   private Map<String, String> status;
   private List<LiaisonInstitution> liaisonInstitutions;
@@ -114,9 +100,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, GlobalUnitManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
-    HistoryComparator historyComparator, LiaisonInstitutionManager liaisonInstitutionManager,
-    ProjectBudgetsValidator projectBudgetsValidator, ProjectPartnerManager projectPartnerManager,
-    PhaseManager phaseManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
+    ProjectPartnerManager projectPartnerManager, PhaseManager phaseManager) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -128,7 +113,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.fundingSourceManager = fundingSourceManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectBudgetsValidator = projectBudgetsValidator;
-    this.historyComparator = historyComparator;
     this.projectPartnerManager = projectPartnerManager;
     this.phaseManager = phaseManager;
 

@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsFlagshipManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -68,39 +67,28 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
 
   private static final long serialVersionUID = 8935913606376386782L;
 
-
+  // Manager
   private CrpProgramManager crpProgramManager;
-
   private BudgetTypeManager budgetTypeManager;
-
   private ProjectManager projectManager;
-
   private ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager;
-
   private AuditLogManager auditLogManager;
-
   private GlobalUnitManager crpManager;
-
-  private long projectID;
-
-  private GlobalUnit loggedCrp;
-
-  private Project project;
-
-  private String transaction;
-
-  private List<BudgetType> budgetTypesList;
-
-  private ProjectBudgetsFlagshipValidator validator;
-  private ProjectFocusManager projectFocusManager;
   private PhaseManager phaseManager;
+
+  // Variables
+  private long projectID;
+  private GlobalUnit loggedCrp;
+  private Project project;
+  private String transaction;
+  private List<BudgetType> budgetTypesList;
+  private ProjectBudgetsFlagshipValidator validator;
 
   @Inject
   public ProjectBudgetByFlagshipAction(APConfig config, CrpProgramManager crpProgramManager,
     BudgetTypeManager budgetTypeManager, ProjectManager projectManager,
     ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager, AuditLogManager auditLogManager,
-    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, ProjectFocusManager projectFocusManager,
-    PhaseManager phaseManager) {
+    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, PhaseManager phaseManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.budgetTypeManager = budgetTypeManager;
@@ -110,7 +98,6 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     this.crpManager = crpManager;
     this.validator = validator;
     this.phaseManager = phaseManager;
-    this.projectFocusManager = projectFocusManager;
 
   }
 

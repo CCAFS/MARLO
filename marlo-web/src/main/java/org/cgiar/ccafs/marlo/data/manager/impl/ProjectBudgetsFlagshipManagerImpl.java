@@ -141,6 +141,14 @@ public class ProjectBudgetsFlagshipManagerImpl implements ProjectBudgetsFlagship
           projectBudgetsFlagship);
       }
     }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveBudgetPhase(upkeepPhase, projectBudgetsFlagship.getProject().getId(), projectBudgetsFlagship);
+        }
+      }
+    }
     return resultProjectBudget;
   }
 
