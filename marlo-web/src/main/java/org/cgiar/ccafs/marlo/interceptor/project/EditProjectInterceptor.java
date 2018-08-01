@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.NoPhaseException;
@@ -121,6 +122,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       if (project != null && project.isActive()) {
         if (!globalUnitProject.isOrigin()) {
+          Phase ph = baseAction.getActualPhase();
           GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
           List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
             .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
@@ -246,6 +248,17 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           baseAction.setCanEditPhase(false);
         }
 
+        // Check if is a Shared project (Crp to Center)
+        if (!globalUnitProject.isOrigin()) {
+          canEdit = false;
+          if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.SHARED_PROJECT_PERMISSION, params))) {
+              canEdit = true;
+            }
+          }
+
+        }
+
         if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
           if (baseAction.isReportingActive()) {
             canEdit = false;
@@ -255,9 +268,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           baseAction.setEditStatus(false);
         }
         // Set the variable that indicates if the user can edit the section
-        baseAction.setEditableParameter(editParameter && canEdit && globalUnitProject.isOrigin());
+        baseAction.setEditableParameter(editParameter && canEdit);
         baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
-        baseAction.setCanEdit(canEdit && globalUnitProject.isOrigin());
+        baseAction.setCanEdit(canEdit);
         baseAction.setEditStatus(baseAction.isEditStatus() && globalUnitProject.isOrigin());
 
       } else {

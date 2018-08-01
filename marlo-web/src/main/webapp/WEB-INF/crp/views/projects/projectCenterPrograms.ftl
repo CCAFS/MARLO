@@ -80,16 +80,16 @@
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-          
+          <input type="hidden"  name="sharedPhaseID" value="${sharedPhaseID}"/>
           [/@s.form] 
       </div> 
     </div> 
 </section>
 [/#if]
 
-
+[#-- 
 <span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
-  
+--]
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 

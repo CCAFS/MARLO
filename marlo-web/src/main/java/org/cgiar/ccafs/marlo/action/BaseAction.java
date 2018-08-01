@@ -6354,6 +6354,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  //
   /**
    * ************************ CENTER METHOD *********************
    * Validate the missing fields in the project section
@@ -6398,6 +6399,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  //
   public boolean validURL(String URL) {
     try {
       java.net.URL url = new java.net.URL(URL);

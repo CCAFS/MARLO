@@ -154,9 +154,9 @@
       [/#if]
     [/#if]
     <div class="leftHead">
-      [#assign globalFlagship][@s.text name="global.flagship"/][/#assign]
+      [#assign globalFlagship][@s.text name="global.flagship${isCenter?string('Center','')}"/][/#assign]
       <span class="index">${index+1}</span>
-      <span class="elementId">${(element.composedName)!globalFlagship}</span>
+      <span class="elementId">${(element.researchArea.acronym)!}  ${(element.composedName)!globalFlagship}</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]
