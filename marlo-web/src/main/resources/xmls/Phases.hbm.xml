@@ -347,5 +347,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget" />
 		</set>
+		<set name="deliverableActivities" table="deliverable_activities"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
+    </set>
 	</class>
 </hibernate-mapping>

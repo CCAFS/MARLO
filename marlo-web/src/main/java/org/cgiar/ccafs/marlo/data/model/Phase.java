@@ -107,9 +107,12 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new HashSet<ProjectExpectedStudyInfo>(0);
   private Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = new HashSet<ProjectExpectedStudySubIdo>(0);
   private Set<ExpectedStudyProject> expectedStudyProjects = new HashSet<ExpectedStudyProject>(0);
+  private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
+
 
   public Phase() {
   }
+
 
   public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
@@ -156,6 +159,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public Set<CrpPpaPartner> getCrpPpaPartner() {
     return crpPpaPartner;
+  }
+
+  public Set<DeliverableActivity> getDeliverableActivities() {
+    return deliverableActivities;
   }
 
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
@@ -206,7 +213,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return fundingSourceLocations;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -221,6 +227,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -232,10 +239,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return name;
   }
 
-
   public Phase getNext() {
     return next;
   }
+
 
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -268,7 +275,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectClusterActivity> getProjectClusters() {
     return projectClusters;
   }
-
 
   public Set<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
@@ -304,6 +310,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudySrfTargets;
   }
 
+
   public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
     return projectExpectedStudySubIdos;
   }
@@ -324,7 +331,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectHighligthsTypes;
   }
 
-
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
@@ -334,14 +340,15 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectInnovationCountries;
   }
 
+
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return projectInnovationCrps;
   }
 
-
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return projectInnovationDeliverables;
   }
+
 
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
@@ -354,7 +361,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectLeverage> getProjectLeverages() {
     return projectLeverages;
   }
-
 
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
@@ -395,6 +401,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return this.year;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -417,7 +424,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.clusters = clusters;
   }
 
-
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
@@ -425,6 +431,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {
     this.crpPpaPartner = crpPpaPartner;
+  }
+
+
+  public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
+    this.deliverableActivities = deliverableActivities;
   }
 
 
