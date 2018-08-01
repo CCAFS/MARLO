@@ -65,23 +65,22 @@ public class ProjectLeveragesAction extends BaseAction {
 
   // Manager
   private ProjectManager projectManager;
-
   private InstitutionManager institutionManager;
-
   private IpProgramManager ipProgrammManager;
   private ProjectLeverageManager projectLeverageManager;
+  private GlobalUnitManager crpManager;
+  private AuditLogManager auditLogManager;
+
+  // Variables
   private long projectID;
   private Project project;
   private Map<String, String> allInstitutions;
   private List<IpProgram> flagshipsPhaseOne;
   private List<CrpProgram> flagshipsPhaseTwo;
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
   private ProjectLeverageValidator projectLeverageValidator;
   private HistoryComparator historyComparator;
   private GlobalUnit loggedCrp;
   private String transaction;
-  private AuditLogManager auditLogManager;
 
 
   @Inject

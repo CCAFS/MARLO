@@ -40,15 +40,12 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
 
-  // Managers
-
 
   @Inject
   public ProjectBudgetManagerImpl(ProjectBudgetDAO projectBudgetDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO) {
     this.projectBudgetDAO = projectBudgetDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
-
   }
 
   @Override
@@ -67,8 +64,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     projectBudgetAdd.setGenderValue(budget.getGenderValue());
     projectBudgetAdd.setInstitution(budget.getInstitution());
     projectBudgetAdd.setYear(budget.getYear());
-
-
   }
 
   @Override
@@ -110,6 +105,15 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudget.getPhase().getNext() != null) {
         this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deletBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
+        }
       }
     }
 
@@ -192,6 +196,14 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudget.getPhase().getNext() != null) {
         this.saveBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
+      }
+    }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
+        }
       }
     }
     return resultBudget;
