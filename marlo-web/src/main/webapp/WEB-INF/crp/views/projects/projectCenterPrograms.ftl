@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectDescription.js", 
+  "${baseUrlMedia}/js/projects/projectDescription.js",  
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -55,7 +55,7 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="name" i18nkey="project.researchProgram" className="projectResearchProgram" help="project.researchProgram.help" editable=true /]
+                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" editable=true /]
               </div>
             </div>
 
