@@ -150,7 +150,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   }
 
   public String getComposedName() {
-    return this.description + " - " + year;
+    return this.name + " - " + year;
   }
 
   public GlobalUnit getCrp() {

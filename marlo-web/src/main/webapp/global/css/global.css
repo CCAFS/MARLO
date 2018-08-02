@@ -6598,3 +6598,15 @@ span.doc-badge {
   color: #8a8a8a;
   margin-left: 3px;
 }
+
+.upkeepCheckbox {
+  margin-right: 10px;
+  padding: 7px 10px;
+  text-align: justify;
+  /* width: 280px; */
+  float: left;
+  background: #fff;
+  font-size: 0.9em;
+  border-radius: 2px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
