@@ -44,9 +44,8 @@ $(document).ready(function() {
     }
 
     var crpProgramId = liaisonInstitutionsPrograms[liasonInstitutionID];
-    console.log("liasonInstitutionID", liasonInstitutionID);
-    if(crpProgramId != -1) {
-      $('input[value="' + crpProgramId + '"]').prop("checked", true);
+    if(liasonInstitutionID != -1) {
+      $('input[value="' + liasonInstitutionID + '"]').prop("checked", true);
       $('#projectFlagshipsBlock input').trigger('change');
     }
 
@@ -128,7 +127,7 @@ $(document).ready(function() {
           $coreSelect.addOption(-1, 'Select an option');
         },
         success: function(data) {
-          //console.log(data.clusters);
+          // console.log(data.clusters);
           $.each(data.clusters, function(i,e) {
             $coreSelect.addOption(e.id, e.description);
           });
