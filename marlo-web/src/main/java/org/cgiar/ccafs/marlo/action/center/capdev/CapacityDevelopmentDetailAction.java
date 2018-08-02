@@ -754,26 +754,20 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
     capdevDB.setTitle(capdev.getTitle());
 
-    if (capdev.getResearchArea() != null) {
-      if (capdev.getResearchArea().getId() != -1) {
-        capdevDB.setResearchArea(capdev.getResearchArea());
 
-        if (capdev.getResearchProgram() != null) {
-          if (capdev.getResearchProgram().getId() != -1) {
-            capdevDB.setResearchProgram(capdev.getResearchProgram());
-          } else {
-            capdevDB.setResearchProgram(null);
-          }
-        }
-        if (capdev.getProject() != null) {
-          if (capdev.getProject().getId() != -1) {
-            capdevDB.setProject(capdev.getProject());
-          } else {
-            capdevDB.setProject(null);
-          }
-        }
+    if (capdev.getResearchProgram() != null) {
+      if (capdev.getResearchProgram().getId() != -1) {
+        capdevDB.setResearchProgram(capdev.getResearchProgram());
       } else {
-        capdevDB.setResearchArea(null);
+        capdevDB.setResearchProgram(null);
+      }
+    }
+
+    if (capdev.getProject() != null) {
+      if (capdev.getProject().getId() != -1) {
+        capdevDB.setProject(capdev.getProject());
+      } else {
+        capdevDB.setProject(null);
       }
     }
 

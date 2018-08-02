@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectDescription.js", 
+  "${baseUrlMedia}/js/projects/projectDescription.js",  
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -55,7 +55,7 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="name" i18nkey="project.researchProgram" className="projectResearchProgram" help="project.researchProgram.help" editable=true /]
+                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" editable=true /]
               </div>
             </div>
 
@@ -86,10 +86,9 @@
     </div> 
 </section>
 [/#if]
+ 
+<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as li]"${li.id}" : ${(li.crpProgram.id)!-1}[#if li_has_next], [/#if][/#list]}</span>
 
-[#-- 
-<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
---]
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 

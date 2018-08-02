@@ -95,16 +95,17 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.getInvalidFields().put("input-project.projectInfo.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser() != null) {
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getId() == -1) {
+    if (!action.isCenterGlobalUnit()) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser() != null) {
+        if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getId() == -1) {
+          action.addMessage(action.getText("project.liaisonUser"));
+          action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         action.addMessage(action.getText("project.liaisonUser"));
         action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("project.liaisonUser"));
-      action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
     }
-
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
       if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
         action.addMessage(action.getText("project.liaisonInstitution"));
@@ -152,16 +153,18 @@ public class ProjectDescriptionValidator extends BaseValidator {
         }
       }
 
-      if (project.getClusterActivities() != null) {
-        if (project.getClusterActivities().size() == 0) {
+      if (!action.isCenterGlobalUnit()) {
+        if (project.getClusterActivities() != null) {
+          if (project.getClusterActivities().size() == 0) {
+            action.addMessage(action.getText("projectDescription.clusterActivities"));
+            action.getInvalidFields().put("list-project.clusterActivities",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
+          }
+        } else {
           action.addMessage(action.getText("projectDescription.clusterActivities"));
           action.getInvalidFields().put("list-project.clusterActivities",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
         }
-      } else {
-        action.addMessage(action.getText("projectDescription.clusterActivities"));
-        action.getInvalidFields().put("list-project.clusterActivities",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
       }
 
       if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)

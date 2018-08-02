@@ -89,8 +89,10 @@
             [#if project.projectInfo.administrative]
               [#local li = (project.projectInfo.liaisonInstitution)!{} ]
               <span class="programTag" style="border-color:#444">
-                [#if (li.crpProgram??)!false]
+                [#if ((li.crpProgram??)!false) && (li.crpProgram.crp.id == actualPhase.crp.id )]
                   ${(li.crpProgram.acronym)!(li.crpProgram.name)}
+                [#elseif (li.institution??)!false]
+                  ${(li.institution.acronym)!(li.institution.name)}
                 [#elseif (li.institution??)!false]
                   ${(li.institution.acronym)!(li.institution.name)}
                 [#else]

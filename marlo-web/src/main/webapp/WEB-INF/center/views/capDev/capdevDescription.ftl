@@ -171,14 +171,10 @@
   
   <hr />
   
-  [#-- Research Area --]
-  <div class="form-group row">
-    <div class="col-md-6  newCapdevField " listname="capdev.researcharea">
-      [@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
-    </div>
-    [#-- Research program --]
+ [#-- Research program --]
+  <div class="form-group row">   
     <div class="col-md-6 researchProgram ">
-      [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
+      [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" required=true /]
     </div>
   </div> 
   [#-- CRP --]
@@ -289,9 +285,9 @@
       </div>
     </div>
   </div>
-  <div class="row grupsParticipantsForm">
+  <div class="grupsParticipantsForm">
     <div class="note participantMessage">
-      <p>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</p>
+      <small>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</small> 
     </div>
   </div>
 </div>

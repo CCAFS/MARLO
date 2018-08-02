@@ -5,11 +5,13 @@
     <thead >
       <tr class="header">
         <th style="width: 2%">ID</th>
-        <th style="width: 21%">Title</th> 
+        <th style="width: 21%">Title</th>
+        <th style="width: 7%">Program</th>
         <th style="width: 7%">Type</th>
         <th style="width: 7%">Created By</th>
         <th style="width: 7%">Annexes</th>
         <th style="width: 7%">Status</th>
+        <th style="width: 1%"></th>
         <th style="width: 1%">Remove</th>
       </tr>
     </thead>
@@ -17,6 +19,7 @@
         [#if capdevs?has_content]
           [#list capdevs as i]
             [#assign submission = action.isSubmitCapDev(i.id) /]
+            [#assign isCompleted = (action.isCompleteCapDev(i.id))!false /]
             [#local capdevUrl][@s.url namespace=namespace action=defaultAction][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
             [#if i.active]
             <tr>
@@ -30,7 +33,15 @@
                 <a href="${capdevUrl}">
                   [#if i.title?has_content]${i.title}[#else]Not defined[/#if]
                 </a>
-              </td> 
+              </td>
+              [#-- Program --]
+              <td class="text-center">
+                [#if (i.researchProgram??)!false]
+                  <span class="programTag" style="border-color:${(i.researchProgram.color)!'#fff'}">${(i.researchProgram.composedName)!}</span>
+                [#else]
+                  Not defined
+                [/#if]
+              </td>
               <td>
                 [#if i.capdevType??]${i.capdevType.name}[#else]Not defined[/#if]
               </td> 
@@ -61,6 +72,14 @@
                 [#else]
                   <strong title="Submitted">Submitted</strong>
                 [/#if]  
+              </td>
+              [#-- Missing fields --]
+              <td>
+                [#if isCompleted]
+                  <span class="icon-20 icon-check" title="Complete"></span>
+                [#else]
+                  <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
+                [/#if]
               </td>
               <td class="removeCol">
                 [#if action.centerCanBeDeleted(i.id, i.class.name)!false]

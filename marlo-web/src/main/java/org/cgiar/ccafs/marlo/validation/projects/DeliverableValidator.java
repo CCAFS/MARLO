@@ -321,23 +321,25 @@ public class DeliverableValidator extends BaseValidator {
     }
 
     if (!action.isReportingActive()) {
-      if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
+      if (!action.isCenterGlobalUnit()) {
+        if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+          && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
+            && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
+              action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+
+              deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
+
+            }
+          } else {
             action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
               InvalidFieldsMessages.EMPTYFIELD);
-
             deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
-
           }
-        } else {
-          action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
-            InvalidFieldsMessages.EMPTYFIELD);
-          deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
         }
       }
     }
