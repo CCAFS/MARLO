@@ -48,6 +48,11 @@ public class GlobalUnitProject extends MarloAuditableEntity implements java.io.S
     this.project = project;
   }
 
+  @Override
+  public String toString() {
+    return "GlobalUnitProject [id=" + this.getId() + ", Project=" + this.getProject().getId() + ",  GlobalUnit="
+      + this.getGlobalUnit().getId() + ", Origin=" + this.isOrigin() + ", isActive=" + this.isActive() + "]";
+  }
 
 }
 
