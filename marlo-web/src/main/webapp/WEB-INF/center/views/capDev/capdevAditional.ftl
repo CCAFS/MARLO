@@ -63,9 +63,11 @@
         <label>[@s.text name="capdev.form.listOfApproaches"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox" listname="capdev.disciplines">
           <div class="form-group approachesListContainer listSelectBlock" >
+            [#if editable]
             <div class=" ">
               [@customForm.select name="" listName="disciplines" keyFieldName="id" displayFieldName="name"  disabled=!editable i18nkey="capdev.form.selectApproach" className="disciplinesSelect" multiple=false placeholder="capdev.select" help="capdev.help.discipline" /]
             </div>
+            [/#if]
             <div id="disciplinesList" class="approachesList" >
               <ul class="list">
                 [#if (capdev.capdevDisciplineList?has_content)!false]
@@ -100,10 +102,11 @@
         <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.targetgroup">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
+            [#if editable]
             <div class=" newCapdevField ">
               [@customForm.select name="" listName="targetGroups" keyFieldName="id" displayFieldName="name"  disabled=!editable i18nkey="capdev.targetgroupselect" className="targetGroupsSelect" multiple=false placeholder="capdev.select" help="capdev.help.targetgroup" /]
             </div>
-
+            [/#if]
             <div id="targetGroupsList" class=" newCapdevField" >
               <ul class="list">
                 [#if (capdev.capdevTargetGroupList?has_content)!false]
@@ -140,9 +143,11 @@
         <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
+            [#if editable]
             <div class="newCapdevField ">
               [@customForm.select name="" listName="partners" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.partnertSelect" className="capdevPartnerSelect" multiple=false placeholder="capdev.select" help="capdev.help.partner"  disabled=!editable /]
             </div>
+            [/#if]
             
             <div id="capdevPartnersList" class="partnersList" >
               <ul class="list">
@@ -180,10 +185,11 @@
         <label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
         <div class="simpleBox" listname="capdev.outputs">
           <div class="form-group outComesContainer listSelectBlock" >
+            [#if editable]
             <div class=" newCapdevField">
               [@customForm.select name="" listName="outputs" keyFieldName="id" displayFieldName="title" i18nkey="capdev.form.selectOutcome" className="capdevOutputSelect" multiple=false placeholder="capdev.select" help="capdev.help.output" disabled=!editable/]
             </div>
-
+            [/#if]
             <div id="capdevOutputsList" class="outputsList" >
               <ul class="list">
                 [#if (capdev.capdevOutputsList?has_content)!false ]

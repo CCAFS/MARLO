@@ -285,9 +285,9 @@
       </div>
     </div>
   </div>
-  <div class="row grupsParticipantsForm">
+  <div class="grupsParticipantsForm">
     <div class="note participantMessage">
-      <p>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</p>
+      <small>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</small> 
     </div>
   </div>
 </div>
