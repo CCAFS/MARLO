@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -66,65 +68,35 @@ public class ProjectCenterMappingAction extends BaseAction {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectCenterMappingAction.class);
 
-
   private ProjectManager projectManager;
-
   private CrpProgramManager programManager;
-
-
   private GlobalUnitProjectManager globalUnitProjectManager;
-
-
   private GlobalUnitManager crpManager;
-
-
   private SectionStatusManager sectionStatusManager;
-
   private ProjectFocusManager projectFocusManager;
-
-
   private AuditLogManager auditLogManager;
-
-
   private long projectID;
-
-
   private GlobalUnit loggedCrp;
-
-
   private Project project;
-
-
   private List<CrpProgram> programFlagships;
-
-
   private List<CrpProgram> regionFlagships;
-
-
   private String transaction;
-
-
   private List<CrpProgram> centerPrograms;
-
-
   private List<CrpProgram> regionPrograms;
-
   private ProjectInfoManager projectInfoManager;
-
-
   private Project projectDB;
-
   private ProjectCenterMappingValidator validator;
-
   private long sharedPhaseID;
-
   private PhaseManager phaseManager;
+  private List<LiaisonInstitution> liaisonInstitutions;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
   @Inject
   public ProjectCenterMappingAction(APConfig config, ProjectManager projectManager, CrpProgramManager programManager,
     GlobalUnitProjectManager globalUnitProjectManager, GlobalUnitManager crpManager,
     SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
-    ProjectInfoManager projectInfoManager, ProjectCenterMappingValidator validator, PhaseManager phaseManager) {
+    ProjectInfoManager projectInfoManager, ProjectCenterMappingValidator validator, PhaseManager phaseManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -168,6 +140,10 @@ public class ProjectCenterMappingAction extends BaseAction {
     return null;
   }
 
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -180,10 +156,10 @@ public class ProjectCenterMappingAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<CrpProgram> getRegionFlagships() {
     return regionFlagships;
@@ -368,7 +344,10 @@ public class ProjectCenterMappingAction extends BaseAction {
         project.setRegions(regions);
       }
 
-
+      liaisonInstitutions = new ArrayList<LiaisonInstitution>();
+      // load the liasons intitutions for the crp
+      liaisonInstitutions
+        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       // load the flaghsips an regions
       programFlagships = new ArrayList<>();
       regionFlagships = new ArrayList<>();
@@ -403,6 +382,17 @@ public class ProjectCenterMappingAction extends BaseAction {
       Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
 
       projectDB.getProjecInfoPhase(sharedPhase);
+
+
+      // no liaison institution selected
+      if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
+        if (project.getProjectInfo().getLiaisonInstitutionCenter().getId() == -1) {
+          projectDB.getProjectInfo().setLiaisonInstitutionCenter(null);
+        }
+      }
+
+
+      projectInfoManager.saveProjectInfo(project.getProjectInfo());
 
       // Saving the flaghsips
 
@@ -523,6 +513,10 @@ public class ProjectCenterMappingAction extends BaseAction {
 
   public void setCenterPrograms(List<CrpProgram> centerPrograms) {
     this.centerPrograms = centerPrograms;
+  }
+
+  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

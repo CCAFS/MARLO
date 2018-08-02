@@ -1338,6 +1338,23 @@ public class ProjectPartnerAction extends BaseAction {
 
 
       for (ProjectPartner projectPartnerDB : partnersDB) {
+
+        // Delete CIAT (Center) Shared Project Relation
+        List<GlobalUnit> centerIns = new ArrayList<>();
+        centerIns = projectPartnerDB.getInstitution().getGlobalUnits().stream()
+          .filter(i -> i.getGlobalUnitType().getId().equals(4) && i.isActive()).collect(Collectors.toList());
+
+        if (!centerIns.isEmpty()) {
+          for (GlobalUnit globalUnit : centerIns) {
+            GlobalUnitProject globalUnitProject =
+              globalUnitProjectManager.findByProjectAndGlobalUnitId(projectDB.getId(), globalUnit.getId());
+
+            if (globalUnitProject != null && !globalUnitProject.isOrigin()) {
+              globalUnitProjectManager.deleteGlobalUnitProject(globalUnitProject.getId());
+            }
+          }
+        }
+        //
         this.removeDeletedPartners(projectPartnerDB);
       }
       if (project.getPartners() != null) {
@@ -1350,6 +1367,32 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerClient.setProject(project);
             projectPartnerClient.setPhase(this.getActualPhase());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerClient);
+
+
+            // Shared project if the partner is a Center
+            List<GlobalUnit> centerIns = new ArrayList<>();
+            centerIns = projectPartnerDB.getInstitution().getGlobalUnits().stream()
+              .filter(i -> i.getGlobalUnitType().getId().equals(4) && i.isActive()).collect(Collectors.toList());
+
+            if (!centerIns.isEmpty()) {
+
+              GlobalUnit centerGlobalUnit = centerIns.get(0);
+
+              GlobalUnitProject globalUnitProject =
+                globalUnitProjectManager.findByProjectAndGlobalUnitId(projectDB.getId(), centerGlobalUnit.getId());
+
+              if (globalUnitProject == null) {
+                // Setting the Global Unit Project
+                GlobalUnitProject globalUnitProjectNew = new GlobalUnitProject();
+                globalUnitProjectNew.setProject(project);
+                globalUnitProjectNew.setGlobalUnit(loggedCrp);
+                globalUnitProjectNew.setOrigin(false);
+                globalUnitProjectManager.saveGlobalUnitProject(globalUnitProjectNew);
+              }
+
+            }
+
+
           } else {
             projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
             projectPartnerDB.setProject(project);

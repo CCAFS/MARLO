@@ -16,9 +16,14 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectInfo extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -3820243690705823369L;
+
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
+  @Expose
+  private LiaisonInstitution liaisonInstitutionCenter;
   @Expose
   private LiaisonUser liaisonUser;
   @Expose
@@ -51,11 +56,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private Long status;
   private String statusName;
-
   @Expose
   private String statusJustification;
   @Expose
   private String genderAnalysis;
+
   @Expose
   private Boolean crossCuttingGender;
   @Expose
@@ -77,14 +82,13 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private String partnerOverall;
 
-
   public ProjectInfo() {
   }
-
 
   public Boolean getAdministrative() {
     return administrative;
   }
+
 
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
@@ -142,10 +146,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return crossCuttingCapacity;
   }
 
+
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
-
 
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
@@ -155,10 +159,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return crossCuttingYouth;
   }
 
+
   public String getDimension() {
     return dimension;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -168,13 +172,17 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return genderAnalysis;
   }
 
+
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
+  }
+
+  public LiaisonInstitution getLiaisonInstitutionCenter() {
+    return liaisonInstitutionCenter;
   }
 
 
@@ -187,10 +195,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return locationGlobal;
   }
 
+
   public Boolean getLocationRegional() {
     return locationRegional;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -283,19 +291,19 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return "";
   }
 
+
   public String getSummary() {
     return summary;
   }
-
 
   public String getTitle() {
     return title;
   }
 
+
   public String getType() {
     return type;
   }
-
 
   public List<Integer> getYears(int year) {
     List<Integer> allYears = new ArrayList<>();
@@ -385,6 +393,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
+  }
+
+
+  public void setLiaisonInstitutionCenter(LiaisonInstitution liaisonInstitutionCenter) {
+    this.liaisonInstitutionCenter = liaisonInstitutionCenter;
   }
 
 
@@ -508,6 +521,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setTitle(update.getTitle());
     this.setType(update.getType());
     this.setNewPartnershipsPlanned(update.getNewPartnershipsPlanned());
+    this.setLiaisonInstitutionCenter(update.getLiaisonInstitutionCenter());
   }
 
 

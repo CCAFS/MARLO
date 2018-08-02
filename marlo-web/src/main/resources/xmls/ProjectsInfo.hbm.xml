@@ -11,6 +11,9 @@
         <many-to-one name="liaisonInstitution" class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
             <column name="liaison_institution_id" />
         </many-to-one>
+        <many-to-one name="liaisonInstitutionCenter" class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+            <column name="liaison_institution_center" />
+        </many-to-one>
         <many-to-one name="liaisonUser" class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" fetch="select">
             <column name="liaison_user_id">
                 <comment>foreign key to the table liaison_users</comment>

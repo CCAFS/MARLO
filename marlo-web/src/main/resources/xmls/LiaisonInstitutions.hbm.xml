@@ -47,7 +47,6 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInfo" />
 		</set>
-
 		<set name="powbSynthesis" table="powb_synthesis" inverse="true"
 			lazy="true" fetch="select">
 			<key>
