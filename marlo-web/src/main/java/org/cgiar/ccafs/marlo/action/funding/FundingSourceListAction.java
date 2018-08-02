@@ -176,7 +176,7 @@ public class FundingSourceListAction extends BaseAction {
       || this.hasPermissionNoBase(
         this.generatePermission(Permission.FUNDING_SOURCE_EDIT_PERMISSION, loggedCrp.getAcronym()));
 
-    return permission;
+    return permission && !this.isReportingActive();
   }
 
 
@@ -226,7 +226,7 @@ public class FundingSourceListAction extends BaseAction {
   public long getFundingSourceID() {
     return fundingSourceID;
   }
-  
+
   /**
    * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
    * may be required in a situation that I am not aware of.
