@@ -22,10 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
-import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
@@ -71,28 +68,20 @@ public class PublicationListAction extends BaseAction {
   private DeliverableInfoManager deliverableInfoManager;
   private GlobalUnitManager crpManager;
   private DeliverableManager deliverableManager;
-  private LiaisonUserManager liaisonUserManager;
-  private InstitutionManager institutionManager;
   private DeliverableLeaderManager deliverableLeaderManager;
-  private PhaseManager phaseManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private String justification;
 
 
   @Inject
   public PublicationListAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
-    InstitutionManager institutionManager, LiaisonUserManager liaisonUserManager,
     DeliverableInfoManager deliverableInfoManager, DeliverableLeaderManager deliverableLeaderManager,
-    PhaseManager phaseManager, LiaisonInstitutionManager liaisonInstitutionManager) {
-
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.crpManager = crpManager;
-    this.liaisonUserManager = liaisonUserManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableLeaderManager = deliverableLeaderManager;
-    this.institutionManager = institutionManager;
-    this.phaseManager = phaseManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
@@ -121,7 +110,6 @@ public class PublicationListAction extends BaseAction {
       }
 
       Phase phase = this.getActualPhase();
-      boolean hasNext = phase.getNext() != null;
       this.saveDeliverableInfo(deliverable, phase);
       this.saveDeliverableLeaders(deliverable, institutions, phase);
       this.clearPermissionsCache();

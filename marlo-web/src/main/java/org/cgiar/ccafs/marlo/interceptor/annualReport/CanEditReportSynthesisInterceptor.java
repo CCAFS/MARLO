@@ -93,7 +93,7 @@ public class CanEditReportSynthesisInterceptor extends AbstractInterceptor imple
     }
   }
 
-  void setPermissionParameters(ActionInvocation invocation) {
+  void setPermissionParameters(ActionInvocation invocation) throws Exception {
 
     User user = (User) session.get(APConstants.SESSION_USER);
     BaseAction baseAction = (BaseAction) invocation.getAction();
@@ -106,91 +106,98 @@ public class CanEditReportSynthesisInterceptor extends AbstractInterceptor imple
     long liaisonInstitutionID;
     user = userManager.getUser(baseAction.getCurrentUser().getId());
 
-    // Get The liaison Institution
-    try {
-      liaisonInstitutionID =
-        Long.parseLong(parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID).getMultipleValues()[0]);
-    } catch (Exception e) {
-      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-            && lu.getLiaisonInstitution().getCrp().getId() == crp.getId()
-            && lu.getLiaisonInstitution().getInstitution() == null)
-          .collect(Collectors.toList()));
-        if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = liaisonUsers.get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+    // Only for reporting
+    if (baseAction.isReportingActive()) {
+
+      // Get The liaison Institution
+      try {
+        liaisonInstitutionID =
+          Long.parseLong(parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID).getMultipleValues()[0]);
+      } catch (Exception e) {
+        if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == crp.getId()
+              && lu.getLiaisonInstitution().getInstitution() == null)
+            .collect(Collectors.toList()));
+          if (!liaisonUsers.isEmpty()) {
+            LiaisonUser liaisonUser = new LiaisonUser();
+            liaisonUser = liaisonUsers.get(0);
+            liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          } else {
+            liaisonInstitutionID = this.firstFlagship();
+          }
         } else {
-          liaisonInstitutionID = this.firstFlagship();
+          liaisonInstitutionID = this.firstFlagship();;
         }
+      }
+
+      // Get the Report Synthesis section
+      long synthesisID;
+      try {
+        synthesisID = Long.parseLong(parameters.get(APConstants.REPORT_SYNTHESIS_ID).getMultipleValues()[0]);
+        reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+      } catch (Exception e) {
+        LiaisonInstitution liaisonInstitution =
+          liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+        // If the LiaisonInstitution is not a PMU or Flagship.
+        if (liaisonInstitution.getInstitution() != null) {
+          throw new NullPointerException();
+        }
+        Phase phase = baseAction.getActualPhase();
+        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        if (reportSynthesis == null) {
+          reportSynthesis = baseAction.createReportSynthesis(phase.getId(), liaisonInstitutionID);
+        }
+        synthesisID = reportSynthesis.getId();
+      }
+
+      // Check if the user have permissions
+      String params[] = {crp.getAcronym(), reportSynthesis.getId() + "",};
+      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+        canEdit = true;
       } else {
-        liaisonInstitutionID = this.firstFlagship();;
-      }
-    }
-
-    // Get the Report Synthesis section
-    long synthesisID;
-    try {
-      synthesisID = Long.parseLong(parameters.get(APConstants.REPORT_SYNTHESIS_ID).getMultipleValues()[0]);
-      reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
-    } catch (Exception e) {
-      LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-      // If the LiaisonInstitution is not a PMU or Flagship.
-      if (liaisonInstitution.getInstitution() != null) {
-        throw new NullPointerException();
-      }
-      Phase phase = baseAction.getActualPhase();
-      reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
-      if (reportSynthesis == null) {
-        reportSynthesis = baseAction.createReportSynthesis(phase.getId(), liaisonInstitutionID);
-      }
-      synthesisID = reportSynthesis.getId();
-    }
-
-    // Check if the user have permissions
-    String params[] = {crp.getAcronym(), reportSynthesis.getId() + "",};
-    if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-      canEdit = true;
-    } else {
-      if (baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params))) {
-        if (baseAction.isReportingActive()) {
-          canEdit = true;
+        if (baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params))) {
+          if (baseAction.isReportingActive()) {
+            canEdit = true;
+          }
         }
       }
-    }
 
-    // Check the permission if user want to edit or save the form
-    if (editParameter || parameters.get("save").isDefined()) {
-      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
-        : baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params));
-    }
-
-    if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
-      // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-      String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
-      editParameter = stringEditable.equals("true");
-      if (!editParameter) {
-        baseAction.setEditableParameter(hasPermissionToEdit);
+      // Check the permission if user want to edit or save the form
+      if (editParameter || parameters.get("save").isDefined()) {
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
+          : baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params));
       }
-    }
 
-    if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
-      // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-      editParameter = false;
-    }
-    // If the user is not asking for edition privileges we don't need to validate them.
-    if (!baseAction.getActualPhase().getEditable()) {
-      canEdit = false;
-      baseAction.setCanEditPhase(false);
-    }
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
+        editParameter = stringEditable.equals("true");
+        if (!editParameter) {
+          baseAction.setEditableParameter(hasPermissionToEdit);
+        }
+      }
 
-    if (!editParameter) {
-      baseAction.setEditStatus(false);
-    }
-    baseAction.setEditableParameter(editParameter && canEdit);
-    baseAction.setCanEdit(canEdit);
+      if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        editParameter = false;
+      }
+      // If the user is not asking for edition privileges we don't need to validate them.
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
 
+      if (!editParameter) {
+        baseAction.setEditStatus(false);
+      }
+      baseAction.setEditableParameter(editParameter && canEdit);
+      baseAction.setCanEdit(canEdit);
+
+    } else {
+      throw new Exception();
+    }
   }
 
 }
