@@ -15,7 +15,7 @@
   [#-- MONITORING OUTCOMES - CENTER --]
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- FUNDING SOURCES - ALL --]
-  { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged && !centerGlobalUnit, 'active': true },
+  { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
   [#-- ADDITIONAL REPORTING - CRP --]
   { 'slug': 'additionalReporting', 'name': 'menu.additionalReporting',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',  'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,  'help': true,  
     'subItems' : [
