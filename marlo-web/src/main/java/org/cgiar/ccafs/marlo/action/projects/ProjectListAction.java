@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -37,7 +38,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -90,6 +90,8 @@ public class ProjectListAction extends BaseAction {
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
+  private ProjectPartnerManager projectPartnerManager;
+
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
@@ -102,7 +104,7 @@ public class ProjectListAction extends BaseAction {
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
     ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -114,6 +116,7 @@ public class ProjectListAction extends BaseAction {
     this.sectionStatusManager = sectionStatusManager;
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
   public String addAdminProject() {
@@ -321,6 +324,7 @@ public class ProjectListAction extends BaseAction {
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModificationJustification("New expected Project created");
       projectInfo.setType(type);
@@ -331,6 +335,14 @@ public class ProjectListAction extends BaseAction {
 
       if (this.isCenterGlobalUnit()) {
         projectInfo.setProjectEditLeader(true);
+
+        // Create Center Partner
+        ProjectPartner projectPartner = new ProjectPartner();
+        projectPartner.setProject(project);
+        projectPartner.setInstitution(loggedCrp.getInstitution());
+        projectPartner.setPhase(this.getActualPhase());
+        projectPartnerManager.saveProjectPartner(projectPartner);
+
       } else {
         projectInfo.setProjectEditLeader(false);
       }
@@ -338,7 +350,7 @@ public class ProjectListAction extends BaseAction {
       projectInfo.setPresetDate(new Date());
       projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       projectInfo.setAdministrative(new Boolean(admin));
-      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+
       if (phase != null) {
         ProjectPhase projectPhase = new ProjectPhase();
         projectPhase.setPhase(phase);
@@ -453,8 +465,8 @@ public class ProjectListAction extends BaseAction {
 
       if (!phases.isEmpty()) {
 
-        Phase phase = globalUnit.getPhases().stream().filter(p -> p.isActive() && p.getEditable() && p.getVisible())
-          .collect(Collectors.toList()).get(0);
+        Phase phase =
+          this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), globalUnit.getId());
 
         List<ProjectInfo> projectInfos = new ArrayList<>(phase.getProjectInfos().stream()
           .filter(pi -> pi.isActive() && (pi.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
@@ -465,30 +477,17 @@ public class ProjectListAction extends BaseAction {
 
           Project project = projectManager.getProjectById(projectInfo.getProject().getId());
           project.setProjectInfo(projectInfo);
-          List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
-            .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-          for (ProjectPartner projectPartner : projectPartners) {
+          if (this.isSubmit(project.getId())) {
+            GlobalUnitProject globalUnitProject =
+              globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
 
-
-            if (projectPartner.getProjectPartnerPersons() != null) {
-              for (ProjectPartnerPerson person : projectPartner.getProjectPartnerPersons().stream()
-                .filter(pp -> pp.isActive()).collect(Collectors.toList())) {
-                if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-                  if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
-                    project.setCurrentPhase(phase);
-
-                    centerProjects.add(project);
-                    break;
-                  }
-                }
-              }
+            if (globalUnitProject != null && !globalUnitProject.isOrigin()) {
+              project.setCurrentPhase(phase);
+              centerProjects.add(project);
             }
-
-
           }
         }
-
       }
 
 
