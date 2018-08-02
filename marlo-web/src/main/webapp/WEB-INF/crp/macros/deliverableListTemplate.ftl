@@ -107,7 +107,6 @@
           </td>
           [#-- Deliverable required fields --]
           <td class="text-center">
-            
             [#if isDeliverableComplete]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
