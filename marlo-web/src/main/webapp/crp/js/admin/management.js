@@ -75,7 +75,7 @@ function attachEvents() {
 
     // Alert PopUp
     noty({
-        text: 'Please be aware you may have outcomes and cluster of activities associated to this Flagship.',
+        text: 'Please be aware you may have outcomes and/or cluster of activities associated to this program.',
         type: 'confirm',
         dismissQueue: true,
         layout: 'center',
