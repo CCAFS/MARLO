@@ -16,16 +16,16 @@
   ]/]
 [#else]
   [#assign menus= [
+    { 'title': '${currentCrp.acronym} Mapping', 'show': centerGlobalUnit && isCrpProject,
+      'items': [
+      { 'slug': 'centerProgram',  'name': 'projects.menu.centerProgram',  'action': 'centerProgram',  'active': true  }
+      ]
+    },
     { 'title': 'General Information', 'show': true,
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true  }
-      ]
-    },
-    { 'title': '${currentCrp.acronym} Mapping', 'show': centerGlobalUnit && isCrpProject,
-      'items': [
-      { 'slug': 'centerProgram',  'name': 'projects.menu.centerProgram',  'action': 'centerProgram',  'active': true  }
       ]
     },
     { 'title': 'Outcomes', 'show': isCrpProject,
