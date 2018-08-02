@@ -1230,7 +1230,7 @@ public class DeliverableAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
-        if (this.isReportingActive()) {
+        if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
 
           DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
             .getDeliverableQualityCheckByDeliverable(deliverable.getId(), this.getActualPhase().getId());
@@ -1615,7 +1615,7 @@ public class DeliverableAction extends BaseAction {
           this.crossCuttingDimensions.add(score);
         }
       }
-      if (this.isReportingActive()) {
+      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
         }
@@ -1834,10 +1834,12 @@ public class DeliverableAction extends BaseAction {
       this.removeOthersDeliverablePartnerships(deliverableManagedState);
       this.updateOtherDeliverablePartnerships();
 
+      // Gender levels is not longer used.
       this.saveDeliverableGenderLevels(deliverableManagedState);
       this.deleteDeliverableGenderLevels(deliverableManagedState);
 
-      if (this.isReportingActive()) {
+      // Reporting and upkeep
+      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
         }
@@ -1845,6 +1847,7 @@ public class DeliverableAction extends BaseAction {
         this.saveMetadata();
         this.saveCrps();
         this.savePublicationMetadata();
+        // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
         this.saveIntellectualAsset();
@@ -1860,7 +1863,7 @@ public class DeliverableAction extends BaseAction {
 
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
-      if (this.isReportingActive()) {
+      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
@@ -2932,7 +2935,7 @@ public class DeliverableAction extends BaseAction {
 
     deliverableInfoDb
       .setStatusDescription(deliverable.getDeliverableInfo(this.getActualPhase()).getStatusDescription());
-    if (this.isReportingActive()) {
+    if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
 
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() != null) {
         deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense());

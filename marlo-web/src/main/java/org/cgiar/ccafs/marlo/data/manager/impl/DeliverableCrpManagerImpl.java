@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableCrpDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
@@ -59,13 +60,25 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   @Override
   public void deleteDeliverableCrp(long deliverableCrpId) {
     DeliverableCrp deliverableCrp = this.getDeliverableCrpById(deliverableCrpId);
-    // Phase currentPhase = phaseDAO.find(deliverableCrp.getPhase().getId());
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)
-    // && !deliverableCrp.getDeliverable().getIsPublication()) {
-    // if (deliverableCrp.getPhase().getNext() != null) {
-    // this.deleteDeliverableCrpPhase(deliverableCrp.getPhase().getNext(), deliverableCrp);
-    // }
-    // }
+    Phase currentPhase = phaseDAO.find(deliverableCrp.getPhase().getId());
+    boolean isPublication =
+      deliverableCrp.getDeliverable().getIsPublication() != null && deliverableCrp.getDeliverable().getIsPublication();
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteDeliverableCrpPhase(upkeepPhase, deliverableCrp);
+        }
+      }
+    } else {
+      // UpKeep
+      if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
+        if (currentPhase.getNext() != null) {
+          this.deleteDeliverableCrpPhase(currentPhase.getNext(), deliverableCrp);
+        }
+      }
+    }
 
     deliverableCrpDAO.deleteDeliverableCrp(deliverableCrpId);
   }
@@ -104,15 +117,27 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   @Override
   public DeliverableCrp saveDeliverableCrp(DeliverableCrp deliverableCrp) {
     DeliverableCrp deliverableCrpResult = deliverableCrpDAO.save(deliverableCrp);
-    // Phase currentPhase = phaseDAO.find(deliverableCrpResult.getPhase().getId());
-    //
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)
-    // && !deliverableManager.getDeliverableById(deliverableCrpResult.getDeliverable().getId()).getIsPublication()) {
-    // if (currentPhase.getNext() != null) {
-    // this.saveDeliverableCrpPhase(deliverableCrpResult, deliverableCrpResult.getDeliverable(),
-    // currentPhase.getNext().getId());
-    // }
-    // }
+    Phase currentPhase = phaseDAO.find(deliverableCrpResult.getPhase().getId());
+    boolean isPublication =
+      deliverableManager.getDeliverableById(deliverableCrpResult.getDeliverable().getId()).getIsPublication() != null
+        && deliverableManager.getDeliverableById(deliverableCrpResult.getDeliverable().getId()).getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableCrpPhase(deliverableCrpResult, deliverableCrpResult.getDeliverable(),
+            upkeepPhase.getId());
+        }
+      }
+    } else {
+      // UpKeep
+      if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
+        if (currentPhase.getNext() != null) {
+          this.saveDeliverableCrpPhase(deliverableCrpResult, deliverableCrpResult.getDeliverable(),
+            currentPhase.getNext().getId());
+        }
+      }
+    }
     return deliverableCrpResult;
   }
 

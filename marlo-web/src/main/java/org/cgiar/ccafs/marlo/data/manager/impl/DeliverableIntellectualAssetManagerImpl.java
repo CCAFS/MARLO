@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableIntellectualAssetDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
@@ -91,15 +92,28 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
     saveDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
     DeliverableIntellectualAsset deliverableIntellectualAssetResult =
       deliverableIntellectualAssetDAO.save(deliverableIntellectualAsset);
-    // Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
-    // boolean isPublication = deliverableIntellectualAssetResult.getDeliverable().getIsPublication() != null
-    // && deliverableIntellectualAssetResult.getDeliverable().getIsPublication();
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
-    // if (currentPhase.getNext() != null) {
-    // this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
-    // deliverableIntellectualAsset.getDeliverable(), currentPhase.getNext().getId());
-    // }
-    // }
+    Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
+    boolean isPublication = deliverableIntellectualAssetResult.getDeliverable().getIsPublication() != null
+      && deliverableIntellectualAssetResult.getDeliverable().getIsPublication();
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
+            deliverableIntellectualAsset.getDeliverable(), upkeepPhase.getId());
+        }
+      }
+    } else {
+      // UpKeep
+      if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
+        if (currentPhase.getNext() != null) {
+          this.saveDeliverableIntellectualAssetPhase(deliverableIntellectualAssetResult,
+            deliverableIntellectualAsset.getDeliverable(), currentPhase.getNext().getId());
+        }
+      }
+    }
+
     return deliverableIntellectualAssetResult;
   }
 

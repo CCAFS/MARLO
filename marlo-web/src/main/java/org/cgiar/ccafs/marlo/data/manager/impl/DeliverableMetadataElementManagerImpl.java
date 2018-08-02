@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableMetadataElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
@@ -84,15 +85,29 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
     saveDeliverableMetadataElement(DeliverableMetadataElement deliverableMetadataElement) {
     DeliverableMetadataElement deliverableMetadataResult =
       deliverableMetadataElementDAO.save(deliverableMetadataElement);
-    // Phase currentPhase = phaseDAO.find(deliverableMetadataResult.getPhase().getId());
-    // boolean isPublication = deliverableMetadataResult.getDeliverable().getIsPublication() != null
-    // && deliverableMetadataResult.getDeliverable().getIsPublication();
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
-    // if (currentPhase.getNext() != null) {
-    // this.saveDeliverableMetadataPhase(deliverableMetadataResult, deliverableMetadataResult.getDeliverable(),
-    // currentPhase.getNext().getId());
-    // }
-    // }
+
+    Phase currentPhase = phaseDAO.find(deliverableMetadataResult.getPhase().getId());
+    boolean isPublication = deliverableMetadataResult.getDeliverable().getIsPublication() != null
+      && deliverableMetadataResult.getDeliverable().getIsPublication();
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableMetadataPhase(deliverableMetadataResult, deliverableMetadataResult.getDeliverable(),
+            upkeepPhase.getId());
+        }
+      }
+    } else {
+      // UpKeep
+      if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
+        if (currentPhase.getNext() != null) {
+          this.saveDeliverableMetadataPhase(deliverableMetadataResult, deliverableMetadataResult.getDeliverable(),
+            currentPhase.getNext().getId());
+        }
+      }
+    }
+
     return deliverableMetadataResult;
   }
 
