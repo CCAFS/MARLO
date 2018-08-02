@@ -86,10 +86,9 @@
     </div> 
 </section>
 [/#if]
+ 
+<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as li]"${li.id}" : ${(li.crpProgram.id)!-1}[#if li_has_next], [/#if][/#list]}</span>
 
-[#-- 
-<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
---]
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
