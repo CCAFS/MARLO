@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePublicationMetadataDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
@@ -92,15 +93,29 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
     saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata) {
     DeliverablePublicationMetadata deliverablePublicationMetadataResult =
       deliverablePublicationMetadataDAO.save(deliverablePublicationMetadata);
-    // Phase currentPhase = phaseDAO.find(deliverablePublicationMetadataResult.getPhase().getId());
-    // boolean isPublication = deliverablePublicationMetadataResult.getDeliverable().getIsPublication() != null
-    // && deliverablePublicationMetadataResult.getDeliverable().getIsPublication();
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
-    // if (currentPhase.getNext() != null) {
-    // this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadataResult,
-    // deliverablePublicationMetadata.getDeliverable(), currentPhase.getNext().getId());
-    // }
-    // }
+
+    Phase currentPhase = phaseDAO.find(deliverablePublicationMetadataResult.getPhase().getId());
+    boolean isPublication = deliverablePublicationMetadataResult.getDeliverable().getIsPublication() != null
+      && deliverablePublicationMetadataResult.getDeliverable().getIsPublication();
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadataResult,
+            deliverablePublicationMetadata.getDeliverable(), upkeepPhase.getId());
+        }
+      }
+    } else {
+      // UpKeep
+      if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
+        if (currentPhase.getNext() != null) {
+          this.saveDeliverablePublicationMetadataPhase(deliverablePublicationMetadataResult,
+            deliverablePublicationMetadata.getDeliverable(), currentPhase.getNext().getId());
+        }
+      }
+    }
+
     return deliverablePublicationMetadataResult;
   }
 
