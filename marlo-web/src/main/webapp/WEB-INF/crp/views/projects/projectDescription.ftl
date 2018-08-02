@@ -15,6 +15,8 @@
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
 [#assign hideJustification = true /]
+[#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
+[#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -34,7 +36,7 @@
         [#if (reportingActive)!false] 
           [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
         [#else] 
-          [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
+          [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison${isCenterProject?string('Center', '')}" /][/@s.param] [/@s.text]
         [/#if]  
       [#else]
         [@s.text name="projectDescription.help1" /] 
@@ -87,7 +89,7 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.researchProgram.id" listName="researchPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="name" i18nkey="project.researchProgram" className="projectResearchProgram" help="project.researchProgram.help" editable=editable /]
+                [@customForm.select name="project.projectInfo.liaisonInstitution.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" editable=editable /]
               </div>
             </div>
             [/#if]
@@ -277,7 +279,7 @@
 [/#if]
 
 
-<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
+<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as li]"${li.id}" : ${(li.crpProgram.id)!-1}[#if li_has_next], [/#if][/#list]}</span>
 
 
 [#-- Cluster of activity list template --]

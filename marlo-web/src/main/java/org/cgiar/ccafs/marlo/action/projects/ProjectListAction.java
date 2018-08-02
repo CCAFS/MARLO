@@ -454,45 +454,34 @@ public class ProjectListAction extends BaseAction {
 
     centerProjects = new ArrayList<>();
 
-    List<GlobalUnit> globalUnits = new ArrayList<>(crpManager.findAll().stream()
-      .filter(crp -> crp.isActive() && crp.isMarlo() && crp.isLogin() && crp.getGlobalUnitType().getId() == 1)
-      .collect(Collectors.toList()));
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects().stream()
+      .filter(gp -> gp.isActive() && !gp.isOrigin()).collect(Collectors.toList()));
 
-    for (GlobalUnit globalUnit : globalUnits) {
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
 
-      List<Phase> phases = globalUnit.getPhases().stream()
-        .filter(p -> p.isActive() && p.getEditable() && p.getVisible()).collect(Collectors.toList());
+      Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
 
-      if (!phases.isEmpty()) {
+      GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
 
-        Phase phase =
-          this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), globalUnit.getId());
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+        globalUnitProjectOrigin.getGlobalUnit().getId());
 
-        List<ProjectInfo> projectInfos = new ArrayList<>(phase.getProjectInfos().stream()
-          .filter(pi -> pi.isActive() && (pi.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-            || pi.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId())))
-          .collect(Collectors.toList()));
 
-        for (ProjectInfo projectInfo : projectInfos) {
+      project.getProjecInfoPhase(phase);
 
-          Project project = projectManager.getProjectById(projectInfo.getProject().getId());
-          project.setProjectInfo(projectInfo);
-
-          if (this.isSubmit(project.getId())) {
-            GlobalUnitProject globalUnitProject =
-              globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
-
-            if (globalUnitProject != null && !globalUnitProject.isOrigin()) {
+      if (project.getProjectInfo() != null) {
+        if (project.getProjectInfo().getProjectEditLeader()) {
+          ProjectInfo info = project.getProjectInfo();
+          if ((info.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || info.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))) {
+            if (this.isSubmit(project.getId())) {
               project.setCurrentPhase(phase);
               centerProjects.add(project);
             }
           }
         }
       }
-
-
     }
-
   }
 
   /**

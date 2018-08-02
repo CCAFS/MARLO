@@ -181,9 +181,14 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     }
 
-    if (capdev.getResearchArea() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.researchArea"));
-      baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
+    if (capdev.getResearchProgram() == null) {
+      baseAction.addMessage(baseAction.getText("capdev.action.researchProgram"));
+      baseAction.getInvalidFields().put("input-capdev.researchProgram.id", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (capdev.getResearchProgram().getId() == -1) {
+        baseAction.addMessage(baseAction.getText("capdev.action.researchProgram"));
+        baseAction.getInvalidFields().put("input-capdev.researchProgram.id", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (capdev.getCategory() == 1) {
