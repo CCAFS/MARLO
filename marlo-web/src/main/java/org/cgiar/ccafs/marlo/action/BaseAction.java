@@ -5466,6 +5466,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Check if the impact pathway is submitted
