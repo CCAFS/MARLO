@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -54,6 +55,15 @@ public interface DeliverableUserDAO {
    */
   public List<DeliverableUser> findAll();
 
+
+  /**
+   * This method gets a deliverableUser object by a given phase, deliverable and deliverableUser data
+   * 
+   * @param deliverableUser
+   * @param phase
+   * @return a DeliverableUser object.
+   */
+  public DeliverableUser findDeliverableUserByPhaseAndDeliverableUser(Phase phase, DeliverableUser deliverableUser);
 
   /**
    * This method saves the information of the given deliverableUser
