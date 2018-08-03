@@ -60,6 +60,17 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
     newDeliverableIntellectualAsset.setTitle(deliverableDissemination.getTitle());
     newDeliverableIntellectualAsset.setType(deliverableDissemination.getType());
     newDeliverableIntellectualAsset.setHasPatentPvp(deliverableDissemination.getHasPatentPvp());
+    newDeliverableIntellectualAsset.setFillingType(deliverableDissemination.getFillingType());
+    newDeliverableIntellectualAsset.setPatentStatus(deliverableDissemination.getPatentStatus());
+    newDeliverableIntellectualAsset.setPatentType(deliverableDissemination.getPatentType());
+    newDeliverableIntellectualAsset.setDateExpiry(deliverableDissemination.getDateExpiry());
+    newDeliverableIntellectualAsset.setDateFilling(deliverableDissemination.getDateFilling());
+    newDeliverableIntellectualAsset.setDateRegistration(deliverableDissemination.getDateRegistration());
+    newDeliverableIntellectualAsset.setVarietyName(deliverableDissemination.getVarietyName());
+    newDeliverableIntellectualAsset.setStatus(deliverableDissemination.getStatus());
+    newDeliverableIntellectualAsset.setCountry(deliverableDissemination.getCountry());
+    newDeliverableIntellectualAsset.setAppRegNumber(deliverableDissemination.getAppRegNumber());
+    newDeliverableIntellectualAsset.setBreederCrop(deliverableDissemination.getBreederCrop());
   }
 
   @Override
@@ -92,6 +103,7 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
     saveDeliverableIntellectualAsset(DeliverableIntellectualAsset deliverableIntellectualAsset) {
     DeliverableIntellectualAsset deliverableIntellectualAssetResult =
       deliverableIntellectualAssetDAO.save(deliverableIntellectualAsset);
+
     Phase currentPhase = phaseDAO.find(deliverableIntellectualAssetResult.getPhase().getId());
     boolean isPublication = deliverableIntellectualAssetResult.getDeliverable().getIsPublication() != null
       && deliverableIntellectualAssetResult.getDeliverable().getIsPublication();
