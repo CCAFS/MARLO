@@ -475,6 +475,18 @@ public class CrpProgamRegionsAction extends BaseAction {
   }
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    String crpAdmins = "";
+    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      } else {
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+    }
     userAssigned = userManager.getUser(userAssigned.getId());
     String regionRole = role.getDescription();
     String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
@@ -484,7 +496,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.region.unassigned",
       new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
-    message.append(this.getText("email.support"));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
     String toEmail = null;
     String ccEmail = null;
