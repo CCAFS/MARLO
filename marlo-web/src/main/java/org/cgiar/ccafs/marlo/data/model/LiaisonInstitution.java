@@ -37,32 +37,38 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
 
   @Expose
   private CrpProgram crpProgram;
+
+
   @Expose
   private Institution institution;
+
+
   @Expose
   private String name;
   @Expose
   private String acronym;
-
   @Expose
   private GlobalUnit crp;
-
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
+
   private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
+
+  private Set<ProjectInfo> centerProjects = new HashSet<ProjectInfo>(0);
   private Set<PowbSynthesis> powbSynthesis = new HashSet<PowbSynthesis>(0);
   private Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget = new HashSet<PowbFinancialPlannedBudget>(0);
-
   private double w1;
-
   private double w3;
-
 
   public LiaisonInstitution() {
   }
 
-
   public String getAcronym() {
     return this.acronym;
+  }
+
+
+  public Set<ProjectInfo> getCenterProjects() {
+    return centerProjects;
   }
 
 
@@ -95,6 +101,7 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
     return institution;
   }
 
+
   public Set<LiaisonUser> getLiaisonUsers() {
     return liaisonUsers;
   }
@@ -115,7 +122,6 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User user = new User();
@@ -128,6 +134,7 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
     return this.name;
   }
 
+
   public Set<PowbFinancialPlannedBudget> getPowbFinancialPlannedBudget() {
     return powbFinancialPlannedBudget;
   }
@@ -136,22 +143,26 @@ public class LiaisonInstitution extends MarloSoftDeleteableEntity implements jav
     return powbSynthesis;
   }
 
-
   public Set<ProjectInfo> getProjects() {
     return projects;
   }
+
 
   public double getW1() {
     return w1;
   }
 
-
   public double getW3() {
     return w3;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setCenterProjects(Set<ProjectInfo> centerProjects) {
+    this.centerProjects = centerProjects;
   }
 
   public void setCrp(GlobalUnit crp) {

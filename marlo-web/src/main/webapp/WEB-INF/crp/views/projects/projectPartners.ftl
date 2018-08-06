@@ -279,8 +279,13 @@
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
+    [#-- TODO: Please improve this validation at backend side --]
+    [#local canRemoveCIAT = true /]
+    [#if centerGlobalUnit && isCenterProject && ((element.institution.id == 46)!false)]
+      [#local canRemoveCIAT = false /]
+    [/#if]
     [#-- Remove link for all partners --]
-    [#if editable ] [#--&& (isTemplate) --]
+    [#if editable && canRemoveCIAT] [#--&& (isTemplate) --]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
