@@ -57,8 +57,8 @@ public class CrpParametersAction extends BaseAction {
   private List<GlobalUnit> crps;
 
   @Inject
-  public CrpParametersAction(APConfig config, GlobalUnitManager globalUnitManager, CustomParameterManager crpParameterManager,
-    ParameterManager parameterManager) {
+  public CrpParametersAction(APConfig config, GlobalUnitManager globalUnitManager,
+    CustomParameterManager crpParameterManager, ParameterManager parameterManager) {
 
     super(config);
     this.parameterManager = parameterManager;
@@ -79,7 +79,7 @@ public class CrpParametersAction extends BaseAction {
   public void prepare() throws Exception {
 
     super.prepare();
-    crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
+    crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo() && c.isActive()).collect(Collectors.toList());
     for (GlobalUnit globalUnit : crps) {
 
       globalUnit.setParameters(
