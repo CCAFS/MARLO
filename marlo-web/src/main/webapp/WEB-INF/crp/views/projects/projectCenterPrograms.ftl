@@ -55,22 +55,22 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" editable=true /]
+                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="centerPrograms" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
               </div>
             </div>
 
             <div class="form-group row simpleBox">
               <div class="col-md-6 ">
-                <h4> Additional Program(s)</h4>
+                <h4> Additional Program(s)[@customForm.req /]</h4>
                 [#list (programFlagships)![] as element] 
-                  [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.composedName}" value="${element.id}" editable=true checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput" cssClassLabel="font-normal" /]
+                  [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
               </div>
               <div class="col-md-6 ">
-                <h4> Additional Region(s)</h4>
+                <h4> Additional Region(s)[@customForm.req /]</h4>
                 [#list (regionFlagships)![] as element]
-                  [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.composedName}" value="${element.id}" editable=true  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
+                  [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
               </div>
