@@ -351,10 +351,6 @@ public class ProjectCenterMappingAction extends BaseAction {
       // load the flaghsips an regions
       programFlagships = new ArrayList<>();
       regionFlagships = new ArrayList<>();
-      centerPrograms = new ArrayList<>();
-      centerPrograms.addAll(loggedCrp.getCrpPrograms().stream()
-        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList()));
       programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
@@ -381,21 +377,23 @@ public class ProjectCenterMappingAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
       Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
 
-      projectDB.getProjecInfoPhase(sharedPhase);
+      projectDB.setProjectInfo(projectDB.getProjecInfoPhase(sharedPhase));
+      // Load basic info project to be saved
+      project.setCreateDate(projectDB.getCreateDate());
+      project.getProjectInfo().setPresetDate(projectDB.getProjectInfo().getPresetDate());
 
 
       // no liaison institution selected
       if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
         if (project.getProjectInfo().getLiaisonInstitutionCenter().getId() == -1) {
-          projectDB.getProjectInfo().setLiaisonInstitutionCenter(null);
+          project.getProjectInfo().setLiaisonInstitutionCenter(null);
         }
       }
 
+      project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
 
-      projectInfoManager.saveProjectInfo(project.getProjectInfo());
 
       // Saving the flaghsips
-
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
@@ -471,10 +469,25 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         }
 
+        project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
+
         // Saving project and add relations we want to save on the history
 
         List<String> relationsName = new ArrayList<>();
         relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+
+        project.getProjectInfo().setPhase(sharedPhase);
+        project.getProjectInfo().setProject(projectDB);
+        project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
+        project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
+        project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
+        project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
+        project.getProjectInfo().setLocationGlobal(projectDB.getProjectInfo().getLocationGlobal());
+
+        project.getProjectInfo().setModificationJustification(this.getJustification());
+
+        projectInfoManager.saveProjectInfo(project.getProjectInfo());
+
 
         /**
          * The following is required because we need to update something on the @Project if we want a row created in the
@@ -555,7 +568,7 @@ public class ProjectCenterMappingAction extends BaseAction {
   public void validate() {
     // if is saving call the validator to check for the missing fields
     if (save) {
-      validator.validate(this, project, true);
+      validator.validate(this, project, true, sharedPhaseID);
     }
   }
 
