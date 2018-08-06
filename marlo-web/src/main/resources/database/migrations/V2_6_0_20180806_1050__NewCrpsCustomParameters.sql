@@ -33,7 +33,7 @@ SELECT id from parameters where `key` = 'crp_rpm_rol' and global_unit_type_id=1)
 UPDATE custom_parameters set `value`= (SELECT r.id from roles r where r.global_unit_id = 17 and acronym = 'CP') where parameter_id = (
 SELECT id from parameters where `key` = 'crp_cp_role' and global_unit_type_id=1) and global_unit_id = 17;
 
-UPDATE custom_parameters set `value`= 'RTB' where parameter_id = (
+UPDATE custom_parameters set `value`= 'rtb' where parameter_id = (
 SELECT id from parameters where `key` = 'crp_custom_file' and global_unit_type_id=1) and global_unit_id = 17;
 
 UPDATE custom_parameters set `value`= 'false' where parameter_id = (
@@ -83,7 +83,7 @@ SELECT id from parameters where `key` = 'crp_rpm_rol' and global_unit_type_id=1)
 UPDATE custom_parameters set `value`= (SELECT r.id from roles r where r.global_unit_id = 27 and acronym = 'CP') where parameter_id = (
 SELECT id from parameters where `key` = 'crp_cp_role' and global_unit_type_id=1) and global_unit_id = 27;
 
-UPDATE custom_parameters set `value`= 'Fish' where parameter_id = (
+UPDATE custom_parameters set `value`= 'fish' where parameter_id = (
 SELECT id from parameters where `key` = 'crp_custom_file' and global_unit_type_id=1) and global_unit_id = 27;
 
 UPDATE custom_parameters set `value`= 'false' where parameter_id = (
@@ -133,7 +133,7 @@ SELECT id from parameters where `key` = 'crp_rpm_rol' and global_unit_type_id=1)
 UPDATE custom_parameters set `value`= (SELECT r.id from roles r where r.global_unit_id = 28 and acronym = 'CP') where parameter_id = (
 SELECT id from parameters where `key` = 'crp_cp_role' and global_unit_type_id=1) and global_unit_id = 28;
 
-UPDATE custom_parameters set `value`= 'GLDC' where parameter_id = (
+UPDATE custom_parameters set `value`= 'gldc' where parameter_id = (
 SELECT id from parameters where `key` = 'crp_custom_file' and global_unit_type_id=1) and global_unit_id = 28;
 
 UPDATE custom_parameters set `value`= 'false' where parameter_id = (
@@ -183,7 +183,7 @@ SELECT id from parameters where `key` = 'crp_rpm_rol' and global_unit_type_id=3)
 UPDATE custom_parameters set `value`= (SELECT r.id from roles r where r.global_unit_id = 25 and acronym = 'CP') where parameter_id = (
 SELECT id from parameters where `key` = 'crp_cp_role' and global_unit_type_id=3) and global_unit_id = 25;
 
-UPDATE custom_parameters set `value`= 'EiB' where parameter_id = (
+UPDATE custom_parameters set `value`= 'eib' where parameter_id = (
 SELECT id from parameters where `key` = 'crp_custom_file' and global_unit_type_id=3) and global_unit_id = 25;
 
 UPDATE custom_parameters set `value`= 'false' where parameter_id = (
