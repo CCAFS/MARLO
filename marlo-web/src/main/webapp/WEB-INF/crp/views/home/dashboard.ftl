@@ -67,8 +67,10 @@
         
         [#-- Summaries --]
         <div class="flex-container">
-          <div id="finalDes" class="option hvr-float disabled" title="This link is disabled">
-            <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
+          <div id="finalDes" class="option hvr-float"">
+            <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
+            </a>
           </div>
         </div>
       
