@@ -90,7 +90,6 @@ public class Institutions {
     this.userManager = userManager;
   }
 
-  @ApiIgnore
   @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
