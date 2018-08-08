@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -41,6 +43,8 @@ public class ProjectCenterMappingValidator extends BaseValidator {
   @Inject
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  @Inject
+  private PhaseManager phaseManager;
 
   @Inject
   public ProjectCenterMappingValidator() {
@@ -58,7 +62,7 @@ public class ProjectCenterMappingValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction action, Project project, boolean saving) {
+  public void validate(BaseAction action, Project project, boolean saving, long SharedPhase) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
@@ -68,7 +72,8 @@ public class ProjectCenterMappingValidator extends BaseValidator {
       }
     }
 
-    this.validateDescription(action, project);
+    this.validateDescription(action, project, SharedPhase);
+
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -81,7 +86,21 @@ public class ProjectCenterMappingValidator extends BaseValidator {
       SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus(), action);
   }
 
-  public void validateDescription(BaseAction action, Project project) {
+  public void validateDescription(BaseAction action, Project project, long SharedPhase) {
+
+    Phase phase = phaseManager.getPhaseById(SharedPhase);
+
+    if (project.getProjecInfoPhase(phase).getLiaisonInstitutionCenter() != null) {
+      if (project.getProjecInfoPhase(phase).getLiaisonInstitution().getId() == -1) {
+        action.addMessage(action.getText("project.liaisonInstitutionCenter"));
+        action.getInvalidFields().put("input-project.projectInfo.liaisonInstitutionCenter.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("project.liaisonInstitutionCenter"));
+      action.getInvalidFields().put("input-project.projectInfo.liaisonInstitutionCenter.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
 
 
     if (project.getFlagships() != null) {

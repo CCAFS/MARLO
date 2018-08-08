@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
@@ -47,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -146,6 +149,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final DeliverableParticipantManager deliverableParticipantManager;
 
+  private final PhaseManager phaseManager;
+
+  private final GlobalUnitManager crpManager;
+
+  private final ProjectCenterMappingValidator projectCenterMappingValidator;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -164,7 +173,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectInnovationValidator projectInnovationValidator,
     ProjectInnovationCountryManager projectInnovationCountryManager, FundingSourceManager fundingSourceManager,
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
-    DeliverableParticipantManager deliverableParticipantManager) {
+    DeliverableParticipantManager deliverableParticipantManager, PhaseManager phaseManager,
+    GlobalUnitManager crpManager, ProjectCenterMappingValidator projectCenterMappingValidator) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -192,6 +202,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.fundingSourceManager = fundingSourceManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
     this.deliverableParticipantManager = deliverableParticipantManager;
+    this.phaseManager = phaseManager;
+    this.crpManager = crpManager;
+    this.projectCenterMappingValidator = projectCenterMappingValidator;
   }
 
 
@@ -467,10 +480,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-      .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive()
-        && d.getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
-      .collect(Collectors.toList());
+    List<ProjectHighlight> highlights =
+      project.getProjectHighligths().stream()
+        .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive() && d
+          .getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
+        .collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
       projectHighlight.setTypes(
@@ -666,6 +680,62 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+  public void validateProjectCenterMapping(BaseAction action, Long projectID, GlobalUnitProject globalUnitProject) {
+    Project project = projectManager.getProjectById(projectID);
+
+    GlobalUnit loggedCrp = (GlobalUnit) action.getSession().get(APConstants.SESSION_CRP);
+
+
+    Phase phase = this.phaseManager.findCycle(action.getCurrentCycle(), action.getCurrentCycleYear(),
+      globalUnitProject.getGlobalUnit().getId());
+
+
+    ProjectInfo projectInfo = project.getProjecInfoPhase(phase);
+
+    // Load the DB information and adjust it to the structures with which the front end
+    project.setProjectInfo(project.getProjecInfoPhase(phase));
+    if (project.getProjectInfo() == null) {
+      project.setProjectInfo(new ProjectInfo());
+    }
+
+    // Load the center Programs
+    project.setFlagshipValue("");
+    project.setRegionsValue("");
+    List<CrpProgram> programs = new ArrayList<>();
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+      .collect(Collectors.toList())) {
+      programs.add(projectFocuses.getCrpProgram());
+      if (project.getFlagshipValue().isEmpty()) {
+        project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+      } else {
+        project.setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+      }
+    }
+
+    List<CrpProgram> regions = new ArrayList<>();
+
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+      .collect(Collectors.toList())) {
+      regions.add(projectFocuses.getCrpProgram());
+      if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
+        project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+      } else {
+        project.setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+      }
+    }
+
+    project.setFlagships(programs);
+    project.setRegions(regions);
+
+    projectCenterMappingValidator.validate(action, project, false, phase.getId());
+  }
+
   public void validateProjectDeliverables(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -694,13 +764,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
 
-      openA.addAll(deliverables.stream().filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
-        && d.getDeliverableInfo(action.getActualPhase()) != null
-        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()
-        && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-        && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
+          && d.getDeliverableInfo(action.getActualPhase()) != null
+          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
+            .getCurrentCycleYear()
+          && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
     }
 
