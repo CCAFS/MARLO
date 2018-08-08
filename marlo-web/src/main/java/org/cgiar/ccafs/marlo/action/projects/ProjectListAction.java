@@ -42,7 +42,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
-import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -588,14 +587,8 @@ public class ProjectListAction extends BaseAction {
 
     // Skip closed projects for Reporting
     if (this.isPlanningActive()) {
-      // Not include Complete projects wihtout subbmission
-      for (Project project : completedProjects) {
-        int year = this.getCurrentCycleYear();
-        List<Submission> submissions = project
-          .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
-            && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-          .collect(Collectors.toList());
-        if (!submissions.isEmpty()) {
+      if (completedProjects != null) {
+        for (Project project : completedProjects) {
           closedProjects.add(project);
         }
       }

@@ -47,6 +47,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInfo" />
 		</set>
+		<set name="centerProjects" table="projects_info" inverse="true" lazy="true"
+      fetch="select">
+      <key>
+        <column name="liaison_institution_center" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInfo" />
+    </set>
 		<set name="powbSynthesis" table="powb_synthesis" inverse="true"
 			lazy="true" fetch="select">
 			<key>
