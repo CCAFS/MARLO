@@ -387,10 +387,6 @@ public class ProjectCenterMappingAction extends BaseAction {
       if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
         if (project.getProjectInfo().getLiaisonInstitutionCenter().getId() == -1) {
           project.getProjectInfo().setLiaisonInstitutionCenter(null);
-        } else {
-          LiaisonInstitution institution = liaisonInstitutionManager
-            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId());
-          project.getProjectInfo().setLiaisonInstitutionCenter(institution);
         }
       }
 
@@ -427,7 +423,7 @@ public class ProjectCenterMappingAction extends BaseAction {
               programManager.getCrpProgramById(Long.parseLong(programID.trim().replaceAll("[^0-9]", "")));
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
-            projectFocus.setProject(project);
+            projectFocus.setProject(projectDB);
 
             projectFocus.setPhase(sharedPhase);
             if (projectDB.getProjectFocuses().stream()
@@ -460,7 +456,7 @@ public class ProjectCenterMappingAction extends BaseAction {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
-            projectFocus.setProject(project);
+            projectFocus.setProject(projectDB);
             projectFocus.setPhase(sharedPhase);
             if (projectDB.getProjectFocuses().stream()
               .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
