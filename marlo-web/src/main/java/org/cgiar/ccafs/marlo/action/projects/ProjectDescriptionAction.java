@@ -685,11 +685,6 @@ public class ProjectDescriptionAction extends BaseAction {
     // load the flaghsips an regions
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
-    centerPrograms = new ArrayList<>();
-    // The same list (test)
-    centerPrograms.addAll(loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList()));
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
