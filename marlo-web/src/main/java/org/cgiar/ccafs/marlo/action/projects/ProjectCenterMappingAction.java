@@ -387,6 +387,10 @@ public class ProjectCenterMappingAction extends BaseAction {
       if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
         if (project.getProjectInfo().getLiaisonInstitutionCenter().getId() == -1) {
           project.getProjectInfo().setLiaisonInstitutionCenter(null);
+        } else {
+          LiaisonInstitution institution = liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId());
+          project.getProjectInfo().setLiaisonInstitutionCenter(institution);
         }
       }
 
@@ -477,7 +481,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
 
         project.getProjectInfo().setPhase(sharedPhase);
-        project.getProjectInfo().setProject(projectDB);
+        project.getProjectInfo().setProject(project);
         project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
         project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
         project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
