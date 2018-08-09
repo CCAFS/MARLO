@@ -824,9 +824,6 @@ public class CrpAdminManagmentAction extends BaseAction {
             userRole.setUser(userManager.getUser(userRole.getUser().getId()));
             this.notifyNewUserCreated(userRole.getUser());
             // Notifiy user been asigned Program Leader to Flagship
-            /**
-             * TODO UNCOMENT THIS LINE
-             */
             this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
           }
 
