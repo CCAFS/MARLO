@@ -332,7 +332,7 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
   @Override
   public String toString() {
     return "User [id=" + this.getId() + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
-      + ", email=" + email + ", password=" + password + ", cgiarUser=" + cgiarUser + ", autoSave=" + autoSave
+      + ", email=" + email + ", password=" + password + ", cgiarUser=" + cgiarUser + ", Active=" + this.isActive()
       + ", lastLogin=" + lastLogin + "]";
   }
 }
