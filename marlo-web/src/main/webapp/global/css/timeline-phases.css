@@ -141,7 +141,7 @@ div#tl-adnyds {
 .example .frame {
   margin: 0 auto;
   width: 90%;
-  height: 40px;
+  height: 38px;
   /* line-height: 200px; */
   overflow: hidden;
   text-shadow: none;
@@ -158,10 +158,10 @@ div#tl-adnyds {
 
 .example .frame ul li {
   float: left;
-  width: 260px;
+  width: 195px;
   height: 100%;
   margin: 0 4px 0 0;
-  padding: 0px 11px;
+  padding: 0px 12px;
   background: #f3f0f0;
   color: #3a3c47;
   /* text-align: center; */
