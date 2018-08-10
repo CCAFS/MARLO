@@ -77,15 +77,15 @@ public class ManageUsersAction extends BaseAction {
    */
   private boolean addUser() {
     newUser.setModificationJustification("User created in MARLO " + actionName.replace("/", "-"));
-    // Why is this set to false?
-    newUser.setActive(false);
+
     newUser.setAutoSave(true);
     newUser.setId(null);
-
     newUser = userManager.saveUser(newUser);
+
     // If successfully added.
     if (newUser.getId() > 0) {
-
+      newUser.setActive(false);
+      newUser = userManager.saveUser(newUser);
       this.users = new ArrayList<>();
       Map<String, Object> userMap = new HashMap<>();
       userMap.put("id", newUser.getId());
