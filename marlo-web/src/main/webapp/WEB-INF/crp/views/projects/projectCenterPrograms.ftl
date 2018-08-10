@@ -63,14 +63,14 @@
               <div class="col-md-6 ">
                 <h4> Additional Program(s)</h4>
                 [#list (programFlagships)![] as element] 
-                  [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.composedName}" value="${element.id}" editable=true checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput" cssClassLabel="font-normal" /]
+                  [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
               </div>
               <div class="col-md-6 ">
                 <h4> Additional Region(s)</h4>
                 [#list (regionFlagships)![] as element]
-                  [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.composedName}" value="${element.id}" editable=true  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
+                  [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
               </div>
