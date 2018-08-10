@@ -91,7 +91,7 @@ public class ProjectCenterMappingValidator extends BaseValidator {
     Phase phase = phaseManager.getPhaseById(SharedPhase);
 
     if (project.getProjecInfoPhase(phase).getLiaisonInstitutionCenter() != null) {
-      if (project.getProjecInfoPhase(phase).getLiaisonInstitution().getId() == -1) {
+      if (project.getProjecInfoPhase(phase).getLiaisonInstitutionCenter().getId() == -1) {
         action.addMessage(action.getText("project.liaisonInstitutionCenter"));
         action.getInvalidFields().put("input-project.projectInfo.liaisonInstitutionCenter.id",
           InvalidFieldsMessages.EMPTYFIELD);
