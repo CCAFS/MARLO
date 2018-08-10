@@ -59,7 +59,7 @@
               </div>
             </div>
 
-            <div class="form-group row simpleBox">
+            <div class="form-group row simpleBox additionalPrograms">
               <div class="col-md-6 ">
                 <h4> Additional Program(s)</h4>
                 [#list (programFlagships)![] as element] 
