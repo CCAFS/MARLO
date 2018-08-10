@@ -5826,10 +5826,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void loadQualityCheck(Deliverable deliverableBD) {
-
-    if (deliverableBD.getDeliverableQualityChecks() != null) {
-
-      if (deliverableBD.getDeliverableQualityChecks().size() > 0) {
+    List<DeliverableQualityCheck> deliverableQualityChecksDB = deliverableBD.getDeliverableQualityChecks().stream()
+      .filter(q -> q.isActive() && q.getPhase() != null && q.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList());
+    if (deliverableQualityChecksDB != null) {
+      if (deliverableQualityChecksDB.size() > 0) {
         deliverableBD.setQualityCheck(deliverableBD.getDeliverableQualityChecks().stream()
           .filter(q -> q.isActive() && q.getPhase() != null && q.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toSet()).iterator().next());
