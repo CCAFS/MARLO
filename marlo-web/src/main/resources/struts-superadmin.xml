@@ -131,7 +131,17 @@
 		
 		
     <!-- End Partners & Country offices requested -->
-		
+    
+		<action name="deliverablesReplication"
+      class="org.cgiar.ccafs.marlo.action.superadmin.DeliverablesReplicationAction">
+      <interceptor-ref name="superAdminStack" />
+      <result name="input">/WEB-INF/global/views/superadmin/bulkReplication.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">deliverablesReplication</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
 
 	</package>
 </struts>
