@@ -113,6 +113,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getDeliverablesByPhase(long phase) {
+    return deliverableDAO.getDeliverablesByPhase(phase);
+  }
+
+  @Override
   public Deliverable saveDeliverable(Deliverable deliverable) {
 
     return deliverableDAO.save(deliverable);

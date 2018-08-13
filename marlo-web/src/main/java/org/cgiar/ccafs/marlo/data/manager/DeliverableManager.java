@@ -63,6 +63,13 @@ public interface DeliverableManager {
   public Deliverable getDeliverableById(long deliverableID);
 
   /**
+   * This method gets a list of Deliverable that are active by a given phase
+   * 
+   * @return a list from Deliverable null if no exist records
+   */
+  public List<Deliverable> getDeliverablesByPhase(long phase);
+
+  /**
    * This method saves the information of the given deliverable
    * 
    * @param deliverable - is the deliverable object with the new information to be added/updated.
