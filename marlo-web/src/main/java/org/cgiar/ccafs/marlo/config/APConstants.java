@@ -93,6 +93,7 @@ public final class APConstants {
   public static final String PHASES = "crp_phases";
   public static final String ALL_PHASES = "crp_all_phases";
   public static final String AVAILABLES_GLOBAL_TYPES = "availablesGlobalTypes";
+  public static final String CURRENT_PHASE_PARAM = "current_phase";
 
   public static final String PHASES_IMPACT = "crp_phases_impact";
   public static final String CRP_REQUEST = "crp";

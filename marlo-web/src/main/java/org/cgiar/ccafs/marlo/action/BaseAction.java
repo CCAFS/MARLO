@@ -1433,7 +1433,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           phase = allPhases.get(new Long(phaseID));
           return phase;
         } catch (Exception e) {
-          phase = phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+          phase = phaseManager.getPhaseById(this.getCurrentPhaseParam());
         }
 
         if (phase != null) {
@@ -1450,8 +1450,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return phase;
 
       } else {
-        Phase phase =
-          phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+
+        Phase phase = phaseManager.getPhaseById(this.getCurrentPhaseParam());
 
         if (phase != null) {
           this.getSession().put(APConstants.CURRENT_PHASE, phase);
@@ -1462,13 +1462,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
-
-    } catch (
-
-    Exception e) {
+    } catch (Exception e) {
       return new Phase(null, "", -1);
     }
-
 
   }
 
@@ -1504,8 +1500,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         Phase phase = allPhases.get(new Long(phaseID));
         return phase;
       }
-      Phase phase =
-        phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+      Phase phase = phaseManager.getPhaseById(this.getCurrentPhaseParam());
       return phase;
     } catch (Exception e) {
       return new Phase(null, "", -1);
@@ -1513,7 +1508,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
-
 
   /**
    * get all phases per CRP
@@ -1573,14 +1567,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return exist;
   }
 
+
   public String getBasePermission() {
     return basePermission;
   }
 
-
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   /**
    * Get the front end libraries acording to Center o CRP access
@@ -1606,7 +1601,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public List<CenterSubmission> getCapdevSubmissions(long capDevID) {
     CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
 
@@ -1618,12 +1612,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submissions;
   }
 
+
   public List<CrpCategoryEnum> getCategories() {
 
     return Arrays.asList(CrpCategoryEnum.values());
   }
 
   /**
+   * TODO: Delete this method as is not used anymore
    * ************************ CENTER METHOD ******************************
    * Get The phase that extract the crp information.
    * ********************************************************************
@@ -1651,7 +1647,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * ***********************CENTER METHOD***************************************************************
    * This method gets the specific section status from the sectionStatuses array for a CenterDeliverable.
@@ -1678,6 +1673,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1729,7 +1725,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ***********************CENTER METHOD********************
    * This method gets the specific section status from the sectionStatuses array for a Output.
@@ -1758,32 +1753,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  /*
-   * public Phase getActualPhase(Map<String, Object> session, long crpID) {
-   * try {
-   * if (session.containsKey(APConstants.CURRENT_PHASE)) {
-   * return (Phase) session.get(APConstants.CURRENT_PHASE);
-   * } else {
-   * String cyle = "";
-   * int year = 0;
-   * if (Boolean.parseBoolean(session.get(APConstants.CRP_REPORTING_ACTIVE).toString())) {
-   * cyle = APConstants.REPORTING;
-   * year = Integer.parseInt(session.get(APConstants.CRP_REPORTING_YEAR).toString());
-   * } else {
-   * cyle = APConstants.PLANNING;
-   * year = Integer.parseInt(session.get(APConstants.CRP_PLANNING_YEAR).toString());
-   * }
-   * Phase phase = phaseManager.findCycle(cyle, year, crpID);
-   * session.put(APConstants.CURRENT_PHASE, phase);
-   * return phase;
-   * }
-   * } catch (Exception e) {
-   * return new Phase(null, "", -1);
-   * }
-   * }
-   */
-
-
   /**
    * ************************ CENTER METHOD *********************
    * Validate the sections of CapDev *
@@ -1810,6 +1779,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1866,7 +1836,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1893,6 +1862,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.centerSession;
   }
+
 
   public List<GlobalUnit> getCentersList() {
     List<GlobalUnit> centers = new ArrayList<>();
@@ -1935,7 +1905,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // return Calendar.getInstance().get(Calendar.YEAR);
   }
 
-
   public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
@@ -1957,6 +1926,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return clusterOfActivities;
   }
 
+
   public APConfig getConfig() {
     return config;
   }
@@ -1975,7 +1945,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return crpProgramOutcomes;
   }
-
 
   /**
    * Check if the project contributes two or more flagships
@@ -2015,6 +1984,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return globalUnits;
   }
 
+
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
    * current action to catch the crp
@@ -2047,7 +2017,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpID;
   }
-
 
   /**
    * Get the Crp List
@@ -2100,6 +2069,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
+
 
   /**
    * ************************ CENTER METHOD ******************************
@@ -2160,23 +2130,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
-
   public String getCurrentCycle() {
     try {
       if (this.isReportingActive()) {
-        return APConstants.REPORTING;
-      } else {
-        return APConstants.PLANNING;
-      }
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-
-  public String getCurrentCycleParam() {
-    try {
-      if (this.isReportingActiveParam()) {
         return APConstants.REPORTING;
       } else {
         return APConstants.PLANNING;
@@ -2190,17 +2146,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.getActualPhase().getYear();
   }
 
-  public int getCurrentCycleYearParam() {
-    try {
-      if (this.isReportingActiveParam()) {
-        return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
-      } else {
-        return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
-      }
-    } catch (Exception e) {
-      return 0;
-    }
-  }
 
   public GlobalUnit getCurrentGlobalUnit() {
     if (session != null && !session.isEmpty()) {
@@ -2217,6 +2162,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
     return this.currentCrp;
+  }
+
+  private long getCurrentPhaseParam() {
+    try {
+      return new Long(Integer.parseInt(this.getSession().get(APConstants.CURRENT_PHASE_PARAM).toString()));
+    } catch (Exception e) {
+      return new Long(0);
+    }
   }
 
 
