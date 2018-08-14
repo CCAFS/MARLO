@@ -54,7 +54,7 @@ public interface PhaseDAO {
    */
   public List<Phase> findAll();
 
-  public Phase findCycle(String cylce, int year, long crpId);
+  public Phase findCycle(String cylce, int year, boolean upkeep, long crpId);
 
 
   /**

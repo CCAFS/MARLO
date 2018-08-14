@@ -326,8 +326,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locElements = projectDB.getProjectLocations()
-      .stream().filter(c -> c.isActive() && c.getLocElement() != null
+    List<ProjectLocation> locElements = projectDB
+      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
         && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
@@ -480,11 +480,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectHighlight> highlights =
-      project.getProjectHighligths().stream()
-        .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive() && d
-          .getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
-        .collect(Collectors.toList());
+    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+      .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive()
+        && d.getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
+      .collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
       projectHighlight.setTypes(
@@ -687,7 +686,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
     Phase phase = this.phaseManager.findCycle(action.getCurrentCycle(), action.getCurrentCycleYear(),
-      globalUnitProject.getGlobalUnit().getId());
+      action.getActualPhase().getUpkeep(), globalUnitProject.getGlobalUnit().getId());
 
 
     ProjectInfo projectInfo = project.getProjecInfoPhase(phase);
@@ -764,15 +763,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
 
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
-          && d.getDeliverableInfo(action.getActualPhase()) != null
-          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
-            .getCurrentCycleYear()
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      openA.addAll(deliverables.stream().filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
+        && d.getDeliverableInfo(action.getActualPhase()) != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
     }
 

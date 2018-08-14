@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,9 +70,9 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
   }
 
   @Override
-  public Phase findCycle(String cylce, int year, long crpId) {
+  public Phase findCycle(String cylce, int year, boolean upkeep, long crpId) {
     String query = "from " + Phase.class.getName() + " where description='" + cylce + "' and year=" + year
-      + " and global_unit_id=" + crpId;
+      + " and upkeep=" + upkeep + " and global_unit_id=" + crpId;
     List<Phase> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

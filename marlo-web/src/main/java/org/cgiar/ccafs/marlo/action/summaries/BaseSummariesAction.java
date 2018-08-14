@@ -303,7 +303,7 @@ public class BaseSummariesAction extends BaseAction {
     }
     // Get phase
     this.setSelectedPhase(
-      phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), loggedCrp.getId().longValue()));
+      phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false, loggedCrp.getId().longValue()));
 
     // Get current user
     if (this.getCurrentUser() != null) {
