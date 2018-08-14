@@ -3824,10 +3824,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPersmissionSubmit(long projectId) {
-    String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
-      this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
-    boolean permissions = this.securityContext.hasPermission(permission);
-    return permissions;
+    if (!this.getActualPhase().getUpkeep()) {
+      String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
+        this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
+      boolean permissions = this.securityContext.hasPermission(permission);
+      return permissions;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -3890,10 +3894,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPersmissionUnSubmit(long projectId) {
-    String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
-      this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
-    boolean permissions = this.securityContext.hasPermission(permission);
-    return permissions;
+    if (!this.getActualPhase().getUpkeep()) {
+      String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
+        this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
+      boolean permissions = this.securityContext.hasPermission(permission);
+      return permissions;
+    } else {
+      return false;
+    }
+
   }
 
   public boolean hasPersmissionUnSubmitImpact(long programID) {
@@ -5380,15 +5389,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProjectSubmitted(long projectID) {
-    Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions()
-      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
-        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
-    if (submissions.isEmpty()) {
+    if (!this.getActualPhase().getUpkeep()) {
+      Project project = projectManager.getProjectById(projectID);
+      List<Submission> submissions = project
+        .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+          && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        .collect(Collectors.toList());
+      if (submissions.isEmpty()) {
+        return false;
+      }
+      return true;
+    } else {
       return false;
     }
-    return true;
   }
 
   /**
