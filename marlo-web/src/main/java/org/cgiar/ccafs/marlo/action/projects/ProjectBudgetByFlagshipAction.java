@@ -134,9 +134,11 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
 
   public boolean existOnYear(Long focusID, int year) {
 
-    Phase phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year, this.getCrpID());
+    Phase phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year,
+      this.getActualPhase().getUpkeep(), this.getCrpID());
     if (phase == null) {
-      phase = phaseManager.findCycle(APConstants.PLANNING, APConstants.FIRST_YEAR, this.getCrpID());
+      phase = phaseManager.findCycle(APConstants.PLANNING, APConstants.FIRST_YEAR, this.getActualPhase().getUpkeep(),
+        this.getCrpID());
     }
     if (phase != null) {
       List<ProjectFocus> focus =
