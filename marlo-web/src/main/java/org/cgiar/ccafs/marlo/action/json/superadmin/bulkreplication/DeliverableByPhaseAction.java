@@ -56,14 +56,15 @@ public class DeliverableByPhaseAction extends BaseAction {
       List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(phaseID);
 
       if (deliverablesbyPhaseList != null && !deliverablesbyPhaseList.isEmpty()) {
-        deliverablesbyPhaseList.sort((d1, d2) -> d1.getId().compareTo(d2.getId()));
+        // deliverablesbyPhaseList.sort((d1, d2) -> d1.getId().compareTo(d2.getId()));
         // Build the list into a Map
         for (Deliverable deliverable : deliverablesbyPhaseList) {
           try {
-            if (deliverable.getDeliverableInfo(phase) != null) {
+            if (deliverable != null && deliverable.getDeliverableInfo(phase) != null
+              && deliverable.getProject() != null) {
               Map<String, Object> deliverableMap = new HashMap<String, Object>();
               deliverableMap.put("id", deliverable.getId());
-              deliverableMap.put("description", deliverable.getDeliverableInfo().getDescription());
+              deliverableMap.put("title", deliverable.getDeliverableInfo().getTitle());
               deliverableMap.put("project", deliverable.getProject().getId());
               this.deliverablesbyPhase.add(deliverableMap);
             }
