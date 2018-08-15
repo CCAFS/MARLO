@@ -85,7 +85,6 @@ public class PhasesByCrpAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-
   }
 
   public void setGlobalUnitID(long globalUnitID) {

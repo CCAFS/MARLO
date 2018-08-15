@@ -2,7 +2,6 @@ package org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,15 +82,7 @@ public class DeliverableByPhaseAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    // get global Unit id from the parameters
-    String _phaseID = StringUtils.trim(this.getRequest().getParameter(APConstants.PHASE_ID));
 
-    try {
-      phaseID = (_phaseID != null) ? Integer.parseInt(_phaseID) : -1;
-    } catch (NumberFormatException e) {
-      logger.warn("There was an exception trying to convert to int the parameter {}", _phaseID);
-      phaseID = -1;
-    }
   }
 
 
