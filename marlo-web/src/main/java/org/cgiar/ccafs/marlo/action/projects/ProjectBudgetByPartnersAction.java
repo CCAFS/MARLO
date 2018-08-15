@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -78,6 +80,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private GlobalUnitManager crpManager;
   private AuditLogManager auditLogManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   // Variables
   private ProjectBudgetsValidator projectBudgetsValidator;
@@ -95,13 +98,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private Map<String, String> w3bilateralBudgetTypes;// List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
   private int budgetIndex;
+  private GlobalUnit sharedGb;
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, GlobalUnitManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
-    ProjectPartnerManager projectPartnerManager, PhaseManager phaseManager) {
+    ProjectPartnerManager projectPartnerManager, PhaseManager phaseManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -115,6 +120,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectBudgetsValidator = projectBudgetsValidator;
     this.projectPartnerManager = projectPartnerManager;
     this.phaseManager = phaseManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
 
   }
 
@@ -457,6 +463,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   @Override
   public boolean isPPA(Institution institution) {
+
+    GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+
     if (institution == null) {
       return false;
     }
@@ -465,7 +474,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+          .filter(c -> c.getCrp().getId().longValue() == gp.getGlobalUnit().getId().longValue() && c.isActive())
           .collect(Collectors.toList()).size() > 0) {
           return true;
         }
@@ -482,6 +491,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
    * project bilateral co-funded creation popup
    */
   public void loadCofundedInfoList() {
+
+    GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+
     status = new HashMap<>();
     List<AgreementStatusEnum> list = Arrays.asList(AgreementStatusEnum.values());
     for (AgreementStatusEnum agreementStatusEnum : list) {
@@ -493,7 +505,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     liaisonInstitutions = new ArrayList<>();
 
-    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
+    liaisonInstitutions.addAll(gp.getGlobalUnit().getLiaisonInstitutions());
     liaisonInstitutions.addAll(
       liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
 
