@@ -90,7 +90,12 @@
           
            <td class="">
             <span class="hidden">${project?index}</span>
-            ${(project.fundingSourceInfo.endDate)!'Not defined'}
+            [#if (project.fundingSourceInfo.status)?? || project.fundingSourceInfo.status=4]
+            ${(project.fundingSourceInfo.extensionDate)!'Not defined'}
+             [#else]
+             ${(project.fundingSourceInfo.endDate)!'Not defined'}
+            [/#if]
+            
           </td>
           
           [#-- Direct Donor --]

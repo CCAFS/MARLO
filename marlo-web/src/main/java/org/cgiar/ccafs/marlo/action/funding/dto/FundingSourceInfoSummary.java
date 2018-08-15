@@ -54,6 +54,10 @@ public class FundingSourceInfoSummary {
   @Expose
   private Boolean w1w2;
 
+  @Expose
+  private Integer status;
+
+
   public FundingSourceInfoSummary() {
   }
 
@@ -90,6 +94,11 @@ public class FundingSourceInfoSummary {
 
   public Date getStartDate() {
     return startDate;
+  }
+
+
+  public Integer getStatus() {
+    return status;
   }
 
 
@@ -145,6 +154,11 @@ public class FundingSourceInfoSummary {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+
+  public void setStatus(Integer status) {
+    this.status = status;
   }
 
 
