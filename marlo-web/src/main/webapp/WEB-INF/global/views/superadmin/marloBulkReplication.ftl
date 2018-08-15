@@ -29,9 +29,9 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
-        [#-- Cross-Cutting Issues --]
         <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /]</h4>
-        <div class="simpleBox">
+        <div class="borderBox">
+          <div class="loading" style="display:none"></div>
           <div class="form-group row">
             <div class="col-md-4">
               <label for="globalUnitID">Global Unit:</label>
@@ -61,6 +61,7 @@
                 <tbody>
                 </tbody>
               </table>
+              <small><i> Found: <span class="count">0</span></i></small>
             </div>
           </div>
           

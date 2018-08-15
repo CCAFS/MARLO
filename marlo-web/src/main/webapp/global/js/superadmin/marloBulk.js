@@ -1,13 +1,17 @@
+var $globalUnitSelect, $phasesSelect, $deliverablesList;
 $(document).ready(init);
 
 function init() {
+  $globalUnitSelect = $('#globalUnitID');
+  $phasesSelect = $('#phaseID');
+  $deliverablesList = $('#deliverables-checkbox table tbody');
   // Events
   attachEvents();
 }
 
 function attachEvents() {
-  $('#globalUnitID').on('change', updatePhases);
-  $('#phaseID').on('change', updateDeliverables);
+  $globalUnitSelect.on('change', updatePhases);
+  $phasesSelect.on('change', updateDeliverables);
 
   $('#toggleSelectAll').on('change', function() {
     $('.deliverableCheck').prop("checked", this.checked);
@@ -16,7 +20,6 @@ function attachEvents() {
 
 function updatePhases() {
   var globalUnitID = this.value;
-  var $phasesSelect = $('#phaseID')
 
   if(globalUnitID == "-1") {
     return;
@@ -27,19 +30,27 @@ function updatePhases() {
       data: {
         globalUnitID: globalUnitID
       },
-      success: function(data) {
+      beforeSend: function() {
+        $('.loading').fadeIn();
         $phasesSelect.empty();
+        $deliverablesList.empty();
+        $('.count').text(0);
+      },
+      success: function(data) {
+
         $phasesSelect.addOption('-1', 'Select an option...');
         $.each(data.phasesbyGlobalUnit, function(i,e) {
           $phasesSelect.addOption(e.id, e.name + ' ' + e.year);
         });
+      },
+      complete: function() {
+        $('.loading').fadeOut();
       }
   });
 }
 
 function updateDeliverables() {
   var phaseID = this.value;
-  var $deliverablesList = $('#deliverables-checkbox table tbody');
   if(phaseID == "-1") {
     return;
   }
@@ -49,9 +60,13 @@ function updateDeliverables() {
       data: {
         phaseID: phaseID
       },
-      success: function(data) {
-        console.log(data);
+      beforeSend: function() {
+        $('.loading').fadeIn();
         $deliverablesList.empty();
+
+      },
+      success: function(data) {
+        $('.count').text((data.deliverablesbyPhase).length);
         $.each(data.deliverablesbyPhase, function(i,e) {
           var $checkmarkRow = $('.check-template tr').clone(true).removeAttr('id');
 
@@ -64,6 +79,9 @@ function updateDeliverables() {
           $deliverablesList.append($checkmarkRow);
 
         });
+      },
+      complete: function() {
+        $('.loading').fadeOut();
       }
   });
 }
