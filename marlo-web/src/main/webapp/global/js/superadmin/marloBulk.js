@@ -8,6 +8,10 @@ function init() {
 function attachEvents() {
   $('#globalUnitID').on('change', updatePhases);
   $('#phaseID').on('change', updateDeliverables);
+
+  $('#toggleSelectAll').on('change', function() {
+    $('.deliverableCheck').prop("checked", this.checked);
+  });
 }
 
 function updatePhases() {
@@ -35,7 +39,7 @@ function updatePhases() {
 
 function updateDeliverables() {
   var phaseID = this.value;
-  var $deliverablesList = $('#deliverables-checkbox');
+  var $deliverablesList = $('#deliverables-checkbox table tbody');
   if(phaseID == "-1") {
     return;
   }
@@ -49,15 +53,16 @@ function updateDeliverables() {
         console.log(data);
         $deliverablesList.empty();
         $.each(data.deliverablesbyPhase, function(i,e) {
-          var $checkmark = $('#check-template').parent().clone(true);
+          var $checkmarkRow = $('.check-template tr').clone(true).removeAttr('id');
 
-          $checkmark.find('input').val(e.id);
-          $checkmark.find('.labelText').text(e.title);
-          $deliverablesList.append($checkmark).append("<br>");
+          $checkmarkRow.find('input').val(e.id);
+          $checkmarkRow.find('.id').text(e.id);
+          $checkmarkRow.find('.labelText').text('D' + e.id + ': ' + e.title + '');
 
-          // $deliverablesList.append('<li> <input type="checkbox" name="deliverables[]" value="' + e.id + '" />D' +
-          // e.id
-          // + ': ' + e.title + ' </li>')
+          console.log($checkmarkRow);
+
+          $deliverablesList.append($checkmarkRow);
+
         });
       }
   });

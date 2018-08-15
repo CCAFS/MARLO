@@ -49,11 +49,18 @@
           </div>
           <hr />
           <div class="form-group">
-            <h4>Deliverables</h4>
+            
+            <label for="toggleSelectAll" class="pull-right"><input type="checkbox" name="" id="toggleSelectAll" checked="checked"/> Select/Unselect All</label>
             <div id="deliverables-checkbox">
-              <ul>
-                
-              </ul>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Deliverables</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
             </div>
           </div>
           
@@ -76,11 +83,12 @@
 
 
 
-
 [#-- Check Template --]
-<div class="hide">
-  [@customForm.checkmark id="check-template" label="title" name="deliverables" cssClass="" cssClassLabel="font-normal" /]
-</div>
+<table class="check-template" style="display:none">
+  <tr>
+    <td>[@customForm.checkmark id="" label="{{ labelText}}" name="deliverables" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
+  </tr>
+</table>
 
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
