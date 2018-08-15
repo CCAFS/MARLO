@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -101,6 +103,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private LiaisonUserManager liaisonUserManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   // Front-end
   private HistoryComparator historyComparator;
@@ -134,7 +137,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     HistoryComparator historyComparator, ProjectInfoManager projectInfoManagerManager,
-    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
+    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -152,6 +156,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.locationTypeManager = locationManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
 
@@ -549,6 +554,8 @@ public class ProjectDescriptionAction extends BaseAction {
         // DB version
         this.setDraft(false);
 
+        GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectInfo() == null) {
@@ -574,7 +581,7 @@ public class ProjectDescriptionAction extends BaseAction {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+            && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
           if (project.getFlagshipValue().isEmpty()) {
@@ -590,7 +597,7 @@ public class ProjectDescriptionAction extends BaseAction {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
             && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+            && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
           if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
