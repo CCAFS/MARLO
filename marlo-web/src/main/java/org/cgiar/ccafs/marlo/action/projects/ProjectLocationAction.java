@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
@@ -88,6 +90,7 @@ public class ProjectLocationAction extends BaseAction {
   private final ProjectLocationManager projectLocationManager;
   private final ProjectManager projectManager;
   private ProjectInfoManager projectInfoManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -108,7 +111,8 @@ public class ProjectLocationAction extends BaseAction {
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
     ProjectLocationManager projectLocationManager, LocGeopositionManager locGeopositionManager,
     AuditLogManager auditLogManager, ProjectLocationValidator locationValidator, ProjectInfoManager projectInfoManager,
-    ProjectLocationElementTypeManager projectLocationElementTypeManager, FundingSourceManager fundingSourceManager) {
+    ProjectLocationElementTypeManager projectLocationElementTypeManager, FundingSourceManager fundingSourceManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -121,6 +125,7 @@ public class ProjectLocationAction extends BaseAction {
     this.locationValidator = locationValidator;
     this.projectLocationElementTypeManager = projectLocationElementTypeManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
 
@@ -536,7 +541,9 @@ public class ProjectLocationAction extends BaseAction {
     }
     this.locationLevels();
     if (project != null) {
+      GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
       Path path = this.getAutoSaveFilePath();
+
 
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
@@ -592,7 +599,7 @@ public class ProjectLocationAction extends BaseAction {
               co.setLocElement(locElementManager.getLocElementById(co.getLocElement().getId()));
               List<FundingSource> sources =
                 fundingSourceManager.searchFundingSourcesByLocElement(projectID, co.getLocElement().getId(),
-                  this.getCurrentCycleYear(), loggedCrp.getId(), this.getActualPhase().getId());
+                  this.getCurrentCycleYear(), gp.getGlobalUnit().getId(), this.getActualPhase().getId());
               for (FundingSource fundingSource : sources) {
                 fundingSource.getFundingSourceInfo(this.getActualPhase());
               }
@@ -600,7 +607,7 @@ public class ProjectLocationAction extends BaseAction {
             } else {
               co.setLocElementType(locElementTypeManager.getLocElementTypeById(co.getLocElementType().getId()));
               List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElementType(projectID,
-                co.getLocElementType().getId(), this.getCurrentCycleYear(), loggedCrp.getId());
+                co.getLocElementType().getId(), this.getCurrentCycleYear(), gp.getGlobalUnit().getId());
               for (FundingSource fundingSource : sources) {
                 fundingSource.getFundingSourceInfo(this.getActualPhase());
               }
@@ -614,10 +621,11 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
-                .filter(
-                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
-                .collect(Collectors.toList()).size() > 0)
+              .filter(
+                c -> c.isActive() && c.getProjectBudgets().stream()
+                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
+                    && fp.getProject().getId().longValue() == projectID)
+                  .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
             }
@@ -632,7 +640,7 @@ public class ProjectLocationAction extends BaseAction {
 
               List<FundingSource> sources =
                 fundingSourceManager.searchFundingSourcesByLocElement(projectID, co.getLocElement().getId(),
-                  this.getCurrentCycleYear(), loggedCrp.getId(), this.getActualPhase().getId());
+                  this.getCurrentCycleYear(), gp.getGlobalUnit().getId(), this.getActualPhase().getId());
               for (FundingSource fundingSource : sources) {
                 fundingSource.getFundingSourceInfo(this.getActualPhase());
               }
@@ -649,10 +657,11 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
-                .filter(
-                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
-                .collect(Collectors.toList()).size() > 0)
+              .filter(
+                c -> c.isActive() && c.getProjectBudgets().stream()
+                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
+                    && fp.getProject().getId().longValue() == projectID)
+                  .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
             }
@@ -906,12 +915,14 @@ public class ProjectLocationAction extends BaseAction {
     hashElements.addAll(locElements);
     locElements = new ArrayList<>(hashElements);
 
+    GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(projectID);
+
     for (LocElement locElement : hashElements) {
       CountryFundingSources countryFundingSources = new CountryFundingSources();
       countryFundingSources.setLocElement(locElement);
 
       List<FundingSource> sources = fundingSourceManager.searchFundingSourcesByLocElement(projectID, locElement.getId(),
-        this.getCurrentCycleYear(), loggedCrp.getId(), this.getActualPhase().getId());
+        this.getCurrentCycleYear(), gp.getGlobalUnit().getId(), this.getActualPhase().getId());
       for (FundingSource fundingSourceElement : sources) {
         fundingSourceElement.setFundingSourceInfo(fundingSourceElement.getFundingSourceInfo(this.getActualPhase()));
       }
@@ -1273,8 +1284,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions = new ArrayList<>(this
-      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    List<ProjectLocation> regions = new ArrayList<>(this.getDBLocations()
+      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()
@@ -1365,8 +1376,8 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
-    regions = new ArrayList<>(this
-      .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+    regions = new ArrayList<>(this.getDBLocations()
+      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()

@@ -51,6 +51,7 @@ public class ApplicationContextConfig {
   public static final String SPRING_PROFILE_USERTEST = "test";
   public static final String SPRING_PROFILE_PRODUCTION = "pro";
   public static final String SPRING_PROFILE_FAST_START = "fast";
+  public static final String SPRING_PROFILE_API = "api";
 
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -101,6 +102,12 @@ public class ApplicationContextConfig {
       if (activeProfiles.contains(SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(SPRING_PROFILE_USERTEST)) {
         String message = "You have misconfigured your application! "
           + "It should not run with both the 'test' and 'dev' profiles at the same time.";
+        log.error(message);
+        throw new RuntimeException(message);
+      }
+      if (activeProfiles.contains(SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(SPRING_PROFILE_API)) {
+        String message = "You have misconfigured your application! "
+          + "It should not run with both the 'api' and 'dev' profiles at the same time.";
         log.error(message);
         throw new RuntimeException(message);
       }
