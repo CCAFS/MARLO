@@ -19,9 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -46,29 +48,38 @@ public class DeliverablesReplicationAction extends BaseAction {
 
   private static Logger logger = LoggerFactory.getLogger(DeliverablesReplicationAction.class);
 
-  // managers
+  // Managers
+  private GlobalUnitManager globalUnitManager;
   private DeliverableManager deliverableManager;
   private PhaseManager phaseManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
   // Variables
   private List<Deliverable> deliverablesbyPhaseList;
+  private List<GlobalUnit> crps;
   private Phase phase;
 
   @Inject
-  public DeliverablesReplicationAction(APConfig config, PhaseManager phaseManager,
+  public DeliverablesReplicationAction(APConfig config, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+    this.globalUnitManager = globalUnitManager;
+  }
+
+  public List<GlobalUnit> getCrps() {
+    return crps;
   }
 
   @Override
   public void prepare() throws Exception {
     // TODO: get deliverables from front-end
-    long phaseID = 1;
-    List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(phaseID);
-    phase = phaseManager.getPhaseById(phaseID);
+    // long phaseID = 1;
+    // List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(phaseID);
+    // phase = phaseManager.getPhaseById(phaseID);
+    super.prepare();
+    crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo() && c.isActive()).collect(Collectors.toList());
   }
 
   @Override
@@ -107,6 +118,10 @@ public class DeliverablesReplicationAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setCrps(List<GlobalUnit> crps) {
+    this.crps = crps;
   }
 
 

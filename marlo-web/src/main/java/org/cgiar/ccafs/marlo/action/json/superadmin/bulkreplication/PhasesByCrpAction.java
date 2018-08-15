@@ -2,7 +2,6 @@ package org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +40,7 @@ public class PhasesByCrpAction extends BaseAction {
     super(config);
     this.phaseManager = phaseManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -74,23 +73,23 @@ public class PhasesByCrpAction extends BaseAction {
   }
 
 
+  public long getGlobalUnitID() {
+    return globalUnitID;
+  }
+
   public List<Map<String, Object>> getPhasesbyGlobalUnit() {
     return phasesbyGlobalUnit;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
-    // get global Unit id from the parameters
-    String _globalUnitID = StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_ID));
 
-    try {
-      globalUnitID = (_globalUnitID != null) ? Integer.parseInt(_globalUnitID) : -1;
-    } catch (NumberFormatException e) {
-      logger.warn("There was an exception trying to convert to int the parameter {}", _globalUnitID);
-      globalUnitID = -1;
-    }
+  }
 
+  public void setGlobalUnitID(long globalUnitID) {
+    this.globalUnitID = globalUnitID;
   }
 
 
