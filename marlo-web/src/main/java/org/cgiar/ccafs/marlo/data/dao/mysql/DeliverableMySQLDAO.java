@@ -76,7 +76,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   public List<Deliverable> getDeliverablesByPhase(long phase) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");
-    query.append("di.id as id ");
+    query.append("d.id as id ");
     query.append("FROM ");
     query.append("deliverables AS d ");
     query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");

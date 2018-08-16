@@ -35,14 +35,14 @@
           <div class="form-group row">
             <div class="col-md-4">
               <label for="globalUnitID">Global Unit:</label>
-              <select name="globalUnitID" id="globalUnitID">
+              <select name="selectedGlobalUnitID" id="globalUnitID">
                 <option value="-1">Select an option...</option>
                 [#list (crps)![] as globalUnit]<option value="${globalUnit.id}">${globalUnit.acronym}</option>[/#list]
               </select>
             </div>
             <div class="col-md-4">
               <label for="phaseID">Phase:</label>
-              <select name="phaseID" id="phaseID">
+              <select name="selectedPhaseID" id="phaseID">
                 <option value="">Select an option...</option>
               </select>
             </div>
@@ -87,7 +87,7 @@
 [#-- Check Template --]
 <table class="check-template" style="display:none">
   <tr>
-    <td>[@customForm.checkmark id="" label="{{ labelText}}" name="deliverables" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
+    <td>[@customForm.checkmark id="" label="{{ labelText}}" name="deliverablesbyPhaseList" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
   </tr>
 </table>
 

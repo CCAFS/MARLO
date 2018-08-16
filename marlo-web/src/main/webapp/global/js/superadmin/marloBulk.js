@@ -28,7 +28,7 @@ function updatePhases() {
   $.ajax({
       url: baseURL + "/getPhasesByGlobalUnit.do",
       data: {
-        globalUnitID: globalUnitID
+        selectedGlobalUnitID: globalUnitID
       },
       beforeSend: function() {
         $('.loading').fadeIn();
@@ -58,7 +58,7 @@ function updateDeliverables() {
   $.ajax({
       url: baseURL + "/getDeliverablesByPhase.do",
       data: {
-        phaseID: phaseID
+        selectedPhaseID: phaseID
       },
       beforeSend: function() {
         $('.loading').fadeIn();

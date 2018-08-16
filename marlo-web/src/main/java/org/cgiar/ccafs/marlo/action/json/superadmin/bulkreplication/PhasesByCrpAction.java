@@ -27,13 +27,10 @@ public class PhasesByCrpAction extends BaseAction {
 
   // Parameters
   private List<Map<String, Object>> phasesbyGlobalUnit;
-
-  private long globalUnitID;
-
+  private long selectedGlobalUnitID;
 
   // Managers
   private PhaseManager phaseManager;
-
 
   @Inject
   public PhasesByCrpAction(APConfig config, PhaseManager phaseManager) {
@@ -45,11 +42,12 @@ public class PhasesByCrpAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     phasesbyGlobalUnit = new ArrayList<Map<String, Object>>();
-    if (globalUnitID != -1) {
+    if (selectedGlobalUnitID != -1) {
 
       // Get phases by Global Unit
       List<Phase> phasesbyGlobalUnitList = phaseManager.findAll().stream()
-        .filter(p -> p.getCrp().getId().longValue() == globalUnitID && p.isActive()).collect(Collectors.toList());
+        .filter(p -> p.getCrp().getId().longValue() == selectedGlobalUnitID && p.isActive())
+        .collect(Collectors.toList());
 
       if (phasesbyGlobalUnitList != null && !phasesbyGlobalUnitList.isEmpty()) {
         phasesbyGlobalUnitList.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
@@ -73,12 +71,13 @@ public class PhasesByCrpAction extends BaseAction {
   }
 
 
-  public long getGlobalUnitID() {
-    return globalUnitID;
-  }
-
   public List<Map<String, Object>> getPhasesbyGlobalUnit() {
     return phasesbyGlobalUnit;
+  }
+
+
+  public long getSelectedGlobalUnitID() {
+    return selectedGlobalUnitID;
   }
 
 
@@ -87,13 +86,14 @@ public class PhasesByCrpAction extends BaseAction {
 
   }
 
-  public void setGlobalUnitID(long globalUnitID) {
-    this.globalUnitID = globalUnitID;
-  }
-
 
   public void setPhasesbyGlobalUnit(List<Map<String, Object>> phasesbyGlobalUnit) {
     this.phasesbyGlobalUnit = phasesbyGlobalUnit;
+  }
+
+
+  public void setSelectedGlobalUnitID(long selectedGlobalUnitID) {
+    this.selectedGlobalUnitID = selectedGlobalUnitID;
   }
 
 
