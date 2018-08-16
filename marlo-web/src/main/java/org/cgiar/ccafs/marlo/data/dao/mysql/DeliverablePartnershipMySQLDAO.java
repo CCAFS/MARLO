@@ -105,6 +105,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     query.append("WHERE ");
     query.append("dp.deliverable_id = " + deliverableID);
     query.append(" and dp.id_phase = " + phase);
+    query.append(" and dp.is_active = 1");
     query.append(" and dp.partner_type = '" + partnerType + "'");
     query.append(" and dp.project_partner_id = " + projectPartnerId);
     if (projectPartnerPersonId != null) {
