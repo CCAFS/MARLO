@@ -55,64 +55,92 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
   // Variables
-  private List<Deliverable> deliverablesbyPhaseList;
+  private String deliverablesbyPhaseList;
   private List<GlobalUnit> crps;
-  private Phase phase;
+  private long selectedPhaseID;
+
 
   @Inject
   public DeliverablesReplicationAction(APConfig config, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager) {
+    DeliverableFundingSourceManager deliverableFundingSourceManager, DeliverableManager deliverableManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.globalUnitManager = globalUnitManager;
+    this.deliverableManager = deliverableManager;
   }
+
 
   public List<GlobalUnit> getCrps() {
     return crps;
   }
 
+  public String getDeliverablesbyPhaseList() {
+    return deliverablesbyPhaseList;
+  }
+
+  public long getSelectedPhaseID() {
+    return selectedPhaseID;
+  }
+
+
   @Override
   public void prepare() throws Exception {
-    // TODO: get deliverables from front-end
-    // long phaseID = 1;
-    // List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(phaseID);
-    // phase = phaseManager.getPhaseById(phaseID);
     super.prepare();
     crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo() && c.isActive()).collect(Collectors.toList());
   }
 
+
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
+      if (deliverablesbyPhaseList != null && !deliverablesbyPhaseList.isEmpty()) {
+        logger.debug("Start replication for phase: " + selectedPhaseID);
+        Phase phase = phaseManager.getPhaseById(selectedPhaseID);
 
-      // Load relations for auditlog
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_INFO);
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
-      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
-        relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
-        relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
-        relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
-        relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
-      }
-      for (Deliverable deliverable : deliverablesbyPhaseList) {
+        for (String id : deliverablesbyPhaseList.trim().split(",")) {
+          logger.debug("Replicating deliverable: " + id);
 
-        // Deliverable Funding sources
-        for (DeliverableFundingSource deliverableFundingSource : deliverable.getDeliverableFundingSources().stream()
-          .filter(df -> df.isActive()).collect(Collectors.toList())) {
-          deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+          Deliverable deliverable = deliverableManager.getDeliverableById(new Long(id.trim()));
+          if (deliverable.getDeliverableInfo(phase) != null) {
+            // Load relations for auditlog
+            List<String> relationsName = new ArrayList<>();
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_INFO);
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
+            if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
+              relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+              relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
+              relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
+            }
+            List<DeliverableFundingSource> deliverableFundingSources = deliverable.getDeliverableFundingSources()
+              .stream().filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(phase))
+              .collect(Collectors.toList());
+            // Deliverable Funding sources
+            if (deliverableFundingSources != null && !deliverableFundingSources.isEmpty()) {
+              for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
+                logger
+                  .debug("Saving deliverable funding source: " + deliverableFundingSource.getFundingSource().getId());
+                deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+              }
+            }
+
+            // Deliverable info
+            deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, phase);
+
+          }
+
         }
-        // Deliverable info
-        deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, phase);
+      } else {
+        logger.debug("No deliverable selected");
       }
       return SUCCESS;
     } else {
@@ -120,8 +148,18 @@ public class DeliverablesReplicationAction extends BaseAction {
     }
   }
 
+
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
+  }
+
+
+  public void setDeliverablesbyPhaseList(String deliverablesbyPhaseList) {
+    this.deliverablesbyPhaseList = deliverablesbyPhaseList;
+  }
+
+  public void setSelectedPhaseID(long selectedPhaseID) {
+    this.selectedPhaseID = selectedPhaseID;
   }
 
 

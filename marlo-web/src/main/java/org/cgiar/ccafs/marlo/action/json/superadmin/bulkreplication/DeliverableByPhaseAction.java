@@ -28,7 +28,7 @@ public class DeliverableByPhaseAction extends BaseAction {
 
   // Parameters
   private List<Map<String, Object>> deliverablesbyPhase;
-  private long phaseID;
+  private long selectedPhaseID;
 
   // Managers
   private DeliverableManager deliverableManager;
@@ -48,18 +48,17 @@ public class DeliverableByPhaseAction extends BaseAction {
   public String execute() throws Exception {
     deliverablesbyPhase = new ArrayList<Map<String, Object>>();
 
-    if (phaseID != -1) {
-      Phase phase = phaseManager.getPhaseById(phaseID);
+    if (selectedPhaseID != -1) {
+      Phase phase = phaseManager.getPhaseById(selectedPhaseID);
       // Get deliverables by Phase
-      List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(phaseID);
+      List<Deliverable> deliverablesbyPhaseList = deliverableManager.getDeliverablesByPhase(selectedPhaseID);
 
       if (deliverablesbyPhaseList != null && !deliverablesbyPhaseList.isEmpty()) {
-        // deliverablesbyPhaseList.sort((d1, d2) -> d1.getId().compareTo(d2.getId()));
+        deliverablesbyPhaseList.sort((d1, d2) -> d1.getId().compareTo(d2.getId()));
         // Build the list into a Map
         for (Deliverable deliverable : deliverablesbyPhaseList) {
           try {
-            if (deliverable != null && deliverable.getDeliverableInfo(phase) != null
-              && deliverable.getProject() != null) {
+            if (deliverable != null && deliverable.getDeliverableInfo(phase) != null) {
               Map<String, Object> deliverableMap = new HashMap<String, Object>();
               deliverableMap.put("id", deliverable.getId());
               deliverableMap.put("title", deliverable.getDeliverableInfo().getTitle());
@@ -76,8 +75,14 @@ public class DeliverableByPhaseAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public List<Map<String, Object>> getDeliverablesbyPhase() {
     return deliverablesbyPhase;
+  }
+
+
+  public long getSelectedPhaseID() {
+    return selectedPhaseID;
   }
 
 
@@ -89,6 +94,11 @@ public class DeliverableByPhaseAction extends BaseAction {
 
   public void setDeliverablesbyPhase(List<Map<String, Object>> deliverablesbyPhase) {
     this.deliverablesbyPhase = deliverablesbyPhase;
+  }
+
+
+  public void setSelectedPhaseID(long selectedPhaseID) {
+    this.selectedPhaseID = selectedPhaseID;
   }
 
 
