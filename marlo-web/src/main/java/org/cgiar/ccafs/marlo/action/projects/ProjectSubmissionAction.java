@@ -329,7 +329,7 @@ public class ProjectSubmissionAction extends BaseAction {
         reportingSummaryAction.setProject(project);
         reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
         reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
-          reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
+          reportingSummaryAction.getSelectedYear(), this.getActualPhase().getUpkeep(), loggedCrp.getId().longValue()));
         reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
         reportingSummaryAction.loadProvider(this.getSession());
         reportingSummaryAction.execute();

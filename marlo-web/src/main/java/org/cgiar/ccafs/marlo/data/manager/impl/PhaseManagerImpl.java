@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -62,9 +62,9 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
-  public Phase findCycle(String cylce, int year, long crpId) {
+  public Phase findCycle(String cylce, int year, boolean upkeep, long crpId) {
 
-    return phaseDAO.findCycle(cylce, year, crpId);
+    return phaseDAO.findCycle(cylce, year, upkeep, crpId);
   }
 
   @Override

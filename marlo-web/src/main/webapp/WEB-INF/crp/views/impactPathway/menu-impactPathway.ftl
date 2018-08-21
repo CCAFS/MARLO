@@ -87,8 +87,7 @@
                       &nbsp; <span class="glyphicon glyphicon-chevron-right"></span>
                   [/#if]
                   [@s.text name=item.name/]
-                  [#-- Draft Tag --]
-                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
+                  
                 </a>
               </li>
               [#-- Set current Item --]

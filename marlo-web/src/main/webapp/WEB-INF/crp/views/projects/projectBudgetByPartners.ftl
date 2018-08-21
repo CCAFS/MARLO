@@ -97,8 +97,7 @@
                           </tr>
                         </table>
                       </div>
-                    </div>
-                    
+                    </div>                   
                     [#if projectPPAPartners?has_content]
                       [#list projectPPAPartners as projectPartner]
                        [#if action.existOnYear(projectPartner.id,year)]

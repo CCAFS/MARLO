@@ -277,8 +277,13 @@ public class ProjectActivitiesAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+
+        // GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+
+        List<Activity> activities = project.getActivities().stream()
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+        project.setProjectActivities(new ArrayList<Activity>(activities));
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {

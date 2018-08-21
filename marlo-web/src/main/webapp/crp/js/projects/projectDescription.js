@@ -138,6 +138,10 @@ $(document).ready(function() {
         }
     });
   });
+  
+  $('.additionalPrograms input[type="checkbox"]').on('change', function() {
+    console.log($(this).attr('id'));
+  });
 
   // No regional programmatic focus
   $('#projectNoRegional').on('change', function() {

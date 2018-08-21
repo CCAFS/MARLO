@@ -5,7 +5,7 @@
      
   ]/]
   
-  [#if ((globalUnitType == 2)!false)]
+  [#if ((globalUnitType == 4)!false)]
     [#assign superAdminMenu = superAdminMenu + [
       { 'slug': 'admin',     'name': 'menu.admin',    'namespace': '/centerAdmin',     'action': '${(centerSession)!}/coordination', 'icon': 'cog',   'visible': action.canAccessSuperAdmin(),  'active': true }
     ]/]
