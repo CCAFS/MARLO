@@ -70,6 +70,7 @@
 
 [#assign sectionsForChecking = [] /]
 
+
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
   <p>[@s.text name="projects.menu.project" /]<br />
@@ -77,7 +78,7 @@
     [#-- Global Unit Acronym --]
     ${(project.projectInfo.phase.crp.acronym)!}
     [#-- Project Type --]
-    [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]
+    [#if (project.projectInfo.administrative)!false][@s.text name="project.Management" /] [#else] [@s.text name="project.Research" /] [/#if]
     </small>
   </p> 
   <ul>
