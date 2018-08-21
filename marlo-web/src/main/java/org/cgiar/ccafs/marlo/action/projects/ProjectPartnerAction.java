@@ -1440,16 +1440,23 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
+
+      boolean changedProjectInfo = false;
       if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
         && project.getProjectInfo().getPartnerOverall() != null) {
         projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
+        changedProjectInfo = true;
       }
 
       if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-
+        projectDB.getProjectInfo().setNewPartnershipsPlanned(project.getProjectInfo().getNewPartnershipsPlanned());
+        changedProjectInfo = true;
+      }
+      if (changedProjectInfo) {
         projectInfoManager.saveProjectInfo(projectDB.getProjectInfo());
         projectDB.setProjectInfo(project.getProjectInfo());
       }
+
       /**
        * The following is required because we need to update something on the @Project if we want a row
        * created in the auditlog table.
