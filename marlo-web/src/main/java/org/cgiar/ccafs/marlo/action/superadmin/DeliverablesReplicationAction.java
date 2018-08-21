@@ -198,171 +198,165 @@ public class DeliverablesReplicationAction extends BaseAction {
           deliverable = deliverableManager.getDeliverableById(new Long(id.trim()));
           if (deliverable.getDeliverableInfo(phase) != null) {
 
-            try {
-
-              // Load relations for auditlog
-              List<String> relationsName = new ArrayList<>();
-              relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
-              relationsName.add(APConstants.PROJECT_DELIVERABLE_INFO);
-              relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
-              relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
-              if (this.isReportingActive() || (this.isPlanningActive() && phase.getUpkeep())) {
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
-                relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
-                relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
-                relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
-                relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
-              }
-
-              // Save Deliverable Funding sources
-              List<DeliverableFundingSource> deliverableFundingSources = deliverable.getDeliverableFundingSources()
-                .stream().filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(phase))
-                .collect(Collectors.toList());
-
-              if (deliverableFundingSources != null && !deliverableFundingSources.isEmpty()) {
-                for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
-                  deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
-                }
-              }
-
-              // Save DelivetablePartnerships
-              // Responsibles
-              DeliverablePartnership partnershipResponsibleDB =
-                this.getDeliverablePartnershipResponsibleDB(deliverable);
-              if (partnershipResponsibleDB != null) {
-                deliverablePartnershipManager.saveDeliverablePartnership(partnershipResponsibleDB);
-              }
-              // Others
-              List<DeliverablePartnership> deliverablePartnershipOthers =
-                deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(), phase.getId(),
-                  DeliverablePartnershipTypeEnum.OTHER.getValue());
-              if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
-                for (DeliverablePartnership deliverablePartnershipOther : deliverablePartnershipOthers) {
-                  if (deliverablePartnershipOther.getProjectPartner() != null) {
-                    deliverablePartnershipManager.saveDeliverablePartnership(deliverablePartnershipOther);
-                  }
-                }
-              }
-
-              // Reporting and upkeep
-              if (phase.isReporting() || (!phase.isReporting() && phase.getUpkeep())) {
-
-                // Deliverable Quality check
-                DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
-                  .getDeliverableQualityCheckByDeliverable(deliverable.getId(), phase.getId());
-                if (deliverableQualityCheck != null) {
-                  deliverableQualityCheckManager.saveDeliverableQualityCheck(deliverableQualityCheck);
-                }
-
-                // Deliverable Dissemination
-                List<DeliverableDissemination> deliverableDisseminations = deliverable.getDeliverableDisseminations()
-                  .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
-                  if (deliverableDisseminations.size() > 1) {
-                    logger.warn("There is more than 1 dissemination for deliverable: " + deliverable.getId()
-                      + " and phase: " + phase.getId());
-                  }
-                  deliverableDisseminationManager.saveDeliverableDissemination(deliverableDisseminations.get(0));
-                }
-
-                // Deliverable Metadata elements
-                List<DeliverableMetadataElement> deliverableMetadataElements =
-                  deliverable.getDeliverableMetadataElements().stream()
-                    .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (deliverableMetadataElements != null && !deliverableMetadataElements.isEmpty()) {
-                  for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElements) {
-                    deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
-                  }
-                }
-
-                // Deliverable Crps
-                List<DeliverableCrp> deliverableCrps = deliverable.getDeliverableCrps().stream()
-                  .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (deliverableCrps != null && !deliverableCrps.isEmpty()) {
-                  for (DeliverableCrp deliverableCrp : deliverableCrps) {
-                    deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
-                  }
-                }
-
-                // Deliverable Publication Metadata
-                List<DeliverablePublicationMetadata> deliverablePublicationMetadata =
-                  deliverable.getDeliverablePublicationMetadatas().stream()
-                    .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (deliverablePublicationMetadata != null && !deliverablePublicationMetadata.isEmpty()) {
-                  if (deliverablePublicationMetadata.size() > 1) {
-                    logger.warn("There is more than 1 publication metadata for deliverable: " + deliverable.getId()
-                      + " and phase: " + phase.getId());
-                  }
-                  deliverablePublicationMetadataManager
-                    .saveDeliverablePublicationMetadata(deliverablePublicationMetadata.get(0));
-                }
-
-                // Deliverable Users
-                List<DeliverableUser> deliverableUsers = deliverable.getDeliverableUsers().stream()
-                  .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (deliverableUsers != null && !deliverableUsers.isEmpty()) {
-                  for (DeliverableUser deliverableUser : deliverableUsers) {
-                    deliverableUserManager.saveDeliverableUser(deliverableUser);
-                  }
-                }
-
-                // Deliverable Intellectual asset
-                List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-                  .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (intellectualAssets != null && !intellectualAssets.isEmpty()) {
-                  if (intellectualAssets.size() > 1) {
-                    logger.warn("There is more than 1 intellectual assets for deliverable: " + deliverable.getId()
-                      + " and phase: " + phase.getId());
-                  }
-                  deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAssets.get(0));
-                }
-
-                // Deliverable Participant
-                List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
-                  .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-                if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
-                  if (deliverableParticipants.size() > 1) {
-                    logger.warn("There is more than 1 deliverable participant for deliverable: " + deliverable.getId()
-                      + " and phase: " + phase.getId());
-                  }
-                  deliverableParticipantManager.saveDeliverableParticipant(deliverableParticipants.get(0));
-                  // Locations
-                  List<DeliverableParticipantLocation> deliverableParticipantLocations = deliverableParticipants.get(0)
-                    .getDeliverableParticipantLocations().stream().collect(Collectors.toList());
-                  if (deliverableParticipantLocations != null && !deliverableParticipantLocations.isEmpty()) {
-                    for (DeliverableParticipantLocation deliverableParticipantLocation : deliverableParticipantLocations) {
-                      deliverableParticipantLocationManager
-                        .saveDeliverableParticipantLocation(deliverableParticipantLocation);
-                    }
-                  }
-                }
-
-              }
-
-              // Deliverable info
-              deliverable.getDeliverableInfo(phase).setModificationJustification(this.getJustification());
-              deliverableInfoManager.saveDeliverableInfo(deliverable.getDeliverableInfo(phase));
-
-              // Deliverable
-              this.setModificationJustification(deliverable);
-              deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, phase);
-
-              // Delete autosave
-              Path path = this.getAutoSaveFilePath();
-
-              if (path.toFile().exists()) {
-                path.toFile().delete();
-              }
-
-            } catch (Exception e) {
-              logger.debug("Error Replicating deliverable: " + id);
-              e.printStackTrace();
+            // Load relations for auditlog
+            List<String> relationsName = new ArrayList<>();
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_INFO);
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
+            relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
+            if (this.isReportingActive() || (this.isPlanningActive() && phase.getUpkeep())) {
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
+              relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
+              relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+              relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
+              relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
             }
+
+            // Save Deliverable Funding sources
+            List<DeliverableFundingSource> deliverableFundingSources = deliverable.getDeliverableFundingSources()
+              .stream().filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(phase))
+              .collect(Collectors.toList());
+
+            if (deliverableFundingSources != null && !deliverableFundingSources.isEmpty()) {
+              for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
+                deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+              }
+            }
+
+            // Save DelivetablePartnerships
+            // Responsible
+            DeliverablePartnership partnershipResponsibleDB = this.getDeliverablePartnershipResponsibleDB(deliverable);
+            if (partnershipResponsibleDB != null) {
+              deliverablePartnershipManager.saveDeliverablePartnership(partnershipResponsibleDB);
+            }
+            // Others
+            List<DeliverablePartnership> deliverablePartnershipOthers =
+              deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(), phase.getId(),
+                DeliverablePartnershipTypeEnum.OTHER.getValue());
+            if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
+              for (DeliverablePartnership deliverablePartnershipOther : deliverablePartnershipOthers) {
+                if (deliverablePartnershipOther.getProjectPartner() != null) {
+                  deliverablePartnershipManager.saveDeliverablePartnership(deliverablePartnershipOther);
+                }
+              }
+            }
+
+            // Reporting and upkeep
+            if (phase.isReporting() || (!phase.isReporting() && phase.getUpkeep())) {
+
+              // Deliverable Quality check
+              DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
+                .getDeliverableQualityCheckByDeliverable(deliverable.getId(), phase.getId());
+              if (deliverableQualityCheck != null) {
+                deliverableQualityCheckManager.saveDeliverableQualityCheck(deliverableQualityCheck);
+              }
+
+              // Deliverable Dissemination
+              List<DeliverableDissemination> deliverableDisseminations = deliverable.getDeliverableDisseminations()
+                .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+                if (deliverableDisseminations.size() > 1) {
+                  logger.warn("There is more than 1 dissemination for deliverable: " + deliverable.getId()
+                    + " and phase: " + phase.getId());
+                }
+                deliverableDisseminationManager.saveDeliverableDissemination(deliverableDisseminations.get(0));
+              }
+
+              // Deliverable Metadata elements
+              List<DeliverableMetadataElement> deliverableMetadataElements =
+                deliverable.getDeliverableMetadataElements().stream()
+                  .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (deliverableMetadataElements != null && !deliverableMetadataElements.isEmpty()) {
+                for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElements) {
+                  deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
+                }
+              }
+
+              // Deliverable Crps
+              List<DeliverableCrp> deliverableCrps = deliverable.getDeliverableCrps().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (deliverableCrps != null && !deliverableCrps.isEmpty()) {
+                for (DeliverableCrp deliverableCrp : deliverableCrps) {
+                  deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
+                }
+              }
+
+              // Deliverable Publication Metadata
+              List<DeliverablePublicationMetadata> deliverablePublicationMetadata =
+                deliverable.getDeliverablePublicationMetadatas().stream()
+                  .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (deliverablePublicationMetadata != null && !deliverablePublicationMetadata.isEmpty()) {
+                if (deliverablePublicationMetadata.size() > 1) {
+                  logger.warn("There is more than 1 publication metadata for deliverable: " + deliverable.getId()
+                    + " and phase: " + phase.getId());
+                }
+                deliverablePublicationMetadataManager
+                  .saveDeliverablePublicationMetadata(deliverablePublicationMetadata.get(0));
+              }
+
+              // Deliverable Users
+              List<DeliverableUser> deliverableUsers = deliverable.getDeliverableUsers().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (deliverableUsers != null && !deliverableUsers.isEmpty()) {
+                for (DeliverableUser deliverableUser : deliverableUsers) {
+                  deliverableUserManager.saveDeliverableUser(deliverableUser);
+                }
+              }
+
+              // Deliverable Intellectual asset
+              List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+                .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (intellectualAssets != null && !intellectualAssets.isEmpty()) {
+                if (intellectualAssets.size() > 1) {
+                  logger.warn("There is more than 1 intellectual assets for deliverable: " + deliverable.getId()
+                    + " and phase: " + phase.getId());
+                }
+                deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAssets.get(0));
+              }
+
+              // Deliverable Participant
+              List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+              if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
+                if (deliverableParticipants.size() > 1) {
+                  logger.warn("There is more than 1 deliverable participant for deliverable: " + deliverable.getId()
+                    + " and phase: " + phase.getId());
+                }
+                deliverableParticipantManager.saveDeliverableParticipant(deliverableParticipants.get(0));
+                // Locations
+                List<DeliverableParticipantLocation> deliverableParticipantLocations = deliverableParticipants.get(0)
+                  .getDeliverableParticipantLocations().stream().collect(Collectors.toList());
+                if (deliverableParticipantLocations != null && !deliverableParticipantLocations.isEmpty()) {
+                  for (DeliverableParticipantLocation deliverableParticipantLocation : deliverableParticipantLocations) {
+                    deliverableParticipantLocationManager
+                      .saveDeliverableParticipantLocation(deliverableParticipantLocation);
+                  }
+                }
+              }
+
+            }
+
+            // Deliverable info
+            deliverable.getDeliverableInfo(phase).setModificationJustification(this.getJustification());
+            deliverableInfoManager.saveDeliverableInfo(deliverable.getDeliverableInfo(phase));
+
+            // Deliverable
+            this.setModificationJustification(deliverable);
+            deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, phase);
+
+            // Delete autosave
+            Path path = this.getAutoSaveFilePath();
+
+            if (path.toFile().exists()) {
+              path.toFile().delete();
+            }
+
+
           }
 
         }
