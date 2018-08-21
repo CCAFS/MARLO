@@ -155,6 +155,10 @@
       </ul>
       [#if editable ]
         [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
+      
+        [#if !fundingSources?has_content]
+          <div class="note"> [@s.text name="deliverable.fundingSourceListEmpty" /]  </div>
+        [/#if]
       [/#if] 
     </div>
   </div>

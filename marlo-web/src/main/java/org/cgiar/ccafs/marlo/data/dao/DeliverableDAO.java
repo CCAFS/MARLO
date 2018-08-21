@@ -55,6 +55,12 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> findAll();
 
+  /**
+   * This method gets a list of Deliverable that are active by a given phase
+   * 
+   * @return a list from Deliverable null if no exist records
+   */
+  public List<Deliverable> getDeliverablesByPhase(long phase);
 
   /**
    * This method saves the information of the given deliverable
