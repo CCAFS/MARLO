@@ -3026,7 +3026,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<Project> avaliableProjects = new ArrayList<>();
     if (projects != null) {
       for (Project project : projects) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getPhase().equals(this.getActualPhase())) {
+        if (project.getProjecInfoPhase(this.getActualPhase()) != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getPhase().equals(this.getActualPhase())) {
           if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
             .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
             || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
