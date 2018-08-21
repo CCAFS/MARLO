@@ -113,6 +113,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getDeliverablesByPhase(long phase) {
+    return deliverableDAO.getDeliverablesByPhase(phase);
+  }
+
+  @Override
   public Deliverable saveDeliverable(Deliverable deliverable) {
 
     return deliverableDAO.save(deliverable);
@@ -123,7 +128,6 @@ public class DeliverableManagerImpl implements DeliverableManager {
     Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
 
     boolean isPublication = resultDeliverable.getIsPublication() != null && resultDeliverable.getIsPublication();
-
     if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.PLANNING)
       && deliverable.getDeliverableInfo().getPhase().getNext() != null && !isPublication) {
       this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),

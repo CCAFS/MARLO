@@ -522,6 +522,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setType(update.getType());
     this.setNewPartnershipsPlanned(update.getNewPartnershipsPlanned());
     this.setLiaisonInstitutionCenter(update.getLiaisonInstitutionCenter());
+    this.setProjectEditLeader(update.getProjectEditLeader());
   }
 
 
