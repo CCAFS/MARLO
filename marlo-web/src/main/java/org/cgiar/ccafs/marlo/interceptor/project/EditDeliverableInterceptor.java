@@ -19,11 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -58,14 +61,17 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private final DeliverableManager deliverableManager;
   private final ProjectManager projectManager;
   private final GlobalUnitManager crpManager;
+  private GlobalUnit loggedCrp;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
-    PhaseManager phaseManager, GlobalUnitManager crpManager) {
+    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.projectManager = projectManager;
     this.deliverableManager = deliverableManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   public Boolean canEditDeliverable(Deliverable deliverable, Phase phase) {
@@ -128,9 +134,35 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
 
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
+    Project project = projectManager.getProjectById(deliverable.getProject().getId());
+
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
+
     if (deliverable != null && deliverable.isActive()) {
+
+      if (!globalUnitProject.isOrigin()) {
+        Phase ph = baseAction.getActualPhase();
+        GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+        List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
+          .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
+            && c.getYear() == baseAction.getActualPhase().getYear())
+          .collect(Collectors.toList());
+        if (phases.size() > 0) {
+          baseAction.setPhaseID(phases.get(0).getId());
+          project.getProjecInfoPhase(phases.get(0));
+        }
+
+        phase = baseAction.getActualPhase();
+        phase = phaseManager.getPhaseById(phase.getId());
+      }
+
 
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
 
@@ -276,6 +308,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         // If the user is not asking for edition privileges we don't need to validate them.
 
       }
+
+      // Check if is a Shared project (Crp to Center)
+      if (!globalUnitProject.isOrigin()) {
+        canEdit = false;
+      }
+
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
         baseAction.setCanEditPhase(false);
@@ -287,7 +325,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
       baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
-      baseAction.setCanSwitchProject(canSwitchProject);
+      baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
 
     } else {
       throw new NullPointerException();

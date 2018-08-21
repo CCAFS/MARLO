@@ -214,8 +214,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     // q.append("AND ( ( fsb.id IS NULL OR ( fsb.id_phase = " + phaseID + " ) ) ");
     q.append(" AND (" + year + " <= YEAR(fsi.end_date) OR " + year + " <= YEAR(fsi.extended_date) ) ) ");
     q.append(") AS sub ");
-    q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 ");
-    q.append("WHERE pb.id IS NULL OR (pb.year= " + year + " AND pb.id_phase=" + phaseID + ") ");
+    q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 " + "AND pb.YEAR ="
+      + year + " AND pb.id_phase =" + phaseID + " ");
     q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
     q.append("ORDER BY sub.id, sub.name");
 

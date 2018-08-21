@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -108,6 +109,7 @@ public class ProjectCenterMappingAction extends BaseAction {
     this.projectInfoManager = projectInfoManager;
     this.validator = validator;
     this.phaseManager = phaseManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   private Path getAutoSaveFilePath() {
@@ -196,6 +198,10 @@ public class ProjectCenterMappingAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
+    Phase phase = this.getActualPhase();
+    sharedPhaseID = phase.getId();
+
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
@@ -252,8 +258,18 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.getProjectInfo()
-          .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
+        project.setProjectInfo(projectDb.getProjectInfo());
+        project.getProjectInfo().setProjectEditLeader(projectDb.getProjecInfoPhase(phase).isProjectEditLeader());
+        project.getProjectInfo().setAdministrative(projectDb.getProjecInfoPhase(phase).getAdministrative());
+        project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(phase).getPhase());
+
+        // load LiaisonUser info
+        if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
+          project.getProjectInfo().setLiaisonInstitutionCenter(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
+        } else {
+          project.getProjecInfoPhase(phase).setLiaisonInstitutionCenter(null);
+        }
 
         // load fps value
         List<CrpProgram> programs = new ArrayList<>();
@@ -298,8 +314,9 @@ public class ProjectCenterMappingAction extends BaseAction {
 
       } else {
         this.setDraft(false);
-        Phase phase = this.getActualPhase();
-        sharedPhaseID = phase.getId();
+
+        GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(phase));
         if (project.getProjectInfo() == null) {
@@ -313,7 +330,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+            && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
           if (project.getFlagshipValue().isEmpty()) {
@@ -329,7 +346,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
             && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+            && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
           if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
@@ -377,20 +394,20 @@ public class ProjectCenterMappingAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
       Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
 
-      projectDB.setProjectInfo(projectDB.getProjecInfoPhase(sharedPhase));
       // Load basic info project to be saved
+      projectDB.setProjectInfo(projectDB.getProjecInfoPhase(sharedPhase));
+
       project.setCreateDate(projectDB.getCreateDate());
       project.getProjectInfo().setPresetDate(projectDB.getProjectInfo().getPresetDate());
 
+      project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
 
-      // no liaison institution selected
+
       if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
         if (project.getProjectInfo().getLiaisonInstitutionCenter().getId() == -1) {
           project.getProjectInfo().setLiaisonInstitutionCenter(null);
         }
       }
-
-      project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
 
 
       // Saving the flaghsips
@@ -471,10 +488,11 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
 
-        // Saving project and add relations we want to save on the history
-
         List<String> relationsName = new ArrayList<>();
         relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+        relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
+        relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
+        relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
         project.getProjectInfo().setPhase(sharedPhase);
         project.getProjectInfo().setProject(project);
@@ -488,13 +506,18 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         projectInfoManager.saveProjectInfo(project.getProjectInfo());
 
+        // Saving project and add relations we want to save on the history
 
-        /**
-         * The following is required because we need to update something on the @Project if we want a row created in the
-         * auditlog table.
-         */
-        this.setModificationJustification(project);
-        projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, sharedPhase);
+        // List<String> relationsName = new ArrayList<>();
+        // relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+        // relationsName.add(APConstants.PROJECT_INFO_RELATION);
+        // /**
+        // * The following is required because we need to update something on the @Project if we want a row created in
+        // the
+        // * auditlog table.
+        // */
+        // this.setModificationJustification(project);
+        // projectManager.saveProject(project, this.getActionName(), relationsName, sharedPhase);
 
         Path path = this.getAutoSaveFilePath();
         // delete the draft file if exists

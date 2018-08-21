@@ -292,7 +292,8 @@ public class ProjectListAction extends BaseAction {
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
 
-      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+        this.getActualPhase().getUpkeep(), this.getCrpID());
 
       this.addProjectOnPhase(phase, project, liaisonInstitution, liaisonUser, type, admin);
 
@@ -323,7 +324,8 @@ public class ProjectListAction extends BaseAction {
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
-      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+        this.getActualPhase().getUpkeep(), this.getCrpID());
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModificationJustification("New expected Project created");
       projectInfo.setType(type);
@@ -463,7 +465,7 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
 
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
-        globalUnitProjectOrigin.getGlobalUnit().getId());
+        this.getActualPhase().getUpkeep(), globalUnitProjectOrigin.getGlobalUnit().getId());
 
 
       project.getProjecInfoPhase(phase);

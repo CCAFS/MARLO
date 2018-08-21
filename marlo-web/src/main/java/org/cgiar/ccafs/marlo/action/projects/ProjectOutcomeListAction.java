@@ -20,12 +20,15 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -59,6 +62,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private SectionStatusManager sectionStatusManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   // Front-end
   private long projectID;
@@ -67,17 +71,19 @@ public class ProjectOutcomeListAction extends BaseAction {
   private Project project;
   private long outcomeId;
   private List<CrpProgramOutcome> outcomes;
+  private long sharedPhaseID;
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
-    ProjectOutcomeManager projectOutcomeManager) {
+    ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
     this.crpManager = crpManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
 
   }
 
@@ -143,47 +149,56 @@ public class ProjectOutcomeListAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
 
     }
-    project = projectManager.getProjectById(projectID);
-    project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-    List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
+    Phase phase = this.getActualPhase();
+    sharedPhaseID = phase.getId();
+
+
+    project = projectManager.getProjectById(projectID);
+    project.setProjectInfo(project.getProjecInfoPhase(phase));
+    List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+
+
+    GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
 
     project.setOutcomes(projectOutcomes);
+
+    System.out.println(project.getOutcomes().size());
+
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
-        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
       .collect(Collectors.toList())) {
 
-      outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> outcomesT = new ArrayList<>(projectFocuses.getCrpProgram().getCrpProgramOutcomes()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+
+      outcomes.addAll(outcomesT);
     }
 
     List<CrpProgram> programs = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
       .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-        && c.getPhase().equals(this.getActualPhase()))
+        && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()) && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
     }
     project.setFlagships(programs);
 
-    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+
+    System.out.println(project.getOutcomes().size());
+    String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
-  }
-
-
-  @Override
-  public String save() {
-    // TODO Auto-generated method stub
-    return super.save();
   }
 
 

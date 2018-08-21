@@ -300,7 +300,8 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+    phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+      this.getActualPhase().getUpkeep(), this.getCrpID());
     phasesProjects = new ArrayList<Project>();
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       phasesProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));

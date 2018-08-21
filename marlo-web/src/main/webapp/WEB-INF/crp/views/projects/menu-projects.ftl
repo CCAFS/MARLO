@@ -1,9 +1,7 @@
 [#ftl]
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
-
 [#assign isGlobalUnitProject = (centerGlobalUnit && isCenterProject) || (!centerGlobalUnit && isCrpProject) /]
-
 [#if !((project.projectInfo.isProjectEditLeader())!false)]
   [#assign menus= [
     { 'title': 'General Information', 'show': true,
@@ -32,10 +30,10 @@
     },
     { 'title': 'Outcomes', 'show': isCrpProject,
       'items': [
-      { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
+      { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && ((!project.projectInfo.administrative)!false) , "showCheck": isGlobalUnitProject},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject },
-      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !reportingActive , "showCheck": isGlobalUnitProject },
+      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingActive , "showCheck": isGlobalUnitProject },
       { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject }
       ]
     },
@@ -64,11 +62,11 @@
   ]/]
 [/#if]
 
-
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
 [#-- assign completed = (action.isCompleteProject(projectID))!false /--]
 [#assign canUnSubmit = ((action.hasPersmissionUnSubmit(projectID))!false)/]
+
 
 [#assign sectionsForChecking = [] /]
 
@@ -89,7 +87,9 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
+            [#if (item.showCheck)!true]
             [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+            [/#if]
             [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if (item.showCheck)!true] ${submitStatus?string('submitted','toSubmit')} [/#if] ${(item.active)?string('enabled','disabled')}">
