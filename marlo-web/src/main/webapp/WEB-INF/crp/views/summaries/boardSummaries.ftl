@@ -138,7 +138,7 @@
       "namespace": "/projects",
       "action": "${crpSession}/DeliverablesReportingSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Reporting" ]
+      "cycles": [ "Reporting", "Upkeep" ]
     }
   ]},
   [#-- BUDGET REPORTS --]
@@ -267,30 +267,23 @@
     [@s.form  target="_blank" action="${report.action}"  method="GET" namespace="${report.namespace}" cssClass=""]
       [#-- Parameters --]
       <div class="form-group row">
+        [#assign reportPhases = (action.getPhasesByCycles(report.cycles))![] ]
         [#-- Cycles (Planning/Reporting) --]
-        [#if report.cycles??]
-          [#if report.cycles?size > 1]
+        [#if reportPhases??]
+          [#if reportPhases?size > 1]
           <div class="col-md-4">
             <label for="">Cycle:</label>
             <select name="cycle" id="">
-              [#list report.cycles as cycle ]
-              <option value="${cycle}" [#if (actualPhase.description == cycle)!false]selected[/#if]>${cycle}</option>
+              [#list reportPhases as phase ]
+              <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
               [/#list]  
             </select>
           </div>
           [#else]
-            <input type="hidden" name="cycle" value="${report.cycles[0]}" />
+            <input type="hidden" name="cycle" value="${(reportPhases[0])!}" />
           [/#if]
         [/#if]
-        [#-- Years --]
-        <div class="col-md-4">
-          <label for="">Year:</label>
-          <select name="year" id="">
-            [#list years as year ]
-            <option value="${year}" [#if (actualPhase.year == year?number)!false]selected[/#if]>${year}</option>
-            [/#list]  
-          </select>
-        </div>
+        
         [#-- Formats (PDF/Excel) --]
         [#if report.formats??]
           [#if report.formats?size > 1]
