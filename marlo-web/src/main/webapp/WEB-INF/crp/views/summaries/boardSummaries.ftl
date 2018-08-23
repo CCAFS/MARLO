@@ -273,7 +273,7 @@
           [#if reportPhases?size > 1]
           <div class="col-md-4">
             <label for="">Cycle:</label>
-            <select name="cycle" id="">
+            <select name="phaseID" id="">
               [#list reportPhases as phase ]
               <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
               [/#list]  
