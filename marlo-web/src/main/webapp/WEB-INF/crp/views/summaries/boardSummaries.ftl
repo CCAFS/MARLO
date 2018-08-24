@@ -270,7 +270,7 @@
         [#assign reportPhases = (action.getPhasesByCycles(report.cycles))![] ]
         [#-- Cycles (Planning/Reporting) --]
         [#if reportPhases??]
-          [#if reportPhases?size > 1]
+         
           <div class="col-md-4">
             <label for="">Cycle:</label>
             <select name="phaseID" id="">
@@ -279,9 +279,7 @@
               [/#list]  
             </select>
           </div>
-          [#else]
-            <input type="hidden" name="cycle" value="${(reportPhases[0])!}" />
-          [/#if]
+         
         [/#if]
         
         [#-- Formats (PDF/Excel) --]
