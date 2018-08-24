@@ -14,8 +14,7 @@
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
   {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-  {"label":"innovationsList", "nameSpace":"/projects", "action":"${(crpSession)!}/innovations" ,"param":"projectID=${projectID}"},
-  {"label":"innovationInformation", "nameSpace":"/projects", "action":""}
+  {"label":"innovationsList", "nameSpace":"/projects", "action":""}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
