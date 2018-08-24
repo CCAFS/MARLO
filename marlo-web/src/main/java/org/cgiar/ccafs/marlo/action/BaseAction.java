@@ -2720,9 +2720,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .collect(Collectors.toList());
     for (int i = 0; i < phases.size(); i++) {
       for (int j = 0; j < reportCycles.size(); j++) {
-        System.out.println("phases " + phases.get(i).getDescription() + "  report " + reportCycles.get(j));
         if (phases.get(i).getDescription().equalsIgnoreCase(reportCycles.get(j))) {
-          System.out.println("entro");
           phasesFilter.add(phases.get(i));
         }
       }
