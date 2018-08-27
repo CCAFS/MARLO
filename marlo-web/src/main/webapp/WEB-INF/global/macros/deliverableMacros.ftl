@@ -461,11 +461,11 @@
   </div>
 [/#macro]
 
-[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true ]
-  <div class="form-group ">
+[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
+  <div class="form-group">
     [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
-  <div class="form-group ">
+  <div class="form-group">
     [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
@@ -484,7 +484,6 @@
       [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
     </div>
   </div>  
-  <div class="form-group ">
     [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="form-group row">
