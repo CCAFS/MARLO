@@ -39,21 +39,10 @@ public class ProjectListByPhase extends BaseSummariesAction {
   private List<Map<String, String>> projects;
 
 
-  private List<Project> allProjects;
-
-
-  private GlobalUnitManager crpManager;
-
-
-  private PhaseManager phaseManager;
-
-
   @Inject
   public ProjectListByPhase(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager) {
     super(config, crpManager, phaseManager, projectManager);
-    this.crpManager = crpManager;
-    this.phaseManager = phaseManager;
 
   }
 
@@ -61,7 +50,6 @@ public class ProjectListByPhase extends BaseSummariesAction {
   @Override
   public String execute() throws Exception {
     projects = new ArrayList<Map<String, String>>();
-    System.out.println("entro a excecute project list");
 
     if (this.getSelectedPhase() != null && this.getSelectedPhase().getProjectPhases().size() > 0) {
       // Status of projects

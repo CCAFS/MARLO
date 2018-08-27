@@ -105,6 +105,7 @@ public class BaseSummariesAction extends BaseAction {
       if (extentionDate != null) {
         extentionYear = this.getIntYearFromDate(extentionDate);
       }
+
       if (startYear <= this.getSelectedYear()
         && (endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
           .parseInt(FundingStatusEnum.Ongoing.getStatusId())
