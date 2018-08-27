@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
@@ -135,7 +136,10 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusteKeyOutput.getKeyOutputOutcomes()) {
             CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
             crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusteKeyOutputAdd);
-            crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
+            CrpProgramOutcome crpProgramOutcome =
+              crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+            crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpProgramOutcomeDAO
+              .getCrpProgramOutcome(crpProgramOutcome.getComposeID(), crpClusterOfActivityAdd.getPhase()));
             crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
           }
         }
@@ -282,7 +286,11 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
               CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
               crpClusterKeyOutputOutcomeAdd.setContribution(crpClusterKeyOutputOutcome.getContribution());
               crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusterKeyOutputAdd);
-              crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
+              // get outcome of the current phase
+              CrpProgramOutcome crpProgramOutcome =
+                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+              crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpProgramOutcomeDAO
+                .getCrpProgramOutcome(crpProgramOutcome.getComposeID(), crpClusterOfActivityPrev.getPhase()));
               crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
             }
           }
@@ -301,8 +309,10 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
             if (crpClusterKeyOutputOutcome != null && crpClusterKeyOutputOutcome.getCrpProgramOutcome() != null
               && crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId() != null) {
-              crpClusterKeyOutputOutcome.setCrpProgramOutcome(
-                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId()));
+              CrpProgramOutcome crpProgramOutcome =
+                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+              crpClusterKeyOutputOutcome.setCrpProgramOutcome(crpProgramOutcomeDAO
+                .getCrpProgramOutcome(crpProgramOutcome.getComposeID(), crpClusterOfActivityPrev.getPhase()));
             } else {
               crpClusterKeyOutputOutcome.setCrpProgramOutcome(null);
             }
