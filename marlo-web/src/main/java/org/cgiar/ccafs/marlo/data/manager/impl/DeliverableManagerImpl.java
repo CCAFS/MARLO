@@ -160,18 +160,28 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
     for (DeliverableInfo deliverableInfo : deliverablesInfo) {
       deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+
       if (deliverableInfo.getCrpClusterKeyOutput() != null
         && deliverableInfo.getCrpClusterKeyOutput().getId() != null) {
+
         CrpClusterKeyOutput crpClusterKeyOutput =
           crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
           crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
-        List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
-          .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
-          .collect(Collectors.toList());
-        if (!clusterKeyOutputs.isEmpty()) {
-          deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+        if (crpClusterOfActivity != null) {
+          List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+            .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
+            .collect(Collectors.toList());
+          if (!clusterKeyOutputs.isEmpty()) {
+            deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+          } else {
+            deliverableInfo.setCrpClusterKeyOutput(null);
+          }
+        } else {
+          deliverableInfo.setCrpClusterKeyOutput(null);
         }
+
       }
 
       deliverableInfo.setPhase(phase);
