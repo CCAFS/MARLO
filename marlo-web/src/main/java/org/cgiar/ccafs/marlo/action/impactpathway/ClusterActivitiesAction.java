@@ -751,10 +751,7 @@ public class ClusterActivitiesAction extends BaseAction {
       for (CrpClusterOfActivity crpClusterOfActivity : selectedProgram.getCrpClusterOfActivities().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
         if (!clusterofActivities.contains(crpClusterOfActivity)) {
-          // if (crpClusterOfActivity.getCrpMilestones().isEmpty() &&
-          // crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
           crpClusterOfActivityManager.deleteCrpClusterOfActivity(crpClusterOfActivity.getId());
-          // }
         }
       }
       /*
@@ -763,13 +760,13 @@ public class ClusterActivitiesAction extends BaseAction {
 
       for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
         CrpClusterOfActivity db = null;
+
         if (crpClusterOfActivity.getId() == null) {
           db = new CrpClusterOfActivity();
-
         } else {
           db = crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-
         }
+
         db.setPhase(this.getActualPhase());
         db.setCrpProgram(selectedProgram);
         db.setIdentifier(crpClusterOfActivity.getIdentifier());
@@ -871,18 +868,15 @@ public class ClusterActivitiesAction extends BaseAction {
         CrpClusterKeyOutput crpClusterKeyOutputPrev = null;
         if (crpClusterOfActivity.getKeyOutputs() != null) {
           for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
+
             if (crpClusterKeyOutput.getId() == null) {
               crpClusterKeyOutputPrev = new CrpClusterKeyOutput();
               crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
-              crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
-
-
             } else {
               crpClusterKeyOutputPrev =
                 crpClusterKeyOutputManager.getCrpClusterKeyOutputById(crpClusterKeyOutput.getId());
-
-
             }
+
             crpClusterKeyOutputPrev.setContribution(crpClusterKeyOutput.getContribution());
             crpClusterKeyOutputPrev.setKeyOutput(crpClusterKeyOutput.getKeyOutput());
             crpClusterKeyOutputPrev.setComposeID(crpClusterKeyOutput.getComposeID());
