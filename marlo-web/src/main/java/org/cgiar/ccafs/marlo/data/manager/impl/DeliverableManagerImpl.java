@@ -146,29 +146,6 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return resultDeliverable;
   }
 
-  @Override
-  public Deliverable saveDeliverableKeyOutput(Deliverable deliverable, String section, List<String> relationsName,
-    Phase phase) {
-    Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
-
-    boolean isPublication = resultDeliverable.getIsPublication() != null && resultDeliverable.getIsPublication();
-    if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.PLANNING)
-      && deliverable.getDeliverableInfo().getPhase().getNext() != null && !isPublication) {
-      this.saveDeliverablePhaseKeyOutput(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
-        deliverable);
-    }
-    if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (deliverable.getDeliverableInfo().getPhase().getNext() != null
-        && deliverable.getDeliverableInfo().getPhase().getNext().getNext() != null && !isPublication) {
-        Phase upkeepPhase = deliverable.getDeliverableInfo().getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveDeliverablePhaseKeyOutput(upkeepPhase, deliverable.getId(), deliverable);
-        }
-      }
-    }
-
-    return resultDeliverable;
-  }
 
   public void saveDeliverablePhase(Phase next, long deliverableID, Deliverable deliverable) {
     Phase phase = phaseDAO.find(next.getId());
@@ -218,51 +195,4 @@ public class DeliverableManagerImpl implements DeliverableManager {
     }
   }
 
-  public void saveDeliverablePhaseKeyOutput(Phase next, long deliverableID, Deliverable deliverable) {
-    Phase phase = phaseDAO.find(next.getId());
-
-    List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
-      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
-      .collect(Collectors.toList());
-
-    if (deliverablesInfo == null || deliverablesInfo.isEmpty()) {
-      deliverablesInfo = new ArrayList<>();
-      deliverablesInfo.add(new DeliverableInfo());
-    }
-
-    for (DeliverableInfo deliverableInfo : deliverablesInfo) {
-      deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
-
-      if (deliverable.getDeliverableInfo().getCrpClusterKeyOutput() != null
-        && deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId() != null) {
-
-        CrpClusterKeyOutput crpClusterKeyOutput =
-          crpClusterKeyOutputDAO.find(deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getId());
-
-        CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
-          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
-        if (crpClusterOfActivity != null) {
-          List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
-            .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
-            .collect(Collectors.toList());
-          if (!clusterKeyOutputs.isEmpty()) {
-            deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
-          } else {
-            deliverableInfo.setCrpClusterKeyOutput(null);
-          }
-        } else {
-          deliverableInfo.setCrpClusterKeyOutput(null);
-        }
-
-      }
-
-      deliverableInfo.setPhase(phase);
-      deliverableInfoDAO.save(deliverableInfo);
-    }
-
-
-    if (phase.getNext() != null) {
-      this.saveDeliverablePhaseKeyOutput(phase.getNext(), deliverableID, deliverable);
-    }
-  }
 }
