@@ -54,20 +54,23 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
       this.getProjectExpectedStudyInstitutionById(projectExpectedStudyInstitutionId);
     Phase currentPhase = projectExpectedStudyInstitution.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteProjectExpectedStudyInstitutionPhase(upkeepPhase,
-            projectExpectedStudyInstitution.getProjectExpectedStudy().getId(), projectExpectedStudyInstitution);
-        }
-      }
-    } else {
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (currentPhase.getNext() != null) {
         this.deleteProjectExpectedStudyInstitutionPhase(currentPhase.getNext(),
           projectExpectedStudyInstitution.getProjectExpectedStudy().getId(), projectExpectedStudyInstitution);
       }
     }
+
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deleteProjectExpectedStudyInstitutionPhase(upkeepPhase,
+    // projectExpectedStudyInstitution.getProjectExpectedStudy().getId(), projectExpectedStudyInstitution);
+    // }
+    // }
+    // }
 
 
     projectExpectedStudyInstitutionDAO.deleteProjectExpectedStudyInstitution(projectExpectedStudyInstitutionId);
@@ -145,21 +148,23 @@ public class ProjectExpectedStudyInstitutionManagerImpl implements ProjectExpect
     ProjectExpectedStudyInstitution institution =
       projectExpectedStudyInstitutionDAO.save(projectExpectedStudyInstitution);
     Phase currentPhase = institution.getPhase();
-
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveExpectedStudyInstitutionPhase(upkeepPhase, institution.getProjectExpectedStudy().getId(),
-            projectExpectedStudyInstitution);
-        }
-      }
-    } else {
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (currentPhase.getNext() != null) {
         this.saveExpectedStudyInstitutionPhase(currentPhase.getNext(), institution.getProjectExpectedStudy().getId(),
           projectExpectedStudyInstitution);
       }
     }
+
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveExpectedStudyInstitutionPhase(upkeepPhase, institution.getProjectExpectedStudy().getId(),
+    // projectExpectedStudyInstitution);
+    // }
+    // }
+    // }
 
     return institution;
   }

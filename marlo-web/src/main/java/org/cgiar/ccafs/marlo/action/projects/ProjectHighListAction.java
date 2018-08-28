@@ -46,7 +46,6 @@ public class ProjectHighListAction extends BaseAction {
   // Manager
   private ProjectHighligthManager projectHighligthManager;
   private ProjectHighlightInfoManager projectHighlightInfoManager;
-
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
 
@@ -56,7 +55,6 @@ public class ProjectHighListAction extends BaseAction {
   // Model for the front-end
   private long projectID;
   private long higlightID;
-
   private List<Integer> allYears;
 
   @Inject

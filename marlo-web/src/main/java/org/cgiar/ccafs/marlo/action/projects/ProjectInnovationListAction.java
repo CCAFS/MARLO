@@ -48,29 +48,17 @@ public class ProjectInnovationListAction extends BaseAction {
 
   // Manager
   private ProjectInnovationManager projectInnovationManager;
-
-
   private ProjectInnovationInfoManager projectInnovationInfoManager;
-
-
   private SectionStatusManager sectionStatusManager;
-
-
   private ProjectManager projectManager;
-
   private ProjectInnovationCrpManager projectInnovationCrpManager;
 
-
+  // Variables
   // Model for the back-end
   private Project project;
-
-
   // Model for the front-end
   private long projectID;
-
-
   private long innovationID;
-
   private List<Integer> allYears;
 
   @Inject

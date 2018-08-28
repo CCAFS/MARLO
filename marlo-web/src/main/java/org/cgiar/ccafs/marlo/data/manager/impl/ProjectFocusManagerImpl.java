@@ -83,15 +83,15 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       && projectFocus.getPhase().getNext() != null) {
       this.deletProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
-
-    if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
-        Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deletProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
+    // if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
+    // }
+    // }
+    // }
 
   }
 
@@ -140,15 +140,15 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       && projectFocus.getPhase().getNext() != null) {
       this.addProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
-
-    if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
-        Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.addProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
+    // if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
+    // }
+    // }
+    // }
 
 
     return focus;

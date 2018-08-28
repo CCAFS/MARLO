@@ -84,16 +84,16 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
           projectClusterActivity.getProject().getId(), projectClusterActivity);
       }
     }
-
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (phase.getNext() != null && phase.getNext().getNext() != null) {
-        Phase upkeepPhase = phase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deletProjectClusterPhase(upkeepPhase, projectClusterActivity.getProject().getId(),
-            projectClusterActivity);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (phase.getDescription().equals(APConstants.REPORTING)) {
+    // if (phase.getNext() != null && phase.getNext().getNext() != null) {
+    // Phase upkeepPhase = phase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletProjectClusterPhase(upkeepPhase, projectClusterActivity.getProject().getId(),
+    // projectClusterActivity);
+    // }
+    // }
+    // }
 
   }
 
@@ -145,15 +145,15 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
       }
     }
 
-
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (phase.getNext() != null && phase.getNext().getNext() != null) {
-        Phase upkeepPhase = phase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.addProjectClusterPhase(upkeepPhase, projectClusterActivity.getProject().getId(), projectClusterActivity);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (phase.getDescription().equals(APConstants.REPORTING)) {
+    // if (phase.getNext() != null && phase.getNext().getNext() != null) {
+    // Phase upkeepPhase = phase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addProjectClusterPhase(upkeepPhase, projectClusterActivity.getProject().getId(), projectClusterActivity);
+    // }
+    // }
+    // }
 
 
     return projectClusterActivityDB;

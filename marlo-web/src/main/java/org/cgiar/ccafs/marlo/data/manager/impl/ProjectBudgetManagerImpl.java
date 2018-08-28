@@ -107,15 +107,15 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
         this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
       }
     }
-
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deletBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
+    // }
+    // }
+    // }
 
   }
 
@@ -198,14 +198,15 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
         this.saveBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
       }
     }
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
+    // }
+    // }
+    // }
     return resultBudget;
   }
 }

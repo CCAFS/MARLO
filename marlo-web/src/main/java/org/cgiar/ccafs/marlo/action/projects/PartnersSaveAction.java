@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
@@ -80,7 +79,6 @@ public class PartnersSaveAction extends BaseAction {
 
   private InstitutionTypeManager institutionManager;
   private InstitutionManager institutionsManager;
-  private ActivityManager activityManager;
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
   private PartnerRequestManager partnerRequestManager;
@@ -91,40 +89,29 @@ public class PartnersSaveAction extends BaseAction {
   private final SendMailS sendMail;
   // Model
   private List<LocElement> countriesList;
-
   private List<InstitutionType> institutionTypesList;
-
   private List<Institution> institutions;
   private long locationId;
   private GlobalUnit loggedCrp;
-  // private ActivityPartner activityPartner;
   private boolean messageSent;
   private String partnerWebPage;
   private String context;
-
-
   private int projectID;
-
-
   private int fundingSourceID;
-
-
   private int expectedID;
-
   private int activityID;
   private int capdevID;
   private String pageRequestName;
 
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
-    InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
-    ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
-    FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager, SendMailS sendMail,
-    ProjectExpectedStudyManager projectExpectedStudyManager, ICapacityDevelopmentService capacityDevelopmentManager) {
+    InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ProjectManager projectManager,
+    PartnerRequestManager partnerRequestManager, FundingSourceManager fundingSourceManager,
+    GlobalUnitManager crpManager, SendMailS sendMail, ProjectExpectedStudyManager projectExpectedStudyManager,
+    ICapacityDevelopmentService capacityDevelopmentManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
-    this.activityManager = activityManager;
     this.projectManager = projectManager;
     this.institutionsManager = institutionsManager;
     this.partnerRequestManager = partnerRequestManager;

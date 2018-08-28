@@ -79,33 +79,23 @@ public class ProjectHighlightAction extends BaseAction {
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightAction.class);
 
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-  private GlobalUnit loggedCrp;
-  private ProjectHighLightValidator highLightValidator;
-
-
-  private String transaction;
-
-  private HistoryComparator historyComparator;
-  private AuditLogManager auditLogManager;
   // Manager
   private ProjectManager projectManager;
-
-
   private ProjectHighligthManager projectHighLightManager;
   private ProjectHighlightInfoManager projectHighlightInfoManager;
-
-
   private ProjectHighligthTypeManager projectHighligthTypeManager;
-
-
   private ProjectHighligthCountryManager projectHighligthCountryManager;
   private FileDBManager fileDBManager;
   private LocElementManager locElementManager;
+  private GlobalUnitManager crpManager;
+  private AuditLogManager auditLogManager;
   private PhaseManager phaseManager;
 
+  // Variables
+  private GlobalUnit loggedCrp;
+  private ProjectHighLightValidator highLightValidator;
+  private String transaction;
+  private HistoryComparator historyComparator;
   private String highlightsImagesUrl;
   private File file;
   // private ProjectHighLightValidator validator;
@@ -119,18 +109,10 @@ public class ProjectHighlightAction extends BaseAction {
   private long projectID;
   private Map<String, String> highlightsTypes;
   private Map<String, String> statuses;
-
-
   private ProjectHighlight highlightDB;
-
   private List<Integer> allYears;
-
-
   private List<LocElement> countries;
-
-
   private List<ProjectHighlightType> previewTypes;
-
   private List<ProjectHighlightCountry> previewCountries;
 
   @Inject
