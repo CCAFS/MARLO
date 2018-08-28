@@ -268,15 +268,15 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartner);
       }
     }
-
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (projectPartner.getPhase().getNext() != null && projectPartner.getPhase().getNext().getNext() != null) {
-        Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deletProjectPartnerPhase(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (projectPartner.getPhase().getNext() != null && projectPartner.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletProjectPartnerPhase(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
+    // }
+    // }
+    // }
 
 
   }
@@ -355,14 +355,14 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       }
     }
 
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.addProjectPartnerDAO(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
-        }
-      }
-    }
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addProjectPartnerDAO(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
+    // }
+    // }
+    // }
 
 
     return resultPartner;

@@ -148,14 +148,15 @@ public class ActivityManagerImpl implements ActivityManager {
         this.deletActivityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
       }
     }
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deletActivityPhase(upkeepPhase, activity.getProject().getId(), activity);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletActivityPhase(upkeepPhase, activity.getProject().getId(), activity);
+    // }
+    // }
+    // }
   }
 
   @Override
@@ -209,14 +210,15 @@ public class ActivityManagerImpl implements ActivityManager {
       }
     }
 
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveActvityPhase(upkeepPhase, activity.getProject().getId(), activity);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveActvityPhase(upkeepPhase, activity.getProject().getId(), activity);
+    // }
+    // }
+    // }
     return resultActivity;
   }
 

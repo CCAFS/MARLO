@@ -55,20 +55,22 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
       this.getProjectExpectedStudyCountryById(projectExpectedStudyCountryId);
     Phase currentPhase = projectExpectedStudyCountry.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteProjectExpectedStudyCountryPhase(upkeepPhase,
-            projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
-        }
-      }
-    } else {
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (currentPhase.getNext() != null) {
         this.deleteProjectExpectedStudyCountryPhase(currentPhase.getNext(),
           projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deleteProjectExpectedStudyCountryPhase(upkeepPhase,
+    // projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
+    // }
+    // }
+    // }
 
     projectExpectedStudyCountryDAO.deleteProjectExpectedStudyCountry(projectExpectedStudyCountryId);
   }
@@ -144,21 +146,22 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
 
     ProjectExpectedStudyCountry country = projectExpectedStudyCountryDAO.save(projectExpectedStudyCountry);
     Phase currentPhase = phaseDAO.find(country.getPhase().getId());
-
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveExpectedStudyCountryPhase(upkeepPhase, country.getProjectExpectedStudy().getId(),
-            projectExpectedStudyCountry);
-        }
-      }
-    } else {
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (currentPhase.getNext() != null) {
         this.saveExpectedStudyCountryPhase(currentPhase.getNext(), country.getProjectExpectedStudy().getId(),
           projectExpectedStudyCountry);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveExpectedStudyCountryPhase(upkeepPhase, country.getProjectExpectedStudy().getId(),
+    // projectExpectedStudyCountry);
+    // }
+    // }
+    // }
 
     return country;
   }

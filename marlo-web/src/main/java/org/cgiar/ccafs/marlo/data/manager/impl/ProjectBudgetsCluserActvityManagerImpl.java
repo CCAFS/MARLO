@@ -106,16 +106,16 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
           projectBudgetsCluserActvity.getProject().getId(), projectBudgetsCluserActvity);
       }
     }
-
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deletBudgetPhase(upkeepPhase, projectBudgetsCluserActvity.getProject().getId(),
-            projectBudgetsCluserActvity);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletBudgetPhase(upkeepPhase, projectBudgetsCluserActvity.getProject().getId(),
+    // projectBudgetsCluserActvity);
+    // }
+    // }
+    // }
 
   }
 
@@ -176,15 +176,16 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
           projectBudgetsCluserActvity.getProject().getId(), projectBudgetsCluserActvity);
       }
     }
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveBudgetPhase(upkeepPhase, projectBudgetsCluserActvity.getProject().getId(),
-            projectBudgetsCluserActvity);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveBudgetPhase(upkeepPhase, projectBudgetsCluserActvity.getProject().getId(),
+    // projectBudgetsCluserActvity);
+    // }
+    // }
+    // }
     return resultProjectBudget;
   }
 

@@ -72,7 +72,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,41 +90,7 @@ public class ProjectInnovationAction extends BaseAction {
 
   private static final long serialVersionUID = 2025842196563364380L;
 
-
-  private long projectID;
-
-
-  private long innovationID;
-
-
-  private Project project;
-
-  private ProjectInnovation innovation;
-
-
-  private ProjectInnovation innovationDB;
-
-  private GlobalUnit loggedCrp;
-
-
-  private List<RepIndPhaseResearchPartnership> phaseResearchList;
-
-  private List<RepIndStageInnovation> stageInnovationList;
-
-  private String transaction;
-
-  private List<RepIndGeographicScope> geographicScopeList;
-  private List<RepIndInnovationType> innovationTypeList;
-  private List<RepIndContributionOfCrp> contributionCrpList;
-  private List<RepIndDegreeInnovation> degreeInnovationList;
-  private List<RepIndRegion> regionList;
-  private List<LocElement> countries;
-  private List<ProjectExpectedStudy> expectedStudyList;
-  private List<Deliverable> deliverableList;
-  private List<GlobalUnit> crpList;
-  private List<RepIndGenderYouthFocusLevel> focusLevelList;
-  private List<RepIndOrganizationType> organizationTypeList;
-
+  // Managers
   private ProjectInnovationManager projectInnovationManager;
   private GlobalUnitManager globalUnitManager;
   private ProjectManager projectManager;
@@ -147,8 +112,30 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private ProjectInnovationCountryManager projectInnovationCountryManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
-  private ProjectInnovationValidator validator;
   private AuditLogManager auditLogManager;
+
+  // Variables
+  private long projectID;
+  private long innovationID;
+  private Project project;
+  private ProjectInnovation innovation;
+  private ProjectInnovation innovationDB;
+  private GlobalUnit loggedCrp;
+  private List<RepIndPhaseResearchPartnership> phaseResearchList;
+  private List<RepIndStageInnovation> stageInnovationList;
+  private String transaction;
+  private List<RepIndGeographicScope> geographicScopeList;
+  private List<RepIndInnovationType> innovationTypeList;
+  private List<RepIndContributionOfCrp> contributionCrpList;
+  private List<RepIndDegreeInnovation> degreeInnovationList;
+  private List<RepIndRegion> regionList;
+  private List<LocElement> countries;
+  private List<ProjectExpectedStudy> expectedStudyList;
+  private List<Deliverable> deliverableList;
+  private List<GlobalUnit> crpList;
+  private List<RepIndGenderYouthFocusLevel> focusLevelList;
+  private List<RepIndOrganizationType> organizationTypeList;
+  private ProjectInnovationValidator validator;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,

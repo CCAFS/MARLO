@@ -119,25 +119,24 @@ public class ProjectExpectedStudyInfoManagerImpl implements ProjectExpectedStudy
     ProjectExpectedStudyInfo sourceInfo = projectExpectedStudyInfoDAO.save(projectExpectedStudyInfo);
     Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
 
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (phase.getNext() != null && phase.getNext().getNext() != null) {
-        Phase upkeepPhase = phase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveInfoPhase(upkeepPhase, projectExpectedStudyInfo.getProjectExpectedStudy().getId(),
-            projectExpectedStudyInfo);
-        }
-      }
-    } else {
-      if (projectExpectedStudyInfo.getPhase().getNext() != null) {
-        this.saveInfoPhase(projectExpectedStudyInfo.getPhase().getNext(),
-          projectExpectedStudyInfo.getProjectExpectedStudy().getId(), projectExpectedStudyInfo);
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
+      if (phase.getNext() != null) {
+        this.saveInfoPhase(phase.getNext(), projectExpectedStudyInfo.getProjectExpectedStudy().getId(),
+          projectExpectedStudyInfo);
       }
     }
-
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (phase.getDescription().equals(APConstants.REPORTING)) {
+    // if (phase.getNext() != null && phase.getNext().getNext() != null) {
+    // Phase upkeepPhase = phase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveInfoPhase(upkeepPhase, projectExpectedStudyInfo.getProjectExpectedStudy().getId(),
+    // projectExpectedStudyInfo);
+    // }
+    // }
+    // }
 
     return sourceInfo;
-
-
   }
 
 

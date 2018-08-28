@@ -81,8 +81,6 @@ public class ProjectLeverageManagerImpl implements ProjectLeverageManager {
   private void deletLeveragePhase(Phase next, Long projecID, ProjectLeverage projectLeverage) {
     Phase phase = phaseDAO.find(next.getId());
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-
-
       List<ProjectLeverage> leverages =
         phase.getProjectLeverages().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
           && projectLeverage.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());

@@ -328,14 +328,15 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
         this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);
       }
     }
-    if (projectInfo.getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (projectInfo.getPhase().getNext() != null && projectInfo.getPhase().getNext().getNext() != null) {
-        Phase upkeepPhase = projectInfo.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveInfoPhase(upkeepPhase, projectInfo.getProject().getId(), projectInfo);
-        }
-      }
-    }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (projectInfo.getPhase().getDescription().equals(APConstants.REPORTING)) {
+    // if (projectInfo.getPhase().getNext() != null && projectInfo.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectInfo.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveInfoPhase(upkeepPhase, projectInfo.getProject().getId(), projectInfo);
+    // }
+    // }
+    // }
     return resultProjectInfo;
   }
 

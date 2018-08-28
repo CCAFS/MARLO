@@ -73,10 +73,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   // Managers
   private InstitutionManager institutionManager;
-
-
   private BudgetTypeManager budgetTypeManager;
-
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
   private ProjectBudgetManager projectBudgetManager;
@@ -89,7 +86,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   // Variables
   private ProjectBudgetsValidator projectBudgetsValidator;
   private long projectID;
-
   private GlobalUnit loggedCrp;
   private Project project;
   private String transaction;
