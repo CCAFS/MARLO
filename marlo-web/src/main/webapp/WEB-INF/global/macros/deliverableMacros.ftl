@@ -478,7 +478,7 @@
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
+      [@deliverableMacros.metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
     </div>
     <div class="col-md-6">
       [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
@@ -488,7 +488,7 @@
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
+      [@deliverableMacros.metadataField title="handles" encodedName="marlo.handle" type="input" require=false/]
     </div>
     <div class="col-md-6">
       [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
@@ -527,7 +527,7 @@
       <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
       <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
       <div class="pull-right" style="width:14%">
-        <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
+        <div id="" class="addAuthor text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
       </div>
     </div>
     <div class="clearfix"></div>
