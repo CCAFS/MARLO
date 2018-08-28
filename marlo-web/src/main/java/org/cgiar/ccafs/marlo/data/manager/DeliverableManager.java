@@ -89,15 +89,5 @@ public interface DeliverableManager {
    */
   public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
 
-  /**
-   * This method saves the information of the given deliverable and save the history in the auditlog
-   * 
-   * @param deliverable - is the deliverable object with the new information to be added/updated.
-   * @param section - the action name of the section that execute the save method
-   * @param relationsName - the model class relations of deliverables that save in the auditlog.
-   * @return
-   */
-  public Deliverable saveDeliverableKeyOutput(Deliverable deliverable, String section, List<String> relationsName,
-    Phase phase);
 
 }
