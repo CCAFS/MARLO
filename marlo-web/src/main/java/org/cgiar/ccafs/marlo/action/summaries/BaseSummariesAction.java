@@ -292,16 +292,16 @@ public class BaseSummariesAction extends BaseAction {
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
-      System.out.println("selected phase " + selectedPhase);
-      this.setSelectedCycle(this.getCurrentCycle());
+      this.setSelectedPhase(this.getCurrentCenterPhase());
     }
     try {
       // Map<String, Parameter> parameters = this.getParameters();
-      this.setSelectedYear(this.selectedPhase.getYear());
+      this.setSelectedYear(selectedPhase.getYear());
       /*
        * this.setSelectedYear(
        * Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
        */
+
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
@@ -312,6 +312,7 @@ public class BaseSummariesAction extends BaseAction {
       this.setSelectedCycle(this.selectedPhase.getDescription());
       // Map<String, Parameter> parameters = this.getParameters();
       // this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
+
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
