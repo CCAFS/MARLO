@@ -622,7 +622,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
             projectInfo.setPhase(phase);
           }
         } catch (Exception r) {
-          projectInfo.setPhase(phase);
         }
 
         final Phase actualPhase;
@@ -809,6 +808,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   }
 
   public ProjectInfo getProjecInfoPhase(Phase phase) {
+    System.out.println("phase " + phase);
     if (this.getProjectInfo() != null) {
       return this.getProjectInfo();
     } else {
