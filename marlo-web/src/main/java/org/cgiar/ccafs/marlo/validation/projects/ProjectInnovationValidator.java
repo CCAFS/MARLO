@@ -215,24 +215,24 @@ public class ProjectInnovationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
         // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-          .getId() == 3
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-            .getId() == 4
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-            .getId() == 5) {
+        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
+          .equals(action.getReportingIndGeographicScopeMultiNational())
+          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeNational())
+          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeSubNational())) {
           // Validate Countries
-          if (projectInnovation.getCountries() == null || projectInnovation.getCountries().isEmpty()) {
+          if (projectInnovation.getCountriesIds() == null || projectInnovation.getCountriesIds().isEmpty()) {
             action.addMessage(action.getText("Countries"));
-            action.addMissingField("projectInnovations.nextUserOrganizationalType");
+            action.addMissingField("projectInnovations.countries");
             action.getInvalidFields().put("list-projectInnovations.countries",
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Countries"}));
           }
         }
 
         // Validate if Scope is Regional and review if The innovation has a region
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-          .getId() == 2) {
+        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
+          .equals(action.getReportingIndGeographicScopeRegional())) {
           // Validate Region
           if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion() != null) {
             if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion()

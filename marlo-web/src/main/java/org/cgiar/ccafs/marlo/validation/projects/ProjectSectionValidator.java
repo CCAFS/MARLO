@@ -551,6 +551,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
+      if (innovation.getCountries() != null) {
+        for (ProjectInnovationCountry country : innovation.getCountries()) {
+          innovation.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+        }
+      }
+
       projectInnovationValidator.validate(action, project, innovation, false);
     }
 
