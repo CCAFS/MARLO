@@ -396,8 +396,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
    * @return the composed name for a project
    */
   public String getComposedName(Phase phase) {
-
+    projectInfo = new ProjectInfo();
     ProjectInfo projectInfo = this.getProjecInfoPhase(phase);
+
     if (projectInfo != null) {
       return "P" + this.getId() + " - " + projectInfo.getTitle();
     } else {
@@ -600,7 +601,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
 
   public ProjectPartner getLeader(Phase phase) {
-
     try {
       if (partners != null) {
         for (ProjectPartner partner : partners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -615,16 +615,26 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
         }
       } else {
+        try {
+
+
+          if (projectInfo.getPhase() == null) {
+            projectInfo.setPhase(phase);
+          }
+        } catch (Exception r) {
+        }
+
         final Phase actualPhase;
+
         if (projectInfo.getPhase() != null) {
           actualPhase = projectInfo.getPhase();
         } else {
           actualPhase = phase;
         }
+
         for (ProjectPartner partner : projectPartners.stream()
           .filter(c -> c.isActive() && c.getPhase().equals(actualPhase)).collect(Collectors.toList())) {
           if (partner.isActive()) {
-
 
             for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
               if (person.isActive()) {
@@ -798,6 +808,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   }
 
   public ProjectInfo getProjecInfoPhase(Phase phase) {
+    System.out.println("phase " + phase);
     if (this.getProjectInfo() != null) {
       return this.getProjectInfo();
     } else {

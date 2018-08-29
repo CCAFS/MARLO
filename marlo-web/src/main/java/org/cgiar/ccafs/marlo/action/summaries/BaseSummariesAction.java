@@ -105,6 +105,7 @@ public class BaseSummariesAction extends BaseAction {
       if (extentionDate != null) {
         extentionYear = this.getIntYearFromDate(extentionDate);
       }
+
       if (startYear <= this.getSelectedYear()
         && (endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
           .parseInt(FundingStatusEnum.Ongoing.getStatusId())
@@ -283,10 +284,24 @@ public class BaseSummariesAction extends BaseAction {
     }
     // Get parameters from URL
     // Get year
+    // Get phase
     try {
       Map<String, Parameter> parameters = this.getParameters();
-      this.setSelectedYear(
-        Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
+      this.setSelectedPhase(phaseManager
+        .getPhaseById(Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
+        + e.getMessage());
+      this.setSelectedPhase(this.getCurrentCenterPhase());
+    }
+    try {
+      // Map<String, Parameter> parameters = this.getParameters();
+      this.setSelectedYear(selectedPhase.getYear());
+      /*
+       * this.setSelectedYear(
+       * Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
+       */
+
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
@@ -294,16 +309,22 @@ public class BaseSummariesAction extends BaseAction {
     }
     // Get cycle
     try {
-      Map<String, Parameter> parameters = this.getParameters();
-      this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
+      this.setSelectedCycle(this.selectedPhase.getDescription());
+      // Map<String, Parameter> parameters = this.getParameters();
+      // this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
+
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
       this.setSelectedCycle(this.getCurrentCycle());
     }
-    // Get phase
-    this.setSelectedPhase(
-      phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false, loggedCrp.getId().longValue()));
+
+    /*
+     * // Get phase
+     * System.out.println(" selected phase " + this.getActualPhase());
+     * this.setSelectedPhase(
+     * phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false, loggedCrp.getId().longValue()));
+     */
 
     // Get current user
     if (this.getCurrentUser() != null) {
