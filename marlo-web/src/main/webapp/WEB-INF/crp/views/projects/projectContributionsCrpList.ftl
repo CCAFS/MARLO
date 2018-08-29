@@ -64,7 +64,7 @@
             <table id="projectOutcomesList" class="table table-striped table-hover ">
               <thead>
                 <tr>
-                  <th>Flagship</th>
+                  <th>Modules</th>
                   <th>Outcome 2022</th>
                   <th></th>
                   <th>Status</th>
