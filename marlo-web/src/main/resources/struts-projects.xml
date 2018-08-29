@@ -220,7 +220,6 @@
         <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
       </result>
-
     </action>
 
     <action name="{crp}/addNewAdminProject" method="addAdminProject"

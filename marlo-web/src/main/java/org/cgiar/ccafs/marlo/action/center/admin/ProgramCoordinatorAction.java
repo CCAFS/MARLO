@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.jfree.util.Log;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
@@ -80,11 +82,20 @@ public class ProgramCoordinatorAction extends BaseAction {
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    long coorRoleId = Long.parseLong(this.getSession().get(APConstants.CENTER_COORD_ROLE).toString());
+    long coorRoleId = 0;
+    if (APConstants.CENTER_COORD_ROLE != null) {
+      try {
+        coorRoleId = Long.parseLong(this.getSession().get(APConstants.CENTER_COORD_ROLE).toString());
+      } catch (Exception e) {
+        Log.error(e.getMessage());
+      }
+    }
 
     Role role = roleService.getRoleById(coorRoleId);
 
-    userRoles = new ArrayList<>(role.getUserRoles());
+    if (role != null) {
+      userRoles = new ArrayList<>(role.getUserRoles());
+    }
 
     String params[] = {loggedCenter.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.CENTER_ADMIN_BASE_PERMISSION, params));
