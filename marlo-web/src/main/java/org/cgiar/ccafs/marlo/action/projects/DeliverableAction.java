@@ -1515,7 +1515,11 @@ public class DeliverableAction extends BaseAction {
           .filter(ca -> ca.isActive() && ca.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
           for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
-            .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+            .getCrpClusterKeyOutputOutcomes().stream()
+            .filter(ko -> ko.isActive() && ko.getCrpClusterKeyOutput() != null && ko.getCrpClusterKeyOutput().isActive()
+              && ko.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
+              && ko.getCrpClusterKeyOutput().getCrpClusterOfActivity().isActive())
+            .collect(Collectors.toList())) {
 
             if (keyOutcome.getCrpClusterKeyOutput().getCrpClusterOfActivity().getPhase()
               .equals(this.getActualPhase())) {
