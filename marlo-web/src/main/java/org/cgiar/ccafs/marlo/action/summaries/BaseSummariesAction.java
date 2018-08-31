@@ -321,7 +321,6 @@ public class BaseSummariesAction extends BaseAction {
 
     /*
      * // Get phase
-     * System.out.println(" selected phase " + this.getActualPhase());
      * this.setSelectedPhase(
      * phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false, loggedCrp.getId().longValue()));
      */

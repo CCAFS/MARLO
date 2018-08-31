@@ -114,7 +114,7 @@ public class CrpProjectPhases extends BaseAction {
       if (!projectInfos.isEmpty()) {
         project.setProjectInfo(projectInfos.get(projectInfos.size() - 1));
       } else {
-        System.out.println(project.getId());
+        // System.out.println(project.getId());
       }
 
     }

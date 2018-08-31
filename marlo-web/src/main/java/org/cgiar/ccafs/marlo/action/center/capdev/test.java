@@ -219,14 +219,14 @@ public class test {
       // System.out.println("firstRow " + firstRow.getRowNum());
       // System.out.println("totalRows " + totalRows);
       final int totalColumns = firstRow.getLastCellNum();
-      System.out.println("notEmptyRows.size " + notEmptyRows.size());
+      // System.out.println("notEmptyRows.size " + notEmptyRows.size());
       for (int fila = 0; fila < notEmptyRows.size(); fila++) {
         final Row row = notEmptyRows.get(fila);
         for (int col = 0; col < row.getLastCellNum(); col++) {
           final Cell cell = row.getCell(col);
           System.out.println(this.getCellData(cell));
         }
-        System.out.println("-----------");
+        // System.out.println("-----------");
 
       }
     } catch (final IOException e) {
