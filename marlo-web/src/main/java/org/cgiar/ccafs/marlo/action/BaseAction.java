@@ -2713,6 +2713,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the list of phases for upkeep
    */
   public List<Phase> getPhasesByCycles(List<String> reportCycles) {
+    System.out.println("report cycles " + reportCycles);
     List<Phase> phasesFilter = new ArrayList<>();
     List<Phase> phases = phaseManager.findAll().stream()
       .filter(

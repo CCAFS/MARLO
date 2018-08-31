@@ -32,7 +32,8 @@ function attachEvents() {
   $('.removeAllTags').on('click', removeAllTags);
   
   // Update project List
-  $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
+  // $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
+    $('[name="phaseID"]').on('change', changePhaseParameters);
 }
 
 // ************************************************ Functions *******************************************************//
