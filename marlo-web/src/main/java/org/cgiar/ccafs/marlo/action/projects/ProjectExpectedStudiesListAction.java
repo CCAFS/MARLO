@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -213,7 +214,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       myNonProjectStudies = new ArrayList<>();
 
       if (!nonProjectStudies.isEmpty()) {
-        if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+        if (this.canAccessSuperAdmin() || this
+          .hasPermission(this.generatePermission(Permission.STUDIES_FULL_EDIT_PERMISSION, loggedCrp.getAcronym()))) {
 
           for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
             if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {

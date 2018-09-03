@@ -142,6 +142,7 @@ public class Permission {
 
   public static final String STUDIES_BASE_PERMISSION = "crp:{0}:studies:{1}";
   public static final String STUDIES_EDIT_PERMISSION = "crp:{0}:studies:{1}:canEdit";
+  public static final String STUDIES_FULL_EDIT_PERMISSION = "crp:{0}:studies:*";
 
   public static final String PROJECT_INNOVATIONS_BASE_PERMISSION = "crp:{0}:project:{1}:innovations";
   public static final String PROJECT_INNOVATIONS_EDIT_PERMISSION = "crp:{0}:project:{1}:innovations:canEdit";
