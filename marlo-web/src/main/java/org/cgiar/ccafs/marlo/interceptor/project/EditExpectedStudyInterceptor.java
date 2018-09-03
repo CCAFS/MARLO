@@ -123,6 +123,9 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
         } else {
           if (user.getId() == projectExpectedStudy.getCreatedBy().getId()) {
             canEdit = true;
+          } else if (baseAction
+            .hasPermission(baseAction.generatePermission(Permission.STUDIES_FULL_EDIT_PERMISSION, crp.getAcronym()))) {
+            canEdit = true;
           } else {
             if (baseAction.hasPermission(baseAction.generatePermission(Permission.STUDIES_EDIT_PERMISSION, params))) {
               canEdit = true;
