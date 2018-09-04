@@ -31,6 +31,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -225,17 +226,19 @@ public class SendMailS {
 
     // Get a Properties object
     Properties properties = System.getProperties();
+    String[] ccEmails = null;
     if (ccEmail != null) {
       ccEmail = ccEmail.replaceAll(", " + toEmail, "");
-
+      ccEmails = ccEmail.split(", ");
     }
-    String[] ccEmails = ccEmail.split(", ");
+
 
     ccEmail = new String();
     Set<String> noRepeatEmails = new HashSet<>();
-
-    for (String string : ccEmails) {
-      noRepeatEmails.add(string.trim());
+    if (ccEmails != null) {
+      for (String string : ccEmails) {
+        noRepeatEmails.add(string.trim());
+      }
     }
     for (String string : noRepeatEmails) {
       ccEmail = ccEmail + ", " + string;
@@ -357,8 +360,7 @@ public class SendMailS {
 
       LOG.info("Message ID: \n" + msg.getMessageID());
       msg.setContent(mimeMultipart);
-      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory);
-      thread.start();
+      Transport.send(msg);
       return true;
 
     } catch (Exception e) {
