@@ -292,7 +292,8 @@ public class BaseSummariesAction extends BaseAction {
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
-      this.setSelectedPhase(this.getCurrentCenterPhase());
+
+      this.setSelectedPhase(this.getActualPhase());
     }
     try {
       // Map<String, Parameter> parameters = this.getParameters();
@@ -305,7 +306,10 @@ public class BaseSummariesAction extends BaseAction {
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      this.setSelectedYear(this.getCurrentCycleYear());
+      Map<String, Parameter> parameters = this.getParameters();
+      this.setSelectedYear(
+        Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
+
     }
     // Get cycle
     try {
@@ -316,7 +320,8 @@ public class BaseSummariesAction extends BaseAction {
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());
-      this.setSelectedCycle(this.getCurrentCycle());
+      Map<String, Parameter> parameters = this.getParameters();
+      this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
     }
 
     /*
@@ -324,6 +329,10 @@ public class BaseSummariesAction extends BaseAction {
      * this.setSelectedPhase(
      * phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false, loggedCrp.getId().longValue()));
      */
+    if (this.getSelectedPhase() == null) {
+      this.setSelectedPhase(
+        phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false, loggedCrp.getId().longValue()));
+    }
 
     // Get current user
     if (this.getCurrentUser() != null) {
