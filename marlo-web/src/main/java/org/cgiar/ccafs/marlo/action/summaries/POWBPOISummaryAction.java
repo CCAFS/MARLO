@@ -1526,6 +1526,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public void prepare() {
     this.setGeneralParameters();
+    if (this.getSelectedPhase() == null) {
+      this.setSelectedPhase(this.getActualPhase());
+    }
     powbSynthesisList =
       this.getSelectedPhase().getPowbSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
     pmuInstitution = this.getPMUInstitution();
