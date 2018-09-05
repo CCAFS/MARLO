@@ -23,6 +23,6 @@ ALTER TABLE srf_cross_cutting_issues
 ADD UNIQUE INDEX `srf_cross_cutting_issues_unique`(`smo_code`) USING BTREE;
 
 ALTER table srf_slo_indicator_targets MODIFY targets_indicator VARCHAR(20);
-ALTER TABLE targets_indicator 
+ALTER TABLE srf_slo_indicator_targets 
 ADD UNIQUE INDEX `srf_cross_cutting_issues_unique`(`targets_indicator`) USING BTREE;
 
