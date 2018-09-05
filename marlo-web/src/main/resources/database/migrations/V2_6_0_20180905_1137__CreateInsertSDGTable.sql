@@ -1,4 +1,4 @@
-CREATE TABLE sustainable_development_goals(smo_code, sdg_name) 
+CREATE TABLE sustainable_development_goals(smo_code, sdg_name)(
 id BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 smo_code BIGINT(20),
 sdg_name text,
