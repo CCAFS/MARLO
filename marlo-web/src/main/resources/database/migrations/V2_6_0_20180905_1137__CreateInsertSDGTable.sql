@@ -1,8 +1,8 @@
-CREATE TABLE sustainable_development_goals(smo_code, sdg_name)(
-id BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE sustainable_development_goals
+(id BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 smo_code BIGINT(20),
 sdg_name text,
-ADD CONSTRAINT sustainable_unique_1 UNIQUE(smo_code)
+CONSTRAINT sustainable_unique_1 UNIQUE(smo_code)
 );
 
 insert into sustainable_development_goals(smo_code, sdg_name) values(1, 'Goal 1: No Poverty');
