@@ -138,20 +138,11 @@ public class ProjectDescriptionValidator extends BaseValidator {
     if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
 
-      if (project.getFlagships() != null) {
-        if (project.getFlagships().size() == 0) {
-          if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
-            action.addMessage(action.getText("projectDescription.flagships"));
-            action.getInvalidFields().put("input-project.projectInfo.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
-          }
-
-        }
-      } else {
-        if (project.getFlagshipValue().length() == 0) {
-          action.addMessage(action.getText("projectDescription.flagships"));
-          action.getInvalidFields().put("input-project.projectInfo.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
-        }
+      if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
+        action.addMessage(action.getText("projectDescription.flagships"));
+        action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
       }
+
 
       if (!action.isCenterGlobalUnit()) {
         if (project.getClusterActivities() != null) {
@@ -173,9 +164,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
           && (project.getProjecInfoPhase(action.getActualPhase()).getNoRegional() == null
             || project.getProjecInfoPhase(action.getActualPhase()).getNoRegional().booleanValue() == false)) {
           action.addMessage(action.getText("projectDescription.regions"));
-          action.getInvalidFields().put("input-project.projectInfo.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
-
-
+          action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }
