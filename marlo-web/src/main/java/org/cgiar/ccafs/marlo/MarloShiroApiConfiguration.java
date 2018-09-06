@@ -15,6 +15,9 @@
 
 package org.cgiar.ccafs.marlo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -25,9 +28,9 @@ import org.springframework.context.annotation.Profile;
 /**
  * Configuration for MARLO Security using Apache Shiro.
  */
-@Profile("!" + ApplicationContextConfig.SPRING_PROFILE_API)
+@Profile("!" + ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)
 @Configuration
-public class MarloShiroConfiguration {
+public class MarloShiroApiConfiguration {
 
 
   /**
@@ -46,10 +49,10 @@ public class MarloShiroConfiguration {
     ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
     shiroFilterFactoryBean.setSecurityManager(securityManager);
 
-    shiroFilterFactoryBean.setLoginUrl("/login.do");
-    shiroFilterFactoryBean.setSuccessUrl("/");
-    shiroFilterFactoryBean.setUnauthorizedUrl("/403");
-
+    // RESTfull services basic authentication filter setup.
+    Map<String, String> filterChainDefinitionMap = new HashMap<>();
+    filterChainDefinitionMap.put("/api/**", "authcBasic");
+    shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
     return shiroFilterFactoryBean;
   }
