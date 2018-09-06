@@ -710,7 +710,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   }
 
   private void createTableE() {
-
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
       new POIField(

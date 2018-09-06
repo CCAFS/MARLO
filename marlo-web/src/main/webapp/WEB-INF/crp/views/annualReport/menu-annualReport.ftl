@@ -120,7 +120,7 @@
 [#-- Generate WORD Document --]
 <br />
 <div class="text-center">
-  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]
+  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
    <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
   </a>
