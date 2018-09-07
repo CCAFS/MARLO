@@ -142,6 +142,11 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     Resource reportResource;
     try {

@@ -1539,6 +1539,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   @Override
   public String execute() throws Exception {
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
     try {
 
       CTDocument1 doc = document.getDocument();

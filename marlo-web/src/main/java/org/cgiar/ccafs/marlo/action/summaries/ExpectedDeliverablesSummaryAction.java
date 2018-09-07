@@ -182,6 +182,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     try {

@@ -102,6 +102,11 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager

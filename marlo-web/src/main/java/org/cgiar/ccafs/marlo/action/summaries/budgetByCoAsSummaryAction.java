@@ -161,6 +161,10 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
   @Override
   public String execute() throws Exception {
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     try {

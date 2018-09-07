@@ -122,6 +122,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource =

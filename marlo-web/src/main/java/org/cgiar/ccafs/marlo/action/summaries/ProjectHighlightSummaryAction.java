@@ -128,6 +128,11 @@ public class ProjectHighlightSummaryAction extends BaseSummariesAction implement
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     if (projectHighlightID == null || projectHighLightManager.getProjectHighligthById(projectHighlightID) == null
       || projectHighLightManager.getProjectHighligthById(projectHighlightID)
         .getProjectHighlightInfo(this.getSelectedPhase()) == null) {

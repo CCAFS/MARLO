@@ -965,10 +965,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
   @Override
   public String execute() throws Exception {
-    LOG.info(this.getProject().getId().toString());
-    LOG.info(this.getSelectedYear() + "");
-    LOG.info(this.getSelectedCycle());
-    LOG.info(this.getSelectedPhase().toString() + "");
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     try {
       hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
     } catch (Exception e) {
