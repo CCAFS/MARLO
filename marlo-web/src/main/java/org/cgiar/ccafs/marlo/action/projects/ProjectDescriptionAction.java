@@ -783,7 +783,6 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getCrossCuttingYouth() == null) {
         project.getProjectInfo().setCrossCuttingYouth(false);
       }
-      project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
 
       if (this.isReportingActive()) {
 
@@ -840,6 +839,8 @@ public class ProjectDescriptionAction extends BaseAction {
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
+              // This add projectFocus to generate correct auditlog.
+              project.getProjectFocuses().add(projectFocus);
             }
           }
 
@@ -872,6 +873,8 @@ public class ProjectDescriptionAction extends BaseAction {
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
+              // This add projectFocus to generate correct auditlog.
+              project.getProjectFocuses().add(projectFocus);
             }
           }
 
@@ -906,7 +909,7 @@ public class ProjectDescriptionAction extends BaseAction {
             projectClusterActivity.setProject(project);
             projectClusterActivity.setPhase(this.getActualPhase());
             projectClusterActivity = projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
-            // add new cluster to generate correct auditlog.
+            // This add clusterActivity to generate correct auditlog.
             project.getProjectClusterActivities().add(projectClusterActivity);
           }
 
@@ -934,6 +937,7 @@ public class ProjectDescriptionAction extends BaseAction {
           if (projectLocation.getId() == null) {
             projectLocation.setProject(project);
             projectScopeManager.saveProjectScope(projectLocation);
+            project.getProjectScopes().add(projectLocation);
           }
 
         }
@@ -962,7 +966,22 @@ public class ProjectDescriptionAction extends BaseAction {
 
       project.getProjectInfo().setModificationJustification(this.getJustification());
 
+      project.getProjectInfo().setModifiedBy(this.getCurrentUser());
       projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
+
+      Path path = this.getAutoSaveFilePath();
+      // if is auto-save, load relations to generate auditlog correctly
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+        project.getProjectInfos().add(project.getProjectInfo());
+        project.getProjectFocuses()
+          .addAll(projectDB.getProjectFocuses().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList()));
+        project.getProjectClusterActivities()
+          .addAll(projectDB.getProjectClusterActivities().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList()));
+      }
 
       /**
        * The following is required because we need to update something on the @Project if we want a row created in the
@@ -970,7 +989,6 @@ public class ProjectDescriptionAction extends BaseAction {
        */
       this.setModificationJustification(project);
       projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
-
 
       // delete the section stust for budgets by coA when there is one Coa selectd to the project
       List<ProjectClusterActivity> currentClusters =
@@ -983,7 +1001,6 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
-      Path path = this.getAutoSaveFilePath();
       // delete the draft file if exists
       if (path.toFile().exists()) {
         path.toFile().delete();
