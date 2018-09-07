@@ -975,6 +975,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     try {
       /* Create a portrait text Section */
       CTDocument1 doc = document.getDocument();

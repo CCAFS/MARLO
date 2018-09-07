@@ -138,6 +138,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     if (projectInnovationID == null || projectInnovationManager.getProjectInnovationById(projectInnovationID) == null
       || projectInnovationManager.getProjectInnovationById(projectInnovationID)
         .getProjectInnovationInfo(this.getSelectedPhase()) == null) {

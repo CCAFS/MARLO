@@ -234,6 +234,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager

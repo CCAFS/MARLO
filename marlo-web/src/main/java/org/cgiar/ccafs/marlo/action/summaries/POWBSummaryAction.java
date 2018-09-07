@@ -216,6 +216,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager

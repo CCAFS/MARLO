@@ -176,6 +176,11 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     if (projectExpectedStudyID == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)

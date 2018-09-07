@@ -332,6 +332,11 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public String execute() throws Exception {
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     resourceManager.registerDefaults();
