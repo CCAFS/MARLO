@@ -26,7 +26,7 @@ import org.mapstruct.MappingTarget;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Mapper(componentModel = "jsr330")
-public abstract class CrpProgramMapper {
+public interface CrpProgramMapper {
 
   public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
 
