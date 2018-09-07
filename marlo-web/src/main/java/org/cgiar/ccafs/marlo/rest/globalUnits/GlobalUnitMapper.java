@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.globalUnits;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.rest.dto.GlobalUnitDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

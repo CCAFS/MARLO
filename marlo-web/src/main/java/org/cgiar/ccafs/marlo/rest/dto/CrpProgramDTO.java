@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.crpPrograms;
+package org.cgiar.ccafs.marlo.rest.dto;
 
 import javax.validation.constraints.NotNull;
 

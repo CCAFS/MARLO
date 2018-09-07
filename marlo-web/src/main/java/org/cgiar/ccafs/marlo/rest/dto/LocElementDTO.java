@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,27 +13,12 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.crpPrograms;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Mapper(componentModel = "jsr330")
-public abstract class CrpProgramMapper {
-
-  public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
-
-  public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
-
-  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
-
-  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
-    @MappingTarget CrpProgram crpProgram);
-
+public class LocElementDTO {
 
 }

@@ -13,28 +13,27 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.crpPrograms;
+package org.cgiar.ccafs.marlo.rest.dto;
 
 import javax.validation.constraints.NotNull;
 
-import io.swagger.annotations.ApiModelProperty;
+public class InstitutionTypeDTO {
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class NewFlagshipDTO {
-
-  @ApiModelProperty(notes = "The Flagship program Name")
   @NotNull
+  private Long id;
+
   private String name;
 
-  @ApiModelProperty(notes = "The Flagship program Acronym")
-  @NotNull
-  private String acronym;
+  private String description;
 
 
-  public String getAcronym() {
-    return acronym;
+  public String getDescription() {
+    return description;
+  }
+
+
+  public Long getId() {
+    return id;
   }
 
 
@@ -42,11 +41,20 @@ public class NewFlagshipDTO {
     return name;
   }
 
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
+
+  public void setDescription(String description) {
+    this.description = description;
   }
+
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
 
   public void setName(String name) {
     this.name = name;
   }
+
+
 }

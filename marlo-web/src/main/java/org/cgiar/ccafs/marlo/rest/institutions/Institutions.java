@@ -27,7 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -90,6 +90,7 @@ public class Institutions {
     this.userManager = userManager;
   }
 
+  @ApiIgnore
   @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
