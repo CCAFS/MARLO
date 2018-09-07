@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.rest;
 
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.institutions.InstitutionTypeMapper;
-import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionTypeDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;

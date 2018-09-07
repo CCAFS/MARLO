@@ -13,21 +13,29 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.institutions;
+package org.cgiar.ccafs.marlo.rest.crpprograms;
 
-import org.cgiar.ccafs.marlo.data.model.InstitutionType;
-import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.rest.dto.CrpProgramDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 @Mapper(componentModel = "jsr330")
-public interface InstitutionTypeMapper {
+public abstract class CrpProgramMapper {
 
-  public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
+  public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
 
-  public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
+  public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
 
-  public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
-    @MappingTarget InstitutionType institutionType);
+  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
+
+  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
+    @MappingTarget CrpProgram crpProgram);
+
+
 }

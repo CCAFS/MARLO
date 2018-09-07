@@ -20,8 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
-import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionLocationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionLocationDTO;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionLocationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionLocationDTO;
 
 import javax.inject.Inject;
 

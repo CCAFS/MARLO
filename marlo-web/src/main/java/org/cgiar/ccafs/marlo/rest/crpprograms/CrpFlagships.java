@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.crpPrograms;
+package org.cgiar.ccafs.marlo.rest.crpprograms;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.CrpProgramDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.ArrayList;
