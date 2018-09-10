@@ -862,6 +862,9 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
       fundingSourceInfoDB.setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
       fundingSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
+      fundingSourceInfoDB.setSynced(fundingSource.getFundingSourceInfo().getSynced());
+      fundingSourceInfoDB.setSyncedDate(fundingSource.getFundingSourceInfo().getSyncedDate());
+      fundingSourceInfoDB.setExtensionDate(fundingSource.getFundingSourceInfo().getExtensionDate());
 
       fundingSourceDB.setBudgets(fundingSource.getBudgets());
 
