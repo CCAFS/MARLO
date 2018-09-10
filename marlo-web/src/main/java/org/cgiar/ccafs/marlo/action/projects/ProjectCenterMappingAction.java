@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -315,8 +314,6 @@ public class ProjectCenterMappingAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-        GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
-
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(phase));
         if (project.getProjectInfo() == null) {
@@ -330,7 +327,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
+            && c.getCrpProgram().getCrp().getId().equals(this.getLoggedCrp().getId()))
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
           if (project.getFlagshipValue().isEmpty()) {
@@ -346,7 +343,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
             && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(gp.getGlobalUnit().getId()))
+            && c.getCrpProgram().getCrp().getId().equals(this.getLoggedCrp().getId()))
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
           if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
