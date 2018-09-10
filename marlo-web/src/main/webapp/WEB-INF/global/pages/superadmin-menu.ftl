@@ -5,15 +5,9 @@
      
   ]/]
   
-  [#if ((globalUnitType == 4)!false)]
-    [#assign superAdminMenu = superAdminMenu + [
-      { 'slug': 'admin',     'name': 'menu.admin',    'namespace': '/centerAdmin',     'action': '${(centerSession)!}/coordination', 'icon': 'cog',   'visible': action.canAccessSuperAdmin(),  'active': true }
-    ]/]
-  [#else]
     [#assign superAdminMenu = superAdminMenu + [
       { 'slug': 'admin',     'name': 'menu.admin',    'namespace': '/admin',            'action': '${(crpSession)!}/management',      'icon': 'cog',  'visible': action.canAcessCrpAdmin(),     'active': true }
     ]/]
-  [/#if]
   <div id="superadminBlock">
     <div class="container">
       <ul>
