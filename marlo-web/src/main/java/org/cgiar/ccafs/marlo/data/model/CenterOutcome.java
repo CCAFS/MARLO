@@ -101,6 +101,21 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
   }
 
 
+  public String getListComposedName() {
+
+    String name = "";
+
+    if (this.getResearchTopic() != null) {
+      name = name + this.getResearchTopic().getResearchProgram().getName();
+
+      if (this.getDescription() != null) {
+        name = name + "- " + this.getDescription();
+      }
+    }
+
+    return name;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -112,10 +127,10 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     return milestones;
   }
 
+
   public Set<CenterMonitoringOutcome> getMonitoringOutcomes() {
     return monitoringOutcomes;
   }
-
 
   public List<CenterMonitoringOutcome> getMonitorings() {
     return monitorings;
@@ -139,10 +154,10 @@ public class CenterOutcome extends MarloAuditableEntity implements Serializable,
     return researchTopic;
   }
 
+
   public Set<CenterSectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public String getShortName() {
     return shortName;

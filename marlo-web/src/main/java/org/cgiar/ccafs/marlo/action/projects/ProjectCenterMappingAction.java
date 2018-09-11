@@ -23,16 +23,19 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -90,13 +93,16 @@ public class ProjectCenterMappingAction extends BaseAction {
   private PhaseManager phaseManager;
   private List<LiaisonInstitution> liaisonInstitutions;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+  private ProjectCenterOutcomeManager projectCenterOutcomeManager;
+  private CenterOutcomeManager centerOutcomeManager;
 
   @Inject
   public ProjectCenterMappingAction(APConfig config, ProjectManager projectManager, CrpProgramManager programManager,
     GlobalUnitProjectManager globalUnitProjectManager, GlobalUnitManager crpManager,
     SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
     ProjectInfoManager projectInfoManager, ProjectCenterMappingValidator validator, PhaseManager phaseManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, ProjectCenterOutcomeManager projectCenterOutcomeManager,
+    CenterOutcomeManager centerOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -109,6 +115,8 @@ public class ProjectCenterMappingAction extends BaseAction {
     this.validator = validator;
     this.phaseManager = phaseManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.projectCenterOutcomeManager = projectCenterOutcomeManager;
+    this.centerOutcomeManager = centerOutcomeManager;
   }
 
   private Path getAutoSaveFilePath() {
@@ -270,6 +278,13 @@ public class ProjectCenterMappingAction extends BaseAction {
           project.getProjecInfoPhase(phase).setLiaisonInstitutionCenter(null);
         }
 
+        if (project.getCenterOutcomes() != null) {
+          for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
+            projectCenterOutcome.setCenterOutcome(
+              centerOutcomeManager.getResearchOutcomeById(projectCenterOutcome.getCenterOutcome().getId()));
+          }
+        }
+
         // load fps value
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
@@ -354,6 +369,15 @@ public class ProjectCenterMappingAction extends BaseAction {
           }
         }
 
+        List<ProjectCenterOutcome> projectCenterOutcomes = new ArrayList<>();
+        for (ProjectCenterOutcome projectCenterOutcome : project.getProjectCenterOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase))
+          .collect(Collectors.toList())) {
+          projectCenterOutcome.setCenterOutcome(
+            centerOutcomeManager.getResearchOutcomeById(projectCenterOutcome.getCenterOutcome().getId()));
+          projectCenterOutcomes.add(projectCenterOutcome);
+        }
+        project.setCenterOutcomes(projectCenterOutcomes);
         project.setFlagships(programs);
         project.setRegions(regions);
       }
@@ -483,6 +507,32 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         }
 
+        // Removing Project Center Outcomes
+        for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase))
+          .collect(Collectors.toList())) {
+          if (project.getCenterOutcomes() == null) {
+            project.setCenterOutcomes(new ArrayList<>());
+          }
+          if (!project.getCenterOutcomes().contains(projectCenterOutcome)) {
+            projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
+          }
+        }
+
+        // Add Project Center Outcomes
+        if (project.getCenterOutcomes() != null) {
+          for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
+            if (projectCenterOutcome.getId() == null) {
+              projectCenterOutcome.setProject(project);
+              projectCenterOutcome.setPhase(sharedPhase);
+              projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(projectCenterOutcome);
+              // This add centerOutcome to generate correct auditlog.
+              project.getProjectCenterOutcomes().add(projectCenterOutcome);
+            }
+
+          }
+        }
+
         project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
 
         List<String> relationsName = new ArrayList<>();
@@ -539,9 +589,12 @@ public class ProjectCenterMappingAction extends BaseAction {
         }
       }
       return SUCCESS;
-    } else {
+    } else
+
+    {
       return NOT_AUTHORIZED;
     }
+
   }
 
   public void setCenterPrograms(List<CrpProgram> centerPrograms) {

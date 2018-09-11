@@ -115,6 +115,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity" />
 		</set>
+		<set name="projectCenterOutcomes" order-by="id"
+      table="project_center_outcomes" inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome" />
+    </set>
 		<set name="projectOutcomes" order-by="id" table="project_outcomes"
 			inverse="true" lazy="true" fetch="select">
 			<key>
