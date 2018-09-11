@@ -2713,7 +2713,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the list of phases for upkeep
    */
   public List<Phase> getPhasesByCycles(List<String> reportCycles) {
-    System.out.println("report cycles " + reportCycles);
     List<Phase> phasesFilter = new ArrayList<>();
     List<Phase> phases = phaseManager.findAll().stream()
       .filter(
@@ -4335,40 +4334,46 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
         && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-        switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-          case DESCRIPTION:
-            i++;
-            if (sectionStatus.getMissingFields().length() > 0) {
-              return false;
-            }
-            break;
-          case PARTNERS:
-            i++;
-            if (sectionStatus.getMissingFields().length() > 0) {
-              return false;
-            }
-            break;
-          case BUDGET:
-            i++;
-            if (sectionStatus.getMissingFields().length() > 0) {
-              return false;
-            }
-            break;
-          case BUDGETBYFLAGSHIP:
-            if (budgetFlagshipSection == 0) {
-              budgetFlagshipSection = 1;
-            }
-            i++;
-            if (sectionStatus.getMissingFields().length() > 0) {
-              return false;
-            }
-            break;
+
+        if (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase()) != null) {
+          switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+            case DESCRIPTION:
+              i++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case PARTNERS:
+              i++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case BUDGET:
+              i++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case BUDGETBYFLAGSHIP:
+              if (budgetFlagshipSection == 0) {
+                budgetFlagshipSection = 1;
+              }
+              i++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+          }
         }
+
       }
 
 
     }
-    if (sections.size() == 0) {
+    if (sections.size() == 0)
+
+    {
       return false;
     }
     if (budgetFlagshipSection == 1) {
