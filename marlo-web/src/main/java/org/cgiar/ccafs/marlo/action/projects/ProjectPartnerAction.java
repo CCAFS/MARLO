@@ -1418,8 +1418,11 @@ public class ProjectPartnerAction extends BaseAction {
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
           this.saveLocations(projectPartnerClient, projectPartnerDB);
-          this.saveProjectPartnership(projectPartnerClient);
-
+          this.saveProjectPartnership(projectPartnerClient, projectPartnerDB);
+          // This is to add projectPartner to generate correct auditlog.
+          projectPartnerDB
+            .setInstitution(institutionManager.getInstitutionById(projectPartnerDB.getInstitution().getId()));
+          projectDB.getProjectPartners().add(projectPartnerDB);
 
         }
       }
@@ -1524,6 +1527,8 @@ public class ProjectPartnerAction extends BaseAction {
         partnerLocation.setProjectPartner(projectPartnerDB);
         partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
         LOG.debug("Saving : " + partnerLocation);
+        // This is to add projectPartnerLocation to generate correct auditlog.
+        projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
       }
     }
 
@@ -1585,6 +1590,9 @@ public class ProjectPartnerAction extends BaseAction {
           }
           partnerContributionClient =
             projectPartnerContributionManager.saveProjectPartnerContribution(partnerContributionClient);
+          // This is to add projectPartnerContribution to generate correct auditlog.
+          projectPersonDB.getProjectPartnerContributions().add(partnerContributionClient);
+
         }
       }
     }
@@ -1645,6 +1653,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (partnerPersonClient.getUser() != null && partnerPersonClient.getUser().getId() != null) {
           ProjectPartnerPerson projectPartnerPersonDB =
             this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
+          // This is to add projectPartnerPerson to generate correct auditlog.
+          projectPartnerDB.getProjectPartnerPersons().add(projectPartnerPersonDB);
         }
       }
 
@@ -1670,7 +1680,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-  private void saveProjectPartnership(ProjectPartner projectPartnerClient) {
+  private void saveProjectPartnership(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
     if (projectPartnerClient.getProjectPartnerPartnership() != null) {
       ProjectPartnerPartnership partnershipClient = projectPartnerClient.getProjectPartnerPartnership();
       ProjectPartnerPartnership partnershipUpdate = new ProjectPartnerPartnership();
@@ -1710,6 +1720,7 @@ public class ProjectPartnerAction extends BaseAction {
           if (!partnershipResearchPhasesDB.contains(partnershipResearchPhaseSave)) {
             projectPartnerPartnershipResearchPhaseManager
               .saveProjectPartnerPartnershipResearchPhase(partnershipResearchPhaseSave);
+            partnershipUpdate.getProjectPartnerPartnershipResearchPhases().add(partnershipResearchPhaseSave);
           }
           partnershipResearchClienteList.add(partnershipResearchPhaseSave);
         }
@@ -1774,6 +1785,7 @@ public class ProjectPartnerAction extends BaseAction {
               locationsSave.add(locationPartnership);
               if (!locationsDB.contains(locationPartnership)) {
                 projectPartnerPartnershipLocationManager.saveProjectPartnerPartnershipLocation(locationPartnership);
+                partnershipUpdate.getProjectPartnerPartnershipLocations().add(locationPartnership);
               }
             }
             for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
@@ -1793,6 +1805,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
       projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+      projectPartnerDB.getProjectPartnerPartnerships().add(partnershipUpdate);
 
     }
 
