@@ -16,12 +16,17 @@
 
 package org.cgiar.ccafs.marlo.interceptor;
 
+import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +38,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
@@ -46,16 +52,24 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
   private final GlobalUnitManager crpManager;
 
   private final LocalizedTextProvider localizedTextProvider;
-
+  private final GlobalUnitProjectManager globalUnitProjectManager;
   private final CustomParameterManager customParameterManager;
+  private final ProjectManager projectManager;
+  private final GlobalUnitManager globalUnitManager;
+  private Map<String, Parameter> parameters;
 
 
   @Inject
   public InternationalitazionFileInterceptor(GlobalUnitManager crpManager,
-    CustomParameterManager customParameterManager, LocalizedTextProvider localizedTextProvider) {
+    CustomParameterManager customParameterManager, LocalizedTextProvider localizedTextProvider,
+    ProjectManager projectManager, GlobalUnitProjectManager globalUnitProjectManager,
+    GlobalUnitManager globalUnitManager) {
     this.crpManager = crpManager;
     this.customParameterManager = customParameterManager;
     this.localizedTextProvider = localizedTextProvider;
+    this.projectManager = projectManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
+    this.globalUnitManager = globalUnitManager;
   }
 
   @Override
@@ -86,15 +100,33 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
 
-      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else {
-
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      BaseAction baseAction = (BaseAction) invocation.getAction();
+      parameters = invocation.getInvocationContext().getParameters();
+      GlobalUnit globalUnit = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+      try {
+        String projectParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
+        long projectId = Long.parseLong(projectParameter);
+        Project project = projectManager.getProjectById(projectId);
+        if (project != null && globalUnit.getGlobalUnitType().getId() == 4) {
+          GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(project.getId());
+          // GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());
+          pathFile = pathFile + globalUnitProject.getGlobalUnit().getAcronym().toLowerCase();
+          this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+        } else {
+          if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+            pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+            this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+          } else {
+            this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+          }
+        }
+      } catch (Exception e) {
+        if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+          pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+          this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+        } else {
+          this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        }
       }
     }
 
