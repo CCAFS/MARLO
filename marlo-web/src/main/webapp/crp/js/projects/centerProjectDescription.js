@@ -129,7 +129,7 @@ $(document).ready(function() {
         },
         success: function(data) {
           // console.log(data.clusters);
-          $.each(data.clusters, function(i,e) {
+          $.each(data.outcomes, function(i,e) {
             $coreSelect.addOption(e.id, e.description);
           });
         },
@@ -277,20 +277,6 @@ $(document).ready(function() {
     var $listElement = $("#cpListTemplate").clone(true).removeAttr("id");
     $listElement.find('.id').val($item.val());
     $listElement.find('.name').html($item.text());
-
-    // Getting CoA Leaders
-    $.ajax({
-        url: baseURL + '/ClusterActivitiesLeaders.do',
-        data: {
-          clusterActivityID: $item.val(),
-          phaseID: phaseID
-        },
-        success: function(data) {
-          $.each(data.leaders, function(i,e) {
-            $listElement.find('.leaders').append('<li class="leader">' + escapeHtml(e.description) + '</li>');
-          });
-        }
-    });
 
     $listElement.appendTo($coreProjects).hide().show('slow');
     $coreProjects.find('.emptyText').hide();
