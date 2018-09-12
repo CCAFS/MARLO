@@ -165,6 +165,16 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return baseLine;
   }
 
+  public String getCenterComposedName() {
+    String name = "";
+    if (this.getResearchArea() != null) {
+      name = name + this.getResearchArea().getAcronym() + " : " + this.getName();
+    }
+
+    return name;
+  }
+
+
   public double getCenterFunds() {
     return centerFunds;
   }
@@ -173,7 +183,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public Set<CenterOutput> getCenterOutputs() {
     return centerOutputs;
   }
-
 
   public Set<CenterSectionStatus> getCenterSectionStatuses() {
     return centerSectionStatuses;
@@ -187,6 +196,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return clusterofActivities;
   }
 
+
   public PowbCollaboration getCollaboration() {
     return collaboration;
   }
@@ -195,7 +205,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public String getColor() {
     return color;
   }
-
 
   public String getComposedName() {
     return this.acronym + ": " + this.name;
