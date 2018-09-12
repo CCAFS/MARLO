@@ -29,6 +29,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -71,8 +73,11 @@ public class ProjectCenterMappingAction extends BaseAction {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectCenterMappingAction.class);
 
+
   private ProjectManager projectManager;
+
   private CrpProgramManager programManager;
+
   private GlobalUnitProjectManager globalUnitProjectManager;
   private GlobalUnitManager crpManager;
   private SectionStatusManager sectionStatusManager;
@@ -95,6 +100,7 @@ public class ProjectCenterMappingAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private ProjectCenterOutcomeManager projectCenterOutcomeManager;
   private CenterOutcomeManager centerOutcomeManager;
+  private List<CenterOutcome> centerOutcomes;
 
   @Inject
   public ProjectCenterMappingAction(APConfig config, ProjectManager projectManager, CrpProgramManager programManager,
@@ -119,16 +125,20 @@ public class ProjectCenterMappingAction extends BaseAction {
     this.centerOutcomeManager = centerOutcomeManager;
   }
 
-  private Path getAutoSaveFilePath() {
+  private Path getAutoSaveFilePath(Phase phase) {
     // get the class simple name
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
-      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + phase.getDescription() + "_"
+      + phase.getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public List<CenterOutcome> getCenterOutcomes() {
+    return centerOutcomes;
   }
 
   public List<CrpProgram> getCenterPrograms() {
@@ -169,10 +179,10 @@ public class ProjectCenterMappingAction extends BaseAction {
     return projectID;
   }
 
-
   public List<CrpProgram> getRegionFlagships() {
     return regionFlagships;
   }
+
 
   public List<CrpProgram> getRegionPrograms() {
     return regionPrograms;
@@ -248,7 +258,7 @@ public class ProjectCenterMappingAction extends BaseAction {
     if (project != null) {
       // We validate if there is a draft version
       // Get the path
-      Path path = this.getAutoSaveFilePath();
+      Path path = this.getAutoSaveFilePath(phase);
       // validate if file exist and user has enabled auto-save funcionallity
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
@@ -395,6 +405,21 @@ public class ProjectCenterMappingAction extends BaseAction {
 
       programFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
 
+
+      centerOutcomes = new ArrayList<>();
+
+      for (CrpProgram crpProgram : project.getFlagships()) {
+        crpProgram = programManager.getCrpProgramById(crpProgram.getId());
+        List<CenterTopic> centerTopics = new ArrayList<>(
+          crpProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+        for (CenterTopic centerTopic : centerTopics) {
+          List<CenterOutcome> centerOutcomesList = new ArrayList<>(
+            centerTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+          for (CenterOutcome centerOutcome : centerOutcomesList) {
+            centerOutcomes.add(centerOutcome);
+          }
+        }
+      }
 
       regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
@@ -566,7 +591,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         // this.setModificationJustification(project);
         // projectManager.saveProject(project, this.getActionName(), relationsName, sharedPhase);
 
-        Path path = this.getAutoSaveFilePath();
+        Path path = this.getAutoSaveFilePath(sharedPhase);
         // delete the draft file if exists
         if (path.toFile().exists()) {
           path.toFile().delete();
@@ -595,6 +620,10 @@ public class ProjectCenterMappingAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  public void setCenterOutcomes(List<CenterOutcome> centerOutcomes) {
+    this.centerOutcomes = centerOutcomes;
   }
 
   public void setCenterPrograms(List<CrpProgram> centerPrograms) {

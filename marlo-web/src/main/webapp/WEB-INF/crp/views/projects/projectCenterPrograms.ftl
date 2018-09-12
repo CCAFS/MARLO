@@ -55,17 +55,19 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="centerComposedName" i18nkey="CIAT Program" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
+                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="CIAT Program" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
               </div>
             </div>
 
             <div class="form-group row simpleBox additionalPrograms">
               <div class="col-md-6 ">
                 <h4> Additional Program(s)</h4>
-                [#list (programFlagships)![] as element] 
+                <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
+                [#list (programFlagships)![] as element]                                  
                   [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.centerComposedName}" value="${element.id}" editable=editable checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
+                </div>
               </div>
               <div class="col-md-6 ">
                 <h4> Regional Offices</h4>
@@ -100,7 +102,7 @@
                 [#if editable]
                   [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
                   <span id="coaSelectedIds" style="display:none">[#if project.centerOutcomes?has_content][#list project.centerOutcomes as e]${e.centerOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="listComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="centerOutcomes" keyFieldName="id" displayFieldName="listComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
                 [#else]
                   [#if !project.centerOutcomes?has_content]
                     <p>[@s.text name="form.values.fieldEmpty" /]</p>

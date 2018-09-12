@@ -126,7 +126,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
           List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
             .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
-              && c.getYear() == baseAction.getActualPhase().getYear())
+              && c.getYear() == baseAction.getActualPhase().getYear() && c.getUpkeep())
             .collect(Collectors.toList());
           if (phases.size() > 0) {
             baseAction.setPhaseID(phases.get(0).getId());
