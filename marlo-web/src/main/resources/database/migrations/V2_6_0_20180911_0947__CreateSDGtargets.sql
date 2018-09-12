@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS `sdg_targets`;
 CREATE TABLE `sdg_targets` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `sdg_target_code` VARCHAR(5) NOT NULL,

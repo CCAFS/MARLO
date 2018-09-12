@@ -1,7 +1,10 @@
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS `sustainable_development_goals`;
 CREATE TABLE sustainable_development_goals
 (id BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 smo_code BIGINT(20),
 sdg_name text,
+icon text,
 CONSTRAINT sustainable_unique_1 UNIQUE(smo_code)
 );
 

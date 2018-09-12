@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS `sgd_indicators`;
 CREATE TABLE `sgd_indicators` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `unsd_indicator_codes` VARCHAR(45) NOT NULL,
