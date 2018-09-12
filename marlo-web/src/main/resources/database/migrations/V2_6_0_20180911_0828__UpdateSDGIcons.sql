@@ -1,0 +1,17 @@
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-01.png' where id = 1 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-02.png' where id = 2 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-03.png' where id = 3 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-04.png' where id = 4 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-05.png' where id = 5 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-06.png' where id = 6 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-07.png' where id = 7 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-08.png' where id = 8 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-09.png' where id = 9 ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-10.png' where id = 10  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-11.png' where id = 11  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-12.png' where id = 12  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-13.png' where id = 13  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-14.png' where id = 14  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-15.png' where id = 15  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-16.png' where id = 16  ;
+update sustainable_development_goals set icon= 'E_SDG-goals_Goal-17.png' where id = 17  ;
