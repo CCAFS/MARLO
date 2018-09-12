@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectDescription.js",  
+  "${baseUrlMedia}/js/projects/centerProjectDescription.js",  
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
@@ -75,7 +75,39 @@
                 [/#list]
               </div>
             </div>
+            [#-- Cluster of Activities --]
             
+            <div class="panel tertiary">
+              <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
+                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable /]</label>
+              </div>
+              <div id="projectsList" class="panel-body" listname="project.clusterActivities">
+                [#-- Loading --]
+                <div class="loading clustersBlock" style="display:none"></div>
+                <ul class="list">
+                [#if project.centerOutcomes?has_content]
+                  [#list project.centerOutcomes as element]
+                    <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
+                      <input class="id" type="hidden" name="project.centerOutcomes[${element_index}].centerOutcome.id" value="${element.centerOutcome.id}" />
+                      <input class="cid" type="hidden" name="project.centerOutcomes[${element_index}].id" value="${(element.id)!}" />
+                      [#if editable]<span class="listButton remove popUpValidation pull-right">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                      <span class="name">${(element.centerOutcome.listComposedName)!'null'}</span>
+                      <div class="clearfix"></div>                      
+                    </li>
+                  [/#list]               
+                [/#if]  
+                </ul>
+                [#if editable]
+                  [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
+                  <span id="coaSelectedIds" style="display:none">[#if project.centerOutcomes?has_content][#list project.centerOutcomes as e]${e.centerOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="listComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
+                [#else]
+                  [#if !project.centerOutcomes?has_content]
+                    <p>[@s.text name="form.values.fieldEmpty" /]</p>
+                  [/#if]
+                [/#if] 
+              </div>
+            </div>
           </div>
           
           [#-- Section Buttons & hidden inputs--]
@@ -83,6 +115,7 @@
           <input type="hidden"  name="sharedPhaseID" value="${sharedPhaseID}"/>
           [/@s.form] 
       </div> 
+      
     </div> 
 </section>
 [/#if]
