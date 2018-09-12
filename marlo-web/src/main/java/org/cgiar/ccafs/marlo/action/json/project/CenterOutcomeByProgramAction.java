@@ -41,10 +41,11 @@ public class CenterOutcomeByProgramAction extends BaseAction {
 
 
   private static final long serialVersionUID = 3406776116755988206L;
+
+
   private final Logger logger = LoggerFactory.getLogger(CenterOutcomeByProgramAction.class);
 
   private List<Map<String, Object>> outcomes;
-
   private String programID;
 
   private CrpProgramManager crpManager;
@@ -88,6 +89,9 @@ public class CenterOutcomeByProgramAction extends BaseAction {
 
   }
 
+  public List<Map<String, Object>> getOutcomes() {
+    return outcomes;
+  }
 
   public String getProgramID() {
     return programID;
@@ -98,6 +102,11 @@ public class CenterOutcomeByProgramAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     programID = (StringUtils.trim(parameters.get(APConstants.CENTER_PROGRAM_ID).getMultipleValues()[0]));
+  }
+
+
+  public void setOutcomes(List<Map<String, Object>> outcomes) {
+    this.outcomes = outcomes;
   }
 
   public void setProgramID(String programID) {
