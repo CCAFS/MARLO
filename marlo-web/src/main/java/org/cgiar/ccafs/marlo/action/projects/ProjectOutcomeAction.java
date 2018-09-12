@@ -558,8 +558,9 @@ public class ProjectOutcomeAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_INDICATORS_RELATION);
-
-      // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
+      if (this.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+        relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
+      }
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
       /**
@@ -637,7 +638,8 @@ public class ProjectOutcomeAction extends BaseAction {
             }
 
             projectCommunication = projectCommunicationManager.saveProjectCommunication(projectCommunication);
-
+            // This add projectCommunication to generate correct auditlog.
+            projectOutcome.getProjectCommunications().add(projectCommunication);
           } else {
             // Update existing entity.
             ProjectCommunication projectCommunicationDB =
@@ -660,7 +662,8 @@ public class ProjectOutcomeAction extends BaseAction {
             }
 
             projectCommunicationDB = projectCommunicationManager.saveProjectCommunication(projectCommunicationDB);
-
+            // This add projectCommunication to generate correct auditlog.
+            projectOutcome.getProjectCommunications().add(projectCommunicationDB);
           }
 
 
@@ -693,6 +696,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectOutcomeIndicator.setProjectOutcome(projectOutcomeDB);
 
             projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicator);
+            // This add projectOutcomeIndicator to generate correct auditlog.
+            projectOutcome.getProjectOutcomeIndicators().add(projectOutcomeIndicator);
 
           } else {
             // Update existing entity
@@ -708,6 +713,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
             projectOutcomeIndicatorDB =
               projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
+            // This add projectOutcomeIndicator to generate correct auditlog.
+            projectOutcome.getProjectOutcomeIndicators().add(projectOutcomeIndicatorDB);
           }
 
 
@@ -747,7 +754,8 @@ public class ProjectOutcomeAction extends BaseAction {
               }
             }
             projectMilestoneManager.saveProjectMilestone(projectMilestone);
-
+            // This add projectMilestone to generate correct auditlog.
+            projectOutcome.getProjectMilestones().add(projectMilestone);
           } else {
             // Update existing entity.
             ProjectMilestone projectMilestoneDB =
@@ -784,6 +792,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
 
             projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
+            // This add projectMilestone to generate correct auditlog.
+            projectOutcome.getProjectMilestones().add(projectMilestoneDB);
 
           }
 
@@ -816,6 +826,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectNextuser.setProjectOutcome(projectOutcomeDB);
 
             projectNextuserManager.saveProjectNextuser(projectNextuser);
+            // This add projectNextuser to generate correct auditlog.
+            projectOutcome.getProjectNextusers().add(projectNextuser);
 
           } else {
             // Update existing entity
@@ -831,6 +843,8 @@ public class ProjectOutcomeAction extends BaseAction {
             projectNextuserDB.setKnowledgeReport(projectNextuser.getKnowledgeReport());
 
             projectNextuserDB = projectNextuserManager.saveProjectNextuser(projectNextuserDB);
+            // This add projectNextuser to generate correct auditlog.
+            projectOutcome.getProjectNextusers().add(projectNextuserDB);
           }
 
 
