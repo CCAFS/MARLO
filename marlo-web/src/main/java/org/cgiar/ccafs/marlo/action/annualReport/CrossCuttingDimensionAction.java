@@ -555,15 +555,19 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
           // Project Innovations
           reportSynthesis.getReportSynthesisCrossCuttingDimension().setInnovations(new ArrayList<>());
-          if (reportSynthesis.getReportSynthesisCrossCuttingDimension()
-            .getReportSynthesisCrossCuttingDimensionInnovations() != null
-            && !reportSynthesis.getReportSynthesisCrossCuttingDimension()
-              .getReportSynthesisCrossCuttingDimensionInnovations().isEmpty()) {
-            for (ReportSynthesisCrossCuttingDimensionInnovation dimensionInnovation : reportSynthesis
-              .getReportSynthesisCrossCuttingDimension().getReportSynthesisCrossCuttingDimensionInnovations().stream()
-              .filter(i -> i.isActive()).collect(Collectors.toList())) {
-              reportSynthesis.getReportSynthesisCrossCuttingDimension().getInnovations()
-                .add(dimensionInnovation.getProjectInnovation());
+          if (reportSynthesisCrossCuttingDimensionInnovationManager.findAll() != null) {
+            List<ReportSynthesisCrossCuttingDimensionInnovation> reportSynthesisCrossCuttingDimensionInnovation =
+              reportSynthesisCrossCuttingDimensionInnovationManager.findAll().stream()
+                .filter(ci -> ci.getReportSynthesisCrossCuttingDimension()
+                  .equals(reportSynthesis.getReportSynthesisCrossCuttingDimension()) && ci.isActive())
+                .collect(Collectors.toList());
+
+            if (reportSynthesisCrossCuttingDimensionInnovation != null
+              && !reportSynthesisCrossCuttingDimensionInnovation.isEmpty()) {
+              for (ReportSynthesisCrossCuttingDimensionInnovation dimensionInnovation : reportSynthesisCrossCuttingDimensionInnovation) {
+                reportSynthesis.getReportSynthesisCrossCuttingDimension().getInnovations()
+                  .add(dimensionInnovation.getProjectInnovation());
+              }
             }
           }
 
@@ -818,14 +822,11 @@ public class CrossCuttingDimensionAction extends BaseAction {
         stList.add(Long.parseLong(string.trim()));
       }
 
-
       for (Long studyId : studiesIds) {
         int index = stList.indexOf(studyId);
         if (index < 0) {
           selectedPs.add(studyId);
         }
-
-
       }
 
       for (ReportSynthesisCrossCuttingDimensionInnovation reportInnovation : crossCuttingDimensionDB
@@ -837,7 +838,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
         }
       }
 
-      for (Long studyId : studiesIds) {
+      for (Long studyId : selectedPs) {
         ProjectInnovation innovation = projectInnovationManager.getProjectInnovationById(studyId);
 
         ReportSynthesisCrossCuttingDimensionInnovation innovationNew =
