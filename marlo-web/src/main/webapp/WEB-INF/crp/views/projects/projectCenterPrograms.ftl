@@ -77,11 +77,11 @@
                 [/#list]
               </div>
             </div>
-            [#-- Cluster of Activities --]
+            [#-- Center Outcomes --]
             
             <div class="panel tertiary">
               <div class="panel-head ${customForm.changedField('project.centerOutcomes')}"> 
-                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable /]</label>
+                <label for="">[@s.text name="center.outcome.map" /]:[@customForm.req required=editable /]</label>
               </div>
               <div id="projectsList" class="panel-body" listname="project.centerOutcomes">
                 [#-- Loading --]
