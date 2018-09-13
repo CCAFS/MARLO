@@ -80,10 +80,10 @@
             [#-- Cluster of Activities --]
             
             <div class="panel tertiary">
-              <div class="panel-head ${customForm.changedField('project.clusterActivities')}"> 
+              <div class="panel-head ${customForm.changedField('project.centerOutcomes')}"> 
                 <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=editable /]</label>
               </div>
-              <div id="projectsList" class="panel-body" listname="project.clusterActivities">
+              <div id="projectsList" class="panel-body" listname="project.centerOutcomes">
                 [#-- Loading --]
                 <div class="loading clustersBlock" style="display:none"></div>
                 <ul class="list">
@@ -123,6 +123,17 @@
 [/#if]
  
 <span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as li]"${li.id}" : ${(li.crpProgram.id)!-1}[#if li_has_next], [/#if][/#list]}</span>
+<ul style="display:none">
+  <li id="cpListTemplate" class="clusterActivity clearfix">
+    <span class="listButton remove pull-right">[@s.text name="form.buttons.remove" /]</span>
+    <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
+    <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+    <ul class="leaders"></ul>
+  </li>
+</ul>
+
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
