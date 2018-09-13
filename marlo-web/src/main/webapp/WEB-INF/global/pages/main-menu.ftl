@@ -24,13 +24,13 @@
     ]
   },
   [#-- SYNTHESIS PLANNING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
       { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged, 'active':  action.canAcessPOWB() }
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
       { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': action.canAcessCrp()},
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false }
