@@ -126,8 +126,8 @@
 <ul style="display:none">
   <li id="cpListTemplate" class="clusterActivity clearfix">
     <span class="listButton remove pull-right">[@s.text name="form.buttons.remove" /]</span>
-    <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
-    <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
+    <input class="id" type="hidden" name="project.centerOutcomes[-1].centerOutcome.id" value="" />
+    <input class="cid" type="hidden" name="project.centerOutcomes[-1].id" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
     <ul class="leaders"></ul>
