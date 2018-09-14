@@ -541,6 +541,7 @@
   <div class="panel tertiary" listname="${name}" style="position:relative">
     <div class="panel-head"><label for="">[@s.text name=label /]:[@req required=required && editable /]</label></div>
     <div class="panel-body" style="min-height: 30px;">
+      <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list listType-${composedID}">
         [#if elementList?has_content]
           [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
@@ -552,6 +553,7 @@
         [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
       [/#if]
     </div>
+    [#-- Element item Template --]
     <ul style="display:none">
       [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
     </ul>
