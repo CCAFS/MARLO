@@ -182,7 +182,9 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
           }
         }
       }
-
+      if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+        hasPermissionToEdit = false;
+      }
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }

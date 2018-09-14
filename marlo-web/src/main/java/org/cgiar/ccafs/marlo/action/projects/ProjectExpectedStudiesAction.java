@@ -352,7 +352,67 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         this.setTransaction("-1");
       }
+      if (expectedStudy.getProjectExpectedStudyInfo() == null) {
+        expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
 
+        // Load ExpectedStudyInfo relations
+        if (expectedStudy.getProjectExpectedStudyInfo() != null) {
+
+          // Load StudyType
+          if (expectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo().setStudyType(
+              studyTypeManager.getStudyTypeById(expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId()));
+          }
+
+          // Load PolicyInvestimentType
+          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo()
+              .setRepIndPolicyInvestimentType(investimentTypeManager.getRepIndPolicyInvestimentTypeById(
+                expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId()));
+          }
+
+          // Load OrganizationType
+          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo()
+              .setRepIndOrganizationType(organizationTypeManager.getRepIndOrganizationTypeById(
+                expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId()));
+          }
+
+          // Load OrganizationType
+          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo().setRepIndStageProcess(stageProcessManager
+              .getRepIndStageProcessById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId()));
+          }
+
+          // Load StageStudy
+          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(stageStudyManager
+              .getRepIndStageStudyById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
+          }
+
+          // Load GeographicScope
+          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo()
+              .setRepIndGeographicScope(geographicScopeManager.getRepIndGeographicScopeById(
+                expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()));
+          }
+
+          // Load region
+          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
+            && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
+            expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(repIndRegionManager
+              .getRepIndRegionById(expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId()));
+          }
+
+        }
+
+      }
     } else {
       expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
     }
@@ -690,6 +750,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_PROJECTS_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_INFOS_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SUBIDOS_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_FLAGSHIP_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_CRP_RELATION);
@@ -768,9 +829,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null) {
-        RepIndStageStudy stageStudy = stageStudyManager
-          .getRepIndStageStudyById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId());
-        expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(stageStudy);
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
+        }
       }
 
       // Validate negative Values
@@ -824,6 +885,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // End
 
       projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(expectedStudy.getProjectExpectedStudyInfo());
+      expectedStudy.getProjectExpectedStudyInfos().add(expectedStudy.getProjectExpectedStudyInfo());
       /**
        * The following is required because we need to update something on the @ProjectExpectedStudy if we want a row
        * created in the auditlog table.
@@ -896,6 +958,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyCrpSave.setGlobalUnit(globalUnit);
 
           projectExpectedStudyCrpManager.saveProjectExpectedStudyCrp(studyCrpSave);
+          // This is to add studyCrpSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyCrps().add(studyCrpSave);
         }
       }
     }
@@ -940,6 +1004,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyFlagshipSave.setCrpProgram(crpProgram);
 
           projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(studyFlagshipSave);
+          // This is to add studyFlagshipSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyFlagships().add(studyFlagshipSave);
         }
       }
     }
@@ -982,6 +1048,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyInstitutionSave.setInstitution(institution);
 
           projectExpectedStudyInstitutionManager.saveProjectExpectedStudyInstitution(studyInstitutionSave);
+          // This is to add studySubIdoSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyInstitutions().add(studyInstitutionSave);
         }
       }
     }
@@ -1023,6 +1091,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyProjectSave.setProject(project);
 
           expectedStudyProjectManager.saveExpectedStudyProject(studyProjectSave);
+          // This is to add studyProjectSave to generate correct auditlog.
+          expectedStudy.getExpectedStudyProjects().add(studyProjectSave);
         }
       }
     }
@@ -1067,6 +1137,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studyFlagshipSave.setCrpProgram(crpProgram);
 
           projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(studyFlagshipSave);
+          // This is to add studyFlagshipSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyFlagships().add(studyFlagshipSave);
         }
       }
     }
@@ -1110,6 +1182,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studytargetSave.setSrfSloIndicator(sloIndicator);
 
           projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(studytargetSave);
+          // This is to add studytargetSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudySrfTargets().add(studytargetSave);
         }
       }
     }
@@ -1152,6 +1226,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           studySubIdoSave.setSrfSubIdo(srfSubIdo);
 
           projectExpectedStudySubIdoManager.saveProjectExpectedStudySubIdo(studySubIdoSave);
+          // This is to add studySubIdoSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudySubIdos().add(studySubIdoSave);
         }
       }
     }
