@@ -33,6 +33,11 @@ public class RepIndPolicyInvestimentType extends MarloBaseEntity implements java
     this.name = name;
   }
 
+  @Override
+  public String toString() {
+    return "RepIndPolicyInvestimentType [name=" + name + ", definition=" + definition + "]";
+  }
+
 
 }
 
