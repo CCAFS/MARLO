@@ -354,62 +354,60 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
       if (expectedStudy.getProjectExpectedStudyInfo() == null) {
         expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+      }
+      // Load ExpectedStudyInfo relations
+      if (expectedStudy.getProjectExpectedStudyInfo() != null) {
 
-        // Load ExpectedStudyInfo relations
-        if (expectedStudy.getProjectExpectedStudyInfo() != null) {
+        // Load StudyType
+        if (expectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setStudyType(
+            studyTypeManager.getStudyTypeById(expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId()));
+        }
 
-          // Load StudyType
-          if (expectedStudy.getProjectExpectedStudyInfo().getStudyType() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo().setStudyType(
-              studyTypeManager.getStudyTypeById(expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId()));
-          }
+        // Load PolicyInvestimentType
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo()
+            .setRepIndPolicyInvestimentType(investimentTypeManager.getRepIndPolicyInvestimentTypeById(
+              expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId()));
+        }
 
-          // Load PolicyInvestimentType
-          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo()
-              .setRepIndPolicyInvestimentType(investimentTypeManager.getRepIndPolicyInvestimentTypeById(
-                expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId()));
-          }
+        // Load OrganizationType
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo()
+            .setRepIndOrganizationType(organizationTypeManager.getRepIndOrganizationTypeById(
+              expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId()));
+        }
 
-          // Load OrganizationType
-          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo()
-              .setRepIndOrganizationType(organizationTypeManager.getRepIndOrganizationTypeById(
-                expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId()));
-          }
+        // Load OrganizationType
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndStageProcess(stageProcessManager
+            .getRepIndStageProcessById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId()));
+        }
 
-          // Load OrganizationType
-          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo().setRepIndStageProcess(stageProcessManager
-              .getRepIndStageProcessById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getId()));
-          }
+        // Load StageStudy
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(stageStudyManager
+            .getRepIndStageStudyById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
+        }
 
-          // Load StageStudy
-          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(stageStudyManager
-              .getRepIndStageStudyById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
-          }
+        // Load GeographicScope
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo()
+            .setRepIndGeographicScope(geographicScopeManager.getRepIndGeographicScopeById(
+              expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()));
+        }
 
-          // Load GeographicScope
-          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo()
-              .setRepIndGeographicScope(geographicScopeManager.getRepIndGeographicScopeById(
-                expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()));
-          }
-
-          // Load region
-          if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
-            && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
-            expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(repIndRegionManager
-              .getRepIndRegionById(expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId()));
-          }
-
+        // Load region
+        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(repIndRegionManager
+            .getRepIndRegionById(expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId()));
         }
 
       }
