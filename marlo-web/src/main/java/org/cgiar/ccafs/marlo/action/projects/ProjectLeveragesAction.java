@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
@@ -70,6 +71,7 @@ public class ProjectLeveragesAction extends BaseAction {
   private ProjectLeverageManager projectLeverageManager;
   private GlobalUnitManager crpManager;
   private AuditLogManager auditLogManager;
+  private CrpProgramManager crpProgramManager;
 
   // Variables
   private long projectID;
@@ -87,7 +89,7 @@ public class ProjectLeveragesAction extends BaseAction {
   public ProjectLeveragesAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
     IpProgramManager ipProgrammManager, AuditLogManager auditLogManager, GlobalUnitManager crpManager,
     ProjectLeverageManager projectLeverageManager, ProjectLeverageValidator projectLeverageValidator,
-    HistoryComparator historyComparator) {
+    HistoryComparator historyComparator, CrpProgramManager crpProgramManager) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -97,6 +99,7 @@ public class ProjectLeveragesAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.historyComparator = historyComparator;
     this.projectLeverageValidator = projectLeverageValidator;
+    this.crpProgramManager = crpProgramManager;
   }
 
   @Override
@@ -202,6 +205,7 @@ public class ProjectLeveragesAction extends BaseAction {
         projectLeverage.setCrpProgram(null);
       }
       projectLeverageManager.saveProjectLeverage(projectLeverage);
+      project.getProjectLeverages().add(projectLeverage);
     }
 
   }
@@ -271,6 +275,16 @@ public class ProjectLeveragesAction extends BaseAction {
         }
 
         this.setDifferences(differences);
+
+        // load crpProgram relations
+        if (project.getProjectLeverages() != null && !project.getProjectLeverages().isEmpty()) {
+          for (ProjectLeverage projectLeverage : project.getProjectLeverages()) {
+            if (projectLeverage.getCrpProgram() != null && projectLeverage.getCrpProgram().getId() != null) {
+              projectLeverage
+                .setCrpProgram(crpProgramManager.getCrpProgramById(projectLeverage.getCrpProgram().getId()));
+            }
+          }
+        }
 
       } else {
         this.transaction = null;
