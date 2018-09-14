@@ -113,6 +113,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationCountryManager projectInnovationCountryManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private AuditLogManager auditLogManager;
+  private DeliverableManager deliverableManager;
 
   // Variables
   private long projectID;
@@ -152,7 +153,7 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationCountryManager projectInnovationCountryManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
     AuditLogManager auditLogManager, RepIndContributionOfCrpManager repIndContributionOfCrpManager,
-    RepIndDegreeInnovationManager repIndDegreeInnovationManager) {
+    RepIndDegreeInnovationManager repIndDegreeInnovationManager, DeliverableManager deliverableManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -177,6 +178,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.repIndContributionOfCrpManager = repIndContributionOfCrpManager;
     this.repIndDegreeInnovationManager = repIndDegreeInnovationManager;
+    this.deliverableManager = deliverableManager;
   }
 
   /**
@@ -295,6 +297,85 @@ public class ProjectInnovationAction extends BaseAction {
         this.transaction = null;
 
         this.setTransaction("-1");
+      }
+      if (innovation.getProjectInnovationInfo() == null) {
+        innovation.getProjectInnovationInfo(this.getActualPhase());
+      }
+      // load relations
+      if (innovation.getProjectInnovationInfo() != null) {
+
+        // load PhaseResearchPartnership
+        if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null
+          && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() != null) {
+          innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(
+            repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(
+              innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId()));
+        }
+
+        // load StageInnovation
+        if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+          && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null) {
+          innovation.getProjectInnovationInfo().setRepIndStageInnovation(repIndStageInnovationManager
+            .getRepIndStageInnovationById(innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId()));
+        }
+
+        // load GeographicScope
+        if (innovation.getProjectInnovationInfo().getRepIndGeographicScope() != null
+          && innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() != null) {
+          innovation.getProjectInnovationInfo().setRepIndGeographicScope(repIndGeographicScopeManager
+            .getRepIndGeographicScopeById(innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId()));
+        }
+
+        // load Region
+        if (innovation.getProjectInnovationInfo().getRepIndRegion() != null
+          && innovation.getProjectInnovationInfo().getRepIndRegion().getId() != null) {
+          innovation.getProjectInnovationInfo().setRepIndRegion(
+            repIndRegionManager.getRepIndRegionById(innovation.getProjectInnovationInfo().getRepIndRegion().getId()));
+        }
+
+        // load InnovationType
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationType(repIndInnovationTypeManager
+            .getRepIndInnovationTypeById(innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()));
+        }
+
+        // load ContributionOfCrp
+        if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
+          && innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId() != null) {
+          innovation.getProjectInnovationInfo()
+            .setRepIndContributionOfCrp(repIndContributionOfCrpManager.getRepIndContributionOfCrpById(
+              innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId()));
+        }
+
+        // load DegreeInnovation
+        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
+          && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
+          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(repIndDegreeInnovationManager
+            .getRepIndDegreeInnovationById(innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
+        }
+
+        // load InnovationDeliverables
+        if (innovation.getProjectInnovationDeliverables() != null
+          && !innovation.getProjectInnovationDeliverables().isEmpty()) {
+          for (ProjectInnovationDeliverable projectInnovationDeliverable : innovation
+            .getProjectInnovationDeliverables()) {
+            if (projectInnovationDeliverable.getDeliverable() != null
+              && projectInnovationDeliverable.getDeliverable().getId() != null) {
+
+              if (deliverableManager
+                .getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()) != null) {
+                Deliverable deliverable =
+                  deliverableManager.getDeliverableById(projectInnovationDeliverable.getDeliverable().getId());
+                projectInnovationDeliverable.setDeliverable(deliverable);
+                projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getActualPhase());
+              }
+
+            }
+
+          }
+        }
+
       }
 
     } else {
@@ -502,6 +583,7 @@ public class ProjectInnovationAction extends BaseAction {
 
 
       List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_INNOVATION_INFOS_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_COUNTRY_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_ORGANIZATION_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_CRP_RELATION);
@@ -540,15 +622,15 @@ public class ProjectInnovationAction extends BaseAction {
 
       // Setup focusLevel
       if (innovation.getProjectInnovationInfo().getGenderFocusLevel() != null) {
-        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
-          .getRepIndGenderYouthFocusLevelById(innovation.getProjectInnovationInfo().getGenderFocusLevel().getId());
-        innovation.getProjectInnovationInfo().setGenderFocusLevel(focusLevel);
+        if (innovation.getProjectInnovationInfo().getGenderFocusLevel().getId() == -1) {
+          innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
+        }
       }
 
       if (innovation.getProjectInnovationInfo().getYouthFocusLevel() != null) {
-        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
-          .getRepIndGenderYouthFocusLevelById(innovation.getProjectInnovationInfo().getYouthFocusLevel().getId());
-        innovation.getProjectInnovationInfo().setYouthFocusLevel(focusLevel);
+        if (innovation.getProjectInnovationInfo().getYouthFocusLevel().getId() == -1) {
+          innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
+        }
       }
       // End
 
@@ -675,6 +757,8 @@ public class ProjectInnovationAction extends BaseAction {
           innovationCrpSave.setGlobalUnit(globalUnit);
 
           projectInnovationCrpManager.saveProjectInnovationCrp(innovationCrpSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          innovation.getProjectInnovationCrps().add(innovationCrpSave);
         }
       }
     }
@@ -711,6 +795,8 @@ public class ProjectInnovationAction extends BaseAction {
           innovationDeliverableSave.setDeliverable(deliverable);
 
           projectInnovationDeliverableManager.saveProjectInnovationDeliverable(innovationDeliverableSave);
+          // This is to add innovationDeliverableSave to generate correct auditlog.
+          innovation.getProjectInnovationDeliverables().add(innovationDeliverableSave);
         }
       }
     }
@@ -754,6 +840,8 @@ public class ProjectInnovationAction extends BaseAction {
           innovationOrganizationSave.setRepIndOrganizationType(repIndOrganizationType);
 
           projectInnovationOrganizationManager.saveProjectInnovationOrganization(innovationOrganizationSave);
+          // This is to add innovationOrganizationSave to generate correct auditlog.
+          innovation.getProjectInnovationOrganizations().add(innovationOrganizationSave);
         }
       }
     }
