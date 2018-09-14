@@ -115,25 +115,41 @@ $(document).ready(function() {
   }
 
   $('#projectFlagshipsBlock input').on('change', function() {
-    console.log(flagshipsIds());
+        
+    var urlAction = "clusterByFPsAction";
+    
+    var $inputSelected = $(this);
+    if($inputSelected.hasClass('getCenterOutcomes')){
+      urlAction = "centerOutcomeByProgramAction";
+      $coreSelect = $('select.elementType-centerOutcome')
+    }
+    
+    
     $.ajax({
-        url: baseURL + '/clusterByFPsAction.do',
+        url: baseURL + '/'+ urlAction+'.do',
         data: {
           flagshipID: flagshipsIds(),
+          programID: flagshipsIds(),
           phaseID: phaseID
         },
         beforeSend: function() {
+          $coreSelect.parents('.panel').find('.listComponentLoading').fadeIn();
           $('.loading.clustersBlock').fadeIn();
           $coreSelect.empty();
           $coreSelect.addOption(-1, 'Select an option');
         },
         success: function(data) {
+          var optionsArray = data.clusters;
+          if($inputSelected.hasClass('getCenterOutcomes')){
+            optionsArray = data.outcomes;
+          }
           // console.log(data.clusters);
-          $.each(data.clusters, function(i,e) {
+          $.each(optionsArray, function(i,e) {
             $coreSelect.addOption(e.id, e.description);
           });
         },
         complete: function(){
+          $coreSelect.parents('.panel').find('.listComponentLoading').fadeOut();
           $('.loading.clustersBlock').fadeOut();
         }
     });

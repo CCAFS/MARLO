@@ -152,7 +152,7 @@
                           <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
                         </p>
                       [#else]
-                        [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" cssClassLabel="font-normal" /]
+                        [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput ${isCenterProject?string('getCenterOutcomes','')}" cssClassLabel="font-normal" /]
                       [/#if]
                     [/#list]
                      
@@ -229,6 +229,13 @@
                   [/#if]
                 [/#if] 
               </div>
+            </div>
+            [/#if]
+            
+            [#if isCenterProject]
+            [#-- CENTER Reserach Outcomes (SA Version) --] 
+            <div class="form-group">
+              [@customForm.elementsListComponent name="project.centerOutcomes" elementType="centerOutcome" elementList=project.centerOutcomes label="projectDescription.researchOutcomes" listName="centerOutcomes" keyFieldName="id" displayFieldName="listComposedName" required=editable /]
             </div>
             [/#if]
             

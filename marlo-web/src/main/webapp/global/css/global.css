@@ -1152,6 +1152,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel .panel-body {
   padding: 4px 3px 4px 3px;
   min-height: 68px;
+  position: relative;
 }
 
 .panel .panel-body > ul {
