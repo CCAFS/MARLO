@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
@@ -34,6 +35,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -43,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
+import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -90,12 +95,12 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
-
   // Managers
   private ProjectManager projectManager;
 
 
   private ProjectInfoManager projectInfoManagerManager;
+
 
   private SectionStatusManager sectionStatusManager;
 
@@ -103,23 +108,28 @@ public class ProjectDescriptionAction extends BaseAction {
   private ProjectFocusManager projectFocusManager;
 
   private FileDBManager fileDBManager;
+
+
   private GlobalUnitManager crpManager;
 
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
 
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
-
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
+
   private GlobalUnitProjectManager globalUnitProjectManager;
+  private ProjectCenterOutcomeManager projectCenterOutcomeManager;
+
   private AuditLogManager auditLogManager;
   private ProjectScopeManager projectScopeManager;
   private LocElementTypeManager locationTypeManager;
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
+  private CenterOutcomeManager centerOutcomeManager;
   private LiaisonUserManager liaisonUserManager;
   private HistoryComparator historyComparator;
+
   private List<CrpProgram> centerPrograms;
   private List<CrpProgram> regionPrograms;
   // Front-end
@@ -129,6 +139,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
+  private List<CrpClusterOfActivity> clusterofActivites;
+  private Project projectDB;
 
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -136,26 +148,23 @@ public class ProjectDescriptionAction extends BaseAction {
    * private UserManager userManager;
    */
 
-  private List<CrpClusterOfActivity> clusterofActivites;
-  private Project projectDB;
   private Map<String, String> projectStatuses;
   private List<LiaisonUser> allOwners;
   private Map<String, String> projectTypes;
   private Map<String, String> projectScales;
-
+  private List<CenterOutcome> centerOutcomes;
   private File file;
-
   private File fileReporting;
-
 
   private String fileContentType;
 
-
   private String fileFileName;
 
-  private String fileReportingFileName;
-  private ProjectDescriptionValidator validator;
 
+  private String fileReportingFileName;
+
+
+  private ProjectDescriptionValidator validator;
 
   @Inject
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -167,7 +176,8 @@ public class ProjectDescriptionAction extends BaseAction {
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
     ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
+    ProjectCenterOutcomeManager projectCenterOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -190,8 +200,9 @@ public class ProjectDescriptionAction extends BaseAction {
     this.locationTypeManager = locationManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.projectCenterOutcomeManager = projectCenterOutcomeManager;
+    this.centerOutcomeManager = centerOutcomeManager;
   }
-
 
   /**
    * In this method it is checked if there is a draft file and it is eliminated
@@ -226,9 +237,11 @@ public class ProjectDescriptionAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public List<LiaisonUser> getAllOwners() {
     return allOwners;
   }
+
 
   /**
    * Return the absolute path where the bilateral contract is or should be located.
@@ -285,6 +298,10 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getBilateralProjectContractProposalFolder() + File.separator;
   }
 
+  public List<CenterOutcome> getCenterOutcomes() {
+    return centerOutcomes;
+  }
+
   public List<CrpProgram> getCenterPrograms() {
     return centerPrograms;
   }
@@ -336,15 +353,14 @@ public class ProjectDescriptionAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+
   public List<CrpProgram> getProgramFlagships() {
     return programFlagships;
   }
-
 
   public Project getProject() {
     return project;
@@ -360,19 +376,19 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectScales;
   }
 
+
   public Map<String, String> getProjectStatuses() {
     return projectStatuses;
   }
-
 
   public Map<String, String> getProjectTypes() {
     return projectTypes;
   }
 
+
   public List<CrpProgram> getRegionFlagships() {
     return regionFlagships;
   }
-
 
   public List<CrpProgram> getRegionPrograms() {
     return regionPrograms;
@@ -671,6 +687,20 @@ public class ProjectDescriptionAction extends BaseAction {
         project.setFlagships(programs);
         project.setRegions(regions);
         project.setScopes(projectLocations);
+
+        // Center Outcomes
+        if (this.isProjectCenter(projectID)) {
+          List<ProjectCenterOutcome> projectCenterOutcomes = new ArrayList<>();
+          for (ProjectCenterOutcome projectCenterOutcome : project.getProjectCenterOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList())) {
+            projectCenterOutcome.setCenterOutcome(
+              centerOutcomeManager.getResearchOutcomeById(projectCenterOutcome.getCenterOutcome().getId()));
+            projectCenterOutcomes.add(projectCenterOutcome);
+          }
+          project.setCenterOutcomes(projectCenterOutcomes);
+        }
+
       }
     }
 
@@ -706,6 +736,24 @@ public class ProjectDescriptionAction extends BaseAction {
       .collect(Collectors.toList()));
     regionFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
 
+
+    // Center Outcomes
+    if (this.isProjectCenter(projectID)) {
+      centerOutcomes = new ArrayList<>();
+
+      for (CrpProgram crpProgram : project.getFlagships()) {
+        crpProgram = programManager.getCrpProgramById(crpProgram.getId());
+        List<CenterTopic> centerTopics = new ArrayList<>(
+          crpProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+        for (CenterTopic centerTopic : centerTopics) {
+          List<CenterOutcome> centerOutcomesList = new ArrayList<>(
+            centerTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+          for (CenterOutcome centerOutcome : centerOutcomesList) {
+            centerOutcomes.add(centerOutcome);
+          }
+        }
+      }
+    }
 
     // Project Statuses
     projectStatuses = new HashMap<>();
@@ -753,6 +801,7 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -943,6 +992,35 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
+
+      // Removing Project Center Outcomes
+      if (this.isProjectCenter(projectID)) {
+        for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
+          if (project.getCenterOutcomes() == null) {
+            project.setCenterOutcomes(new ArrayList<>());
+          }
+          if (!project.getCenterOutcomes().contains(projectCenterOutcome)) {
+            projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
+          }
+        }
+
+        // Add Project Center Outcomes
+        if (project.getCenterOutcomes() != null) {
+          for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
+            if (projectCenterOutcome.getId() == null) {
+              projectCenterOutcome.setProject(project);
+              projectCenterOutcome.setPhase(this.getActualPhase());
+              projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(projectCenterOutcome);
+              // This add centerOutcome to generate correct auditlog.
+              project.getProjectCenterOutcomes().add(projectCenterOutcome);
+            }
+
+          }
+        }
+      }
+
       // load basic info to project
       project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
       // project.setGlobal(projectDB.isGlobal());
@@ -1040,9 +1118,13 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
-
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
+  }
+
+
+  public void setCenterOutcomes(List<CenterOutcome> centerOutcomes) {
+    this.centerOutcomes = centerOutcomes;
   }
 
   public void setCenterPrograms(List<CrpProgram> centerPrograms) {
