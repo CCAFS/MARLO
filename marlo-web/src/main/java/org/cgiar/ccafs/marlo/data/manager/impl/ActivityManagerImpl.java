@@ -287,6 +287,8 @@ public class ActivityManagerImpl implements ActivityManager {
           DeliverableActivity deliverableActivityNew = new DeliverableActivity();
           this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
           deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+          // This is to add DeliverableActivity to generate correct auditlog.
+          activityUI.getDeliverableActivities().add(deliverableActivityNew);
         } else {
           // Check if already exists in DB, then save
           List<DeliverableActivity> deliverableActivities = currentPhase.getDeliverableActivities().stream()

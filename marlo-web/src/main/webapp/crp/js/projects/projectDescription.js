@@ -124,12 +124,16 @@ $(document).ready(function() {
       $coreSelect = $('select.elementType-centerOutcome')
     }
     
+    var selectedPrograms = flagshipsIds();
+    if(!selectedPrograms){
+      return;
+    }
     
     $.ajax({
         url: baseURL + '/'+ urlAction+'.do',
         data: {
-          flagshipID: flagshipsIds(),
-          programID: flagshipsIds(),
+          flagshipID: selectedPrograms,
+          programID: selectedPrograms,
           phaseID: phaseID
         },
         beforeSend: function() {
@@ -155,8 +159,16 @@ $(document).ready(function() {
     });
   });
   
-  $('.additionalPrograms input[type="checkbox"]').on('change', function() {
-    console.log($(this).attr('id'));
+  $('.additionalPrograms input[type="checkbox"], #projectWorking  input[type="checkbox"]').on('click', function(e) {
+    
+    var programID = ($(this).attr('id')).split("-")[1];
+    var liaisonID = getKeyByValue(liaisonInstitutionsPrograms, programID);
+    var selectedLiaisonID = $('select.liaisonInstitutionSelect').val();
+    if(liaisonID == selectedLiaisonID){
+      e.preventDefault();
+      $(this).prop('checked', true);
+      $(this).parent().animateCss('shake');
+    }
   });
 
   // No regional programmatic focus

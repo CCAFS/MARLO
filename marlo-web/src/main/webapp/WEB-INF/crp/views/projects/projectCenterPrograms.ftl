@@ -60,7 +60,7 @@
             </div>
 
             <div class="form-group row simpleBox additionalPrograms">
-              <div class="col-md-6 ">
+              <div class="col-md-6" listname="additionalPrograms">
                 <h4> Additional Program(s)</h4>
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
                 [#list (programFlagships)![] as element]                                  
@@ -69,7 +69,7 @@
                 [/#list]
                 </div>
               </div>
-              <div class="col-md-6 ">
+              <div class="col-md-6" listname="additionalOffices">
                 <h4> Regional Office(s)</h4>
                 [#list (regionFlagships)![] as element]
                   [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.name}" value="${element.id}" editable=editable  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
