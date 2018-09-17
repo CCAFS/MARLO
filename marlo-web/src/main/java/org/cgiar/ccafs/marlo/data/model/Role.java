@@ -74,6 +74,33 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
     return this.acronym;
   }
 
+  public String getAcronymDimanic() {
+    String acronym = "";
+
+    // If is Center Chang
+    if (this.getCrp().getGlobalUnitType().getId() == 4) {
+      switch (this.getAcronym()) {
+        case "FPL":
+          acronym = "Area/Program Leaders";
+          break;
+        case "CRP-Admin":
+          acronym = "Admin";
+          break;
+        case "RPL":
+          acronym = "Regional Offices Leaders";
+          break;
+        default:
+          acronym = this.getAcronym();
+          break;
+
+      }
+
+    }
+
+    return acronym;
+
+  }
+
   public GlobalUnit getCrp() {
     return crp;
   }
