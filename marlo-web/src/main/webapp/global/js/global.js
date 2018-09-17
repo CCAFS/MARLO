@@ -570,7 +570,6 @@ function onSelectElement() {
   // Update indexes
   $list.find('li.relationElement').each(function(i,element) {
     var indexLevel = $(element).classParam('indexLevel');
-    console.log("indexLevel", indexLevel);
     $(element).setNameIndexes(indexLevel, i);
   });
 }
