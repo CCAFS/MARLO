@@ -103,6 +103,17 @@ public class ProjectActivitiesAction extends BaseAction {
     this.projectPartnerManager = projectPartnerManager;
   }
 
+  public void activitiesPreviousData(Project projectBD) {
+    List<Activity> activitiesPrew;
+    activitiesPrew = projectBD.getActivities().stream()
+      .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+    for (Activity activity : activitiesPrew) {
+      if (!project.getProjectActivities().contains(activity)) {
+        activityManager.deleteActivity(activity.getId());
+      }
+    }
+  }
+
   @Override
   public String cancel() {
 
@@ -126,6 +137,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
     return SUCCESS;
   }
+
 
   public List<Activity> getActivities(boolean open) {
 
@@ -153,7 +165,6 @@ public class ProjectActivitiesAction extends BaseAction {
     }
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -172,10 +183,10 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
@@ -185,10 +196,10 @@ public class ProjectActivitiesAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public Map<String, String> getStatus() {
     return status;
@@ -224,14 +235,35 @@ public class ProjectActivitiesAction extends BaseAction {
           differences.addAll(historyComparator.getDifferencesList(activity, transaction, specialList,
             "project.projectActivities[" + i + "]", "project", 1));
           i++;
+
+
+          if (activity.getDeliverableActivities() != null && !activity.getDeliverableActivities().isEmpty()) {
+            for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities()) {
+              if (deliverableActivity.getDeliverable() != null
+                && deliverableActivity.getDeliverable().getId() != null) {
+
+                if (deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId()) != null) {
+                  Deliverable deliverable =
+                    deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+                  deliverableActivity.setDeliverable(deliverable);
+                  deliverableActivity.getDeliverable().getDeliverableInfo(this.getActualPhase());
+                }
+
+              }
+
+            }
+          }
         }
 
         this.setDifferences(differences);
+
+
       } else {
         this.transaction = null;
 
         this.setTransaction("-1");
       }
+
 
     } else {
       project = projectManager.getProjectById(projectID);
@@ -372,7 +404,6 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -380,6 +411,7 @@ public class ProjectActivitiesAction extends BaseAction {
       Project projectBD = projectManager.getProjectById(projectID);
       List<Activity> activitiesDB = projectBD.getActivities().stream()
         .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      this.activitiesPreviousData(projectBD);
       // Check activities from UI
       if (project.getProjectActivities() != null && !project.getProjectActivities().isEmpty()) {
         this.saveActivitiesNewData();
@@ -390,8 +422,8 @@ public class ProjectActivitiesAction extends BaseAction {
             activityManager.deleteActivity(activity.getId());
           }
         }
-
       }
+
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
@@ -456,6 +488,8 @@ public class ProjectActivitiesAction extends BaseAction {
           }
           // Save new activity and deliverable activities
           activityUI = activityManager.saveActivity(activityUI);
+          // This is to add Activity to generate correct auditlog.
+          project.getActivities().add(activityUI);
         } else {
           // Update Activity
           Activity activityUpdate = activityManager.getActivityById(activityUI.getId());
@@ -482,11 +516,14 @@ public class ProjectActivitiesAction extends BaseAction {
           }
           // Set deliverables here to add inside saveActivity
           activityUpdate.setDeliverables(activityUI.getDeliverables());
+
           // Save new activity and deliverable activities
           activityUpdate = activityManager.saveActivity(activityUpdate);
-
+          // This is to add Activity to generate correct auditlog.
+          project.getActivities().add(activityUpdate);
         }
       }
+
 
     }
 

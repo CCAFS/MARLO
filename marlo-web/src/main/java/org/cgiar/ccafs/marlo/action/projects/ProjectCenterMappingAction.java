@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -77,7 +78,7 @@ public class ProjectCenterMappingAction extends BaseAction {
   private ProjectManager projectManager;
 
   private CrpProgramManager programManager;
-
+  private LiaisonUserManager liaisonUserManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
   private GlobalUnitManager crpManager;
   private SectionStatusManager sectionStatusManager;
@@ -108,7 +109,7 @@ public class ProjectCenterMappingAction extends BaseAction {
     SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
     ProjectInfoManager projectInfoManager, ProjectCenterMappingValidator validator, PhaseManager phaseManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectCenterOutcomeManager projectCenterOutcomeManager,
-    CenterOutcomeManager centerOutcomeManager) {
+    CenterOutcomeManager centerOutcomeManager, LiaisonUserManager liaisonUserManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -123,6 +124,7 @@ public class ProjectCenterMappingAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectCenterOutcomeManager = projectCenterOutcomeManager;
     this.centerOutcomeManager = centerOutcomeManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   private Path getAutoSaveFilePath(Phase phase) {
@@ -343,6 +345,14 @@ public class ProjectCenterMappingAction extends BaseAction {
         project.setProjectInfo(project.getProjecInfoPhase(phase));
         if (project.getProjectInfo() == null) {
           project.setProjectInfo(new ProjectInfo());
+        }
+
+        if (project.getProjectInfo().getLiaisonInstitutionCenter() != null
+          && project.getProjectInfo().getLiaisonInstitutionCenter().getId() != null) {
+          project.getProjectInfo().setLiaisonUser(
+            liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
+        } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
         }
 
         // Load the center Programs
@@ -573,6 +583,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
         project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
         project.getProjectInfo().setLocationGlobal(projectDB.getProjectInfo().getLocationGlobal());
+        project.getProjectInfo().setLiaisonInstitution(projectDB.getProjectInfo().getLiaisonInstitution());
 
         project.getProjectInfo().setModificationJustification(this.getJustification());
 

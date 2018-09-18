@@ -450,41 +450,7 @@
 			</plugin>
 
 			<!-- MINIFYING CSS AND JS - TEST -->
-			<plugin>
-				<groupId>com.samaxes.maven</groupId>
-				<artifactId>minify-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-minify</id>
-						<phase>package</phase>
-						<configuration>
-							<charset>UTF-8</charset>
-							<nosuffix>true</nosuffix>
-							<skipMerge>true</skipMerge>
-							<verbose>true</verbose>
-							<!-- CSS -->
-							<cssSourceDir>global</cssSourceDir>
-							<cssSourceIncludes>
-								<!--<cssSourceInclude>crp/css/**/*.css</cssSourceInclude>-->
-								<!--<cssSourceInclude>center/css/**/*.css</cssSourceInclude>-->
-								<cssSourceInclude>css/**/*.css</cssSourceInclude>
-							</cssSourceIncludes>
-
-							<!-- Javascript -->
-							<jsSourceDir>global</jsSourceDir>
-							<jsSourceIncludes>
-								<!-- <jsSourceInclude>crp/js/**/*.js</jsSourceInclude>-->
-								<!-- <jsSourceInclude>center/js/**/*.js</jsSourceInclude>-->
-								<jsSourceInclude>js/**/*.js</jsSourceInclude>
-							</jsSourceIncludes>
-
-						</configuration>
-						<goals>
-							<goal>minify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			
 			<!-- END -->
 
 		</plugins>
