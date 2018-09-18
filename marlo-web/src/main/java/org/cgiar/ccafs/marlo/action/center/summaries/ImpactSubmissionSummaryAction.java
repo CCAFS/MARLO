@@ -414,7 +414,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
         if (programImpact.isEmpty()) {
           programImpact = "&lt;Not Defined&gt;";
         }
-        if (researchOutcome.getTargetUnit() != null) {
+        if (researchOutcome.getSrfTargetUnit() != null) {
           targetUnit = researchOutcome.getSrfTargetUnit().getName();
         }
         if (targetUnit.isEmpty()) {
