@@ -252,11 +252,15 @@
                 <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}">
                  <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'None'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'None'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
-                   [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
-                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
-                   [#else] 
-                     <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
-                   [/#if]
+                 [#if deliverableFundingSource.fundingSource.fundingSourceInfo?has_content]
+                  [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
+                    <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
+                  [#else] 
+                    <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
+                  [/#if]
+                 [#else]
+                  <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
+                 [/#if] 
                 </div>
               [/#list]
             [#else]

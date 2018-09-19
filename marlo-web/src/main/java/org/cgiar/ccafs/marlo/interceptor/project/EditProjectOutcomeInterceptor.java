@@ -151,7 +151,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
       String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-        if (!baseAction.isSubmit(project.getProject().getId())) {
+        if (!baseAction.isSubmit(project.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
 
           canSwitchProject = true;
         }
