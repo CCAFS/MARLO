@@ -20,15 +20,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
@@ -51,7 +48,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectCenterMappingAction extends BaseAction {
 
+  private static final long serialVersionUID = 6623716093003057656L;
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectCenterMappingAction.class);
 
@@ -78,10 +76,7 @@ public class ProjectCenterMappingAction extends BaseAction {
   private ProjectManager projectManager;
 
   private CrpProgramManager programManager;
-  private LiaisonUserManager liaisonUserManager;
-  private GlobalUnitProjectManager globalUnitProjectManager;
   private GlobalUnitManager crpManager;
-  private SectionStatusManager sectionStatusManager;
   private ProjectFocusManager projectFocusManager;
   private AuditLogManager auditLogManager;
   private long projectID;
@@ -105,17 +100,14 @@ public class ProjectCenterMappingAction extends BaseAction {
 
   @Inject
   public ProjectCenterMappingAction(APConfig config, ProjectManager projectManager, CrpProgramManager programManager,
-    GlobalUnitProjectManager globalUnitProjectManager, GlobalUnitManager crpManager,
-    SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
+    GlobalUnitManager crpManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
     ProjectInfoManager projectInfoManager, ProjectCenterMappingValidator validator, PhaseManager phaseManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectCenterOutcomeManager projectCenterOutcomeManager,
-    CenterOutcomeManager centerOutcomeManager, LiaisonUserManager liaisonUserManager) {
+    CenterOutcomeManager centerOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
-    this.globalUnitProjectManager = globalUnitProjectManager;
     this.crpManager = crpManager;
-    this.sectionStatusManager = sectionStatusManager;
     this.projectFocusManager = projectFocusManager;
     this.auditLogManager = auditLogManager;
     this.projectInfoManager = projectInfoManager;
@@ -124,7 +116,6 @@ public class ProjectCenterMappingAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectCenterOutcomeManager = projectCenterOutcomeManager;
     this.centerOutcomeManager = centerOutcomeManager;
-    this.liaisonUserManager = liaisonUserManager;
   }
 
   private Path getAutoSaveFilePath(Phase phase) {
@@ -282,7 +273,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         project.getProjectInfo().setAdministrative(projectDb.getProjecInfoPhase(phase).getAdministrative());
         project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(phase).getPhase());
 
-        // load LiaisonUser info
+        // load LiaisonInstitutionCenter info
         if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
           project.getProjectInfo().setLiaisonInstitutionCenter(liaisonInstitutionManager
             .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
@@ -341,7 +332,7 @@ public class ProjectCenterMappingAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-        // Load the DB information and adjust it to the structures with which the front end
+        // Load the DB information and adjust it to the structures with the front end
         project.setProjectInfo(project.getProjecInfoPhase(phase));
         if (project.getProjectInfo() == null) {
           project.setProjectInfo(new ProjectInfo());
@@ -349,10 +340,10 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         if (project.getProjectInfo().getLiaisonInstitutionCenter() != null
           && project.getProjectInfo().getLiaisonInstitutionCenter().getId() != null) {
-          project.getProjectInfo().setLiaisonUser(
-            liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
+          project.getProjectInfo().setLiaisonInstitutionCenter(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
         } else {
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitutionCenter(null);
         }
 
         // Load the center Programs
@@ -443,6 +434,15 @@ public class ProjectCenterMappingAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.SHARED_PROJECT_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitutionCenter(null);
+      project.setFlagshipValue(null);
+      project.setRegionsValue(null);
+      if (project.getCenterOutcomes() != null) {
+        project.getCenterOutcomes().clear();
+      }
+    }
   }
 
   @Override
@@ -458,28 +458,15 @@ public class ProjectCenterMappingAction extends BaseAction {
 
       project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
 
-
       if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
         if (project.getProjectInfo().getLiaisonInstitutionCenter().getId() == -1) {
           project.getProjectInfo().setLiaisonInstitutionCenter(null);
         }
       }
 
-
       // Saving the flaghsips
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
-        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
-          .collect(Collectors.toList())) {
-
-          if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-            projectFocusManager.deleteProjectFocus(projectFocus.getId());
-
-          }
-        }
         List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
@@ -490,6 +477,7 @@ public class ProjectCenterMappingAction extends BaseAction {
             projectFocusManager.deleteProjectFocus(projectFocus.getId());
           }
         }
+
         for (String programID : project.getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program =
@@ -509,21 +497,32 @@ public class ProjectCenterMappingAction extends BaseAction {
           }
 
         }
+      } else {
+        // Delete All flagships
+        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList())) {
+          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+        }
       }
 
 
       // Saving the regions
-      List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
-          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-          && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
-        .collect(Collectors.toList());
-      for (ProjectFocus projectFocus : regionsPreview) {
-        if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocusManager.deleteProjectFocus(projectFocus.getId());
-        }
-      }
       if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
+
+        List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList());
+        for (ProjectFocus projectFocus : regionsPreview) {
+          if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          }
+        }
+
         for (String programID : project.getRegionsValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
@@ -539,91 +538,107 @@ public class ProjectCenterMappingAction extends BaseAction {
               projectFocusManager.saveProjectFocus(projectFocus);
             }
           }
-
         }
+      } else {
+        // Delete All Regions
+        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase)
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList())) {
+          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+        }
+      }
 
+
+      // Saving Project Center Outcomes
+      if (project.getCenterOutcomes() == null || !project.getCenterOutcomes().isEmpty()) {
         // Removing Project Center Outcomes
         for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase))
           .collect(Collectors.toList())) {
-          if (project.getCenterOutcomes() == null) {
-            project.setCenterOutcomes(new ArrayList<>());
-          }
           if (!project.getCenterOutcomes().contains(projectCenterOutcome)) {
             projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
           }
         }
-
         // Add Project Center Outcomes
-        if (project.getCenterOutcomes() != null) {
-          for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
-            if (projectCenterOutcome.getId() == null) {
-              projectCenterOutcome.setProject(project);
-              projectCenterOutcome.setPhase(sharedPhase);
-              projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(projectCenterOutcome);
-              // This add centerOutcome to generate correct auditlog.
-              project.getProjectCenterOutcomes().add(projectCenterOutcome);
-            }
-
+        for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
+          if (projectCenterOutcome.getId() == null) {
+            projectCenterOutcome.setProject(project);
+            projectCenterOutcome.setPhase(sharedPhase);
+            projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(projectCenterOutcome);
+            // This add centerOutcome to generate correct auditlog.
+            project.getProjectCenterOutcomes().add(projectCenterOutcome);
           }
         }
 
-        project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
-
-        List<String> relationsName = new ArrayList<>();
-        relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
-        relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
-        relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
-        relationsName.add(APConstants.PROJECT_INFO_RELATION);
-
-        project.getProjectInfo().setPhase(sharedPhase);
-        project.getProjectInfo().setProject(project);
-        project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
-        project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
-        project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
-        project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
-        project.getProjectInfo().setLocationGlobal(projectDB.getProjectInfo().getLocationGlobal());
-        project.getProjectInfo().setLiaisonInstitution(projectDB.getProjectInfo().getLiaisonInstitution());
-
-        project.getProjectInfo().setModificationJustification(this.getJustification());
-
-        projectInfoManager.saveProjectInfo(project.getProjectInfo());
-
-        // Saving project and add relations we want to save on the history
-
-        // List<String> relationsName = new ArrayList<>();
-        // relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
-        // relationsName.add(APConstants.PROJECT_INFO_RELATION);
-        // /**
-        // * The following is required because we need to update something on the @Project if we want a row created in
-        // the
-        // * auditlog table.
-        // */
-        // this.setModificationJustification(project);
-        // projectManager.saveProject(project, this.getActionName(), relationsName, sharedPhase);
-
-        Path path = this.getAutoSaveFilePath(sharedPhase);
-        // delete the draft file if exists
-        if (path.toFile().exists()) {
-          path.toFile().delete();
-        }
-
-        // check if there is a url to redirect
-        if (this.getUrl() == null || this.getUrl().isEmpty()) {
-          // check if there are missing field
-          Collection<String> messages = this.getActionMessages();
-          if (!this.getInvalidFields().isEmpty()) {
-            this.setActionMessages(null);
-            // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-            List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-            for (String key : keys) {
-              this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-            }
-          } else {
-            this.addActionMessage("message:" + this.getText("saving.saved"));
-          }
+      } else {
+        // Removing All Project Center Outcomes
+        for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase))
+          .collect(Collectors.toList())) {
+          projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
         }
       }
+
+
+      project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+      relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
+      relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
+
+      project.getProjectInfo().setPhase(sharedPhase);
+      project.getProjectInfo().setProject(project);
+      project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
+      project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
+      project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
+      project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
+      project.getProjectInfo().setLocationGlobal(projectDB.getProjectInfo().getLocationGlobal());
+      project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
+      project.getProjectInfo().setLiaisonInstitution(projectDB.getProjectInfo().getLiaisonInstitution());
+      project.getProjectInfo().setLiaisonUser(projectDB.getProjectInfo().getLiaisonUser());
+
+      project.getProjectInfo().setModificationJustification(this.getJustification());
+      project.getProjectInfo().setActiveSince(new Date());
+      projectInfoManager.saveProjectInfo(project.getProjectInfo());
+
+      // Saving project and add relations we want to save on the history
+
+      // List<String> relationsName = new ArrayList<>();
+      // relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+      // relationsName.add(APConstants.PROJECT_INFO_RELATION);
+      // /**
+      // * The following is required because we need to update something on the @Project if we want a row created in
+      // the
+      // * auditlog table.
+      // */
+      this.setModificationJustification(project);
+      projectManager.saveProject(project, this.getActionName(), relationsName, sharedPhase);
+
+      Path path = this.getAutoSaveFilePath(sharedPhase);
+      // delete the draft file if exists
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+      }
+
       return SUCCESS;
     } else
 

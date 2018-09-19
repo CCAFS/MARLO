@@ -122,7 +122,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       if (project != null && project.isActive()) {
         if (!globalUnitProject.isOrigin()) {
-          Phase ph = baseAction.getActualPhase();
           GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
           List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
             .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())

@@ -510,6 +510,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setLiaisonInstitution(update.getLiaisonInstitution());
     this.setLiaisonUser(update.getLiaisonUser());
     this.setLocationGlobal(update.getLocationGlobal());
+    this.setLocationRegional(update.getLocationRegional());
     this.setNoRegional(update.getNoRegional());
     this.setPresetDate(update.getPresetDate());
     this.setReporting(update.getReporting());
@@ -523,6 +524,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setNewPartnershipsPlanned(update.getNewPartnershipsPlanned());
     this.setLiaisonInstitutionCenter(update.getLiaisonInstitutionCenter());
     this.setProjectEditLeader(update.getProjectEditLeader());
+    this.setActiveSince(update.getActiveSince());
   }
 
 
