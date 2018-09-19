@@ -61,7 +61,7 @@
 
             <div class="form-group row simpleBox additionalPrograms">
               <div class="col-md-6" listname="additionalPrograms">
-                <h4> Additional Program(s)</h4>
+                <h4> ${crpSession} Program(s)</h4>
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
                 [#list (programFlagships)![] as element]                                  
                   [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.centerComposedName}" value="${element.id}" editable=editable checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput getCenterOutcomes" cssClassLabel="font-normal" /]

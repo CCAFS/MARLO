@@ -698,7 +698,6 @@ Number.prototype.toCurrencyFormat = function(n,x,s,c) {
   return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
 };
 
-
 /**
  * Function to get a key in an object by its value
  * 
@@ -706,6 +705,8 @@ Number.prototype.toCurrencyFormat = function(n,x,s,c) {
  * @param value
  * @returns key
  */
-function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] == value);
+function getKeyByValue(obj,value) {
+  return Object.keys(obj).filter(function(key) {
+    return obj[key] == value
+  })[0];
 }
