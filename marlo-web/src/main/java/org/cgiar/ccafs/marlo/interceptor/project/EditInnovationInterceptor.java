@@ -106,7 +106,7 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_INNOVATIONS_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
-        if (baseAction.isSubmit(projectInnovation.getProject().getId())) {
+        if (baseAction.isSubmit(projectInnovation.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
           canEdit = false;
         }
         if (baseAction.isCrpClosed()) {

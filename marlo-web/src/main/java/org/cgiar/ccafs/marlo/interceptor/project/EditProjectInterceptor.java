@@ -164,7 +164,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
             canSwitchProject = true;
           }
 
-          if (baseAction.isSubmit(projectId)) {
+          if (baseAction.isSubmit(projectId) && !baseAction.getActualPhase().getUpkeep()) {
             canEdit = false;
 
           }
