@@ -119,7 +119,8 @@ public class CrossCgiarPartnershipValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.CROSS_CGIAR.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesisSectionStatusEnum.CROSS_CGIAR.getStatus(), action);
     }
 
 

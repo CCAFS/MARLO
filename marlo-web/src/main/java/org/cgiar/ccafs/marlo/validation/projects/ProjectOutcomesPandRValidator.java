@@ -48,8 +48,8 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -66,7 +66,7 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
   public void validate(BaseAction action, Project project, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(project, action.getCrpID(),action);
+      Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
@@ -120,10 +120,10 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
 
       if (action.isReportingActive()) {
         this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
+          action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       } else {
         this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
+          action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       }
     }
   }

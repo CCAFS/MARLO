@@ -119,7 +119,8 @@ public class FinancialSummaryValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesisSectionStatusEnum.FINANCIAL_SUMMARY.getStatus(), action);
     }
 
   }

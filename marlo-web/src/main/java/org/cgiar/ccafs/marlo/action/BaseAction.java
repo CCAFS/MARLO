@@ -2508,7 +2508,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
-      this.getActualPhase().getDescription(), this.getActualPhase().getYear());
+      this.getActualPhase().getDescription(), this.getActualPhase().getYear(), this.getActualPhase().getUpkeep());
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields().length() == 0
         && !this.getAutoSaveFilePath(CrpProgram.class.getSimpleName(), section, crpProgramID)) {
@@ -2833,8 +2833,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     switch (PowbSynthesisSectionStatusEnum.value(sectionName.toUpperCase())) {
       case FLAGSHIP_PLANS:
         if (this.isPowbFlagship(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), this.getCurrentCycle(),
+              powbSynthesis.getPhase().getYear(), powbSynthesis.getPhase().getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             return false;
@@ -2847,8 +2848,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
       case EVIDENCES:
         if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), this.getCurrentCycle(),
+              powbSynthesis.getPhase().getYear(), powbSynthesis.getPhase().getUpkeep(), sectionName);
           if (sectionStatus == null) {
             return false;
           }
@@ -2864,8 +2866,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case MANAGEMENT_GOVERNANCE:
       case MANAGEMENT_RISK:
         if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), this.getCurrentCycle(),
+              powbSynthesis.getPhase().getYear(), powbSynthesis.getPhase().getUpkeep(), sectionName);
           if (sectionStatus == null) {
             return false;
           }
@@ -2877,8 +2880,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
 
       default:
-        sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-          this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
+        sectionStatus =
+          sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), this.getCurrentCycle(),
+            powbSynthesis.getPhase().getYear(), powbSynthesis.getPhase().getUpkeep(), sectionName);
         if (sectionStatus == null) {
           return false;
         }
@@ -3105,7 +3109,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus == null) {
             return false;
           }
@@ -3129,7 +3133,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (caseStudyProject.isActive() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
             caStudies.add(caseStudyProject.getCaseStudy());
             sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
-              this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus == null) {
               return false;
 
@@ -3159,7 +3163,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         for (ProjectHighlight highlight : highlights) {
 
           sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus == null) {
             return false;
 
@@ -3234,7 +3238,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         for (Deliverable deliverable : openA) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus == null) {
             return false;
           }
@@ -3261,7 +3265,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), section);
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
             return true;
@@ -3283,7 +3287,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), section);
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
             return true;
@@ -3296,7 +3300,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), section);
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
             return true;
@@ -3342,7 +3346,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (ProjectExpectedStudy projectExpectedStudy : myStudies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
@@ -3369,7 +3373,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (ProjectInnovation projectInnovation : innovations) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
@@ -3386,7 +3390,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), section);
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
             return true;
@@ -3401,7 +3405,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), section);
+          this.getCurrentCycleYear(), this.isUpKeepActive(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
             return true;
@@ -3510,8 +3514,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case FLAGSHIP_PROGRESS:
         if (this.isPowbFlagship(reportSynthesis.getLiaisonInstitution())) {
 
-          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-            this.getCurrentCycle(), reportSynthesis.getPhase().getYear(), sectionName);
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), this.getCurrentCycle(),
+              reportSynthesis.getPhase().getYear(), reportSynthesis.getPhase().getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             return false;
@@ -3533,8 +3538,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case INFLUENCE:
       case CONTROL:
         if (this.isPowbPMU(reportSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-            this.getCurrentCycle(), reportSynthesis.getPhase().getYear(), sectionName);
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), this.getCurrentCycle(),
+              reportSynthesis.getPhase().getYear(), reportSynthesis.getPhase().getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             return false;
@@ -3548,8 +3554,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
 
       default:
-        sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(),
-          this.getCurrentCycle(), reportSynthesis.getPhase().getYear(), sectionName);
+        sectionStatus =
+          sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), this.getCurrentCycle(),
+            reportSynthesis.getPhase().getYear(), reportSynthesis.getPhase().getUpkeep(), sectionName);
         if (sectionStatus == null) {
           return false;
         }
@@ -3912,8 +3919,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     SectionStatus sectionStatus = null;
     ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id);
 
-    sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(),
-      this.getCurrentCycle(), this.getCurrentCycleYear(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus());
+    sectionStatus =
+      sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(), this.getCurrentCycle(),
+        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus());
 
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields() != null) {

@@ -101,7 +101,8 @@ public class ProjectHighLightValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, highLigths, action.getActualPhase().getDescription(),
-      action.getActualPhase().getYear(), ProjectSectionStatusEnum.HIGHLIGHTS.getStatus(), action);
+      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+      ProjectSectionStatusEnum.HIGHLIGHTS.getStatus(), action);
 
   }
 

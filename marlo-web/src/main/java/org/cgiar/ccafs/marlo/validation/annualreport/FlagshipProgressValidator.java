@@ -160,7 +160,8 @@ public class FlagshipProgressValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.FLAGSHIP_PROGRESS.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesisSectionStatusEnum.FLAGSHIP_PROGRESS.getStatus(), action);
     }
 
   }

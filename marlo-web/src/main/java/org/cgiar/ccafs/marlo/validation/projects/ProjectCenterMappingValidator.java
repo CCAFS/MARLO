@@ -83,7 +83,7 @@ public class ProjectCenterMappingValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus(), action);
+      action.getActualPhase().getUpkeep(), SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus(), action);
   }
 
   public void validateDescription(BaseAction action, Project project, long SharedPhase) {

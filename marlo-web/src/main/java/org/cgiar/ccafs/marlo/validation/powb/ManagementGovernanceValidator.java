@@ -74,7 +74,7 @@ public class ManagementGovernanceValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.MANAGEMENT_GOVERNANCE.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.MANAGEMENT_GOVERNANCE.getStatus(), action);
     }
 
   }

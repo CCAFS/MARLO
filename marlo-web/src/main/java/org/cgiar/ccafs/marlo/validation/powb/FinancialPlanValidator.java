@@ -89,7 +89,7 @@ public class FinancialPlanValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.FINANCIAL_PLAN.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.FINANCIAL_PLAN.getStatus(), action);
     }
 
   }

@@ -74,7 +74,7 @@ public class ProjectLocationValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.LOCATIONS.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.LOCATIONS.getStatus(), action);
   }
 
   public void validateLocation(BaseAction action, Project project) {

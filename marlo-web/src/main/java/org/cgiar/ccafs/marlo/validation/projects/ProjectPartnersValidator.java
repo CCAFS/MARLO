@@ -127,7 +127,7 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.PARTNERS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.PARTNERS.getStatus(), action);
     }
 
     return hasErros;

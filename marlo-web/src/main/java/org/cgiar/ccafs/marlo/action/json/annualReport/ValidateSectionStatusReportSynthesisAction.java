@@ -161,7 +161,7 @@ public class ValidateSectionStatusReportSynthesisAction extends BaseAction {
       case FLAGSHIP_PROGRESS:
         if (this.isFlagship(reportSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle,
-            phase.getYear(), sectionName);
+            phase.getYear(), phase.getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             sectionStatus = new SectionStatus();
@@ -183,7 +183,7 @@ public class ValidateSectionStatusReportSynthesisAction extends BaseAction {
       case CONTROL:
         if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle,
-            phase.getYear(), sectionName);
+            phase.getYear(), phase.getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             sectionStatus = new SectionStatus();
@@ -198,7 +198,7 @@ public class ValidateSectionStatusReportSynthesisAction extends BaseAction {
 
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle,
-          phase.getYear(), sectionName);
+          phase.getYear(), phase.getUpkeep(), sectionName);
         if (sectionStatus == null) {
           sectionStatus = new SectionStatus();
           sectionStatus.setMissingFields("No section");

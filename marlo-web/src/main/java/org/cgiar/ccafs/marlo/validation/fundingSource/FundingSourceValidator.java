@@ -58,7 +58,8 @@ public class FundingSourceValidator extends BaseValidator {
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = "fundingSource";
     String autoSaveFile =
-      fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+      fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_"
+        + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -297,7 +298,7 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
     this.saveMissingFields(fundingSource, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), action);
 
 
   }

@@ -20,54 +20,45 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public class SectionStatus extends MarloBaseEntity implements java.io.Serializable {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -7527583315860965374L;
 
   private CrpProgram crpProgram;
-
 
   private String sectionName;
 
   private String missingFields;
 
-
   private String cycle;
 
   private Integer year;
 
+  private Boolean upkeep;
 
   private Project project;
 
   private FundingSource fundingSource;
 
-
   private Deliverable deliverable;
 
   private ProjectOutcome projectOutcome;
-
 
   private CaseStudy caseStudy;
 
   private ProjectHighlight projectHighlight;
 
-
   private IpProgram ipProgram;
 
   private IpLiaisonInstitution ipLiaisonInstitution;
-
 
   private PowbSynthesis powbSynthesis;
 
   private ProjectInnovation projectInnovation;
 
-
   private ProjectExpectedStudy projectExpectedStudy;
 
 
   private ReportSynthesis reportSynthesis;
+
 
   public SectionStatus() {
   }
@@ -75,7 +66,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
-
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -93,6 +83,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public FundingSource getFundingSource() {
     return fundingSource;
   }
+
 
   public IpLiaisonInstitution getIpLiaisonInstitution() {
     return ipLiaisonInstitution;
@@ -138,6 +129,10 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     return this.sectionName;
   }
 
+  public Boolean getUpkeep() {
+    return upkeep;
+  }
+
   public Integer getYear() {
     return this.year;
   }
@@ -154,7 +149,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.cycle = cycle;
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -163,6 +157,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
@@ -175,7 +170,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
   }
-
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
@@ -191,26 +185,31 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
+
   public void setProjectHighlight(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
   }
-
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
 
+
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
-
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+
   public void setSectionName(String sectionName) {
     this.sectionName = sectionName;
+  }
+
+  public void setUpkeep(Boolean upkeep) {
+    this.upkeep = upkeep;
   }
 
   public void setYear(Integer year) {

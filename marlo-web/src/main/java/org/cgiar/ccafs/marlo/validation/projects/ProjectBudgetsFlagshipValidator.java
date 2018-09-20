@@ -74,8 +74,8 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
 
   public boolean hasBudgets(Long type, int year, long projectID) {
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD
+      .getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
       .collect(Collectors.toList());
 
@@ -112,12 +112,10 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
         }
       }
       Project projectDB = projectManager.getProjectById(project.getId());
-      List<ProjectFocus> projectFocuses =
-        new ArrayList<>(
-          projectDB.getProjectFocuses().stream()
-            .filter(pf -> pf.isActive()
-              && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList()));
+      List<ProjectFocus> projectFocuses = new ArrayList<>(projectDB.getProjectFocuses().stream()
+        .filter(
+          pf -> pf.isActive() && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
       if (!projectFocuses.isEmpty()) {
         if (CollectionUtils.isNotEmpty(project.getBudgetsFlagship())) {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
@@ -158,7 +156,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.BUDGETBYFLAGSHIP.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGETBYFLAGSHIP.getStatus(), action);
     }
   }
 

@@ -101,7 +101,8 @@ public class GovernanceValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
     }
 
   }

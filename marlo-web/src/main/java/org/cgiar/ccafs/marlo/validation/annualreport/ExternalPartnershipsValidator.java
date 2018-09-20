@@ -100,7 +100,8 @@ public class ExternalPartnershipsValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.EXTERNAL_PARTNERSHIP.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesisSectionStatusEnum.EXTERNAL_PARTNERSHIP.getStatus(), action);
     }
 
   }

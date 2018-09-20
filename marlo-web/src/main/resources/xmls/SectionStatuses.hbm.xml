@@ -78,5 +78,8 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="year" />
 		</property>
+		<property name="upkeep" type="java.lang.Boolean">
+      <column name="upkeep" not-null="true"/>
+    </property> 
 	</class>
 </hibernate-mapping>

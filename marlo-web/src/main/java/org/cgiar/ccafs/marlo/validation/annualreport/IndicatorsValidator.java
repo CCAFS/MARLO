@@ -108,7 +108,7 @@ public class IndicatorsValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), actionName, action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(), actionName, action);
 
     }
   }

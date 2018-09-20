@@ -79,7 +79,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
-      action.getActualPhase().getYear(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
+      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+      ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
 
   }
 
