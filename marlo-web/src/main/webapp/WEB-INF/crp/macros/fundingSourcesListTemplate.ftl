@@ -17,7 +17,7 @@
         <th id="endDate" >[@s.text name="projectsList.endDate" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.originalDonor" /]</th>
-        <th id="fieldCheck" >[@s.text name="message.fieldsCheck.required" /]</th>
+        <th id="fieldCheck" ></th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -77,27 +77,23 @@
           <td class=""> 
             [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
-                [#if institutionLead_index!=0]
-                  <hr />
-                [/#if]
-                  <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
-                  <div class="clearfix"></div>
+                [#if institutionLead_index!=0]<hr />[/#if]
+                <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
+                <div class="clearfix"></div>
               [/#list]
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]
           </td>
-          
-           <td class="">
+          [#-- End Date --]
+          <td class="">
             <span class="hidden">${project?index}</span>
             [#if (project.fundingSourceInfo.status)?? || project.fundingSourceInfo.status=4]
-            ${(project.fundingSourceInfo.extensionDate)!'Not defined'}
-             [#else]
-             ${(project.fundingSourceInfo.endDate)!'Not defined'}
+              [#if (project.fundingSourceInfo.extensionDate??)!false] ${(project.fundingSourceInfo.extensionDate)!'Not defined'} [#else] ${(project.fundingSourceInfo.endDate)!'Not defined'}[/#if]
+            [#else]
+              ${(project.fundingSourceInfo.endDate)!'Not defined'}
             [/#if]
-            
           </td>
-          
           [#-- Direct Donor --]
           <td class=""> 
             ${(project.fundingSourceInfo.directDonorName)!'Not defined'}
