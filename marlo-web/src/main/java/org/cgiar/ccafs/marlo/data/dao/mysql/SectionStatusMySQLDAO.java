@@ -71,9 +71,10 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName) {
+  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and case_study_id=" + caseStudyID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and case_study_id=" + caseStudyID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -83,9 +84,34 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
 
   @Override
   public SectionStatus getSectionStatusByCrpIndicators(long ipLiaisonInstitutionID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and ip_liaison_id=" + ipLiaisonInstitutionID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year,
+    Boolean upkeep) {
+    String query =
+      "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and crp_program_id="
+        + crpProgramID + " and cycle='" + cylce + "' and year=" + year + " and upkeep=" + upkeep;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and ip_liaison_id=" + ipLiaisonInstitutionID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and deliverable_id=" + deliverableID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -94,32 +120,11 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and crp_program_id=" + crpProgramID + " and cycle='" + cylce + "' and year=" + year;
-    List<SectionStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-  @Override
-  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and deliverable_id=" + deliverableID;
-    List<SectionStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-  @Override
-  public SectionStatus getSectionStatusByFundingSource(long fundingSourceId, String cycle, Integer year,
+  public SectionStatus getSectionStatusByFundingSource(long fundingSourceId, String cycle, Integer year, Boolean upkeep,
     String sectionName) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and funding_source_id=" + fundingSourceId + " and year=" + year + " and cycle='" + cycle + "'";
+    String query =
+      "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and funding_source_id="
+        + fundingSourceId + " and year=" + year + " and upkeep=" + upkeep + " and cycle='" + cycle + "'";
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -128,45 +133,10 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and ip_program_id=" + ipProgramID;
-    List<SectionStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-  @Override
-  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year,
+  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and powb_synthesis_id=" + powbSynthesisID;
-    List<SectionStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-
-  @Override
-  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and project_id=" + projectID;
-    List<SectionStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-
-  @Override
-  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and project_cofunded_id=" + projectID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and ip_program_id=" + ipProgramID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -175,10 +145,48 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year,
+  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and project_expected_id=" + expectedID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and powb_synthesis_id=" + powbSynthesisID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+
+  @Override
+  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and project_id=" + projectID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+
+  @Override
+  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and project_cofunded_id=" + projectID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and project_expected_id=" + expectedID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -188,9 +196,9 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
 
   @Override
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
-    String sectionName) {
+    Boolean upkeep, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and highlight_id=" + projectHighlightID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and highlight_id=" + projectHighlightID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -200,9 +208,21 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
 
   @Override
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and project_innovation_id=" + projectInnovationID;
+    List<SectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and project_innovation_id=" + projectInnovationID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and project_outcome_id=" + projectID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -211,9 +231,10 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName) {
+  public SectionStatus getSectionStatusByReportSynthesis(long synthesisID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and project_outcome_id=" + projectID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and report_synthesis_id=" + synthesisID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -222,20 +243,10 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByReportSynthesis(long synthesisID, String cycle, int year, String sectionName) {
+  public SectionStatus getSectionStatusBySynteshisMog(long ipProgramID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and report_synthesis_id=" + synthesisID;
-    List<SectionStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-  @Override
-  public SectionStatus getSectionStatusBySynteshisMog(long ipProgramID, String cycle, int year, String sectionName) {
-    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
-      + cycle + "' and year=" + year + " and ip_program_id=" + ipProgramID;
+      + cycle + "' and year=" + year + " and upkeep=" + upkeep + " and ip_program_id=" + ipProgramID;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

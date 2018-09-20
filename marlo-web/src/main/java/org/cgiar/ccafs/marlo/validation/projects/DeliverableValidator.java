@@ -237,7 +237,7 @@ public class DeliverableValidator extends BaseValidator {
     }
 
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
 
   }
 

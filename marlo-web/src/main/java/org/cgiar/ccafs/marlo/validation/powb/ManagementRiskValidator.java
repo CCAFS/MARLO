@@ -74,7 +74,7 @@ public class ManagementRiskValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.MANAGEMENT_RISK.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.MANAGEMENT_RISK.getStatus(), action);
     }
 
   }

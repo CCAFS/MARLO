@@ -128,11 +128,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
       this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
     } else {
       action.addMissingField("");
       this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
     }
 
 

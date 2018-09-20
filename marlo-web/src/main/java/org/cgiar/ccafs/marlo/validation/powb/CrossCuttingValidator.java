@@ -82,7 +82,8 @@ public class CrossCuttingValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.CROSS_CUTTING_DIMENSIONS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.CROSS_CUTTING_DIMENSIONS.getStatus(),
+        action);
     }
 
   }

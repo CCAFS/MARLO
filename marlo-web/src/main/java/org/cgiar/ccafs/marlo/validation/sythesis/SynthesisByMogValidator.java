@@ -110,10 +110,10 @@ public class SynthesisByMogValidator extends BaseValidator {
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.SYNTHESISMOG.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SYNTHESISMOG.getStatus(), action);
     } else {
       this.saveMissingFields(ipProgram, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.SYNTHESISMOG.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SYNTHESISMOG.getStatus(), action);
     }
 
   }

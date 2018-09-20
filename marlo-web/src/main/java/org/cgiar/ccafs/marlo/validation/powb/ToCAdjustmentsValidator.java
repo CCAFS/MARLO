@@ -94,7 +94,7 @@ public class ToCAdjustmentsValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus(), action);
     }
 
   }

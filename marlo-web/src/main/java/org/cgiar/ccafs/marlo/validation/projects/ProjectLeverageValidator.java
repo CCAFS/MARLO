@@ -119,7 +119,7 @@ public class ProjectLeverageValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.LEVERAGES.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.LEVERAGES.getStatus(), action);
   }
 
 

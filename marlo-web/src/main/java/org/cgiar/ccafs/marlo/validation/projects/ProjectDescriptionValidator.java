@@ -79,7 +79,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.DESCRIPTION.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DESCRIPTION.getStatus(), action);
   }
 
   public void validateDescription(BaseAction action, Project project) {

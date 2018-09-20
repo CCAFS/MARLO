@@ -101,7 +101,8 @@ public class RiskValidator extends BaseValidator {
       }
 
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ReportSynthesisSectionStatusEnum.RISKS.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ReportSynthesisSectionStatusEnum.RISKS.getStatus(), action);
     }
 
   }

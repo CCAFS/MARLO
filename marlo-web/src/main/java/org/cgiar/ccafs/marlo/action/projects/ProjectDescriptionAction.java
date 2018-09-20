@@ -1072,8 +1072,9 @@ public class ProjectDescriptionAction extends BaseAction {
       List<ProjectClusterActivity> currentClusters =
         projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       if (currentClusters.isEmpty() || currentClusters.size() == 1) {
-        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-          this.getCurrentCycleYear(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+        SectionStatus sectionStatus =
+          sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(), this.getCurrentCycleYear(),
+            this.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
         if (sectionStatus != null) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         }

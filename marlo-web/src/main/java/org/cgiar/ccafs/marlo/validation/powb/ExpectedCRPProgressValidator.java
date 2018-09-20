@@ -158,7 +158,7 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.CRP_PROGRESS.getStatus(), action);
     }
 
   }

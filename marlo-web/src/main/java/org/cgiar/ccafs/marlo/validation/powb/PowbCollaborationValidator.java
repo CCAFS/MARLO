@@ -136,7 +136,7 @@ public class PowbCollaborationValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus(), action);
     }
   }
 

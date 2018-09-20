@@ -83,7 +83,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     this.saveMissingFieldsImpactPathway(program, "clusterActivities", action.getActualPhase().getYear(),
-      action.getActualPhase().getDescription(), action);
+      action.getActualPhase().getDescription(), action.getActualPhase().getUpkeep(), action);
   }
 
   public void validateClusterOfActivity(BaseAction action, CrpClusterOfActivity activity, int i) {

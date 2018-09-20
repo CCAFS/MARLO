@@ -58,10 +58,11 @@ public interface SectionStatusManager {
    * @param projectID is the project outcome identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
   public SectionStatus getSectionStatusByCrpIndicators(long liaisonInstitutionID, String cycle, int year,
-    String sectionName);
+    Boolean upkeep, String sectionName);
 
 
   /**
@@ -70,7 +71,8 @@ public interface SectionStatusManager {
    * @param crpProgramID is the crp program identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year);
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year,
+    Boolean upkeep);
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -78,9 +80,10 @@ public interface SectionStatusManager {
    * @param deliverableID is the deliverable identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
-  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year, Boolean upkeep,
     String sectionName);
 
   /**
@@ -97,9 +100,10 @@ public interface SectionStatusManager {
    * @param ipProgramID is the IpProgram identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
-  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year,
+  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
   /**
@@ -108,7 +112,8 @@ public interface SectionStatusManager {
    * @param projectID is the project identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -116,7 +121,8 @@ public interface SectionStatusManager {
    * @param projectID is the project co - funded identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
 
   /**
@@ -125,7 +131,7 @@ public interface SectionStatusManager {
    * @param expectedID is the expectedID identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year,
+  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
 
@@ -136,11 +142,11 @@ public interface SectionStatusManager {
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
-    String sectionName);
+    Boolean upkeep, String sectionName);
 
 
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
-    String sectionName);
+    Boolean upkeep, String sectionName);
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -148,9 +154,10 @@ public interface SectionStatusManager {
    * @param projectID is the project outcome identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
-  public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year,
+  public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName);
 
   /**
@@ -159,7 +166,8 @@ public interface SectionStatusManager {
    * @param ipProgramID is the IpProgram identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, String sectionName);
+  public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, Boolean upkeep,
+    String sectionName);
 
   /**
    * This method saves the information of the given sectionStatus

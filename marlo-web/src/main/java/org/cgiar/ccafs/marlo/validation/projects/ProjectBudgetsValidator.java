@@ -152,7 +152,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.BUDGET.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGET.getStatus(), action);
 
       // Saving missing fields.
 

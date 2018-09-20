@@ -111,10 +111,10 @@ public class CrpIndicatorsValidator extends BaseValidator {
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
     } else {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
     }
 
 

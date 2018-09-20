@@ -153,10 +153,10 @@ public class PublicationValidator extends BaseValidator {
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(deliverable, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
     } else {
       this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
     }
   }
 

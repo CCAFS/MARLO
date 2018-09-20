@@ -70,8 +70,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   public double calculateGender(Long type, int year, long projectID) {
     double gender = 0;
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD
+      .getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
       .collect(Collectors.toList());
 
@@ -96,8 +96,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
   public boolean hasBudgets(Long type, int year, long projectID) {
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD
+      .getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
       .collect(Collectors.toList());
     Double totalAmount = 0.0;
@@ -190,7 +190,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.BUDGETBYCOA.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus(), action);
 
 
       // Saving missing fields.
