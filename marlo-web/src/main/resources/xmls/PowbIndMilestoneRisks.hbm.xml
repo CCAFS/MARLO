@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 20, 2018 11:48:09 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk" table="powb_ind_milestone_risks" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="65535" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <set name="crpMilestones" table="crp_milestones" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="powb_ind_milestone_risk_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" />
+        </set>
+    </class>
+</hibernate-mapping>

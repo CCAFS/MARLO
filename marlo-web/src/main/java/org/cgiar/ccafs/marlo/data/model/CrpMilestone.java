@@ -29,17 +29,24 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpMilestone extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 4398175741401855358L;
+
 
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
+
   @Expose
   private SrfTargetUnit srfTargetUnit;
 
+
   @Expose
   private String title;
+
+
   private Long index;
+
 
   @Expose
   private Integer year;
@@ -48,13 +55,67 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   @Expose
   private BigDecimal value;
 
+
   @Expose
   private String composeID;
 
+
+  /** POWB 2019 New Milestones Fields **/
+
+  // Assessment of Risk
+  @Expose
+  private PowbIndAssesmentRisk powbIndAssesmentRisk;
+
+
+  // DAC Youth
+  @Expose
+  private RepIndGenderYouthFocusLevel youthFocusLevel;
+
+
+  // Main Risk
+  @Expose
+  private PowbIndMilestoneRisk powbIndMilestoneRisk;
+
+
+  // DAC Climate
+  @Expose
+  private RepIndGenderYouthFocusLevel climateFocusLevel;
+
+
+  // DAC CapDev
+  @Expose
+  private RepIndGenderYouthFocusLevel capdevFocusLevel;
+
+
+  // DAC Gender
+  @Expose
+  private RepIndGenderYouthFocusLevel genderFocusLevel;
+
+
+  // Indicate the Following
+  @Expose
+  private PowbIndFollowingMilestone powbIndFollowingMilestone;
+
+
+  // Text Other Risk
+  @Expose
+  private String powbMilestoneOtherRisk;
+
+
+  // Means of Verification
+  @Expose
+  private String powbMilestoneVerification;
+
+
+  /** **/
+
+
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
+
 
   public CrpMilestone() {
   }
+
 
   public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, Integer year,
     BigDecimal value) {
@@ -64,6 +125,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.year = year;
     this.value = value;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -87,19 +149,28 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return true;
   }
 
+  public RepIndGenderYouthFocusLevel getCapdevFocusLevel() {
+    return capdevFocusLevel;
+  }
+
+  public RepIndGenderYouthFocusLevel getClimateFocusLevel() {
+    return climateFocusLevel;
+  }
 
   public String getComposedName() {
     return this.year + " - " + this.title;
   }
 
-
   public String getComposeID() {
     return composeID;
   }
 
-
   public CrpProgramOutcome getCrpProgramOutcome() {
     return this.crpProgramOutcome;
+  }
+
+  public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
+    return genderFocusLevel;
   }
 
   public Long getIndex() {
@@ -113,6 +184,27 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return sb.toString();
   }
 
+  public PowbIndAssesmentRisk getPowbIndAssesmentRisk() {
+    return powbIndAssesmentRisk;
+  }
+
+  public PowbIndFollowingMilestone getPowbIndFollowingMilestone() {
+    return powbIndFollowingMilestone;
+  }
+
+  public PowbIndMilestoneRisk getPowbIndMilestoneRisk() {
+    return powbIndMilestoneRisk;
+  }
+
+  public String getPowbMilestoneOtherRisk() {
+    return powbMilestoneOtherRisk;
+  }
+
+
+  public String getPowbMilestoneVerification() {
+    return powbMilestoneVerification;
+  }
+
   public Set<ProjectMilestone> getProjectMilestones() {
     return projectMilestones;
   }
@@ -121,6 +213,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
 
     return this.srfTargetUnit;
   }
+
 
   public String getTitle() {
     return this.title;
@@ -134,6 +227,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return this.year;
   }
 
+  public RepIndGenderYouthFocusLevel getYouthFocusLevel() {
+    return youthFocusLevel;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -142,6 +239,13 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return result;
   }
 
+  public void setCapdevFocusLevel(RepIndGenderYouthFocusLevel capdevFocusLevel) {
+    this.capdevFocusLevel = capdevFocusLevel;
+  }
+
+  public void setClimateFocusLevel(RepIndGenderYouthFocusLevel climateFocusLevel) {
+    this.climateFocusLevel = climateFocusLevel;
+  }
 
   public void setComposeID(String composeID) {
     this.composeID = composeID;
@@ -153,13 +257,43 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   }
 
 
+  public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
+    this.genderFocusLevel = genderFocusLevel;
+  }
+
+
   public void setIndex(Long index) {
     this.index = index;
   }
 
+
+  public void setPowbIndAssesmentRisk(PowbIndAssesmentRisk powbIndAssesmentRisk) {
+    this.powbIndAssesmentRisk = powbIndAssesmentRisk;
+  }
+
+  public void setPowbIndFollowingMilestone(PowbIndFollowingMilestone powbIndFollowingMilestone) {
+    this.powbIndFollowingMilestone = powbIndFollowingMilestone;
+  }
+
+
+  public void setPowbIndMilestoneRisk(PowbIndMilestoneRisk powbIndMilestoneRisk) {
+    this.powbIndMilestoneRisk = powbIndMilestoneRisk;
+  }
+
+  public void setPowbMilestoneOtherRisk(String powbMilestoneOtherRisk) {
+    this.powbMilestoneOtherRisk = powbMilestoneOtherRisk;
+  }
+
+
+  public void setPowbMilestoneVerification(String powbMilestoneVerification) {
+    this.powbMilestoneVerification = powbMilestoneVerification;
+  }
+
+
   public void setProjectMilestones(Set<ProjectMilestone> projectMilestones) {
     this.projectMilestones = projectMilestones;
   }
+
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
@@ -176,6 +310,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   public void setYear(Integer year) {
     this.year = year;
   }
+
+  public void setYouthFocusLevel(RepIndGenderYouthFocusLevel youthFocusLevel) {
+    this.youthFocusLevel = youthFocusLevel;
+  }
+
 
   @Override
   public String toString() {

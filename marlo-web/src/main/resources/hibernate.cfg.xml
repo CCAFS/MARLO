@@ -312,6 +312,9 @@
     <mapping resource="xmls/ReportSynthesisMelia.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisMeliaEvaluations.hbm.xml"/>
     <mapping resource="xmls/ReportSynthesisMeliaStudies.hbm.xml"/>
-    <mapping resource="xmls/ProjectCenterOutcomes.hbm.xml"/>        
+    <mapping resource="xmls/ProjectCenterOutcomes.hbm.xml"/>
+    <mapping resource="xmls/PowbIndAssesmentRisk.hbm.xml"/>
+    <mapping resource="xmls/PowbIndFollowingMilestones.hbm.xml"/>
+    <mapping resource="xmls/PowbIndMilestoneRisks.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
