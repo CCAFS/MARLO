@@ -234,6 +234,7 @@ public class ProjectListAction extends BaseAction {
       status = new SectionStatus();
       status.setCycle(this.getCurrentCycle());
       status.setYear(this.getCurrentCycleYear());
+      status.setUpkeep(this.isUpKeepActive());
       status.setProject(project);
       status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
 
@@ -367,9 +368,9 @@ public class ProjectListAction extends BaseAction {
         status = new SectionStatus();
         status.setCycle(this.getCurrentCycle());
         status.setYear(this.getCurrentCycleYear());
+        status.setUpkeep(this.isUpKeepActive());
         status.setProject(project);
         status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-
 
       }
       status.setMissingFields("");
