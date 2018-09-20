@@ -26,6 +26,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbIndAssesmentRiskManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbIndMilestoneRiskManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
@@ -39,7 +42,10 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk;
+import org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
@@ -90,6 +96,7 @@ public class OutcomesAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
+
   private CrpAssumptionManager crpAssumptionManager;
 
 
@@ -98,19 +105,29 @@ public class OutcomesAction extends BaseAction {
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+
+
   private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
+
   private CrpMilestoneManager crpMilestoneManager;
 
+
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
+
   private long crpProgramID;
+
+
   private FileDBManager fileDBManager;
+
 
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
+
   private GlobalUnit loggedCrp;
   private List<Integer> milestoneYears;
   private List<CrpProgramOutcome> outcomes;
+
   private List<CrpProgram> programs;
   private CrpProgram selectedProgram;
   private SrfIdoManager srfIdoManager;
@@ -121,6 +138,13 @@ public class OutcomesAction extends BaseAction {
   private String transaction;
   private UserManager userManager;
   private OutcomeValidator validator;
+  // POWB 2019 Milestones New List
+  private List<PowbIndAssesmentRisk> assessmentRisks;
+  private List<RepIndGenderYouthFocusLevel> focusLevels;
+  private List<PowbIndMilestoneRisk> milestoneRisks;
+  private PowbIndAssesmentRiskManager powbIndAssesmentRiskManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private PowbIndMilestoneRiskManager powbIndMilestoneRiskManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -128,7 +152,10 @@ public class OutcomesAction extends BaseAction {
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
     CrpAssumptionManager crpAssumptionManager, GlobalUnitManager crpManager, UserManager userManager,
     HistoryComparator historyComparator, AuditLogManager auditLogManager, FileDBManager fileDBManager,
-    CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicator, SrfSubIdoManager srfSubIdoManager) {
+    CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicator, SrfSubIdoManager srfSubIdoManager,
+    PowbIndAssesmentRiskManager powbIndAssesmentRiskManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    PowbIndMilestoneRiskManager powbIndMilestoneRiskManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -145,6 +172,9 @@ public class OutcomesAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.crpProgramOutcomeIndicatorManager = crpProgramOutcomeIndicator;
+    this.powbIndAssesmentRiskManager = powbIndAssesmentRiskManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
   }
 
   @Override
@@ -197,7 +227,6 @@ public class OutcomesAction extends BaseAction {
     return path;
   }
 
-
   public String getBaseLineFileUrlPath(String outcomeID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
@@ -220,19 +249,32 @@ public class OutcomesAction extends BaseAction {
     return milestoneYears;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
 
 
+  public PowbIndAssesmentRiskManager getPowbIndAssesmentRiskManager() {
+    return powbIndAssesmentRiskManager;
+  }
+
+
+  public PowbIndMilestoneRiskManager getPowbIndMilestoneRiskManager() {
+    return powbIndMilestoneRiskManager;
+  }
+
   public List<CrpProgram> getPrograms() {
     return programs;
+  }
+
+  public RepIndGenderYouthFocusLevelManager getRepIndGenderYouthFocusLevelManager() {
+    return repIndGenderYouthFocusLevelManager;
   }
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
+
 
   public List<SrfIdo> getSrfIdos() {
     return srfIdos;
@@ -267,10 +309,10 @@ public class OutcomesAction extends BaseAction {
     return targetYears;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public void loadInfo() {
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
@@ -532,6 +574,15 @@ public class OutcomesAction extends BaseAction {
     }
 
 
+    assessmentRisks = new ArrayList<>();
+    assessmentRisks = powbIndAssesmentRiskManager.findAll();
+
+    focusLevels = new ArrayList<>();
+    focusLevels = repIndGenderYouthFocusLevelManager.findAll();
+
+    milestoneRisks = new ArrayList<>();
+    milestoneRisks = powbIndMilestoneRiskManager.findAll();
+
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
     for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -543,6 +594,7 @@ public class OutcomesAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -640,7 +692,6 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
-
   public void saveCrpProgramOutcome() {
 
     /**
@@ -705,7 +756,6 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
-
 
   public void saveIndicators(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
@@ -783,12 +833,24 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneDB.setTitle(crpMilestoneDetached.getTitle());
         crpMilestoneDB.setValue(crpMilestoneDetached.getValue());
         crpMilestoneDB.setYear(crpMilestoneDetached.getYear());
+        /* POWB 2019 New Milestones Fileds */
+        crpMilestoneDB.setPowbIndAssesmentRisk(crpMilestoneDetached.getPowbIndAssesmentRisk());
+        crpMilestoneDB.setYouthFocusLevel(crpMilestoneDetached.getYouthFocusLevel());
+        crpMilestoneDB.setPowbIndMilestoneRisk(crpMilestoneDetached.getPowbIndMilestoneRisk());
+        crpMilestoneDB.setClimateFocusLevel(crpMilestoneDetached.getClimateFocusLevel());
+        crpMilestoneDB.setCapdevFocusLevel(crpMilestoneDetached.getCapdevFocusLevel());
+        crpMilestoneDB.setGenderFocusLevel(crpMilestoneDetached.getGenderFocusLevel());
+        crpMilestoneDB.setPowbIndFollowingMilestone(crpMilestoneDetached.getPowbIndFollowingMilestone());
+        crpMilestoneDB.setPowbMilestoneOtherRisk(crpMilestoneDetached.getPowbMilestoneOtherRisk());
+        crpMilestoneDB.setPowbMilestoneVerification(crpMilestoneDetached.getPowbMilestoneVerification());
+
 
         crpMilestoneDB = crpMilestoneManager.saveCrpMilestone(crpMilestoneDB);
       }
     }
 
   }
+
 
   public void saveSubIdo(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
@@ -880,14 +942,28 @@ public class OutcomesAction extends BaseAction {
     this.milestoneYears = milestoneYears;
   }
 
-
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
+  }
+
+  public void setPowbIndAssesmentRiskManager(PowbIndAssesmentRiskManager powbIndAssesmentRiskManager) {
+    this.powbIndAssesmentRiskManager = powbIndAssesmentRiskManager;
+  }
+
+
+  public void setPowbIndMilestoneRiskManager(PowbIndMilestoneRiskManager powbIndMilestoneRiskManager) {
+    this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
   }
 
 
   public void setPrograms(List<CrpProgram> programs) {
     this.programs = programs;
+  }
+
+
+  public void
+    setRepIndGenderYouthFocusLevelManager(RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
   }
 
   public void setSelectedProgram(CrpProgram selectedProgram) {
