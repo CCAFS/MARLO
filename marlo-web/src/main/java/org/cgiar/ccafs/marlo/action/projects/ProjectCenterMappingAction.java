@@ -552,7 +552,7 @@ public class ProjectCenterMappingAction extends BaseAction {
 
 
       // Saving Project Center Outcomes
-      if (project.getCenterOutcomes() == null || !project.getCenterOutcomes().isEmpty()) {
+      if (project.getCenterOutcomes() != null && !project.getCenterOutcomes().isEmpty()) {
         // Removing Project Center Outcomes
         for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase))

@@ -206,6 +206,15 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
     }
 
+    // validation for center projects
+    if (action.isProjectCenter(project.getId())) {
+      if (project.getCenterOutcomes() == null || project.getCenterOutcomes().isEmpty()) {
+        action.addMessage(action.getText("projectDescription.researchOutcomes"));
+        action.getInvalidFields().put("list-project.centerOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
   }
 
 }
