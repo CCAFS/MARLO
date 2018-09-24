@@ -717,8 +717,6 @@ public class OutcomesAction extends BaseAction {
       }
 
     }
-
-
     /*
      * Save outcomes
      */
