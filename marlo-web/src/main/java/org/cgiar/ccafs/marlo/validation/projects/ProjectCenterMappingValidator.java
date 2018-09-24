@@ -120,7 +120,7 @@ public class ProjectCenterMappingValidator extends BaseValidator {
 
     if (project.getCenterOutcomes() == null || project.getCenterOutcomes().isEmpty()) {
       action.addMessage(action.getText("projectDescription.researchOutcomes"));
-      action.getInvalidFields().put("input-project.centerOutcomes", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("list-project.centerOutcomes", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
