@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -49,13 +50,13 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -153,6 +154,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final GlobalUnitManager crpManager;
 
+  private final GlobalUnitProjectManager globalUnitProjectManager;
+
   private final ProjectCenterMappingValidator projectCenterMappingValidator;
 
 
@@ -174,7 +177,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectInnovationCountryManager projectInnovationCountryManager, FundingSourceManager fundingSourceManager,
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     DeliverableParticipantManager deliverableParticipantManager, PhaseManager phaseManager,
-    GlobalUnitManager crpManager, ProjectCenterMappingValidator projectCenterMappingValidator) {
+    GlobalUnitManager crpManager, ProjectCenterMappingValidator projectCenterMappingValidator,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -205,6 +209,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.phaseManager = phaseManager;
     this.crpManager = crpManager;
     this.projectCenterMappingValidator = projectCenterMappingValidator;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
 
@@ -685,15 +690,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-  public void validateProjectCenterMapping(BaseAction action, Long projectID, GlobalUnitProject globalUnitProject) {
+  public void validateProjectCenterMapping(BaseAction action, Long projectID, Phase phase) {
     Project project = projectManager.getProjectById(projectID);
 
     GlobalUnit loggedCrp = (GlobalUnit) action.getSession().get(APConstants.SESSION_CRP);
-
-
-    Phase phase = this.phaseManager.findCycle(action.getCurrentCycle(), action.getCurrentCycleYear(),
-      action.getActualPhase().getUpkeep(), globalUnitProject.getGlobalUnit().getId());
-
 
     ProjectInfo projectInfo = project.getProjecInfoPhase(phase);
 
@@ -735,6 +735,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
     }
 
+    List<ProjectCenterOutcome> projectCenterOutcomes = new ArrayList<>();
+    for (ProjectCenterOutcome projectCenterOutcome : project.getProjectCenterOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList())) {
+      projectCenterOutcomes.add(projectCenterOutcome);
+    }
+    project.setCenterOutcomes(projectCenterOutcomes);
     project.setFlagships(programs);
     project.setRegions(regions);
 
