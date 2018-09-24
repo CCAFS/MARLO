@@ -573,7 +573,7 @@ public class OutcomesAction extends BaseAction {
       }
     }
 
-
+    /** POWB 2019 List */
     assessmentRisks = new ArrayList<>();
     assessmentRisks = powbIndAssesmentRiskManager.findAll();
 
@@ -582,6 +582,8 @@ public class OutcomesAction extends BaseAction {
 
     milestoneRisks = new ArrayList<>();
     milestoneRisks = powbIndMilestoneRiskManager.findAll();
+
+    /** */
 
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
