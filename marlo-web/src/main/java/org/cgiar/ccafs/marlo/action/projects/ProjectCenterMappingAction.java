@@ -404,7 +404,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
 
-      programFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+      programFlagships.sort((p1, p2) -> p1.getCenterComposedName().compareTo(p2.getCenterComposedName()));
 
 
       centerOutcomes = new ArrayList<>();
