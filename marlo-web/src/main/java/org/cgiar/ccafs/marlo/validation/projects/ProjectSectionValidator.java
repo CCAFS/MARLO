@@ -970,6 +970,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
       projectLocations.add(projectLocation);
     }
+    List<ProjectCenterOutcome> projectCenterOutcomes = new ArrayList<>();
+    for (ProjectCenterOutcome projectCenterOutcome : project.getProjectCenterOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+      .collect(Collectors.toList())) {
+      projectCenterOutcomes.add(projectCenterOutcome);
+    }
+    project.setCenterOutcomes(projectCenterOutcomes);
     project.setClusterActivities(projectClusterActivities);
     project.setFlagships(programs);
     project.setRegions(regions);
