@@ -598,6 +598,16 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // We change this variable so that the user knows that he is working on a draft version
 
+        // Center Outcomes
+        if (this.isProjectCenter(projectID)) {
+          if (project.getCenterOutcomes() != null) {
+            for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
+              projectCenterOutcome.setCenterOutcome(
+                centerOutcomeManager.getResearchOutcomeById(projectCenterOutcome.getCenterOutcome().getId()));
+            }
+          }
+        }
+
         this.setDraft(true);
       } else {
         // DB version
@@ -789,6 +799,9 @@ public class ProjectDescriptionAction extends BaseAction {
       }
       project.setFlagshipValue(null);
       project.setRegionsValue(null);
+      if (project.getCenterOutcomes() != null) {
+        project.getCenterOutcomes().clear();
+      }
 
       project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
       project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
@@ -862,18 +875,20 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       // Saving the flaghsips
-      List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-          && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
-        .collect(Collectors.toList());
-      for (ProjectFocus projectFocus : fpsPreview) {
-        if (project.getFlagshipValue() == null || project.getFlagshipValue().isEmpty()
-          || !project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocusManager.deleteProjectFocus(projectFocus.getId());
-        }
-      }
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
+
+        List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList());
+        for (ProjectFocus projectFocus : fpsPreview) {
+          if (project.getFlagshipValue() == null || project.getFlagshipValue().isEmpty()
+            || !project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          }
+        }
+
         for (String programID : project.getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program =
@@ -894,21 +909,32 @@ public class ProjectDescriptionAction extends BaseAction {
           }
 
         }
-      }
-
-      // Saving the regions
-      List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-          && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
-        .collect(Collectors.toList());
-      for (ProjectFocus projectFocus : regionsPreview) {
-        if (project.getRegionsValue() == null || project.getRegionsValue().isEmpty()
-          || !project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+      } else {
+        // Delete All flagships
+        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList())) {
           projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
+
+      // Saving the regions
       if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
+
+        List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList());
+        for (ProjectFocus projectFocus : regionsPreview) {
+          if (project.getRegionsValue() == null || project.getRegionsValue().isEmpty()
+            || !project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          }
+        }
+
         for (String programID : project.getRegionsValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
@@ -929,6 +955,15 @@ public class ProjectDescriptionAction extends BaseAction {
 
         }
 
+      } else {
+        // Delete All Regions
+        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+          .collect(Collectors.toList())) {
+          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+        }
       }
 
 
@@ -995,19 +1030,18 @@ public class ProjectDescriptionAction extends BaseAction {
 
       // Removing Project Center Outcomes
       if (this.isProjectCenter(projectID)) {
-        for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())) {
-          if (project.getCenterOutcomes() == null) {
-            project.setCenterOutcomes(new ArrayList<>());
-          }
-          if (!project.getCenterOutcomes().contains(projectCenterOutcome)) {
-            projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
-          }
-        }
 
-        // Add Project Center Outcomes
-        if (project.getCenterOutcomes() != null) {
+        // Saving Project Center Outcomes
+        if (project.getCenterOutcomes() != null && !project.getCenterOutcomes().isEmpty()) {
+          // Removing Project Center Outcomes
+          for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList())) {
+            if (!project.getCenterOutcomes().contains(projectCenterOutcome)) {
+              projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
+            }
+          }
+          // Add Project Center Outcomes
           for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
             if (projectCenterOutcome.getId() == null) {
               projectCenterOutcome.setProject(project);
@@ -1016,7 +1050,14 @@ public class ProjectDescriptionAction extends BaseAction {
               // This add centerOutcome to generate correct auditlog.
               project.getProjectCenterOutcomes().add(projectCenterOutcome);
             }
+          }
 
+        } else {
+          // Removing All Project Center Outcomes
+          for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList())) {
+            projectCenterOutcomeManager.deleteProjectCenterOutcome(projectCenterOutcome.getId());
           }
         }
       }
@@ -1110,9 +1151,7 @@ public class ProjectDescriptionAction extends BaseAction {
         return REDIRECT;
       }
 
-    } else
-
-    {
+    } else {
       // no permissions to edit
       return NOT_AUTHORIZED;
     }

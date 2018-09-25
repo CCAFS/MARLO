@@ -98,5 +98,8 @@
         <property name="contacts" type="string">
             <column name="contacts" sql-type="TEXT" />
         </property>
+        <property name="commissioningStudy" type="string">
+            <column name="commissioning_study" sql-type="TEXT" />
+        </property>
     </class>
 </hibernate-mapping>

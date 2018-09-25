@@ -52,7 +52,7 @@
             [#-- Your project contributes to the flagships --]
             <div class="form-group">
               <p>
-                <strong>[@s.text name="projectContributionsCrpList.flagships" /]</strong><br />
+                <strong>[@s.text name="projectContributionsCrpList.flagships" /]:</strong><br />
                 [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
                 <div class="clearfix"></div>
               </p>
@@ -64,7 +64,7 @@
             <table id="projectOutcomesList" class="table table-striped table-hover ">
               <thead>
                 <tr>
-                  <th>Module</th>
+                  <th>[@s.text name="global.flagship" /]</th>
                   <th>Outcome 2022</th>
                   <th></th>
                   <th>Status</th>
@@ -167,7 +167,7 @@
       </td>
       [#-- Remove Contribution--]
       <td class="text-center">
-        [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" )]
+        [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" ) && !action.isCenterGlobalUnit() ]
           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
             <img src="${baseUrl}/global/images/trash.png" />
           </a>

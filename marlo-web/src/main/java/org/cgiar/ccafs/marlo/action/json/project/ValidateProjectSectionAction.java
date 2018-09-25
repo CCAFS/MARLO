@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -185,9 +186,21 @@ public class ValidateProjectSectionAction extends BaseAction {
         switch (SharedProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
           case CENTER_MAPPING:
 
-            GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(this.getProjectID());
+            Phase phase = this.getActualPhase();
+            GlobalUnitProject globalUnitProject =
+              globalUnitProjectManager.findByProjectAndGlobalUnitId(this.getProjectID(), loggedCrp.getId());
+            if (!globalUnitProject.isOrigin()) {
+              GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(this.getProjectID());
+              List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
+                .filter(c -> c.isActive() && c.getDescription().equals(this.getActualPhase().getDescription())
+                  && c.getYear() == this.getActualPhase().getYear() && c.getUpkeep())
+                .collect(Collectors.toList());
+              if (phases.size() > 0) {
+                phase = phases.get(0);
+              }
+            }
 
-            this.projectSectionValidator.validateProjectCenterMapping(this, this.getProjectID(), globalUnitProject);
+            this.projectSectionValidator.validateProjectCenterMapping(this, this.getProjectID(), phase);
             break;
 
         }
