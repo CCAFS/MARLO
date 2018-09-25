@@ -362,7 +362,7 @@
     <div class="form-group">
       [#-- Indicate of the following --]
       <div class="form-group">
-        [@customForm.select name="${milestoneCustomName}.powbIndFollowingMilestone.id"  i18nkey="outcome.milestone.powbIndFollowingMilestone" className="" keyFieldName="id" displayFieldName="name" listName="" editable=editable required=true /]
+        [@customForm.select name="${milestoneCustomName}.powbIndFollowingMilestone.id"  i18nkey="outcome.milestone.powbIndFollowingMilestone" className="" keyFieldName="id" displayFieldName="name" listName="followingMilestones" editable=editable required=true /]
       </div>
       [#-- Assessment of risk to achievement --]
       <div class="form-group">
@@ -375,7 +375,7 @@
       [#-- For medium/high please select the main risk --]
       [#local showOtherRisk = (milestone.powbIndAssesmentRisk.id >= 2)!false ]
       <div class="form-group milestoneOtherRisk" style="display:${showOtherRisk?string('block', 'none')}">
-        [@customForm.select name="${milestoneCustomName}.powbMilestoneOtherRisk.id"  i18nkey="outcome.milestone.powbMilestoneOtherRisk" className="" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=true /]
+        [@customForm.select name="${milestoneCustomName}.powbIndMilestoneRisk.id"  i18nkey="outcome.milestone.powbMilestoneOtherRisk" className="" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=true /]
       </div>
       [#-- Means of verification --]
       <div class="form-group">

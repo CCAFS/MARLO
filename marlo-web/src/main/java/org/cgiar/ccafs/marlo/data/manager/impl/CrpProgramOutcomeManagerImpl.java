@@ -21,6 +21,10 @@ import org.cgiar.ccafs.marlo.data.dao.CrpOutcomeSubIdoDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dao.PowbIndAssesmentRiskDAO;
+import org.cgiar.ccafs.marlo.data.dao.PowbIndFollowingMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.dao.PowbIndMilestoneRiskDAO;
+import org.cgiar.ccafs.marlo.data.dao.RepIndGenderYouthFocusLevelDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -28,6 +32,10 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk;
+import org.cgiar.ccafs.marlo.data.model.PowbIndFollowingMilestone;
+import org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +55,10 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   private CrpAssumptionDAO crpAssumptionDAO;
   private CrpMilestoneDAO crpMilestoneDAO;
   private CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO;
+  private PowbIndFollowingMilestoneDAO powbIndFollowingMilestoneDAO;
+  private PowbIndAssesmentRiskDAO powbIndAssesmentRiskDAO;
+  private PowbIndMilestoneRiskDAO powbIndMilestoneRiskDAO;
+  private RepIndGenderYouthFocusLevelDAO repIndGenderYouthFocusLevelDAO;
 
   private PhaseDAO phaseMySQLDAO;
 
@@ -56,14 +68,19 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   @Inject
   public CrpProgramOutcomeManagerImpl(CrpProgramOutcomeDAO crpProgramOutcomeDAO,
     CrpOutcomeSubIdoDAO crpOutcomeSubIdoDAO, CrpAssumptionDAO crpAssumptionDAO, PhaseDAO phaseMySQLDAO,
-    CrpMilestoneDAO crpMilestoneDAO, CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO) {
+    CrpMilestoneDAO crpMilestoneDAO, CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO,
+    PowbIndFollowingMilestoneDAO powbIndFollowingMilestoneDAO, PowbIndAssesmentRiskDAO powbIndAssesmentRiskDAO,
+    PowbIndMilestoneRiskDAO powbIndMilestoneRiskDAO, RepIndGenderYouthFocusLevelDAO repIndGenderYouthFocusLevelDAO) {
     this.crpProgramOutcomeDAO = crpProgramOutcomeDAO;
     this.crpOutcomeSubIdoDAO = crpOutcomeSubIdoDAO;
     this.crpAssumptionDAO = crpAssumptionDAO;
     this.crpProgramOutcomeIndicatorDAO = crpProgramOutcomeIndicatorDAO;
     this.crpMilestoneDAO = crpMilestoneDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
-
+    this.powbIndFollowingMilestoneDAO = powbIndFollowingMilestoneDAO;
+    this.powbIndAssesmentRiskDAO = powbIndAssesmentRiskDAO;
+    this.powbIndMilestoneRiskDAO = powbIndMilestoneRiskDAO;
+    this.repIndGenderYouthFocusLevelDAO = repIndGenderYouthFocusLevelDAO;
 
   }
 
@@ -362,6 +379,59 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setTitle(crpMilestone.getTitle());
           crpMilestoneAdd.setValue(crpMilestone.getValue());
           crpMilestoneAdd.setYear(crpMilestone.getYear());
+
+
+          /* POWB 2019 */
+
+
+          crpMilestoneAdd.setPowbMilestoneOtherRisk(crpMilestone.getPowbMilestoneOtherRisk());
+          crpMilestoneAdd.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
+
+
+          if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
+            PowbIndAssesmentRisk powbIndAssesmentRisk =
+              powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
+            crpMilestoneAdd.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+          }
+
+          if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
+            PowbIndMilestoneRisk powbIndMilestoneRisk =
+              powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
+            crpMilestoneAdd.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+          }
+
+          if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
+            PowbIndFollowingMilestone powbIndFollowingMilestone =
+              powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
+            crpMilestoneAdd.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+          }
+
+          if (crpMilestone.getYouthFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
+            crpMilestoneAdd.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          if (crpMilestone.getClimateFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
+            crpMilestoneAdd.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          if (crpMilestone.getCapdevFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
+            crpMilestoneAdd.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          if (crpMilestone.getGenderFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
+            crpMilestoneAdd.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          /* */
+
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
           if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().length() == 0) {
@@ -378,6 +448,54 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           milestonetoUpdate.setYear(crpMilestone.getYear());
           milestonetoUpdate.setValue(crpMilestone.getValue());
+          /* POWB 2019 */
+
+          milestonetoUpdate.setPowbMilestoneOtherRisk(crpMilestone.getPowbMilestoneOtherRisk());
+          milestonetoUpdate.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
+
+          if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
+            PowbIndAssesmentRisk powbIndAssesmentRisk =
+              powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
+            milestonetoUpdate.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+          }
+
+          if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
+            PowbIndMilestoneRisk powbIndMilestoneRisk =
+              powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
+            milestonetoUpdate.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+          }
+
+          if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
+            PowbIndFollowingMilestone powbIndFollowingMilestone =
+              powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
+            milestonetoUpdate.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+          }
+
+          if (crpMilestone.getYouthFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
+            milestonetoUpdate.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          if (crpMilestone.getClimateFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
+            milestonetoUpdate.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          if (crpMilestone.getCapdevFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
+            milestonetoUpdate.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          if (crpMilestone.getGenderFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
+            milestonetoUpdate.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+          }
+
+          /*  */
           crpMilestoneDAO.save(milestonetoUpdate);
         }
       }
