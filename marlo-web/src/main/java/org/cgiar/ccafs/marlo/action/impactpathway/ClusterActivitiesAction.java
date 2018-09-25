@@ -769,6 +769,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
         db.setPhase(this.getActualPhase());
         db.setCrpProgram(selectedProgram);
+        crpClusterOfActivity.setCrpProgram(selectedProgram);
         db.setIdentifier(crpClusterOfActivity.getIdentifier());
 
         db.setDescription(crpClusterOfActivity.getDescription());
