@@ -211,7 +211,7 @@
     </ul>
   
     <!-- Tab panes -->
-    <div class="tab-content">
+    <div class="tab-content impactpathwayTabContent">
       [#-- Outcome Sub-IDOs List --]
       <div role="tabpanel" class="tab-pane fade in active" id="subIdos-tab-${index}">
         [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
@@ -354,6 +354,49 @@
       [#local showTargetValue = (targetUnitList?has_content) && (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
+      </div>
+    </div>
+    
+    <hr />
+    [#-- POWB 2019 REQUIREMENTS --]
+    <div class="form-group">
+      [#-- Indicate of the following --]
+      <div class="form-group">
+        [@customForm.select name="${milestoneCustomName}.powbIndFollowingMilestone.id"  i18nkey="outcome.milestone.powbIndFollowingMilestone" className="" keyFieldName="id" displayFieldName="name" listName="" editable=editable required=true /]
+      </div>
+      [#-- Assessment of risk to achievement --]
+      <div class="form-group">
+        <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required=editable  /]</label> 
+        [#list (assessmentRisks)![] as assesment]
+          [@customForm.radioFlat id="${milestoneCustomName}-risk-${assesment.id}" name="${milestoneCustomName}.powbIndAssesmentRisk.id" label="${assesment.name}" value="${assesment.id}" checked=(powbIndAssesmentRisk.id == assesment.id)!false editable=editable cssClass="assesmentRiskOption" cssClassLabel=""/]
+        [/#list]
+        [#if !editable && (!(milestone.powbIndAssesmentRisk??))!true][@s.text name="form.values.fieldEmpty"/][/#if]
+      </div>
+      [#-- For medium/high please select the main risk --]
+      [#local showOtherRisk = (milestone.powbIndAssesmentRisk.id >= 2)!false ]
+      <div class="form-group milestoneOtherRisk" style="display:${showOtherRisk?string('block', 'none')}">
+        [@customForm.select name="${milestoneCustomName}.powbMilestoneOtherRisk.id"  i18nkey="outcome.milestone.powbMilestoneOtherRisk" className="" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=true /]
+      </div>
+      [#-- Means of verification --]
+      <div class="form-group">
+        [@customForm.textArea name="${milestoneCustomName}.powbMilestoneVerification" i18nkey="outcome.milestone.powbMilestoneVerification" required=true className="milestone-powbMilestoneVerification" editable=editable required=true /]
+      </div>
+      [#-- DAC Markers for the milestone --]
+      <div class="row form-group">
+        <label class="subTitle col-md-12">[@s.text name="outcome.milestone.milestoneMarkers" /]</label><br />
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.genderFocusLevel.id"  i18nkey="outcome.milestone.genderFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=true  /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.youthFocusLevel.id"  i18nkey="outcome.milestone.youthFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=true /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.capdevFocusLevel.id"  i18nkey="outcome.milestone.capdevFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=true /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.climateFocusLevel.id"  i18nkey="outcome.milestone.climateFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=true /]
+        </div>
+        <br />
       </div>
     </div>
     

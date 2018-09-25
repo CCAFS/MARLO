@@ -213,6 +213,10 @@ public class OutcomesAction extends BaseAction {
     return false;
   }
 
+  public List<PowbIndAssesmentRisk> getAssessmentRisks() {
+    return assessmentRisks;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -232,10 +236,14 @@ public class OutcomesAction extends BaseAction {
       + File.separator;
   }
 
-
   public long getCrpProgramID() {
     return crpProgramID;
   }
+
+  public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
+    return focusLevels;
+  }
+
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
@@ -243,6 +251,10 @@ public class OutcomesAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<PowbIndMilestoneRisk> getMilestoneRisks() {
+    return milestoneRisks;
   }
 
   public List<Integer> getMilestoneYears() {
