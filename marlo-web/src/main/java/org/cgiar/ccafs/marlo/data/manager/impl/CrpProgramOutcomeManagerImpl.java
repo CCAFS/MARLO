@@ -388,46 +388,60 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
 
 
-          if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
-            PowbIndAssesmentRisk powbIndAssesmentRisk =
-              powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
-            crpMilestoneAdd.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+          if (crpMilestone.getPowbIndAssesmentRisk() != null) {
+            if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
+              PowbIndAssesmentRisk powbIndAssesmentRisk =
+                powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
+              crpMilestoneAdd.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+            }
           }
 
-          if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
-            PowbIndMilestoneRisk powbIndMilestoneRisk =
-              powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
-            crpMilestoneAdd.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+          if (crpMilestone.getPowbIndMilestoneRisk() != null) {
+            if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
+              PowbIndMilestoneRisk powbIndMilestoneRisk =
+                powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
+              crpMilestoneAdd.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+            }
           }
 
-          if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
-            PowbIndFollowingMilestone powbIndFollowingMilestone =
-              powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
-            crpMilestoneAdd.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+          if (crpMilestone.getPowbIndFollowingMilestone() != null) {
+            if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
+              PowbIndFollowingMilestone powbIndFollowingMilestone =
+                powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
+              crpMilestoneAdd.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+            }
           }
 
-          if (crpMilestone.getYouthFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
-            crpMilestoneAdd.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getYouthFocusLevel() != null) {
+            if (crpMilestone.getYouthFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
+              crpMilestoneAdd.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
-          if (crpMilestone.getClimateFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
-            crpMilestoneAdd.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getClimateFocusLevel() != null) {
+            if (crpMilestone.getClimateFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
+              crpMilestoneAdd.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
-          if (crpMilestone.getCapdevFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
-            crpMilestoneAdd.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getCapdevFocusLevel() != null) {
+            if (crpMilestone.getCapdevFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
+              crpMilestoneAdd.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
-          if (crpMilestone.getGenderFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
-            crpMilestoneAdd.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getGenderFocusLevel() != null) {
+            if (crpMilestone.getGenderFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
+              crpMilestoneAdd.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
           /* */
@@ -453,46 +467,60 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           milestonetoUpdate.setPowbMilestoneOtherRisk(crpMilestone.getPowbMilestoneOtherRisk());
           milestonetoUpdate.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
 
-          if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
-            PowbIndAssesmentRisk powbIndAssesmentRisk =
-              powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
-            milestonetoUpdate.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+          if (crpMilestone.getPowbIndAssesmentRisk() != null) {
+            if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
+              PowbIndAssesmentRisk powbIndAssesmentRisk =
+                powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
+              milestonetoUpdate.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+            }
           }
 
-          if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
-            PowbIndMilestoneRisk powbIndMilestoneRisk =
-              powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
-            milestonetoUpdate.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+          if (crpMilestone.getPowbIndMilestoneRisk() != null) {
+            if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
+              PowbIndMilestoneRisk powbIndMilestoneRisk =
+                powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
+              milestonetoUpdate.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+            }
           }
 
-          if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
-            PowbIndFollowingMilestone powbIndFollowingMilestone =
-              powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
-            milestonetoUpdate.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+          if (crpMilestone.getPowbIndFollowingMilestone() != null) {
+            if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
+              PowbIndFollowingMilestone powbIndFollowingMilestone =
+                powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
+              milestonetoUpdate.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+            }
           }
 
-          if (crpMilestone.getYouthFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
-            milestonetoUpdate.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getYouthFocusLevel() != null) {
+            if (crpMilestone.getYouthFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
+              milestonetoUpdate.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
-          if (crpMilestone.getClimateFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
-            milestonetoUpdate.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getClimateFocusLevel() != null) {
+            if (crpMilestone.getClimateFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
+              milestonetoUpdate.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
-          if (crpMilestone.getCapdevFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
-            milestonetoUpdate.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getCapdevFocusLevel() != null) {
+            if (crpMilestone.getCapdevFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
+              milestonetoUpdate.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
-          if (crpMilestone.getGenderFocusLevel().getId() != null) {
-            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
-              repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
-            milestonetoUpdate.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+          if (crpMilestone.getGenderFocusLevel() != null) {
+            if (crpMilestone.getGenderFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
+              milestonetoUpdate.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+            }
           }
 
           /*  */

@@ -873,47 +873,60 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneDB.setPowbMilestoneOtherRisk(crpMilestoneDetached.getPowbMilestoneOtherRisk());
         crpMilestoneDB.setPowbMilestoneVerification(crpMilestoneDetached.getPowbMilestoneVerification());
 
-        if (crpMilestoneDetached.getPowbIndAssesmentRisk().getId() != null) {
-          PowbIndAssesmentRisk powbIndAssesmentRisk = powbIndAssesmentRiskManager
-            .getPowbIndAssesmentRiskById(crpMilestoneDetached.getPowbIndAssesmentRisk().getId());
-          crpMilestoneDB.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+        if (crpMilestoneDetached.getPowbIndAssesmentRisk() != null) {
+          if (crpMilestoneDetached.getPowbIndAssesmentRisk().getId() != null) {
+            PowbIndAssesmentRisk powbIndAssesmentRisk = powbIndAssesmentRiskManager
+              .getPowbIndAssesmentRiskById(crpMilestoneDetached.getPowbIndAssesmentRisk().getId());
+            crpMilestoneDB.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+          }
         }
 
-        if (crpMilestoneDetached.getPowbIndMilestoneRisk().getId() != null) {
-          PowbIndMilestoneRisk powbIndMilestoneRisk = powbIndMilestoneRiskManager
-            .getPowbIndMilestoneRiskById(crpMilestoneDetached.getPowbIndMilestoneRisk().getId());
-          crpMilestoneDB.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+        if (crpMilestoneDetached.getPowbIndMilestoneRisk() != null) {
+          if (crpMilestoneDetached.getPowbIndMilestoneRisk().getId() != null) {
+            PowbIndMilestoneRisk powbIndMilestoneRisk = powbIndMilestoneRiskManager
+              .getPowbIndMilestoneRiskById(crpMilestoneDetached.getPowbIndMilestoneRisk().getId());
+            crpMilestoneDB.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+          }
         }
 
-        if (crpMilestoneDetached.getPowbIndFollowingMilestone().getId() != null) {
-          PowbIndFollowingMilestone powbIndFollowingMilestone = powbIndFollowingMilestoneManager
-            .getPowbIndFollowingMilestoneById(crpMilestoneDetached.getPowbIndFollowingMilestone().getId());
-          crpMilestoneDB.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+        if (crpMilestoneDetached.getPowbIndFollowingMilestone() != null) {
+          if (crpMilestoneDetached.getPowbIndFollowingMilestone().getId() != null) {
+            PowbIndFollowingMilestone powbIndFollowingMilestone = powbIndFollowingMilestoneManager
+              .getPowbIndFollowingMilestoneById(crpMilestoneDetached.getPowbIndFollowingMilestone().getId());
+            crpMilestoneDB.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+          }
         }
 
-
-        if (crpMilestoneDetached.getYouthFocusLevel().getId() != null) {
-          RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
-            .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getYouthFocusLevel().getId());
-          crpMilestoneDB.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+        if (crpMilestoneDetached.getYouthFocusLevel() != null) {
+          if (crpMilestoneDetached.getYouthFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+              .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getYouthFocusLevel().getId());
+            crpMilestoneDB.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+          }
         }
 
-        if (crpMilestoneDetached.getClimateFocusLevel().getId() != null) {
-          RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
-            .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getClimateFocusLevel().getId());
-          crpMilestoneDB.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+        if (crpMilestoneDetached.getClimateFocusLevel() != null) {
+          if (crpMilestoneDetached.getClimateFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+              .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getClimateFocusLevel().getId());
+            crpMilestoneDB.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+          }
         }
 
-        if (crpMilestoneDetached.getCapdevFocusLevel().getId() != null) {
-          RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
-            .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getCapdevFocusLevel().getId());
-          crpMilestoneDB.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+        if (crpMilestoneDetached.getCapdevFocusLevel() != null) {
+          if (crpMilestoneDetached.getCapdevFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+              .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getCapdevFocusLevel().getId());
+            crpMilestoneDB.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+          }
         }
 
-        if (crpMilestoneDetached.getGenderFocusLevel().getId() != null) {
-          RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
-            .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getGenderFocusLevel().getId());
-          crpMilestoneDB.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+        if (crpMilestoneDetached.getGenderFocusLevel() != null) {
+          if (crpMilestoneDetached.getGenderFocusLevel().getId() != null) {
+            RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+              .getRepIndGenderYouthFocusLevelById(crpMilestoneDetached.getGenderFocusLevel().getId());
+            crpMilestoneDB.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+          }
         }
 
         crpMilestoneDB = crpMilestoneManager.saveCrpMilestone(crpMilestoneDB);
