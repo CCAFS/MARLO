@@ -404,7 +404,7 @@ public class ProjectCenterMappingAction extends BaseAction {
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
 
-      programFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+      programFlagships.sort((p1, p2) -> p1.getCenterComposedName().compareTo(p2.getCenterComposedName()));
 
 
       centerOutcomes = new ArrayList<>();
@@ -552,7 +552,7 @@ public class ProjectCenterMappingAction extends BaseAction {
 
 
       // Saving Project Center Outcomes
-      if (project.getCenterOutcomes() == null || !project.getCenterOutcomes().isEmpty()) {
+      if (project.getCenterOutcomes() != null && !project.getCenterOutcomes().isEmpty()) {
         // Removing Project Center Outcomes
         for (ProjectCenterOutcome projectCenterOutcome : projectDB.getProjectCenterOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(sharedPhase))

@@ -177,9 +177,14 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   @Override
   public String execute() throws Exception {
 
+    if (this.projectExpectedStudyID == -1) {
+      return NOT_FOUND;
+    }
+
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
+
 
     if (projectExpectedStudyID == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
@@ -672,8 +677,18 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     this.setGeneralParameters();
-    projectExpectedStudyID =
-      Long.parseLong(StringUtils.trim(parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0]));
+    try {
+      projectExpectedStudyID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0]));
+    } catch (Exception e) {
+      LOG.info("Error getting project: expected study " + projectExpectedStudyID);
+
+      if (projectExpectedStudyID == null) {
+        projectExpectedStudyID = (long) -1;
+      }
+    }
+
+
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "

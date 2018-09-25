@@ -185,6 +185,17 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate Commissioning Study
+    if (!this.isValidString(
+      projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy())
+      && this.wordCount(
+        projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy()) <= 20) {
+      action.addMessage(action.getText("Commissioning Study"));
+      action.addMissingField("study.commissioningStudy.readText");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Sub-Idos
     if (projectExpectedStudy.getSubIdos() == null || projectExpectedStudy.getSubIdos().isEmpty()) {
       action.addMessage(action.getText("subIdos"));
@@ -200,6 +211,64 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         action.addMissingField("study.stratgicResultsLink.srfTargets");
         action.getInvalidFields().put("list-expectedStudy.srfTargets",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
+      }
+
+      // Validate Geographic Scope
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+        .getRepIndGeographicScope() != null) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
+          .getId() == null
+          || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
+            .getId() == -1) {
+          action.addMessage(action.getText("Geographic Scope"));
+          action.addMissingField("study.geographicScope");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndGeographicScope.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
+            .getId().equals(action.getReportingIndGeographicScopeMultiNational())
+            || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
+              .getId().equals(action.getReportingIndGeographicScopeNational())
+            || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
+              .getId().equals(action.getReportingIndGeographicScopeSubNational())) {
+            // Validate Countries
+            if (projectExpectedStudy.getCountriesIds() == null || projectExpectedStudy.getCountriesIds().isEmpty()) {
+              action.addMessage(action.getText("countries"));
+              action.addMissingField("study.countries");
+              action.getInvalidFields().put("input-expectedStudy.countriesIds",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+            }
+          }
+
+          // Validate if Scope is Regional and review if The innovation has a region
+          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
+            .getId().equals(action.getReportingIndGeographicScopeRegional())) {
+            // Validate Region
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+              .getRepIndRegion() != null) {
+              if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
+                .getId() == null
+                || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
+                  .getId() == -1) {
+                action.addMessage(action.getText("Region"));
+                action.addMissingField("study.region");
+                action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            } else {
+              action.addMessage(action.getText("Region"));
+              action.addMissingField("study.region");
+              action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        }
+      } else {
+        action.addMessage(action.getText("Geographic Scope"));
+        action.addMissingField("study.geographicScope");
+        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndGeographicScope.id",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
 
@@ -424,66 +493,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
           }
         }
-
-
-        // Validate Geographic Scope
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-          .getRepIndGeographicScope() != null) {
-          if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-            .getId() == null
-            || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-              .getId() == -1) {
-            action.addMessage(action.getText("Geographic Scope"));
-            action.addMissingField("study.geographicScope");
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndGeographicScope.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          } else {
-            // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-              .getId().equals(action.getReportingIndGeographicScopeMultiNational())
-              || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                .getRepIndGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
-              || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                .getRepIndGeographicScope().getId().equals(action.getReportingIndGeographicScopeSubNational())) {
-              // Validate Countries
-              if (projectExpectedStudy.getCountriesIds() == null || projectExpectedStudy.getCountriesIds().isEmpty()) {
-                action.addMessage(action.getText("countries"));
-                action.addMissingField("study.countries");
-                action.getInvalidFields().put("input-expectedStudy.countriesIds",
-                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
-              }
-            }
-
-            // Validate if Scope is Regional and review if The innovation has a region
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-              .getId().equals(action.getReportingIndGeographicScopeRegional())) {
-              // Validate Region
-              if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-                .getRepIndRegion() != null) {
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
-                  .getId() == null
-                  || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
-                    .getId() == -1) {
-                  action.addMessage(action.getText("Region"));
-                  action.addMissingField("study.region");
-                  action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                }
-              } else {
-                action.addMessage(action.getText("Region"));
-                action.addMissingField("study.region");
-                action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            }
-          }
-        } else {
-          action.addMessage(action.getText("Geographic Scope"));
-          action.addMissingField("study.geographicScope");
-          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndGeographicScope.id",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
 
         // Validate Gender Radio Button
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel() == null) {
