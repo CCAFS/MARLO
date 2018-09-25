@@ -30,7 +30,6 @@ function attachEvents() {
     } else {
       $targetValue.hide('slow');
     }
-
   });
 
   // Add an Outcome
@@ -63,8 +62,7 @@ function attachEvents() {
         }
       });
     }
-  });
-  $('input.outcomeYear, input.milestoneYear').trigger('keyup');
+  }).trigger('keyup');
 
   // Add a Sub IDO
   $('.addSubIdo').on('click', addSubIdo);
@@ -125,13 +123,14 @@ function attachEvents() {
 
   // Filter SubIDOs
   $("#filterForm").on("change", filter);
+
   // Select a subIdo
   $(".subIDO").on("click", function() {
     var canAdd = true;
     // less text
     var $divSubIdo = currentSubIdo.find(".subIdoSelected");
     var $subIdosList = currentSubIdo.parents(".subIdos-list");
-    //var v = $(this).text().length > 65 ? $(this).text().substr(0, 65) + ' ... ' : $(this).text();
+    // var v = $(this).text().length > 65 ? $(this).text().substr(0, 65) + ' ... ' : $(this).text();
     var v = $(this).text();
 
     $divSubIdo.text(v);
@@ -156,6 +155,18 @@ function attachEvents() {
     $("#subIDOs-graphic").dialog("close");
     // Update component
     $(document).trigger('updateComponent');
+  });
+
+  // Event when the assessment of risk to achievement is changed
+  $('input.assesmentRiskOption').on('change', function() {
+
+    console.log(this.value);
+    var $milestoneOtherRisk = $(this).parents('.milestone').find('.milestoneOtherRisk');
+    if(this.value >= 2) {
+      $milestoneOtherRisk.slideDown();
+    } else {
+      $milestoneOtherRisk.slideUp();
+    }
   });
 }
 
