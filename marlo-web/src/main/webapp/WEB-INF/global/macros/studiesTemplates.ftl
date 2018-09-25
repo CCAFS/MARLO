@@ -112,7 +112,6 @@
       </div>
       
       [#-- 6.  Geographic scope - Countries  --]
-      [#if isOutcomeCaseStudy]
       <div class="form-group geographicScopeBlock">
         [#local geographicScope = ((element.projectExpectedStudyInfo.repIndGeographicScope.id)!-1) ]
         
@@ -143,7 +142,6 @@
           </div>
         </div>
       </div>
-      [/#if]
 
       [#-- 7. Key Contributors  --]
       <div class="form-group">
