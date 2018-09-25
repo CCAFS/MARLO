@@ -103,6 +103,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private String contacts;
 
+  @Expose
+  private String commissioningStudy;
+
   public ProjectExpectedStudyInfo() {
   }
 
@@ -133,6 +136,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return capdevLevel;
   }
 
+  public String getCommissioningStudy() {
+    return commissioningStudy;
+  }
+
   public String getComunicationsMaterial() {
     return comunicationsMaterial;
   }
@@ -140,6 +147,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getContacts() {
     return contacts;
   }
+
 
   public String getDescribeCapdev() {
     return describeCapdev;
@@ -160,10 +168,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return elaborationOutcomeImpactStatement;
   }
 
-
   public RepIndGenderYouthFocusLevel getGenderLevel() {
     return genderLevel;
   }
+
 
   public Boolean getIsContribution() {
     return isContribution;
@@ -289,7 +297,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return studyType;
   }
 
-
   public String getTitle() {
     return title;
   }
@@ -309,6 +316,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public void setCapdevLevel(RepIndGenderYouthFocusLevel capdevLevel) {
     this.capdevLevel = capdevLevel;
+  }
+
+  public void setCommissioningStudy(String commissioningStudy) {
+    this.commissioningStudy = commissioningStudy;
   }
 
   public void setComunicationsMaterial(String comunicationsMaterial) {
@@ -331,6 +342,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.describeYouth = describeYouth;
   }
 
+
   public void setElaborationOutcomeImpactStatement(String elaborationOutcomeImpactStatement) {
     this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
   }
@@ -338,7 +350,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setGenderLevel(RepIndGenderYouthFocusLevel genderLevel) {
     this.genderLevel = genderLevel;
   }
-
 
   public void setIsContribution(Boolean isContribution) {
     this.isContribution = isContribution;
@@ -369,6 +380,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.policyAmount = policyAmount;
   }
 
+
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
@@ -376,7 +388,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setQuantification(String quantification) {
     this.quantification = quantification;
   }
-
 
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
@@ -406,9 +417,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.repIndStageProcess = repIndStageProcess;
   }
 
+
   public void setRepIndStageStudy(RepIndStageStudy repIndStageStudy) {
     this.repIndStageStudy = repIndStageStudy;
   }
+
 
   public void setScopeComments(String scopeComments) {
     this.scopeComments = scopeComments;
@@ -424,19 +437,19 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.studyType = studyType;
   }
 
-
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setTopLevelComments(String topLevelComments) {
     this.topLevelComments = topLevelComments;
   }
 
+
   public void setYouthLevel(RepIndGenderYouthFocusLevel youthLevel) {
     this.youthLevel = youthLevel;
   }
+
 
   /**
    * Add the save/update information to reply the next Phase
@@ -477,7 +490,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setOtherCrossCuttingDimensions(projectExpectedStudyInfoUpdate.getOtherCrossCuttingDimensions());
     this.setComunicationsMaterial(projectExpectedStudyInfoUpdate.getComunicationsMaterial());
     this.setContacts(projectExpectedStudyInfoUpdate.getContacts());
-
+    this.setCommissioningStudy(projectExpectedStudyInfoUpdate.getCommissioningStudy());
 
   }
 
