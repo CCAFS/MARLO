@@ -75,7 +75,7 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
   }
 
   public String getAcronymDimanic() {
-    String acronym = "";
+    String acronym = this.getAcronym();
 
     // If is Center Chang
     if (this.getCrp().getGlobalUnitType().getId() == 4) {
@@ -88,9 +88,6 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
           break;
         case "RPL":
           acronym = "Regional Offices Leaders";
-          break;
-        default:
-          acronym = this.getAcronym();
           break;
 
       }
