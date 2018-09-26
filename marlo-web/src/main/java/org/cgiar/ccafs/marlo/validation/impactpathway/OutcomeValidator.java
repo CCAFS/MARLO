@@ -260,10 +260,13 @@ public class OutcomeValidator extends BaseValidator
      * action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
      * }
      */
+    int year = action.getCurrentCycleYear();
     if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
-        this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
+        if (outcome.getMilestones().get(j).getYear() != null && outcome.getMilestones().get(j).getYear() >= year) {
+          this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
+        }
       }
     } else {
       action.addMessage("outcome.action.milestones.requeried");
