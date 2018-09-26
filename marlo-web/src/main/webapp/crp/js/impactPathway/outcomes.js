@@ -158,14 +158,28 @@ function attachEvents() {
   });
 
   // Event when the assessment of risk to achievement is changed
-  $('input.assesmentRiskOption').on('change', function() {
+  $('input.assesmentLevels').on('change', function() {
+    var $milestoneRiskBlocks = $(this).parents('.milestone').find('.milestoneRisk');
 
-    console.log(this.value);
-    var $milestoneOtherRisk = $(this).parents('.milestone').find('.milestoneOtherRisk');
     if(this.value >= 2) {
-      $milestoneOtherRisk.slideDown();
+      $milestoneRiskBlocks.slideDown();
     } else {
-      $milestoneOtherRisk.slideUp();
+      // Trigger Risks Options
+      $('select.risksOptions').val('-1');
+      $milestoneRiskBlocks.slideUp();
+    }
+
+    // Trigger Risks Options
+    $('select.risksOptions').trigger('change');
+  });
+
+  $('select.risksOptions').on('change', function() {
+    var $elementBlocks = $(this).parents('.milestone').find('.milestoneOtherRiskField');
+    if(this.value == 7) {
+      $elementBlocks.slideDown();
+    } else {
+      $elementBlocks.find('input').val('');
+      $elementBlocks.slideUp();
     }
   });
 }

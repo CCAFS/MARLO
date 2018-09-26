@@ -104,9 +104,10 @@ public class OutcomeValidator extends BaseValidator
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
+    String customName = "outcomes[" + i + "].milestones[" + j + "]";
+
     if (!(this.isValidString(milestone.getTitle()) && this.wordCount(milestone.getTitle()) <= 100)) {
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].title",
-        InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-" + customName + ".title", InvalidFieldsMessages.EMPTYFIELD);
       action.addMessage(action.getText("outcome.action.title.required", params));
     }
 
@@ -118,16 +119,14 @@ public class OutcomeValidator extends BaseValidator
 
     if (!this.isValidNumber(String.valueOf(milestone.getYear())) || milestone.getYear() <= 0) {
       action.addMessage(action.getText("outcome.action.milestone.year.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].year",
-        InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-" + customName + ".year", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
     if (milestone.getCrpProgramOutcome() != null && milestone.getCrpProgramOutcome().getYear() != null) {
       if (milestone.getYear() == null
         || (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue())) {
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].year",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-" + customName + ".year", InvalidFieldsMessages.EMPTYFIELD);
         action.addMessage(action.getText("outcome.action.milestone.year.required", params));
       }
     }
@@ -136,15 +135,14 @@ public class OutcomeValidator extends BaseValidator
 
       if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
         action.addMessage(action.getText("outcome.action.milestone.value.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].value",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-" + customName + ".value", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
 
     /* POWB 2019 validators */
 
     if (!(this.isValidString(milestone.getPowbMilestoneVerification()))) {
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].powbMilestoneVerification",
+      action.getInvalidFields().put("input-" + customName + ".powbMilestoneVerification",
         InvalidFieldsMessages.EMPTYFIELD);
       action.addMessage(action.getText("outcome.action.milestone.mean.verification.required", params));
     }
@@ -153,99 +151,74 @@ public class OutcomeValidator extends BaseValidator
       if (milestone.getPowbIndFollowingMilestone().getId() == null
         || milestone.getPowbIndFollowingMilestone().getId() == -1) {
         action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "]..powbIndFollowingMilestone.id",
+        action.getInvalidFields().put("input-" + customName + ".powbIndFollowingMilestone.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "]..powbIndFollowingMilestone.id",
+      action.getInvalidFields().put("input-" + customName + ".powbIndFollowingMilestone.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (milestone.getPowbIndAssesmentRisk() != null) {
       if (milestone.getPowbIndAssesmentRisk().getId() == null || milestone.getPowbIndAssesmentRisk().getId() == -1) {
         action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "]..powbIndFollowingMilestone.id",
+        action.getInvalidFields().put("list-" + customName + ".powbIndAssesmentRisk.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
         if (milestone.getPowbIndAssesmentRisk().getId() == 2 || milestone.getPowbIndAssesmentRisk().getId() == 3) {
 
-          if (milestone.getPowbIndMilestoneRisk() != null) {
-            if (milestone.getPowbIndMilestoneRisk().getId() != null
-              || milestone.getPowbIndMilestoneRisk().getId() != -1) {
-              action.addMessage(action.getText("outcome.action.milestone.main.risk.required", params));
-              action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "]..powbIndMilestoneRisk.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            } else {
-              if (milestone.getPowbIndMilestoneRisk().getId() == 7) {
-                // if (!(this.isValidString(milestone.getPowbMilestoneOtherRisk()))) {
-                // action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j +
-                // "].powbMilestoneVerification",
-                // InvalidFieldsMessages.EMPTYFIELD);
-                // action.addMessage(action.getText("outcome.action.milestone.other.risk.required", params));
-                // }
+          if ((milestone.getPowbIndMilestoneRisk() == null) || (milestone.getPowbIndMilestoneRisk().getId() == null)
+            || (milestone.getPowbIndMilestoneRisk().getId() == -1)) {
+            // Required for medium/high the main risk
+            action.addMessage(action.getText("outcome.action.milestone.main.risk.required", params));
+            action.getInvalidFields().put("input-" + customName + ".powbIndMilestoneRisk.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            // Please specify other risk
+            if (milestone.getPowbIndMilestoneRisk().getId() == 7) {
+              if (!(this.isValidString(milestone.getPowbMilestoneOtherRisk()))) {
+                action.getInvalidFields().put("input-" + customName + ".powbMilestoneOtherRisk",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                action.addMessage(action.getText("outcome.action.milestone.other.risk.required", params));
               }
             }
-          } else {
-            action.addMessage(action.getText("outcome.action.milestone.main.risk.required", params));
-            action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "]..powbIndMilestoneRisk.id",
-              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
       }
     } else {
       action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "]..powbIndFollowingMilestone.id",
+      action.getInvalidFields().put("input-" + customName + ".powbIndAssesmentRisk.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (milestone.getGenderFocusLevel() != null) {
       if (milestone.getGenderFocusLevel().getId() == null || milestone.getGenderFocusLevel().getId() == -1) {
         action.addMessage(action.getText("outcome.action.milestone.gender.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].genderFocusLevel.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-" + customName + ".genderFocusLevel.id", InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("outcome.action.milestone.gender.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].genderFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (milestone.getYouthFocusLevel() != null) {
       if (milestone.getYouthFocusLevel().getId() == null || milestone.getYouthFocusLevel().getId() == -1) {
         action.addMessage(action.getText("outcome.action.milestone.youth.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].youthFocusLevel.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-" + customName + ".youthFocusLevel.id", InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("outcome.action.milestone.youth.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].youthFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (milestone.getCapdevFocusLevel() != null) {
       if (milestone.getCapdevFocusLevel().getId() == null || milestone.getCapdevFocusLevel().getId() == -1) {
         action.addMessage(action.getText("outcome.action.milestone.capdev.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].capdevFocusLevel.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-" + customName + ".capdevFocusLevel.id", InvalidFieldsMessages.EMPTYFIELD);
       }
-
-    } else {
-      action.addMessage(action.getText("outcome.action.milestone.capdev.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].capdevFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (milestone.getClimateFocusLevel() != null) {
       if (milestone.getClimateFocusLevel().getId() == null || milestone.getClimateFocusLevel().getId() == -1) {
         action.addMessage(action.getText("outcome.action.milestone.climate.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].climateFocusLevel.id",
+        action.getInvalidFields().put("input-" + customName + ".climateFocusLevel.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("outcome.action.milestone.climate.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].climateFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
