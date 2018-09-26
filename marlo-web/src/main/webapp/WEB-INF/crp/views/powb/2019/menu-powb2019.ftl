@@ -8,8 +8,8 @@
   },
   { 'title': '2.  Expected Key Results', 'show': true,
     'items': [
-    { 'slug': 'expectedOutcomes',              'name': 'powb.menu.expectedOutcomes',                'action': 'crpStaffing',                'active': false},
-    { 'slug': 'financialPlan',            'name': 'powb.menu.plannedStudies',              'action': 'financialPlan',              'active': false},
+    { 'slug': 'expectedOutcomes',              'name': 'powb.menu.expectedOutcomes',                'action': 'plannedStudies',                'active': false},
+    { 'slug': 'plannedStudies',            'name': 'powb.menu.plannedStudies',              'action': 'plannedStudies',              'active': true},
     { 'slug': 'collaborationIntegration', 'name': 'powb.menu.plannedCollaborations',   'action': 'collaborationIntegration',   'active': false }
     ]
   },
