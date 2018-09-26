@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+   
+  <!-- CRP Plan of Work and Budget (POWB) -->
+  <package name="powb2019" namespace="/powb2019" extends="marlo-default">
+    
+    <!--  1.1 Adjustments/ Changes to Your Theories of Change -->
+    <action name="{crp}/adjustmentsChanges" class="org.cgiar.ccafs.marlo.action.powb.y2019.ToCAdjustments2019Action">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/2019/powb_adjustmentsChanges2019.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/adjustmentsChanges</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>    
+  </package>
+</struts>
