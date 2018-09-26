@@ -268,18 +268,20 @@ public class ProjectCenterMappingAction extends BaseAction {
 
         // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
         Project projectDb = projectManager.getProjectById(project.getId());
+        // load LiaisonInstitutionCenter info
+        if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
+          projectDb.getProjectInfo().setLiaisonInstitutionCenter(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
+        } else {
+          projectDb.getProjectInfo().setLiaisonInstitutionCenter(null);
+        }
+
+
         project.setProjectInfo(projectDb.getProjectInfo());
         project.getProjectInfo().setProjectEditLeader(projectDb.getProjecInfoPhase(phase).isProjectEditLeader());
         project.getProjectInfo().setAdministrative(projectDb.getProjecInfoPhase(phase).getAdministrative());
         project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(phase).getPhase());
 
-        // load LiaisonInstitutionCenter info
-        if (project.getProjectInfo().getLiaisonInstitutionCenter() != null) {
-          project.getProjectInfo().setLiaisonInstitutionCenter(liaisonInstitutionManager
-            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitutionCenter().getId()));
-        } else {
-          project.getProjecInfoPhase(phase).setLiaisonInstitutionCenter(null);
-        }
 
         if (project.getCenterOutcomes() != null) {
           for (ProjectCenterOutcome projectCenterOutcome : project.getCenterOutcomes()) {
