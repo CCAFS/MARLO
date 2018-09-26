@@ -481,6 +481,7 @@
 	<include file="struts-annualReport.xml" />
 	<include file="struts-publications.xml" />
 	<include file="struts-studies.xml" />
+	<include file="struts-powb2019.xml" />
 
 	<include file="struts-center-home.xml" />
 	<include file="struts-center-impactPathway.xml" />
