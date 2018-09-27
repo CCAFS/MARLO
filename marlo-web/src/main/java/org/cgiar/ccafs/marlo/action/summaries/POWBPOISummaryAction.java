@@ -735,8 +735,12 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    powbSynthesisPMU.setPowbFinancialPlannedBudgetList(powbSynthesisPMU.getPowbFinancialPlannedBudget().stream()
-      .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+
+    if (powbSynthesisPMU != null) {
+      powbSynthesisPMU.setPowbFinancialPlannedBudgetList(powbSynthesisPMU.getPowbFinancialPlannedBudget().stream()
+        .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+    }
+
     // Flagships
     List<LiaisonInstitution> flagships = this.getFlagships();
     if (flagships != null && !flagships.isEmpty()) {
@@ -744,19 +748,22 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, center = 0.0, total = 0.0;
         String category = "", comments = "";
         category = flagship.getAcronym();
-        PowbFinancialPlannedBudget powbFinancialPlannedBudget = this.getPowbFinancialPlanBudget(flagship.getId(), true);
-        if (powbFinancialPlannedBudget != null) {
-          w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
-          carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
-          w3Bilateral =
-            powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
-          center =
-            powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
-          total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
-            ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
-          comments = powbFinancialPlannedBudget.getComments() == null
-            || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
-              : powbFinancialPlannedBudget.getComments();
+        if (powbSynthesisPMU != null) {
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget =
+            this.getPowbFinancialPlanBudget(flagship.getId(), true);
+          if (powbFinancialPlannedBudget != null) {
+            w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
+            carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
+            w3Bilateral =
+              powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
+            center =
+              powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
+            total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
+              ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
+            comments = powbFinancialPlannedBudget.getComments() == null
+              || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
+                : powbFinancialPlannedBudget.getComments();
+          }
         }
         totalCarry += carry;
         totalw1w2 += w1w2;
@@ -782,21 +789,24 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, center = 0.0, total = 0.0;
         String category = "", comments = "";
         category = powbExpenditureArea.getExpenditureArea();
-        PowbFinancialPlannedBudget powbFinancialPlannedBudget =
-          this.getPowbFinancialPlanBudget(powbExpenditureArea.getId(), false);
-        if (powbFinancialPlannedBudget != null) {
-          w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
-          carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
-          w3Bilateral =
-            powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
-          center =
-            powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
-          total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
-            ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
-          comments = powbFinancialPlannedBudget.getComments() == null
-            || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
-              : powbFinancialPlannedBudget.getComments();
+        if (powbSynthesisPMU != null) {
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget =
+            this.getPowbFinancialPlanBudget(powbExpenditureArea.getId(), false);
+          if (powbFinancialPlannedBudget != null) {
+            w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
+            carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
+            w3Bilateral =
+              powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
+            center =
+              powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
+            total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
+              ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
+            comments = powbFinancialPlannedBudget.getComments() == null
+              || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
+                : powbFinancialPlannedBudget.getComments();
+          }
         }
+
         totalCarry += carry;
         totalw1w2 += w1w2;
         totalw3Bilateral += w3Bilateral;
