@@ -47,7 +47,8 @@
     "sly": "https://github.com/darsain/sly.git#^1.6.1",
     "pickadate": "^3.5.6",
     "components-font-awesome": "^5.0.6",
-    "pusher-js": "pusher#^4.2.2"
+    "pusher-js": "pusher#^4.2.2",
+    "trumbowyg": "^2.11.0"
   },
   "overrides": {
     "jquery": {
@@ -119,6 +120,12 @@
         "lib/themes/classic.css",
         "lib/themes/classic.date.css",
         "lib/themes/classic.time.css"
+      ]
+    },
+    "trumbowyg": {
+      "main": [
+        "dist/trumbowyg.min.js",
+        "dist/ui/trumbowyg.min.css"
       ]
     }
   }

@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Report" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
-[#assign pageLibs = [ "blueimp-file-upload" ] /]
+[#assign pageLibs = [ "blueimp-file-upload", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/powb2019/powb2019_adjustmentsChanges.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
@@ -41,7 +41,7 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=editable powbInclude=PMU /]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" allowTextEditor=true editable=editable powbInclude=PMU /]
           </div>
           
           [#-- Annex a brief updated summary of the crp --] 

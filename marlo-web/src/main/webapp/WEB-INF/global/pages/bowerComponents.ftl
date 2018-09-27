@@ -26,6 +26,7 @@
   [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.date.css" />[/#if]
   [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.time.css" />[/#if]
   [#if libraryName="components-font-awesome" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/components-font-awesome/css/fontawesome-all.css" />[/#if]
+  [#if libraryName="trumbowyg" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/trumbowyg/dist/ui/trumbowyg.min.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -66,5 +67,6 @@
   [#if libraryName="pickadate"]<script src="${baseUrl}/global/bower_components/pickadate/lib/picker.date.js"></script>[/#if]
   [#if libraryName="pickadate"]<script src="${baseUrl}/global/bower_components/pickadate/lib/picker.time.js"></script>[/#if]
   [#if libraryName="pusher-js"]<script src="${baseUrl}/global/bower_components/pusher-js/dist/web/pusher.js"></script>[/#if]
+  [#if libraryName="trumbowyg"]<script src="${baseUrl}/global/bower_components/trumbowyg/dist/trumbowyg.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

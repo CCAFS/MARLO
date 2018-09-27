@@ -31,7 +31,7 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" powbInclude=false]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
@@ -47,18 +47,18 @@
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
-      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')}" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
+      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')} [#if allowTextEditor]allowTextEditor[/#if]" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
     [#else]
       <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 
-      <p>
+      <div>
         [#if value=="-NULL"] 
           [#assign customValue][@s.property value="${name?string}"/][/#assign] 
-          [#if !(customValue)?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${customValue?replace('\n', '<br>')}[/#if]
+          [#if !(customValue)?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else][#if allowTextEditor] ${customValue} [#else]${customValue?replace('\n', '<br>')}[/#if][/#if]
         [#else]
           [#if !value?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${value?replace('\n', '<br>')}[/#if] 
         [/#if]
-      </p>
+      </div>
     [/#if] 
   </div>
 [/#macro]
