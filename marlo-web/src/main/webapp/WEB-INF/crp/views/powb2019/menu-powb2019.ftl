@@ -9,7 +9,7 @@
   { 'title': '2.  Expected Key Results', 'show': true,
     'items': [
     { 'slug': 'expectedOutcomes',              'name': 'powb.menu.expectedOutcomes',                'action': 'plannedStudies',                'active': false},
-    { 'slug': 'plannedStudies',            'name': 'powb.menu.plannedStudies',              'action': 'plannedStudies',              'active': true},
+    { 'slug': 'plannedStudies',            'name': 'powb.menu.plannedStudies',              'action': 'plannedStudies',              'active': false},
     { 'slug': 'collaborationIntegration', 'name': 'powb.menu.plannedCollaborations',   'action': 'collaborationIntegration',   'active': false }
     ]
   },

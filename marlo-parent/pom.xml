@@ -60,6 +60,7 @@
 		<springfox-swagger2.version>2.7.0</springfox-swagger2.version>
 		<quartz.version>2.1.5</quartz.version>
 		<commons-validator>1.4.0</commons-validator>
+		<jsoup.version>1.11.3</jsoup.version>
 	</properties>
 	<developers>
 		<developer>
@@ -374,11 +375,11 @@
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate-core-version}</version>
 			</dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-ehcache</artifactId>
-        <version>${hibernate-core-version}</version>
-      </dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-ehcache</artifactId>
+				<version>${hibernate-core-version}</version>
+			</dependency>
 			<dependency>
 				<groupId>javax.transaction</groupId>
 				<artifactId>jta</artifactId>
@@ -580,6 +581,12 @@
 				<groupId>commons-validator</groupId>
 				<artifactId>commons-validator</artifactId>
 				<version>${commons-validator}</version>
+			</dependency>
+			<dependency>
+				<!-- jsoup HTML parser library @ https://jsoup.org/ -->
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>${jsoup.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
