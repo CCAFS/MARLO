@@ -5,7 +5,7 @@
 [#assign customJS = ["${baseUrlMedia}/js/powb/2019/powb_plannedStudies.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
-[#assign currentStage = "evidenceRelevant" /]
+[#assign currentStage = "plannedStudies" /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
@@ -22,16 +22,16 @@
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
-  [#include "/WEB-INF/crp/views/powb/submenu-powb.ftl" /]
+  [#include "/WEB-INF/crp/views/powb2019/submenu-powb2019.ftl" /]
   
   <div class="row">
     [#-- POWB Menu --]
     <div class="col-md-3">
-      [#include "/WEB-INF/crp/views/powb/2019/menu-powb2019.ftl" /]
+      [#include "/WEB-INF/crp/views/powb2019/menu-powb2019.ftl" /]
     </div> 
     <div class="col-md-9">
       [#-- Section Messages --]
-      [#include "/WEB-INF/crp/views/powb/messages-powb.ftl" /]
+      [#include "/WEB-INF/crp/views/powb2019/messages-powb2019.ftl" /]
       
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
