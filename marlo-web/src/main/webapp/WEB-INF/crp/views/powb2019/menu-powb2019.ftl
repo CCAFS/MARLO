@@ -1,7 +1,7 @@
 [#ftl]
 
 [#assign menus= [
-  { 'title': '1.  Expected Key Results', 'show': true,
+  { 'title': '1.  Theories of Change', 'show': true,
     'items': [
     { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': true }
     ]
