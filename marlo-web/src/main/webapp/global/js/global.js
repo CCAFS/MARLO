@@ -310,6 +310,19 @@ $(document).ready(function() {
 
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
+  
+  $('.allowTextEditor').trumbowyg({
+      btns: [
+        ['formatting'],
+        ['strong', 'em', 'del'],
+        ['superscript', 'subscript'],
+        ['link'],
+        ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+        ['unorderedList', 'orderedList'],
+        ['removeformat'],
+    ],
+    autogrow: true
+  });
 
   // Accessible enter click when button is focus
   $("input[type='submit']").keyup(function(event) {

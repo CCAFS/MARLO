@@ -1,0 +1,7 @@
+.trumbowyg-editor, .trumbowyg-textarea {
+  min-height: 200px;
+}
+
+.trumbowyg-box {
+  min-height: 200px !important;
+}
