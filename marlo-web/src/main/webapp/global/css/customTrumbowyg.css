@@ -2,6 +2,7 @@
   min-height: 200px;
 }
 
-.trumbowyg-box {
+.trumbowyg-box, .trumbowyg-editor {
   min-height: 200px !important;
+  margin: 0px auto;
 }
