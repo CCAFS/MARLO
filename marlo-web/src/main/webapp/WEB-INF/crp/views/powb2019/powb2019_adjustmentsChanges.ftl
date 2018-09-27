@@ -41,7 +41,11 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" allowTextEditor=true editable=editable powbInclude=PMU /]
+          [#if editable]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=true allowTextEditor=true  powbInclude=PMU /]
+          [#else] 
+            [@customForm.textArea name="Test" value="${action.getOnlyReadHtmlText(powbSynthesis.powbToc.tocOverall)}" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=false allowTextEditor=true  powbInclude=PMU /]
+          [/#if]
           </div>
           
           [#-- Annex a brief updated summary of the crp --] 
