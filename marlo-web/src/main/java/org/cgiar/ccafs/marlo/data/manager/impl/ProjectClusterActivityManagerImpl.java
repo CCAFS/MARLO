@@ -16,9 +16,11 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectClusterActivityDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 
@@ -36,32 +38,42 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
 
 
   private ProjectClusterActivityDAO projectClusterActivityDAO;
+  private CrpClusterOfActivityDAO crpClusterOfActivityDAO;
   private PhaseDAO phaseDAO;
 
   // Managers
 
 
   @Inject
-  public ProjectClusterActivityManagerImpl(ProjectClusterActivityDAO projectClusterActivityDAO, PhaseDAO phaseDAO) {
+  public ProjectClusterActivityManagerImpl(ProjectClusterActivityDAO projectClusterActivityDAO, PhaseDAO phaseDAO,
+    CrpClusterOfActivityDAO crpClusterOfActivityDAO) {
     this.projectClusterActivityDAO = projectClusterActivityDAO;
     this.phaseDAO = phaseDAO;
-
-
+    this.crpClusterOfActivityDAO = crpClusterOfActivityDAO;
   }
 
+  /**
+   * @param next: Next phase to replicate
+   * @param projecID
+   * @param projectCluster: Project cluster of the first phase
+   */
   public void addProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectCluster) {
     Phase phase = phaseDAO.find(next.getId());
     List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
-      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectCluster
-        .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && projectCluster.getCrpClusterOfActivity().getIdentifier().equals(c.getCrpClusterOfActivity().getIdentifier()))
       .collect(Collectors.toList());
     if (clusters.isEmpty()) {
-
       ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
-      projectClusterAdd.setCrpClusterOfActivity(projectCluster.getCrpClusterOfActivity());
-      projectClusterAdd.setPhase(phase);
-      projectClusterAdd.setProject(projectCluster.getProject());
-      this.projectClusterActivityDAO.save(projectClusterAdd);
+      CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
+        .getCrpClusterOfActivityByIdentifierPhase(projectCluster.getCrpClusterOfActivity().getIdentifier(), phase);
+      if (crpClusterOfActivity != null) {
+        projectClusterAdd.setCrpClusterOfActivity(crpClusterOfActivity);
+        projectClusterAdd.setPhase(phase);
+        projectClusterAdd.setProject(projectCluster.getProject());
+        this.projectClusterActivityDAO.save(projectClusterAdd);
+      }
+
     }
 
     if (phase.getNext() != null) {
@@ -78,6 +90,8 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
     Phase phase = projectClusterActivity.getPhase();
     projectClusterActivity.setActive(false);
     this.saveProjectClusterActivity(projectClusterActivity);
+    projectClusterActivity
+      .setCrpClusterOfActivity(crpClusterOfActivityDAO.find(projectClusterActivity.getCrpClusterOfActivity().getId()));
     if (phase.getDescription().equals(APConstants.PLANNING)) {
       if (phase.getNext() != null) {
         this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
@@ -102,7 +116,7 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
 
     List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectClusterActivity
-        .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
+        .getCrpClusterOfActivity().getIdentifier().equals(c.getCrpClusterOfActivity().getIdentifier()))
       .collect(Collectors.toList());
     for (ProjectClusterActivity clusterActivity : clusters) {
       this.deleteProjectClusterActivity(clusterActivity.getId());
@@ -138,10 +152,12 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   public ProjectClusterActivity saveProjectClusterActivity(ProjectClusterActivity projectClusterActivity) {
     Phase phase = projectClusterActivity.getPhase();
     ProjectClusterActivity projectClusterActivityDB = projectClusterActivityDAO.save(projectClusterActivity);
+    projectClusterActivityDB.setCrpClusterOfActivity(
+      crpClusterOfActivityDAO.find(projectClusterActivityDB.getCrpClusterOfActivity().getId()));
     if (phase.getDescription().equals(APConstants.PLANNING)) {
       if (phase.getNext() != null) {
-        this.addProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
-          projectClusterActivity.getProject().getId(), projectClusterActivity);
+        this.addProjectClusterPhase(projectClusterActivityDB.getPhase().getNext(),
+          projectClusterActivityDB.getProject().getId(), projectClusterActivityDB);
       }
     }
 
