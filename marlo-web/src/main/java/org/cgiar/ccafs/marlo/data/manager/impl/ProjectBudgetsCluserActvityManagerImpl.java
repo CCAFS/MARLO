@@ -16,10 +16,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectBudgetsCluserActvityDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 
@@ -40,25 +42,27 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   // Managers
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
+  private CrpClusterOfActivityDAO crpClusterOfActivityDAO;
 
 
   @Inject
   public ProjectBudgetsCluserActvityManagerImpl(ProjectBudgetsCluserActvityDAO projectBudgetsCluserActvityDAO,
-    PhaseDAO phaseDAO, ProjectDAO projectDAO) {
+    PhaseDAO phaseDAO, ProjectDAO projectDAO, CrpClusterOfActivityDAO crpClusterOfActivityDAO) {
     this.projectBudgetsCluserActvityDAO = projectBudgetsCluserActvityDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
+    this.crpClusterOfActivityDAO = crpClusterOfActivityDAO;
   }
 
-  public void cloneBudget(ProjectBudgetsCluserActvity projectBudgetAdd, ProjectBudgetsCluserActvity budget,
-    Phase phase) {
+  public void cloneBudget(ProjectBudgetsCluserActvity projectBudgetAdd, ProjectBudgetsCluserActvity budget, Phase phase,
+    CrpClusterOfActivity crpClusterOfActivity) {
     projectBudgetAdd.setPhase(phase);
     projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
     projectBudgetAdd.setAmount(budget.getAmount());
     projectBudgetAdd.setBudgetType(budget.getBudgetType());
     projectBudgetAdd.setGenderPercentage(budget.getGenderPercentage());
     projectBudgetAdd.setYear(budget.getYear());
-    projectBudgetAdd.setCrpClusterOfActivity(budget.getCrpClusterOfActivity());
+    projectBudgetAdd.setCrpClusterOfActivity(crpClusterOfActivity);
 
 
   }
@@ -67,11 +71,11 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   public ProjectBudgetsCluserActvity
     copyProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity, Phase phase) {
     ProjectBudgetsCluserActvity budgetAdd = new ProjectBudgetsCluserActvity();
-    this.cloneBudget(budgetAdd, projectBudgetsCluserActvity, phase);
+    CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
+      projectBudgetsCluserActvity.getCrpClusterOfActivity().getIdentifier(), phase);
+    this.cloneBudget(budgetAdd, projectBudgetsCluserActvity, phase, crpClusterOfActivity);
     budgetAdd = projectBudgetsCluserActvityDAO.save(budgetAdd);
     return budgetAdd;
-
-
   }
 
   public void deletBudgetPhase(Phase next, long projecID, ProjectBudgetsCluserActvity projectBudget) {
@@ -79,7 +83,7 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
 
     List<ProjectBudgetsCluserActvity> budgets = phase.getProjectBudgetsActivities().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && c.getCrpClusterOfActivity().getId().equals(projectBudget.getCrpClusterOfActivity().getId())
+        && c.getCrpClusterOfActivity().getIdentifier().equals(projectBudget.getCrpClusterOfActivity().getIdentifier())
         && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
       .collect(Collectors.toList());
     for (ProjectBudgetsCluserActvity projectBudgetDB : budgets) {
@@ -100,6 +104,8 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
     ProjectBudgetsCluserActvity projectBudgetsCluserActvity =
       this.getProjectBudgetsCluserActvityById(projectBudgetsCluserActvityId);
     Phase currentPhase = phaseDAO.find(projectBudgetsCluserActvity.getPhase().getId());
+    projectBudgetsCluserActvity.setCrpClusterOfActivity(
+      crpClusterOfActivityDAO.find(projectBudgetsCluserActvity.getCrpClusterOfActivity().getId()));
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudgetsCluserActvity.getPhase().getNext() != null) {
         this.deletBudgetPhase(projectBudgetsCluserActvity.getPhase().getNext(),
@@ -141,21 +147,27 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   public void saveBudgetPhase(Phase next, long projecID, ProjectBudgetsCluserActvity projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
 
+    System.out.println(projectBudget.getCrpClusterOfActivity().getIdentifier());
     List<ProjectBudgetsCluserActvity> budgets = phase.getProjectBudgetsActivities().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && c.getCrpClusterOfActivity().getId().equals(projectBudget.getCrpClusterOfActivity().getId())
+        && c.getCrpClusterOfActivity().getIdentifier().equals(projectBudget.getCrpClusterOfActivity().getIdentifier())
         && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
       .collect(Collectors.toList());
-    if (budgets.isEmpty()) {
-      ProjectBudgetsCluserActvity budgetAdd = new ProjectBudgetsCluserActvity();
-      this.cloneBudget(budgetAdd, projectBudget, phase);
-      projectBudgetsCluserActvityDAO.save(budgetAdd);
-    } else {
-      ProjectBudgetsCluserActvity budgetAdd = budgets.get(0);
-      this.cloneBudget(budgetAdd, projectBudget, phase);
-      projectBudgetsCluserActvityDAO.save(budgetAdd);
-    }
 
+    CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
+      .getCrpClusterOfActivityByIdentifierPhase(projectBudget.getCrpClusterOfActivity().getIdentifier(), phase);
+
+    if (crpClusterOfActivity != null) {
+      if (budgets.isEmpty()) {
+        ProjectBudgetsCluserActvity budgetAdd = new ProjectBudgetsCluserActvity();
+        this.cloneBudget(budgetAdd, projectBudget, phase, crpClusterOfActivity);
+        projectBudgetsCluserActvityDAO.save(budgetAdd);
+      } else {
+        ProjectBudgetsCluserActvity budgetAdd = budgets.get(0);
+        this.cloneBudget(budgetAdd, projectBudget, phase, crpClusterOfActivity);
+        projectBudgetsCluserActvityDAO.save(budgetAdd);
+      }
+    }
 
     if (phase.getNext() != null) {
       this.saveBudgetPhase(phase.getNext(), projecID, projectBudget);
@@ -170,6 +182,8 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
 
     ProjectBudgetsCluserActvity resultProjectBudget = projectBudgetsCluserActvityDAO.save(projectBudgetsCluserActvity);
     Phase currentPhase = phaseDAO.find(projectBudgetsCluserActvity.getPhase().getId());
+    projectBudgetsCluserActvity.setCrpClusterOfActivity(
+      crpClusterOfActivityDAO.find(projectBudgetsCluserActvity.getCrpClusterOfActivity().getId()));
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudgetsCluserActvity.getPhase().getNext() != null) {
         this.saveBudgetPhase(projectBudgetsCluserActvity.getPhase().getNext(),
