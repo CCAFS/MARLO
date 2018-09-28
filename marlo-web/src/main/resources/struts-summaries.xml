@@ -25,6 +25,16 @@
 			</result>
 		</action>
 
+		<action name="{crp}/POWBSummary2019"
+			class="org.cgiar.ccafs.marlo.action.summaries.POWBPOISummary2019Action">
+			<interceptor-ref name="homeStack" />
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">filename="${fileName}"</param>
+			</result>
+		</action>
+
 		<action name="{crp}/AnnualReportSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.AnualReportPOISummaryAction">
 			<interceptor-ref name="homeStack" />
@@ -43,27 +53,31 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
-    
-    <!-- Projects Summaries -->
-    <action name="{crp}/projectHighlightSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightSummaryAction">
-      <interceptor-ref name="unloggedStack" />
-      <result name="success" type="stream">
-        <param name="inputName">inputStream</param>             
-        <param name="contentType">${contentType}</param>               
-        <param name="contentDisposition">filename="${fileName}"</param>
-      </result>
-    </action>
-    
-    <action name="{crp}/projectInnovationSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.ProjectInnovationSummaryAction">
-      <interceptor-ref name="unloggedStack" />
-      <result name="success" type="stream">
-        <param name="inputName">inputStream</param>             
-        <param name="contentType">${contentType}</param>               
-        <param name="contentDisposition">filename="${fileName}"</param>
-      </result>
-    </action>
+
+		<!-- Projects Summaries -->
+		<action name="{crp}/projectHighlightSummary"
+			class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightSummaryAction">
+			<interceptor-ref name="unloggedStack" />
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				     
+				<param name="contentType">${contentType}</param>
+				       
+				<param name="contentDisposition">filename="${fileName}"</param>
+			</result>
+		</action>
+
+		<action name="{crp}/projectInnovationSummary"
+			class="org.cgiar.ccafs.marlo.action.summaries.ProjectInnovationSummaryAction">
+			<interceptor-ref name="unloggedStack" />
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				     
+				<param name="contentType">${contentType}</param>
+				       
+				<param name="contentDisposition">filename="${fileName}"</param>
+			</result>
+		</action>
 	</package>
 
 </struts>
