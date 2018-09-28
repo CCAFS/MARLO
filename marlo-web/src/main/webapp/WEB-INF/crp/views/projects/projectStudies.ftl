@@ -125,7 +125,7 @@
                 [#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]
               [#if !previousYear]</a>[/#if]
             </td>
-            <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[#else]Not defined[/#if]</td>
+            <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false][#if (item.projectExpectedStudyInfo.studyType.id=1)]OICS[#else]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[/#if][#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
             <td>
