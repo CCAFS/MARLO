@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Report" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
-[#assign pageLibs = [ "blueimp-file-upload"] /]
+[#assign pageLibs = [ "blueimp-file-upload", "trumbowyg"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/powb2019/powb2019_adjustmentsChanges.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
@@ -41,11 +41,8 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
-          [#if editable]
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=true allowTextEditor=true  powbInclude=PMU /]
-          [#else] 
-            [@customForm.textArea name="Test" value="${action.getOnlyReadHtmlText(powbSynthesis.powbToc.tocOverall)}" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=false allowTextEditor=true  powbInclude=PMU /]
-          [/#if]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=editable allowTextEditor=true  powbInclude=PMU /]
+            [#-- ${action.getOnlyReadHtmlText(powbSynthesis.powbToc.tocOverall)} --]
           </div>
           
           [#-- Annex a brief updated summary of the crp --] 
