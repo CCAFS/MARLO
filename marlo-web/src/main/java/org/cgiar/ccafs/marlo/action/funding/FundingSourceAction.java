@@ -608,9 +608,9 @@ public class FundingSourceAction extends BaseAction {
 
         if (fundingSource.getFundingSourceLocations() != null) {
 
-          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations()
-            .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
-              && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
+            .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase()) && fl.getLocElementType() == null
+              && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 2)
             .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
@@ -629,8 +629,8 @@ public class FundingSourceAction extends BaseAction {
             }
           }
 
-          regions = new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
-            .filter(fl -> fl.isActive() && fl.getLocElementType() != null && fl.getLocElement() == null
+          regions = new ArrayList<>(fundingSource
+            .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() != null
               && fl.getLocElement() == null && fl.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList()));
 
@@ -1057,9 +1057,9 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingRegions() != null) {
 
-      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations()
-        .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
-          && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+        .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase()) && fl.getLocElementType() == null
+          && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
         .collect(Collectors.toList()));
 
       if (regions != null && regions.size() > 0) {
@@ -1131,8 +1131,8 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingCountry() != null) {
 
-      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations()
-        .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB
+        .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
           && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
         .collect(Collectors.toList()));
 
@@ -1169,9 +1169,9 @@ public class FundingSourceAction extends BaseAction {
     }
 
     // Check empty regions and countries
-    List<FundingSourceLocation> regionsDB = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
-      .filter(
-        fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+    List<FundingSourceLocation> regionsDB = new ArrayList<>(fundingSourceDB
+      .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
+        && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
       .collect(Collectors.toList()));
 
     // If regions were deleted and existed records in DB, delete the regions
