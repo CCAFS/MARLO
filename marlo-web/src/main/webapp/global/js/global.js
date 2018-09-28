@@ -311,17 +311,23 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
   
-  $('.allowTextEditor').trumbowyg({
-      btns: [
-        ['formatting'],
-        ['strong', 'em', 'del'],
-        ['superscript', 'subscript'],
-        ['link'],
-        ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-        ['unorderedList', 'orderedList'],
-        ['removeformat'],
-    ],
-    autogrow: true
+  if($.fn.trumbowyg) {
+    $('.allowTextEditor').trumbowyg({
+        btns: [
+          ['formatting'],
+          ['strong', 'em', 'del'],
+          ['superscript', 'subscript'],
+          ['link'],
+          ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+          ['unorderedList', 'orderedList'],
+          ['removeformat'],
+      ],
+      autogrow: true
+    });
+  }
+
+  $('.decodeHTML').each(function(i,e){
+    $(this).html($(this).text());
   });
 
   // Accessible enter click when button is focus
