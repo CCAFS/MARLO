@@ -45,25 +45,6 @@
             [#-- ${action.getOnlyReadHtmlText(powbSynthesis.powbToc.tocOverall)} --]
           </div>
           
-          [#-- Annex a brief updated summary of the crp --] 
-          [#if PMU]
-          <div class="form-group margin-panel">
-            <div class="row">
-              <div class="col-sm-7">
-                <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
-                [@customForm.fileUploadAjax
-                  fileDB=(powbSynthesis.powbToc.file)!{} 
-                  name="powbSynthesis.powbToc.file.id" 
-                  label="adjustmentsChanges.uploadFile" 
-                  dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
-                  path="${action.path}"
-                  isEditable=editable
-                /]
-              </div>
-            </div>
-          </div>
-          [/#if]
-          
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="adjustmentsChanges.flagshipsTable.title" /]</h4>
@@ -104,7 +85,11 @@
           
           [#-- Narrative--]
           <td class="left narrative">
-            [#if (element.overall?has_content)!false]${element.overall?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
+            [#if (element.overall?has_content)!false]
+             <div class="">${element.overall}</div> 
+            [#else]
+              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+            [/#if]
           </td>
         </tr>
       [/#list]

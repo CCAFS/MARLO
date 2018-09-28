@@ -318,11 +318,12 @@ $(document).ready(function() {
           ['strong', 'em', 'del'],
           ['superscript', 'subscript'],
           ['link'],
-          ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
           ['unorderedList', 'orderedList'],
           ['removeformat'],
       ],
-      autogrow: true
+      autogrow: true,
+      minimalLinks: true,
+      semantic: false
     });
   }
 
