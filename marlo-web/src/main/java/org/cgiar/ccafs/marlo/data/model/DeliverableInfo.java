@@ -59,14 +59,20 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private Long crossCuttingScoreCapacity;
   @Expose
   private Boolean isLocationGlobal;
+  @Expose
+  private RepIndGeographicScope geographicScope;
+  @Expose
+  private RepIndRegion region;
 
 
   public DeliverableInfo() {
   }
 
+
   public Boolean getAdoptedLicense() {
     return adoptedLicense;
   }
+
 
   public Boolean getAllowModifications() {
     return allowModifications;
@@ -85,6 +91,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return null;
   }
 
+
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
@@ -92,7 +99,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
-
 
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
@@ -102,7 +108,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return crossCuttingScoreCapacity;
   }
 
-
   public Long getCrossCuttingScoreGender() {
     return crossCuttingScoreGender;
   }
@@ -111,10 +116,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return crossCuttingScoreYouth;
   }
 
+
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
   }
-
 
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
@@ -125,11 +130,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return crpProgramOutcome;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
-
 
   public DeliverableType getDeliverableType() {
     return deliverableType;
@@ -155,9 +158,15 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public RepIndGeographicScope getGeographicScope() {
+    return geographicScope;
+  }
+
+
   public Boolean getIsLocationGlobal() {
     return isLocationGlobal;
   }
+
 
   public String getLicense() {
     return license;
@@ -195,6 +204,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public Phase getPhase() {
     return phase;
+  }
+
+  public RepIndRegion getRegion() {
+    return region;
   }
 
 
@@ -374,9 +387,15 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public void setGeographicScope(RepIndGeographicScope geographicScope) {
+    this.geographicScope = geographicScope;
+  }
+
+
   public void setIsLocationGlobal(Boolean isLocationGlobal) {
     this.isLocationGlobal = isLocationGlobal;
   }
+
 
   public void setLicense(String license) {
     this.license = license;
@@ -386,7 +405,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.newExpectedYear = newExpectedYear;
   }
 
-
   public void setOtherLicense(String otherLicense) {
     this.otherLicense = otherLicense;
   }
@@ -394,6 +412,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+
+  public void setRegion(RepIndRegion region) {
+    this.region = region;
   }
 
 

@@ -289,7 +289,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharings)";
   public static final String PROJECT_DELIVERABLE_DATA_SHARING_FILES =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharingFiles)";
-
+  public static final String PROJECT_DELIVERABLE_LOCATIONS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableLocations)";
   public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
   public static final String PROJECT_DELIVERABLES_INTELLECTUAL_RELATION =

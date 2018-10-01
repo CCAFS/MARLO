@@ -108,6 +108,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos = new HashSet<ProjectExpectedStudySubIdo>(0);
   private Set<ExpectedStudyProject> expectedStudyProjects = new HashSet<ExpectedStudyProject>(0);
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
+  private Set<DeliverableLocation> deliverableLocations = new HashSet<DeliverableLocation>(0);
 
 
   public Phase() {
@@ -120,12 +121,14 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.year = year;
   }
 
+
   public Phase(GlobalUnit crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
     this.description = description;
     this.year = year;
     this.projectPhases = projectPhases;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -177,6 +180,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return deliverableIntellectualAssets;
   }
 
+  public Set<DeliverableLocation> getDeliverableLocations() {
+    return deliverableLocations;
+  }
+
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
@@ -220,7 +227,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
@@ -235,6 +241,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return u;
   }
 
+
   public String getName() {
     return name;
   }
@@ -243,10 +250,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return next;
   }
 
-
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   public Set<ProjectPartner> getPartners() {
     return partners;
@@ -279,7 +286,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectExpectedStudy> getProjectExpectedStudies() {
     return projectExpectedStudies;
   }
-
 
   public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
     return projectExpectedStudyCountries;
@@ -315,6 +321,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudySubIdos;
   }
 
+
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
@@ -335,7 +342,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectInfos;
   }
 
-
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return projectInnovationCountries;
   }
@@ -345,14 +351,15 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectInnovationCrps;
   }
 
+
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return projectInnovationDeliverables;
   }
 
-
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
   }
+
 
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
     return projectInnovationOrganizations;
@@ -365,7 +372,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
-
 
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
@@ -410,6 +416,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return result;
   }
 
+
   @Override
   public boolean isActive() {
 
@@ -427,7 +434,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
-
 
   public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {
     this.crpPpaPartner = crpPpaPartner;
@@ -451,6 +457,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public void setDeliverableIntellectualAssets(Set<DeliverableIntellectualAsset> deliverableIntellectualAssets) {
     this.deliverableIntellectualAssets = deliverableIntellectualAssets;
+  }
+
+
+  public void setDeliverableLocations(Set<DeliverableLocation> deliverableLocations) {
+    this.deliverableLocations = deliverableLocations;
   }
 
 
