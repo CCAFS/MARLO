@@ -288,15 +288,10 @@ public class FundingSourceListAction extends BaseAction {
       .filter(c -> c.getUser().getId().longValue() == this.getCurrentUser().getId().longValue())
       .collect(Collectors.toList()).isEmpty();
     if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin() || isPMU) {
-
       // TODO confirm with the MARLO team in Cali, that nonPmu users can also view the list of fundingSources.
       this.myProjects = fundingSourceManager.getOngoingFundingSourceSummaries(loggedCrp, this.getActualPhase());
-
-
     } else {
-
       this.myProjects = fundingSourceManager.getOngoingFundingSourceSummaries(loggedCrp, this.getActualPhase());
-
     }
 
     this.closedProjects = fundingSourceManager.getClosedFundingSourceSummaries(loggedCrp, this.getActualPhase());
