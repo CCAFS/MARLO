@@ -316,5 +316,6 @@
     <mapping resource="xmls/PowbIndAssesmentRisk.hbm.xml"/>
     <mapping resource="xmls/PowbIndFollowingMilestones.hbm.xml"/>
     <mapping resource="xmls/PowbIndMilestoneRisks.hbm.xml"/>
+    <mapping resource="xmls/DeliverableLocations.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>

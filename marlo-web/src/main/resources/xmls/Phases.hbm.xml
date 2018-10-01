@@ -354,5 +354,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
     </set>
+    <set name="deliverableLocations" table="deliverable_locations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLocation" />
+    </set>
 	</class>
 </hibernate-mapping>
