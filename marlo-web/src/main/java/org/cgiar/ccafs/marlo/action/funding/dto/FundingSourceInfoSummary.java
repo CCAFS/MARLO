@@ -46,26 +46,38 @@ public class FundingSourceInfoSummary {
   private String originalDonorName;
 
   @Expose
+  private String directDonorAcronym;
+
+
+  @Expose
+  private String originalDonorAcronym;
+
+
+  @Expose
   private Date syncedDate;
+
 
   @Expose
   private Boolean synced;
 
+
   @Expose
   private Boolean w1w2;
+
 
   @Expose
   private Integer status;
 
-
   public FundingSourceInfoSummary() {
   }
-
 
   public String getBudgetTypeName() {
     return budgetTypeName;
   }
 
+  public String getDirectDonorAcronym() {
+    return directDonorAcronym;
+  }
 
   public String getDirectDonorName() {
     return directDonorName;
@@ -84,6 +96,11 @@ public class FundingSourceInfoSummary {
 
   public String getFinanceCode() {
     return financeCode;
+  }
+
+
+  public String getOriginalDonorAcronym() {
+    return originalDonorAcronym;
   }
 
 
@@ -127,6 +144,11 @@ public class FundingSourceInfoSummary {
   }
 
 
+  public void setDirectDonorAcronym(String directDonorAcronym) {
+    this.directDonorAcronym = directDonorAcronym;
+  }
+
+
   public void setDirectDonorName(String directDonorName) {
     this.directDonorName = directDonorName;
   }
@@ -144,6 +166,11 @@ public class FundingSourceInfoSummary {
 
   public void setFinanceCode(String financeCode) {
     this.financeCode = financeCode;
+  }
+
+
+  public void setOriginalDonorAcronym(String originalDonorAcronym) {
+    this.originalDonorAcronym = originalDonorAcronym;
   }
 
 

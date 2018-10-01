@@ -57,6 +57,10 @@
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]
+          [#if (project.fundingSourceInfo.financeCode?has_content)!false]
+            [#local ciatFinanceCode = "" /]
+          [/#if]
+          
           <td style="position:relative">
             [#if project.fundingSourceInfo.financeCode?has_content]
               [#assign isSynced = (project.fundingSourceInfo.synced)!false ]
@@ -78,10 +82,9 @@
             [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
                 [#if institutionLead_index!=0]<hr />[/#if]
-                <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
-                <div class="clearfix"></div>
+                <p class="name">${(institutionLead.acronym)!institutionLead.name}</p>
               [/#list]
-              [#else]
+            [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]
           </td>
@@ -95,13 +98,13 @@
             [/#if]
           </td>
           [#-- Direct Donor --]
-          <td class=""> 
-            ${(project.fundingSourceInfo.directDonorName)!'Not defined'}
+          <td class="" title="${(project.fundingSourceInfo.directDonorName)!}">
+            ${(project.fundingSourceInfo.directDonorAcronym)!'<p style="opacity:0.5">Not defined</p>'}
           </td>
           
           [#-- Original Donor --]
-          <td class=""> 
-            ${(project.fundingSourceInfo.originalDonorName)!'Not defined'}
+          <td class="" title="${(project.fundingSourceInfo.originalDonorName)!}"> 
+            ${(project.fundingSourceInfo.originalDonorAcronym)!'<p style="opacity:0.5">Not defined</p>'}
           </td>
           
           [#-- Field Check --]
