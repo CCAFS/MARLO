@@ -167,7 +167,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
         }
 
-        if (baseAction.isSubmit(project.getProject().getId())) {
+        if (baseAction.isSubmit(project.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
           canEdit = false;
 
         }
