@@ -67,7 +67,7 @@
               [#else]
                 [#assign url]#[/#assign]
               [/#if]
-              <a href="${url}" onclick="return ${subItem.active?string}" class="action-${subItem.action}">
+              <a href="${url}" onclick="return ${subItem.active?string};" class="action-${subItem.action}">
                 [#if subItem.icon?has_content]<span class="glyphicon glyphicon-${subItem.icon}"></span> [/#if]
                 [@s.text name=subItem.name ][/@s.text]
                 [#if (subItem.development)!false][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /][/#if]
