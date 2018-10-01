@@ -36,7 +36,7 @@
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
         [#-- Title --]
-        <h3 class="headTitle">[@s.text name="evidenceRelevant.title" /]</h3>
+        <h3 class="headTitle">[@s.text name="evidenceRelevant.title.2019" /]</h3>
         <div class="borderBox">
           [#-- Provide a short narrative for any outcome --]
           [#if PMU]
@@ -45,10 +45,10 @@
           </div>
           [/#if]
           
-          [#-- Table B & H: Planned Studies for Relevant Outcomes and Impacts and planned monitoring, evaluation, and learning exercises --]
+          [#-- Table 2B: Planned Evaluations/ Reviews, Impact Assessments and Learning Exercises --]
           [#if PMU]
           <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title" /]
+            <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title.2019" /]
               <span class="powb-doc badge label-powb-table pull-right" title="[@s.text name="powb.includedField.title" /]">
                 [@s.text name="powb.includedField" /]<span class="glyphicon glyphicon-save-file"></span>
               </span>
@@ -89,10 +89,11 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-projectId" width="0%">[@s.text name="evidenceRelevant.tablePlannedStudies.projectId" /]</th>
-        <th id="tb-plannedTopic" width="20%">[@s.text name="evidenceRelevant.tablePlannedStudies.plannedTopic" /]</th>
+        <th id="tb-status" width="10%">[@s.text name="evidenceRelevant.table.status" /]</th>
+        <th id="tb-plannedStudy" width="20%">[@s.text name="evidenceRelevant.table.plannedStudy" /]</th>
         <th id="tb-geographicScope" width="11%">[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
         <th id="tb-relevant" width="24%">[@s.text name="evidenceRelevant.tablePlannedStudies.relevant" /]</th>
-        <th id="tb-comments" width="34%">[@s.text name="evidenceRelevant.tablePlannedStudies.comments" /]</th>
+        <th id="tb-commissioning" width="34%">[@s.text name="evidenceRelevant.table.commissioning" /]</th>
         <th id="tb-checkbox" width="0%">[@s.text name="evidenceRelevant.tablePlannedStudies.include" /]</th>
       </tr>
     </thead>
@@ -102,21 +103,35 @@
       [#list popUpProjects as popUp]
         [#if popUp.project.id?has_content]
             [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-            [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(popUp.id)!''}[/@s.param][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [#local wordCutterMaxPos=180]
         <tr>
           [#-- Project ID --]
           <td class="tb-projectId text-center">
             <a href="${pURL}" target="_blank">P${(popUp.project.id)!''}</a>
           </td>
+           [#-- Status --]
+          <td>
+          [#if popUp.projectExpectedStudyInfo.status?has_content]
+            [#if popUp.projectExpectedStudyInfo.statusName?length gt wordCutterMaxPos]
+              <div title="${(popUp.projectExpectedStudyInfo.statusName)!''}">
+            [/#if]
+              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(popUp.projectExpectedStudyInfo.statusName)!''}" maxPos=wordCutterMaxPos /]</a>
+            [#if popUp.projectExpectedStudyInfo.statusName?length gt wordCutterMaxPos]
+              </div>
+            [/#if]
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
           [#-- Planned topic of study --]
           <td>
-          [#if popUp.projectExpectedStudyInfo.studyType?has_content]
-            [#if popUp.projectExpectedStudyInfo.studyType?length gt wordCutterMaxPos]
-              <div title="${(popUp.projectExpectedStudyInfo.studyType.name)!''}">
+          [#if popUp.projectExpectedStudyInfo.title?has_content]
+            [#if popUp.projectExpectedStudyInfo.title?length gt wordCutterMaxPos]
+              <div title="${(popUp.projectExpectedStudyInfo.title)!''}">
             [/#if]
-              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(popUp.projectExpectedStudyInfo.studyType.name)!''}" maxPos=wordCutterMaxPos /]</a>
-            [#if popUp.projectExpectedStudyInfo.studyType.name?length gt wordCutterMaxPos]
+              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(popUp.projectExpectedStudyInfo.title)!''}" maxPos=wordCutterMaxPos /]</a>
+            [#if popUp.projectExpectedStudyInfo.title?length gt wordCutterMaxPos]
               </div>
             [/#if]
           [#else]
@@ -125,8 +140,8 @@
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-          [#if popUp.scopeName?has_content]
-            ${popUp.scopeName}
+          [#if popUp.projectExpectedStudyInfo.repIndGeographicScope?has_content]
+            ${popUp.projectExpectedStudyInfo.repIndGeographicScope.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
@@ -149,14 +164,14 @@
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
-          [#-- Comments --]
+          [#--  Who is commissioning this study --]
           <td class="comments">
-          [#if popUp.comments?has_content]
-            [#if popUp.comments?length gt wordCutterMaxPos]
-              <div title="${(popUp.comments)!''}">
+          [#if popUp.projectExpectedStudyInfo.commissioningStudy?has_content]
+            [#if popUp.projectExpectedStudyInfo.commissioningStudy?length gt wordCutterMaxPos]
+              <div title="${(popUp.projectExpectedStudyInfo.commissioningStudy)!''}">
             [/#if]
-              [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=wordCutterMaxPos /]
-            [#if popUp.comments?length gt wordCutterMaxPos]
+              [@utilities.wordCutter string="${(popUp.projectExpectedStudyInfo.commissioningStudy)!''}" maxPos=wordCutterMaxPos /]
+            [#if popUp.projectExpectedStudyInfo.commissioningStudy?length gt wordCutterMaxPos]
               </div>
             [/#if]
           [#else]
@@ -192,10 +207,11 @@
       <tr class="subHeader">
         <th id="tb-fp" width="0%">[@s.text name="evidenceRelevant.table.fp" /]</th>
         <th id="tb-pID" width="0%">[@s.text name="evidenceRelevant.table.projectId" /]</th>
-        <th id="tb-plannedTopic" width="22%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
+        <th id="tb-status" width="10%">[@s.text name="evidenceRelevant.table.status" /]</th>
+        <th id="tb-plannedStudy" width="22%">[@s.text name="evidenceRelevant.table.plannedStudy" /]</th>
         <th id="tb-geographicScope" width="12%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
         <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
-        <th id="tb-comments" width="38%">[@s.text name="evidenceRelevant.table.comments" /]</th>
+        <th id="tb-commissioning" width="16%">[@s.text name="evidenceRelevant.table.commissioning" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -217,19 +233,32 @@
           [#-- Project ID --]
           <td class="tb-projectId text-center">
             <a href="${tsURL}" target="_blank">P${(flagshipPlanned.projectExpectedStudy.project.id)!}</a>
-          </td>
-          [#-- Planned topic of study --]
+          </td>    
+          [#-- Status --]
           <td>
-          [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
-            <a title="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
+          [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.status?has_content]
+            [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.statusName?length gt wordCutterMaxPos]
+              <div title="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.statusName)!''}">
+            [/#if]
+              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.statusName)!''}" maxPos=wordCutterMaxPos /]</a>
+            [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.statusName?length gt wordCutterMaxPos]
+              </div>
+            [/#if]
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>      
+          [#-- Planned topic of study --]
+          [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.title?has_content]
+            <a title="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.title)!''}" href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.title)!''}" maxPos=wordCutterMaxPos /]</a>
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-          [#if flagshipPlanned.projectExpectedStudy.scopeName?has_content]
-            ${flagshipPlanned.projectExpectedStudy.scopeName}
+          [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.repIndGeographicScope?has_content]
+            ${flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.repIndGeographicScope.name}
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
@@ -252,14 +281,14 @@
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
           </td>
-          [#-- Comments --]
-          <td class="comments" title="${(flagshipPlanned.projectExpectedStudy.comments)!''}">
-          [#if flagshipPlanned.projectExpectedStudy.comments?has_content]
-            [#if flagshipPlanned.projectExpectedStudy.comments?length gt wordCutterMaxPos]
-              <div title="${(flagshipPlanned.projectExpectedStudy.comments)!''}">
+          [#-- Who is commissioning this study --]
+          <td class="comments" title="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.commissioningStudy)!''}">
+          [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.commissioningStudy?has_content]
+            [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.commissioningStudy?length gt wordCutterMaxPos]
+              <div title="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.commissioningStudy)!''}">
             [/#if]
-              [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.comments)!''}" maxPos=wordCutterMaxPos /]
-            [#if flagshipPlanned.projectExpectedStudy.comments?length gt wordCutterMaxPos]
+              [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.commissioningStudy)!''}" maxPos=wordCutterMaxPos /]
+            [#if flagshipPlanned.projectExpectedStudy.projectExpectedStudyInfo.commissioningStudy?length gt wordCutterMaxPos]
               </div>
             [/#if]
           [#else]
