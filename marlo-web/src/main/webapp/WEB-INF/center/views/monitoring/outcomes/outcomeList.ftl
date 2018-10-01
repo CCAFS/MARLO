@@ -51,7 +51,7 @@
         <div style="display:none">[@outcomesListMonitoring.outcomesListMonitoring outcomes=outcomes canValidate=true canEdit=editable namespace="/monitoring" defaultAction="${(centerSession)!}/monitoringOutcome" /]</div>
         <div class="clearfix"></div>
       [#else]
-        <p class="text-center borderBox inf">To begin reporting on progress towards outcomes, please submit the program impact pathway <a href="[@s.url namespace="/centerImpactPathway" action='${centerSession}/programimpacts'][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p>  
+        <p class="text-center borderBox inf">To begin reporting on progress towards outcomes, please submit the program impact pathway <a href="[@s.url namespace="/impactPathway" action='${centerSession}/programimpacts'][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p>  
       [/#if]      
       
     </div>

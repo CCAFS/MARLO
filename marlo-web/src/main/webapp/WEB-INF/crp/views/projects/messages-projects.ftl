@@ -47,7 +47,7 @@
   [/#if]
  
   [#-- Privileges Message --]
-  [#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
+  [#if (!canEdit && !(transaction??)) || crpClosed]
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]

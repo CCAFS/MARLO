@@ -73,7 +73,9 @@ public abstract class FundingSourceSummaryMapper {
 
   @Mappings({@Mapping(source = "budgetType.name", target = "budgetTypeName"),
     @Mapping(source = "directDonor.composedNameLoc", target = "directDonorName"),
-    @Mapping(source = "originalDonor.composedNameLoc", target = "originalDonorName"),})
+    @Mapping(source = "directDonor.acronymName", target = "directDonorAcronym"),
+    @Mapping(source = "originalDonor.composedNameLoc", target = "originalDonorName"),
+    @Mapping(source = "originalDonor.acronymName", target = "originalDonorAcronym"),})
   public abstract FundingSourceInfoSummary
     fundingSourceInfoToFundingSourceInfoSummary(FundingSourceInfo fundingSourceInfo);
 

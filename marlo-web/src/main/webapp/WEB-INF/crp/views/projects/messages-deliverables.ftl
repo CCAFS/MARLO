@@ -29,7 +29,7 @@
   [/#if]
   
   [#-- Privileges Message --]
-  [#if (!canEdit && !(transaction??) && !(submission?has_content)) || crpClosed]
+  [#if (!canEdit && !(transaction??)) || crpClosed]
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
