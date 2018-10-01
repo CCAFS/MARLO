@@ -214,11 +214,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return outcomeImpactStatement;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
-
 
   public Double getPolicyAmount() {
     return policyAmount;
