@@ -41,8 +41,7 @@ public class DeliverableLocationMySQLDAO extends AbstractMarloDAO<DeliverableLoc
   @Override
   public void deleteDeliverableLocation(long deliverableLocationId) {
     DeliverableLocation deliverableLocation = this.find(deliverableLocationId);
-    deliverableLocation.setActive(false);
-    this.update(deliverableLocation);
+    this.delete(deliverableLocation);
   }
 
   @Override
