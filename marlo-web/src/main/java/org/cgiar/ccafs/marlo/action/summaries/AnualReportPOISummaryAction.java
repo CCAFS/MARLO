@@ -1818,6 +1818,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
               && d.getDeliverableInfo(phase).getNewExpectedYear().intValue() == this.getCurrentCycleYear()))
           || (d.getDeliverableInfo(phase).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && d.getDeliverableInfo().isActive()
             && (d.getDeliverableInfo(phase).getYear() == this.getCurrentCycleYear()
               || (d.getDeliverableInfo(phase).getNewExpectedYear() != null
                 && d.getDeliverableInfo(phase).getNewExpectedYear().intValue() == this.getCurrentCycleYear()))))
