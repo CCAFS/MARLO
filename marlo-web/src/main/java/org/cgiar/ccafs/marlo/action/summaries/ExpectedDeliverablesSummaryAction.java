@@ -299,7 +299,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
       .collect(Collectors.toList())) {
       for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
-        && d.getDeliverableInfo(this.getSelectedPhase()) != null
+        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
           || (d.getDeliverableInfo().getStatus() != null
             && d.getDeliverableInfo().getStatus().intValue() == Integer

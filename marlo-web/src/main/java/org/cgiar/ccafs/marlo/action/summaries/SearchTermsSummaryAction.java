@@ -412,7 +412,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           for (Deliverable deliverable : project.getDeliverables().stream()
             .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-              && d.getDeliverableInfo().getPhase().equals(this.getSelectedPhase()))
+              && d.getDeliverableInfo().isActive() && d.getDeliverableInfo().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             String devTitle = "";
             // Pattern case insensitive
