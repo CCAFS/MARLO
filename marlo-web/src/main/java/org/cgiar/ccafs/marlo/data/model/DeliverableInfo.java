@@ -466,8 +466,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setCrossCuttingScoreGender(update.getCrossCuttingScoreGender());
     this.setCrossCuttingScoreYouth(update.getCrossCuttingScoreYouth());
     this.setCrossCuttingScoreCapacity(update.getCrossCuttingScoreCapacity());
-
-
+    this.setGeographicScope(update.getGeographicScope());
+    this.setRegion(update.getRegion());
   }
 
 

@@ -10,7 +10,7 @@
     'items': [
     { 'slug': 'expectedOutcomes',              'name': 'powb.menu.expectedOutcomes',                'action': 'plannedStudies',                'active': false},
     { 'slug': 'plannedStudies',            'name': 'powb.menu.plannedStudies',              'action': 'plannedStudies',              'active': true},
-    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.plannedCollaborations',   'action': 'collaborationIntegration',   'active': false }
+    { 'slug': 'plannedCollaborations', 'name': 'powb.menu.plannedCollaborations',   'action': 'plannedCollaborations',   'active': true }
     ]
   },
   { 'title': '3.  Financial Plan', 'show': true,
