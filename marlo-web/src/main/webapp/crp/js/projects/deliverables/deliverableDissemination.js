@@ -226,9 +226,9 @@ function addDisseminationEvents() {
       width: '100%'
   });
 
-  // Partnership Geographic Scope
+  // Deliverable Geographic Scope
   $(".geographicScopeSelect").on('change', function() {
-    var $partner = $(this).parents('.block-involveParticipants');
+    var $partner = $(this).parents('.block-geographicScope');
     var $regionalBlock = $partner.find('.regionalBlock');
     var $nationalBlock = $partner.find('.nationalBlock');
 
@@ -269,7 +269,7 @@ function addDisseminationEvents() {
       $nationalBlock.hide();
     }
 
-  });
+  }).trigger('change');
 
 }
 
