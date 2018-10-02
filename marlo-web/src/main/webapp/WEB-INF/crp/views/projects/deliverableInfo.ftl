@@ -203,7 +203,7 @@
   [#-- Countries --]
   <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
     [#-- Multinational, National and Subnational scope --]
-    [@customForm.select name="deliverable.countriesIdsText" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIdsText" multiple=true required=editable className="countriesSelect" disabled=!editable/]
+    [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
   </div>
 </div>
 
