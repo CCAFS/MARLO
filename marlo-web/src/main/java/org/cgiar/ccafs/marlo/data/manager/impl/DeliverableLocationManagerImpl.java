@@ -38,10 +38,9 @@ public class DeliverableLocationManagerImpl implements DeliverableLocationManage
   private PhaseDAO phaseDAO;
 
   @Inject
-  public DeliverableLocationManagerImpl(DeliverableLocationDAO deliverableLocationDAO) {
+  public DeliverableLocationManagerImpl(DeliverableLocationDAO deliverableLocationDAO, PhaseDAO phaseDAO) {
     this.deliverableLocationDAO = deliverableLocationDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
