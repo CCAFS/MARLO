@@ -360,6 +360,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   }
 
   private void addParticipatingCenters() {
+    // erase this method
     String participantingCenters = "";
     List<CrpPpaPartner> crpPpaPartnerList = this.getLoggedCrp().getCrpPpaPartners().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
@@ -995,7 +996,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       CTDocument1 doc = document.getDocument();
       CTBody body = doc.getBody();
 
-      poiSummary.pageHeader(document, this.getText("summaries.powb.header"));
+      poiSummary.pageHeader(document, this.getText("summaries.powb2019.header"));
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -1005,17 +1006,20 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       }
       String currentDate = timezone.format(format) + "(GMT" + zone + ")";
       poiSummary.pageFooter(document, "This report was generated on " + currentDate);
-      poiSummary.textLineBreak(document, 13);
-      poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.powb.mainTitle"));
-      poiSummary.textLineBreak(document, 12);
-      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.mainTitle2"));
-      poiSummary.textLineBreak(document, 1);
-      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.cover"));
+      // First page - table of contents
+      poiSummary.textLineBreak(document, 2);
+      poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
+      poiSummary.textLineBreak(document, 25);
+
+      // Second page
+      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb2019.narrativeSection"));
       poiSummary.textLineBreak(document, 1);
       String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
         ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
-      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb.unitName") + ": " + unitName);
-      this.addParticipatingCenters();
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
+      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.platformName") + ": ");
+      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.hostEntityName") + ": ");
+      // this.addParticipatingCenters();// erase this
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults"));
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults.toc"));
@@ -1132,7 +1136,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("POWBSynthesisSummary-");
+    fileName.append("2019_PTF_POWB");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));

@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.Borders;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -111,6 +112,21 @@ public class POISummary {
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
+
+  public void pageLeftHeader(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpHeader = CTP.Factory.newInstance();
+    CTR ctrHeader = ctpHeader.addNewR();
+    CTText ctHeader = ctrHeader.addNewT();
+    ctHeader.setStringValue(text);
+    XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+    headerParagraph.setAlignment(ParagraphAlignment.LEFT);
+    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+    parsHeader[0] = headerParagraph;
+    policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
+
 
   public void tableA1AnnualReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
@@ -447,6 +463,16 @@ public class POISummary {
     h1Run.setFontSize(16);
   }
 
+  public void textHead1TitleLightBlue(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor("5B9BD5");
+    h1Run.setBold(true);
+    h1Run.setFontFamily(FONT_TYPE);
+    h1Run.setFontSize(13);
+  }
+
   public void textHead2Title(XWPFParagraph h2, String text) {
     h2.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun h2Run = h2.createRun();
@@ -475,6 +501,17 @@ public class POISummary {
     h1Run.setBold(false);
     h1Run.setFontFamily(FONT_TYPE);
     h1Run.setFontSize(26);
+  }
+
+  public void textHeadPrincipalTitle(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.LEFT);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor("323E4F");
+    h1Run.setBold(true);
+    h1Run.setFontFamily(FONT_TYPE);
+    h1Run.setFontSize(26);
+    h1.setBorderBottom(Borders.SINGLE);
   }
 
   public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
