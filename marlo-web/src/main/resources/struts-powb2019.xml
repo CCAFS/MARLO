@@ -30,6 +30,19 @@
         <param name="phaseID">${phaseID}</param>
       </result>
     </action>
+    
+    <!--  2.3 Planned Collaborations -->
+    <action name="{crp}/plannedCollaborations" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedColaborationAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedCollaboration.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/plannedCollaborations</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
         
   </package>
 </struts>
