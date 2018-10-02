@@ -306,7 +306,8 @@ public class PlannedStudiesAction extends BaseAction {
       List<ProjectExpectedStudy> expectedStudies =
         new ArrayList<>(
           projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID && ps.getProject() != null
+            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+              && ps.getYear() == this.getCurrentCycleYear() && ps.getProject() != null
               && ps.getProject().getGlobalUnitProjects().stream()
                 .filter(
                   gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
@@ -495,22 +496,42 @@ public class PlannedStudiesAction extends BaseAction {
 
     popUpProjects = new ArrayList<>();
 
-    if (projectFocusManager.findAll() != null) {
+    if (this.isFlagship()) {
+      if (projectFocusManager.findAll() != null) {
+        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          .collect(Collectors.toList()));
 
-      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-          && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
-        .collect(Collectors.toList()));
-
-      for (ProjectFocus focus : projectFocus) {
-        Project project = projectManager.getProjectById(focus.getProject().getId());
-        List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
-        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
-          projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
-          popUpProjects.add(projectExpectedStudy);
+        for (ProjectFocus focus : projectFocus) {
+          Project project = projectManager.getProjectById(focus.getProject().getId());
+          List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
+            .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+          for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+            projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+            popUpProjects.add(projectExpectedStudy);
+          }
         }
       }
+    } else {
+      Phase phase = this.getActualPhase();
+      liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+      this.getFpPlannedList(liaisonInstitutions, phase.getId());
+
+      for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList) {
+
+        ProjectExpectedStudy expectedStudy = powbEvidencePlannedStudyDTO.getProjectExpectedStudy();
+        expectedStudy.getProjectExpectedStudyInfo(phase);
+
+        popUpProjects.add(expectedStudy);
+
+      }
+
     }
   }
 
@@ -609,9 +630,9 @@ public class PlannedStudiesAction extends BaseAction {
       liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      if (this.isFlagship()) {
-        this.popUpProject(phase.getId(), liaisonInstitution);
-      }
+      // Able to PMU Also
+      this.popUpProject(phase.getId(), liaisonInstitution);
+
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -624,20 +645,20 @@ public class PlannedStudiesAction extends BaseAction {
         powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
         powbSynthesisID = powbSynthesis.getId();
 
-        if (this.isFlagship()) {
-          if (powbSynthesis.getPowbEvidence().getPlannedStudiesValue() != null) {
-            String[] studyValues = powbSynthesis.getPowbEvidence().getPlannedStudiesValue().split(",");
-            powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+        // Able to PMU Also
+        if (powbSynthesis.getPowbEvidence().getPlannedStudiesValue() != null) {
+          String[] studyValues = powbSynthesis.getPowbEvidence().getPlannedStudiesValue().split(",");
+          powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
 
 
-            for (int i = 0; i < studyValues.length; i++) {
+          for (int i = 0; i < studyValues.length; i++) {
 
-              ProjectExpectedStudy study =
-                projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyValues[i]));
-              powbSynthesis.getPowbEvidence().getExpectedStudies().add(study);
-            }
+            ProjectExpectedStudy study =
+              projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyValues[i]));
+            powbSynthesis.getPowbEvidence().getExpectedStudies().add(study);
           }
         }
+
 
         this.setDraft(true);
         reader.close();
@@ -652,15 +673,13 @@ public class PlannedStudiesAction extends BaseAction {
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
-
-        if (this.isFlagship()) {
-          powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
-          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null
-            && !powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies().isEmpty()) {
-            for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
-              .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-              powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
-            }
+        // Able to PMU also
+        powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+        if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null
+          && !powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies().isEmpty()) {
+          for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
+            .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
           }
         }
       }
@@ -673,9 +692,9 @@ public class PlannedStudiesAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    if (this.isPMU()) {
-      this.getFpPlannedList(liaisonInstitutions, phase.getId());
-    }
+    // if (this.isPMU()) {
+    // this.getFpPlannedList(liaisonInstitutions, phase.getId());
+    // }
 
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
@@ -716,12 +735,11 @@ public class PlannedStudiesAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       PowbEvidence powbEvidenceDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbEvidence();
-      if (this.isFlagship()) {
-        if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
-          powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
-        }
-        this.expectedStudiesNewData(powbEvidenceDB);
+      // Able to PMU also
+      if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
+        powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
       }
+      this.expectedStudiesNewData(powbEvidenceDB);
 
       if (this.isPMU()) {
         powbEvidenceDB.setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
