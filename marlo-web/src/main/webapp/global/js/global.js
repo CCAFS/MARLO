@@ -314,7 +314,6 @@ $(document).ready(function() {
   if($.fn.trumbowyg) {
     $('.allowTextEditor').trumbowyg({
         btns: [
-          ['formatting'],
           ['strong', 'em', 'del'],
           ['superscript', 'subscript'],
           ['link'],
