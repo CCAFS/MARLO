@@ -1021,29 +1021,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.hostEntityName") + ": ");
       // this.addParticipatingCenters();// erase this
       poiSummary.textLineBreak(document, 1);
-      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults"));
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults.toc"));
+
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        this.getText("summaries.powb2019.expectedKeyResults.toc"));
       this.addAdjustmentDescription();
-      poiSummary.textHead2Title(document.createParagraph(),
-        this.getText("summaries.powb.expectedKeyResults.expectedCrp"));
-      this.addExpectedCrp();
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults.evidence"));
-      this.addEvidence();
-      poiSummary.textHead2Title(document.createParagraph(),
-        this.getText("summaries.powb.expectedKeyResults.flagshipPlans"));
-      this.addFlagshipPlans();
-      this.addCrossCutting();
-      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.effectiveness"));
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.staffing"));
-      this.addCrpStaffing();
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.financial"));
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        this.getText("summaries.powb2019.expectedKeyResults.plan"));
+      this.addAdjustmentDescription();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb2019.effectiveness.financial"));
       this.addFinancialPlan();
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.collaboration"));
-      this.addCollaboration();
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.mel"));
-      poiSummary.textLineBreak(document, 1);
-      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.management"));
-      this.addManagement();
+
 
       /* Create a landscape text Section */
       XWPFParagraph para = document.createParagraph();
