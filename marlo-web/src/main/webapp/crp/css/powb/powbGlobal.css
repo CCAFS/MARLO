@@ -131,7 +131,7 @@ form .form-group.margin-panel {
 }
 
 #table-plannedStudies .subHeader th {
-  text-align: center;
+  /* text-align: center; */
 }
 
 #table-plannedStudies .relevantSubIDO ul {
