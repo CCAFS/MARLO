@@ -139,7 +139,7 @@
                   [@deliverableMacros.complianceCheck /]
                 </div>
                 <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">
-                  [#-- Fair Compliant--] 
+                  [#-- Fair Compliant --] 
                   [@deliverableMacros.fairCompliant /]
                 </div>
               </div>
