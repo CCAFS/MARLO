@@ -457,11 +457,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.powb.tableA1.outcomes"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.meansVerification"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.assessment"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader = {new POIField(this.getText("financialPlan2019.tableA2.title1"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title2"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title3") + "*", ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title4"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title5"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title6"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title7") + "*", ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title8"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title9"), ParagraphAlignment.CENTER),
+      new POIField(this.getText("financialPlan2019.tableA2.title10"), ParagraphAlignment.CENTER)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -502,7 +507,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
             new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
             new POIField(meansVerifications, ParagraphAlignment.LEFT),
-            new POIField(assessment, ParagraphAlignment.CENTER)};
+            new POIField(assessment, ParagraphAlignment.CENTER), new POIField(assessment, ParagraphAlignment.CENTER),
+            new POIField(assessment, ParagraphAlignment.CENTER), new POIField(assessment, ParagraphAlignment.CENTER),
+            new POIField(assessment, ParagraphAlignment.CENTER), new POIField(assessment, ParagraphAlignment.CENTER)};
           data = Arrays.asList(sData);
           datas.add(data);
 
