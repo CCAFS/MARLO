@@ -1280,7 +1280,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       for (Deliverable deliverable : this.getLoggedCrp().getDeliverables().stream()
         .filter(d -> d.getIsPublication() != null && d.getIsPublication().booleanValue() && d.isActive()
           && d.getProject() == null && d.getDeliverableInfo(this.getSelectedPhase()) != null
-          && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+          && d.getDeliverableInfo().isActive() && d.getDeliverableInfo().getYear() == this.getSelectedYear())
         .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
 
         Long publicationId = null;

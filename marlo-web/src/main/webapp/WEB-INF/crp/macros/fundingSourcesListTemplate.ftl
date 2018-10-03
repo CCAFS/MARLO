@@ -65,7 +65,7 @@
               [#-- Code --]
               <span [#if isSynced]style="color: #2aa4c9;"[/#if]>${project.fundingSourceInfo.financeCode}</span>
             [#else]
-              <p class="text-muted">Not defined</p>
+              <p class="text-muted" style="opacity:0.5">Not defined</p>
             [/#if]
           </td>
           [#-- Project Status 
@@ -74,11 +74,11 @@
           </td>
           --]
           [#-- Center Lead --]
-          <td class=""> 
+          <td class="institutionLead"> 
             [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
                 [#if institutionLead_index!=0]<hr />[/#if]
-                <p class="name">${(institutionLead.acronym)!institutionLead.name}</p>
+                ${(institutionLead.acronym)!institutionLead.name}
               [/#list]
             [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
@@ -86,12 +86,21 @@
           </td>
           [#-- End Date --]
           <td class="">
-            <span class="hidden">${project?index}</span>
             [#if (project.fundingSourceInfo.status)?? || project.fundingSourceInfo.status=4]
-              [#if (project.fundingSourceInfo.extensionDate??)!false] ${(project.fundingSourceInfo.extensionDate)!'Not defined'} [#else] ${(project.fundingSourceInfo.endDate)!'Not defined'}[/#if]
+              [#local fsEndDate][#if (project.fundingSourceInfo.extensionDate??)!false]${(project.fundingSourceInfo.extensionDate)!}[#else]${(project.fundingSourceInfo.endDate)!}[/#if][/#local]
             [#else]
-              ${(project.fundingSourceInfo.endDate)!'Not defined'}
+              [#local fsEndDate]${(project.fundingSourceInfo.endDate)!}[/#local]
             [/#if]
+            
+            [#if fsEndDate?has_content]
+              [#local fsYear = fsEndDate?date?string('yyyy')?number ]
+              [#local validDate = (fsYear >= actualPhase.year)!false ]
+              <span class="hidden">${fsYear}</span>
+              <nobr><p class="${(!validDate)?string('fieldError', '')}">${fsEndDate}</p></nobr>
+            [#else]
+              <p style="opacity:0.5">Not defined</p>
+            [/#if]
+            
           </td>
           [#-- Direct Donor --]
           <td class="" title="${(project.fundingSourceInfo.directDonorName)!}">
