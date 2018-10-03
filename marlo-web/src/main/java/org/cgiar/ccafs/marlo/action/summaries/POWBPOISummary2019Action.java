@@ -996,7 +996,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       CTDocument1 doc = document.getDocument();
       CTBody body = doc.getBody();
 
-      poiSummary.pageHeader(document, this.getText("summaries.powb2019.header"));
+      poiSummary.pageLeftHeader(document, this.getText("summaries.powb2019.header"));
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -1009,16 +1009,20 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // First page - table of contents
       poiSummary.textLineBreak(document, 2);
       poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
+      poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
       poiSummary.textLineBreak(document, 25);
 
       // Second page
-      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb2019.narrativeSection"));
+      poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.narrativeSection"));
       poiSummary.textLineBreak(document, 1);
       String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
         ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
       poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
-      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.platformName") + ": ");
-      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.hostEntityName") + ": ");
+      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.platformName") + ": ");
+      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.hostEntityName") + ": ");
       // this.addParticipatingCenters();// erase this
       poiSummary.textLineBreak(document, 1);
 
@@ -1028,7 +1032,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         this.getText("summaries.powb2019.expectedKeyResults.plan"));
       this.addAdjustmentDescription();
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb2019.effectiveness.financial"));
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        this.getText("summaries.powb2019.effectiveness.financial"));
       this.addFinancialPlan();
 
 
@@ -1046,41 +1051,23 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       XWPFParagraph paragraph = document.createParagraph();
       this.loadTablePMU();
-      poiSummary.textHead1Title(paragraph, "TABLES");
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableA.title"));
-      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.tableA1.title"));
-      this.createTableA1();
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.tableA2.title"));
+      poiSummary.textHead1TitleFontCalibri(paragraph, "TABLES");
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableA2.title"));
       this.createTableA2();
-      poiSummary.textNotes(document.createParagraph(), "*" + this.getText("expectedProgress.tableA.milestone.help"));
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableB.title"));
-      this.createTableB();
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("crossCuttingDimensions.tableC.title"));
-      this.createTableC();
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("crpStaffing.tableD.title"));
-      this.createTableD();
+      poiSummary.textLineBreak(document, 1);
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableB2.title"));
+      this.createTableA2();
+      poiSummary.textLineBreak(document, 1);
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableC2.title"));
+      this.createTableA2();
+
       poiSummary.textNotes(document.createParagraph(), this.getText("crpStaffing.tableD.help"));
       document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(),
-        this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+        this.getText("financialPlan.table3.title", new String[] {String.valueOf(this.getSelectedYear())}));
       this.createTableE();
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title"));
-      this.createTableF();
-      poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
-      poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.estimatedPercentage.help"));
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(),
-        this.getText("collaborationIntegration.listCollaborations.title"));
-      this.createTableG();
-      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.powb.tableG.description.help"));
-      document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableF.title"));
-      this.createTableH();
+      poiSummary.textLineBreak(document, 1);
+
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
       bytesDOC = os.toByteArray();
