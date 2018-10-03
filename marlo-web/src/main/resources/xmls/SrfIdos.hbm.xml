@@ -16,6 +16,9 @@
 		<property name="description" type="string">
 			<column name="description" sql-type="TEXT" not-null="true" />
 		</property>
+		<property name="smoCode" type="string">
+      <column name="smo_code" sql-type="TEXT" not-null="false" />
+    </property>
 		<property name="isCrossCutting" type="boolean">
 			<column name="is_cross_cutting" not-null="true" />
 		</property>

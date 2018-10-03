@@ -28,10 +28,15 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfCrossCuttingIssue extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -1176189419675828693L;
+
 
   @Expose
   private String name;
+
+  @Expose
+  private String smoCode;
 
   private Set<SrfIdo> srfIdos = new HashSet<SrfIdo>(0);
 
@@ -49,12 +54,20 @@ public class SrfCrossCuttingIssue extends MarloAuditableEntity implements java.i
     return this.name;
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public Set<SrfIdo> getSrfIdos() {
     return this.srfIdos;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 
   public void setSrfIdos(Set<SrfIdo> srfIdos) {

@@ -54,6 +54,13 @@ public interface SrfSloDAO {
    */
   public List<SrfSlo> findAll();
 
+  /**
+   * This method get a SrfSlo by a given SMO code.
+   * 
+   * @param smoCode
+   * @return
+   */
+  public SrfSlo findBySmoCode(String smoCode);
 
   /**
    * This method saves the information of the given srfSlo
