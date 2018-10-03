@@ -56,7 +56,7 @@ public class SrfCrossCuttingIssueItem<T> {
    * @param id
    * @return a SrfCrossCuttingIssueDTO with the SRL-SLO data.
    */
-  public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfIdobyMARLOId(Long id) {
+  public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfCrossCuttingIssuebyMARLOId(Long id) {
     SrfCrossCuttingIssue srfCrossCuttingIssue = srfCrossCuttingIssueManager.getSrfCrossCuttingIssueById(id);
     return Optional.ofNullable(srfCrossCuttingIssue)
       .map(srfCrossCuttingIssueMapper::srfCrossCuttingIssueToSrfCrossCuttingIssueDTO)
@@ -68,7 +68,7 @@ public class SrfCrossCuttingIssueItem<T> {
    * 
    * @return a List of SrfCrossCuttingIssueDTO with all SRF-SLO Items.
    */
-  public List<SrfCrossCuttingIssueDTO> getAllSrfIdos() {
+  public List<SrfCrossCuttingIssueDTO> getAllSrfCrossCuttingIssues() {
     if (srfCrossCuttingIssueManager.findAll() != null) {
       List<SrfCrossCuttingIssue> srfCrossCuttingIssues = new ArrayList<>(srfCrossCuttingIssueManager.findAll());
       List<SrfCrossCuttingIssueDTO> srfCrossCuttingIssuesDTOs =

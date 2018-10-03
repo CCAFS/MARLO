@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.rest.controller.controllist;
 import org.cgiar.ccafs.marlo.rest.controller.controllist.items.SrfCrossCuttingIssueItem;
 import org.cgiar.ccafs.marlo.rest.controller.controllist.items.SrfIdoItem;
 import org.cgiar.ccafs.marlo.rest.controller.controllist.items.SrfSloItem;
-import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfCrossCuttingIssueDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -89,12 +89,26 @@ public class SrfLists {
   }
 
   /**
-   * Find a SRF IDO requesting a MARLO Id
+   * Get All the SRF Cross Cutting Issue items
+   * 
+   * @return a List of SrfCrossCuttingIssueDTO with all SRF Cross Cutting Issue Items.
+   */
+  @ApiOperation(value = "View all SRF Cross Cutting Issue", response = Iterable.class)
+  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/srfCrossCuttingIssues", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<SrfCrossCuttingIssueDTO> getAllSrfSrfCrossCuttingIssues() {
+    LOG.debug("REST request to get SRF Cross Cutting Issues");
+    return srfCrossCuttingIssueItem.getAllSrfCrossCuttingIssues();
+  }
+
+  /**
+   * Find a SRF IDO requesting by MARLO Id
    * 
    * @param id
    * @return a SrfIdoDTO with the SRL IDO data.
    */
-  @ApiOperation(value = "Search an SRF IDO with an MARLO ID", response = InstitutionDTO.class)
+  @ApiOperation(value = "Search an SRF IDO with a MARLO ID", response = SrfIdoDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfIdo/Marlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfIdoDTO> getSrfIdoByMARLOId(@PathVariable Long id) {
@@ -103,12 +117,12 @@ public class SrfLists {
   }
 
   /**
-   * Find a SRF-SLO requesting a MARLO Id
+   * Find a SRF-SLO requesting by MARLO Id
    * 
    * @param id
    * @return a SrfSloDTO with the SRL-SLO data.
    */
-  @ApiOperation(value = "Search an SRF-SLO with an MARLO ID", response = InstitutionDTO.class)
+  @ApiOperation(value = "Search an SRF-SLO with a MARLO ID", response = SrfSloDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfSlo/Marlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfSloDTO> getSrfSloByMARLOId(@PathVariable Long id) {
@@ -117,12 +131,12 @@ public class SrfLists {
   }
 
   /**
-   * Find a SRF-SLO requesting a SMO Code
+   * Find a SRF-SLO requesting by SMO Code
    * 
    * @param id
    * @return a SrfSloDTO with the SRL-SLO data.
    */
-  @ApiOperation(value = "Search an SRF-SLO with an MARLO ID", response = InstitutionDTO.class)
+  @ApiOperation(value = "Search an SRF-SLO with a SMO Code", response = SrfSloDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfSlo/smoCode/{smoCode}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)

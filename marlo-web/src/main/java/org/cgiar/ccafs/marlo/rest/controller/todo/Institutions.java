@@ -59,7 +59,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @Api(value = "InstitutionsService",
   description = "Service pertaining to legal institutions information stored in MARLO.")
-@ApiIgnore
 public class Institutions {
 
   private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
