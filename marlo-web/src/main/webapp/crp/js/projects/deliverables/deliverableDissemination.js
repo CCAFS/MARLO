@@ -232,6 +232,7 @@ function addDisseminationEvents() {
     var $regionalBlock = $partner.find('.regionalBlock');
     var $nationalBlock = $partner.find('.nationalBlock');
 
+    var isGlobal = this.value == 1;
     var isRegional = this.value == 2;
     var isMultiNational = this.value == 3;
     var isNational = this.value == 4;
@@ -242,10 +243,16 @@ function addDisseminationEvents() {
       $regionalBlock.show();
     } else {
       $regionalBlock.hide();
+      // Clean selected region
+      $regionalBlock.find("select").val("-1").trigger('change');
+    }
+
+    if(isGlobal || isRegional) {
+      // Clean selected countries
+      $nationalBlock.find("select").val(null).trigger('change');
     }
 
     // Countries
-    $nationalBlock.find("select").val(null).trigger('change');
     if(isMultiNational || isNational || isSubNational) {
       if(isMultiNational) {
         $nationalBlock.find("select").select2({
