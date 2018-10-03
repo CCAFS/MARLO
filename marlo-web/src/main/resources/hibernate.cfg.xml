@@ -278,7 +278,6 @@
     <mapping resource="xmls/RepIndStageStudies.hbm.xml"/>  
     <mapping resource="xmls/RepIndStageProcess.hbm.xml"/>
     <mapping resource="xmls/DeliverableParticipants.hbm.xml"/>
-    <mapping resource="xmls/DeliverableParticipantLocations.hbm.xml"/>
     <mapping resource="xmls/RepIndFillingTypes.hbm.xml"/>
     <mapping resource="xmls/RepIndPatentStatuses.hbm.xml"/>
     <mapping resource="xmls/ProjectPartnerPartnershipResearchPhases.hbm.xml"/>
