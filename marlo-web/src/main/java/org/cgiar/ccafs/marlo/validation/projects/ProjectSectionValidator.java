@@ -42,7 +42,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
-import org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
@@ -894,22 +893,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           if (deliverableParticipants.size() > 0) {
             deliverable.setDeliverableParticipant(
               deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
-            // Participants Locations
-            if (deliverable.getDeliverableParticipant().getDeliverableParticipantLocations() == null) {
-              deliverable.getDeliverableParticipant().setParticipantLocations(new ArrayList<>());
-            } else {
-              List<DeliverableParticipantLocation> locations = deliverable.getDeliverableParticipant()
-                .getDeliverableParticipantLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList());
-              deliverable.getDeliverableParticipant().setParticipantLocations(locations);
-
-            }
-            if (deliverable.getDeliverableParticipant().getParticipantLocations() != null) {
-              for (DeliverableParticipantLocation location : deliverable.getDeliverableParticipant()
-                .getParticipantLocations()) {
-                deliverable.getDeliverableParticipant().getParticipantLocationsIsos()
-                  .add(location.getLocElement().getIsoAlpha2());
-              }
-            }
           } else {
             deliverable.setDeliverableParticipant(new DeliverableParticipant());
           }
