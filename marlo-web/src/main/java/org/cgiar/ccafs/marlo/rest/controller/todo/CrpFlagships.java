@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.crpprograms;
+package org.cgiar.ccafs.marlo.rest.controller.todo;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CrpProgramDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.CrpProgramMapper;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.ArrayList;
@@ -49,12 +50,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
 @Api(value = "FlagshipService", description = "Service pertaining to CRP Flagship programs.")
+@ApiIgnore
 public class CrpFlagships {
 
   private static final Logger LOG = LoggerFactory.getLogger(CrpFlagships.class);
@@ -108,9 +111,6 @@ public class CrpFlagships {
 
     crpProgram = crpProgramManager.saveCrpProgram(crpProgram);
 
-
-    // Return an institutionDTO with a blank id - so that the user doesn't try and look up the institution straight
-    // away.
     return new ResponseEntity<CrpProgramDTO>(crpProgramMapper.crpProgramToCrpProgramDTO(crpProgram),
       HttpStatus.CREATED);
   }
