@@ -754,7 +754,9 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   @Override
   public void prepare() throws Exception {
     try {
-      year = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("year")));
+      if (this.getRequest().getParameter("year") != null) {
+        year = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("year")));
+      }
     } catch (Exception e) {
       LOG.error("Failed to get capdev from Database. Exception: " + e.getMessage());
       throw e;
