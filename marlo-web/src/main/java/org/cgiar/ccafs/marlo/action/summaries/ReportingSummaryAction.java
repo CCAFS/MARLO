@@ -1798,6 +1798,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
                   && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this
                     .getSelectedYear()))))
+          && d.getDeliverableInfo().isActive()
           && (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())
             || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer

@@ -331,16 +331,17 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Set<Deliverable> deliverablesSet = new HashSet();
       for (Deliverable deliverable : project.getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
-            || (d.getDeliverableInfo().getStatus() != null
-              && d.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear() == 2017)
-            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
-              && d.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+        .filter(
+          d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && d.getDeliverableInfo().isActive()
+            && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
+              || (d.getDeliverableInfo().getStatus() != null
+                && d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                && d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear() == 2017)
+              || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
+                && d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {
         deliverablesSet.add(deliverable);
       }
