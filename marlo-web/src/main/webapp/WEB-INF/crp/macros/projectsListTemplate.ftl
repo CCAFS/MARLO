@@ -95,8 +95,6 @@
                   ${(li.crpProgram.acronym)!(li.crpProgram.name)}
                 [#elseif (li.institution??)!false]
                   ${(li.institution.acronym)!(li.institution.name)}
-                [#elseif (li.institution??)!false]
-                  ${(li.institution.acronym)!(li.institution.name)}
                 [#else]
                   [@s.text name="global.pmu" /]
                 [/#if]
