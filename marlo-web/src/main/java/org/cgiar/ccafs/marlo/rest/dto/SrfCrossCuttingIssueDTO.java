@@ -13,29 +13,52 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.crpprograms;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.rest.dto.CrpProgramDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Mapper(componentModel = "jsr330")
-public interface CrpProgramMapper {
+public class SrfCrossCuttingIssueDTO {
 
-  public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
 
-  public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
+  @ApiModelProperty(notes = "The Generated srf Cross Cutting Issue ID")
+  private Long id;
 
-  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
 
-  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
-    @MappingTarget CrpProgram crpProgram);
+  @ApiModelProperty(notes = "The srf Cross Cutting Issue name")
+  private String name;
 
+
+  @ApiModelProperty(notes = "The Generated SMO Code for Srf Cross Cutting Issue")
+  private String smoCode;
+
+
+  public Long getId() {
+    return id;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+
+  public String getSmoCode() {
+    return smoCode;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
+  }
 
 }

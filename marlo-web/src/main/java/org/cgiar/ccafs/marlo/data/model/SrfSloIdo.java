@@ -32,6 +32,7 @@ public class SrfSloIdo extends MarloAuditableEntity implements java.io.Serializa
   @Expose
   private SrfSlo srfSlo;
 
+
   public SrfSloIdo() {
   }
 

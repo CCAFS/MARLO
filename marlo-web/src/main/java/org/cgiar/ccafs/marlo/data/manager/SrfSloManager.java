@@ -53,12 +53,21 @@ public interface SrfSloManager {
 
 
   /**
+   * This method get a SrfSlo by a given SMO code.
+   * 
+   * @param smoCode
+   * @return
+   */
+  public SrfSlo findBySmoCode(String smoCode);
+
+  /**
    * This method gets a srfSlo object by a given srfSlo identifier.
    * 
    * @param srfSloID is the srfSlo identifier.
    * @return a SrfSlo object.
    */
   public SrfSlo getSrfSloById(long srfSloID);
+
 
   /**
    * This method saves the information of the given srfSlo
