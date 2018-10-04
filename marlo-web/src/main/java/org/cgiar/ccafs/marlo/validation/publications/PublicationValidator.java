@@ -211,6 +211,29 @@ public class PublicationValidator extends BaseValidator {
       action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+
+    // Deliverable Locations
+    if (deliverableInfo.getGeographicScope() == null || deliverableInfo.getGeographicScope().getId() == -1) {
+      action.addMessage(action.getText("deliverable.geographicScope"));
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.geographicScope.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
+        if (deliverableInfo.getRegion() == null || deliverableInfo.getRegion().getId() == -1) {
+          action.addMessage(action.getText("deliverable.region"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.region.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+      if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
+        || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
+        || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeSubNational())) {
+        if (deliverable.getCountriesIds() == null || deliverable.getCountriesIds().isEmpty()) {
+          action.addMessage(action.getText("deliverable.countries"));
+          action.getInvalidFields().put("input-deliverable.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    }
   }
 
   private void validateDeliverableParticipant(DeliverableParticipant deliverableParticipant, BaseAction action) {

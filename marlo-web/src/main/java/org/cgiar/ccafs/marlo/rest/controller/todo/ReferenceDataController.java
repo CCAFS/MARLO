@@ -13,12 +13,12 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest;
+package org.cgiar.ccafs.marlo.rest.controller.todo;
 
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
-import org.cgiar.ccafs.marlo.rest.institutions.InstitutionTypeMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.InstitutionTypeMapper;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -33,6 +33,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * This controller publishes Refrence data for REST clients to consume. This is a read only service and it's purpose
@@ -42,8 +44,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * 
  * @author GrantL
  */
-// Temporally Disable Controller
-// @RestController
+
+@RestController
+@ApiIgnore
 public class ReferenceDataController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ReferenceDataController.class);
