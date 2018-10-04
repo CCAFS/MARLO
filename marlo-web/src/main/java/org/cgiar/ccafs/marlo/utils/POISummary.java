@@ -463,13 +463,24 @@ public class POISummary {
     h1Run.setFontSize(16);
   }
 
+  public void textHead1TitleFontCalibri(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor(TITLE_FONT_COLOR);
+    h1Run.setBold(true);
+    h1Run.setFontFamily("Calibri");
+    h1Run.setFontSize(16);
+  }
+
+
   public void textHead1TitleLightBlue(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun h1Run = h1.createRun();
     this.addParagraphTextBreak(h1Run, text);
     h1Run.setColor("5B9BD5");
     h1Run.setBold(true);
-    h1Run.setFontFamily(FONT_TYPE);
+    h1Run.setFontFamily("Calibri");
     h1Run.setFontSize(13);
   }
 
@@ -509,7 +520,7 @@ public class POISummary {
     this.addParagraphTextBreak(h1Run, text);
     h1Run.setColor("323E4F");
     h1Run.setBold(true);
-    h1Run.setFontFamily(FONT_TYPE);
+    h1Run.setFontFamily("Calibri");
     h1Run.setFontSize(26);
     h1.setBorderBottom(Borders.SINGLE);
   }
@@ -562,6 +573,27 @@ public class POISummary {
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily(FONT_TYPE);
     paragraphRun.setFontSize(11);
+  }
+
+  public void textParagraphFontCalibri(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(false);
+    paragraphRun.setFontFamily("Calibri");
+    paragraphRun.setFontSize(11);
+  }
+
+  public void textParagraphItalicLightBlue(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor("5B9BD5");
+    paragraphRun.setBold(false);
+    paragraphRun.setItalic(true);
+    paragraphRun.setFontFamily("Calibri");
+    paragraphRun.setFontSize(12);
   }
 
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
