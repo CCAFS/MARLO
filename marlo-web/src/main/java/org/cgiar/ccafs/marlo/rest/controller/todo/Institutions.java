@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.institutions;
+package org.cgiar.ccafs.marlo.rest.controller.todo;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;

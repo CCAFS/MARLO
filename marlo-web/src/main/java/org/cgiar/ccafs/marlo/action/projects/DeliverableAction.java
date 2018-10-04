@@ -1873,7 +1873,6 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
         relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
-        relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION);
       }
       /**
        * The following is required because we need to update something on the @Deliverable if we want a row created in

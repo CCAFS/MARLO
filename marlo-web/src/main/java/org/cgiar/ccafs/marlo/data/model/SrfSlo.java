@@ -28,13 +28,18 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSlo extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 8111135950998862150L;
+
 
   @Expose
   private String title;
 
   @Expose
   private String description;
+
+  @Expose
+  private String smoCode;
 
   private Set<SrfSloIndicator> srfSloIndicators = new HashSet<SrfSloIndicator>(0);
 
@@ -74,6 +79,10 @@ public class SrfSlo extends MarloAuditableEntity implements java.io.Serializable
     return sb.toString();
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public Set<SrfSloIdo> getSrfSloIdos() {
     return this.srfSloIdos;
   }
@@ -86,7 +95,6 @@ public class SrfSlo extends MarloAuditableEntity implements java.io.Serializable
     return this.title;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -95,8 +103,13 @@ public class SrfSlo extends MarloAuditableEntity implements java.io.Serializable
     return result;
   }
 
+
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 
   public void setSrfSloIdos(Set<SrfSloIdo> srfSloIdos) {

@@ -29,7 +29,9 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfIdo extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 8353586687845581811L;
+
 
   @Expose
   private SrfCrossCuttingIssue srfCrossCuttingIssue;
@@ -40,15 +42,18 @@ public class SrfIdo extends MarloAuditableEntity implements java.io.Serializable
   @Expose
   private boolean isCrossCutting;
 
+  @Expose
+  private String smoCode;
+
   private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
 
   private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);
-
 
   private List<SrfSubIdo> subIdos;
 
   public SrfIdo() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -81,6 +86,10 @@ public class SrfIdo extends MarloAuditableEntity implements java.io.Serializable
     return sb.toString();
   }
 
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public SrfCrossCuttingIssue getSrfCrossCuttingIssue() {
     return this.srfCrossCuttingIssue;
   }
@@ -105,10 +114,10 @@ public class SrfIdo extends MarloAuditableEntity implements java.io.Serializable
     return result;
   }
 
-
   public boolean isIsCrossCutting() {
     return this.isCrossCutting;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -116,6 +125,10 @@ public class SrfIdo extends MarloAuditableEntity implements java.io.Serializable
 
   public void setIsCrossCutting(boolean isCrossCutting) {
     this.isCrossCutting = isCrossCutting;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 
 
