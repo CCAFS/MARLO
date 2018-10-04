@@ -13,21 +13,24 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.institutions;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.InstitutionType;
-import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.SrfSlo;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 @Mapper(componentModel = "jsr330")
-public interface InstitutionTypeMapper {
+public interface SrfSloMapper {
 
-  public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
+  public abstract SrfSlo srfSloDTOToSrfSlo(SrfSloDTO srfSloDTO);
 
-  public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
+  public abstract SrfSloDTO SrfSloToSrfSloDTO(SrfSlo srfSlo);
 
-  public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
-    @MappingTarget InstitutionType institutionType);
+  public abstract SrfSlo updateSrfSloFromSrfSloDto(SrfSloDTO srfSloDTO, @MappingTarget SrfSlo srfSlo);
+
 }

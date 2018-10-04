@@ -27,6 +27,9 @@
 		<property name="name" type="string">
 			<column name="name" sql-type="TEXT" not-null="true" />
 		</property>
+		<property name="smoCode" type="string">
+      <column name="smo_code" sql-type="TEXT" not-null="false" />
+    </property>
 		<set lazy="true" name="srfIdos" table="srf_idos" inverse="true"
 			fetch="select">
 			<key>

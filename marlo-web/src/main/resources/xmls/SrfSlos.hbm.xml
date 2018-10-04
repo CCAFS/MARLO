@@ -30,6 +30,9 @@
 		<property name="description" type="string">
 			<column name="description" sql-type="TEXT" not-null="true" />
 		</property>
+		<property name="smoCode" type="string">
+      <column name="smo_code" sql-type="TEXT" not-null="false" />
+    </property>
 		<set lazy="true" name="srfSloIndicators" table="srf_slo_indicators"
 			inverse="true" fetch="select">
 			<key>

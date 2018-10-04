@@ -13,13 +13,14 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.globalUnits;
+package org.cgiar.ccafs.marlo.rest.controller.todo;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.GlobalUnitDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.GlobalUnitMapper;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -41,9 +42,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
-// Temporally Disable Controller
-// @RestController
+
+@RestController
+@ApiIgnore
 public class GlobalUnitController {
 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitController.class);
