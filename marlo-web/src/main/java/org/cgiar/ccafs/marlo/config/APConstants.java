@@ -319,9 +319,6 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePublicationMetadatas)";
   public static final String PROJECT_DELIVERABLES_PARTICIPANT_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableParticipants)";
-  public static final String PROJECT_DELIVERABLES_PARTICIPANT_LOCATION_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableParticipants.deliverableParticipantLocations)";
-
 
   public static final String PROJECT_DELIVERABLE_QUALITY_CHECK =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableQualityChecks)";
