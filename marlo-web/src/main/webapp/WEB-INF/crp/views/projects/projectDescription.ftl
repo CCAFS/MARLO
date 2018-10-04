@@ -142,17 +142,19 @@
                      
                     [#-- Contributions allowed to this flagship --]
                     [#list (programFlagships)![] as element]
+                      [#assign flagshipName][#if isCrpProject]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
+                      
                       [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
                       [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
                       [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
                       
                       [#if (totalContributions != 0)] 
                         <p class="checkDisable"> 
-                           ${element.composedName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
+                          ${flagshipName} [#if outcomesContributions?size > 0] [@outcomesRelationsPopup  element outcomesContributions clustersContributions /][/#if]
                           <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
                         </p>
                       [#else]
-                        [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput ${isCenterProject?string('getCenterOutcomes','')}" cssClassLabel="font-normal" /]
+                        [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${flagshipName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput ${isCenterProject?string('getCenterOutcomes','')}" cssClassLabel="font-normal" /]
                       [/#if]
                     [/#list]
                      
@@ -170,11 +172,14 @@
                   <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
                     <p><label>[@s.text name="projectDescription.regions${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
-                      [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                      [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]
-                      [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
+                      [#if isCrpProject]
+                        [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
+                        [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]
+                        [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
+                      [/#if]
                       [#list (regionFlagships)![] as element]
-                        [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
+                        [#assign regionName][#if isCrpProject]${element.composedName}[#else]${element.name}[/#if][/#assign]
+                        [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${regionName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
                       [/#list]
                        
                     [#else]
@@ -183,7 +188,10 @@
                         <p class="checked"> [@s.text name="project.noRegional" /]</p>
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
-                      [#list (project.regions)![] as element]<p class="checked">${element.composedName}</p>[/#list]
+                      [#list (project.regions)![] as element]
+                        [#assign regionName][#if isCrpProject]${element.composedName}[#else]${element.name}[/#if][/#assign]
+                        <p class="checked">${regionName}</p>
+                      [/#list]
                     [/#if]
                   </div>
                 [/#if]
