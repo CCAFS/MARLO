@@ -48,14 +48,6 @@
 			class="org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant" fetch="select">
 			<column name="rep_ind_type_participant_id" />
 		</many-to-one>
-		<many-to-one name="repIndGeographicScope"
-			class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope" fetch="select">
-			<column name="rep_ind_geographic_scope_id" />
-		</many-to-one>
-		<many-to-one name="repIndRegion"
-			class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
-			<column name="rep_ind_region_id" />
-		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
@@ -76,13 +68,5 @@
 			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
-		<set name="deliverableParticipantLocations" table="deliverable_participant_locations"
-      inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="deliverable_participant_id" not-null="true" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.DeliverableParticipantLocation" />
-    </set>
 	</class>
 </hibernate-mapping>
