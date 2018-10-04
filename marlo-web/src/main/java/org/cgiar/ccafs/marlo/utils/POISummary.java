@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.Borders;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TOC;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
@@ -33,6 +34,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSdtBlock;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
@@ -68,6 +70,23 @@ public class POISummary {
       }
     } else {
       paragraphRun.setText(text, 0);
+    }
+  }
+
+  public void createTOC(XWPFDocument document) {
+    // Create table of contents
+    CTSdtBlock block = document.getDocument().getBody().addNewSdt();
+    TOC toc = new TOC(block);
+    for (XWPFParagraph par : document.getParagraphs()) {
+      String parStyle = par.getStyle();
+      if ((parStyle != null) && (parStyle.startsWith("Heading"))) {
+        try {
+          int level = Integer.valueOf(parStyle.substring("Heading".length())).intValue();
+          toc.addRow(level, par.getText(), 1, "112723803");
+        } catch (NumberFormatException e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 
@@ -519,7 +538,7 @@ public class POISummary {
     XWPFRun h1Run = h1.createRun();
     this.addParagraphTextBreak(h1Run, text);
     h1Run.setColor("323E4F");
-    h1Run.setBold(true);
+    h1Run.setBold(false);
     h1Run.setFontFamily("Calibri");
     h1Run.setFontSize(26);
     h1.setBorderBottom(Borders.SINGLE);
