@@ -42,7 +42,7 @@ function attachEvents() {
 
   setViewMores();
 
-  addFlagshipAutoComplete();
+  //addFlagshipAutoComplete();
 
   // Add a program collaboration
   $('.addProgramCollaboration').on('click', addProgramCollaboration);
@@ -83,13 +83,13 @@ function addProgramCollaboration() {
 
   // Clear Program
   $autoCompleteInput.val('');
-
+  /*
   $autoCompleteInput.autocomplete({
       source: searchFlagships,
       select: selectFlagship,
       minLength: 0
   }).autocomplete("instance")._renderItem = renderItem;
-
+  */
   $item.show('slow');
   updateIndexes();
 }
@@ -185,7 +185,7 @@ function addFlagshipAutoComplete() {
         select: selectFlagship,
         minLength: 0
     }).autocomplete("instance")._renderItem = renderItem;
-
+  
   });
 }
 
