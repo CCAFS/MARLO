@@ -726,12 +726,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("involveParticipants.females"));
     masterReport.getParameterValues().put("i8nDeliverablesRParticipantType",
       this.getText("involveParticipants.participantsType"));
-    masterReport.getParameterValues().put("i8nDeliverablesRParticipantGeographicScope",
-      this.getText("involveParticipants.eventScope"));
-    masterReport.getParameterValues().put("i8nDeliverablesRParticipantRegional",
-      this.getText("involveParticipants.region"));
-    masterReport.getParameterValues().put("i8nDeliverablesRParticipantCountries",
-      this.getText("involveParticipants.countries"));
 
     masterReport.getParameterValues().put("i8nDeliverablesRMetadataSubtitle",
       this.getText("project.deliverable.dissemination.metadataSubtitle"));
