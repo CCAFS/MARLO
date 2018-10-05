@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -61,6 +62,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   private List<ProjectExpectedStudy> nonProjectStudies;
   private List<ProjectExpectedStudy> myNonProjectStudies;
   private List<ProjectExpectedStudy> projectStudies;
+  private List<ProjectExpectedStudy> projectOldStudies;
   private Project project;
   private List<Integer> allYears;
   private long projectID;
@@ -158,9 +160,14 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return projectID;
   }
 
+  public List<ProjectExpectedStudy> getProjectOldStudies() {
+    return projectOldStudies;
+  }
+
   public List<ProjectExpectedStudy> getProjectStudies() {
     return projectStudies;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -178,27 +185,59 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
 
     if (project != null) {
-      List<ProjectExpectedStudy> studies =
-        project.getProjectExpectedStudies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      projectStudies = new ArrayList<ProjectExpectedStudy>();
-      for (ProjectExpectedStudy projectExpectedStudy : studies) {
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-          projectStudies.add(projectExpectedStudy);
-        }
+
+      List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+
+      // Load Studies
+      List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+        .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList());
+      if (studies != null && studies.size() > 0) {
+        allProjectStudies.addAll(studies);
       }
 
-
-      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project
-        .getExpectedStudyProjects().stream().filter(px -> px.isActive()
-          && px.getPhase().getId() == this.getActualPhase().getId() && px.getProjectExpectedStudy().isActive())
+      // Load Shared studies
+      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
+        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+          && px.getProjectExpectedStudy().isActive()
+          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList()));
-      for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
-        if (!projectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
-          if (expectedStudy.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-            projectStudies.add(expectedStudy.getProjectExpectedStudy());
+      if (expectedStudyProject != null && expectedStudyProject.size() > 0) {
+        for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+          if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+            allProjectStudies.add(expectedStudy.getProjectExpectedStudy());
           }
         }
       }
+
+      if (allProjectStudies != null && allProjectStudies.size() > 0) {
+        // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
+        // Every study of the current cycle year will be editable
+        projectStudies = new ArrayList<ProjectExpectedStudy>();
+        projectStudies = allProjectStudies.stream()
+          .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+            && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear() - 1
+            && ps.getProjectExpectedStudyInfo().getYear() >= 2018
+            && ((ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+              .equals(ProjectStatusEnum.Ongoing.getStatus())
+              || ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                .equals(ProjectStatusEnum.Extended.getStatus()))
+              || ((ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                .equals(ProjectStatusEnum.Complete.getStatus())
+                || ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                  .equals(ProjectStatusEnum.Cancelled.getStatus()))
+                && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+          .collect(Collectors.toList());
+
+        // Non Editable project studies
+        projectOldStudies = new ArrayList<ProjectExpectedStudy>();
+        for (ProjectExpectedStudy projectExpectedStudy : allProjectStudies) {
+          if (!projectStudies.contains(projectExpectedStudy)) {
+            projectOldStudies.add(projectExpectedStudy);
+          }
+        }
+      }
+
 
     } else {
       nonProjectStudies = new ArrayList<>();
@@ -247,6 +286,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     }
   }
 
+
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
   }
@@ -269,6 +309,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectOldStudies(List<ProjectExpectedStudy> projectOldStudies) {
+    this.projectOldStudies = projectOldStudies;
   }
 
   public void setProjectStudies(List<ProjectExpectedStudy> projectStudies) {
