@@ -123,7 +123,8 @@ public class ReportSynthesisCrpProgressManagerImpl implements ReportSynthesisCrp
         .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
           && ps.getProjectExpectedStudyInfo(phase).getStudyType() != null
           && ps.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1
-          && ps.getProjectExpectedStudyInfo(phase).getPhase().getId() == phaseID && ps.getYear() == phase.getYear())
+          && ps.getProjectExpectedStudyInfo(phase).getPhase().getId() == phaseID
+          && ps.getProjectExpectedStudyInfo(phase).getYear() == phase.getYear())
         .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
