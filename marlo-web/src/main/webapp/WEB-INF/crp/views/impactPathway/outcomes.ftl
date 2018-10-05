@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20180510", 
   "${baseUrl}/global/js/autoSave.js", 
   "${baseUrl}/global/js/impactGraphic.js",
   "${baseUrl}/global/js/fieldsValidation.js" 
