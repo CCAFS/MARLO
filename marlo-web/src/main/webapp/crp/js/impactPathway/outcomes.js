@@ -165,12 +165,12 @@ function attachEvents() {
       $milestoneRiskBlocks.slideDown();
     } else {
       // Trigger Risks Options
-      $('select.risksOptions').val('-1');
+      $milestoneRiskBlocks.find('select.risksOptions').val('-1');
       $milestoneRiskBlocks.slideUp();
     }
 
     // Trigger Risks Options
-    $('select.risksOptions').trigger('change');
+    $milestoneRiskBlocks.find('select.risksOptions').trigger('change');
   });
 
   $('select.risksOptions').on('change', function() {
