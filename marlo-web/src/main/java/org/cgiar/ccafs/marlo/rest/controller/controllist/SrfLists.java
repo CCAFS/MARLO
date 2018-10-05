@@ -110,7 +110,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "Search an SRF IDO with a MARLO ID", response = SrfIdoDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/srfIdo/Marlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfIdo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfIdoDTO> getSrfIdoByMARLOId(@PathVariable Long id) {
     LOG.debug("REST request to get SRF-SLO : {}", id);
     return srfIdoItem.findSrfIdobyMARLOId(id);
@@ -124,25 +124,10 @@ public class SrfLists {
    */
   @ApiOperation(value = "Search an SRF-SLO with a MARLO ID", response = SrfSloDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/srfSlo/Marlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfSlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfSloDTO> getSrfSloByMARLOId(@PathVariable Long id) {
     LOG.debug("REST request to get SRF-SLO : {}", id);
     return srfSloItem.findSrfSlobyMARLOId(id);
-  }
-
-  /**
-   * Find a SRF-SLO requesting by SMO Code
-   * 
-   * @param id
-   * @return a SrfSloDTO with the SRL-SLO data.
-   */
-  @ApiOperation(value = "Search an SRF-SLO with a SMO Code", response = SrfSloDTO.class)
-  @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/srfSlo/smoCode/{smoCode}", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<SrfSloDTO> getSrfSloBySmoCode(@PathVariable String smoCode) {
-    LOG.debug("REST request to get SRF-SLO : {}", smoCode);
-    return srfSloItem.findSrfSlobySmoCode(smoCode);
   }
 
 
