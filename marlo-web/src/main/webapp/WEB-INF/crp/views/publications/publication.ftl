@@ -186,6 +186,11 @@
       </div>
       [/#if]
       
+      [#-- Geographic Scope  --]
+      <div class="form-group simpleBox">
+        [@deliverableMacros.deliverableGeographicScope /]
+      </div>
+      
       [#--  Cross Cutting --]
       <div class="form-group simpleBox">
         [@deliverableMacros.deliverableCrossCuttingMacro label="publication.crossCuttingDimensions" /]
