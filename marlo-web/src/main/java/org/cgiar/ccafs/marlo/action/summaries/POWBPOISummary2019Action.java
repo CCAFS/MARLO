@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
-import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -373,57 +372,85 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String FP, outcomes, milestone, assessment, meansVerifications;
+    String FP, outcomes = null, milestone = null, assessment, meansVerifications;
 
     List<List<POIField>> datas = new ArrayList<>();
 
     List<POIField> data;
-
-    for (CrpProgram flagship : flagships) {
+    /*
+     * for (CrpProgram flagship : flagships) {
+     * data = new ArrayList<>();
+     * int outcome_index = 0;
+     * for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+     * int milestone_index = 0;
+     * for (CrpMilestone crpMilestone : outcome.getMilestones()) {
+     * Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
+     * Boolean isOutcomeRow = (milestone_index == 0);
+     * if (isFlagshipRow) {
+     * FP = flagship.getAcronym();
+     * } else {
+     * FP = " ";
+     * }
+     * if (isOutcomeRow) {
+     * outcomes = outcome.getComposedName();
+     * } else {
+     * outcomes = " ";
+     * }
+     * milestone = crpMilestone.getComposedName();
+     * PowbExpectedCrpProgress milestoneProgress =
+     * this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
+     * assessment =
+     * milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
+     * ? milestoneProgress.getAssesmentName() : " ";
+     * meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
+     * ? milestoneProgress.getMeans() : " ";
+     * POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT),
+     * new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+     * new POIField(meansVerifications, ParagraphAlignment.LEFT),
+     * new POIField(assessment, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.LEFT),
+     * new POIField(assessment, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.LEFT),
+     * new POIField(assessment, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.LEFT)};
+     * data = Arrays.asList(sData);
+     * datas.add(data);
+     * milestone_index++;
+     * }
+     * outcome_index++;
+     * }
+     * }
+     */
+    String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "", c7 = "", c8 = "", c9 = "", c10 = "";
+    for (int i = 1; i <= 2; i++) {
       data = new ArrayList<>();
-      int outcome_index = 0;
-      for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-        int milestone_index = 0;
-        for (CrpMilestone crpMilestone : outcome.getMilestones()) {
-          Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
-          Boolean isOutcomeRow = (milestone_index == 0);
-          if (isFlagshipRow) {
-            FP = flagship.getAcronym();
-          } else {
-            FP = " ";
-          }
-          if (isOutcomeRow) {
-            outcomes = outcome.getComposedName();
-          } else {
-            outcomes = " ";
-          }
-          milestone = crpMilestone.getComposedName();
 
-          PowbExpectedCrpProgress milestoneProgress =
-            this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
-          assessment =
-            milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
-              ? milestoneProgress.getAssesmentName() : " ";
-          meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
-            ? milestoneProgress.getMeans() : " ";
+      if (i == 1) {
+        c1 = "Module";
+        c2 = "Mapped to Sub-IDO";
+        c3 = "2022 Module outcomes ";
+        c4 = "Milestone";
+        c5 = "";
+        c6 = "Means of verification ";
+        c7 = "CGIAR Cross-Cutting Markers for the milestone";
+        c8 = "CGIAR Cross-Cutting Markers for the milestone";
+        c9 = "CGIAR Cross-Cutting Markers for the milestone";
+        c10 = "CGIAR Cross-Cutting Markers for the milestone";
 
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT),
-            new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-            new POIField(meansVerifications, ParagraphAlignment.LEFT),
-            new POIField(assessment, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.LEFT),
-            new POIField(assessment, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.LEFT),
-            new POIField(assessment, ParagraphAlignment.LEFT), new POIField(assessment, ParagraphAlignment.LEFT)};
-          data = Arrays.asList(sData);
-          datas.add(data);
+      } else {
 
-          milestone_index++;
-        }
-        outcome_index++;
+
+        POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
+          new POIField(c3, ParagraphAlignment.LEFT), new POIField(c4, ParagraphAlignment.LEFT),
+          new POIField(c5, ParagraphAlignment.LEFT), new POIField(c6, ParagraphAlignment.LEFT),
+          new POIField(c7, ParagraphAlignment.LEFT), new POIField(c8, ParagraphAlignment.LEFT),
+          new POIField(c9, ParagraphAlignment.LEFT), new POIField(c10, ParagraphAlignment.LEFT)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+
       }
     }
 
 
-    poiSummary.textTable(document, headers, datas, false, "tableA");
+    poiSummary.textTable(document, headers, datas, false, "tableA2Powb");
   }
 
   private void createTableB2() {
@@ -507,11 +534,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     List<POIField> data;
     this.tableCInfo(this.getSelectedPhase());
 
-    POIField[] sData = {new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 4)),
-      ParagraphAlignment.LEFT), new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.LEFT)};
+    POIField[] sData = {
+      new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 4)),
+        ParagraphAlignment.LEFT, bold, blackColor),
+      new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.LEFT, bold, blackColor)};
     data = Arrays.asList(sData);
     datas.add(data);
-
 
     poiSummary.textTable(document, headers, datas, true, "tableC");
   }
@@ -659,7 +687,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       CTBody body = doc.getBody();
 
       poiSummary.pageLeftHeader(document, this.getText("summaries.powb2019.header"));
-      poiSummary.createTOC(document);
+
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -673,7 +701,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       poiSummary.textLineBreak(document, 2);
       poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
       poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
-      poiSummary.textLineBreak(document, 25);
+      poiSummary.textLineBreak(document, 22);
 
       // Second page
       poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
@@ -723,8 +751,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableC2.title"));
       this.createTableC2();
-
-      poiSummary.textNotes(document.createParagraph(), this.getText("crpStaffing.tableD.help"));
       document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
@@ -774,6 +800,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("2019_PTF_POWB");
+    fileName.append("-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");

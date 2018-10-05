@@ -163,6 +163,46 @@ public class POISummary {
     }
   }
 
+  public void tableA2PowbStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables A */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        for (int y = 0; y < 2; y++) {
+          XWPFTableCell cell = row.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+  }
+
   public void tableAStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
@@ -631,9 +671,12 @@ public class POISummary {
       }
       for (POIField poiParameter : poiParameters) {
 
-        // Condition for table b cell color in fields 5 and 6
+        // Condition for table b cell color in fields 5 and 6 in annual report
         if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
           TABLE_HEADER_FONT_COLOR = "DEEAF6";
+          // Condition for table 2a
+        } else if (tableType.equals("tableA2Powb")) {
+          TABLE_HEADER_FONT_COLOR = "FFFFFF";
         } else {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
@@ -684,7 +727,6 @@ public class POISummary {
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
 
-
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
         }
         record++;
@@ -699,6 +741,8 @@ public class POISummary {
       // Condition for table b cell color in fields 5 and 6
       if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
         TABLE_HEADER_FONT_COLOR = "DEEAF6";
+      } else if (tableType.equals("tableA2Powb")) {
+        TABLE_HEADER_FONT_COLOR = "FFFFFF";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFF2CC";
       }
@@ -729,6 +773,16 @@ public class POISummary {
           } else {
             TABLE_HEADER_FONT_COLOR = "FFF2CC";
           }
+
+          if (tableType.equals("tableA2Powb")) {
+            if (count >= 1) {
+              dataRow.getCell(record).setColor("FFF2CC");
+            }
+            if (count >= 20) {
+              dataRow.getCell(record).setColor("D9EAD3");
+            }
+          }
+
 
           // highlight and bold first and SecondColumn for table D1
           if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
@@ -779,6 +833,7 @@ public class POISummary {
         this.tableGStyle(table);
         break;
 
+      // Annual report tables
       case "tableAAnnualReport":
         this.tableBAnnualReportStyle(table);
         break;
@@ -820,8 +875,14 @@ public class POISummary {
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);
         break;
+
+      // powb 2019 template tables
+      case "tableA2Powb":
+        count = 0;
+        this.tableA2PowbStyle(table);
+        break;
     }
-    if (tableType.contains("AnnualReport")) {
+    if (tableType.contains("AnnualReport") || tableType.contains("Powb")) {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
