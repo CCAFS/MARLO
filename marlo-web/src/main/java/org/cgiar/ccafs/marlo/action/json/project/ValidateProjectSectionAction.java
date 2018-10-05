@@ -354,7 +354,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           // Owner Studies
           List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream()
             .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-              && c.getYear() == this.getCurrentCycleYear())
+              && c.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear())
             .collect(Collectors.toList());
           if (ownerStudies != null && !ownerStudies.isEmpty()) {
             myStudies.addAll(ownerStudies);
@@ -363,9 +363,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           // Shared Studies
           List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
             .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-              && c.getProjectExpectedStudy().getYear() != null
-              && c.getProjectExpectedStudy().getYear() == this.getCurrentCycleYear()
-              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null
+              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() != null
+              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this
+                .getCurrentCycleYear())
             .collect(Collectors.toList());
 
           if (sharedStudies != null && !sharedStudies.isEmpty()) {

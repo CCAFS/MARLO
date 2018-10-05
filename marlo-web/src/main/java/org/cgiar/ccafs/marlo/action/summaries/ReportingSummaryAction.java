@@ -4070,8 +4070,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     Set<ProjectExpectedStudy> myStudies = new HashSet<>();
 
     List<ProjectExpectedStudy> projectExpectedStudies = project.getProjectExpectedStudies().stream()
-      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null && p.getYear() != null
-        && p.getYear().equals(this.getSelectedYear()))
+      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
+        && p.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+        && p.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedYear()))
       .collect(Collectors.toList());
     if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
       myStudies.addAll(projectExpectedStudies);
@@ -4079,9 +4080,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Shared Studies
     List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-        && c.getProjectExpectedStudy().getYear() != null
-        && c.getProjectExpectedStudy().getYear() == this.getCurrentCycleYear()
-        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() != null
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this
+          .getCurrentCycleYear())
       .collect(Collectors.toList());
 
     if (sharedStudies != null && !sharedStudies.isEmpty()) {
@@ -4111,8 +4113,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Id
         id = projectExpectedStudy.getId();
         // Year
-        if (projectExpectedStudy.getYear() != null) {
-          year = projectExpectedStudy.getYear();
+        if (projectExpectedStudy.getProjectExpectedStudyInfo().getYear() != null) {
+          year = projectExpectedStudy.getProjectExpectedStudyInfo().getYear();
         }
         // Title
         if (studyinfo.getTitle() != null && !studyinfo.getTitle().trim().isEmpty()) {

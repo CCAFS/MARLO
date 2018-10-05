@@ -384,8 +384,8 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
       isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false;
 
     // Year
-    if (projectExpectedStudyInfo.getProjectExpectedStudy().getYear() != null) {
-      year = projectExpectedStudyInfo.getProjectExpectedStudy().getYear();
+    if (projectExpectedStudyInfo.getYear() != null) {
+      year = projectExpectedStudyInfo.getYear();
     }
     // Title
     if (projectExpectedStudyInfo.getTitle() != null && !projectExpectedStudyInfo.getTitle().trim().isEmpty()) {

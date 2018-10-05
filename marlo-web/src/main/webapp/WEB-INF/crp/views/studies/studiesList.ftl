@@ -117,7 +117,7 @@
           </td>
           [#-- Delivery year --]
           <td class=""> 
-           ${(element.year)!'Not defined'}
+           ${(element.projectExpectedStudyInfo.year)!'Not defined'}
           </td>
           [#--Status --]
           <td class=""> 

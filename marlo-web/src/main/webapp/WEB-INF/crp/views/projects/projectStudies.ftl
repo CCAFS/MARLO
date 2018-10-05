@@ -109,7 +109,7 @@
           [#-- Is this complete --]
           [#local isThisComplete = (action.hasStudiesMissingFields(item.class.name,item.id))!false]
           [#-- Previous year --]
-          [#local previousYear = (item.year < currentCycleYear)!false ]
+          [#local previousYear = (item.projectExpectedStudyInfo.year < currentCycleYear)!false ]
           [#-- Owner --]
           [#local isOwner = (item.project.id == projectID)!false]
           <tr>
@@ -127,9 +127,9 @@
             </td>
             <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false][#if (item.projectExpectedStudyInfo.studyType.id=1)]OICS[#else]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[/#if][#else]Not defined[/#if]</td>
             <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
-            <td class="year">[#if (item.year?trim?has_content)!false]${(item.year)!}[#else]Not defined[/#if]</td>
+            <td class="year">[#if (item.projectExpectedStudyInfo.year?trim?has_content)!false]${(item.projectExpectedStudyInfo.year)!}[#else]Not defined[/#if]</td>
             <td>
-              [#if isThisComplete || ((item.year lt  currentCycleYear)!false)]
+              [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]
                 <span class="icon-20 icon-check" title="Complete"></span> 
               [#else]
                 <span class="icon-20 icon-uncheck" title=""></span> 
@@ -137,7 +137,7 @@
             </td>
             [#if !previousTable]
             <td class="removeHighlight-row text-center">
-              [#if canEdit && isOwner && ((item.year gte  currentCycleYear)!true) ]
+              [#if canEdit && isOwner && ((item.projectExpectedStudyInfo.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>
