@@ -100,7 +100,7 @@ public class OutcomeValidator extends BaseValidator
   }
 
   public void validateMilestone(BaseAction action, CrpMilestone milestone, int i, int j) {
-
+    int year = action.getCurrentCycleYear();
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
@@ -140,89 +140,92 @@ public class OutcomeValidator extends BaseValidator
     }
 
     /* POWB 2019 validators */
+    if (milestone.getYear() != null && milestone.getYear() == year && milestone.getYear() >= 2019) {
 
-    if (!(this.isValidString(milestone.getPowbMilestoneVerification()))) {
-      action.getInvalidFields().put("input-" + customName + ".powbMilestoneVerification",
-        InvalidFieldsMessages.EMPTYFIELD);
-      action.addMessage(action.getText("outcome.action.milestone.mean.verification.required", params));
-    }
+      if (!(this.isValidString(milestone.getPowbMilestoneVerification()))) {
+        action.getInvalidFields().put("input-" + customName + ".powbMilestoneVerification",
+          InvalidFieldsMessages.EMPTYFIELD);
+        action.addMessage(action.getText("outcome.action.milestone.mean.verification.required", params));
+      }
 
-    if (milestone.getPowbIndFollowingMilestone() != null) {
-      if (milestone.getPowbIndFollowingMilestone().getId() == null
-        || milestone.getPowbIndFollowingMilestone().getId() == -1) {
+      if (milestone.getPowbIndFollowingMilestone() != null) {
+        if (milestone.getPowbIndFollowingMilestone().getId() == null
+          || milestone.getPowbIndFollowingMilestone().getId() == -1) {
+          action.addMessage(action.getText("outcome.action.milestone.following.required", params));
+          action.getInvalidFields().put("input-" + customName + ".powbIndFollowingMilestone.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         action.addMessage(action.getText("outcome.action.milestone.following.required", params));
         action.getInvalidFields().put("input-" + customName + ".powbIndFollowingMilestone.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-      action.getInvalidFields().put("input-" + customName + ".powbIndFollowingMilestone.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
 
-    if (milestone.getPowbIndAssesmentRisk() != null) {
-      if (milestone.getPowbIndAssesmentRisk().getId() == null || milestone.getPowbIndAssesmentRisk().getId() == -1) {
-        action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-        action.getInvalidFields().put("list-" + customName + ".powbIndAssesmentRisk.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      } else {
-        if (milestone.getPowbIndAssesmentRisk().getId() == 2 || milestone.getPowbIndAssesmentRisk().getId() == 3) {
+      if (milestone.getPowbIndAssesmentRisk() != null) {
+        if (milestone.getPowbIndAssesmentRisk().getId() == null || milestone.getPowbIndAssesmentRisk().getId() == -1) {
+          action.addMessage(action.getText("outcome.action.milestone.following.required", params));
+          action.getInvalidFields().put("list-" + customName + ".powbIndAssesmentRisk.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (milestone.getPowbIndAssesmentRisk().getId() == 2 || milestone.getPowbIndAssesmentRisk().getId() == 3) {
 
-          if ((milestone.getPowbIndMilestoneRisk() == null) || (milestone.getPowbIndMilestoneRisk().getId() == null)
-            || (milestone.getPowbIndMilestoneRisk().getId() == -1)) {
-            // Required for medium/high the main risk
-            action.addMessage(action.getText("outcome.action.milestone.main.risk.required", params));
-            action.getInvalidFields().put("input-" + customName + ".powbIndMilestoneRisk.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          } else {
-            // Please specify other risk
-            if (milestone.getPowbIndMilestoneRisk().getId() == 7) {
-              if (!(this.isValidString(milestone.getPowbMilestoneOtherRisk()))) {
-                action.getInvalidFields().put("input-" + customName + ".powbMilestoneOtherRisk",
-                  InvalidFieldsMessages.EMPTYFIELD);
-                action.addMessage(action.getText("outcome.action.milestone.other.risk.required", params));
+            if ((milestone.getPowbIndMilestoneRisk() == null) || (milestone.getPowbIndMilestoneRisk().getId() == null)
+              || (milestone.getPowbIndMilestoneRisk().getId() == -1)) {
+              // Required for medium/high the main risk
+              action.addMessage(action.getText("outcome.action.milestone.main.risk.required", params));
+              action.getInvalidFields().put("input-" + customName + ".powbIndMilestoneRisk.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            } else {
+              // Please specify other risk
+              if (milestone.getPowbIndMilestoneRisk().getId() == 7) {
+                if (!(this.isValidString(milestone.getPowbMilestoneOtherRisk()))) {
+                  action.getInvalidFields().put("input-" + customName + ".powbMilestoneOtherRisk",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                  action.addMessage(action.getText("outcome.action.milestone.other.risk.required", params));
+                }
               }
             }
           }
         }
-      }
-    } else {
-      action.addMessage(action.getText("outcome.action.milestone.following.required", params));
-      action.getInvalidFields().put("input-" + customName + ".powbIndAssesmentRisk.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (milestone.getGenderFocusLevel() != null) {
-      if (milestone.getGenderFocusLevel().getId() == null || milestone.getGenderFocusLevel().getId() == -1) {
-        action.addMessage(action.getText("outcome.action.milestone.gender.required", params));
-        action.getInvalidFields().put("input-" + customName + ".genderFocusLevel.id", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
-    if (milestone.getYouthFocusLevel() != null) {
-      if (milestone.getYouthFocusLevel().getId() == null || milestone.getYouthFocusLevel().getId() == -1) {
-        action.addMessage(action.getText("outcome.action.milestone.youth.required", params));
-        action.getInvalidFields().put("input-" + customName + ".youthFocusLevel.id", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
-    if (milestone.getCapdevFocusLevel() != null) {
-      if (milestone.getCapdevFocusLevel().getId() == null || milestone.getCapdevFocusLevel().getId() == -1) {
-        action.addMessage(action.getText("outcome.action.milestone.capdev.required", params));
-        action.getInvalidFields().put("input-" + customName + ".capdevFocusLevel.id", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
-    if (milestone.getClimateFocusLevel() != null) {
-      if (milestone.getClimateFocusLevel().getId() == null || milestone.getClimateFocusLevel().getId() == -1) {
-        action.addMessage(action.getText("outcome.action.milestone.climate.required", params));
-        action.getInvalidFields().put("input-" + customName + ".climateFocusLevel.id",
+      } else {
+        action.addMessage(action.getText("outcome.action.milestone.following.required", params));
+        action.getInvalidFields().put("input-" + customName + ".powbIndAssesmentRisk.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
+
+      if (milestone.getGenderFocusLevel() != null) {
+        if (milestone.getGenderFocusLevel().getId() == null || milestone.getGenderFocusLevel().getId() == -1) {
+          action.addMessage(action.getText("outcome.action.milestone.gender.required", params));
+          action.getInvalidFields().put("input-" + customName + ".genderFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
+      if (milestone.getYouthFocusLevel() != null) {
+        if (milestone.getYouthFocusLevel().getId() == null || milestone.getYouthFocusLevel().getId() == -1) {
+          action.addMessage(action.getText("outcome.action.milestone.youth.required", params));
+          action.getInvalidFields().put("input-" + customName + ".youthFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
+      if (milestone.getCapdevFocusLevel() != null) {
+        if (milestone.getCapdevFocusLevel().getId() == null || milestone.getCapdevFocusLevel().getId() == -1) {
+          action.addMessage(action.getText("outcome.action.milestone.capdev.required", params));
+          action.getInvalidFields().put("input-" + customName + ".capdevFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
+      if (milestone.getClimateFocusLevel() != null) {
+        if (milestone.getClimateFocusLevel().getId() == null || milestone.getClimateFocusLevel().getId() == -1) {
+          action.addMessage(action.getText("outcome.action.milestone.climate.required", params));
+          action.getInvalidFields().put("input-" + customName + ".climateFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
     }
-
-
-    /* */
+    /* End POWB Validations */
 
   }
 
@@ -264,9 +267,9 @@ public class OutcomeValidator extends BaseValidator
     if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
-        if (outcome.getMilestones().get(j).getYear() != null && outcome.getMilestones().get(j).getYear() >= year) {
-          this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
-        }
+
+        this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
+
       }
     } else {
       action.addMessage("outcome.action.milestones.requeried");
