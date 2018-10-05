@@ -178,35 +178,13 @@
   [/#if]
 </div>
 
+[#-- Geographic Scope  --]
 <h3 class="headTitle">Geographic Scope</h3>
-<div class="simpleBox block-geographicScope">
-  [#-- Geographic Scope  --]
-  <div class="form-group row">
-    <div class="col-md-6">
-      [@customForm.select name="deliverable.deliverableInfo.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
-    </div>
-  </div>
-  
-  [#assign scopeID = (deliverable.deliverableInfo.geographicScope.id)!-1 ]  
-  [#assign isRegional = ((scopeID == action.reportingIndGeographicScopeRegional)) ]
-  [#assign isMultiNational = ((scopeID == action.reportingIndGeographicScopeMultiNational)) ]
-  [#assign isNational = ((scopeID == action.reportingIndGeographicScopeNational)) ]
-  [#assign isSubNational = ((scopeID == action.reportingIndGeographicScopeSubNational)) ]
-  
-  [#-- Region --]
-  <div class="form-group row">
-    <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-      [@customForm.selectGroup name="deliverable.deliverableInfo.region.id" list=(repIndRegions)![] element=(deliverable.deliverableInfo.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="deliverable.region" required=true className="" editable=editable /]
-    </div>
-  </div>
-  
-  [#-- Countries --]
-  <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-    [#-- Multinational, National and Subnational scope --]
-    [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
-  </div>
+<div class="simpleBox">
+  [@deliverableMacros.deliverableGeographicScope /]
 </div>
 
+[#-- Cross-cutting dimensions --]
 <h3 class="headTitle">[@s.text name="deliverable.crossCuttingDimensionsTitle" /] </h3>
 <div class="simpleBox">
   [@deliverableMacros.deliverableCrossCuttingMacro /]
