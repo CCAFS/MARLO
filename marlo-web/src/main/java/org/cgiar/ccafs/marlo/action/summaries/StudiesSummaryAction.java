@@ -293,24 +293,30 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
     if (studyType.equals("all")) {
       projectExpectedStudyInfos =
         projectExpectedStudyInfoManager.getProjectExpectedStudyInfoByPhase(this.getSelectedPhase()).stream()
-          .filter(si -> si.getProjectExpectedStudy().getYear() != null
-            && si.getProjectExpectedStudy().getYear().intValue() == this.getSelectedYear())
+          .filter(
+            si -> si.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+              && si.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear()
+                .intValue() == this.getSelectedYear())
           .collect(Collectors.toList());
     }
     if (studyType.equals("outcome_case_study")) {
       projectExpectedStudyInfos =
         projectExpectedStudyInfoManager.getProjectExpectedStudyInfoByPhase(this.getSelectedPhase()).stream()
-          .filter(si -> si.getProjectExpectedStudy().getYear() != null
-            && si.getProjectExpectedStudy().getYear().intValue() == this.getSelectedYear() && si.getStudyType() != null
-            && si.getStudyType().getId() == 1)
+          .filter(
+            si -> si.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+              && si.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear()
+                .intValue() == this.getSelectedYear()
+              && si.getStudyType() != null && si.getStudyType().getId() == 1)
           .collect(Collectors.toList());
     }
     if (studyType.equals("others")) {
       projectExpectedStudyInfos =
         projectExpectedStudyInfoManager.getProjectExpectedStudyInfoByPhase(this.getSelectedPhase()).stream()
-          .filter(si -> si.getProjectExpectedStudy().getYear() != null
-            && si.getProjectExpectedStudy().getYear().intValue() == this.getSelectedYear() && si.getStudyType() != null
-            && si.getStudyType().getId() != 1)
+          .filter(
+            si -> si.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+              && si.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear()
+                .intValue() == this.getSelectedYear()
+              && si.getStudyType() != null && si.getStudyType().getId() != 1)
           .collect(Collectors.toList());
     }
     if (projectExpectedStudyInfos != null && !projectExpectedStudyInfos.isEmpty()) {
@@ -334,8 +340,10 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         // Id
         id = projectExpectedStudyInfo.getProjectExpectedStudy().getId();
         // Year
-        if (projectExpectedStudyInfo.getProjectExpectedStudy().getYear() != null) {
-          year = projectExpectedStudyInfo.getProjectExpectedStudy().getYear();
+        if (projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+          .getYear() != null) {
+          year = projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+            .getYear();
         }
         // Title
         if (projectExpectedStudyInfo.getTitle() != null && !projectExpectedStudyInfo.getTitle().trim().isEmpty()) {

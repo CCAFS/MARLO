@@ -303,16 +303,14 @@ public class PlannedStudiesAction extends BaseAction {
     flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies =
-        new ArrayList<>(
-          projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-              && ps.getYear() == this.getCurrentCycleYear() && ps.getProject() != null
-              && ps.getProject().getGlobalUnitProjects().stream()
-                .filter(
-                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).size() > 0)
-            .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
+          && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
@@ -506,7 +504,9 @@ public class PlannedStudiesAction extends BaseAction {
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
           List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-            .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+            .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+              && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear())
+            .collect(Collectors.toList()));
           for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
             projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
             popUpProjects.add(projectExpectedStudy);

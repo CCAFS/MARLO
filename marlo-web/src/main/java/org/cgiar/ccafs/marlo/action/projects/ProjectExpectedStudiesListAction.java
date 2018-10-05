@@ -84,8 +84,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public String add() {
     ProjectExpectedStudy projectExpectedStudy = new ProjectExpectedStudy();
 
-    projectExpectedStudy.setYear(this.getActualPhase().getYear());
-
     if (project != null) {
       projectExpectedStudy.setProject(project);
     }
@@ -96,7 +94,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudy = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
 
     ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo(this.getActualPhase(),
-      projectExpectedStudy, "", "", "", "", "", "", "", "", "", "", "", "", "");
+      projectExpectedStudy, "", "", "", "", "", "", "", "", "", "", "", "", "", this.getActualPhase().getYear());
 
     long studyTypeID = -1;
     try {

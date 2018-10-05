@@ -691,7 +691,9 @@ public class MeliaAction extends BaseAction {
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+          .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
+            && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear())
+          .collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
             if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
@@ -703,7 +705,8 @@ public class MeliaAction extends BaseAction {
       }
 
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(es -> es.isActive() && es.getYear() == this.getCurrentCycleYear() && es.getProject() == null)
+        .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
+          && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear() && es.getProject() == null)
         .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
