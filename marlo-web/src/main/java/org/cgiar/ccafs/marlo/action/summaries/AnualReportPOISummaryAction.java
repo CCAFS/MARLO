@@ -676,7 +676,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           describeCapDev = "", additional = "", linkToEvidence = "";
 
         /** creating download link **/
-        String year = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getYear() + "";
+        String year = powbEvidencePlannedStudyDTO.getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() + "";
         String cycle = this.getCurrentCycle();
         String study = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getId() + "";
 
