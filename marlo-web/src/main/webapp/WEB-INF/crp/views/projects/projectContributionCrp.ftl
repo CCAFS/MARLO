@@ -310,6 +310,7 @@
     </div>
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
+    [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
     
     [#-- Milestone Title --]
     <div class="form-group grayBox">
@@ -318,13 +319,29 @@
           <strong>Target Value:</strong> ${(element.value)!}
         </div>
       [/#if]
+      [#-- Milestone Year --]
       <div class="row">
         <div class="col-md-6">
           <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!}</span> </strong> 
         </div>
       </div>
-      
-      <span class="title">${(element.title)!}</span>
+      [#--  Title --]
+      <div class="form-group">
+        <span class="title">${(element.title)!}</span>
+      </div>
+      [#--  Means of verification
+      <div class="form-group">
+        <strong>[@s.text name="outcome.milestone.powbMilestoneVerification" /]</strong>
+        <br /> [#if (element.powbMilestoneVerification?has_content)!false]${element.powbMilestoneVerification}[#else]${prefilled}[/#if]
+      </div>
+       --]
+      [#-- DAC Markers --]
+      <div class="form-group row">
+        <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.name)!prefilled} </div>
+        <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.name)!prefilled}</div>
+        <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.name)!prefilled}</div>
+        <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.name)!prefilled}</div>
+      </div>
     </div>
     
     <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear${index}-${year}">

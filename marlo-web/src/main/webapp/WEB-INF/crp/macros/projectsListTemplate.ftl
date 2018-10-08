@@ -32,9 +32,7 @@
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
         [/#if]
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
-        
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
-
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
         [#if isPlanning]
           <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
@@ -67,8 +65,12 @@
                 [@s.text name="projectsList.title.none" /]
               </a>
             [/#if]
-            [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.startDate??)!false) ]
-              <p><small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small></p>
+            [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.endDate??)!false) ]
+              [#local pYear = (project.projectInfo.endDate)?date?string('yyyy')?number ]
+              [#local validDate = (pYear >= actualPhase.year)!false ]
+              <p class="${(!validDate)?string('fieldError', '')}" title="${(!validDate)?string('Invalid End Date', '')}">
+                <small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small>
+              </p>
             [/#if]
           </td>
           [#-- Project Leader --]

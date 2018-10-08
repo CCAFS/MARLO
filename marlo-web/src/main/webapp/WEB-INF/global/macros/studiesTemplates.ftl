@@ -10,11 +10,14 @@
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
       <div class="form-group row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2" i18nkey="study.status" listName="statuses" header=false required=true editable=editable /]
+        </div>
+        <div class="col-md-4">
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="years" header=false required=true editable=editable /]
         </div>
       </div>
     </div>
