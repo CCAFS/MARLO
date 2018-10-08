@@ -49,9 +49,7 @@
         [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
           
           [#-- Studies list --]
-          <h3 class="headTitle">
-            [@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small>
-          </h3>
+          <h3 class="headTitle">[@s.text name="projectStudies.studiesTitle" /] <br /><small>[@s.text name="projectStudies.studiesSubTitle" /]</small></h3>
           <div id="caseStudiesBlock" class="simpleBox">
             [@tableList list=(projectStudies)![]  /]
           </div>
@@ -66,6 +64,12 @@
             </a>
           </div>
           [/#if]
+          
+          [#-- OLD Studies list --]
+          <h3 class="headTitle">[@s.text name="projectStudies.studiesTitleOldFormat" /]</h3>
+          <div id="caseStudiesBlock" class="simpleBox">
+            [@tableList list=(projectOldStudies)![] previousTable=true /]
+          </div>
           
         [/@s.form]
   
@@ -95,8 +99,9 @@
         <th class="type">Type</th>
         <th class="owner">Owner</th>
         <th class="year">Year</th>
-        <th></th>
+        <th class="status">Status</th>
         [#if !previousTable]
+        <th></th>
         <th class="removeHighlight"></th> 
         [/#if]
       </tr>
@@ -109,25 +114,30 @@
           [#-- Is this complete --]
           [#local isThisComplete = (action.hasStudiesMissingFields(item.class.name,item.id))!false]
           [#-- Previous year --]
-          [#local previousYear = (item.projectExpectedStudyInfo.year < currentCycleYear)!false ]
+          [#local oldFormat = (item.projectExpectedStudyInfo.year < 2018)!false ]
           [#-- Owner --]
           [#local isOwner = (item.project.id == projectID)!false]
           <tr>
             <td class="id" >
-              [#if !previousYear]<a href="${dlurl}">[/#if]
+              [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
                 ${item.id}
-              [#if !previousYear]</a>[/#if]
+              [#if !oldFormat]</a>[/#if]
             </td> 
             <td class="name">
               [#-- Report Tag --]
-              [#if reportingActive && !previousYear]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
-              [#if !previousYear]<a href="${dlurl}">[/#if]
-                [#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]
-              [#if !previousYear]</a>[/#if]
+              [#if reportingActive && !oldFormat]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+              [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
+              [#if oldFormat] <span class="label label-info">Old Format</span> [/#if]
+              [#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]
+              [#if !oldFormat]</a>[/#if]
             </td>
             <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false][#if (item.projectExpectedStudyInfo.studyType.id=1)]OICS[#else]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[/#if][#else]Not defined[/#if]</td>
-            <td class="owner">[#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if]</td>
+            <td class="owner text-center">
+              [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if][/#if]
+            </td>
             <td class="year">[#if (item.projectExpectedStudyInfo.year?trim?has_content)!false]${(item.projectExpectedStudyInfo.year)!}[#else]Not defined[/#if]</td>
+            <td class="status">[#if (item.projectExpectedStudyInfo.statusName?trim?has_content)!false]${(item.projectExpectedStudyInfo.statusName)!}[#else]Not defined[/#if]</td>
+            [#if !previousTable]
             <td>
               [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]
                 <span class="icon-20 icon-check" title="Complete"></span> 
@@ -135,7 +145,6 @@
                 <span class="icon-20 icon-uncheck" title=""></span> 
               [/#if]
             </td>
-            [#if !previousTable]
             <td class="removeHighlight-row text-center">
               [#if canEdit && isOwner && ((item.projectExpectedStudyInfo.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
