@@ -122,9 +122,9 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
 
   public String getComposedName() {
     try {
-      return "<b> (FS" + this.getId() + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
+      return "<b> (FS" + this.fundingSource.getId() + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
     } catch (Exception e) {
-      return "<b> (FS" + this.getId() + ") </b> - " + this.title;
+      return "<b> (FS" + this.fundingSource.getId() + ") </b> - " + this.title;
     }
   }
 
