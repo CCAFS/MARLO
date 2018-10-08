@@ -288,7 +288,7 @@
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
         [#if outcome.milestones?has_content]
           [#list outcome.milestones as milestone]
-            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable && action.canEditMileStone(milestone) /]
+            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable canEditMilestone=action.canEditMileStone(milestone) /]
           [/#list]
         [#else]
           <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
@@ -310,8 +310,9 @@
 [/#macro]
 
 
-[#macro milestoneMacro milestone name index isTemplate=false editable=true]
-  [#assign milestoneCustomName = "${name}[${index}]" /]
+[#macro milestoneMacro milestone name index isTemplate=false editable=true canEditMilestone=true]
+  [#local milestoneCustomName = "${name}[${index}]" /]
+  [#local editableMilestone = editable && canEditMilestone]
   <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead green sm">
       <span class="index">${index+1}</span>
@@ -321,9 +322,9 @@
      <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
      
     [#-- Remove Button --]
-    [#if editable && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
+    [#if editableMilestone && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
-    [#elseif editable]
+    [#elseif editableMilestone]
       <div class="removeElement sm disable" title="[@s.text name="global.CrpMilestone"/] can not be deleted"></div>
     [/#if]
     
@@ -335,30 +336,30 @@
     
     [#-- Milestone Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editable /]
+      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     <div class="row form-group target-block">
       [#-- Target Year --]
       <div class="col-md-4">
-        [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editable  disabled=!editable/]
-        [#if !editable][#if (milestone.year??) && (milestone.year != -1)]${(milestone.year)!}[/#if][/#if]
+        [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone  disabled=!editable/]
+        [#if !editableMilestone][#if (milestone.year??) && (milestone.year != -1)]${(milestone.year)!}[/#if][/#if]
       </div>
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4">
-        [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+        [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editableMilestone  /]
         [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if--]
       </div>
       [/#if]
       [#-- Target Value --]
       [#local showTargetValue = (targetUnitList?has_content) && (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
-        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
+        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editableMilestone /]
       </div>
     </div>
     
     [#-- POWB 2019 REQUIREMENTS --]
-    [#if (milestone.year >= 2019)!true]
+    [#if true]
     [#local reqMilestonesFields = (milestone.year == actualPhase.year)!false /]
     <hr />
     <div class="form-group">
