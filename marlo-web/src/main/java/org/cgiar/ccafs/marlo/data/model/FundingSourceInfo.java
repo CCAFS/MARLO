@@ -387,7 +387,6 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
       }
     }
 
-
     this.setTitle(fundingSourceInfoUpdate.getTitle());
     this.setDescription(fundingSourceInfoUpdate.getDescription());
     this.setContactPersonEmail(fundingSourceInfoUpdate.getContactPersonEmail());
@@ -400,6 +399,10 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
     this.setFileResearch(fundingSourceInfoUpdate.getFileResearch());
     this.setHasFileResearch(fundingSourceInfoUpdate.getHasFileResearch());
+    this.setSynced(fundingSourceInfoUpdate.getSynced());
+    this.setExtensionDate(fundingSourceInfoUpdate.getExtensionDate());
+    this.setSyncedDate(fundingSourceInfoUpdate.getSyncedDate());
+    this.setGrantAmount(fundingSourceInfoUpdate.getGrantAmount());
   }
 
 }
