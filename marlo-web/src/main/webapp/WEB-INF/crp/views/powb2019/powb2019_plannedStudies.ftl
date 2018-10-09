@@ -91,14 +91,16 @@
           </td>
           [#-- Planned topic of study --]
           <td>
-            [#if study.projectExpectedStudyInfo.title?has_content]
-              <a href="${tsURL}" target="_blank"> 
-                [#if ((study.projectExpectedStudyInfo.title)?has_content)!false] ${study.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
-              </a>
-              [#if (study.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(study.project.id)!})</i> [/#if]
-            [#else]
-              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-            [/#if]
+            [#-- Study title --]
+            <a href="${tsURL}" target="_blank"> 
+              [#if study.projectExpectedStudyInfo.title?has_content]
+                  [#if ((study.projectExpectedStudyInfo.title)?has_content)!false] ${study.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+            </a>
+            [#-- Project title --]
+            [#if (study.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(study.project.id)!})</i> [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
