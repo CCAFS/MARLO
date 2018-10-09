@@ -105,13 +105,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
   private static void addCustomHeadingStyle(XWPFDocument docxDocument, String strStyleId, int headingLevel) {
 
+
     CTStyle ctStyle = CTStyle.Factory.newInstance();
+
     ctStyle.setStyleId(strStyleId);
 
     CTString styleName = CTString.Factory.newInstance();
     styleName.setVal(strStyleId);
     ctStyle.setName(styleName);
-
 
     CTDecimalNumber indentNumber = CTDecimalNumber.Factory.newInstance();
     indentNumber.setVal(BigInteger.valueOf(headingLevel));
@@ -200,11 +201,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private void addAdjustmentDescription() {
     if (powbSynthesisPMU != null) {
       String adjustmentsDescription = "";
-      if (powbSynthesisPMU.getPowbToc() != null) {
-        adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
-          && !powbSynthesisPMU.getPowbToc().getTocOverall().trim().isEmpty()
-            ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
-      }
+
+      adjustmentsDescription =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur faucibus gravida lorem ultricies commodo. Integer quis lorem est. Praesent ipsum dui, aliquam vel elit non, rhoncus dictum justo. Ut ornare nisi quis velit accumsan malesuada. Suspendisse iaculis est sit amet tempor facilisis. Morbi nec commodo elit. Aliquam facilisis ipsum et est faucibus, in sagittis justo semper. Duis interdum at orci vel viverra. Sed bibendum pretium nisi, in viverra tortor. Vivamus blandit velit vitae lacinia lacinia. Fusce sapien elit, gravida vitae augue eu, vehicula faucibus nibh. Pellentesque mattis mauris in dolor tincidunt iaculis. Fusce vestibulum faucibus ante at elementum. Pellentesque sit amet tortor eget leo euismod rhoncus. Phasellus non rutrum orci. Maecenas felis nulla, blandit a suscipit ac, ullamcorper vel urna. Quisque ac elementum nisl. Mauris sollicitudin tellus in tortor fringilla, at dapibus turpis commodo. Praesent cursus tellus quis egestas congue. Suspendisse id odio sodales, varius est vitae, cursus sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean vel augue nec nisl molestie fermentum at in enim. Curabitur ultricies tortor sem, in ultricies mi pretium sed. Sed porta cursus elementum. Ut fringilla turpis sed eros imperdiet lobortis.  Curabitur dignissim, arcu nec congue posuere, odio elit laoreet orci, non sodales quam nibh rutrum elit. Sed et interdum nisi. Fusce leo ex, mattis vel sapien sit amet, facilisis commodo lacus. Mauris at rutrum leo. Cras tempus, turpis eu tempor scelerisque, ante lacus varius diam, a viverra quam elit sed nulla. Proin quis elit et ante maximus facilisis quis non augue. Curabitur metus erat, condimentum mattis velit eu, vulputate auctor urna. Nunc velit nunc, tempor quis interdum posuere, maximus sit amet ipsum. Suspendisse libero ligula, vulputate vel nisl quis, ornare posuere nibh. Mauris sodales libero orci, non eleifend dolor rhoncus venenatis. Maecenas at dictum mi. Ut nibh augue, facilisis id aliquam sed, tempor quis quam. Proin eu lacus ornare, faucibus nulla ac, consequat ligula. Vivamus est lacus, fringilla et ligula et, vulputate mollis sem. In a mi odio.  Integer vehicula sem ut nunc scelerisque, eget consectetur ligula vehicula. Proin in mauris ultrices, rutrum leo vel, vulputate felis. In aliquet sit amet justo in facilisis. Praesent lacinia justo in est blandit sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur molestie arcu et nibh elementum sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut finibus scelerisque urna id viverra. Integer consectetur sapien in imperdiet congue.      Pellentesque rutrum posuere lorem. Phasellus at ante ex. Suspendisse vitae pretium nulla. Fusce congue cursus tempus. Sed et lorem eros. Etiam eros metus, semper ut lacus sed, molestie elementum ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas pulvinar est eu nisl euismod, non bibendum tellus imperdiet. Aliquam risus ante, ullamcorper nec sem eget, commodo varius neque. Duis mattis ultricies diam sed tempor. Nulla iaculis dolor et dolor posuere lacinia. Maecenas sed commodo mi, eget blandit felis. Praesent.";
+      /*
+       * if (powbSynthesisPMU.getPowbToc() != null) {
+       * adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
+       * && !powbSynthesisPMU.getPowbToc().getTocOverall().trim().isEmpty()
+       * ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
+       * }
+       */
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
       if (powbSynthesisPMU.getPowbToc() != null && powbSynthesisPMU.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
@@ -217,19 +223,35 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
   }
 
+  private void addExpectedKeyResults() {
+    String expectedKeyResults = "";
+
+
+    expectedKeyResults =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur faucibus gravida lorem ultricies commodo. Integer quis lorem est. Praesent ipsum dui, aliquam vel elit non, rhoncus dictum justo. Ut ornare nisi quis velit accumsan malesuada. Suspendisse iaculis est sit amet tempor facilisis. Morbi nec commodo elit. Aliquam facilisis ipsum et est faucibus, in sagittis justo semper. Duis interdum at orci vel viverra. Sed bibendum pretium nisi, in viverra tortor. Vivamus blandit velit vitae lacinia lacinia. Fusce sapien elit, gravida vitae augue eu, vehicula faucibus nibh. Pellentesque mattis mauris in dolor tincidunt iaculis. Fusce vestibulum faucibus ante at elementum. Pellentesque sit amet tortor eget leo euismod rhoncus. Phasellus non rutrum orci. Maecenas felis nulla, blandit a suscipit ac, ullamcorper vel urna. Quisque ac elementum nisl. Mauris sollicitudin tellus in tortor fringilla, at dapibus turpis commodo. Praesent cursus tellus quis egestas congue. Suspendisse id odio sodales, varius est vitae, cursus sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean vel augue nec nisl molestie fermentum at in enim. Curabitur ultricies tortor sem, in ultricies mi pretium sed. Sed porta cursus elementum. Ut fringilla turpis sed eros imperdiet lobortis.  Curabitur dignissim, arcu nec congue posuere, odio elit laoreet orci, non sodales quam nibh rutrum elit. Sed et interdum nisi. Fusce leo ex, mattis vel sapien sit amet, facilisis commodo lacus. Mauris at rutrum leo. Cras tempus, turpis eu tempor scelerisque, ante lacus varius diam, a viverra quam elit sed nulla. Proin quis elit et ante maximus facilisis quis non augue. Curabitur metus erat, condimentum mattis velit eu, vulputate auctor urna. Nunc velit nunc, tempor quis interdum posuere, maximus sit amet ipsum. Suspendisse libero ligula, vulputate vel nisl quis, ornare posuere nibh. Mauris sodales libero orci, non eleifend dolor rhoncus venenatis. Maecenas at dictum mi. Ut nibh augue, facilisis id aliquam sed, tempor quis quam. Proin eu lacus ornare, faucibus nulla ac, consequat ligula. Vivamus est lacus, fringilla et ligula et, vulputate mollis sem. In a mi odio.  Integer vehicula sem ut nunc scelerisque, eget consectetur ligula vehicula. Proin in mauris ultrices, rutrum leo vel, vulputate felis. In aliquet sit amet justo in facilisis. Praesent lacinia justo in est blandit sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur molestie arcu et nibh elementum sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut finibus scelerisque urna id viverra. Integer consectetur sapien in imperdiet congue.      Pellentesque rutrum posuere lorem. Phasellus at ante ex. Suspendisse vitae pretium nulla. Fusce congue cursus tempus. Sed et lorem eros. Etiam eros metus, semper ut lacus sed, molestie elementum ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas pulvinar est eu nisl euismod, non bibendum tellus imperdiet. Aliquam risus ante, ullamcorper nec sem eget, commodo varius neque. Duis mattis ultricies diam sed tempor. Nulla iaculis dolor et dolor posuere lacinia. Maecenas sed commodo mi, eget blandit felis. Praesent.";
+
+    poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
+
+  }
+
   private void addFinancialPlan() {
     String financialPlanDescription = "";
-    if (powbSynthesisPMU != null) {
-      // Financial Plan
-      if (powbSynthesisPMU.getFinancialPlan() != null) {
-        financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
-          && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
-            ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "";
-      }
-    }
+    financialPlanDescription =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur faucibus gravida lorem ultricies commodo. Integer quis lorem est. Praesent ipsum dui, aliquam vel elit non, rhoncus dictum justo. Ut ornare nisi quis velit accumsan malesuada. Suspendisse iaculis est sit amet tempor facilisis. Morbi nec commodo elit. Aliquam facilisis ipsum et est faucibus, in sagittis justo semper. Duis interdum at orci vel viverra. Sed bibendum pretium nisi, in viverra tortor. Vivamus blandit velit vitae lacinia lacinia. Fusce sapien elit, gravida vitae augue eu, vehicula faucibus nibh. Pellentesque mattis mauris in dolor tincidunt iaculis. Fusce vestibulum faucibus ante at elementum. Pellentesque sit amet tortor eget leo euismod rhoncus. Phasellus non rutrum orci. Maecenas felis nulla, blandit a suscipit ac, ullamcorper vel urna. Quisque ac elementum nisl. Mauris sollicitudin tellus in tortor fringilla, at dapibus turpis commodo. Praesent cursus tellus quis egestas congue. Suspendisse id odio sodales, varius est vitae, cursus sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean vel augue nec nisl molestie fermentum at in enim. Curabitur ultricies tortor sem, in ultricies mi pretium sed. Sed porta cursus elementum. Ut fringilla turpis sed eros imperdiet lobortis.  Curabitur dignissim, arcu nec congue posuere, odio elit laoreet orci, non sodales quam nibh rutrum elit. Sed et interdum nisi. Fusce leo ex, mattis vel sapien sit amet, facilisis commodo lacus. Mauris at rutrum leo. Cras tempus, turpis eu tempor scelerisque, ante lacus varius diam, a viverra quam elit sed nulla. Proin quis elit et ante maximus facilisis quis non augue. Curabitur metus erat, condimentum mattis velit eu, vulputate auctor urna. Nunc velit nunc, tempor quis interdum posuere, maximus sit amet ipsum. Suspendisse libero ligula, vulputate vel nisl quis, ornare posuere nibh. Mauris sodales libero orci, non eleifend dolor rhoncus venenatis. Maecenas at dictum mi. Ut nibh augue, facilisis id aliquam sed, tempor quis quam. Proin eu lacus ornare, faucibus nulla ac, consequat ligula. Vivamus est lacus, fringilla et ligula et, vulputate mollis sem. In a mi odio.  Integer vehicula sem ut nunc scelerisque, eget consectetur ligula vehicula. Proin in mauris ultrices, rutrum leo vel, vulputate felis. In aliquet sit amet justo in facilisis. Praesent lacinia justo in est blandit sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur molestie arcu et nibh elementum sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut finibus scelerisque urna id viverra. Integer consectetur sapien in imperdiet congue.      Pellentesque rutrum posuere lorem. Phasellus at ante ex. Suspendisse vitae pretium nulla. Fusce congue cursus tempus. Sed et lorem eros. Etiam eros metus, semper ut lacus sed, molestie elementum ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas pulvinar est eu nisl euismod, non bibendum tellus imperdiet. Aliquam risus ante, ullamcorper nec sem eget, commodo varius neque. Duis mattis ultricies diam sed tempor. Nulla iaculis dolor et dolor posuere lacinia. Maecenas sed commodo mi, eget blandit felis. Praesent.";
+
+    /*
+     * if (powbSynthesisPMU != null) {
+     * if (powbSynthesisPMU.getFinancialPlan() != null) {
+     * financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
+     * && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
+     * ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "";
+     * }
+     * }
+     */
     poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
 
   }
+
 
   public void createPageFooter() {
     CTP ctp = CTP.Factory.newInstance();
@@ -603,19 +625,15 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       this.createPageFooter();
 
-
       // First page - table of contents
       poiSummary.textLineBreak(document, 2);
       poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
       poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
-      poiSummary.textLineBreak(document, 2);
-      // poiSummary.createTOC(document);
-
-      // test code************************/
+      poiSummary.textLineBreak(document, 4);
 
       document.createTOC();
 
-
+      // Toc section
       addCustomHeadingStyle(document, "heading 1", 1);
       addCustomHeadingStyle(document, "heading 2", 2);
 
@@ -631,21 +649,22 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       run.addBreak(BreakType.PAGE);
 
 
-      /**************************/
-
-
       // Second page
-
 
       // narrative section
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.narrativeSection"));
+      // run.setBold(true);
+      run.setFontSize(14);
+      run.setFontFamily("Calibri");
+      run.setColor("3366CC");
       paragraph.setStyle("heading 1");
       /*****************************/
 
-      poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.narrativeSection"));
+
+      // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
+      // this.getText("summaries.powb2019.narrativeSection"));
       poiSummary.textLineBreak(document, 1);
       String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
         ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
@@ -655,52 +674,68 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.cover"));
+      // run.setBold(true);
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
         this.getText("summaries.powb2019.platformName") + ": ");
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
         this.getText("summaries.powb2019.hostEntityName") + ": ");
-      // this.addParticipatingCenters();// erase this
       poiSummary.textLineBreak(document, 1);
-
 
       // 1. toc
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.expectedKeyResults.toc"));
+      // run.setBold(true);
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        this.getText("summaries.powb2019.expectedKeyResults.toc"));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("summaries.powb2019.expectedKeyResults.toc"));
       this.addAdjustmentDescription();
+      poiSummary.textLineBreak(document, 1);
 
 
       // 2. plans
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.expectedKeyResults.plan"));
+      // run.setBold(true);
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        this.getText("summaries.powb2019.expectedKeyResults.plan"));
-      this.addAdjustmentDescription();
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("summaries.powb2019.expectedKeyResults.plan"));
+      this.addExpectedKeyResults();
+      poiSummary.textLineBreak(document, 1);
 
 
       // 3. financial
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.effectiveness.financial"));
+      // run.setBold(true);
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        this.getText("summaries.powb2019.effectiveness.financial"));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("summaries.powb2019.effectiveness.financial"));
       this.addFinancialPlan();
 
 
@@ -722,19 +757,26 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText("TABLES");
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 1");
       /*******************/
 
-      poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
+      // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
 
       // Table 2a
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.tableA2.title"));
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableA2.title"));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("summaries.powb2019.tableA2.title"));
       this.createTableA2();
       document.createParagraph().setPageBreak(true);
 
@@ -742,10 +784,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.tableB2.title"));
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableB2.title"));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("summaries.powb2019.tableB2.title"));
       this.createTableB2();
       document.createParagraph().setPageBreak(true);
 
@@ -753,10 +799,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.tableC2.title"));
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableC2.title"));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("summaries.powb2019.tableC2.title"));
       this.createTableC2();
       document.createParagraph().setPageBreak(true); // Fast Page Break
 
@@ -764,11 +814,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+      run.setFontSize(13);
+      run.setFontFamily("Calibri");
+      run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
       /*******************/
 
-      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+      // this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
       this.createTableE();
       poiSummary.textLineBreak(document, 1);
 
