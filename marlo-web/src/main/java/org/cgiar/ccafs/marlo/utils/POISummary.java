@@ -55,7 +55,7 @@ public class POISummary {
   private final static String FONT_TYPE = "Calibri Light";
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
-  private final static Integer TABLE_TEXT_FONT_SIZE = 10;
+  private static Integer TABLE_TEXT_FONT_SIZE = 10;
   private static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
   private int count = 0;
 
@@ -79,9 +79,9 @@ public class POISummary {
     TOC toc = new TOC(block);
     for (XWPFParagraph par : document.getParagraphs()) {
       String parStyle = par.getStyle();
-      if ((parStyle != null) && (parStyle.startsWith("Heading"))) {
+      if ((parStyle != null) && (parStyle.startsWith("Narrative "))) {
         try {
-          int level = Integer.valueOf(parStyle.substring("Heading".length())).intValue();
+          int level = Integer.valueOf(parStyle.substring("Narrative".length())).intValue();
           toc.addRow(level, par.getText(), 1, "112723803");
         } catch (NumberFormatException e) {
           e.printStackTrace();
@@ -393,16 +393,18 @@ public class POISummary {
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
     CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
 
+    /* Vertical merge, From format tables E */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
 
     XWPFTableRow row = table.getRow(0);
     int numberOfCell = row.getTableCells().size();
     for (int y = 0; y < numberOfCell - 1; y++) {
       XWPFTableCell cell = row.getCell(y);
-
       if (cell.getCTTc() == null) {
         ((CTTc) cell).addNewTcPr();
       }
-
       if (cell.getCTTc().getTcPr() == null) {
         cell.getCTTc().addNewTcPr();
       }
@@ -417,24 +419,55 @@ public class POISummary {
       }
     }
 
+    for (int x = 0; x < 2; x++) {
+      if (x >= 0) {
+        XWPFTableRow row1 = table.getRow(x);
+        for (int y = 0; y < 7; y++) {
+          XWPFTableCell cell = row1.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+
 
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 1) {
         XWPFTableRow rowCom = table.getRow(x);
         XWPFTableCell cell = rowCom.getCell(6);
-
         if (cell.getCTTc() == null) {
           ((CTTc) cell).addNewTcPr();
         }
-
         if (cell.getCTTc().getTcPr() == null) {
           cell.getCTTc().addNewTcPr();
         }
-
         cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
-
       }
     }
+
   }
 
   public void tableEStyle(XWPFTable table) {
@@ -739,6 +772,12 @@ public class POISummary {
 
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
     Boolean highlightFirstColumn, String tableType) {
+    if (tableType.contains("Powb")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
     XWPFTable table = document.createTable();
     int record = 0;
     int headerIndex = 0;
@@ -972,7 +1011,7 @@ public class POISummary {
         break;
       case "tableC2Powb":
         count = 0;
-        this.tableC2PowbStyle(table);
+        // this.tableC2PowbStyle(table);
         break;
       case "tableEPowb":
         count = 0;
