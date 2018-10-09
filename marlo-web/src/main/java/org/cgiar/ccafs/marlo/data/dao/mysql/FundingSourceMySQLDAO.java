@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PhaseDescription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +111,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
       + "left join fetch f.sectionStatuses ss " + "left join fetch f.fundingSourceBudgets fsb "
       + "WHERE f.active = TRUE " + "AND f.crp = :globalUnit " + "AND fsi.phase = :phase "
       + "AND ( fsint IS NULL OR fsint.phase = :phase ) " /** I think SectionStatus should be updated to use a phase **/
-      + "AND ( ss IS NULL OR (ss.cycle = :phaseDescription AND ss.year = :phaseYear ) ) "
+      // + "AND ( ss IS NULL OR (ss.cycle = :phaseDescription AND ss.year = :phaseYear ) ) "
+      // Above: I don't know why this piece of code is here
       // + "AND ( fsb IS NULL OR (fsb.year = :phaseYear AND fsb.phase = :phase ) ) "
       // The above line should be what we use, but it appears we have some data corruption, excluding the year works for
       // now, so using the below statement.
@@ -125,10 +125,11 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
      * filter out the results.
      */
     @SuppressWarnings("unchecked")
-    List<FundingSource> fundingSources =
-      this.getSessionFactory().getCurrentSession().createQuery(queryString).setParameter("globalUnit", globalUnit)
-        .setParameter("phase", phase).setParameter("phaseDescription", PhaseDescription.PLANNING.toString())
-        .setParameter("phaseYear", phase.getYear()).list();
+    List<FundingSource> fundingSources = this.getSessionFactory().getCurrentSession().createQuery(queryString)
+      .setParameter("globalUnit", globalUnit).setParameter("phase", phase)
+      // .setParameter("phaseDescription", PhaseDescription.PLANNING.toString())
+      // .setParameter("phaseYear", phase.getYear())
+      .list();
 
     return fundingSources;
 
