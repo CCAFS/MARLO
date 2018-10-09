@@ -73,19 +73,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFStyle;
+import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +102,43 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
   private static final long serialVersionUID = 2828551630719082089L;
   private static Logger LOG = LoggerFactory.getLogger(POWBPOISummary2019Action.class);
+
+  private static void addCustomHeadingStyle(XWPFDocument docxDocument, String strStyleId, int headingLevel) {
+
+    CTStyle ctStyle = CTStyle.Factory.newInstance();
+    ctStyle.setStyleId(strStyleId);
+
+    CTString styleName = CTString.Factory.newInstance();
+    styleName.setVal(strStyleId);
+    ctStyle.setName(styleName);
+
+
+    CTDecimalNumber indentNumber = CTDecimalNumber.Factory.newInstance();
+    indentNumber.setVal(BigInteger.valueOf(headingLevel));
+
+    // lower number > style is more prominent in the formats bar
+    ctStyle.setUiPriority(indentNumber);
+
+    CTOnOff onoffnull = CTOnOff.Factory.newInstance();
+    ctStyle.setUnhideWhenUsed(onoffnull);
+
+    // style shows up in the formats bar
+    ctStyle.setQFormat(onoffnull);
+
+    // style defines a heading of the given level
+    CTPPr ppr = CTPPr.Factory.newInstance();
+    ppr.setOutlineLvl(indentNumber);
+    ctStyle.setPPr(ppr);
+
+    XWPFStyle style = new XWPFStyle(ctStyle);
+
+    // is a null op if already defined
+    XWPFStyles styles = docxDocument.createStyles();
+
+    style.setType(STStyleType.PARAGRAPH);
+    styles.addStyle(style);
+
+  }
 
   public static double round(double value, int places) {
     if (places < 0) {
@@ -126,6 +172,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private List<CrpProgram> flagships;
   // Parameter for tables E and F
   Double totalCarry = 0.0, totalw1w2 = 0.0, totalw3Bilateral = 0.0, totalCenter = 0.0, grandTotal = 0.0;
+
   // Streams
   private InputStream inputStream;
 
@@ -206,12 +253,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       LOG.error("Failed to createFooter. Exception: " + e.getMessage());
     }
 
-
-    // test code
-    CTP ctP = codePara.getCTP();
-    CTSimpleField toc = ctP.addNewFldSimple();
-    toc.setInstr("TOC \\h");
-    toc.setDirty(STOnOff.TRUE);
   }
 
   private void createTableA2() {
@@ -241,42 +282,47 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "", c7 = "", c8 = "", c9 = "", c10 = "";
     for (int i = 1; i <= 3; i++) {
 
+      switch (i) {
+        case 1:
+          bold = true;
+          c1 = "Module";
+          c2 = "Mapped to Sub-IDO";
+          c3 = "2022 Module outcomes ";
+          c4 = "Milestone";
+          c5 = "Milestone";
+          c6 = "Means of verification ";
+          c7 = "CGIAR Cross-Cutting Markers for the milestone";
+          c8 = "CGIAR Cross-Cutting Markers for the milestone";
+          c9 = "CGIAR Cross-Cutting Markers for the milestone";
+          c10 = "CGIAR Cross-Cutting Markers for the milestone";
+          break;
 
-      if (i == 1) {
-        c1 = "Module";
-        c2 = "Mapped to Sub-IDO";
-        c3 = "2022 Module outcomes ";
-        c4 = "Milestone";
-        c5 = "Milestone";
-        c6 = "Means of verification ";
-        c7 = "CGIAR Cross-Cutting Markers for the milestone";
-        c8 = "CGIAR Cross-Cutting Markers for the milestone";
-        c9 = "CGIAR Cross-Cutting Markers for the milestone";
-        c10 = "CGIAR Cross-Cutting Markers for the milestone";
+        case 2:
+          bold = false;
+          c1 = "";
+          c2 = "";
+          c3 = "";
+          c4 = "";
+          c5 = "";
+          c6 = "";
+          c7 = "for gender";
+          c8 = "for youth";
+          c9 = "for CapDev";
+          c10 = "for CC";
+          break;
 
-      } else if (i == 2) {
-        c1 = "";
-        c2 = "";
-        c3 = "";
-        c4 = "";
-        c5 = "";
-        c6 = "";
-        c7 = "for gender";
-        c8 = "for youth";
-        c9 = "for CapDev";
-        c10 = "for CC";
-
-      } else {
-        c1 = "Taken from proposal";
-        c2 = "Taken from proposal";
-        c3 = "Taken from proposal";
-        c4 = "Taken from proposal";
-        c5 = "Taken from proposal";
-        c6 = "Taken from proposal";
-        c7 = "";
-        c8 = "";
-        c9 = "";
-        c10 = "";
+        default:
+          bold = false;
+          c1 = "Taken from proposal";
+          c2 = "Taken from proposal";
+          c3 = "Taken from proposal";
+          c4 = "Taken from proposal";
+          c5 = "Taken from proposal";
+          c6 = "Taken from proposal";
+          c7 = "";
+          c8 = "";
+          c9 = "";
+          c10 = "";
       }
 
       POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
@@ -291,6 +337,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     poiSummary.textTable(document, headers, datas, false, "tableA2Powb");
   }
+
 
   private void createTableB2() {
     Boolean bold = false;
@@ -333,7 +380,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     poiSummary.textTable(document, headers, datas, false, "tableBPowb");
   }
 
-
   private void createTableC2() {
     Boolean bold = false;
     String blackColor = "000000";
@@ -355,7 +401,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     data = Arrays.asList(sData);
     datas.add(data);
 
-    poiSummary.textTable(document, headers, datas, true, "tableC2Powb");
+    poiSummary.textTable(document, headers, datas, false, "tableC2Powb");
   }
 
   private void createTableE() {
@@ -366,15 +412,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       new POIField(
         this.getText("financialPlan2019.tableE.plannedBudget", new String[] {String.valueOf(this.getSelectedYear())}),
         ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
       new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.LEFT, bold, blackColor)};
+
     POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.w1w2"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.w3bilateral"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.centerFunds"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("", ParagraphAlignment.CENTER)};
+      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
@@ -517,11 +564,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
 
     POIField[] sData = {new POIField("Platform Total", ParagraphAlignment.LEFT, bold, blackColor),
-
       new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalw3Bilateral, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalCenter, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotal, 2)), ParagraphAlignment.CENTER, bold, blackColor)};
+      new POIField(currencyFormat.format(round(grandTotal, 2)), ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField("", ParagraphAlignment.CENTER, bold, blackColor),
+      new POIField("", ParagraphAlignment.CENTER, bold, blackColor)};
 
     data = Arrays.asList(sData);
     datas.add(data);
@@ -560,14 +608,56 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       poiSummary.textLineBreak(document, 2);
       poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
       poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
-      poiSummary.textLineBreak(document, 22);
+      poiSummary.textLineBreak(document, 2);
+      // poiSummary.createTOC(document);
+
+      // test code************************/
+
+      document.createTOC();
+
+
+      addCustomHeadingStyle(document, "heading 1", 1);
+      addCustomHeadingStyle(document, "heading 2", 2);
+
+      // the body content
+      XWPFParagraph paragraph = document.createParagraph();
+
+      CTP ctP = paragraph.getCTP();
+      CTSimpleField toc = ctP.addNewFldSimple();
+      toc.setInstr("TOC \\h");
+      toc.setDirty(STOnOff.TRUE);
+
+      XWPFRun run = paragraph.createRun();
+      run.addBreak(BreakType.PAGE);
+
+
+      /**************************/
+
 
       // Second page
+
+
+      // narrative section
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.narrativeSection"));
+      paragraph.setStyle("heading 1");
+      /*****************************/
+
       poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
         this.getText("summaries.powb2019.narrativeSection"));
       poiSummary.textLineBreak(document, 1);
       String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
         ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
+
+
+      // cover page
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.cover"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
         this.getText("summaries.powb2019.platformName") + ": ");
@@ -576,12 +666,39 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // this.addParticipatingCenters();// erase this
       poiSummary.textLineBreak(document, 1);
 
+
+      // 1. toc
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.expectedKeyResults.toc"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         this.getText("summaries.powb2019.expectedKeyResults.toc"));
       this.addAdjustmentDescription();
+
+
+      // 2. plans
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.expectedKeyResults.plan"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         this.getText("summaries.powb2019.expectedKeyResults.plan"));
       this.addAdjustmentDescription();
+
+
+      // 3. financial
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.effectiveness.financial"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         this.getText("summaries.powb2019.effectiveness.financial"));
       this.addFinancialPlan();
@@ -599,19 +716,58 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       pageSizeTable.setW(BigInteger.valueOf(842 * 20));
       pageSizeTable.setH(BigInteger.valueOf(595 * 20));
 
-      XWPFParagraph paragraph = document.createParagraph();
       this.loadTablePMU();
+
+      // Tables
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText("TABLES");
+      paragraph.setStyle("heading 1");
+      /*******************/
+
       poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
+
+      // Table 2a
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.tableA2.title"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableA2.title"));
       this.createTableA2();
-      poiSummary.textLineBreak(document, 1);
+      document.createParagraph().setPageBreak(true);
+
+      // Table 2b
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.tableB2.title"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableB2.title"));
       this.createTableB2();
-      poiSummary.textLineBreak(document, 1);
+      document.createParagraph().setPageBreak(true);
+
+      // Table 2c
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("summaries.powb2019.tableC2.title"));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
       poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.tableC2.title"));
       this.createTableC2();
       document.createParagraph().setPageBreak(true); // Fast Page Break
-      poiSummary.textHead2Title(document.createParagraph(),
+
+      // Table 3
+      paragraph = document.createParagraph();
+      run = paragraph.createRun();
+      run.setText(this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+      paragraph.setStyle("heading 2");
+      /*******************/
+
+      poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
       this.createTableE();
       poiSummary.textLineBreak(document, 1);
@@ -634,6 +790,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+
 
   @Override
   public int getContentLength() {
