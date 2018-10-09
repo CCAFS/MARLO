@@ -191,6 +191,20 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
+        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+          System.out.println(cal.get(Calendar.YEAR));
+          System.out.println(baseAction.getActualPhase().getYear());
+          if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+            if (baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+              canEdit = false;
+              canSwitchProject = false;
+            }
+          }
+        }
+
         String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
         if (baseAction.isReportingActive()
           && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {

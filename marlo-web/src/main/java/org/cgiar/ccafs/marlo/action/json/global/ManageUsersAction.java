@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -50,16 +52,28 @@ public class ManageUsersAction extends BaseAction {
 
   private static Logger LOG = LoggerFactory.getLogger(ManageUsersAction.class);
 
+
   private static String PARAM_FIRST_NAME = "firstName";
+
+
   private static String PARAM_LAST_NAME = "lastName";
 
+
   private static String PARAM_EMAIL = "email";
+
+
   private static String PARAM_IS_ACTIVE = "isActive";
+
+  private static String PARAM_CGIAR = "isCGIAR";
+
   private UserManager userManager;
   private String actionName;
 
   private String queryParameter;
   private List<Map<String, Object>> users;
+  private Map<String, Object> emailStatus;
+  private String emailParameter;
+  private boolean isCGIAR;
 
   private User newUser;
   private String message;
@@ -103,7 +117,6 @@ public class ManageUsersAction extends BaseAction {
     }
   }
 
-
   /**
    * Create a new user in the system.
    * 
@@ -126,7 +139,7 @@ public class ManageUsersAction extends BaseAction {
       }
 
       // Validate if is a CGIAR email.
-      if (newUser.getEmail().toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
+      if (isCGIAR) {
         newUser.setCgiarUser(true); // marking it as CGIAR user.
 
         // Validate and populate the information that is coming from the CGIAR Outlook Active Directory.
@@ -143,11 +156,6 @@ public class ManageUsersAction extends BaseAction {
         // If the email does not belong to the CGIAR.
         if (newUser.getFirstName() != null && newUser.getLastName() != null) {
           newUser.setCgiarUser(false);
-          // Generating a random password.
-          // String newPassword = RandomStringUtils.random(6, "0123456789abcdefghijkmnpqrstuvwxyz");
-          // String newPassword = RandomStringUtils.randomNumeric(6);
-          // newUser.setPassword(newPassword);
-
           if (!this.addUser()) {
             // If user could not be added.
             newUser = null;
@@ -163,12 +171,20 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-
   @Override
   public String execute() throws Exception {
     // Nothing to do here yet.
     return SUCCESS;
   }
+
+  public String getEmailParameter() {
+    return emailParameter;
+  }
+
+  public Map<String, Object> getEmailStatus() {
+    return emailStatus;
+  }
+
 
   /**
    * Get a message of the result of the query.
@@ -184,45 +200,41 @@ public class ManageUsersAction extends BaseAction {
     return users;
   }
 
+  private boolean isValidEmail(String emailStr) {
+    boolean isValid = false;
+
+    Matcher matcher =
+      Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(emailStr);
+    if (matcher.find()) {
+      isValid = true;
+    }
+    return isValid;
+  }
+
+
   @Override
   public void prepare() throws Exception {
-    // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
-
     // if searching a user, we need to get the queried String.
     if (ActionContext.getContext().getName().equals("searchUsers")) {
-
-      // queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
       queryParameter = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
     } else if (ActionContext.getContext().getName().equals("createUser")) {
       // if Adding a new user, we need to get the info to be added.
       newUser = new User();
       newUser.setId((long) -1);
-      // if (!StringUtils.trim(((String[])
-      // parameters.get(PARAM_EMAIL))[0]).toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
-      if (!StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]).toLowerCase()
-        .endsWith(APConstants.OUTLOOK_EMAIL)) {
-        // newUser.setFirstName(StringUtils.trim(((String[]) parameters.get(PARAM_FIRST_NAME))[0]));
-        // newUser.setLastName(StringUtils.trim(((String[]) parameters.get(PARAM_LAST_NAME))[0]));
-
-        newUser.setFirstName(StringUtils.trim(parameters.get(PARAM_FIRST_NAME).getMultipleValues()[0]));
-        newUser.setLastName(StringUtils.trim(parameters.get(PARAM_LAST_NAME).getMultipleValues()[0]));
-      }
-
-      // newUser.setEmail(StringUtils.trim(((String[]) parameters.get(PARAM_EMAIL))[0]));
-      // newUser.setActive(StringUtils.trim(((String[]) parameters.get(PARAM_IS_ACTIVE))[0]).equals("1") ? true :
-      // false);
-
+      newUser.setFirstName(StringUtils.trim(parameters.get(PARAM_FIRST_NAME).getMultipleValues()[0]));
+      newUser.setLastName(StringUtils.trim(parameters.get(PARAM_LAST_NAME).getMultipleValues()[0]));
       newUser.setEmail(StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]));
       newUser
         .setActive(StringUtils.trim(parameters.get(PARAM_IS_ACTIVE).getMultipleValues()[0]).equals("1") ? true : false);
 
-      // actionName = StringUtils.trim(((String[]) parameters.get("actionName"))[0]);
+      isCGIAR = StringUtils.trim(parameters.get(PARAM_CGIAR).getMultipleValues()[0]).equals("1") ? true : false;
+
       actionName = StringUtils.trim(parameters.get("actionName").getMultipleValues()[0]);
+    } else if (ActionContext.getContext().getName().equals("validateEmail")) {
+      emailParameter = StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]);
     }
-
   }
-
 
   /**
    * Search a user in the database
@@ -253,6 +265,33 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public void setEmailParameter(String emailParameter) {
+    this.emailParameter = emailParameter;
+  }
+
+
+  public void setEmailStatus(Map<String, Object> emailStatus) {
+    this.emailStatus = emailStatus;
+  }
+
+
+  public String validateEmail() {
+    emailStatus = new HashMap<>();
+
+    if (this.isValidEmail(emailParameter)) {
+      if (this.validateOutlookUser(emailParameter) != null) {
+        emailStatus.put("status", true);
+      } else {
+        emailStatus.put("status", false);
+      }
+    } else {
+      message = this.getText("manageUsers.email.notValid");
+      emailStatus.put("status", "error");
+    }
+
+    return SUCCESS;
+  }
 
   /**
    * Validate if a given user exists in the Outlook Active Directory .
