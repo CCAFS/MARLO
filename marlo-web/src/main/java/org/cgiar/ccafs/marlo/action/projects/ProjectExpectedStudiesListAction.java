@@ -232,14 +232,18 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
         // Non Editable project studies
         projectOldStudies = new ArrayList<ProjectExpectedStudy>();
-        for (ProjectExpectedStudy projectExpectedStudy : allProjectStudies) {
-          if (!projectStudies.contains(projectExpectedStudy)) {
-            projectOldStudies.add(projectExpectedStudy);
+        if (projectStudies == null || projectStudies.isEmpty()) {
+          projectOldStudies.addAll(allProjectStudies);
+        } else {
+          for (ProjectExpectedStudy projectExpectedStudy : allProjectStudies) {
+            List<ProjectExpectedStudy> studiesFiltered = projectStudies.stream()
+              .filter(ps -> ps.getId().equals(projectExpectedStudy.getId())).collect(Collectors.toList());
+            if (studiesFiltered == null || studiesFiltered.isEmpty()) {
+              projectOldStudies.add(projectExpectedStudy);
+            }
           }
         }
       }
-
-
     } else {
       nonProjectStudies = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
