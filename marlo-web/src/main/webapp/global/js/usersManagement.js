@@ -136,9 +136,11 @@ $(document)
                     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                     if(!emailReg.test(user.email)) {
                       invalidFields.push('valid email');
+                      $dialogContent.find(".tickBox-toggle").hide();
                     }
 
                     if(invalidFields.length > 0) {
+                      $dialogContent.find(".tickBox-toggle").hide();
                       var msj = "Please enter a " + invalidFields.join(', ');
                       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
                     } else {
