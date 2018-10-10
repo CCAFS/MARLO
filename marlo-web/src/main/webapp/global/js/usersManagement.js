@@ -152,6 +152,9 @@ $(document)
                               success: function(data) {
                                 if(data.message) {
                                   $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
+                                  if(!data.showInputs) {
+                                    $dialogContent.find(".tickBox-toggle").hide();
+                                  }
                                 } else {
                                   var user = data.users[0];
                                   addUser(user.composedName, user.id, user);
