@@ -125,6 +125,7 @@ public class ManageUsersAction extends BaseAction {
    * @throws Exception
    */
   public String create() throws Exception {
+    emailStatus = new HashMap<>();
     if (newUser.getEmail() != null) {
 
 
@@ -225,13 +226,21 @@ public class ManageUsersAction extends BaseAction {
       // if Adding a new user, we need to get the info to be added.
       newUser = new User();
       newUser.setId((long) -1);
-      newUser.setFirstName(StringUtils.trim(parameters.get(PARAM_FIRST_NAME).getMultipleValues()[0]));
-      newUser.setLastName(StringUtils.trim(parameters.get(PARAM_LAST_NAME).getMultipleValues()[0]));
+      try {
+        newUser.setFirstName(StringUtils.trim(parameters.get(PARAM_FIRST_NAME).getMultipleValues()[0]));
+      } catch (Exception e) {
+        newUser.setFirstName(null);
+      }
+      try {
+        newUser.setLastName(StringUtils.trim(parameters.get(PARAM_LAST_NAME).getMultipleValues()[0]));
+      } catch (Exception e) {
+        newUser.setLastName(null);
+      }
       newUser.setEmail(StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]));
       newUser
         .setActive(StringUtils.trim(parameters.get(PARAM_IS_ACTIVE).getMultipleValues()[0]).equals("1") ? true : false);
 
-      isCGIAR = StringUtils.trim(parameters.get(PARAM_CGIAR).getMultipleValues()[0]).equals("1") ? true : false;
+      // isCGIAR = StringUtils.trim(parameters.get(PARAM_CGIAR).getMultipleValues()[0]).equals("1") ? true : false;
 
       actionName = StringUtils.trim(parameters.get("actionName").getMultipleValues()[0]);
     } else if (ActionContext.getContext().getName().equals("validateEmail")) {
@@ -305,16 +314,23 @@ public class ManageUsersAction extends BaseAction {
    */
   private User validateOutlookUser(String email) {
     LDAPService service = new LDAPService();
+    User userM = new User();
     if (config.isProduction()) {
       service.setInternalConnection(false);
     } else {
       service.setInternalConnection(true);
     }
-    LDAPUser user = service.searchUserByEmail(email);
+    LDAPUser user = null;
+    try {
+      user = service.searchUserByEmail(email);
+    } catch (Exception e) {
+      user = null;
+    }
     if (user != null) {
-      newUser.setFirstName(user.getFirstName());
-      newUser.setLastName(user.getLastName());
-      newUser.setUsername(user.getLogin().toLowerCase());
+      userM.setFirstName(user.getFirstName());
+      userM.setLastName(user.getLastName());
+      userM.setUsername(user.getLogin().toLowerCase());
+      newUser = userM;
       return newUser;
     }
     return null;
