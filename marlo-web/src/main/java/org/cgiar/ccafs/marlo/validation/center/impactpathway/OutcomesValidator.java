@@ -52,8 +52,8 @@ public class OutcomesValidator extends BaseValidator {
     GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = outcome.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.OUTCOME.getStatus().replace("/", "_");
-    String autoSaveFile = outcome.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription()
-      + "_" + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = outcome.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getName() + "_"
+      + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }

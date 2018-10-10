@@ -68,8 +68,8 @@ public class ProjectHighLightValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = highLigths.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.HIGHLIGHT.getStatus().replace("/", "_");
-    String autoSaveFile = highLigths.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
-      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = highLigths.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
+      + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }

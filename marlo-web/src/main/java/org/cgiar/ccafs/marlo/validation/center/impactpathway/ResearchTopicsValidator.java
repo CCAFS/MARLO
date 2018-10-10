@@ -50,8 +50,8 @@ public class ResearchTopicsValidator extends BaseValidator {
     GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.TOPIC.getStatus().replace("/", "_");
-    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription()
-      + "_" + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getName() + "_"
+      + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }

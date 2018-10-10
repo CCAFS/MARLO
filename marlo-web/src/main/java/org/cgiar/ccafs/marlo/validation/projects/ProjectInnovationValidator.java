@@ -50,8 +50,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = innovation.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.INNOVATION.getStatus().replace("/", "_");
-    String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
-      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
+      + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 

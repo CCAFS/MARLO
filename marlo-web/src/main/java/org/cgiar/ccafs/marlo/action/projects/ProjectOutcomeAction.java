@@ -155,8 +155,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = projectOutcome.getId() + "_" + composedClassName + "_"
-      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = projectOutcome.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }

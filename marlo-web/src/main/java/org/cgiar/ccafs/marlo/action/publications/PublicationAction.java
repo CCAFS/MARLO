@@ -311,8 +311,8 @@ public class PublicationAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + deliverable.getPhase().getDescription()
-      + "_" + deliverable.getPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + deliverable.getPhase().getName() + "_"
+      + deliverable.getPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
