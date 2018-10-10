@@ -64,19 +64,23 @@ public class ManageUsersAction extends BaseAction {
 
   private static String PARAM_IS_ACTIVE = "isActive";
 
+
   private static String PARAM_CGIAR = "isCGIAR";
 
+
   private UserManager userManager;
+
   private String actionName;
 
   private String queryParameter;
   private List<Map<String, Object>> users;
-  private Map<String, Object> emailStatus;
-  private String emailParameter;
-  private boolean isCGIAR;
 
+  private Map<String, Object> emailStatus;
   private User newUser;
   private String message;
+
+
+  private boolean showInputs;
 
   @Inject
   public ManageUsersAction(APConfig config, UserManager userManager) {
@@ -117,6 +121,7 @@ public class ManageUsersAction extends BaseAction {
     }
   }
 
+
   /**
    * Create a new user in the system.
    * 
@@ -126,6 +131,7 @@ public class ManageUsersAction extends BaseAction {
    */
   public String create() throws Exception {
     emailStatus = new HashMap<>();
+    showInputs = true;
     if (newUser.getEmail() != null) {
 
 
@@ -139,6 +145,7 @@ public class ManageUsersAction extends BaseAction {
           // If email already exists into our database.
           message = this.getText("manageUsers.email.existing");
           newUser = null;
+          showInputs = false;
           return SUCCESS; // Stop here!
         }
 
@@ -179,14 +186,9 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public String getEmailParameter() {
-    return emailParameter;
-  }
-
   public Map<String, Object> getEmailStatus() {
     return emailStatus;
   }
-
 
   /**
    * Get a message of the result of the query.
@@ -202,6 +204,12 @@ public class ManageUsersAction extends BaseAction {
     return users;
   }
 
+
+  public boolean isShowInputs() {
+    return showInputs;
+  }
+
+
   private boolean isValidEmail(String emailStr) {
     boolean isValid = false;
     Matcher matcher =
@@ -211,7 +219,6 @@ public class ManageUsersAction extends BaseAction {
     }
     return isValid;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -240,10 +247,9 @@ public class ManageUsersAction extends BaseAction {
       // isCGIAR = StringUtils.trim(parameters.get(PARAM_CGIAR).getMultipleValues()[0]).equals("1") ? true : false;
 
       actionName = StringUtils.trim(parameters.get("actionName").getMultipleValues()[0]);
-    } else if (ActionContext.getContext().getName().equals("validateEmail")) {
-      emailParameter = StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]);
     }
   }
+
 
   /**
    * Search a user in the database
@@ -274,14 +280,13 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-
-  public void setEmailParameter(String emailParameter) {
-    this.emailParameter = emailParameter;
+  public void setEmailStatus(Map<String, Object> emailStatus) {
+    this.emailStatus = emailStatus;
   }
 
 
-  public void setEmailStatus(Map<String, Object> emailStatus) {
-    this.emailStatus = emailStatus;
+  public void setShowInputs(boolean showInputs) {
+    this.showInputs = showInputs;
   }
 
 
