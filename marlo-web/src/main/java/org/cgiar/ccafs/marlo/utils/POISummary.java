@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.utils;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
@@ -770,6 +771,103 @@ public class POISummary {
     paragraphRun.setFontSize(12);
   }
 
+  public void convertHTMLTags(XWPFParagraph paragraph, String text) {
+    XWPFRun paragraphRun = paragraph.createRun();
+    this.addParagraphTextBreak(paragraphRun, text);
+    int posInit = 0;
+    int posInitA=0;
+    int posFinalA=0;
+    int posFinal = 0;
+    int tagSize = 0;
+    String htmlText, url = "", linkText = "";
+    String expression = "";
+
+    List<String> expressionsList = new ArrayList<String>();
+    expressionsList.add("b");
+    expressionsList.add("strong");
+    expressionsList.add("i");
+    expressionsList.add("em");
+    expressionsList.add("u");
+    expressionsList.add("strike");
+    expressionsList.add("s");
+    expressionsList.add("del");
+    expressionsList.add("a");
+
+    for (int i = 0; i < expressionsList.size(); i++) {
+      
+      expression = expressionsList.get(i);
+      posInit = text.indexOf("<" + expression + ">");
+      
+      /*
+       * Check links tags
+       */
+      
+      //identify start of <a> tag
+      posInitA= text.indexOf("<a href=");
+      
+      //if tag exist
+      if(posInitA > 0) {
+        
+        //Create temp started in the tag
+        String temp = text.substring(posInitA+8);
+       
+        
+        for(int y=0; y<temp.length() ;y++) {
+          char finalLink = temp.charAt(y);
+          
+          //idenfity the final of link part
+          if(finalLink == '>') {
+            posFinalA=temp.indexOf(">");
+            url = temp.substring(posInitA, posFinalA);
+          }
+        }
+        
+        //Identify start of link text
+        String temp2 = temp.substring(posFinalA+2);
+        for(int y=0; y<temp2.length() ;y++) {
+          char finalLink = temp.charAt(y);
+          if(finalLink == '>') {
+            
+            linkText = temp.substring(posInitA, finalLink);
+          }
+        }
+        
+       
+      }
+      
+      if(posInit > 0) {
+      posFinal = text.indexOf("</" + expressionsList.get(i) + ">");
+      tagSize = expressionsList.get(i).length()+2;
+      
+      htmlText = text.substring(posInit+tagSize, posFinal+tagSize+1); 
+      
+      switch(expression){
+        case "b":
+          paragraphRun.setBold(true);
+          break;
+        case "strong":
+          paragraphRun.setBold(true);
+          break;
+        case "i":
+          paragraphRun.setItalic(true);
+          break;
+        case "em":
+          break;
+        case "u":
+          //paragraphRun.setUnderline(value);
+          break;
+        case "strike":
+          break;    
+        case "del":
+          break;
+        case "a":
+      
+          break;
+      }
+      }
+    }
+  }
+
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
     Boolean highlightFirstColumn, String tableType) {
     if (tableType.contains("Powb")) {
@@ -1021,7 +1119,7 @@ public class POISummary {
     if (tableType.contains("AnnualReport")) {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
     } else if (tableType.contains("Powb")) {
-      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13400));
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13410));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
