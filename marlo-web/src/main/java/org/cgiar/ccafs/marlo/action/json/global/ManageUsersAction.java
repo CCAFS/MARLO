@@ -126,47 +126,51 @@ public class ManageUsersAction extends BaseAction {
    */
   public String create() throws Exception {
     if (newUser.getEmail() != null) {
-      boolean emailExists = false;
-      // We need to validate that the email does not exist yet into our database.
-      emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
-      // If email already exists.
-      if (emailExists) {
-        // If email already exists into our database.
-        message = this.getText("manageUsers.email.existing");
-        newUser = null;
-        return SUCCESS; // Stop here!
-      }
 
-      // Validate if is a CGIAR email.
-      if (isCGIAR) {
-        newUser.setCgiarUser(true); // marking it as CGIAR user.
+      if (this.isValidEmail(newUser.getEmail())) {
+        boolean emailExists = false;
+        // We need to validate that the email does not exist yet into our database.
+        emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
-        // Validate and populate the information that is coming from the CGIAR Outlook Active Directory.
-        newUser = this.validateOutlookUser(newUser.getEmail());
-        // If user was not found in the Active Directory.
-        if (newUser == null) {
-          message = this.getText("manageUsers.email.doesNotExist");
+        // If email already exists.
+        if (emailExists) {
+          // If email already exists into our database.
+          message = this.getText("manageUsers.email.existing");
+          newUser = null;
           return SUCCESS; // Stop here!
-        } else {
-          // If user was found, let's add it into our database.
+        }
+
+
+        User cgUser = this.validateOutlookUser(newUser.getEmail());
+
+        // Validate if is a CGIAR email.
+        if (cgUser != null) {
+          newUser.setCgiarUser(true); // marking it as CGIAR user.
+          // Validate and populate the information that is coming from the CGIAR Outlook Active Directory.
+          newUser = this.validateOutlookUser(newUser.getEmail());
           this.addUser();
+        } else {
+          // If the email does not belong to the CGIAR.
+          if (newUser.getFirstName() != null && newUser.getLastName() != null) {
+            newUser.setCgiarUser(false);
+            if (!this.addUser()) {
+              // If user could not be added.
+              newUser = null;
+              message = this.getText("manageUsers.email.notAdded");
+            }
+            return SUCCESS;
+          } else {
+            message = this.getText("manageUsers.email.validation");
+            emailStatus.put("status", true);
+            return SUCCESS;
+          }
         }
       } else {
-        // If the email does not belong to the CGIAR.
-        if (newUser.getFirstName() != null && newUser.getLastName() != null) {
-          newUser.setCgiarUser(false);
-          if (!this.addUser()) {
-            // If user could not be added.
-            newUser = null;
-            message = this.getText("manageUsers.email.notAdded");
-          }
-          return SUCCESS;
-        } else {
-          message = this.getText("manageUsers.email.validation");
-          return SUCCESS;
-        }
+        message = this.getText("manageUsers.email.notValid");
       }
+
+
     }
     return SUCCESS;
   }
@@ -202,7 +206,6 @@ public class ManageUsersAction extends BaseAction {
 
   private boolean isValidEmail(String emailStr) {
     boolean isValid = false;
-
     Matcher matcher =
       Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(emailStr);
     if (matcher.find()) {
@@ -276,6 +279,7 @@ public class ManageUsersAction extends BaseAction {
   }
 
 
+  // TODO
   public String validateEmail() {
     emailStatus = new HashMap<>();
 
