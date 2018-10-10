@@ -143,17 +143,14 @@ public class ManageUsersAction extends BaseAction {
         }
 
 
-        User cgUser = this.validateOutlookUser(newUser.getEmail());
-
         // Validate if is a CGIAR email.
-        if (cgUser != null) {
+        if (this.validateOutlookUser(newUser.getEmail())) {
           newUser.setCgiarUser(true); // marking it as CGIAR user.
-          // Validate and populate the information that is coming from the CGIAR Outlook Active Directory.
-          newUser = this.validateOutlookUser(newUser.getEmail());
           this.addUser();
         } else {
-          // If the email does not belong to the CGIAR.
-          if (newUser.getFirstName() != null && newUser.getLastName() != null) {
+
+          if (newUser.getFirstName() != null && newUser.getLastName() != null
+            && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
             newUser.setCgiarUser(false);
             if (!this.addUser()) {
               // If user could not be added.
@@ -288,33 +285,14 @@ public class ManageUsersAction extends BaseAction {
   }
 
 
-  // TODO
-  public String validateEmail() {
-    emailStatus = new HashMap<>();
-
-    if (this.isValidEmail(emailParameter)) {
-      if (this.validateOutlookUser(emailParameter) != null) {
-        emailStatus.put("status", true);
-      } else {
-        emailStatus.put("status", false);
-      }
-    } else {
-      message = this.getText("manageUsers.email.notValid");
-      emailStatus.put("status", "error");
-    }
-
-    return SUCCESS;
-  }
-
   /**
    * Validate if a given user exists in the Outlook Active Directory .
    * 
    * @param email is the CGIAR email.
    * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
    */
-  private User validateOutlookUser(String email) {
+  private boolean validateOutlookUser(String email) {
     LDAPService service = new LDAPService();
-    User userM = new User();
     if (config.isProduction()) {
       service.setInternalConnection(false);
     } else {
@@ -327,13 +305,12 @@ public class ManageUsersAction extends BaseAction {
       user = null;
     }
     if (user != null) {
-      userM.setFirstName(user.getFirstName());
-      userM.setLastName(user.getLastName());
-      userM.setUsername(user.getLogin().toLowerCase());
-      newUser = userM;
-      return newUser;
+      newUser.setFirstName(user.getFirstName());
+      newUser.setLastName(user.getLastName());
+      newUser.setUsername(user.getLogin().toLowerCase());
+      return true;
     }
-    return null;
+    return false;
   }
 
 }
