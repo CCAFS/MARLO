@@ -165,7 +165,6 @@ $(document)
                                 var errorInfo =
                                     "<p id='errorInfo' class='error-info'>This user cannot be created. Check that the email address is correct, and/or contact MARLOSupport@cgiar.org.</p>"
                                 $(".create-user-block").prepend(errorInfo);
-                                console.log("Holi error" + data);
                               }
                           });
                     }
