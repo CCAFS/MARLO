@@ -196,8 +196,8 @@ public class PowbCollaborationAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -514,8 +514,8 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
 
-    List<FundingSourceLocation> locationsFunding = locElement.getFundingSourceLocations()
-      .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+    List<FundingSourceLocation> locationsFunding = locElement
+      .getFundingSourceLocations().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
         && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
       .collect(Collectors.toList());
     locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));

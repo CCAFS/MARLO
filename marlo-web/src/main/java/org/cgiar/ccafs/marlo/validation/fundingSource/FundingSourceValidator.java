@@ -57,9 +57,8 @@ public class FundingSourceValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = "fundingSource";
-    String autoSaveFile =
-      fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_"
-        + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }

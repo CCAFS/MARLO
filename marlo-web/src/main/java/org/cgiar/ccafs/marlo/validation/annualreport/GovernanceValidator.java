@@ -51,7 +51,7 @@ public class GovernanceValidator extends BaseValidator {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = ReportSynthesisSectionStatusEnum.GOVERNANCE.getStatus().replace("/", "_");
     String autoSaveFile =
-      reportSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
+      reportSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getName() + "_"
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);

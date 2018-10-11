@@ -49,9 +49,8 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = expectedStudy.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus().replace("/", "_");
-    String autoSaveFile =
-      expectedStudy.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_"
-        + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = expectedStudy.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
