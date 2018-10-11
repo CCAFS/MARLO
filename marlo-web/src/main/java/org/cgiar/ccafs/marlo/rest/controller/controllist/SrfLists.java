@@ -15,9 +15,9 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.SrfCrossCuttingIssueItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.SrfIdoItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.SrfSloItem;
+import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfCrossCuttingIssueItem;
+import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfIdoItem;
+import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfSloItem;
 import org.cgiar.ccafs.marlo.rest.dto.SrfCrossCuttingIssueDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;
