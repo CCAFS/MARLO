@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist.items;
+package org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist;
 
 import org.cgiar.ccafs.marlo.data.manager.SrfCrossCuttingIssueManager;
 import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
