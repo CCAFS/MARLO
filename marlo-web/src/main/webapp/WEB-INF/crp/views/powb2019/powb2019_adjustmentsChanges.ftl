@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "powbSynthesis.powbToc" /]
+[#assign customLabel= "powbSynthesis.${currentStage}" /]
+
 [#-- Helptext --]
 [@utilities.helpBox name="adjustmentsChanges.help" /]
     
@@ -42,15 +45,12 @@
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
             [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" helpIcon=false required=true className="" editable=editable allowTextEditor=true   /]
-            [#-- ${action.getOnlyReadHtmlText(powbSynthesis.powbToc.tocOverall)} --]
+            [@customForm.textArea name="${customName}.tocOverall" i18nkey="${customLabel}.adjustmentsChanges" help="${customLabel}.adjustmentsChanges.help" helpIcon=false required=true className="" editable=editable allowTextEditor=true   /]
           </div>
           
           [#if PMU]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="adjustmentsChanges.flagshipsTable.title" /]</h4>
-            <hr />
-            [@FlagshipsTableACMacro elements=tocList/]
+            [@tableFlagshipSynthesis tableName="flagshipsTable" list=tocList columns=["overall"] /]
           </div>
           [/#if]
           
@@ -65,42 +65,44 @@
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
-[#macro FlagshipsTableACMacro elements={}]
-  <table class="table-flagshipsAdjustments table-border-powb" id="table-flagshipsAdjustments">
-    <thead>
-      <tr class="subHeader">
-        <th id="tb-name" class="col-md-1">[@s.text name="adjustmentsChanges.flagshipsTable.flagshipName" /]</th>
-        <th id="tb-narrative" class="text-center" width="60%">[@s.text name="adjustmentsChanges.flagshipsTable.narrative" /]</th>
-      </tr>
-    </thead>
-    <tbody>
-    [#if elements?has_content ]
-      [#list elements as element ]
+
+[#----------------------------------------------------- MACROS --------------------------------------------------------]
+
+[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
+  <div class="form-group">
+    <h4 class="simpleTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
+    <table class="table table-bordered">
+      <thead>
         <tr>
-          [#-- Flagship Name --]
-          <td class="left flagship-name">
-            <span class="programTag" style="border-color:${(element.liaisonInstitution.crpProgram.color)!'#fff'}">
-              ${element.liaisonInstitution.acronym}
-            </span>
-          </td>
-          
-          [#-- Narrative--]
-          <td class="left narrative">
-            [#if (element.overall?has_content)!false]
-             <div class="">${element.overall}</div> 
-            [#else]
-              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-            [/#if]
-          </td>
+          <th class="col-md-1 text-center"> FP </th>
+          [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
-      [/#list]
-    [#else]
-      <tr>
-        <td colspan="2" class="text-center">
-          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-        </td>
-      </tr>
-    [/#if]
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        [#if list?has_content]
+          [#list list as item]
+            [#local crpProgram = (item.liaisonInstitution.crpProgram)!{} ]
+            <tr>
+              <td>
+                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
+              </td>
+              [#list columns as column]
+                <td>
+                  [#if (item[column]?has_content)!false] 
+                    ${item[column]?replace('\n', '<br>')} 
+                  [#else]
+                    <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                  [/#if]
+                </td>
+              [/#list]
+            </tr>
+          [/#list]
+        [#else]
+          <tr>
+            <td class="text-center" colspan="${columns?size + 1}"><i>No flagships loaded...</i></td>
+          </tr>
+        [/#if]
+      </tbody>
+    </table>
+  </div>
 [/#macro]

@@ -455,6 +455,42 @@ public class ExpectedCRPProgressAction extends BaseAction {
   }
 
 
+  /**
+   * Table only for the specific Flagship
+   */
+  public void loadTableA() {
+    flagships = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getId() == liaisonInstitution.getCrpProgram().getId())
+      .collect(Collectors.toList());
+    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+    for (CrpProgram crpProgram : flagships) {
+      crpProgram.setMilestones(new ArrayList<>());
+      crpProgram.setW1(new Double(0));
+      crpProgram.setW3(new Double(0));
+
+      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+        crpProgramOutcome.setSubIdos(
+          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        if (!crpProgram.getMilestones().isEmpty()) {
+          validOutcomes.add(crpProgramOutcome);
+        }
+      }
+      crpProgram.setOutcomes(validOutcomes);
+      this.loadFlagShipBudgetInfo(crpProgram);
+
+    }
+  }
+
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -659,6 +695,9 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
     if (this.isPMU()) {
       this.loadTablePMU();
+    } else {
+      // TABLE A POWB 2019: Specific Flagship only
+      this.loadTableA();
     }
 
     // Base Permission

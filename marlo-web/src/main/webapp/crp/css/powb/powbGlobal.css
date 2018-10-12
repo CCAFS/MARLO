@@ -232,3 +232,8 @@ tfoot {
   right: 3px;
   bottom: 6px;
 }
+
+
+table#table2A-POWB2019 td {
+  font-size: 0.9em;
+}
