@@ -27,7 +27,7 @@
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
       { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !powb2019, 'active':  action.canAcessPOWB() },
-      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb2019',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && powb2019, 'active':  action.canAcessPOWB() }
+      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb2019',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && powb2019, 'active': false <!--action.canAcessPOWB()--> }
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
