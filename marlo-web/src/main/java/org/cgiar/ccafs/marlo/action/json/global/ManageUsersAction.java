@@ -64,19 +64,23 @@ public class ManageUsersAction extends BaseAction {
 
   private static String PARAM_IS_ACTIVE = "isActive";
 
+
   private static String PARAM_CGIAR = "isCGIAR";
 
+
   private UserManager userManager;
+
   private String actionName;
 
   private String queryParameter;
   private List<Map<String, Object>> users;
-  private Map<String, Object> emailStatus;
-  private String emailParameter;
-  private boolean isCGIAR;
 
+  private Map<String, Object> emailStatus;
   private User newUser;
   private String message;
+
+
+  private boolean showInputs;
 
   @Inject
   public ManageUsersAction(APConfig config, UserManager userManager) {
@@ -117,6 +121,7 @@ public class ManageUsersAction extends BaseAction {
     }
   }
 
+
   /**
    * Create a new user in the system.
    * 
@@ -125,48 +130,52 @@ public class ManageUsersAction extends BaseAction {
    * @throws Exception
    */
   public String create() throws Exception {
+    emailStatus = new HashMap<>();
+    showInputs = true;
     if (newUser.getEmail() != null) {
-      boolean emailExists = false;
-      // We need to validate that the email does not exist yet into our database.
-      emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
-      // If email already exists.
-      if (emailExists) {
-        // If email already exists into our database.
-        message = this.getText("manageUsers.email.existing");
-        newUser = null;
-        return SUCCESS; // Stop here!
-      }
 
-      // Validate if is a CGIAR email.
-      if (isCGIAR) {
-        newUser.setCgiarUser(true); // marking it as CGIAR user.
+      if (this.isValidEmail(newUser.getEmail())) {
+        boolean emailExists = false;
+        // We need to validate that the email does not exist yet into our database.
+        emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
-        // Validate and populate the information that is coming from the CGIAR Outlook Active Directory.
-        newUser = this.validateOutlookUser(newUser.getEmail());
-        // If user was not found in the Active Directory.
-        if (newUser == null) {
-          message = this.getText("manageUsers.email.doesNotExist");
+        // If email already exists.
+        if (emailExists) {
+          // If email already exists into our database.
+          message = this.getText("manageUsers.email.existing");
+          newUser = null;
+          showInputs = false;
           return SUCCESS; // Stop here!
-        } else {
-          // If user was found, let's add it into our database.
+        }
+
+
+        // Validate if is a CGIAR email.
+        if (this.validateOutlookUser(newUser.getEmail())) {
+          newUser.setCgiarUser(true); // marking it as CGIAR user.
           this.addUser();
+        } else {
+
+          if (newUser.getFirstName() != null && newUser.getLastName() != null
+            && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+            newUser.setCgiarUser(false);
+            if (!this.addUser()) {
+              // If user could not be added.
+              newUser = null;
+              message = this.getText("manageUsers.email.notAdded");
+            }
+            return SUCCESS;
+          } else {
+            message = this.getText("manageUsers.email.validation");
+            emailStatus.put("status", true);
+            return SUCCESS;
+          }
         }
       } else {
-        // If the email does not belong to the CGIAR.
-        if (newUser.getFirstName() != null && newUser.getLastName() != null) {
-          newUser.setCgiarUser(false);
-          if (!this.addUser()) {
-            // If user could not be added.
-            newUser = null;
-            message = this.getText("manageUsers.email.notAdded");
-          }
-          return SUCCESS;
-        } else {
-          message = this.getText("manageUsers.email.validation");
-          return SUCCESS;
-        }
+        message = this.getText("manageUsers.email.notValid");
       }
+
+
     }
     return SUCCESS;
   }
@@ -177,14 +186,9 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public String getEmailParameter() {
-    return emailParameter;
-  }
-
   public Map<String, Object> getEmailStatus() {
     return emailStatus;
   }
-
 
   /**
    * Get a message of the result of the query.
@@ -200,9 +204,14 @@ public class ManageUsersAction extends BaseAction {
     return users;
   }
 
+
+  public boolean isShowInputs() {
+    return showInputs;
+  }
+
+
   private boolean isValidEmail(String emailStr) {
     boolean isValid = false;
-
     Matcher matcher =
       Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(emailStr);
     if (matcher.find()) {
@@ -210,7 +219,6 @@ public class ManageUsersAction extends BaseAction {
     }
     return isValid;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -222,19 +230,26 @@ public class ManageUsersAction extends BaseAction {
       // if Adding a new user, we need to get the info to be added.
       newUser = new User();
       newUser.setId((long) -1);
-      newUser.setFirstName(StringUtils.trim(parameters.get(PARAM_FIRST_NAME).getMultipleValues()[0]));
-      newUser.setLastName(StringUtils.trim(parameters.get(PARAM_LAST_NAME).getMultipleValues()[0]));
+      try {
+        newUser.setFirstName(StringUtils.trim(parameters.get(PARAM_FIRST_NAME).getMultipleValues()[0]));
+      } catch (Exception e) {
+        newUser.setFirstName(null);
+      }
+      try {
+        newUser.setLastName(StringUtils.trim(parameters.get(PARAM_LAST_NAME).getMultipleValues()[0]));
+      } catch (Exception e) {
+        newUser.setLastName(null);
+      }
       newUser.setEmail(StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]));
       newUser
         .setActive(StringUtils.trim(parameters.get(PARAM_IS_ACTIVE).getMultipleValues()[0]).equals("1") ? true : false);
 
-      isCGIAR = StringUtils.trim(parameters.get(PARAM_CGIAR).getMultipleValues()[0]).equals("1") ? true : false;
+      // isCGIAR = StringUtils.trim(parameters.get(PARAM_CGIAR).getMultipleValues()[0]).equals("1") ? true : false;
 
       actionName = StringUtils.trim(parameters.get("actionName").getMultipleValues()[0]);
-    } else if (ActionContext.getContext().getName().equals("validateEmail")) {
-      emailParameter = StringUtils.trim(parameters.get(PARAM_EMAIL).getMultipleValues()[0]);
     }
   }
+
 
   /**
    * Search a user in the database
@@ -265,33 +280,15 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
-
-  public void setEmailParameter(String emailParameter) {
-    this.emailParameter = emailParameter;
-  }
-
-
   public void setEmailStatus(Map<String, Object> emailStatus) {
     this.emailStatus = emailStatus;
   }
 
 
-  public String validateEmail() {
-    emailStatus = new HashMap<>();
-
-    if (this.isValidEmail(emailParameter)) {
-      if (this.validateOutlookUser(emailParameter) != null) {
-        emailStatus.put("status", true);
-      } else {
-        emailStatus.put("status", false);
-      }
-    } else {
-      message = this.getText("manageUsers.email.notValid");
-      emailStatus.put("status", "error");
-    }
-
-    return SUCCESS;
+  public void setShowInputs(boolean showInputs) {
+    this.showInputs = showInputs;
   }
+
 
   /**
    * Validate if a given user exists in the Outlook Active Directory .
@@ -299,21 +296,26 @@ public class ManageUsersAction extends BaseAction {
    * @param email is the CGIAR email.
    * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
    */
-  private User validateOutlookUser(String email) {
+  private boolean validateOutlookUser(String email) {
     LDAPService service = new LDAPService();
     if (config.isProduction()) {
       service.setInternalConnection(false);
     } else {
       service.setInternalConnection(true);
     }
-    LDAPUser user = service.searchUserByEmail(email);
+    LDAPUser user = null;
+    try {
+      user = service.searchUserByEmail(email);
+    } catch (Exception e) {
+      user = null;
+    }
     if (user != null) {
       newUser.setFirstName(user.getFirstName());
       newUser.setLastName(user.getLastName());
       newUser.setUsername(user.getLogin().toLowerCase());
-      return newUser;
+      return true;
     }
-    return null;
+    return false;
   }
 
 }

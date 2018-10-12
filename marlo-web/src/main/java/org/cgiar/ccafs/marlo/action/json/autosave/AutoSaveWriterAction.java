@@ -223,8 +223,8 @@ public class AutoSaveWriterAction extends BaseAction {
 
         String fileName = "";
         if (phase != null) {
-          fileName = fileId + "_" + fileClass + "_" + phase.getDescription() + "_" + phase.getYear() + "_" + fileAction
-            + ".json";
+          fileName =
+            fileId + "_" + fileClass + "_" + phase.getName() + "_" + phase.getYear() + "_" + fileAction + ".json";
         } else {
           fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
         }

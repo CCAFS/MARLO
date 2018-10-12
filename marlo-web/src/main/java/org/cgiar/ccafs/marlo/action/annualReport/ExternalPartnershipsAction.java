@@ -150,8 +150,8 @@ public class ExternalPartnershipsAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_"
-      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     String fl = config.getAutoSaveFolder();
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
