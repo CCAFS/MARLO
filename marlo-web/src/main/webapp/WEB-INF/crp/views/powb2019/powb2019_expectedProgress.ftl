@@ -69,14 +69,14 @@
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
-                [@tableA2Milestones list=flagships includeAllColumns=true /]
+                [@tableA2Milestones list=flagships includeAllColumns=true allowPopups=false /]
               </div>
             </div>
           </div>
             
           <h4 class="sectionSubTitle">[@s.text name="${customLabel}.tableA2Milestones.title" /]</h4>
           <div class="form-group">
-            [@tableA2Milestones list=flagships includeAllColumns=false /]
+            [@tableA2Milestones list=flagships includeAllColumns=false allowPopups=true /]
           </div>
         </div>
         
@@ -178,13 +178,13 @@
                   <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${(outcome.composedName)!}</td>
                 [/#if]
                 [#-- Milestone --]
-                <td> ${(m.composedName)!}  [#-- <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] --]  </div></td>
+                <td> ${(m.composedName)!}   [#if allowPopups]<div class="pull-right">[@milestoneContributions element=m tiny=true /][/#if]  </div></td>
                 [#-- Indicate of the following --]
                 [#if includeAllColumns]
                   <td> [#if (m.powbIndFollowingMilestone.name?has_content)!false]${m.powbIndFollowingMilestone.name}[#else] [@utils.prefilledTag /] [/#if] </td>
                 [/#if]
                 [#-- Means Verification --]
-                <td class="col-md-4">[#if (m.powbMilestoneVerification?has_content)!false]${m.powbMilestoneVerification}[#else] [@utils.prefilledTag /] [/#if]</td>
+                <td class="">[#if (m.powbMilestoneVerification?has_content)!false]${m.powbMilestoneVerification}[#else] [@utils.prefilledTag /] [/#if]</td>
                 [#-- Gender --]
                 <td class="text-center"> [#if (m.genderFocusLevel?has_content)!false] <p class="dacMarker level-${m.genderFocusLevel.id}" title="${m.genderFocusLevel.name}">${m.genderFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Youth --]
@@ -218,4 +218,65 @@
       </tbody>
     </table>
   </div>
+[/#macro]
+
+[#macro milestoneContributions element tiny=false]
+[#local projectContributions = action.getContributions(element.id) ]
+[#if projectContributions?size > 0]
+<button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
+  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="milestone-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
+        <hr />
+        <p><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
+        [#assign hasTarget = element.srfTargetUnit?? && (element.srfTargetUnit.id != -1) /]
+        [#if hasTarget]
+          <p><strong>Target unit:</strong> ${(element.srfTargetUnit.name!)} <br /> <strong>Target value:</strong> ${(element.value!)}</p>
+        [/#if]
+      </div>
+      <div class="modal-body">
+        <div class="">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="col-md-1"> Project ID </th>
+                <th class="col-md-4"> Project Title </th>
+                [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} </th>[/#if]
+                <th class="col-md-6"> [@s.text name="expectedProgress.contributionMilestoneTarget" /]  </th>
+                <th> </th>
+              </tr>
+            </thead>
+            <tbody>
+              [#list projectContributions as contribution]
+                [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${contribution.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                <tr>
+                  <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
+                  <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
+                  [#if hasTarget]
+                  <td class="text-center">
+                    [#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]
+                  </td>
+                  [/#if]
+                  <td> ${contribution.narrativeTarget?replace('\n', '<br>')} </td>
+                  <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                </tr>
+              [/#list]
+            </tbody>
+          </table>
+        </div>
+        
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+[/#if]
 [/#macro]
