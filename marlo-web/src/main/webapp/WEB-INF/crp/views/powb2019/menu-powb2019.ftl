@@ -15,7 +15,7 @@
   },
   { 'title': '3.  Financial Plan',        'show': true,
     'items': [
-    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': false }
+    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true }
     ]
   }
 ]/]

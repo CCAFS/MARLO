@@ -44,6 +44,11 @@ td {
   vertical-align: middle !important;
 }
 
+table.noFormatTable, table.noFormatTable th{
+  border: none;
+  background:none;
+}
+
 span.icon-20 {
   margin-top: 7px;
 }
@@ -232,14 +237,14 @@ tfoot {
 }
 
 table#table2A-POWB2019 td {
-  /* font-size: 0.9em; */
+  font-size: 0.95em;
 }
 
 p.dacMarker {
   background: #ececec;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 27px;
+  height: 27px;
   padding: 5px;
   margin: 0 auto;
 }
@@ -252,4 +257,9 @@ p.dacMarker.level-2 {
 p.dacMarker.level-3 {
   background: #5db0f3;
   color: #fff;
+}
+
+.amountType{
+  font-weight: bold;
+  color: #ceb286;
 }
