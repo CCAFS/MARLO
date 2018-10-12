@@ -22,6 +22,10 @@ public class RepIndGenderYouthFocusLevel extends MarloBaseEntity implements java
     this.definition = definition;
   }
 
+  public String getAcronym() {
+    return this.name.split("-")[0];
+  }
+
   public String getDefinition() {
     return this.definition;
   }

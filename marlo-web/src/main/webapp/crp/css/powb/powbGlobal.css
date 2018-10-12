@@ -1,20 +1,20 @@
 table {
 }
 
-.powb-table{
+.powb-table {
   display: inline-block;
 }
 
-span.powb-doc.badge{
+span.powb-doc.badge {
   background-color: #0d8dc0;
 }
 
-.label-powb-table{
+.label-powb-table {
   margin-bottom: 5px;
   margin-left: 5px;
 }
 
-.powb-label{
+.powb-label {
   width: 100%;
 }
 
@@ -25,7 +25,7 @@ table tr {
   font-size: 0.95em;
 }
 
-table tr.text-small{
+table tr.text-small {
   font-size: 0.85em;
 }
 
@@ -73,7 +73,7 @@ table ul {
 }
 
 .table > thead > tr > th {
-  vertical-align:middle;
+  vertical-align: middle;
 }
 
 form .form-group.margin-panel {
@@ -83,26 +83,27 @@ form .form-group.margin-panel {
 .table-border-powb {
   border-collapse: collapse;
 }
+
 .table-border-powb td {
   border: 1px solid rgb(224, 224, 224);
 }
+
 .table-border-powb tr:nth-child(even) {
   background-color: #fcfcfc;
 }
 
 /************* 1.1 ToC Adjustments/Changes ***************/
-
-.table-flagshipsAdjustments .flagship-name, .table-flagshipsAdjustments .narrative{
+.table-flagshipsAdjustments .flagship-name, .table-flagshipsAdjustments .narrative {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
 /************* 1.2 Expected CRP Progress ***************/
-
 .powbOutcome {
   padding-top: 16px;
 }
-.powbMilestone{
+
+.powbMilestone {
   padding-top: 20px;
 }
 
@@ -111,7 +112,6 @@ form .form-group.margin-panel {
 }
 
 /************* 1.3 Evidence ***************/
-
 .evidence-plannedStudies-header .flagship-planned-studies-button {
   position: absolute;
   margin-top: 15px;
@@ -122,11 +122,11 @@ form .form-group.margin-panel {
   cursor: pointer;
 }
 
-.evidence-plannedStudies-header .flagship-planned-studies-button:hover{
+.evidence-plannedStudies-header .flagship-planned-studies-button:hover {
   background-color: #41b9dd;
 }
 
-.label-min-width{
+.label-min-width {
   max-width: 85% !important;
 }
 
@@ -138,7 +138,7 @@ form .form-group.margin-panel {
   padding-left: 12px;
 }
 
-#table-plannedStudies .relevantSubIDO ul li{
+#table-plannedStudies .relevantSubIDO ul li {
   margin-bottom: 3px;
 }
 
@@ -158,7 +158,7 @@ form .form-group.margin-panel {
   display: table-cell;
 }
 
-.plannedStudiesCheckbox p.checked{
+.plannedStudiesCheckbox p.checked {
   height: 20px;
   margin-left: 15px;
 }
@@ -167,9 +167,7 @@ tfoot {
   font-weight: bold;
 }
 
-
 /* View more */
-
 .viewMoreSyntesis-block {
   overflow: hidden;
   -webkit-transition: height 1s;
@@ -181,7 +179,7 @@ tfoot {
 .viewMoreSyntesis {
   color: #6b6b6b;
   /* border-bottom: 1px solid #dddddd; */
-  position:absolute;
+  position: absolute;
   bottom: 0;
   width: 94%;
   margin: 0 0.5%;
@@ -199,9 +197,9 @@ tfoot {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 
-.viewMoreSyntesis:hover{
-  color:#999;
-  text-decoration:underline;
+.viewMoreSyntesis:hover {
+  color: #999;
+  text-decoration: underline;
 }
 
 #tableE td {
@@ -223,17 +221,35 @@ tfoot {
 
 .powb-submenuItem.active {
   background-color: #1da5ce;
-  color:#fff;
+  color: #fff;
   border-color: #1c96bb;
 }
 
 .powb-submenuItem img.check {
-  position:absolute;
+  position: absolute;
   right: 3px;
   bottom: 6px;
 }
 
-
 table#table2A-POWB2019 td {
-  font-size: 0.9em;
+  /* font-size: 0.9em; */
+}
+
+p.dacMarker {
+  background: #ececec;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  margin: 0 auto;
+}
+
+p.dacMarker.level-2 {
+  background: #a8ceec;
+  color: #fff;
+}
+
+p.dacMarker.level-3 {
+  background: #5db0f3;
+  color: #fff;
 }
