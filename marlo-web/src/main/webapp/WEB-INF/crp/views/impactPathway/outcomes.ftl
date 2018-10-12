@@ -368,19 +368,21 @@
         [@customForm.select name="${milestoneCustomName}.powbIndFollowingMilestone.id"  i18nkey="outcome.milestone.powbIndFollowingMilestone" className="" keyFieldName="id" displayFieldName="name" listName="followingMilestones" editable=editable required=reqMilestonesFields /]
       </div>
       [#-- Assessment of risk to achievement --]
-      <div class="form-group listname="${milestoneCustomName}.powbIndAssesmentRisk.id">
-        <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required=editable && reqMilestonesFields  /]</label> 
-        [#list (assessmentRisks)![] as assesment]
-          [@customForm.radioFlat id="${milestoneCustomName}-risk-${assesment.id}" name="${milestoneCustomName}.powbIndAssesmentRisk.id" label="${assesment.name}" value="${assesment.id}" checked=(milestone.powbIndAssesmentRisk.id == assesment.id)!false editable=editable cssClass="assesmentLevels" cssClassLabel=""/]
-        [/#list]
-        [#if !editable && (!(milestone.powbIndAssesmentRisk??))!true][@s.text name="form.values.fieldEmpty"/][/#if]
-      </div>
-      <div class="row form-group">
-        [#-- For medium/high please select the main risk --]
-        [#local showRisk = (milestone.powbIndAssesmentRisk.id >= 2)!false ]
-        <div class="col-md-6 milestoneRisk" style="display:${showRisk?string('block', 'none')}">
-          [@customForm.select name="${milestoneCustomName}.powbIndMilestoneRisk.id"  i18nkey="outcome.milestone.powbIndMilestoneRisk" className="risksOptions" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=reqMilestonesFields /]
+        [#if globalUnitType != 3]
+        <div class="form-group listname="${milestoneCustomName}.powbIndAssesmentRisk.id">
+          <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required=editable && reqMilestonesFields  /]</label> 
+          [#list (assessmentRisks)![] as assesment]
+            [@customForm.radioFlat id="${milestoneCustomName}-risk-${assesment.id}" name="${milestoneCustomName}.powbIndAssesmentRisk.id" label="${assesment.name}" value="${assesment.id}" checked=(milestone.powbIndAssesmentRisk.id == assesment.id)!false editable=editable cssClass="assesmentLevels" cssClassLabel=""/]
+          [/#list]
+          [#if !editable && (!(milestone.powbIndAssesmentRisk??))!true][@s.text name="form.values.fieldEmpty"/][/#if]
         </div>
+        <div class="row form-group">
+          [#-- For medium/high please select the main risk --]
+          [#local showRisk = (milestone.powbIndAssesmentRisk.id >= 2)!false ]
+          <div class="col-md-6 milestoneRisk" style="display:${showRisk?string('block', 'none')}">
+            [@customForm.select name="${milestoneCustomName}.powbIndMilestoneRisk.id"  i18nkey="outcome.milestone.powbIndMilestoneRisk" className="risksOptions" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=reqMilestonesFields /]
+          </div>
+        [/#if]
         [#-- Other Risk --]
         [#local showOtherRiskField = (milestone.powbIndMilestoneRisk.id == 7)!false ]
         <div class="col-md-6 milestoneOtherRiskField" style="display:${showOtherRiskField?string('block', 'none')}">
