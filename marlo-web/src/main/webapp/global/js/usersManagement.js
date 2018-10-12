@@ -148,12 +148,13 @@ $(document)
                               data: user,
                               beforeSend: function() {
                                 $dialogContent.find('.loading').show();
+                                $dialogContent.find(".tickBox-toggle").hide();
                               },
                               success: function(data) {
                                 if(data.message) {
                                   $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
-                                  if(!data.showInputs) {
-                                    $dialogContent.find(".tickBox-toggle").hide();
+                                  if(data.showInputs) {
+                                    $dialogContent.find(".tickBox-toggle").show();
                                   }
                                 } else {
                                   var user = data.users[0];

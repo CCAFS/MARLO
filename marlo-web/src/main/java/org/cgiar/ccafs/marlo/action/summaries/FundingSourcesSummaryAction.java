@@ -837,7 +837,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
       for (FundingSourceBudget fundingSourceBudget : fundingSource.getFundingSourceBudgets().stream()
         .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == this.getSelectedYear()
-          && fsb.getPhase() != null && fsb.getPhase().equals(this.getSelectedPhase()))
+          && fsb.getPhase() != null && fsb.getPhase().equals(this.getSelectedPhase()) && fsb.getBudget() != null)
         .collect(Collectors.toList())) {
         totalBudget += fundingSourceBudget.getBudget();
       }
