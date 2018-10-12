@@ -69,3 +69,5 @@
     <img src="${baseUrl}/global/images/icons/file-doc.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
   </span>
 [/#macro]
+
+[#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]

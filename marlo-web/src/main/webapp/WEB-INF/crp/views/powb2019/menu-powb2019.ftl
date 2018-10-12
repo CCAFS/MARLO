@@ -1,21 +1,21 @@
 [#ftl]
 
 [#assign menus= [
-  { 'title': '1.  Theories of Change', 'show': true,
+  { 'title': '1.  Theories of Change',    'show': true,
     'items': [
-    { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': true }
+    { 'slug': 'adjustmentsChanges',     'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': true }
     ]
   },
-  { 'title': '2.  Expected Key Results', 'show': true,
+  { 'title': '2.  Expected Key Results',  'show': true,
     'items': [
-    { 'slug': 'expectedOutcomes',              'name': 'powb.menu.expectedOutcomes',                'action': 'plannedStudies',                'active': false},
-    { 'slug': 'plannedStudies',            'name': 'powb.menu.plannedStudies',              'action': 'plannedStudies',              'active': true},
-    { 'slug': 'plannedCollaborations', 'name': 'powb.menu.plannedCollaborations',   'action': 'plannedCollaborations',   'active': true }
+    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'expectedProgress',       'active': true},
+    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true},
+    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true }
     ]
   },
-  { 'title': '3.  Financial Plan', 'show': true,
+  { 'title': '3.  Financial Plan',        'show': true,
     'items': [
-    { 'slug': 'managementRisks',        'name': 'powb.menu.plannedBudget',        'action': 'managementRisks',        'active': false }
+    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': false }
     ]
   }
 ]/]

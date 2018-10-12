@@ -18,7 +18,20 @@
       </result>
     </action>
     
-     <!--  2.2 Planned Studies -->
+    <!--  2.1  Expected Progress Towards Outcomes  -->
+    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_expectedProgress.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/expectedProgress</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+
+    <!--  2.2 Planned Studies -->
     <action name="{crp}/plannedStudies" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedStudiesAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedStudies.ftl</result>
@@ -43,6 +56,20 @@
         <param name="phaseID">${phaseID}</param>
       </result>
     </action>
-        
+ 
+    <!--  3.1  Planned Budget  -->
+    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedColaborationAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedBudget.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/plannedBudget</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+    
+    
   </package>
 </struts>
