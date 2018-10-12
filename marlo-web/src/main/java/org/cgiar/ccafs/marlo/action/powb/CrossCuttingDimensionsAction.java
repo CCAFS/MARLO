@@ -150,8 +150,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -551,8 +551,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d

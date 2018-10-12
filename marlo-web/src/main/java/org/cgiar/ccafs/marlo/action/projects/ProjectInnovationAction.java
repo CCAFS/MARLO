@@ -192,8 +192,8 @@ public class ProjectInnovationAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatenate name and add the .json extension
-    String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
