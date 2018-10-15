@@ -128,7 +128,7 @@
   <div class="simpleBox">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.${isLiaison?string('liaisonInstitution','powbExpenditureArea')}.id" value="${(area.id)!}" />
-    ${(element)!false}
+    
  
     <h4 class="subTitle headTitle"> ${(area.composedName)!(area.expenditureArea)!'null'} </h4>
     <div class="form-group">
