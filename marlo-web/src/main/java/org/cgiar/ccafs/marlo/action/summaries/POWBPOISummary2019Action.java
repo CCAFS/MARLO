@@ -61,11 +61,13 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -202,7 +204,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       String adjustmentsDescription = "";
 
       adjustmentsDescription =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur faucibus gravida lorem ultricies commodo. Integer quis lorem est. Praesent ipsum dui, aliquam vel elit non, rhoncus dictum justo. Ut ornare nisi quis velit accumsan malesuada. Suspendisse iaculis est sit amet tempor facilisis. Morbi nec commodo elit. Aliquam facilisis ipsum et est faucibus, in sagittis justo semper. Duis interdum at orci vel viverra. Sed bibendum pretium nisi, in viverra tortor. Vivamus blandit velit vitae lacinia lacinia. Fusce sapien elit, gravida vitae augue eu, vehicula faucibus nibh. Pellentesque mattis mauris in dolor tincidunt iaculis. Fusce vestibulum faucibus ante at elementum. Pellentesque sit amet tortor eget leo euismod rhoncus. Phasellus non rutrum orci. Maecenas felis nulla, blandit a suscipit ac, ullamcorper vel urna. Quisque ac elementum nisl. Mauris sollicitudin tellus in tortor fringilla, at dapibus turpis commodo. Praesent cursus tellus quis egestas congue. Suspendisse id odio sodales, varius est vitae, cursus sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean vel augue nec nisl molestie fermentum at in enim. Curabitur ultricies tortor sem, in ultricies mi pretium sed. Sed porta cursus elementum. Ut fringilla turpis sed eros imperdiet lobortis.  Curabitur dignissim, arcu nec congue posuere, odio elit laoreet orci, non sodales quam nibh rutrum elit. Sed et interdum nisi. Fusce leo ex, mattis vel sapien sit amet, facilisis commodo lacus. Mauris at rutrum leo. Cras tempus, turpis eu tempor scelerisque, ante lacus varius diam, a viverra quam elit sed nulla. Proin quis elit et ante maximus facilisis quis non augue. Curabitur metus erat, condimentum mattis velit eu, vulputate auctor urna. Nunc velit nunc, tempor quis interdum posuere, maximus sit amet ipsum. Suspendisse libero ligula, vulputate vel nisl quis, ornare posuere nibh. Mauris sodales libero orci, non eleifend dolor rhoncus venenatis. Maecenas at dictum mi. Ut nibh augue, facilisis id aliquam sed, tempor quis quam. Proin eu lacus ornare, faucibus nulla ac, consequat ligula. Vivamus est lacus, fringilla et ligula et, vulputate mollis sem. In a mi odio.  Integer vehicula sem ut nunc scelerisque, eget consectetur ligula vehicula. Proin in mauris ultrices, rutrum leo vel, vulputate felis. In aliquet sit amet justo in facilisis. Praesent lacinia justo in est blandit sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur molestie arcu et nibh elementum sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut finibus scelerisque urna id viverra. Integer consectetur sapien in imperdiet congue.      Pellentesque rutrum posuere lorem. Phasellus at ante ex. Suspendisse vitae pretium nulla. Fusce congue cursus tempus. Sed et lorem eros. Etiam eros metus, semper ut lacus sed, molestie elementum ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas pulvinar est eu nisl euismod, non bibendum tellus imperdiet. Aliquam risus ante, ullamcorper nec sem eget, commodo varius neque. Duis mattis ultricies diam sed tempor. Nulla iaculis dolor et dolor posuere lacinia. Maecenas sed commodo mi, eget blandit felis. Praesent.";
+        "Lorem ipsum dolor sit amet, consectetur <b>adipiscing elit. is interdum</b> at orci vel viverra.";
       /*
        * if (powbSynthesisPMU.getPowbToc() != null) {
        * adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
@@ -210,6 +212,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
        * ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
        * }
        */
+      poiSummary.convertHTMLTags(document, adjustmentsDescription);
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
       if (powbSynthesisPMU.getPowbToc() != null && powbSynthesisPMU.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
@@ -225,18 +228,18 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private void addExpectedKeyResults() {
     String expectedKeyResults = "";
 
-
     expectedKeyResults =
-      "<b>Lorem ipsum</b> <ul>dolor sit amet,</ul> consectetur adipiscing elit. Curabitur faucibus gravida lorem ultricies commodo. Integer quis lorem est. Praesent ipsum dui, aliquam vel elit non, rhoncus dictum justo. Ut ornare nisi quis velit accumsan malesuada. Suspendisse iaculis est sit amet tempor facilisis. Morbi nec commodo elit. Aliquam facilisis ipsum et est faucibus, in sagittis justo semper. Duis interdum at orci vel viverra. Sed bibendum pretium nisi, in viverra tortor. Vivamus blandit velit vitae lacinia lacinia. Fusce sapien elit, gravida vitae augue eu, vehicula faucibus nibh. Pellentesque mattis mauris in dolor tincidunt iaculis. Fusce vestibulum faucibus ante at elementum. Pellentesque sit amet tortor eget leo euismod rhoncus. Phasellus non rutrum orci. Maecenas felis nulla, blandit a suscipit ac, ullamcorper vel urna. Quisque ac elementum nisl. Mauris sollicitudin tellus in tortor fringilla, at dapibus turpis commodo. Praesent cursus tellus quis egestas congue. Suspendisse id odio sodales, varius est vitae, cursus sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean vel augue nec nisl molestie fermentum at in enim. Curabitur ultricies tortor sem, in ultricies mi pretium sed. Sed porta cursus elementum. Ut fringilla turpis sed eros imperdiet lobortis.  Curabitur dignissim, arcu nec congue posuere, odio elit laoreet orci, non sodales quam nibh rutrum elit. Sed et interdum nisi. Fusce leo ex, mattis vel sapien sit amet, facilisis commodo lacus. Mauris at rutrum leo. Cras tempus, turpis eu tempor scelerisque, ante lacus varius diam, a viverra quam elit sed nulla. Proin quis elit et ante maximus facilisis quis non augue. Curabitur metus erat, condimentum mattis velit eu, vulputate auctor urna. Nunc velit nunc, tempor quis interdum posuere, maximus sit amet ipsum. Suspendisse libero ligula, vulputate vel nisl quis, ornare posuere nibh. Mauris sodales libero orci, non eleifend dolor rhoncus venenatis. Maecenas at dictum mi. Ut nibh augue, facilisis id aliquam sed, tempor quis quam. Proin eu lacus ornare, faucibus nulla ac, consequat ligula. Vivamus est lacus, fringilla et ligula et, vulputate mollis sem. In a mi odio.  Integer vehicula sem ut nunc scelerisque, eget consectetur ligula vehicula. Proin in mauris ultrices, rutrum leo vel, vulputate felis. In aliquet sit amet justo in facilisis. Praesent lacinia justo in est blandit sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur molestie arcu et nibh elementum sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut finibus scelerisque urna id viverra. Integer consectetur sapien in imperdiet congue.      Pellentesque rutrum posuere lorem. Phasellus at ante ex. Suspendisse vitae pretium nulla. Fusce congue cursus tempus. Sed et lorem eros. Etiam eros metus, semper ut lacus sed, molestie elementum ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas pulvinar est eu nisl euismod, non bibendum tellus imperdiet. Aliquam risus ante, ullamcorper nec sem eget, commodo varius neque. Duis mattis ultricies diam sed tempor. Nulla iaculis dolor et dolor posuere lacinia. Maecenas sed commodo mi, eget blandit felis. Praesent.";
+      "Lorem ipsum dolor sit amet, <b>consectetur adipiscing elit,</b> sed do eiusmod tempor incididunt <u>ut labore et dolore</u> magna aliqua. Ut enim ad minim veniam, <s>quis nostrud exercitation ullamco laboris</s> nisi ut aliquip ex <i>ea commodo consequat. Duis aute</i> irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
 
+    poiSummary.convertHTMLTags(document, expectedKeyResults);
     poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
 
   }
 
   private void addFinancialPlan() {
     String financialPlanDescription = "";
-    financialPlanDescription =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur faucibus gravida lorem ultricies commodo. Integer quis lorem est. Praesent ipsum dui, aliquam vel elit non, rhoncus dictum justo. Ut ornare nisi quis velit accumsan malesuada. Suspendisse iaculis est sit amet tempor facilisis. Morbi nec commodo elit. Aliquam facilisis ipsum et est faucibus, in sagittis justo semper. Duis interdum at orci vel viverra. Sed bibendum pretium nisi, in viverra tortor. Vivamus blandit velit vitae lacinia lacinia. Fusce sapien elit, gravida vitae augue eu, vehicula faucibus nibh. Pellentesque mattis mauris in dolor tincidunt iaculis. Fusce vestibulum faucibus ante at elementum. Pellentesque sit amet tortor eget leo euismod rhoncus. Phasellus non rutrum orci. Maecenas felis nulla, blandit a suscipit ac, ullamcorper vel urna. Quisque ac elementum nisl. Mauris sollicitudin tellus in tortor fringilla, at dapibus turpis commodo. Praesent cursus tellus quis egestas congue. Suspendisse id odio sodales, varius est vitae, cursus sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean vel augue nec nisl molestie fermentum at in enim. Curabitur ultricies tortor sem, in ultricies mi pretium sed. Sed porta cursus elementum. Ut fringilla turpis sed eros imperdiet lobortis.  Curabitur dignissim, arcu nec congue posuere, odio elit laoreet orci, non sodales quam nibh rutrum elit. Sed et interdum nisi. Fusce leo ex, mattis vel sapien sit amet, facilisis commodo lacus. Mauris at rutrum leo. Cras tempus, turpis eu tempor scelerisque, ante lacus varius diam, a viverra quam elit sed nulla. Proin quis elit et ante maximus facilisis quis non augue. Curabitur metus erat, condimentum mattis velit eu, vulputate auctor urna. Nunc velit nunc, tempor quis interdum posuere, maximus sit amet ipsum. Suspendisse libero ligula, vulputate vel nisl quis, ornare posuere nibh. Mauris sodales libero orci, non eleifend dolor rhoncus venenatis. Maecenas at dictum mi. Ut nibh augue, facilisis id aliquam sed, tempor quis quam. Proin eu lacus ornare, faucibus nulla ac, consequat ligula. Vivamus est lacus, fringilla et ligula et, vulputate mollis sem. In a mi odio.  Integer vehicula sem ut nunc scelerisque, eget consectetur ligula vehicula. Proin in mauris ultrices, rutrum leo vel, vulputate felis. In aliquet sit amet justo in facilisis. Praesent lacinia justo in est blandit sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur molestie arcu et nibh elementum sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut finibus scelerisque urna id viverra. Integer consectetur sapien in imperdiet congue.      Pellentesque rutrum posuere lorem. Phasellus at ante ex. Suspendisse vitae pretium nulla. Fusce congue cursus tempus. Sed et lorem eros. Etiam eros metus, semper ut lacus sed, molestie elementum ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas pulvinar est eu nisl euismod, non bibendum tellus imperdiet. Aliquam risus ante, ullamcorper nec sem eget, commodo varius neque. Duis mattis ultricies diam sed tempor. Nulla iaculis dolor et dolor posuere lacinia. Maecenas sed commodo mi, eget blandit felis. Praesent.";
+
+    financialPlanDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
 
     /*
      * if (powbSynthesisPMU != null) {
@@ -247,6 +250,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
      * }
      * }
      */
+
+    poiSummary.convertHTMLTags(document, financialPlanDescription);
     poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
 
   }
@@ -873,9 +878,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("2019_PTF_POWB");
-    // fileName.append("-");
-    // fileName.append(this.getLoggedCrp().getAcronym() + "-");
-    // fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append("-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");
     return fileName.toString();
   }
