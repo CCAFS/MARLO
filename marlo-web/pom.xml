@@ -343,11 +343,12 @@
 			<groupId>org.easyrules</groupId>
 			<artifactId>easyrules-core</artifactId>
 		</dependency>
-		<!-- library to ws client -->
+		<!-- library to ws client 
 		<dependency>
 			<groupId>org.apache.axis</groupId>
 			<artifactId>axis</artifactId>
 		</dependency>
+		-->
 		<!-- library to cast xml to object -->
 		<dependency>
 			<groupId>javax.xml</groupId>
