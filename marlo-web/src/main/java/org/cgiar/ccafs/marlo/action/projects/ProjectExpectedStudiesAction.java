@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -57,6 +58,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -137,6 +139,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
+  private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
 
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
@@ -182,7 +185,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
     ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -214,6 +218,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyInstitutionManager = projectExpectedStudyInstitutionManager;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
+    this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
 
   }
 
@@ -404,11 +409,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Load region
-        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
-          && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
-          expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(repIndRegionManager
-            .getRepIndRegionById(expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId()));
-        }
+        // if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
+        // && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
+        // expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(repIndRegionManager
+        // .getRepIndRegionById(expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId()));
+        // }
 
       }
     } else {
@@ -470,6 +475,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : expectedStudy.getRegions()) {
             projectExpectedStudyFlagship
               .setCrpProgram(crpProgramManager.getCrpProgramById(projectExpectedStudyFlagship.getCrpProgram().getId()));
+          }
+        }
+
+        // Expected Study Geographic Regions List Autosave
+        if (expectedStudy.getStudyRegions() != null) {
+          for (ProjectExpectedStudyRegion projectExpectedStudyRegion : expectedStudy.getStudyRegions()) {
+            projectExpectedStudyRegion.setRepIndRegion(
+              repIndRegionManager.getRepIndRegionById(projectExpectedStudyRegion.getRepIndRegion().getId()));
           }
         }
 
@@ -552,6 +565,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
               && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList())));
+        }
+
+        // Expected Study Geographic Regions List
+        if (expectedStudy.getProjectExpectedStudyRegions() != null) {
+          expectedStudy.setStudyRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyRegions().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
         // Expected Study Crp List
@@ -701,6 +720,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         expectedStudy.getProjects().clear();
       }
 
+      if (expectedStudy.getStudyRegions() != null) {
+        expectedStudy.getStudyRegions().clear();
+      }
+
       // HTTP Post info Values
       expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
       expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
@@ -744,6 +767,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveSubIdos(expectedStudyDB, phase);
       this.saveInstitutions(expectedStudyDB, phase);
       this.saveSrfTargets(expectedStudyDB, phase);
+      this.saveStudyRegions(expectedStudyDB, phase);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -1182,6 +1206,50 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           projectExpectedStudySrfTargetManager.saveProjectExpectedStudySrfTarget(studytargetSave);
           // This is to add studytargetSave to generate correct auditlog.
           expectedStudy.getProjectExpectedStudySrfTargets().add(studytargetSave);
+        }
+      }
+    }
+
+  }
+
+  /**
+   * Save Expected Studies Geographic Regions Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveStudyRegions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyRegions() != null
+      && projectExpectedStudy.getProjectExpectedStudyRegions().size() > 0) {
+
+      List<ProjectExpectedStudyRegion> regionPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRegions().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyRegion studyRegion : regionPrev) {
+        if (expectedStudy.getStudyRegions() == null || !expectedStudy.getStudyRegions().contains(studyRegion)) {
+          projectExpectedStudyRegionManager.deleteProjectExpectedStudyRegion(studyRegion.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getStudyRegions() != null) {
+      for (ProjectExpectedStudyRegion studyRegion : expectedStudy.getStudyRegions()) {
+        if (studyRegion.getId() == null) {
+          ProjectExpectedStudyRegion studyRegionSave = new ProjectExpectedStudyRegion();
+          studyRegionSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyRegionSave.setPhase(phase);
+
+          RepIndRegion repIndRegion = repIndRegionManager.getRepIndRegionById(studyRegion.getRepIndRegion().getId());
+
+          studyRegionSave.setRepIndRegion(repIndRegion);
+
+          projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(studyRegionSave);
+          // This is to add studyFlagshipSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyRegions().add(studyRegionSave);
         }
       }
     }

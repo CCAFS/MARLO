@@ -30,7 +30,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   @Expose
   private String description;
 
-
   @Expose
   private int year;
 
@@ -42,8 +41,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   @Expose
   private Boolean editable;
 
+
   @Expose
   private Boolean visible;
+
 
   @Expose
   private Phase next;
@@ -54,17 +55,19 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   @Expose
   private Date endDate;
 
-
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
 
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
+
 
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
 
   private Set<CrpPpaPartner> crpPpaPartner = new HashSet<CrpPpaPartner>(0);
+
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
+
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
@@ -109,11 +112,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<ExpectedStudyProject> expectedStudyProjects = new HashSet<ExpectedStudyProject>(0);
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
   private Set<DeliverableLocation> deliverableLocations = new HashSet<DeliverableLocation>(0);
-
+  private Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions = new HashSet<ProjectExpectedStudyRegion>(0);
 
   public Phase() {
   }
-
 
   public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
@@ -148,9 +150,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return true;
   }
 
+
   public Set<CrpClusterOfActivity> getClusters() {
     return clusters;
   }
+
 
   public String getComposedName() {
     return this.name + " - " + year;
@@ -233,7 +237,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -241,19 +244,19 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return u;
   }
 
-
   public String getName() {
     return name;
   }
+
 
   public Phase getNext() {
     return next;
   }
 
+
   public Set<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
-
 
   public Set<ProjectPartner> getPartners() {
     return partners;
@@ -262,6 +265,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<PowbSynthesis> getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   public Set<Activity> getProjectActivites() {
     return projectActivites;
@@ -291,11 +295,9 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudyCountries;
   }
 
-
   public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
     return projectExpectedStudyCrps;
   }
-
 
   public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
     return projectExpectedStudyFlagships;
@@ -312,6 +314,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   }
 
 
+  public Set<ProjectExpectedStudyRegion> getProjectExpectedStudyRegions() {
+    return projectExpectedStudyRegions;
+  }
+
+
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
   }
@@ -325,6 +332,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
+
 
   public Set<ProjectHighlightCountry> getProjectHighlightCountries() {
     return projectHighlightCountries;
@@ -346,7 +354,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectInnovationCountries;
   }
 
-
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return projectInnovationCrps;
   }
@@ -356,14 +363,15 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectInnovationDeliverables;
   }
 
+
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
   }
 
-
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
     return projectInnovationOrganizations;
   }
+
 
   public Set<ProjectLeverage> getProjectLeverages() {
     return projectLeverages;
@@ -376,7 +384,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
-
 
   public Set<ProjectPhase> getProjectPhases() {
     return this.projectPhases;
@@ -423,6 +430,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return true;
   }
 
+
   public Boolean isReporting() {
     return description.equals(APConstants.REPORTING);
   }
@@ -438,7 +446,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {
     this.crpPpaPartner = crpPpaPartner;
   }
-
 
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
@@ -509,6 +516,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.fundingSourceLocations = fundingSourceLocations;
   }
 
+
   @Override
   public void setModifiedBy(User modifiedBy) {
 
@@ -518,15 +526,14 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.name = name;
   }
 
-
   public void setNext(Phase next) {
     this.next = next;
   }
 
+
   public void setOutcomes(Set<CrpProgramOutcome> otucomes) {
     this.outcomes = otucomes;
   }
-
 
   public void setPartners(Set<ProjectPartner> partners) {
     this.partners = partners;
@@ -536,6 +543,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setPowbSynthesis(Set<PowbSynthesis> powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
+
 
   public void setProjectActivites(Set<Activity> projectActivites) {
     this.projectActivites = projectActivites;
@@ -548,7 +556,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setProjectBudgetsActivities(Set<ProjectBudgetsCluserActvity> projectBudgetsActivities) {
     this.projectBudgetsActivities = projectBudgetsActivities;
   }
-
 
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;
@@ -569,10 +576,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
 
+
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
   }
-
 
   public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
     this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
@@ -587,6 +594,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void
     setProjectExpectedStudyInstitutions(Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions) {
     this.projectExpectedStudyInstitutions = projectExpectedStudyInstitutions;
+  }
+
+
+  public void setProjectExpectedStudyRegions(Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions) {
+    this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {

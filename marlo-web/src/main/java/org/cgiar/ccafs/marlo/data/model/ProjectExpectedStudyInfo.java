@@ -474,7 +474,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
     this.setPhase(phase);
     this.setRepIndGeographicScope(projectExpectedStudyInfoUpdate.getRepIndGeographicScope());
-    this.setRepIndRegion(projectExpectedStudyInfoUpdate.getRepIndRegion());
+    // this.setRepIndRegion(projectExpectedStudyInfoUpdate.getRepIndRegion());
     this.setRepIndOrganizationType(projectExpectedStudyInfoUpdate.getRepIndOrganizationType());
     this.setGenderLevel(projectExpectedStudyInfoUpdate.getGenderLevel());
     this.setYouthLevel(projectExpectedStudyInfoUpdate.getYouthLevel());
@@ -504,6 +504,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setContacts(projectExpectedStudyInfoUpdate.getContacts());
     this.setCommissioningStudy(projectExpectedStudyInfoUpdate.getCommissioningStudy());
     this.setYear(projectExpectedStudyInfoUpdate.getYear());
+
 
   }
 
