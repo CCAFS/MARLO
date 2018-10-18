@@ -147,27 +147,34 @@
       </tr>
     </thead>
     <tbody>
+    [#assign collaborations = [] ]
     [#list crpPrograms as crpProgram]
       [#if crpProgram.synthesis.powbCollaborationGlobalUnitsList??]
-        [#list crpProgram.synthesis.powbCollaborationGlobalUnitsList as collaboration]
+        [#list crpProgram.synthesis.powbCollaborationGlobalUnitsList as coll]
+          [#assign collaborations = collaborations + [coll] ]
           <tr>
             <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
             <td class="col-md-3"> 
-              <strong>${(collaboration.globalUnit.acronym)!}</strong><br />
-              <i>${(collaboration.globalUnit.globalUnitType.name)!}</i>
+              <strong>${(coll.globalUnit.acronym)!}</strong><br />
+              <i>${(coll.globalUnit.globalUnitType.name)!}</i>
             </td>
             <td class="col-md-8">
-              ${(collaboration.brief?replace('\n', '<br>'))!} 
+              ${(coll.brief?replace('\n', '<br>'))!} 
             </td>
             [#-- Include in POWB --]
             <td class="col-md-1 text-center">
-              [#local isCollaborationChecked = ((!powbSynthesis.powbCollaborationGlobalUnitsList.plannedCollabortionsIds?seq_contains(collaboration.id))!true) ]
-              [@customForm.checkmark id="coll-${(collaboration.id)!''}" name="${customName}.plannedCollabortions" value="${(collaboration.id)!''}" checked=isCollaborationChecked editable=editable centered=true/]
+              [#local isCollaborationChecked = ((!powbSynthesis.powbCollaborationGlobalUnitsList.plannedCollabortionsIds?seq_contains(coll.id))!true) ]
+              [@customForm.checkmark id="coll-${(coll.id)!''}" name="${customName}.plannedCollabortions" value="${(coll.id)!''}" checked=isCollaborationChecked editable=editable centered=true/]
             </td>
           </tr>
         [/#list]
       [/#if]
     [/#list]
+    [#if !(collaborations?has_content)]
+      <tr>
+        <td colspan="4"> <p class="text-center">No Collaborations added.</p></td>
+      </tr>
+    [/#if]
     </tbody>
   </table>
 </div>

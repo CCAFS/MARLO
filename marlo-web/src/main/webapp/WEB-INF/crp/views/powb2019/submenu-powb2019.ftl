@@ -21,3 +21,11 @@
 
   [/#if]
 </ul>
+
+[#function calculateLimitWords maxLimit]
+  [#if PMU]
+    [#return maxLimit]
+  [#else]
+    [#return (maxLimit/(liaisonInstitutions?size-1))*2]
+  [/#if]
+[/#function]
