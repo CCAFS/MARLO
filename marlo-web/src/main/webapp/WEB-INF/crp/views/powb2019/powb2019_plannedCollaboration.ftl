@@ -13,7 +13,7 @@
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb", "action":"${crpSession}/adjustmentsChanges"},
-  {"label":"collaborationIntegration", "nameSpace":"powb", "action":"${crpSession}/collaborationIntegration"}
+  {"label":"plannedCollaborations", "nameSpace":"powb", "action":""}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]

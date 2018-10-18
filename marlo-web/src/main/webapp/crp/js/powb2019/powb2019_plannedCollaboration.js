@@ -42,7 +42,7 @@ function attachEvents() {
 
   setViewMores();
 
-  //addFlagshipAutoComplete();
+  // addFlagshipAutoComplete();
 
   // Add a program collaboration
   $('.addProgramCollaboration').on('click', addProgramCollaboration);
@@ -50,21 +50,6 @@ function attachEvents() {
   // Remove a program collaboration
   $('.removeProgramCollaboration').on('click', removeProgramCollaboration);
 
-  // Update Efforts Country Question
-  $('.updateEffostornCountry').on('keyup', updateEffostornCountry);
-
-}
-
-function updateEffostornCountry() {
-  var pmuValue = ""
-  $('textarea.updateEffostornCountry').each(function(i,input) {
-    if(input.value) {
-      pmuValue += $(input).parents('.regionBox').find('.regionTitle').text() + "\n";
-      pmuValue += input.value + "\n \n";
-    }
-  });
-
-  $('#pmuValue').val(pmuValue);
 }
 
 function addProgramCollaboration() {
@@ -84,12 +69,9 @@ function addProgramCollaboration() {
   // Clear Program
   $autoCompleteInput.val('');
   /*
-  $autoCompleteInput.autocomplete({
-      source: searchFlagships,
-      select: selectFlagship,
-      minLength: 0
-  }).autocomplete("instance")._renderItem = renderItem;
-  */
+   * $autoCompleteInput.autocomplete({ source: searchFlagships, select: selectFlagship, minLength: 0
+   * }).autocomplete("instance")._renderItem = renderItem;
+   */
   $item.show('slow');
   updateIndexes();
 }
@@ -185,7 +167,7 @@ function addFlagshipAutoComplete() {
         select: selectFlagship,
         minLength: 0
     }).autocomplete("instance")._renderItem = renderItem;
-  
+
   });
 }
 
