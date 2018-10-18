@@ -28,6 +28,7 @@
   background-color: #eee;
   border: 1px solid #ccc;
   border-radius: 2px;
+  box-shadow: 1px 1px 2px #ccc;
 }
 
 .checkmark.centered-true {
@@ -38,6 +39,10 @@
 /* On mouse-over, add a grey background color */
 .inputContainer:hover input ~ .checkmark {
   background-color: #ccc;
+}
+
+.inputContainer:hover input ~ .labelText  {
+  color: #000;
 }
 
 /* When the checkbox is checked, add a blue background */

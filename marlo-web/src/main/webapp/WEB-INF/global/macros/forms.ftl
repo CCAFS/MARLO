@@ -19,11 +19,12 @@
       [#if inputGroupText != ""]</div>[/#if]
       [#-- End condition --]
     [#else]
-      [#assign requiredText][#if required && editable ]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 
+      [#local isCurrencyInput = className?contains("currencyInput") ]
+      [#local requiredText][#if required && editable ]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#local] 
       [#-- Hidden input --]
       <input type="hidden" id="${name}" name="${name}" value="${customValue}" class="form-control input-sm ${className} ${required?string('required','optional')}"/>
       [#-- Show custom value --]
-      <p class="">[#if (customValue?has_content)!false]${customValue}[#else]${requiredText}[@s.text name="form.values.fieldEmpty" /][/#if]</p>
+      <p>[#if (customValue?has_content)!false] [#if isCurrencyInput]<nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>[#else]${customValue}[/#if]  [#else]${requiredText}[@s.text name="form.values.fieldEmpty" /][/#if]</p>
     [/#if]
   </div>
 [/#macro]

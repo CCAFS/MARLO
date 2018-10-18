@@ -8,14 +8,19 @@
   },
   { 'title': '2.  Expected Key Results',  'show': true,
     'items': [
-    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'expectedProgress',       'active': true},
-    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true},
-    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true }
+    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'expectedProgress',       'active': true, 'development': true },
+    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true },
+    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true, 'development': true }
     ]
   },
   { 'title': '3.  Financial Plan',        'show': true,
     'items': [
-    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true }
+    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true, 'development': true }
+    ]
+  },
+  { 'title': '4. CCAFS Specific',        'show': true,
+    'items': [
+    { 'slug': 'programChanges',          'name': 'powb.menu.programChanges',          'action': 'programChanges',       'active': true, 'development': true }
     ]
   }
 ]/]
@@ -41,13 +46,11 @@
             [#assign submitStatus = (action.getPowbSynthesisSectionStatus(item.action, powbSynthesisID))!false /]
             [#assign hasDraft = (action.getAutoSaveFilePath(powbSynthesis.class.simpleName, item.action, powbSynthesis.id))!false /]
             [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')}  [#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
                   [@s.text name=item.name/]
-                  [#-- Draft Tag 
-                  [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
-                  --]
+                  [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /][/#if]
                 </a>
               </li>
               [#-- Set current Item --]

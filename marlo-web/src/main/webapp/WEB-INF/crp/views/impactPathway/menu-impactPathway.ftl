@@ -110,7 +110,7 @@
 
 [#-- Submition message --]
 [#if !submission?has_content && completed && !canSubmit]
-  <p class="text-center" style="display:block">The Impact Pathway can be submitted now by the flagship leader.</p>
+  <p class="text-center" style="display:block">The Impact Pathway can be submitted now by the [@s.text name="global.managementLiaison${centerGlobalUnit?string('Center', '')}" /].</p>
 [/#if]
 
 [#-- Check button --]
