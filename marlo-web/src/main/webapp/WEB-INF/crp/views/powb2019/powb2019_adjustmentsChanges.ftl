@@ -45,7 +45,7 @@
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
             [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-            [@customForm.textArea name="${customName}.tocOverall" i18nkey="${customLabel}.adjustmentsChanges" help="${customLabel}.adjustmentsChanges.help" helpIcon=false required=true className="limitWords-500" editable=editable allowTextEditor=true   /]
+            [@customForm.textArea name="${customName}.tocOverall" i18nkey="${customLabel}.adjustmentsChanges" help="${customLabel}.adjustmentsChanges.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
           </div>
           
           [#if PMU]
