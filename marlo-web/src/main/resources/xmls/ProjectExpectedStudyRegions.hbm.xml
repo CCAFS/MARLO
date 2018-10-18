@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="phases" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />
         </many-to-one>
         <many-to-one name="projectExpectedStudy" class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">

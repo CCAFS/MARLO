@@ -361,7 +361,7 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLocation" />
     </set>
-    <set name="projectExpectedStudyInRegions" table="project_expected_study_regions"
+    <set name="projectExpectedStudyRegions" table="project_expected_study_regions"
       inverse="true" lazy="true" fetch="select">
       <key>
         <column name="id_phase" />
