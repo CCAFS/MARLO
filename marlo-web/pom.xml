@@ -233,6 +233,12 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>ooxml-schemas</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.htmlparser.jericho/jericho-html -->
+    <dependency>
+        <groupId>net.htmlparser.jericho</groupId>
+        <artifactId>jericho-html</artifactId>
+        <version>3.4</version>
+    </dependency> 
 		<!-- Database version control -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
