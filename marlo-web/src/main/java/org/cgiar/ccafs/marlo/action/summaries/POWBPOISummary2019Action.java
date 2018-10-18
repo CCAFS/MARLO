@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
 import org.cgiar.ccafs.marlo.utils.ReadWordFile;
+import org.cgiar.ccafs.marlo.utils.richTextPOI.HTMLtoWord;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -106,7 +107,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
   private static void addCustomHeadingStyle(XWPFDocument docxDocument, String strStyleId, int headingLevel) {
 
-
     CTStyle ctStyle = CTStyle.Factory.newInstance();
 
     ctStyle.setStyleId(strStyleId);
@@ -139,7 +139,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     style.setType(STStyleType.PARAGRAPH);
     styles.addStyle(style);
-
   }
 
   public static double round(double value, int places) {
@@ -204,7 +203,17 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       String adjustmentsDescription = "";
 
       adjustmentsDescription =
-        "Lorem ipsum dolor sit amet, consectetur <b>adipiscing elit. is interdum</b> at orci vel viverra.";
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vestibulum purus tortor, nec interdum libero eleifend eget. Sed dolor neque, tincidunt viverra enim ut, gravida maximus metus. Phasellus dictum vitae enim vel vehicula. Phasellus mattis sapien id convallis placerat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris egestas leo eu congue rhoncus. Nullam at sagittis turpis. Sed pretium pharetra velit ac venenatis. Maecenas rutrum ex et ultrices rutrum.\r\n"
+          + "\r\n"
+          + "Etiam lacus quam, finibus non risus sed, auctor malesuada elit. Proin malesuada, turpis non tempor dapibus, neque sapien accumsan sapien, sed maximus eros ipsum non ipsum. Vestibulum egestas quam vitae neque gravida, in laoreet arcu eleifend. Morbi in risus eu ligula tristique sodales. Morbi ac ultricies enim, ac tincidunt dolor. Etiam euismod hendrerit arcu ut rhoncus. Maecenas vehicula tempus justo, sed dignissim nisl hendrerit at. Duis volutpat sed nisl sit amet finibus.\r\n"
+          + "\r\n"
+          + "Nunc vel ante sapien. Phasellus vel imperdiet tellus, ac vestibulum erat. Morbi vehicula augue leo, nec ornare est varius vitae. In placerat, augue non pulvinar fermentum, tellus tellus varius ipsum, vitae sagittis diam nibh vitae lorem. Nulla maximus tristique consequat. Fusce velit ex, auctor ut auctor quis, efficitur nec nisl. Nunc dictum iaculis nisl.\r\n"
+          + "\r\n"
+          + "Proin quis elit scelerisque, gravida est at, aliquet mi. Suspendisse tristique mi sed sapien porttitor placerat vitae eu lacus. Vestibulum nec euismod neque. Nulla sed mollis magna. Phasellus ultricies odio a nisi mollis molestie. Pellentesque a placerat nibh. Vivamus nulla lectus, aliquet vitae suscipit quis, viverra et urna. Nunc iaculis luctus arcu et lobortis. Nullam cursus malesuada erat iaculis consectetur. Phasellus dui sem, elementum nec dui vitae, elementum mollis felis. Integer ut nisi quis sem accumsan ornare et ac lectus.\r\n"
+          + "\r\n"
+          + "Curabitur non enim gravida, efficitur velit non, bibendum elit. Phasellus fermentum magna vel risus consequat bibendum. Suspendisse nunc eros, blandit vel elementum non, rutrum dignissim urna. Nullam at egestas justo. Vestibulum quis aliquam est. Aliquam tempus et ligula eu ornare. Suspendisse in sodales eros. Nam eleifend felis eu nulla feugiat, vitae vulputate risus rutrum. Sed vel feugiat metus. Aliquam erat volutpat. Mauris congue mauris at eros elementum, quis ornare velit vehicula. Maecenas mi urna, pharetra et fringilla sit amet, gravida quis sapien. Pellentesque quis nibh a turpis consectetur consequat eget gravida lorem.\r\n"
+          + "\r\n"
+          + "Sed rutrum libero sed eros mattis, bibendum pulvinar risus molestie. Nunc sapien mauris, eleifend vitae volutpat in, lobortis in arcu. Maecenas egestas erat sed pellentesque suscipit. Praesent et dolor in ipsum ultrices dignissim non sed sem. Mauris aliquet erat in lectus fringilla, at elementum mauris consequat. Etiam sit amet efficitur mi. In sit amet orci eu est feugiat accumsan. Maecenas maximus urna nec libero ornare, iaculis vehicula urna faucibus. Fusce volutpat tempus metus vel varius. Nunc sollicitudin blandit tempus. Aliquam interdum in nibh at sollicitudin. Integer sit amet viverra massa. Nulla viverra ante at accumsan rutrum. Vivamus sit amet arcu non sem fringilla hendrerit a a lorem. Maecenas at metus volutpat, aliquet quam sed, pharetra tellus. Nunc et venenatis nunc. Proin at scelerisque tortor. Maecenas eget eros eget ante.";
       /*
        * if (powbSynthesisPMU.getPowbToc() != null) {
        * adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
@@ -212,7 +221,10 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
        * ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
        * }
        */
-      poiSummary.convertHTMLTags(document, adjustmentsDescription);
+      // poiSummary.convertHTMLTags(document, adjustmentsDescription);
+      HTMLtoWord htmltoWord = new HTMLtoWord();
+
+
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
       if (powbSynthesisPMU.getPowbToc() != null && powbSynthesisPMU.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
@@ -229,9 +241,50 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String expectedKeyResults = "";
 
     expectedKeyResults =
-      "Lorem ipsum dolor sit amet, <b>consectetur adipiscing elit,</b> sed do eiusmod tempor incididunt <u>ut labore et dolore</u> magna aliqua. Ut enim ad minim veniam, <s>quis nostrud exercitation ullamco laboris</s> nisi ut aliquip ex <i>ea commodo consequat. Duis aute</i> irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
-
-    poiSummary.convertHTMLTags(document, expectedKeyResults);
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus massa augue, consectetur sed lorem et, consectetur scelerisque tortor. Pellentesque quis luctus lorem. Cras non cursus sapien, ut posuere sapien. Maecenas non risus sem. Nulla neque justo, sagittis in neque in, dictum dignissim arcu. In non eleifend ex. Fusce semper vestibulum ex ac scelerisque. Ut dignissim urna finibus lacus porttitor, at sollicitudin diam laoreet. Nulla dapibus ultricies lectus at luctus. Donec eget justo at lorem interdum gravida eu et purus. Etiam vel turpis ultrices nisi varius venenatis. Donec vestibulum id enim sit amet molestie. Ut pharetra, neque nec aliquet rutrum, massa est commodo tellus, rhoncus fermentum purus lacus et nisl. Ut nec felis lobortis, sagittis lacus non, tristique arcu.\r\n"
+        + "\r\n"
+        + "Pellentesque auctor urna ac tincidunt maximus. Proin fermentum ultrices eros, a porttitor risus dignissim sit amet. Ut aliquet velit vel velit tempus lobortis. Quisque viverra aliquet fermentum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam elementum dapibus rutrum. Cras mattis vitae urna eget interdum. Sed iaculis lorem eget dapibus pretium. Proin diam mauris, sodales ut sagittis ut, commodo non mi. Sed congue lacus at dolor consequat, id consectetur nulla egestas.\r\n"
+        + "\r\n"
+        + "Praesent in mattis dolor. Nam ut mollis justo, at ullamcorper libero. In hac habitasse platea dictumst. Duis dignissim congue elit, et egestas neque scelerisque eget. Nam mattis elit et fringilla facilisis. Cras condimentum dignissim augue nec finibus. Curabitur sed molestie felis. Vestibulum dapibus dolor eu enim iaculis porta. Ut efficitur tempor augue, a feugiat ex faucibus eget.\r\n"
+        + "\r\n"
+        + "Nullam pharetra risus ullamcorper ante feugiat, ut volutpat ex suscipit. Suspendisse pellentesque mi venenatis nunc molestie porttitor. Ut nisi orci, gravida nec vehicula at, semper egestas urna. Sed leo nulla, lacinia quis quam ac, cursus condimentum sapien. Duis placerat maximus ex at suscipit. Sed sollicitudin malesuada dolor, ut efficitur felis. In hac habitasse platea dictumst. In vel nunc non tellus maximus blandit eget vitae nunc. Morbi auctor non mauris id consequat.\r\n"
+        + "\r\n"
+        + "Donec pulvinar purus eu nisl rutrum, ac tempus massa cursus. Suspendisse et augue aliquam, pretium erat vitae, iaculis massa. Fusce auctor erat fringilla eleifend auctor. Ut sit amet convallis tortor. Curabitur sit amet accumsan metus, sit amet finibus tellus. Proin auctor enim nec neque aliquet dapibus. Quisque tristique odio in lacus convallis blandit.\r\n"
+        + "\r\n"
+        + "Vestibulum a egestas purus. Curabitur eu gravida eros, mattis fermentum nibh. Nullam nibh nulla, vestibulum et est eget, laoreet egestas odio. Curabitur vel magna quis diam tristique sagittis. Phasellus tempor id velit quis lacinia. Proin est erat, dictum ut purus id, sollicitudin molestie orci. In eget imperdiet nunc. Donec luctus venenatis elit, eget condimentum ligula congue sit amet. Duis arcu elit, pellentesque eu ligula a, sollicitudin tempor nisl. Sed hendrerit, erat ac ultrices consectetur, elit lectus dapibus lacus, at interdum dolor nisi quis augue. Proin mi nunc, condimentum nec varius aliquam, finibus id ex. Nunc sit amet efficitur nisi.\r\n"
+        + "\r\n"
+        + "Vestibulum laoreet urna vel quam molestie, ut pretium nibh ornare. Nulla sed diam a neque commodo malesuada in nec augue. Vivamus scelerisque urna nisi, quis auctor quam elementum vitae. Etiam ac congue nisl, ac venenatis nulla. Curabitur mi justo, ornare in vehicula nec, interdum vel leo. Nam convallis augue sapien, eget feugiat est accumsan nec. Phasellus tempor volutpat eros a dictum. Nulla suscipit, dui eu blandit semper, arcu mauris elementum ligula, vulputate aliquet risus sem vel nulla. Vivamus id ultricies quam. In ipsum arcu, convallis sed orci quis, posuere vulputate mauris. Fusce ut commodo felis. In semper erat ac quam condimentum sagittis.\r\n"
+        + "\r\n"
+        + "Aenean consectetur magna sit amet nunc varius, nec porta lorem molestie. In finibus nibh vitae dui elementum placerat. Integer euismod mi sed diam placerat, in ullamcorper dui varius. Quisque posuere cursus lacus, nec tempor lorem laoreet ut. Duis lacinia eros eget mauris blandit, in semper magna volutpat. Vivamus in imperdiet ex. Suspendisse fermentum vestibulum hendrerit. Integer vestibulum sodales lacus facilisis pharetra. Phasellus tincidunt sapien at vulputate vulputate. Fusce in lacus justo. Nullam a mattis turpis. Nulla viverra mauris nisl, et pellentesque lacus lacinia id. Nam fringilla nisl et orci fermentum, id porta velit vulputate. Sed a sapien non urna vulputate fermentum. In consequat sed velit hendrerit lobortis. Phasellus facilisis faucibus porta.\r\n"
+        + "\r\n"
+        + "In vel arcu auctor, congue metus nec, vulputate justo. Maecenas et laoreet orci, egestas varius velit. Nullam a finibus lorem, in egestas eros. Suspendisse eleifend, nibh a dictum dignissim, mauris ex blandit eros, non malesuada orci lorem vel turpis. Sed vitae fringilla lacus, a porttitor augue. Nullam condimentum aliquet massa, quis viverra diam auctor tristique. Ut cursus turpis ut nunc blandit fringilla. Morbi pharetra felis ac scelerisque commodo. Duis eleifend euismod libero vitae luctus. Maecenas facilisis euismod turpis, a auctor massa tincidunt in. Nunc justo nunc, finibus sed dictum ac, tempus quis odio. Curabitur in orci lorem. Morbi at nisi aliquet, rutrum augue non, dictum leo. Etiam ullamcorper purus ut suscipit mollis. Maecenas id laoreet ex.\r\n"
+        + "\r\n"
+        + "Nullam non tristique metus. Donec massa nunc, euismod sodales augue et, dignissim laoreet risus. Aliquam a varius odio. Morbi porta erat sed eros scelerisque elementum. Integer in sem at metus efficitur tristique sed non turpis. Donec eget nisl in justo posuere imperdiet. Fusce sagittis dui id lacus pretium tincidunt. Suspendisse efficitur mi tellus. Integer eget ligula et purus egestas aliquet vel semper elit. Quisque auctor velit auctor, interdum quam quis, placerat mi. Phasellus vitae interdum libero. Phasellus tristique, justo sed mollis fringilla, risus massa imperdiet justo, at elementum quam dolor vitae lacus. Aenean imperdiet diam eget rutrum laoreet. Cras sed faucibus tortor. Integer et mattis massa.\r\n"
+        + "\r\n"
+        + "Phasellus imperdiet eros nec ante vehicula, sed finibus leo pretium. Ut semper ante ligula, vel pretium sapien facilisis id. Praesent sit amet tortor ultricies, ultricies lorem at, iaculis augue. Praesent non velit eros. Cras id vestibulum leo. Integer malesuada arcu eros, accumsan ullamcorper diam auctor vel. Phasellus consequat sollicitudin metus a blandit. In in elit sit amet leo pretium commodo accumsan in ante. Pellentesque imperdiet rutrum erat, sed imperdiet tortor pulvinar id. Pellentesque rhoncus sit amet lectus at euismod. Maecenas finibus ante ac consectetur lobortis. Integer nec orci aliquet, pulvinar magna at, interdum nunc. Phasellus eu faucibus nisl, at efficitur justo. Etiam ac ligula bibendum, laoreet dui vel, malesuada nisi.\r\n"
+        + "\r\n"
+        + "In in dui ac diam tincidunt varius. Phasellus nisl orci, sagittis eget orci at, pulvinar tincidunt magna. Integer ullamcorper nec ligula id lacinia. Nunc a ligula non lacus eleifend mattis vel eu nunc. Sed ac convallis leo. Aliquam id semper mauris. Praesent eu feugiat quam. Praesent vitae dapibus nulla. Sed et rhoncus turpis. Fusce in diam sapien. Cras quis faucibus mauris. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.\r\n"
+        + "\r\n"
+        + "Quisque dolor neque, consectetur vel lectus non, vehicula tincidunt dolor. Proin felis libero, blandit semper dui et, posuere sollicitudin metus. Cras id lacinia orci. Curabitur imperdiet risus sed sodales pellentesque. Aliquam at lectus a tortor congue consectetur. Curabitur consequat, erat at consectetur mollis, lorem purus malesuada neque, condimentum euismod lectus odio non felis. In accumsan fermentum est vel facilisis. Etiam volutpat vulputate facilisis. Pellentesque ultrices felis eget nibh lobortis, vitae maximus purus mattis. In accumsan gravida sollicitudin. Phasellus est enim, maximus vel tristique aliquet, blandit non leo.\r\n"
+        + "\r\n"
+        + "Pellentesque accumsan lobortis ipsum vel elementum. Aenean nunc neque, condimentum sit amet congue vel, vestibulum et turpis. Proin ut aliquam mauris. Fusce sagittis libero neque, vitae convallis ante hendrerit quis. Praesent tempor dapibus enim, rhoncus sodales nisi ultricies nec. Quisque eu sapien eros. Donec semper tincidunt egestas. Phasellus gravida rhoncus mi, eu imperdiet dolor varius a. Quisque in vehicula justo, a interdum est. Etiam condimentum finibus pretium. Pellentesque vehicula leo magna, eu venenatis arcu mollis et. Quisque sit amet lorem neque. Nulla vitae nisi nec eros hendrerit mollis vel eu orci. Integer ullamcorper arcu nec lobortis gravida.\r\n"
+        + "\r\n"
+        + "Cras pretium, ex semper lobortis suscipit, elit nulla eleifend justo, sit amet euismod orci ante nec dolor. Aliquam eget ornare mi. Donec suscipit ante at diam sollicitudin, sagittis tincidunt ex tristique. Nulla vel varius sapien. Maecenas eu massa pulvinar, iaculis lacus vel, rhoncus ligula. Morbi sit amet massa sit amet nulla volutpat eleifend quis ac ipsum. Sed eleifend luctus arcu, in finibus sapien euismod a. Etiam quis lorem nec tellus scelerisque vehicula. In viverra sem in nibh maximus cursus vitae vel nunc. Aenean a purus non felis pretium dictum quis ut felis. Pellentesque quis dolor congue, aliquam augue eget, gravida velit. Mauris et consequat orci. Vestibulum vitae dui nec metus lobortis maximus.\r\n"
+        + "\r\n"
+        + "Integer nec massa commodo, auctor elit nec, pretium nulla. Mauris dictum porttitor mattis. Praesent id aliquam augue, eget laoreet nibh. Praesent aliquam nec metus non dapibus. Pellentesque sed dignissim mi. Curabitur sed faucibus dui, vitae semper nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus laoreet purus eu aliquam eleifend. Morbi et congue urna. Duis vel malesuada magna, et tincidunt nibh. Sed vitae eros rhoncus, eleifend augue quis, placerat elit. Sed interdum non est placerat congue. Nam quis lectus velit. Phasellus rhoncus sagittis ipsum eget gravida.\r\n"
+        + "\r\n"
+        + "Vivamus eu dignissim elit. Curabitur pellentesque dui vitae tortor tempor pulvinar. Pellentesque semper mollis egestas. Nam mollis felis lorem, non mollis ex pretium vitae. Cras lectus metus, commodo non purus nec, elementum cursus massa. Integer tincidunt augue purus, ac pellentesque tellus lacinia id. Nulla facilisi. Aenean imperdiet ultrices est non consectetur. Ut non nibh elit. Vestibulum vehicula lectus blandit viverra condimentum. Vestibulum ut dolor rhoncus, semper nisl vitae, finibus risus. Donec pellentesque libero euismod nunc aliquet dictum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque congue sodales nisl, nec ullamcorper libero tincidunt at. Proin ut lacus viverra ipsum pharetra interdum. Fusce vulputate ut lacus eu pulvinar.\r\n"
+        + "\r\n"
+        + "Sed at scelerisque sapien, ut euismod quam. Nunc auctor vestibulum ante vel volutpat. Nulla varius congue volutpat. Cras porta nisl tempor faucibus placerat. Aliquam venenatis, nunc id congue consequat, neque risus fringilla elit, vitae consectetur ipsum tortor eu quam. Vestibulum pellentesque, ex vel euismod mollis, augue leo bibendum tortor, sed hendrerit ligula mi nec nunc. Suspendisse malesuada ex sit amet commodo tempor. Integer tincidunt, tortor at dictum facilisis, neque eros cursus mauris, eu volutpat nisi neque id dui. Praesent iaculis id elit feugiat fermentum. Cras fermentum ligula vitae nulla placerat ornare. Vestibulum varius lobortis risus. Pellentesque sed odio consectetur, euismod eros id, sodales ex. Nullam vitae convallis sem. Nam in accumsan eros. Nunc vel sapien et metus iaculis placerat a ac neque. Suspendisse potenti.\r\n"
+        + "\r\n"
+        + "Ut pulvinar congue nunc vel elementum. Suspendisse potenti. Pellentesque volutpat dictum urna eget porta. Proin lobortis tortor ut ornare ultricies. Suspendisse ornare lorem nec lacus mollis iaculis. Cras sed augue ipsum. Donec nisi leo, tincidunt ac dolor at, fermentum imperdiet nulla. Duis porttitor a libero quis hendrerit.\r\n"
+        + "\r\n"
+        + "Duis sollicitudin, tortor vel ultrices varius, elit purus finibus enim, et mattis mauris lacus nec diam. Fusce in fringilla dui, vitae dignissim neque. Aliquam tempor sit amet urna nec viverra. Maecenas purus elit, mattis a purus vel, placerat malesuada velit. Mauris mattis nibh a eros tristique vehicula. In pulvinar tortor quis lorem accumsan, eu semper urna mollis. Praesent consequat vestibulum magna, ut molestie justo. In hac habitasse platea dictumst. Proin ultricies condimentum purus sed lobortis. Duis eros nibh, pretium id est eu, condimentum mattis tortor. Donec viverra ac arcu id malesuada. Maecenas vestibulum imperdiet velit id ultricies. Maecenas vitae nulla vitae nibh aliquam eleifend vitae non lacus. Vestibulum ornare hendrerit neque, blandit porttitor diam mattis congue. Duis semper justo vel tempus vestibulum.\r\n"
+        + "\r\n"
+        + "Sed posuere dui non dolor rhoncus, rutrum fermentum risus euismod. Phasellus massa orci, tristique quis sem vel, ultricies eleifend sem. Vivamus hendrerit magna eu justo elementum, a efficitur nisi suscipit. Aenean at aliquam nisi. Integer blandit semper enim ut posuere. Integer finibus erat vel nisl ullamcorper, ut consectetur dui tincidunt. Praesent consequat orci in fermentum sollicitudin. Vivamus vestibulum tellus vitae libero vestibulum, ut imperdiet ligula aliquet. Sed bibendum dolor sit amet metus fermentum mollis. Quisque cursus est risus, sed dapibus lectus congue ut.\r\n"
+        + "\r\n"
+        + "Duis varius erat at sem porttitor, sed tristique purus convallis. In dapibus elementum facilisis. Nunc fringilla risus lacus, nec pellentesque quam sodales eget. Sed efficitur condimentum dolor, sed malesuada leo pulvinar tincidunt. Vestibulum faucibus metus a arcu malesuada suscipit.";
+    // poiSummary.convertHTMLTags(document, expectedKeyResults);
     poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
 
   }
@@ -239,7 +292,20 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private void addFinancialPlan() {
     String financialPlanDescription = "";
 
-    financialPlanDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
+    financialPlanDescription =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque volutpat convallis nunc, ut faucibus ex luctus a. Suspendisse ultricies tortor et velit pretium interdum. Nulla non maximus risus, quis dictum elit. Proin eleifend urna id augue eleifend efficitur. Donec non varius dui, id pretium sapien. Phasellus luctus tortor vitae erat posuere, at mollis erat dapibus. Mauris vitae euismod ligula, et lacinia lacus.\r\n"
+        + "\r\n"
+        + "Donec nunc purus, sollicitudin non convallis non, imperdiet non massa. Nam bibendum risus diam, id suscipit magna pretium at. Nulla at dolor eleifend, mattis enim et, luctus lorem. Maecenas laoreet arcu a ligula ultrices, ut rhoncus sapien tincidunt. Etiam egestas mauris sit amet orci accumsan gravida. Etiam consectetur arcu sit amet elementum ullamcorper. In rhoncus mauris augue, eget accumsan felis egestas quis. Maecenas dictum dapibus tellus, vitae placerat metus venenatis et. Sed et nulla ultrices, lobortis diam sed, mattis lorem. Vivamus vitae ullamcorper dolor, vel commodo diam. Nulla auctor diam at justo scelerisque pretium.\r\n"
+        + "\r\n"
+        + "Suspendisse at nibh nec ipsum interdum auctor. Duis tempor suscipit nisl vel faucibus. Nulla ullamcorper tortor mi, sed iaculis ante suscipit eget. Phasellus rhoncus, lacus vel interdum laoreet, augue nisi facilisis dolor, eu rhoncus leo metus scelerisque dui. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin tincidunt, metus nec maximus sagittis, purus sem blandit sem, eget scelerisque ex quam non est. Nullam ornare tincidunt urna, ut aliquet purus mattis vel. In hac habitasse platea dictumst.\r\n"
+        + "\r\n"
+        + "Duis odio orci, auctor eu ultrices in, elementum ut arcu. In sapien nisi, tincidunt id tristique non, molestie eu lectus. Aenean vel dolor massa. Aliquam vitae sodales risus. Duis elit purus, ultricies quis nisl ut, efficitur congue orci. Praesent sit amet nibh vitae dolor auctor luctus sit amet tincidunt ligula. Vivamus laoreet orci ante, in tempus ante tempor sit amet.\r\n"
+        + "\r\n"
+        + "Vivamus auctor posuere euismod. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer feugiat purus in ultrices tristique. Nunc pharetra varius erat eu dignissim. Morbi mollis et sapien facilisis imperdiet. Morbi a ligula eu urna tempor vestibulum. Pellentesque vitae vestibulum lacus, id placerat sapien. In hac habitasse platea dictumst.\r\n"
+        + "\r\n"
+        + "Sed in elit sed justo consequat convallis et in est. Sed ante turpis, pellentesque et nunc vel, faucibus viverra libero. Sed egestas, ante vitae ornare egestas, turpis est eleifend lacus, nec fermentum leo est in lectus. Fusce vehicula lacus metus, ac feugiat diam pellentesque dictum. Phasellus ut nibh sed sapien varius ultrices. Maecenas luctus vehicula turpis. Morbi maximus neque sed lacinia gravida. Mauris ac pharetra mi. Aenean gravida rutrum nulla a rutrum. Maecenas quam diam, interdum vel ultrices eget, convallis vitae arcu. Maecenas ac elit urna. Curabitur eget ultricies neque. In sit amet cursus lectus.\r\n"
+        + "\r\n"
+        + "Mauris vulputate velit at dictum aliquam. Nulla sed velit condimentum nisi rutrum vehicula. Donec nec est eu risus egestas suscipit. Phasellus vitae nisi id nisl tincidunt efficitur. Ut at mauris vitae tortor tempor dignissim ac sit amet leo. Aliquam ornare vestibulum eros, ac porta mi. Nulla euismod erat non ipsum tempor ornare. Curabitur hendrerit finibus tellus a accumsan. Praesent volutpat.";
 
     /*
      * if (powbSynthesisPMU != null) {
@@ -251,7 +317,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
      * }
      */
 
-    poiSummary.convertHTMLTags(document, financialPlanDescription);
+    // poiSummary.convertHTMLTags(document, financialPlanDescription);
     poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
 
   }
