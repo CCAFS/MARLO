@@ -5,23 +5,23 @@
 [#assign customJS = [ "${baseUrlMedia}/js/powb2019/powb2019_adjustmentsChanges.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
-[#assign currentStage = "adjustmentsChanges" /]
+[#assign currentStage = "programChanges" /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb2019", "action":"${crpSession}/adjustmentsChanges"},
-  {"label":"adjustmentsChanges", "nameSpace":"powb2019", "action":"${crpSession}/adjustmentsChanges"}
+  {"label":"programChanges", "nameSpace":"powb2019", "action":"${crpSession}/programChanges"}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "powbSynthesis.powbToc" /]
+[#assign customName= "powbSynthesis.programChanges" /]
 [#assign customLabel= "powbSynthesis.${currentStage}" /]
 
 [#-- Helptext --]
-[@utilities.helpBox name="adjustmentsChanges.help" /]
+[@utilities.helpBox name="${customLabel}.help" /]
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
@@ -39,18 +39,18 @@
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
          
         [#-- Title --]
-        <h3 class="headTitle">[@s.text name="adjustmentsChanges.title" /]</h3>
+        <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
         <div class="borderBox">
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
             [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-            [@customForm.textArea name="${customName}.tocOverall" i18nkey="${customLabel}.adjustmentsChanges" help="${customLabel}.adjustmentsChanges.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
+            [@customForm.textArea name="${customName}.programChanges" i18nkey="${customLabel}.programChanges" help="${customLabel}.programChanges.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
           </div>
           
           [#if PMU]
           <div class="form-group">
-            [@tableFlagshipSynthesis tableName="flagshipsTable" list=tocList columns=["overall"] /]
+            [@tableFlagshipSynthesis tableName="fpsChangesTable" list=tocList columns=["programChanges"] /]
           </div>
           [/#if]
           

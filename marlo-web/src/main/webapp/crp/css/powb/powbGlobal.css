@@ -44,9 +44,9 @@ td {
   vertical-align: middle !important;
 }
 
-table.noFormatTable, table.noFormatTable th{
+table.noFormatTable, table.noFormatTable th, table.noFormatTable tr {
   border: none;
-  background:none;
+  background: none;
 }
 
 span.icon-20 {
@@ -259,7 +259,8 @@ p.dacMarker.level-3 {
   color: #fff;
 }
 
-.amountType{
+.amountType {
   font-weight: bold;
   color: #ceb286;
+  padding: 0;
 }

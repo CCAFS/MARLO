@@ -322,7 +322,8 @@ $(document).ready(function() {
       ],
       autogrow: true,
       minimalLinks: true,
-      semantic: false
+      semantic: true,
+      removeformatPasted: true
     });
   }
 

@@ -2,7 +2,7 @@
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign pageLibs = [ "trumbowyg"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/powb/powb_financialPlan.js" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/powb2019/powb2019_plannedBudget.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "plannedBudget" /]
@@ -10,7 +10,7 @@
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb2019", "action":"${crpSession}/adjustmentsChanges"},
-  {"label":"expectedProgress", "nameSpace":"powb2019", "action":""}
+  {"label":"plannedBudget", "nameSpace":"powb2019", "action":""}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
@@ -46,7 +46,7 @@
             [#-- Provide a short narrative of expected highlights of the CRP/PTF in the coming year --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="" editable=editable allowTextEditor=true   /]
+              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
             </div>
             
             [#if PMU]
@@ -61,12 +61,18 @@
           [#if PMU]
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title" /]</h4>
             <div class="form-group">
-              [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) ]
-              [#list expenditureAreas  as area]
-                [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
-                [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
-                [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
-              [/#list]
+              <div class="expenditures-list">
+                [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) ]
+                [#list expenditureAreas  as area]
+                  [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
+                  [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
+                  [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
+                [/#list]
+              </div>
+              [#-- Add other main program planned budget outside FPs  --]
+              [#if editable]
+                <div class="addExpenditureArea bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addExpenditureArea"/]</div>
+              [/#if]
             </div>
           [/#if]
         </div>
@@ -78,6 +84,9 @@
     </div> 
   </div> 
 </section>
+
+[#-- Templates --]
+[@powbExpenditureArea area={} element={} index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -122,15 +131,29 @@
   </div>
 [/#macro]
 
-[#macro powbExpenditureArea area element index isLiaison]
+[#macro powbExpenditureArea area element index isLiaison=false isTemplate=false ]
   [#local customName = "powbSynthesis.powbFinancialPlannedBudgetList[${index}]"]
   [#local areaType = (area.class.name?split('.')[area.class.name?split('.')?size-1])!]
-  <div class="simpleBox">
+  [#local isCustomExpenditure =  !(((area.name?has_content)!false) || ((area.expenditureArea?has_content)!false))]
+  <div id="expenditureBlock-${isTemplate?string('template', index)}" class="expenditureBlock simpleBox form-group" style="display:${isTemplate?string('none','block')}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.${isLiaison?string('liaisonInstitution','powbExpenditureArea')}.id" value="${(area.id)!}" />
+    [#if !isCustomExpenditure ]
+      <input type="hidden" name="${customName}.${isLiaison?string('liaisonInstitution','powbExpenditureArea')}.id" value="${(area.id)!}" />
+    [/#if]
     
- 
-    <h4 class="subTitle headTitle"> ${(area.composedName)!(area.expenditureArea)!'null'} </h4>
+    [#-- Remove Button --]
+    [#if editable && isCustomExpenditure]<div class="removeElement removeIcon sm removeExpendutureArea" title="Remove"></div>[/#if]
+    
+    [#-- Title --]
+    [#if !isCustomExpenditure ]
+      [#if isLiaison]<span class="programTag" style="border-color:${(area.crpProgram.color)!'#fff'};margin-right: 1em;  margin-top: 6px;" >${area.crpProgram.acronym}</span></td>[/#if]      
+      <h4 class="subTitle headTitle"> ${(area.name)!(area.expenditureArea)!'null'} </h4>
+      <hr />
+    [#else]
+      <div class="form-group">
+        [@customForm.input name="${customName}.title" i18nkey="${customLabel}.areaTitle" help="${customLabel}.areaTitle.help" helpIcon=false className="" required=true editable=editable /]
+      </div>
+    [/#if]
     <div class="form-group">
       <table class="noFormatTable">
         <thead>
@@ -146,19 +169,19 @@
           <tr>
             <td class="amountType"> <nobr>Planned Budget:</nobr> </td>
             [#-- W1/W2 --]
-            <td>
-              [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true /]
+            <td class="text-right">
+              [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true editable=editable /]
             </td>
             [#-- W3/Bilateral --]
-            <td>
-              [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3Bilateral category-${index}" required=true /]
+            <td class="text-right">
+              [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3Bilateral category-${index}" required=true editable=editable /]
             </td>
             [#-- Center own funds --]
-            <td>
-              [@customForm.input name="${customName}.centerFunds" value="${(element.centerFunds)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-centerFunds category-${index}" required=true /]
+            <td class="text-right">
+              [@customForm.input name="${customName}.centerFunds" value="${(element.centerFunds)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-centerFunds category-${index}" required=true editable=editable /]
             </td>
             [#-- Total --]
-            <td>
+            <td class="text-right">
               <nobr>US$ <span class="text-right label-total category-${index}">0.00</span></nobr>
             </td>
           </tr>

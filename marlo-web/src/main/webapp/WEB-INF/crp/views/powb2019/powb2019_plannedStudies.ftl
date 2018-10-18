@@ -10,7 +10,7 @@
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb2019", "action":"${crpSession}/adjustmentsChanges"},
-  {"label":"evidenceRelevant", "nameSpace":"powb2019", "action":"${crpSession}/evidenceRelevant"}
+  {"label":"plannedStudies", "nameSpace":"powb2019", "action":""}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]

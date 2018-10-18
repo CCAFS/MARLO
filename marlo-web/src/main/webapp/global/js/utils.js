@@ -431,6 +431,12 @@ jQuery.fn.clearOptions = function(arrIds) {
   }
 };
 
+function strip(html) {
+  var tmp = document.createElement("DIV");
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || "";
+}
+
 /**
  * Escape HTML text
  */
@@ -525,30 +531,40 @@ function applyCharCounter($textArea,charCount) {
 
 /* Add a word counter to a specific text area */
 function applyWordCounter($textArea,wordCount) {
+  console.log();
+  var eventType = 'keyup ';
+  if($textArea.hasClass('allowTextEditor')) {
+    eventType += ' tbwchange tbwfocus tbwblur tbwpaste ';
+  }
+
   var message = "<p class='charCount'>(<span>" + wordCount + "</span> words remaining of " + wordCount + ")</p>";
   $textArea.parent().append(message);
   $textArea.parent().find(".charCount").find("span").text(wordCount - word_count($textArea));
-  $textArea.on("keyup", function(event) {
-    var valueLength = $(event.target).val().length;
-    var $charCount = $(event.target).parent().find(".charCount");
-    if((word_count($(event.target)) > wordCount)
-        || ((valueLength == 0) && $(event.target).hasClass("required") && $('.hasMissingFields').exists() && $(
-            event.target).attr('id') != 'justification')) {
-      $(event.target).addClass('fieldError');
+  $textArea.on(eventType, function() {
+    var content = $(this).val();
+    var valueLength = content.length;
+    var $charCount = $(this).closest('.textArea, .input').find(".charCount");
+    var hasMissingFields = $('.hasMissingFields').exists();
+    var required = $(this).hasClass("required");
+    var noJustification = ($(this).attr('id') != 'justification');
+
+    if((word_count($(this)) > wordCount) || ((valueLength == 0) && required && hasMissingFields && noJustification)) {
+      $(this).addClass('fieldError');
       $charCount.addClass('fieldError');
     } else {
-      $(event.target).removeClass('fieldError');
+      $(this).removeClass('fieldError');
       $charCount.removeClass('fieldError');
     }
     // Set count value
-    $charCount.find("span").text(wordCount - word_count($(event.target)));
+    $charCount.find("span").text(wordCount - word_count($(this)));
 
   });
-  $textArea.trigger("keyup");
+  $textArea.trigger(eventType);
 }
 
 function word_count(field) {
   var value = $.trim($(field).val());
+  value = $.trim(value.replace(/<\/?[^>]+>/ig, " "));
   if(typeof value === "undefined" || value.length == 0) {
     return 0;
   } else {
