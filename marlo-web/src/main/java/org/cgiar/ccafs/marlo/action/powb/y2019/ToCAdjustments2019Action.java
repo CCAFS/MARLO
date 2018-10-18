@@ -507,7 +507,7 @@ public class ToCAdjustments2019Action extends BaseAction {
   public void validate() {
     if (save) {
 
-      if (this.isPMU()) {
+      if (this.isPMU() && !this.isPowb2019()) {
         if (powbSynthesis.getPowbToc().getFile() != null && powbSynthesis.getPowbToc().getFile().getId() == null
           || powbSynthesis.getPowbToc().getFile().getId().longValue() == -1) {
           powbSynthesis.getPowbToc().setFile(null);
