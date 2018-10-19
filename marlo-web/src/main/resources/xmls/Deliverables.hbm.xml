@@ -173,5 +173,12 @@
           </key>
           <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableParticipant" />
         </set>
+        <set name="deliverableGeographicRegions" table="deliverable_geographic_regions" inverse="true"
+          lazy="true" fetch="select">
+          <key>
+            <column name="deliverable_id" />
+          </key>
+          <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion" />
+        </set>
 	</class>
 </hibernate-mapping>

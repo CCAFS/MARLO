@@ -368,5 +368,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion" />
     </set>
+    <set name="deliverableGeographicRegions" table="deliverable_geographic_regions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion" />
+    </set>
 	</class>
 </hibernate-mapping>
