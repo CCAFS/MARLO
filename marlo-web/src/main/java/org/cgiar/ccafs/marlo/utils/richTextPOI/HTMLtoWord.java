@@ -210,10 +210,10 @@ public class HTMLtoWord {
 
     RichTextString richText = new XSSFRichTextString(textBuffer.toString());
     for (int i = 0; i < textBuffer.length(); i++) {
-      Font currentFont = mergedMap.get(i);
-      if (currentFont != null) {
-        richText.applyFont(i, i + 1, currentFont);
-      }
+      // Font currentFont = mergedMap.get(i);
+      // if (currentFont != null) {
+      // richText.applyFont(i, i + 1, currentFont);
+      // }
     }
     return richText;
   }
@@ -232,7 +232,7 @@ public class HTMLtoWord {
     Source source = new Source(newhtml);
     List<RichTextDetailsWord> cellValues = new ArrayList<RichTextDetailsWord>();
     for (Element el : source.getAllElements("div")) {
-      cellValues.add(createCellValue(el.toString(), document));
+      // cellValues.add(createCellValue(el.toString(), document));
     }
     RichTextString cellValue = mergeTextDetails(cellValues);
 
