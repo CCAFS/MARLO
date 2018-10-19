@@ -701,10 +701,18 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
+  /**
+   * @param projectPartnerId
+   * @return
+   */
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
-    List<ProjectPartnerPerson> projectPartnerPersons =
-      projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
-    return projectPartnerPersons;
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+      .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+      && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+      return projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
+    } else {
+      return projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartnerId);
+    }
   }
 
 
@@ -790,10 +798,17 @@ public class DeliverableAction extends BaseAction {
       .filter(o -> o.isActive() && o.getProjectPartner() != null && o.getProjectPartner().getId() == partnerID)
       .collect(Collectors.toList())) {
       if (deliverablePartnership.getProjectPartnerPerson() != null
-        && deliverablePartnership.getProjectPartnerPerson().isActive()
-        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner() != null
-        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner().isActive()) {
-        deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
+        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner().isActive()
+        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner() != null) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+          deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
+        } else {
+          if (deliverablePartnership.getProjectPartnerPerson().isActive()) {
+            deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
+          }
+        }
       }
     }
     List<Long> projectPartnerPersonIds =
@@ -1207,12 +1222,23 @@ public class DeliverableAction extends BaseAction {
         List<DeliverablePartnership> deliverablePartnershipResponsibles =
           deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(),
             this.getActualPhase().getId(), DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+
         if (deliverablePartnershipResponsibles != null && deliverablePartnershipResponsibles.size() > 0) {
           if (deliverablePartnershipResponsibles.size() > 1) {
             logger.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + this.getActualPhase().toString());
           }
-          deliverable.setResponsiblePartner(deliverablePartnershipResponsibles.get(0));
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+            deliverable.setResponsiblePartner(deliverablePartnershipResponsibles.get(0));
+          } else {
+            if (deliverablePartnershipResponsibles.get(0).getProjectPartnerPerson() == null
+              || deliverablePartnershipResponsibles.get(0).getProjectPartnerPerson().isActive()) {
+              deliverable.setResponsiblePartner(deliverablePartnershipResponsibles.get(0));
+            }
+          }
+
         }
 
         // Get other partners
@@ -1220,7 +1246,19 @@ public class DeliverableAction extends BaseAction {
           deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(),
             this.getActualPhase().getId(), DeliverablePartnershipTypeEnum.OTHER.getValue());
         if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
-          deliverable.setOtherPartners(deliverablePartnershipOthers);
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+            deliverable.setOtherPartners(deliverablePartnershipOthers);
+          } else {
+            deliverable.setOtherPartners(new ArrayList<DeliverablePartnership>());
+            for (DeliverablePartnership deliverablePartnership : deliverablePartnershipOthers) {
+              if (deliverablePartnership.getProjectPartnerPerson() == null
+                || deliverablePartnership.getProjectPartnerPerson().isActive()) {
+                deliverable.getOtherPartners().add(deliverablePartnership);
+              }
+            }
+          }
         }
 
         deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
@@ -2595,7 +2633,13 @@ public class DeliverableAction extends BaseAction {
       }
     } else {
       if (partnershipResponsibleDB != null) {
-        deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsibleDB.getId());
+        // Delete all partners responsible
+        List<DeliverablePartnership> deliverablePartnershipResponsibles =
+          deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(),
+            this.getActualPhase().getId(), DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+        for (DeliverablePartnership deliverablePartnership : deliverablePartnershipResponsibles) {
+          deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+        }
       }
     }
   }
@@ -2936,6 +2980,7 @@ public class DeliverableAction extends BaseAction {
 
     // Save Locations
     if (deliverable.getDeliverableInfo().getGeographicScope() != null
+      && deliverable.getDeliverableInfo().getGeographicScope().getId() != null
       && deliverable.getDeliverableInfo().getGeographicScope().getId() != -1) {
 
       deliverableInfoDb.setGeographicScope(deliverable.getDeliverableInfo().getGeographicScope());

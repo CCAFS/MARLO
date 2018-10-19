@@ -1295,10 +1295,11 @@ public class ProjectPartnerAction extends BaseAction {
     for (ProjectPartnerPerson partnerPerson : projectPartnerDB.getProjectPartnerPersons()) {
       if (projectPartnerClient.getPartnerPersons() == null
         || !projectPartnerClient.getPartnerPersons().contains(partnerPerson)) {
-        for (DeliverablePartnership deliverablePartnership : partnerPerson.getDeliverablePartnerships().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
-          deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
-        }
+        // Disable delete of deliverable partnership
+        // for (DeliverablePartnership deliverablePartnership : partnerPerson.getDeliverablePartnerships().stream()
+        // .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        // deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+        // }
         projectPartnerPersonManager.deleteProjectPartnerPerson(partnerPerson.getId());
       }
     }
