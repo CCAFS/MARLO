@@ -345,7 +345,8 @@ public class DeliverableValidator extends BaseValidator {
     }
 
     // Deliverable Locations
-    if (deliverableInfo.getGeographicScope() == null || deliverableInfo.getGeographicScope().getId() == -1) {
+    if (deliverableInfo.getGeographicScope() == null || deliverableInfo.getGeographicScope().getId() == null
+      || deliverableInfo.getGeographicScope().getId() == -1) {
       action.addMessage(action.getText("deliverable.geographicScope"));
       action.getInvalidFields().put("input-deliverable.deliverableInfo.geographicScope.id",
         InvalidFieldsMessages.EMPTYFIELD);

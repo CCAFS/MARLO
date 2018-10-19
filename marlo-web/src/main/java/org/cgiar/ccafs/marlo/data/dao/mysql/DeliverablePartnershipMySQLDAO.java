@@ -83,7 +83,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     String query =
       "select dp from DeliverablePartnership as dp inner join dp.projectPartner as pp left join dp.projectPartnerPerson as ppp where dp.active is true "
         + "and dp.partnerType = :partnerType and dp.deliverable.id = :deliverableId and dp.phase.id = :phaseId and "
-        + "pp.phase.id = :phaseId and pp.id =dp.projectPartner.id and (ppp is null or ppp.active is true)";
+        + "pp.phase.id = :phaseId and pp.id =dp.projectPartner.id order by dp.id DESC";
 
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("deliverableId", deliverableId);
@@ -118,7 +118,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       query.append(" and dp.division_id IS NULL");
     }
-
+    query.append(" order by dp.id DESC");
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<DeliverablePartnership> DeliverablePartnerships = new ArrayList<>();

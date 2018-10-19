@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -59,6 +59,11 @@ public class ProjectPartnerPersonManagerImpl implements ProjectPartnerPersonMana
 
     return projectPartnerPersonDAO.findAll();
 
+  }
+
+  @Override
+  public List<ProjectPartnerPerson> findAllActiveForProjectPartner(long projectPartnerId) {
+    return projectPartnerPersonDAO.findAllActiveForProjectPartner(projectPartnerId);
   }
 
   @Override
