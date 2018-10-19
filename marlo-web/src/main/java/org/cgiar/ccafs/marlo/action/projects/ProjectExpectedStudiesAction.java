@@ -58,7 +58,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -68,7 +67,6 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
-import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
@@ -111,9 +109,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   private static final long serialVersionUID = 597647662288518417L;
 
+
   // Managers
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+
   private AuditLogManager auditLogManager;
+
   private GlobalUnitManager crpManager;
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
@@ -140,10 +141,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
-
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
+
   private Project project;
   private long projectID;
   private long expectedID;
@@ -151,7 +152,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudy expectedStudyDB;
   private Map<Integer, String> statuses;
   private List<RepIndGeographicScope> geographicScopes;
-  private List<RepIndRegion> regions;
+  private List<LocElement> regions;
   private List<RepIndOrganizationType> organizationTypes;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<RepIndPolicyInvestimentType> policyInvestimentTypes;
@@ -272,7 +273,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return myProjects;
   }
 
-
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return organizationTypes;
   }
@@ -280,6 +280,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
   }
+
 
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
@@ -297,14 +298,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return regionList;
   }
 
-  public List<RepIndRegion> getRegions() {
+  public List<LocElement> getRegions() {
     return regions;
   }
-
 
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
   }
+
 
   public List<RepIndStageStudy> getStageStudies() {
     return stageStudies;
@@ -314,12 +315,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return statuses;
   }
 
-
   private String getStudiesSourceFolder() {
     return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(File.separator).concat(this.getCrpSession() + "_")
       .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
+
 
   public List<StudyType> getStudyTypes() {
     return studyTypes;
@@ -480,9 +481,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         // Expected Study Geographic Regions List Autosave
         if (expectedStudy.getStudyRegions() != null) {
-          for (ProjectExpectedStudyRegion projectExpectedStudyRegion : expectedStudy.getStudyRegions()) {
-            projectExpectedStudyRegion.setRepIndRegion(
-              repIndRegionManager.getRepIndRegionById(projectExpectedStudyRegion.getRepIndRegion().getId()));
+          for (ProjectExpectedStudyCountry projectExpectedStudyCountry : expectedStudy.getStudyRegions()) {
+            projectExpectedStudyCountry
+              .setLocElement(locElementManager.getLocElementById(projectExpectedStudyCountry.getLocElement().getId()));
           }
         }
 
@@ -541,7 +542,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.setCountries(new ArrayList<>());
         } else {
           List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
-            .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId());
+            .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList());
           expectedStudy.setCountries(countries);
         }
 
@@ -568,9 +571,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Geographic Regions List
-        if (expectedStudy.getProjectExpectedStudyRegions() != null) {
-          expectedStudy.setStudyRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyRegions().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        if (expectedStudy.getProjectExpectedStudyCountries() != null) {
+          expectedStudy.setStudyRegions(new ArrayList<>(projectExpectedStudyCountryManager
+            .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList())));
         }
 
         // Expected Study Crp List
@@ -631,11 +636,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
       }
 
-      countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
-        .collect(Collectors.toList());
+      countries = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
 
       geographicScopes = geographicScopeManager.findAll();
-      regions = repIndRegionManager.findAll();
+      regions = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive()).collect(Collectors.toList());
       organizationTypes = organizationTypeManager.findAll();
       // Focus levels and Too early to tell was removed
       focusLevels = focusLevelManager.findAll().stream().filter(f -> f.getId() != 4).collect(Collectors.toList());
@@ -786,8 +792,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // Save the Countries List (ProjectExpectedStudyCountry)
       if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {
 
-        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
-          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), this.getActualPhase().getId());
+        List<ProjectExpectedStudyCountry> countries =
+          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
+            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList());
         List<ProjectExpectedStudyCountry> countriesSave = new ArrayList<>();
         for (String countryIds : expectedStudy.getCountriesIds()) {
           ProjectExpectedStudyCountry countryInn = new ProjectExpectedStudyCountry();
@@ -1224,32 +1232,36 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     if (projectExpectedStudy.getProjectExpectedStudyRegions() != null
       && projectExpectedStudy.getProjectExpectedStudyRegions().size() > 0) {
 
-      List<ProjectExpectedStudyRegion> regionPrev =
-        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectExpectedStudyCountry> regionPrev =
+        projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
+          .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+          .collect(Collectors.toList());
+      //
+      // new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRegions().stream()
+      // .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-      for (ProjectExpectedStudyRegion studyRegion : regionPrev) {
+      for (ProjectExpectedStudyCountry studyRegion : regionPrev) {
         if (expectedStudy.getStudyRegions() == null || !expectedStudy.getStudyRegions().contains(studyRegion)) {
-          projectExpectedStudyRegionManager.deleteProjectExpectedStudyRegion(studyRegion.getId());
+          projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(studyRegion.getId());
         }
       }
     }
 
     // Save form Information
     if (expectedStudy.getStudyRegions() != null) {
-      for (ProjectExpectedStudyRegion studyRegion : expectedStudy.getStudyRegions()) {
+      for (ProjectExpectedStudyCountry studyRegion : expectedStudy.getStudyRegions()) {
         if (studyRegion.getId() == null) {
-          ProjectExpectedStudyRegion studyRegionSave = new ProjectExpectedStudyRegion();
+          ProjectExpectedStudyCountry studyRegionSave = new ProjectExpectedStudyCountry();
           studyRegionSave.setProjectExpectedStudy(projectExpectedStudy);
           studyRegionSave.setPhase(phase);
 
-          RepIndRegion repIndRegion = repIndRegionManager.getRepIndRegionById(studyRegion.getRepIndRegion().getId());
+          LocElement locElement = locElementManager.getLocElementById(studyRegion.getLocElement().getId());
 
-          studyRegionSave.setRepIndRegion(repIndRegion);
+          studyRegionSave.setLocElement(locElement);
 
-          projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(studyRegionSave);
+          projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(studyRegionSave);
           // This is to add studyFlagshipSave to generate correct auditlog.
-          expectedStudy.getProjectExpectedStudyRegions().add(studyRegionSave);
+          expectedStudy.getProjectExpectedStudyCountries().add(studyRegionSave);
         }
       }
     }
@@ -1300,7 +1312,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
@@ -1315,6 +1326,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.expectedID = expectedID;
   }
 
+
   public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
     this.expectedStudy = expectedStudy;
   }
@@ -1327,10 +1339,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.focusLevels = focusLevels;
   }
 
-
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
+
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
@@ -1352,7 +1364,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -1368,7 +1379,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
-  public void setRegions(List<RepIndRegion> regions) {
+  public void setRegions(List<LocElement> regions) {
     this.regions = regions;
   }
 

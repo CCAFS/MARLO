@@ -133,7 +133,7 @@ public class Clone {
      */
 
 
-    String[] model = {"ProjectExpectedStudyRegion"};
+    String[] model = {"DeliverableGeographicRegion"};
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
       generateMysqlDao(model[i]);
