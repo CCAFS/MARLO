@@ -1397,8 +1397,8 @@ public class DeliverableAction extends BaseAction {
 
       this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
         .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
-      this.setRepIndRegions(locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive()).collect(Collectors.toList()));
+      repIndRegions = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive()).collect(Collectors.toList());
       this.setCountries(locElementManager.findAll().stream()
         .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
@@ -2112,8 +2112,8 @@ public class DeliverableAction extends BaseAction {
     }
 
     // Save form Information
-    if (deliverable.getDeliverableGeographicRegions() != null) {
-      for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableGeographicRegions()) {
+    if (deliverable.getDeliverableRegions() != null) {
+      for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
         if (deliverableRegion.getId() == null) {
           DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
           deliverableRegionSave.setDeliverable(deliverable);
