@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
@@ -88,6 +90,7 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableParticipantManager deliverableParticipantManager;
   private DeliverableInfoManager deliverableInfoManager;
   private DeliverableLocationManager deliverableLocationManager;
+  private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
 
   // Variables
   private String deliverablesbyPhaseList;
@@ -108,7 +111,8 @@ public class DeliverablesReplicationAction extends BaseAction {
     DeliverableUserManager deliverableUserManager,
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     DeliverableParticipantManager deliverableParticipantManager, DeliverableInfoManager deliverableInfoManager,
-    DeliverableLocationManager deliverableLocationManager) {
+    DeliverableLocationManager deliverableLocationManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
@@ -125,6 +129,7 @@ public class DeliverablesReplicationAction extends BaseAction {
     this.deliverableParticipantManager = deliverableParticipantManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
   }
 
 
@@ -251,6 +256,15 @@ public class DeliverablesReplicationAction extends BaseAction {
             if (countries != null && countries.size() > 0) {
               for (DeliverableLocation deliverableLocation : countries) {
                 deliverableLocationManager.saveDeliverableLocation(deliverableLocation);
+              }
+            }
+
+            // Save Regions list
+            List<DeliverableGeographicRegion> regions = deliverableGeographicRegionManager
+              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), phase.getId());
+            if (regions != null && regions.size() > 0) {
+              for (DeliverableGeographicRegion deliverableRegion : regions) {
+                deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegion);
               }
             }
 

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
@@ -100,9 +101,20 @@ public class DeliverableLocationManagerImpl implements DeliverableLocationManage
 
     DeliverableLocation location = deliverableLocationDAO.save(deliverableLocation);
 
-    if (location.getPhase().getNext() != null) {
-      this.saveDeliverableLocationPhase(location.getPhase().getNext(), location.getDeliverable().getId(),
-        deliverableLocation);
+    if (location.getPhase().getDescription().equals(APConstants.PLANNING) && location.getPhase().getNext() != null) {
+      if (location.getPhase().getNext() != null) {
+        this.saveDeliverableLocationPhase(location.getPhase().getNext(), location.getDeliverable().getId(),
+          deliverableLocation);
+      }
+    }
+
+    if (location.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (location.getPhase().getNext() != null && location.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = location.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableLocationPhase(upkeepPhase, location.getDeliverable().getId(), deliverableLocation);
+        }
+      }
     }
 
     return location;

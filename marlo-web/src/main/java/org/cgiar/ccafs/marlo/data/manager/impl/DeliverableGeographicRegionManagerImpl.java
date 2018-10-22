@@ -53,10 +53,18 @@ public class DeliverableGeographicRegionManagerImpl implements DeliverableGeogra
       this.getDeliverableGeographicRegionById(deliverableGeographicRegionId);
     Phase currentPhase = deliverableGeographicRegion.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteDeliverableGeographicRegionPhase(currentPhase.getNext(),
-          deliverableGeographicRegion.getDeliverable().getId(), deliverableGeographicRegion);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.deleteDeliverableGeographicRegionPhase(currentPhase.getNext(),
+        deliverableGeographicRegion.getDeliverable().getId(), deliverableGeographicRegion);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteDeliverableGeographicRegionPhase(upkeepPhase.getNext(),
+            deliverableGeographicRegion.getDeliverable().getId(), deliverableGeographicRegion);
+        }
       }
     }
 
@@ -111,12 +119,22 @@ public class DeliverableGeographicRegionManagerImpl implements DeliverableGeogra
     saveDeliverableGeographicRegion(DeliverableGeographicRegion deliverableGeographicRegion) {
     DeliverableGeographicRegion region = deliverableGeographicRegionDAO.save(deliverableGeographicRegion);
     Phase currentPhase = phaseDAO.find(region.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveDeliverableGeographicRegionPhase(currentPhase.getNext(), region.getDeliverable().getId(),
-          deliverableGeographicRegion);
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.saveDeliverableGeographicRegionPhase(currentPhase.getNext(), region.getDeliverable().getId(),
+        deliverableGeographicRegion);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableGeographicRegionPhase(upkeepPhase, region.getDeliverable().getId(),
+            deliverableGeographicRegion);
+        }
       }
     }
+
     return region;
   }
 
