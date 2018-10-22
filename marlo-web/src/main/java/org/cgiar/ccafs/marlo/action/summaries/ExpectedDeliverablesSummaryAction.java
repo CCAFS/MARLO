@@ -331,22 +331,22 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       List<DeliverablePartnership> partnershipsList = deliverable.getDeliverablePartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
       // Set responible;
-      DeliverablePartnership responisble = null;
+      DeliverablePartnership responsible = null;
       if (partnershipsList.stream()
         .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).size() > 0) {
-        responisble = partnershipsList.stream()
+        responsible = partnershipsList.stream()
           .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
           .collect(Collectors.toList()).get(0);
       }
 
-      if (responisble != null) {
-        if (responisble.getProjectPartner() != null) {
-          institutionsResponsibleList.add(responisble.getProjectPartner().getInstitution());
+      if (responsible != null) {
+        if (responsible.getProjectPartner() != null) {
+          institutionsResponsibleList.add(responsible.getProjectPartner().getInstitution());
         }
-        if (responisble.getProjectPartnerPerson() != null) {
+        if (responsible.getProjectPartnerPerson() != null) {
           individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
-          ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+          ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
           if (responsibleppp.getProjectPartner() != null) {
             if (responsibleppp.getProjectPartner().getInstitution() != null) {
               if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
@@ -364,9 +364,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (responsibleppp.getUser() != null) {
             individual += responsibleppp.getUser().getComposedName();
           }
-          if (responisble.getPartnerDivision() != null && responisble.getPartnerDivision().getAcronym() != null
-            && !responisble.getPartnerDivision().getAcronym().isEmpty()) {
-            individual += " (" + responisble.getPartnerDivision().getAcronym() + ")";
+          if (responsible.getPartnerDivision() != null && responsible.getPartnerDivision().getAcronym() != null
+            && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
+            individual += " (" + responsible.getPartnerDivision().getAcronym() + ")";
           }
           individual += "</span>";
         }
@@ -413,6 +413,34 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
             }
             individual += "</span>";
+          } else {
+
+            // get deliverable information from deliverablePartnership
+            if (individual.isEmpty()) {
+              individual += "<span style='font-family: Segoe UI;font-size: 10'>";
+            } else {
+              individual += ", <span style='font-family: Segoe UI;font-size: 10'>";
+            }
+            if (deliverablePartnership.getProjectPartner() != null) {
+              if (deliverablePartnership.getProjectPartner().getInstitution() != null) {
+                if (deliverablePartnership.getProjectPartner().getInstitution().getAcronym() != null
+                  && !deliverablePartnership.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
+                  individual += deliverablePartnership.getProjectPartner().getInstitution().getAcronym();
+                  ppaResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution().getAcronym());
+                } else {
+                  individual += deliverablePartnership.getProjectPartner().getInstitution().getName();
+                  ppaResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution().getName());
+                }
+              }
+            }
+
+            if (deliverablePartnership.getPartnerDivision() != null
+              && deliverablePartnership.getPartnerDivision().getAcronym() != null
+              && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
+              individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
+            }
+            individual += "</span>";
+
           }
         }
       }
