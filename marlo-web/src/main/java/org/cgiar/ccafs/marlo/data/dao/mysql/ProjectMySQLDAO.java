@@ -135,7 +135,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   @Override
   public void deleteProject(Project project) {
 
-
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
     project.setActive(false);

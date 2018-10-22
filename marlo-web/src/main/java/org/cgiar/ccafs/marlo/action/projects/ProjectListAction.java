@@ -394,6 +394,8 @@ public class ProjectListAction extends BaseAction {
       if (permission) {
         Project project = projectManager.getProjectById(projectID);
         try {
+          project.setModifiedBy(this.getCurrentUser());
+          project.setModificationJustification("Deleted by : " + this.getCurrentUser().getComposedCompleteName());
           projectManager.deleteProject(project);
           for (ProjectPhase projectPhase : project.getProjectPhases()) {
             projectPhaseManager.deleteProjectPhase(projectPhase.getId());
