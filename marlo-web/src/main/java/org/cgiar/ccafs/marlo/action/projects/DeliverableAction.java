@@ -560,8 +560,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
-        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable
+        .getOtherPartners().stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 
@@ -1278,7 +1278,8 @@ public class DeliverableAction extends BaseAction {
         }
 
         // Expected Study Geographic Regions List
-        if (deliverable.getDeliverableGeographicRegions() != null) {
+        if (deliverable.getDeliverableGeographicRegions() != null
+          && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
           deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
             .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
             .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
@@ -2152,7 +2153,8 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (deliverable.getDeliverableRegions() != null) {
       for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
-        if (deliverableRegion.getId() == null) {
+        if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null
+          && deliverableRegion.getLocElement().getId() != -1) {
           DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
           deliverableRegionSave.setDeliverable(deliverable);
           deliverableRegionSave.setPhase(phase);
