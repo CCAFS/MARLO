@@ -140,8 +140,8 @@ public class DeliverablesReplicationAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
-      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + phase.getName() + "_" + phase.getYear()
+      + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
 
@@ -251,8 +251,8 @@ public class DeliverablesReplicationAction extends BaseAction {
             }
 
             // Save Countries list
-            List<DeliverableLocation> countries = deliverableLocationManager
-              .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            List<DeliverableLocation> countries =
+              deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), phase.getId());
             if (countries != null && countries.size() > 0) {
               for (DeliverableLocation deliverableLocation : countries) {
                 deliverableLocationManager.saveDeliverableLocation(deliverableLocation);
