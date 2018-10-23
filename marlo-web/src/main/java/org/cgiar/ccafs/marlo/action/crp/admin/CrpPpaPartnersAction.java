@@ -662,9 +662,9 @@ public class CrpPpaPartnersAction extends BaseAction {
                   if (liaisonInstitution != null) {
                     liaisonUserManager.saveLiaisonUser(liaisonUserSave);
                     // If is new user active it
-                    if (!liaisonUser.getUser().isActive()) {
-                      this.notifyNewUserCreated(liaisonUser.getUser());
-                    }
+
+                    this.notifyNewUserCreated(liaisonUser.getUser());
+
                     this.addCrpUserIfNotExist(liaisonUser.getUser());
                     // add userRole
                     if (cpRole != null) {
