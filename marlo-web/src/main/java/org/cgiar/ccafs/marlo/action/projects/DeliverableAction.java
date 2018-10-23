@@ -560,8 +560,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable
-        .getOtherPartners().stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
+        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 
@@ -1210,6 +1210,10 @@ public class DeliverableAction extends BaseAction {
         // Deliverable Geographic Regions List Autosave
         if (deliverable.getDeliverableRegions() != null) {
           for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
+            if (deliverableGeographicRegion.getLocElement().getId() == null
+              || deliverableGeographicRegion.getLocElement().getId() == -1) {
+              deliverable.getDeliverableRegions().remove(deliverableGeographicRegion);
+            }
             deliverableGeographicRegion
               .setLocElement(locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
           }
