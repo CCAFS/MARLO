@@ -54,11 +54,9 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
   private ApiInfo apiInfo() {
 
-    ApiInfo apiInfo = new ApiInfo("MARLO REST API",
-      "A list of operations provided by the MARLO REST API.  "
-        + "Please note that access to this page does not necessarily mean that you have authorization to perform all actions.",
-      "v1", "Terms of service URL - to be confirmed", new Contact("MARLO Team", "", "MARLOSupport@cgiar.org"),
-      "License of API - To be confirmed", "API license URL - to be confirmed", Collections.emptyList());
+    ApiInfo apiInfo = new ApiInfo("Clarisa",
+      "Please note that access to this page does not necessarily mean that you have authorization to perform all actions.",
+      "v1", null, new Contact("Technical team", "", "MARLOSupport@cgiar.org"), null, null, Collections.emptyList());
 
     return apiInfo;
   }

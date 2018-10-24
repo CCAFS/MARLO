@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(value = "SrfLists", description = "List of the CGIAR's Strategy and Results Items")
+@Api(description = "List of the CGIAR's Strategy and Results Items", tags = "SRF List")
 @Named
 public class SrfLists {
 
@@ -67,7 +67,7 @@ public class SrfLists {
    * 
    * @return a List of SrfIdoDTO with all SRF IDO Items.
    */
-  @ApiOperation(value = "View all Srf IDO", response = Iterable.class)
+  @ApiOperation(value = "View all Srf IDO", tags = "SRF List", response = SrfIdoDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SrfIdoDTO> getAllSrfIdos() {
@@ -80,7 +80,7 @@ public class SrfLists {
    * 
    * @return a List of SrfSloDTO with all SRF-SLO Items.
    */
-  @ApiOperation(value = "View all Srf-SLO", response = Iterable.class)
+  @ApiOperation(value = "View all Srf-SLO", tags = "SRF List", response = SrfSloDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfSlos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SrfSloDTO> getAllSrfSlos() {
@@ -93,7 +93,8 @@ public class SrfLists {
    * 
    * @return a List of SrfCrossCuttingIssueDTO with all SRF Cross Cutting Issue Items.
    */
-  @ApiOperation(value = "View all SRF Cross Cutting Issue", response = Iterable.class)
+  @ApiOperation(value = "View all SRF Cross Cutting Issue", tags = "SRF List", response = SrfCrossCuttingIssueDTO.class,
+    responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfCrossCuttingIssues", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -108,7 +109,7 @@ public class SrfLists {
    * @param id
    * @return a SrfIdoDTO with the SRL IDO data.
    */
-  @ApiOperation(value = "Search an SRF IDO with a MARLO ID", response = SrfIdoDTO.class)
+  @ApiOperation(value = "Search an SRF IDO with a MARLO ID", tags = "SRF List", response = SrfIdoDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfIdo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfIdoDTO> getSrfIdoByMARLOId(@PathVariable Long id) {
@@ -122,7 +123,7 @@ public class SrfLists {
    * @param id
    * @return a SrfSloDTO with the SRL-SLO data.
    */
-  @ApiOperation(value = "Search an SRF-SLO with a MARLO ID", response = SrfSloDTO.class)
+  @ApiOperation(value = "Search an SRF-SLO with a MARLO ID", tags = "SRF List", response = SrfSloDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srfSlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfSloDTO> getSrfSloByMARLOId(@PathVariable Long id) {
