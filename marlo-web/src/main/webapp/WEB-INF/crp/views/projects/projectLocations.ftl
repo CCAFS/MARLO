@@ -73,7 +73,7 @@
                   <p><small>[@s.text name="projectLocations.note" /] </small></p>
                 </div>
                 <div class="note addloc left">
-                  <p><small>To add a new location please double click the "Add new location" button.</small></p>
+                  <p><small>To add a new location, please double click the "Add new location" button.</small></p>
                 </div>
                 [#-- Hide map hint depending on 'crp_other_locations' parameter --]
                 [#if action.hasSpecificities('crp_other_locations')]
