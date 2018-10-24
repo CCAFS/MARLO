@@ -240,12 +240,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
       // Send UserManual.pdf
       String contentType = "application/pdf";
-      String fileName = "Introduction_To_MARLO_v2.3.pdf";
+      String fileName = "Introduction_To_MARLO_v2.4.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/custom/Introduction_To_MARLO_v2.3.pdf");
+        inputStream = this.getClass().getResourceAsStream("/custom/Introduction_To_MARLO_v2.4.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
