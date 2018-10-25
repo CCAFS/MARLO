@@ -19,11 +19,13 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
@@ -35,7 +37,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -91,13 +92,15 @@ public class ValidateProjectSectionAction extends BaseAction {
   private final GlobalUnitManager crpManager;
   private final ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator;
   private final GlobalUnitProjectManager globalUnitProjectManager;
+  private final DeliverableInfoManager deliverableInfoManager;
 
 
   @Inject
   public ValidateProjectSectionAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     SectionStatusManager sectionStatusManager,
     ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator,
-    LocalizedTextProvider localizedTextProvider, GlobalUnitProjectManager globalUnitProjectManager) {
+    LocalizedTextProvider localizedTextProvider, GlobalUnitProjectManager globalUnitProjectManager,
+    DeliverableInfoManager deliverableInfoManager) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -105,6 +108,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     this.crpManager = crpManager;
     this.localizedTextProvider = localizedTextProvider;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
 
@@ -257,72 +261,24 @@ public class ValidateProjectSectionAction extends BaseAction {
             section.put("missingFields", section.get("missingFields") + "-" + "deliveralbes");
           }
 
-          List<Deliverable> deliverables =
-            project
-              .getDeliverables().stream().filter(d -> d.isActive()
-                && d.getDeliverableInfo(this.getActualPhase()) != null && d.getDeliverableInfo().isActive())
-              .collect(Collectors.toList());
-          List<Deliverable> openA = new ArrayList<>();
-          if (this.isPlanningActive()) {
-            openA = deliverables.stream()
-              .filter(a -> a.isActive() && a.getDeliverableInfo().isActive()
-                && a.getDeliverableInfo(this.getActualPhase()) != null
+          Phase phase = this.getActualPhase();
+          List<Deliverable> deliverables = new ArrayList<>();
 
-                && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-                  || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                    && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
-                  || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                    || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
-              .collect(Collectors.toList());
-          } else {
-            openA = deliverables.stream()
-              .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
-                && a.getDeliverableInfo().isActive()
-                && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-                  || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                    || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
-              .collect(Collectors.toList());
+          if (project.getDeliverables() != null) {
 
-            openA.addAll(deliverables.stream()
-              .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-                && d.getDeliverableInfo().isActive()
-                && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
-                && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-              .collect(Collectors.toList()));
+            List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
 
-            openA.addAll(deliverables.stream()
-              .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-                && d.getDeliverableInfo().isActive()
-                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
-                  .getCurrentCycleYear()
-                && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-              .collect(Collectors.toList()));
-          }
-
-          if (openA.isEmpty()) {
-            if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-              && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("");
-              section.put("missingFields", "");
-            } else {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("");
-              section.put("missingFields", "Empty Deliverables");
+            if (infos != null && !infos.isEmpty()) {
+              for (DeliverableInfo deliverableInfo : infos) {
+                Deliverable deliverable = deliverableInfo.getDeliverable();
+                deliverable.setDeliverableInfo(deliverableInfo);
+                deliverables.add(deliverable);
+              }
             }
           }
 
-          for (Deliverable deliverable : openA) {
+
+          for (Deliverable deliverable : deliverables) {
             sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
             if (sectionStatus == null) {
@@ -415,8 +371,9 @@ public class ValidateProjectSectionAction extends BaseAction {
           section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHTS);
           section.put("missingFields", "");
 
-          List<ProjectHighlight> highlights = project.getProjectHighligths().stream().filter(d -> d.isActive()
-            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
+          List<ProjectHighlight> highlights = project
+            .getProjectHighligths().stream().filter(d -> d.isActive() && d
+              .getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList());
 
           for (ProjectHighlight highlight : highlights) {
