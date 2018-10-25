@@ -54,7 +54,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @Api(description = "Service pertaining to legal institutions information stored in MARLO.", tags = "Institutions")
@@ -90,7 +89,7 @@ public class Institutions {
     this.userManager = userManager;
   }
 
-  @ApiIgnore
+
   @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -131,7 +130,7 @@ public class Institutions {
       HttpStatus.CREATED);
   }
 
-  @ApiIgnore
+
   @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -183,7 +182,6 @@ public class Institutions {
   }
 
 
-  @ApiIgnore
   @RequiresPermissions(Permission.INSTITUTIONS_UPDATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
