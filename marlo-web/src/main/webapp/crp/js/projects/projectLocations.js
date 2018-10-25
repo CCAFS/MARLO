@@ -170,20 +170,22 @@ function attachEvents() {
 
 // Function to add location from location level
 function addLocationFromLocLevel() {
+  console.log("addLocationFromLocLevel");
+
   var parent = $(this).parents(".locationLevel");
   $("html, body").animate({
     scrollTop: $("#map").offset().top - 45
   }, 600);
   var latLng = new google.maps.LatLng(map.getCenter().lat(), map.getCenter().lng());
-  openInfoWindowForm(latLng);
   var locationValue = parent.find("input.locationLevelId").val();
   var isList = parent.find("input.isList").val();
   var locName = parent.find("input.locationLevelName").val();
   var select = $("#locLevelSelect");
-  console.log(parent);
-  console.log(locationValue + "-" + isList + "-" + locName);
+  // console.log(parent);
+  // console.log(locationValue + "-" + isList + "-" + locName);
   select.val(locationValue + "-" + isList + "-" + locName).trigger("change")
 
+  openInfoWindowForm(latLng);
 }
 
 // Add Regions
@@ -533,6 +535,7 @@ function initMap() {
 }
 
 function CenterControl(controlDiv,map) {
+  console.log("CenterControl");
 
   // Set CSS for the control border.
   var controlUI = document.createElement('div');
@@ -677,12 +680,13 @@ function showMarkers() {
 
 // open info window with the form
 function openInfoWindowForm(e) {
+  console.log("openInfoWindowForm");
 
   resetInfoWindow();
   var content;
-  content = $("#infoWrapper").html();
+  content = $("#infoWrapper").clone(true);
   infoWindow.setContent([
-    content
+    content.html()
   ].join(''));
   infoWindow.open(map);
   infoWindow.setPosition(e);
@@ -691,17 +695,21 @@ function openInfoWindowForm(e) {
     "data": "form"
   };
   // Init select2
-  $("select").select2();
-  if($("select").hasClass("select2-hidden-accessible")) {
-    $("select").select2('destroy');
-    $('select').select2({
-        width: '100%',
-        placeholder: function() {
-          $(this).data('placeholder');
-        }
-    });
-    $("select").next().next().remove();
-  }
+  $("select").each(function(i,element) {
+    $(element).select2();
+    console.log("select2", element);
+    if($(element).hasClass("select2-hidden-accessible")) {
+      $(element).select2('destroy');
+      $(element).select2({
+          width: '100%',
+          placeholder: function() {
+            $(this).data('placeholder');
+          }
+      });
+      $(element).next().next().remove();
+    }
+  });
+
   // Set latLng
   $("#inputFormWrapper").find("input.latitude").val(e.lat());
   $("#inputFormWrapper").find("input.longitude").val(e.lng());
@@ -731,63 +739,61 @@ function formWindowEvents() {
   /* prevent enter key to inputs */
 
   $('input').on("keypress", function(event) {
-
     if(event.keyCode === 10 || event.keyCode === 13) {
       event.preventDefault();
     }
   });
 
-// Events
-  $("#locLevelSelect").on(
-      "change",
-      function() {
-        var option = $(this).find("option:selected");
-        if(option.val() == "-1") {
-          $("#addLocationButton").hide("slow");
-          resetInfoWindow();
+  // Events
+  console.log("Set event #locLevelSelect", $("#locLevelSelect"));
+  $("#locLevelSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() == "-1") {
+      $("#addLocationButton").hide("slow");
+      resetInfoWindow();
+    } else {
+      $("#addLocationButton").show("slow");
+      if(option.val().split("-")[1] == "true") {
+        // If is a country change button text
+        if(option.val().split("-")[2] === "Country") {
+          $("#addLocationButton").text("Add country(ies)");
         } else {
-          $("#addLocationButton").show("slow");
-          if(option.val().split("-")[1] == "true") {
-            // If is a country change button text
-            if(option.val().split("-")[2] === "Country") {
-              $("#addLocationButton").text("Add country(ies)");
-            } else {
-              $("#addLocationButton").text("Drop pin");
-            }
-            // LocElements options using ajax
-            var select = $("#countriesCmvs");
-            var url = baseURL + "/searchCountryListPL.do";
-            var data = {
-                parentId: option.val().split("-")[0],
-                phaseID: phaseID
-            };
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: "json",
-                data: data
-            }).done(
-                function(m) {
-                  select.empty();
-                  for(var i = 0; i < m.locElements.length; i++) {
-                    select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id
-                        + "-" + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name + "' >"
-                        + m.locElements[i].name + "</option>");
-                  }
-                  if($("#locLevelSelect").val().split("-")[2] == "Country") {
-                    setCountryDefault();
-                  }
-                });
-            $("#inputFormWrapper").slideUp();
-            $(".selectLocations").slideDown();
-            console.log(option.val());
-
-          } else {
-            $(".selectLocations").slideUp();
-            $("#inputFormWrapper").slideDown();
-          }
+          $("#addLocationButton").text("Drop pin");
         }
-      });
+        // LocElements options using ajax
+        var $select = $("#countriesCmvs");
+        var url = baseURL + "/searchCountryListPL.do";
+        var data = {
+            parentId: option.val().split("-")[0],
+            phaseID: phaseID
+        };
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: "json",
+            data: data
+        }).done(function(m) {
+          $select.empty();
+          for(var i = 0; i < m.locElements.length; i++) {
+            var className = m.locElements[i].isoAlpha2;
+            var sVal = m.locElements[i].id + "-" + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name;
+            var sName = m.locElements[i].name;
+            $select.append("<option class='" + className + "' value='" + sVal + "' >" + sName + "</option>");
+          }
+          if($("#locLevelSelect").val().split("-")[2] == "Country") {
+            setCountryDefault();
+          }
+        });
+        $("#inputFormWrapper").slideUp();
+        $(".selectLocations").slideDown();
+        console.log(option.val());
+
+      } else {
+        $(".selectLocations").slideUp();
+        $("#inputFormWrapper").slideDown();
+      }
+    }
+  });
 
   // Add location button
   $("#addLocationButton").on("click", function(e) {
