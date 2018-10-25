@@ -48,7 +48,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
-import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
@@ -682,7 +681,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     Project project = projectManager.getProjectById(projectID);
 
     project.setBudgets(project.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase())
+        && (c.getFundingSource().getFundingSourceInfo(action.getActualPhase()).getStatus() != 3
+          || c.getFundingSource().getFundingSourceInfo(action.getActualPhase()).getStatus() != 5))
+      .collect(Collectors.toList()));
 
 
     projectBudgetsValidator.validate(action, project, false);
@@ -776,14 +778,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     Phase phase = action.getActualPhase();
 
-    List<DeliverableType> deliverablesType = new ArrayList<>();
     List<Deliverable> deliverables;
-
-    List<Integer> allYears = project.getProjecInfoPhase(action.getActualPhase()).getAllYears();
-
-    if (deliverableTypeManager.findAll() != null) {
-      deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
-    }
 
     if (project.getDeliverables() != null) {
 
@@ -796,23 +791,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           deliverables.add(deliverable);
         }
       }
-
-
-      // for (Deliverable deliverable : deliverables) {
-      // deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
-      //
-      // // Gets the Deliverable Funding Source Data without the full information.
-      // List<DeliverableFundingSource> fundingSources =
-      // new ArrayList<>(deliverable.getDeliverableFundingSources().stream()
-      // .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-      // for (DeliverableFundingSource deliverableFundingSource : fundingSources) {
-      // deliverableFundingSource.getFundingSource().setFundingSourceInfo(
-      // deliverableFundingSource.getFundingSource().getFundingSourceInfo(action.getActualPhase()));
-      // }
-      //
-      // deliverable.setFundingSources(fundingSources);
-      // }
-
 
       for (Deliverable deliverable : deliverables) {
 

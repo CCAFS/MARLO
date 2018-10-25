@@ -619,6 +619,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         project.getProjectInfo()
           .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
         reader.close();
+        // Dont show Complete or Canceled Funding Sources
         if (project.getBudgets() != null) {
           for (ProjectBudget projectBudget : project.getBudgets()) {
             if (projectBudget != null && projectBudget.getFundingSource() != null) {
@@ -635,7 +636,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         project.setBudgets(project.getProjectBudgets().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && (c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 3
+              || c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 5))
           .collect(Collectors.toList()));
 
 
