@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
@@ -40,11 +42,13 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
@@ -157,6 +161,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectCenterMappingValidator projectCenterMappingValidator;
 
+  private final DeliverableTypeManager deliverableTypeManager;
+
+  private final DeliverableInfoManager deliverableInfoManager;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -177,7 +185,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     DeliverableParticipantManager deliverableParticipantManager, PhaseManager phaseManager,
     GlobalUnitManager crpManager, ProjectCenterMappingValidator projectCenterMappingValidator,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitProjectManager globalUnitProjectManager, DeliverableTypeManager deliverableTypeManager,
+    DeliverableInfoManager deliverableInfoManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -209,6 +218,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.crpManager = crpManager;
     this.projectCenterMappingValidator = projectCenterMappingValidator;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.deliverableTypeManager = deliverableTypeManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
 
@@ -330,8 +341,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locElements = projectDB
-      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
+    List<ProjectLocation> locElements = projectDB.getProjectLocations()
+      .stream().filter(c -> c.isActive() && c.getLocElement() != null
         && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
@@ -430,6 +441,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   }
 
 
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+    try {
+      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+        .filter(
+          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+      return partnership;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   private DeliverablePartnership responsiblePartner(Deliverable deliverable, BaseAction baseAction) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -468,6 +491,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateCCAFSOutcomes(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -479,15 +503,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-
   public void validateHighlight(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-      .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive()
-        && d.getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
-      .collect(Collectors.toList());
+    List<ProjectHighlight> highlights =
+      project.getProjectHighligths().stream()
+        .filter(d -> d.getProjectHighlightInfo(action.getActualPhase()) != null && d.isActive() && d
+          .getProjectHighlightInfo(action.getActualPhase()).getYear().intValue() == action.getActualPhase().getYear())
+        .collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
       projectHighlight.setTypes(
@@ -506,6 +530,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
+
 
   public void validateInnovations(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -565,7 +590,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
-
 
   public void validateLeverage(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -665,6 +689,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
+
   public void validateProjectBudgetsCoAs(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -676,7 +701,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
-
 
   public void validateProjectBudgetsFlagship(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -750,157 +774,166 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<Deliverable> deliverables = project.getDeliverables().stream()
-      .filter(
-        d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()) != null && d.getDeliverableInfo().isActive())
-      .collect(Collectors.toList());
-    List<Deliverable> openA = deliverables.stream()
-      .filter(a -> a.isActive() && a.getDeliverableInfo().isActive()
-        && ((a.getDeliverableInfo(action.getActualPhase()).getStatus() == null
-          || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
-          || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
-      .collect(Collectors.toList());
+    Phase phase = action.getActualPhase();
 
-    if (action.isReportingActive()) {
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
-          && d.getDeliverableInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
+    List<DeliverableType> deliverablesType = new ArrayList<>();
+    List<Deliverable> deliverables;
 
-      openA.addAll(deliverables.stream().filter(d -> d.isActive() && d.getDeliverableInfo().isActive()
-        && d.getDeliverableInfo(action.getActualPhase()) != null
-        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()
-        && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-        && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
+    List<Integer> allYears = project.getProjecInfoPhase(action.getActualPhase()).getAllYears();
+
+    if (deliverableTypeManager.findAll() != null) {
+      deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
     }
 
-    for (Deliverable deliverable : openA) {
+    if (project.getDeliverables() != null) {
 
-      deliverable.getDeliverableInfo(action.getActualPhase());
-      deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, action));
-      deliverable.setOtherPartners(this.otherPartners(deliverable, action));
-
-      deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
-        .collect(Collectors.toList()));
-
-      for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
-
-        deliverableFundingSource.setFundingSource(
-          fundingSourceManager.getFundingSourceById(deliverableFundingSource.getFundingSource().getId()));
-        deliverableFundingSource.getFundingSource().setFundingSourceInfo(
-          deliverableFundingSource.getFundingSource().getFundingSourceInfo(action.getActualPhase()));
-        if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
-          deliverableFundingSource.getFundingSource().setFundingSourceInfo(
-            deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(action.getActualPhase()));
+      List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
+      deliverables = new ArrayList<>();
+      if (infos != null && !infos.isEmpty()) {
+        for (DeliverableInfo deliverableInfo : infos) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.setDeliverableInfo(deliverableInfo);
+          deliverables.add(deliverable);
         }
       }
-      deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
 
 
-      if (action.isReportingActive()) {
+      // for (Deliverable deliverable : deliverables) {
+      // deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
+      //
+      // // Gets the Deliverable Funding Source Data without the full information.
+      // List<DeliverableFundingSource> fundingSources =
+      // new ArrayList<>(deliverable.getDeliverableFundingSources().stream()
+      // .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+      // for (DeliverableFundingSource deliverableFundingSource : fundingSources) {
+      // deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+      // deliverableFundingSource.getFundingSource().getFundingSourceInfo(action.getActualPhase()));
+      // }
+      //
+      // deliverable.setFundingSources(fundingSources);
+      // }
 
-        DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
-          .getDeliverableQualityCheckByDeliverable(deliverable.getId(), action.getActualPhase().getId());
-        deliverable.setQualityCheck(deliverableQualityCheck);
 
-        if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
-        }
+      for (Deliverable deliverable : deliverables) {
 
-        if (deliverable.getDeliverableDisseminations() != null) {
-          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
-          if (deliverable.getDisseminations().size() > 0) {
-            deliverable.setDissemination(deliverable.getDisseminations().get(0));
-          } else {
-            deliverable.setDissemination(new DeliverableDissemination());
+        deliverable.getDeliverableInfo(action.getActualPhase());
+        deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, action));
+        deliverable.setOtherPartners(this.otherPartners(deliverable, action));
+
+        deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+          .collect(Collectors.toList()));
+
+        for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+
+          deliverableFundingSource.setFundingSource(
+            fundingSourceManager.getFundingSourceById(deliverableFundingSource.getFundingSource().getId()));
+          deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+            deliverableFundingSource.getFundingSource().getFundingSourceInfo(action.getActualPhase()));
+          if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
+            deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+              deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(action.getActualPhase()));
           }
         }
-
-        if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
-        }
-
-        if (deliverable.getDeliverablePublicationMetadatas() != null) {
-          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
-        }
-        if (!deliverable.getPublicationMetadatas().isEmpty()) {
-          deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
-        }
-
-        if (deliverable.getDeliverableDataSharings() != null) {
-          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings().stream()
-            .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
-        }
-
-
-        deliverable.setUsers(deliverable.getDeliverableUsers().stream()
+        deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-        deliverable.setCrps(deliverable.getDeliverableCrps().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-        deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())) {
 
-          DeliverableFile deFile = new DeliverableFile();
-          switch (dataSharingFile.getTypeId().toString()) {
-            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getFile().getFileName());
-              break;
 
-            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getExternalFile());
-              break;
+        if (action.isReportingActive()) {
+
+          DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
+            .getDeliverableQualityCheckByDeliverable(deliverable.getId(), action.getActualPhase().getId());
+          deliverable.setQualityCheck(deliverableQualityCheck);
+
+          if (deliverable.getDeliverableMetadataElements() != null) {
+            deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
           }
-          deFile.setId(dataSharingFile.getId());
-          deFile.setSize(0);
-          deliverable.getFiles().add(deFile);
-        }
 
-        if (deliverable.getDeliverableIntellectualAssets() != null) {
-          List<DeliverableIntellectualAsset> intellectualAssets =
-            deliverable.getDeliverableIntellectualAssets().stream()
+          if (deliverable.getDeliverableDisseminations() != null) {
+            deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+            if (deliverable.getDisseminations().size() > 0) {
+              deliverable.setDissemination(deliverable.getDisseminations().get(0));
+            } else {
+              deliverable.setDissemination(new DeliverableDissemination());
+            }
+          }
+
+          if (deliverable.getDeliverableDataSharingFiles() != null) {
+            deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+          }
+
+          if (deliverable.getDeliverablePublicationMetadatas() != null) {
+            deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()
+              .stream().filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase()))
+              .collect(Collectors.toList())));
+          }
+          if (!deliverable.getPublicationMetadatas().isEmpty()) {
+            deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
+          }
+
+          if (deliverable.getDeliverableDataSharings() != null) {
+            deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings().stream()
+              .filter(c -> c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())));
+          }
+
+
+          deliverable.setUsers(deliverable.getDeliverableUsers().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+          deliverable.setCrps(deliverable.getDeliverableCrps().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+          deliverable.setFiles(new ArrayList<>());
+          for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList())) {
+
+            DeliverableFile deFile = new DeliverableFile();
+            switch (dataSharingFile.getTypeId().toString()) {
+              case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getFile().getFileName());
+                break;
+
+              case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getExternalFile());
+                break;
+            }
+            deFile.setId(dataSharingFile.getId());
+            deFile.setSize(0);
+            deliverable.getFiles().add(deFile);
+          }
+
+          if (deliverable.getDeliverableIntellectualAssets() != null) {
+            List<DeliverableIntellectualAsset> intellectualAssets =
+              deliverable.getDeliverableIntellectualAssets().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+            if (intellectualAssets.size() > 0) {
+              deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
+            } else {
+              deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+            }
+          }
+          if (deliverable.getDeliverableParticipants() != null) {
+            List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
 
-          if (intellectualAssets.size() > 0) {
-            deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
-              .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
-          } else {
-            deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+            if (deliverableParticipants.size() > 0) {
+              deliverable.setDeliverableParticipant(
+                deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
+            } else {
+              deliverable.setDeliverableParticipant(new DeliverableParticipant());
+            }
           }
-        }
-        if (deliverable.getDeliverableParticipants() != null) {
-          List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
 
-          if (deliverableParticipants.size() > 0) {
-            deliverable.setDeliverableParticipant(
-              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
-          } else {
-            deliverable.setDeliverableParticipant(new DeliverableParticipant());
-          }
         }
-
+        deliverableValidator.validate(action, deliverable, false);
       }
-      deliverableValidator.validate(action, deliverable, false);
     }
+
 
   }
 
