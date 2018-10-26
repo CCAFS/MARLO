@@ -1,21 +1,34 @@
 .headerTitle {
   font-family: 'Montserrat',sans-serif;
+  color:#ffffff;
 }
 
 .cTitle{
-  font-size: 350%;
-  font-weight: 800;
+  font-size: 380%;
+  font-weight: 900;
   margin: auto;
 }
 
 .sTitle{
-  font-size: 85%;
-  font-weight: 300;
+  font-size: 95%;
+  font-weight: 500;
   margin: auto;
 }
 
 .clarisaHeader {
-  height: 30%;
+  background-image: url("clarisa-header.jpg");
+  height: 50%;
   width: 100%;
-  padding: 2%;
+  padding: 6%;
+  background-repeat: no-repeat;
+  background-size: auto;
+  margin-bottom:50px;
+  cursor: default;
+}
+
+.no-seleccionable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
 }
