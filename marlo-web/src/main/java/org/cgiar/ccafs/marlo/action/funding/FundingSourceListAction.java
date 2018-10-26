@@ -296,7 +296,19 @@ public class FundingSourceListAction extends BaseAction {
 
     this.closedProjects = fundingSourceManager.getClosedFundingSourceSummaries(loggedCrp, this.getActualPhase());
 
+
   }
+
+  // public void getBudgetAmount(long fundingsourceID){
+  //
+  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
+  //
+  // List<FundingSourceBudget> fundingSourceBudgets = new
+  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
+  // fb.getPhase().getId().equals(this)));
+  //
+  //
+  // }
 
   public void setClosedProjects(List<FundingSourceSummary> closedProjects) {
     this.closedProjects = closedProjects;
