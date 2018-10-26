@@ -23,9 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevFoundingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevHighestDegreeManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevRangeAgeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevLocationsService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevParticipantService;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.IParticipantService;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -36,9 +39,13 @@ import org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree;
 import org.cgiar.ccafs.marlo.data.model.CapdevLocations;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.data.model.CapdevRangeAge;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.ocs.model.ResourceInfoOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -55,7 +62,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,22 +85,34 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public enum DurationUnits {
-    Hours, Days, Weeks, Years
+    Hours, Days, Weeks, Months, Years
   }
+
 
   public enum Genders {
     Male, Female, Other
   }
 
+
   private static final long serialVersionUID = 1L;
 
 
   private long capdevID;
+
+
   private int capdevCategory;
+
+
   private long projectID;
+
+
   private CapacityDevelopment capdev;
+
   private List<LocElement> regionsList;
+
   private List<LocElement> countryList;
+
+
   private List<Institution> institutions;
   private List<CapacityDevelopmentType> capdevTypes;
   private List<CapdevHighestDegree> highestDegrreList;
@@ -125,19 +143,22 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private CapacityDevelopmentValidator validator;
   private ReadExcelFile reader = new ReadExcelFile();
   private CapacityDevelopment capdevDB;
-
-
+  private List<GlobalUnit> crps;
+  private List<CenterArea> researchAreas;
+  private List<CrpProgram> researchPrograms;
   private List<Map<String, Object>> previewList;
   private List<String> previewListHeader;
   private List<Map<String, Object>> previewListContent;
-
   private String transaction;
   private final AuditLogManager auditLogService;
-
+  private final GlobalUnitManager crpService;
+  private final ICenterAreaManager researchAreaService;
+  private final CrpProgramManager crpProgramManager;
   // OCS Agreement Servcie Class
   private MarloOcsClient ocsClient;
-  private ResourceInfoOCS resourceOCS;
 
+
+  private ResourceInfoOCS resourceOCS;
 
   @Inject
   public CapacityDevelopmentDetailAction(APConfig config, ICapacityDevelopmentService capdevService,
@@ -146,7 +167,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     CapdevRangeAgeManager capdevRangeAgeService, ICapdevParticipantService capdevParicipantService,
     CapacityDevelopmentValidator validator, InstitutionManager institutionService,
     CapdevHighestDegreeManager capdevHighestDegreeService, CapdevFoundingTypeManager capdevFoundingTypeService,
-    AuditLogManager auditLogService, MarloOcsClient ocsClient) {
+    AuditLogManager auditLogService, MarloOcsClient ocsClient, GlobalUnitManager crpService,
+    ICenterAreaManager researchAreaService, CrpProgramManager crpProgramManager) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
@@ -161,8 +183,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.capdevFoundingTypeService = capdevFoundingTypeService;
     this.auditLogService = auditLogService;
     this.ocsClient = ocsClient;
+    this.crpService = crpService;
+    this.researchAreaService = researchAreaService;
+    this.crpProgramManager = crpProgramManager;
   }
-
 
   public Boolean bolValue(String value) {
     if ((value == null) || value.isEmpty() || value.toLowerCase().equals("null")) {
@@ -203,9 +227,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     if (capdev_country != null) {
-      capdev_country.setActive(false);
-      capdev_country.setModifiedBy(this.getCurrentUser());
-      capdevLocationService.saveCapdevLocations(capdev_country);
+
+      capdevLocationService.deleteCapdevLocations(capdev_country.getId());
     }
     return SUCCESS;
   }
@@ -214,13 +237,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
     for (CapdevParticipant obj : listOfParticipants) {
-      obj.setActive(false);
-      obj.setModifiedBy(this.getCurrentUser());
-      capdevParicipantService.saveCapdevParticipant(obj);
+      capdevParicipantService.deleteCapdevParticipant(obj.getId());
       Participant participant = obj.getParticipant();
-      participant.setActive(false);
-      participant.setModifiedBy(this.getCurrentUser());
-      participantService.saveParticipant(participant);
+      participantService.deleteParticipant(participant.getId());
     }
     capdev.setNumParticipants(null);
     capdev.setNumMen(null);
@@ -241,9 +260,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     if (capdev_region != null) {
-      capdev_region.setActive(false);
-      capdev_region.setModifiedBy(this.getCurrentUser());
-      capdevLocationService.saveCapdevLocations(capdev_region);
+      capdevLocationService.deleteCapdevLocations(capdev_region.getId());
     }
     return SUCCESS;
   }
@@ -262,21 +279,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return capdev;
   }
 
-
   public int getCapdevCategory() {
     return capdevCategory;
   }
-
 
   public List<Long> getCapdevCountries() {
     return capdevCountries;
   }
 
-
   public long getCapdevID() {
     return capdevID;
   }
-
 
   public List<Long> getCapdevRegions() {
     return capdevRegions;
@@ -295,6 +308,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public List<LocElement> getCountryList() {
     return countryList;
+  }
+
+
+  public List<GlobalUnit> getCrps() {
+    return crps;
   }
 
 
@@ -336,12 +354,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumMenParticipants(Object[][] data) {
     int numMen = 0;
     for (Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("Male")) {
+      if (((String) element[2]).equalsIgnoreCase("Male")) {
         numMen++;
       }
     }
     return numMen;
   }
+
 
   /*
    * this method is used to get the number of participants that selected gender like Other in the list of participants.
@@ -351,13 +370,14 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumOtherGender(Object[][] data) {
     int numOther = 0;
     for (Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("Other")) {
+      if (((String) element[2]).equalsIgnoreCase("Other")) {
         numOther++;
 
       }
     }
     return numOther;
   }
+
 
   /*
    * this method is used to get the number of women in the list of participants.
@@ -367,7 +387,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public int getNumWomenParticipants(Object[][] data) {
     int numWomen = 0;
     for (Object[] element : data) {
-      if (((String) element[3]).equalsIgnoreCase("Female")) {
+      if (((String) element[2]).equalsIgnoreCase("Female")) {
         numWomen++;
 
       }
@@ -390,11 +410,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return participantList;
   }
 
-
   public List<Map<String, Object>> getPreviewList() {
     return previewList;
   }
-
 
   public List<Map<String, Object>> getPreviewListContent() {
     return previewListContent;
@@ -420,6 +438,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return regionsList;
   }
 
+
+  public List<CenterArea> getResearchAreas() {
+    return researchAreas;
+  }
+
+
+  public List<CrpProgram> getResearchPrograms() {
+    return researchPrograms;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -433,7 +462,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public String getUploadFileContentType() {
     return uploadFileContentType;
   }
-
 
   public String getUploadFileName() {
     return uploadFileName;
@@ -452,49 +480,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     for (int i = 0; i < reader.getTotalRows(); i++) {
       Participant participant = new Participant();
-      participant.setCode(Math.round((double) data[i][0]));
-      participant.setName((String) data[i][1]);
-      participant.setLastName((String) data[i][2]);
-      participant.setGender((String) data[i][3]);
+      participant.setName((String) data[i][0]);
+      participant.setLastName((String) data[i][1]);
+      participant.setGender((String) data[i][2]);
 
-      if (reader.sustraerID((String) data[i][4]) != null) {
-        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])) != null) {
+      if (reader.sustraerID((String) data[i][3]) != null) {
+        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][3])) != null) {
           participant.setLocElementsByCitizenship(
-            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][4])));
-        }
-
-      }
-      if (reader.sustraerId((String) data[i][5]) != null) {
-        if (capdevHighestDegreeService
-          .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))) != null) {
-          participant.setHighestDegree(capdevHighestDegreeService
-            .getCapdevHighestDegreeById(Long.parseLong((String) reader.sustraerId((String) data[i][5]))));
-        }
-
-      }
-      if (reader.sustraerID((String) data[i][6]) != null) {
-        if (institutionService
-          .getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))) != null) {
-          participant.setInstitutions(
-            institutionService.getInstitutionById(Long.parseLong((String) (reader.sustraerID((String) data[i][6])))));
-        }
-
-      }
-      if (reader.sustraerID((String) data[i][7]) != null) {
-        if (locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])) != null) {
-          participant.setLocElementsByCountryOfInstitucion(
-            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][7])));
+            locElementService.getLocElementByISOCode((String) reader.sustraerID((String) data[i][3])));
         }
 
       }
 
-      participant.setEmail((String) data[i][8]);
-      participant.setInstitutionsSuggested((String) data[i][9]);
-
-
-      participant.setActive(true);
-      participant.setCreatedBy(currentUser);
-
+      participant.setEmail((String) data[i][4]);
       participantList.add(participant);
     }
 
@@ -554,6 +552,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     // range Age
     rangeAgeList = capdevRangeAgeService.findAll().stream().filter(age -> age.isActive()).collect(Collectors.toList());
 
+    // Crp - CIAT programs
+    crps = crpService.findAll().stream()
+      .filter(out -> out.isActive() && (out.getGlobalUnitType().getId() == 1 || out.getGlobalUnitType().getId() == 3))
+      .collect(Collectors.toList());
+    Collections.sort(crps, (r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym()));
+
+    researchAreas = researchAreaService.findAll().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
+    Collections.sort(researchAreas, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
+    researchPrograms = crpProgramManager.findAll().stream().filter(rl -> rl.isActive() && rl.getResearchArea() != null
+      && rl.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()).collect(Collectors.toList());
+    Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+
     participantList = new ArrayList<>();
     capdevCountries = new ArrayList<>();
     capdevRegions = new ArrayList<>();
@@ -608,8 +619,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         }
         capdev.setGlobal(this.bolValue(capdev.getsGlobal()));
         capdev.setRegional(this.bolValue(capdev.getsRegional()));
-
-        System.out.println(capdev.getRegional());
 
 
         if (capdev.getCapDevCountries() != null) {
@@ -708,6 +717,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
+
   /*
    * This method is used to do a preview of excel file uploaded
    * @return previewList is a JSON Object containing the data from excel file
@@ -734,18 +744,39 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
     capdevDB.setStartDate(capdev.getStartDate());
-    capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
-
-    System.out.println(capdev.getTitle());
     capdevDB.setTitle(capdev.getTitle());
 
+
+    if (capdev.getResearchProgram() != null) {
+      if (capdev.getResearchProgram().getId() != -1) {
+        capdevDB.setResearchProgram(capdev.getResearchProgram());
+      } else {
+        capdevDB.setResearchProgram(null);
+      }
+    }
+
+    if (capdev.getProject() != null) {
+      if (capdev.getProject().getId() != -1) {
+        capdevDB.setProject(capdev.getProject());
+      } else {
+        capdevDB.setProject(null);
+      }
+    }
+
+
+    if (capdev.getCrp().getId() > -1) {
+      capdevDB.setCrp(capdev.getCrp());
+    } else {
+      capdevDB.setCrp(null);
+    }
 
     if (capdev.getCapdevType() != null) {
       if (capdev.getCapdevType().getId() != -1) {
@@ -769,16 +800,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setHighestDegree(capdev.getParticipant().getHighestDegree());
 
       capdevDB.setNumParticipants(1);
-      if (capdev.getParticipant().getGender().equals("Male")) {
-        capdevDB.setNumMen(1);
+      if (capdev.getParticipant().getGender() != null) {
+        if (capdev.getParticipant().getGender().equals("Male")) {
+          capdevDB.setNumMen(1);
+        }
+        if (capdev.getParticipant().getGender().equals("Female")) {
+          capdevDB.setNumWomen(1);
+        }
+        if (capdev.getParticipant().getGender().equals("Other")) {
+          capdevDB.setNumOther(1);
+        }
       }
-      if (capdev.getParticipant().getGender().equals("Female")) {
-        capdevDB.setNumWomen(1);
-      }
-      if (capdev.getParticipant().getGender().equals("Other")) {
-        capdevDB.setNumOther(1);
-      }
-
 
       this.saveParticipant(capdev.getParticipant());
 
@@ -786,7 +818,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
         List<CapdevParticipant> participants = capdevParicipantService.findAll().stream()
           .filter(p -> p.isActive() && (p.getCapacityDevelopment().getId() == capdevID)).collect(Collectors.toList());
-        System.out.println(participants.size());
         if (participants != null) {
           if (participants.isEmpty()) {
             this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
@@ -860,9 +891,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.CAPDEV_LOCATIONS_RELATION);
     relationsName.add(APConstants.CAPDEV_PARTICIPANTS_RELATION);
-    capdev.setActiveSince(new Date());
-    capdev.setModifiedBy(this.getCurrentUser());
 
+    /**
+     * The following is required because we need to update something on the @CapacityDevelopment if we want a row
+     * created in the auditlog table.
+     */
+    this.setModificationJustification(capdev);
 
     capdevService.saveCapacityDevelopment(capdev, this.getActionName(), relationsName);
 
@@ -896,10 +930,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations = new CapdevLocations();
           capdevLocations.setCapacityDevelopment(capdev);
           capdevLocations.setLocElement(iterator.getLocElement());
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(this.getCurrentUser());
-          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
@@ -907,19 +937,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
   }
 
-
   public void saveCapDevParticipan(Participant participant, CapacityDevelopment capdev) {
     CapdevParticipant capdevParticipant = new CapdevParticipant();
     capdevParticipant.setCapacityDevelopment(capdev);
     capdevParticipant.setParticipant(participant);
-    capdevParticipant.setActive(true);
-    capdevParticipant.setActiveSince(new Date());
-    capdevParticipant.setCreatedBy(this.getCurrentUser());
-    capdevParticipant.setModifiedBy(this.getCurrentUser());
 
     capdevParicipantService.saveCapdevParticipant(capdevParticipant);
   }
-
 
   public void saveCapDevRegions(List<CapdevLocations> capdevRegions, CapacityDevelopment capdev) {
 
@@ -930,10 +954,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations = new CapdevLocations();
           capdevLocations.setCapacityDevelopment(capdev);
           capdevLocations.setLocElement(iterator.getLocElement());
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(this.getCurrentUser());
-          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
       }
@@ -979,14 +999,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if ((participant.getFellowship() == null) || (participant.getFellowship().getId() == -1)) {
       participant.setFellowship(null);
     }
-    if (participant.getSync() == null) {
-      participant.setSync(null);
-    }
-    participant.setActive(true);
-    participant.setAciveSince(new Date());
-    participant.setCreatedBy(this.getCurrentUser());
-    participant.setModifiedBy(this.getCurrentUser());
 
+    if (participant.getOtherFunding() == null) {
+      participant.setOtherFunding(null);
+    }
 
     participantService.saveParticipant(participant);
   }
@@ -1029,6 +1045,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setCountryList(List<LocElement> countryList) {
     this.countryList = countryList;
+  }
+
+
+  public void setCrps(List<GlobalUnit> crps) {
+    this.crps = crps;
   }
 
 
@@ -1104,6 +1125,16 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setRegionsList(List<LocElement> regionsList) {
     this.regionsList = regionsList;
+  }
+
+
+  public void setResearchAreas(List<CenterArea> researchAreas) {
+    this.researchAreas = researchAreas;
+  }
+
+
+  public void setResearchPrograms(List<CrpProgram> researchPrograms) {
+    this.researchPrograms = researchPrograms;
   }
 
 

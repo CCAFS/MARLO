@@ -41,7 +41,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -217,11 +216,7 @@ public class ProjectOutputsAction extends BaseAction {
     for (IpProjectContributionOverview overview : overviews) {
       if (overview != null) {
         if (overview.getId() == null || overview.getId() == -1) {
-          overview.setActive(true);
-          overview.setCreatedBy(this.getCurrentUser());
-          overview.setModifiedBy(this.getCurrentUser());
           overview.setModificationJustification(this.getJustification());
-          overview.setActiveSince(new Date());
 
           overview.setId(null);
           overview.setProject(project);
@@ -229,13 +224,9 @@ public class ProjectOutputsAction extends BaseAction {
         } else {
           IpProjectContributionOverview overviewDB =
             ipProjectContributionOverviewManager.getIpProjectContributionOverviewById(overview.getId());
-          overview.setActive(true);
-          overview.setCreatedBy(overviewDB.getCreatedBy());
-          overview.setModifiedBy(this.getCurrentUser());
           overview.setModificationJustification(this.getJustification());
           overview.setYear(overviewDB.getYear());
           overview.setProject(project);
-          overview.setActiveSince(overviewDB.getActiveSince());
 
         }
         ipProjectContributionOverviewManager.saveIpProjectContributionOverview(overview);
@@ -374,12 +365,6 @@ public class ProjectOutputsAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
-
-
       this.overViewsNewData(project.getOverviews());
       /*
        * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
@@ -388,7 +373,11 @@ public class ProjectOutputsAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OVERVIEWS_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

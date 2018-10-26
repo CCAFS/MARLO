@@ -12,16 +12,16 @@
             <column name="deliverable_id" not-null="true" />
         </many-to-one>
         <property name="volume" type="string">
-            <column name="volume" length="65535" />
+            <column name="volume" sql-type="TEXT" />
         </property>
         <property name="issue" type="string">
-            <column name="issue" length="65535" />
+            <column name="issue" sql-type="TEXT" />
         </property>
         <property name="pages" type="string">
-            <column name="pages" length="65535" />
+            <column name="pages" sql-type="TEXT" />
         </property>
         <property name="journal" type="string">
-            <column name="journal" length="65535" />
+            <column name="journal" sql-type="TEXT" />
         </property>
          <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />

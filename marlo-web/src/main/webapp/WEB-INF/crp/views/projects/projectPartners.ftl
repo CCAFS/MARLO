@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js", 
   "${baseUrl}/global/js/usersManagement.js", 
-  "${baseUrlMedia}/js/projects/projectPartners.js", 
+  "${baseUrlMedia}/js/projects/projectPartners.js?1", 
   "${baseUrl}/global/js/autoSave.js"
   ] 
 /]  
@@ -69,7 +69,7 @@
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <div class="form-group">
-                [@customForm.textArea name="project.projectInfo.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.partnerOverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=true editable=editable /]
               </div>
               [/#if]
               
@@ -79,21 +79,22 @@
                   [#-- Lessons learnt from last planning/reporting cycle --]
                   [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
-                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
+                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:[@customForm.req required=false /]</label>
                     <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]
                   [#-- Planning/Reporting lessons --]
-                   [#if (action.isReportingActive())]
+                  [#if reportingActive]
                   <div class="fullBlock">
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable required=true /]
                   [/#if]
                   </div>
                 </div>
               [/#if]
+              <div class="clearfix"></div>
             </div>
             [/#if]
           
@@ -102,14 +103,17 @@
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
-                  [@projectPartnerMacro element=projectPartner!{} name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                  [@projectPartnerMacro element=projectPartner!{} name="project.partners[${projectPartner_index}]" index=projectPartner_index opened=(project.partners?size = 1)/]
                 [/#list]
               [#else]
+                [@projectPartnerMacro element={} name="project.partners[0]" index=0 opened=true defaultPerson=true /]
+                [#-- 
                 [#if !editable]
                   <p class="center">[@s.text name="projectPartners.empty" /]
                   <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
                   </p>
                 [/#if]
+                 --]
               [/#if] 
               [#if (editable && canEdit)]
                 <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
@@ -266,7 +270,7 @@
 [#----------------------------------------------------     MACROS     ----------------------------------------------------]
 [#------------------------------------------------------            ------------------------------------------------------]
 
-[#macro projectPartnerMacro element name index=-1 isTemplate=false]
+[#macro projectPartnerMacro element name index=-1 opened=false defaultPerson=false isTemplate=false]
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
@@ -275,13 +279,18 @@
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
     <div class="loading" style="display:none"></div>
+    [#-- TODO: Please improve this validation at backend side --]
+    [#local canRemoveCIAT = true /]
+    [#if centerGlobalUnit && isCenterProject && ((element.institution.id == 46)!false)]
+      [#local canRemoveCIAT = false /]
+    [/#if]
     [#-- Remove link for all partners --]
-    [#if editable ] [#--&& (isTemplate) --]
+    [#if editable && canRemoveCIAT] [#--&& (isTemplate) --]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
     [#-- Partner Title --]
-    <div class="blockTitle closed">
+    <div class="blockTitle ${opened?string('opened', 'closed')}">
       [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
       
@@ -303,10 +312,10 @@
       <div class="clearfix"></div>
     </div>
     
-    <div class="blockContent" style="display:none">
+    <div class="blockContent" style="display:${opened?string('block','none')}">
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
-       <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
+      <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
       
       [#-- Institution / Organization --]
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
@@ -330,6 +339,53 @@
         [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=partnerRespRequired editable=editable /]
         <div class="clearfix"></div>
       </div>
+      [/#if]
+      
+      [#-- Reporting Partnerships --]
+      [#if reportingActive]
+        <h5 class="sectionSubTitle">Partnership</h5>
+        <div class="${reportingActive?string('fieldFocus','')}">
+          [#assign customPartnershipName = "${name}.projectPartnerPartnership"]
+          [#assign isRegional = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
+          [#assign isMultiNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
+          [#assign isNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
+          [#assign isSubNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
+          
+          [#-- Hidden Inputs --]
+          <input type="hidden" name="${name}.projectPartnerPartnership.id" value="${(element.projectPartnerPartnership.id)!}"/>
+          <div class="form-group">
+            [#-- Is This partner a formal partner --]
+            <label for="">[@s.text name="projectPartners.hasPartnerships" /][@customForm.req required=editable /]
+              [@customForm.helpLabel name="projectPartners.hasPartnerships.help" showIcon=false editable=editable/]
+            </label>
+            [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.hasPartnerships" label="Yes" value="true" checked=(element.hasPartnerships)!false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no" editable=editable /]
+          </div>
+          <div class="form-group">
+            [#-- Phase of research --]
+            <div class="form-group">
+              [@customForm.select name="${customPartnershipName}.researchPhasesIds" label="" i18nkey="projectPartners.researchPhase" listName="allRepIndResearchPhases" keyFieldName="id"  displayFieldName="name" value="${customPartnershipName}.researchPhasesIds" multiple=true required=true className="researchPhasesSelect" disabled=!editable /]
+            </div>
+            [#-- Geographic Scope --]
+            <div class="form-group row">
+              <div class="col-md-6">
+                [@customForm.select name="${customPartnershipName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projectPartners.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
+              </div>
+            </div>
+            [#-- Regional scope --]
+            <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+              [@customForm.selectGroup name="${customPartnershipName}.region.id" list=allRepIndRegions element=(element.projectPartnerPartnership.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="projectPartners.region" required=true className="" editable=editable /]
+            </div>
+            [#-- Multinational, National and Subnational scope --]
+            <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+              [@customForm.select name="${customPartnershipName}.partnershipLocationsIsos" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIsos" multiple=true required=true className="countriesSelect" disabled=!editable /]
+            </div>
+            [#-- Main area of partnership --]
+            <div class="form-group">
+              [@customForm.textArea name="${customPartnershipName}.mainArea" className="limitWords-30" i18nkey="projectPartners.partnershipMainarea"  editable=editable required=true/]
+            </div>
+          </div>
+        </div>
       [/#if]
       
       [#--Select country office  (if applicable)  --] 
@@ -397,8 +453,8 @@
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
-          [#if isPPA]
-           [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+          [#if isPPA || defaultPerson]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]

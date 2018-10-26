@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,12 +99,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         projectPartnerContribution.setProjectPartner(projectPartnerAdd);
         projectPartnerContribution.setProjectPartnerContributor(projectPartnerDAO.getPartnerPhase(phase,
           projectPartner.getProject(), partnerContribution.getProjectPartnerContributor().getInstitution()));
-        projectPartnerContribution.setActive(true);
-        projectPartnerContribution.setActiveSince(new Date());
-        projectPartnerContribution.setCreatedBy(projectPartner.getCreatedBy());
-        projectPartnerContribution.setModificationJustification(projectPartner.getModificationJustification());
-        projectPartnerContribution.setModifiedBy(projectPartner.getCreatedBy());
-
 
         if (projectPartnerContribution.getProjectPartnerContributor() != null) {
           projectPartnerContributionDAO.save(projectPartnerContribution);
@@ -130,11 +123,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           institutionDAO.findByLocation(locElement.getId(), projectPartner.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
         partnerLocation.setInstitutionLocation(institutionLocationDB);
-        partnerLocation.setActive(true);
-        partnerLocation.setActiveSince(new Date());
-        partnerLocation.setCreatedBy(projectPartner.getCreatedBy());
-        partnerLocation.setModificationJustification(projectPartner.getModificationJustification());
-        partnerLocation.setModifiedBy(projectPartner.getCreatedBy());
         partnerLocation.setProjectPartner(projectPartnerAdd);
         projectPartnerLocationDAO.save(partnerLocation);
       }
@@ -154,11 +142,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     if (projectPartner.getPartnerPersons() != null) {
       for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
         ProjectPartnerPerson projectPartnerPersonAdd = new ProjectPartnerPerson();
-        projectPartnerPersonAdd.setActive(true);
-        projectPartnerPersonAdd.setActiveSince(projectPartner.getActiveSince());
-        projectPartnerPersonAdd.setCreatedBy(projectPartner.getCreatedBy());
-        projectPartnerPersonAdd.setModificationJustification(projectPartner.getModificationJustification());
-        projectPartnerPersonAdd.setModifiedBy(projectPartner.getCreatedBy());
         projectPartnerPersonAdd.setProjectPartner(projectPartnerDAO.find(newPartern));
         projectPartnerPersonAdd.setContactType(projectPartnerPerson.getContactType());
         projectPartnerPersonAdd.setUser(projectPartnerPerson.getUser());
@@ -186,15 +169,11 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
     if (partners.isEmpty()) {
       ProjectPartner projectPartnerAdd = new ProjectPartner();
-      projectPartnerAdd.setActive(true);
-      projectPartnerAdd.setActiveSince(projectPartner.getActiveSince());
-      projectPartnerAdd.setCreatedBy(projectPartner.getCreatedBy());
       projectPartnerAdd.setInstitution(projectPartner.getInstitution());
-      projectPartnerAdd.setModificationJustification(projectPartner.getModificationJustification());
-      projectPartnerAdd.setModifiedBy(projectPartner.getModifiedBy());
       projectPartnerAdd.setPhase(phase);
       projectPartnerAdd.setResponsibilities(projectPartner.getResponsibilities());
       projectPartnerAdd.setProject(projectPartner.getProject());
+      projectPartnerAdd.setSubDepartment(projectPartner.getSubDepartment());
       projectPartnerAdd = projectPartnerDAO.save(projectPartnerAdd);
 
       if (projectPartnerAdd.getId() != null) {
@@ -208,6 +187,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
       for (ProjectPartner projectPartnerPrev : partners) {
         projectPartnerPrev.setResponsibilities(projectPartner.getResponsibilities());
+        projectPartnerPrev.setSubDepartment(projectPartner.getSubDepartment());
         projectPartnerPrev = projectPartnerDAO.save(projectPartnerPrev);
         this.updateUsers(projectPartnerPrev, projectPartner);
         this.updateLocations(projectPartnerPrev, projectPartner);
@@ -234,12 +214,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
     if (partners.isEmpty()) {
       ProjectPartner projectPartnerAdd = new ProjectPartner();
-      projectPartnerAdd.setActive(true);
-      projectPartnerAdd.setActiveSince(projectPartner.getActiveSince());
-      projectPartnerAdd.setCreatedBy(projectPartner.getCreatedBy());
       projectPartnerAdd.setInstitution(projectPartner.getInstitution());
-      projectPartnerAdd.setModificationJustification(projectPartner.getModificationJustification());
-      projectPartnerAdd.setModifiedBy(projectPartner.getModifiedBy());
       projectPartnerAdd.setPhase(phase);
       projectPartnerAdd.setResponsibilities(projectPartner.getResponsibilities());
       projectPartnerAdd.setProject(projectPartner.getProject());
@@ -277,7 +252,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     }
     for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      projectPartnerPerson.setActive(false);
       projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPerson.getId());
     }
     for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
@@ -294,6 +268,15 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartner);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (projectPartner.getPhase().getNext() != null && projectPartner.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletProjectPartnerPhase(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
+    // }
+    // }
+    // }
 
 
   }
@@ -310,17 +293,14 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
       for (ProjectPartnerContribution projectPartnerContribution : partner.getProjectPartnerContributions().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        projectPartnerContribution.setActive(false);
         projectPartnerContributionDAO.deleteProjectPartnerContribution(projectPartnerContribution.getId());
       }
       for (ProjectPartnerPerson projectPartnerPerson : partner.getProjectPartnerPersons().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        projectPartnerPerson.setActive(false);
         projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPerson.getId());
       }
       for (ProjectPartnerLocation projectPartnerLocation : partner.getProjectPartnerLocations().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        projectPartnerLocation.setActive(false);
         projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocation.getId());
       }
 
@@ -374,6 +354,17 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartner);
       }
     }
+
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addProjectPartnerDAO(upkeepPhase, projectPartner.getProject().getId(), projectPartner);
+    // }
+    // }
+    // }
+
+
     return resultPartner;
 
   }
@@ -393,10 +384,8 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           .equals(projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()))
         .collect(Collectors.toList()).isEmpty()) {
 
-        ProjectPartnerContribution projectContributionDB =
-          projectPartnerContributionDAO.find(projectPartnerContribution.getId());
-        projectContributionDB.setActive(false);
-        projectPartnerContributionDAO.save(projectContributionDB);
+        projectPartnerContributionDAO.deleteProjectPartnerContribution(projectPartnerContribution.getId());
+
       }
     }
     if (projectPartner.getPartnerContributors() != null) {
@@ -410,11 +399,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartnerContributionAdd.setProjectPartner(projectPartnerPrev);
           projectPartnerContributionAdd.setProjectPartnerContributor(projectPartnerDAO.getPartnerPhase(phase,
             projectPartner.getProject(), projectPartnerContribution.getProjectPartnerContributor().getInstitution()));
-          projectPartnerContributionAdd.setActive(true);
-          projectPartnerContributionAdd.setActiveSince(new Date());
-          projectPartnerContributionAdd.setCreatedBy(projectPartner.getCreatedBy());
-          projectPartnerContributionAdd.setModificationJustification("");
-          projectPartnerContributionAdd.setModifiedBy(projectPartner.getModifiedBy());
           if (projectPartnerContributionAdd.getProjectPartnerContributor() != null) {
             projectPartnerContributionDAO.save(projectPartnerContributionAdd);
           }
@@ -440,10 +424,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           .equals(projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2()))
         .collect(Collectors.toList()).isEmpty()) {
 
-        ProjectPartnerLocation projectPartnerLocationDB =
-          projectPartnerLocationDAO.find(projectPartnerLocation.getId());
-        projectPartnerLocationDB.setActive(false);
-        projectPartnerLocationDAO.save(projectPartnerLocationDB);
+        projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocation.getId());
       }
     }
     if (projectPartner.getSelectedLocations() != null) {
@@ -461,11 +442,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
             institutionLocationManager.findByLocation(locElement.getId(), projectPartner.getInstitution().getId()));
 
 
-          partnerLocation.setActive(true);
-          partnerLocation.setActiveSince(new Date());
-          partnerLocation.setCreatedBy(projectPartner.getCreatedBy());
-          partnerLocation.setModificationJustification("");
-          partnerLocation.setModifiedBy(projectPartner.getModifiedBy());
           partnerLocation.setProjectPartner(projectPartnerPrev);
           projectPartnerLocationDAO.save(partnerLocation);
         }
@@ -487,8 +463,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           && c.getUser().getId() != null && c.getUser().getId().equals(partnerPerson.getUser().getId())
           && c.getContactType() != null && c.getContactType().equals(partnerPerson.getContactType()))
         .collect(Collectors.toList()).isEmpty()) {
-        partnerPerson.setActive(false);
-        projectPartnerPersonDAO.save(partnerPerson);
+        projectPartnerPersonDAO.deleteProjectPartnerPerson(partnerPerson.getId());
       }
     }
     if (projectPartner.getPartnerPersons() != null) {
@@ -503,15 +478,10 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           ProjectPartner partner = new ProjectPartner();
           partner.setId(projectPartnerPrev.getId());
           partnerPersonAdd.setProjectPartner(partner);
-          partnerPersonAdd.setModifiedBy(projectPartnerPrev.getModifiedBy());
-          partnerPersonAdd.setActive(true);
-          partnerPersonAdd.setActiveSince(projectPartnerPrev.getActiveSince());
           partnerPersonAdd.setContactType(partnerPerson.getContactType());
-          partnerPersonAdd.setModificationJustification(projectPartnerPrev.getModificationJustification());
 
 
           partnerPersonAdd.setUser(partnerPerson.getUser());
-          partnerPersonAdd.setCreatedBy(projectPartnerPrev.getCreatedBy());
           if (partnerPersonAdd.getUser() != null && partnerPersonAdd.getUser().getId() != null) {
             projectPartnerPersonDAO.save(partnerPersonAdd);
           }

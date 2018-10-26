@@ -4,7 +4,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,37 +13,19 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jimenez
  */
-public class GlobalUnit implements java.io.Serializable, IAuditLog {
+public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -3398924354219701873L;
 
-
-  @Expose
-  private Long id;
-
   @Expose
   private GlobalUnitType globalUnitType;
-
-
-  @Expose
-  private User modifiedBy;
-
-  @Expose
-  private User createdBy;
 
   @Expose
   private String name;
   @Expose
   private String acronym;
 
-  @Expose
-  private boolean active;
-  @Expose
-  private Date activeSince;
-
-  @Expose
-  private String modificationJustification;
   @Expose
   private boolean marlo;
 
@@ -141,51 +122,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     // Default Constructor
   }
 
-  public GlobalUnit(Long id, GlobalUnitType globalUnitType, User modifiedBy, User createdBy, String name,
-    String acronym, boolean active, Date activeSince, String modificationJustification, boolean marlo, boolean login,
-    Set<CenterLeader> centerLeaders, Set<CrpProgram> crpPrograms, Set<CrpTargetUnit> crpTargetUnits,
-    Set<CenterArea> centerAreas, Set<DeliverableType> deliverableTypes, Set<LocElementType> locElementTypes,
-    Set<LocElement> locElements, Set<CrpPpaPartner> crpPpaPartners, Set<CrpSubIdosContribution> crpSubIdosContributions,
-    Set<LiaisonInstitution> liaisonInstitutions, Set<CenterObjective> centerObjectives, Set<Phase> phases,
-    Set<CenterProjectFundingSource> centerProjectFundingSources, Set<CrpUser> crpUsers,
-    Set<CrpsSiteIntegration> crpsSitesIntegrations, Set<CrpLocElementType> crpLocElementTypes,
-    Set<CustomParameter> customParameters, Set<LiaisonUser> liasonUsers, Set<Role> roles) {
-    super();
-    this.id = id;
-    this.globalUnitType = globalUnitType;
-    this.modifiedBy = modifiedBy;
-    this.createdBy = createdBy;
-    this.name = name;
-    this.acronym = acronym;
-    this.active = active;
-    this.activeSince = activeSince;
-    this.modificationJustification = modificationJustification;
-    this.marlo = marlo;
-    this.login = login;
-    this.centerLeaders = centerLeaders;
-    this.crpPrograms = crpPrograms;
-    this.crpTargetUnits = crpTargetUnits;
-    this.centerAreas = centerAreas;
-    this.deliverableTypes = deliverableTypes;
-    this.locElementTypes = locElementTypes;
-    this.locElements = locElements;
-    this.crpPpaPartners = crpPpaPartners;
-    this.crpSubIdosContributions = crpSubIdosContributions;
-    this.liaisonInstitutions = liaisonInstitutions;
-    this.centerObjectives = centerObjectives;
-    this.phases = phases;
-
-    this.centerProjectFundingSources = centerProjectFundingSources;
-
-    this.crpUsers = crpUsers;
-    this.crpsSitesIntegrations = crpsSitesIntegrations;
-    this.crpLocElementTypes = crpLocElementTypes;
-    this.customParameters = customParameters;
-    this.liasonUsers = liasonUsers;
-
-    this.roles = roles;
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -213,10 +149,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return acronymValid;
   }
 
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
   public Set<CenterArea> getCenterAreas() {
     return centerAreas;
   }
@@ -239,11 +171,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     } else {
       return this.name;
     }
-  }
-
-
-  public User getCreatedBy() {
-    return createdBy;
   }
 
   public List<CrpPpaPartner> getCrpInstitutionsPartners() {
@@ -311,11 +238,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return globalUnitType;
   }
 
-  @Override
-  public Long getId() {
-    return id;
-  }
-
   public Institution getInstitution() {
     return institution;
   }
@@ -349,17 +271,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   public String getName() {
@@ -400,17 +311,17 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  @Override
-  public boolean isActive() {
-    return active;
   }
 
   public boolean isCenterType() {
     return this.globalUnitType.getId().intValue() == 4;
+  }
+
+  public boolean isCrpType() {
+    // CRP or Platform
+    return this.globalUnitType.getId().intValue() == 1 || this.globalUnitType.getId().intValue() == 3;
   }
 
   public boolean isHasRegions() {
@@ -433,14 +344,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.acronymValid = acronymValid;
   }
 
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
   public void setCenterAreas(Set<CenterArea> centerAreas) {
     this.centerAreas = centerAreas;
   }
@@ -457,11 +360,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   public void setCenterProjectFundingSources(Set<CenterProjectFundingSource> centerProjectFundingSources) {
     this.centerProjectFundingSources = centerProjectFundingSources;
-  }
-
-
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
   }
 
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
@@ -535,10 +433,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.hasRegions = hasRegions;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setInstitution(Institution institution) {
     this.institution = institution;
   }
@@ -576,14 +470,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.marlo = marlo;
   }
 
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
-
   public void setName(String name) {
     this.name = name;
   }
@@ -604,10 +490,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.roles = roles;
   }
 
-
   public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
     this.siteIntegrations = siteIntegrations;
   }
+
 
   public void setSmoCode(String smoCode) {
     this.smoCode = smoCode;
@@ -615,6 +501,12 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   public void setTargetUnits(List<TargetUnitSelect> targetUnits) {
     this.targetUnits = targetUnits;
+  }
+
+  @Override
+  public String toString() {
+    return "GlobalUnit [id=" + this.getId() + ", globalUnitType=" + globalUnitType + ", name=" + name + ", acronym="
+      + acronym + ", active=" + this.isActive() + ", marlo=" + marlo + ", login=" + login + "]";
   }
 
 

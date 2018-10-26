@@ -17,25 +17,14 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.Date;
-
 import com.google.gson.annotations.Expose;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverableActivity implements java.io.Serializable, IAuditLog {
+public class DeliverableActivity extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 5926712975974248056L;
-
-  @Expose
-  private Long id;
-
-  @Expose
-  private User modifiedBy;
-
-  @Expose
-  private User createdBy;
 
   @Expose
   private Activity activity;
@@ -44,41 +33,10 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   private Deliverable deliverable;
 
   @Expose
-  private boolean active;
-
-
-  @Expose
-  private Date activeSince;
-
-  @Expose
-  private String modificationJustification;
-
-  @Expose
   private Phase phase;
 
 
   public DeliverableActivity() {
-  }
-
-
-  public DeliverableActivity(User modifiedBy, User createdBy, Activity activity, Deliverable deliverable,
-    boolean active, Date activeSince, String modificationJustification) {
-    this.modifiedBy = modifiedBy;
-    this.createdBy = createdBy;
-    this.activity = activity;
-    this.deliverable = deliverable;
-    this.active = active;
-    this.activeSince = activeSince;
-    this.modificationJustification = modificationJustification;
-  }
-
-  public DeliverableActivity(User modifiedBy, User createdBy, boolean active, Date activeSince,
-    String modificationJustification) {
-    this.modifiedBy = modifiedBy;
-    this.createdBy = createdBy;
-    this.active = active;
-    this.activeSince = activeSince;
-    this.modificationJustification = modificationJustification;
   }
 
 
@@ -94,19 +52,14 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
       return false;
     }
     DeliverableActivity other = (DeliverableActivity) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
-  }
-
-
-  public Date getActiveSince() {
-    return this.activeSince;
   }
 
 
@@ -114,17 +67,8 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     return activity;
   }
 
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
   public Deliverable getDeliverable() {
     return deliverable;
-  }
-
-  @Override
-  public Long getId() {
-    return this.id;
   }
 
   @Override
@@ -132,16 +76,6 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-  @Override
-  public String getModificationJustification() {
-    return this.modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   public Phase getPhase() {
@@ -152,49 +86,17 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
   }
 
   public void setActivity(Activity activity) {
     this.activity = activity;
   }
 
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
-  }
-
 
   public void setPhase(Phase phase) {
     this.phase = phase;

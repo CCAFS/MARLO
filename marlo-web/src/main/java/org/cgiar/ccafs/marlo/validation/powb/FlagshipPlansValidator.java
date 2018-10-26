@@ -70,7 +70,7 @@ public class FlagshipPlansValidator extends BaseValidator {
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus(), action);
+      action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus(), action);
   }
 
   private void validateFlagshipPlans(BaseAction action, PowbSynthesis powbSynthesis) {

@@ -12,7 +12,7 @@
 
 <div class="buttons">
   <div class="buttons-content">
-    [#-- History Log --]
+  [#-- History Log--]
     [#if action.getListLog(deliverable)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=action.getListLog(deliverable) itemName="deliverableID" itemId=(deliverable.id)! /]

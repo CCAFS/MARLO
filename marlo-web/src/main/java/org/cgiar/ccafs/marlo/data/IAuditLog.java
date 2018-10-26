@@ -43,7 +43,7 @@ public interface IAuditLog {
    * 
    * @return a Object model id
    */
-  public Object getId();
+  public Long getId();
 
   /**
    * This method get a entity information detail to identify in the audit.
@@ -67,5 +67,7 @@ public interface IAuditLog {
    * @return true if the Entity is active or false if the Entity is not active.
    */
   public boolean isActive();
+
+  public void setModifiedBy(User modifiedBy);
 
 }

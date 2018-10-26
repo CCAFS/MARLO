@@ -51,7 +51,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,26 +163,14 @@ public class ProjectOtherContributionsAction extends BaseAction {
       for (ProjectCrpContribution crpContribution : crpContributions) {
         if (crpContribution != null) {
           if (crpContribution.getId() == null || crpContribution.getId() == -1) {
-            crpContribution.setActive(true);
-            crpContribution.setCreatedBy(this.getCurrentUser());
-            crpContribution.setModifiedBy(this.getCurrentUser());
             crpContribution.setModificationJustification(this.getJustification());
-            crpContribution.setActiveSince(new Date());
 
             crpContribution.setId(null);
             crpContribution.setProject(project);
 
           } else {
-            ProjectCrpContribution crpContributionDB =
-              projectCrpContributionManager.getProjectCrpContributionById(crpContribution.getId());
-            crpContribution.setActive(true);
-            crpContribution.setCreatedBy(crpContributionDB.getCreatedBy());
-            crpContribution.setModifiedBy(this.getCurrentUser());
             crpContribution.setModificationJustification(this.getJustification());
-
             crpContribution.setProject(project);
-            crpContribution.setActiveSince(crpContributionDB.getActiveSince());
-
           }
           projectCrpContributionManager.saveProjectCrpContribution(crpContribution);
         }
@@ -281,24 +268,13 @@ public class ProjectOtherContributionsAction extends BaseAction {
       for (OtherContribution otherContribution : otherContributions) {
         if (otherContribution != null) {
           if (otherContribution.getId() == null || otherContribution.getId() == -1) {
-            otherContribution.setActive(true);
-            otherContribution.setCreatedBy(this.getCurrentUser());
-            otherContribution.setModifiedBy(this.getCurrentUser());
             otherContribution.setModificationJustification(this.getJustification());
-            otherContribution.setActiveSince(new Date());
             otherContribution.setId(null);
             otherContribution.setProject(project);
 
           } else {
-            OtherContribution otherContributionDB =
-              otherContributionManager.getOtherContributionById(otherContribution.getId());
-            otherContribution.setActive(true);
-            otherContribution.setCreatedBy(otherContributionDB.getCreatedBy());
-            otherContribution.setModifiedBy(this.getCurrentUser());
             otherContribution.setModificationJustification(this.getJustification());
-
             otherContribution.setProject(project);
-            otherContribution.setActiveSince(otherContributionDB.getActiveSince());
 
           }
           otherContributionManager.saveOtherContribution(otherContribution);
@@ -499,11 +475,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
       for (ProjectOtherContribution projectOtherContribution : projectOtherContributions) {
         if (projectOtherContribution != null) {
           if (projectOtherContribution.getId() == null || projectOtherContribution.getId() == -1) {
-            projectOtherContribution.setActive(true);
-            projectOtherContribution.setCreatedBy(this.getCurrentUser());
-            projectOtherContribution.setModifiedBy(this.getCurrentUser());
             projectOtherContribution.setModificationJustification(this.getJustification());
-            projectOtherContribution.setActiveSince(new Date());
             projectOtherContribution.setAdditionalContribution("");
             projectOtherContribution.setId(null);
             projectOtherContribution.setProject(project);
@@ -511,13 +483,9 @@ public class ProjectOtherContributionsAction extends BaseAction {
           } else {
             ProjectOtherContribution otherContributionDB =
               projectOtherContributionManager.getProjectOtherContributionById(projectOtherContribution.getId());
-            projectOtherContribution.setActive(true);
-            projectOtherContribution.setCreatedBy(otherContributionDB.getCreatedBy());
-            projectOtherContribution.setModifiedBy(this.getCurrentUser());
             projectOtherContribution.setModificationJustification(this.getJustification());
             projectOtherContribution.setAdditionalContribution(otherContributionDB.getAdditionalContribution());
             projectOtherContribution.setProject(project);
-            projectOtherContribution.setActiveSince(otherContributionDB.getActiveSince());
 
           }
           projectOtherContributionManager.saveProjectOtherContribution(projectOtherContribution);
@@ -535,9 +503,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
       this.projectOtherContributionsNewData(project.getProjectOtherContributionsList());
       this.OtherContributionsPreviousData(project.getOtherContributionsList());
       this.OtherContributionsNewData(project.getOtherContributionsList());
@@ -550,7 +515,11 @@ public class ProjectOtherContributionsAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OTHER_CONTRIBUTIONS_RELATION);
       relationsName.add(APConstants.OTHER_CONTRIBUTIONS_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

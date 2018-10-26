@@ -18,10 +18,11 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -47,7 +48,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -78,17 +78,21 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private HashMap<Long, String> targetUnitList;
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>();
   // Managers
-  private SrfTargetUnitManager srfTargetUnitManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
+  private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
+
   @Inject
   public OutcomesContributionsSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager) {
-    super(config, crpManager, phaseManager);
+    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -100,6 +104,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private MasterReport addi8nParameters(MasterReport masterReport) {
     masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nStartDate", this.getText("project.startDate"));
+    masterReport.getParameterValues().put("i8nEndDate", this.getText("project.endDate"));
     masterReport.getParameterValues().put("i8nFlagship", this.getText("projectOtherContributions.flagship"));
     masterReport.getParameterValues().put("i8nOutcomeStatement", this.getText("outcome.statement.readText"));
     masterReport.getParameterValues().put("i8nExpectedValue",
@@ -119,18 +125,39 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     masterReport.getParameterValues().put("i8nMilestonesTitle",
       this.getText("summaries.outcomesContributions.titleMilestones"));
     masterReport.getParameterValues().put("i8nOutcomeIndicator", this.getText("outcome.inidicator.readText"));
+    // Reporting
+    masterReport.getParameterValues().put("i8nAchievedValue", this.getText("projectOutcome.achievedValue"));
+    masterReport.getParameterValues().put("i8nNarrativeAchieved",
+      this.getText("projectOutcome.narrativeAchieved.readText"));
+    masterReport.getParameterValues().put("i8nMilestoneAchievedValue",
+      this.getText("projectOutcomeMilestone.achievedValue"));
+    masterReport.getParameterValues().put("i8nMilestoneNarrativeAchieved",
+      this.getText("projectOutcomeMilestone.expectedNarrative.readText"));
+    masterReport.getParameterValues().put("i8nComunications",
+      this.getText("summaries.flagshipOutcomes.communications"));
+
+
     return masterReport;
   }
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
+    Resource reportResource;
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/OutcomesContributions.prpt"), MasterReport.class);
+      if (this.getSelectedCycle().equals("Planning")) {
+        reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/OutcomesContributions.prpt"), MasterReport.class);
+      } else {
+        reportResource = resourceManager.createDirectly(
+          this.getClass().getResource("/pentaho/crp/OutcomesContributions(Reporting).prpt"), MasterReport.class);
+      }
+
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -215,6 +242,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ImpactPathWayContributionsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "_");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -248,25 +277,37 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
-        "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value"},
+        "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value", "achieved_value",
+        "achieved_narrative", "startDate", "endDate"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, Long.class, BigDecimal.class},
+        String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class, String.class,
+        String.class},
       0);
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
     for (ProjectMilestone projectMilestone : projectMilestones.stream().sorted((po1, po2) -> Long
       .compare(po1.getProjectOutcome().getProject().getId(), po2.getProjectOutcome().getProject().getId()))
       .collect(Collectors.toList())) {
 
       String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
-        expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
+        expectedUnit = "", narrativeTarget = "", outcomeIndicator = null, achievedTarget = "", startDate = "",
+        endDate = "";
       Double expectedValue = new Double(0);
       Long phaseID = null;
       projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
       BigDecimal outcomeExpectedValue = new BigDecimal(0);
+      Long achievedValue = new Long(0);
       if (projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()) != null) {
         title =
           projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
         phaseID = projectMilestone.getProjectOutcome().getProject().getProjectInfo().getPhase().getId();
+        if (projectMilestone.getProjectOutcome().getProject().getProjectInfo().getStartDate() != null) {
+          startDate =
+            formatter.format(projectMilestone.getProjectOutcome().getProject().getProjectInfo().getStartDate());
+        }
+        if (projectMilestone.getProjectOutcome().getProject().getProjectInfo().getEndDate() != null) {
+          endDate = formatter.format(projectMilestone.getProjectOutcome().getProject().getProjectInfo().getEndDate());
+        }
       }
       flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
       outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
@@ -283,110 +324,155 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         if (projectMilestone.getCrpMilestone().getSrfTargetUnit().getId() == -1) {
           expectedValue = -1.0;
           outcomeExpectedValue = new BigDecimal(-1);
+          // Only reporting
+          if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+            achievedValue = new Long(-1);
+          }
         } else {
           if (projectMilestone.getExpectedValue() != null) {
             outcomeExpectedValue = projectMilestone.getCrpMilestone().getValue();
             expectedValue = projectMilestone.getExpectedValue();
+          }
+          // Only reporting
+          if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+            if (projectMilestone.getAchievedValue() != null) {
+              achievedValue = projectMilestone.getAchievedValue();
+            }
           }
         }
       } else {
         expectedUnit = "Not Applicable";
         expectedValue = -1.0;
         outcomeExpectedValue = new BigDecimal(-1);
+        // Only reporting
+        if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+          achievedValue = new Long(-1);
+        }
       }
 
       narrativeTarget = projectMilestone.getNarrativeTarget();
+      // Only reporting
+      if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+        achievedTarget = projectMilestone.getNarrativeAchieved();
+      }
 
-      model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue, expectedUnit,
-        narrativeTarget, title, outcomeIndicator, phaseID, outcomeExpectedValue});
+      model.addRow(
+        new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue, expectedUnit, narrativeTarget,
+          title, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue, achievedTarget, startDate, endDate});
     }
     return model;
   }
 
 
   private TypedTableModel getProjectsOutcomesTableModel() {
-
-    // Get all Global Unit Projects
-    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(this.getLoggedCrp().getGlobalUnitProjects());
-    List<Project> guProjects = new ArrayList<>();
-    for (GlobalUnitProject globalUnitProject : globalUnitProjects.stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList())) {
-      guProjects.add(globalUnitProject.getProject());
-    }
-
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
-        "expected_narrative", "project_url", "outcomeIndicator", "phaseID", "outcome_expected_value"},
+        "expected_narrative", "project_url", "outcomeIndicator", "phaseID", "outcome_expected_value", "achieved_value",
+        "achieved_narrative", "startDate", "endDate", "communications"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
-        String.class, String.class, Long.class, BigDecimal.class},
+        String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class, String.class, String.class,
+        String.class},
       0);
 
-    for (Project project : guProjects.stream().sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
-      .collect(Collectors.toList())) {
-      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
-        .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
-        .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
-        String projectId = "";
-        String title = "";
-        String flagship = "";
-        String outcome = "";
-        String outcomeIndicator = null;
-        Double expectedValue = new Double(0);
-        BigDecimal outcomeExpectedValue = new BigDecimal(0);
-        String expectedUnit = "";
-        String expectedNarrative = "";
-        String projectUrl = "";
-        projectId = project.getId().toString();
-        projectUrl = "P" + project.getId().toString();
-        title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
-        if (projectOutcome.getCrpProgramOutcome() != null) {
-          if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
-            flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
-            outcome = projectOutcome.getCrpProgramOutcome().getDescription();
-            if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
-              && projectOutcome.getCrpProgramOutcome().getIndicator() != null
-              && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
-              outcomeIndicator = projectOutcome.getCrpProgramOutcome().getIndicator();
-            }
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+
+    // Status of projects
+    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Complete.getStatusId(),
+      ProjectStatusEnum.Extended.getStatusId()};
+
+    // Get projects with the status defined
+    List<Project> activeProjects =
+      this.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedYear(), statuses);
+
+    if (activeProjects != null && !activeProjects.isEmpty()) {
+      for (Project project : activeProjects) {
+        for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+          .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
+          .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList())) {
+          String projectId = "", title = "", flagship = "", outcome = "", outcomeIndicator = null, expectedUnit = "",
+            expectedNarrative = "", projectUrl = "", achievedNarrative = "", startDate = "", endDate = "",
+            communications = "";
+          Double expectedValue = new Double(0);
+          BigDecimal outcomeExpectedValue = new BigDecimal(0);
+          Long achievedValue = new Long(0);
+
+          projectId = project.getId().toString();
+          projectUrl = "P" + project.getId().toString();
+          title = project.getProjectInfo().getTitle();
+          if (project.getProjectInfo().getStartDate() != null) {
+            startDate = formatter.format(project.getProjectInfo().getStartDate());
           }
-          if (projectOutcome.getCrpProgramOutcome() != null
-            && projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
-            expectedUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
-            if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1) {
-              expectedValue = -1.0;
-              outcomeExpectedValue = new BigDecimal(-1);
-            } else {
-              if (projectOutcome.getExpectedValue() != null) {
-                outcomeExpectedValue = projectOutcome.getCrpProgramOutcome().getValue();
-                expectedValue = projectOutcome.getExpectedValue();
-              }
-            }
-          } else {
-            expectedUnit = "Not Applicable";
-            outcomeExpectedValue = new BigDecimal(-1);
-            expectedValue = -1.0;
+          if (project.getProjectInfo().getEndDate() != null) {
+            endDate = formatter.format(project.getProjectInfo().getEndDate());
           }
 
-          expectedNarrative = projectOutcome.getNarrativeTarget();
-        }
-        Long phaseID = this.getSelectedPhase().getId();
-        model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit, expectedNarrative,
-          projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue});
-        if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
-          for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
-            .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
-            projectMilestones.add(projectMilestone);
+          if (projectOutcome.getCrpProgramOutcome() != null) {
+            if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
+              flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
+              outcome = projectOutcome.getCrpProgramOutcome().getDescription();
+              if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
+                && projectOutcome.getCrpProgramOutcome().getIndicator() != null
+                && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
+                outcomeIndicator = projectOutcome.getCrpProgramOutcome().getIndicator();
+              }
+            }
+            if (projectOutcome.getCrpProgramOutcome() != null
+              && projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
+              expectedUnit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
+              if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1) {
+                expectedValue = -1.0;
+                outcomeExpectedValue = new BigDecimal(-1);
+                // Only reporting
+                if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+                  achievedValue = new Long(-1);
+                }
+              } else {
+                if (projectOutcome.getExpectedValue() != null) {
+                  outcomeExpectedValue = projectOutcome.getCrpProgramOutcome().getValue();
+                  expectedValue = projectOutcome.getExpectedValue();
+                }
+                if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+                  if (projectOutcome.getAchievedValue() != null) {
+                    achievedValue = projectOutcome.getAchievedValue();
+                  }
+                }
+              }
+            } else {
+              expectedUnit = "Not Applicable";
+              outcomeExpectedValue = new BigDecimal(-1);
+              expectedValue = -1.0;
+              // Only reporting
+              if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+                achievedValue = new Long(-1);
+              }
+            }
+            expectedNarrative = projectOutcome.getNarrativeTarget();
+            if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
+              achievedNarrative = projectOutcome.getNarrativeAchieved();
+            }
+            List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
+              .filter(pc -> pc.isActive() && pc.getYear() == this.getSelectedYear())
+              .sorted((pc1, pc2) -> pc2.getId().compareTo(pc1.getId())).collect(Collectors.toList());
+            if (projectCommunications != null && !projectCommunications.isEmpty()) {
+              ProjectCommunication projectCommunication = projectCommunications.get(0);
+              communications = projectCommunication.getCommunication();
+            }
+          }
+          Long phaseID = this.getSelectedPhase().getId();
+          model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit,
+            expectedNarrative, projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
+            achievedNarrative, startDate, endDate, communications});
+          if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
+            for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
+              .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
+              projectMilestones.add(projectMilestone);
+            }
           }
         }
       }
     }
+
     return model;
   }
 

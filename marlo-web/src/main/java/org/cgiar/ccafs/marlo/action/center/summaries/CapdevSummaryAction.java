@@ -34,8 +34,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,7 +48,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -64,50 +64,58 @@ import org.slf4j.LoggerFactory;
 
 public class CapdevSummaryAction extends BaseAction implements Summary {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(CapacityDevelopmentAction.class);
 
   private InputStream inputStream;
-  // PDF bytes
-  private byte[] bytesPDF;
+  // XLS bytes
+  private byte[] bytesXLS;
 
-  private long capdevID;
-  private CapacityDevelopment capdev;
-  private List<CapacityDevelopment> capDevs;
-
+  private List<CapacityDevelopment> capDevs = new ArrayList<>();
   private final ICapacityDevelopmentService capdevService;
+  private final ResourceManager resourceManager;
   private int totalParticipants = 0;
   private int totalMen = 0;
   private int totalWomen = 0;
   private int totalOther = 0;
-  private Long researchAreaID;
-  private Long researchProgramID;
-  private Long isFrom; // if 1=request come from research Area, if 2= request come from research program
   private int year;
 
   @Inject
-  public CapdevSummaryAction(APConfig config, ICapacityDevelopmentService capdevService) {
+  public CapdevSummaryAction(APConfig config, ICapacityDevelopmentService capdevService,
+    ResourceManager resourceManager) {
     super(config);
     this.capdevService = capdevService;
+    this.resourceManager = resourceManager;
   }
 
 
   @Override
   public String execute() throws Exception {
 
-
-    ClassicEngineBoot.getInstance().start();
     final ByteArrayOutputStream os = new ByteArrayOutputStream();
-    final ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
 
     final Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/center/Capdev.prpt"), MasterReport.class);
+      resourceManager.createDirectly(this.getClass().getResource("/pentaho/center/Capdev.prpt"), MasterReport.class);
 
     final MasterReport masterReport = (MasterReport) reportResource.getResource();
+    String center = this.getCurrentCrp().getAcronym();
+
+    // Get datetime
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+
+    // Set Main_Query
+    CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+    String masterQueryName = "main";
+    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+    TypedTableModel model = this.getMasterTableModel(center, currentDate);
+    sdf.addTable(masterQueryName, model);
+    masterReport.setDataFactory(cdf);
 
     // Get details band
     final ItemBand masteritemBand = masterReport.getItemBand();
@@ -119,9 +127,9 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
 
     // Subreport list of capdev
-    this.fillSubreport((SubReport) hm.get("capdev_list"), "capdev_list");
-    this.fillSubreport((SubReport) hm.get("capdevDetail"), "capdevDetail");
-    this.fillSubreport((SubReport) hm.get("types"), "types");
+    this.fillSubreport((SubReport) hm.get("capdev_interventions"), "capdev_interventions");
+    this.fillSubreport((SubReport) hm.get("capdev_participants"), "capdev_participants");
+    this.fillSubreport((SubReport) hm.get("individual_types"), "individual_types");
     this.fillSubreport((SubReport) hm.get("groupTypes"), "groupTypes");
     this.fillSubreport((SubReport) hm.get("disciplines"), "disciplines");
     this.fillSubreport((SubReport) hm.get("target_groups"), "target_groups");
@@ -129,19 +137,14 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     this.fillSubreport((SubReport) hm.get("crp"), "crp");
     this.fillSubreport((SubReport) hm.get("capdevSummary"), "capdevSummary");
     this.fillSubreport((SubReport) hm.get("citizenship"), "citizenship");
-    this.fillSubreport((SubReport) hm.get("highest_degree"), "highest_degree");
-    this.fillSubreport((SubReport) hm.get("founding_type"), "founding_type");
+    this.fillSubreport((SubReport) hm.get("funding_type"), "funding_type");
     this.fillSubreport((SubReport) hm.get("institution"), "institution");
     this.fillSubreport((SubReport) hm.get("institutions_type"), "institutions_type");
 
 
-    // PdfReportUtil.createPDF(masterReport, os);
     ExcelReportUtil.createXLSX(masterReport, os);
-    bytesPDF = os.toByteArray();
+    bytesXLS = os.toByteArray();
     os.close();
-
-    // LOG.info(
-    // "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName());
 
     return SUCCESS;
   }
@@ -151,11 +154,17 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     final TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
+      case "capdev_interventions":
+        model = this.getCapDevInterventionsTableModel();
+        break;
+      case "capdev_participants":
+        model = this.getCapDevParticipantsTableModel();
+        break;
+      case "individual_types":
+        model = this.getIndividualTypesTableModel();
+        break;
       case "capdevSummary":
         model = this.getCapDevSummaryTableModel();
-        break;
-      case "types":
-        model = this.getIndividualTypeTableModel();
         break;
       case "groupTypes":
         model = this.getGroupTypeTableModel();
@@ -175,17 +184,8 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       case "citizenship":
         model = this.getcitizenshipTableModel();
         break;
-      case "highest_degree":
-        model = this.getHigestDegreeTableModel();
-        break;
-      case "founding_type":
-        model = this.getFoundingTypeTableModel();
-        break;
-      case "capdev_list":
-        model = this.getCapDevListTableModel();
-        break;
-      case "capdevDetail":
-        model = this.getCapDevDetailTableModel();
+      case "funding_type":
+        model = this.getFundingTypeTableModel();
         break;
       case "outputs":
         model = this.getOutputTypeTableModel();
@@ -256,22 +256,111 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     }
   }
 
-  public byte[] getBytesPDF() {
-    return bytesPDF;
+  public byte[] getBytesXLS() {
+    return bytesXLS;
   }
 
-  public CapacityDevelopment getCapdev() {
-    return capdev;
+
+  private TypedTableModel getCapDevInterventionsTableModel() {
+    // Initialization of Model
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"capdevId", "title", "type", "category", "numParticipants", "numMen", "numWomen", "numOther",
+        "researchArea", "researchProgram", "startDate", "duration", "duration_unit", "num_supporting_docs"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, Date.class, String.class, String.class, Integer.class});
+
+    for (CapacityDevelopment capdev : capDevs) {
+      String capdev_id = capdev.getId().toString();
+      String title = null;
+      if (capdev.getTitle() != null && !capdev.getTitle().isEmpty()) {
+        title = capdev.getTitle();
+      }
+
+      String type = null;
+      if (capdev.getCapdevType() != null) {
+        type = capdev.getCapdevType().getName();
+      }
+
+      String category = null;
+      if (capdev.getCategory() == 1) {
+        category = "Individual";
+      }
+      if (capdev.getCategory() == 2) {
+        category = "Group";
+      }
+
+      String numParticipants = null;
+      if (capdev.getNumParticipants() != null) {
+        numParticipants = capdev.getNumParticipants().toString();
+        totalParticipants = totalParticipants + capdev.getNumParticipants();
+      }
+
+      String numMen = null;
+      if (capdev.getNumMen() != null) {
+        numMen = capdev.getNumMen().toString();
+        totalMen = totalMen + capdev.getNumMen();
+      }
+
+      String numWomen = null;
+      if (capdev.getNumWomen() != null) {
+        numWomen = capdev.getNumWomen().toString();
+        totalWomen = totalWomen + capdev.getNumWomen();
+      }
+
+      String numOther = null;
+      if (capdev.getNumOther() != null) {
+        numOther = capdev.getNumOther().toString();
+        totalOther = totalOther + capdev.getNumOther();
+      }
+
+      String researcharea = null;
+      if (capdev.getResearchArea() != null) {
+        researcharea = capdev.getResearchArea().getName();
+      }
+
+      String researchProgram = null;
+      if (capdev.getResearchProgram() != null) {
+        researchProgram = capdev.getResearchProgram().getName();
+      }
+
+      Date startDate = null;
+      if (capdev.getStartDate() != null) {
+        startDate = capdev.getStartDate();
+      }
+
+      String duration = null;
+
+      if (capdev.getDuration() != null) {
+        duration = capdev.getDuration().toString();
+      }
+
+      String durationUnit = null;
+      if (capdev.getDurationUnit() != null && !capdev.getDurationUnit().equals("-1")
+        && !capdev.getDurationUnit().isEmpty()) {
+        durationUnit = capdev.getDurationUnit();
+      }
+
+      Integer numSupportingDocs = null;
+      if (capdev.getDeliverables() != null) {
+        numSupportingDocs = capdev.getDeliverables().stream()
+          .filter(s -> s.isActive() && s.getYear() != null && s.getYear().intValue() == this.year)
+          .collect(Collectors.toList()).size();
+      }
+
+      model.addRow(new Object[] {capdev_id, title, type, category, numParticipants, numMen, numWomen, numOther,
+        researcharea, researchProgram, startDate, duration, durationUnit, numSupportingDocs});
+    }
+    return model;
   }
 
-  private TypedTableModel getCapDevDetailTableModel() {
+
+  private TypedTableModel getCapDevParticipantsTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"capdevId", "name", "gender", "age", "citizenship", "institution", "country_institution",
-        "highest_degree", "personal_email", "job_email", "supervisor"},
+        "personal_email", "job_email", "supervisor"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class});
-
+        String.class, String.class, String.class});
     for (CapacityDevelopment capdev : capDevs) {
 
       if (capdev.getCapdevParticipant() != null) {
@@ -281,155 +370,62 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
           for (CapdevParticipant capdev_participant : participants) {
             String capdev_id = capdev_participant.getCapacityDevelopment().getId().toString();
             Participant participant = capdev_participant.getParticipant();
-            String name = "";
-            if (participant.getName() != null) {
-              name = participant.getName();
-              if (participant.getLastName() != null) {
-                name += participant.getLastName();
+            List<String> nameList = new ArrayList<>();
+            String name = null;
+            if (participant.getName() != null && !participant.getName().isEmpty()) {
+              nameList.add(participant.getName());
+            }
+            if (participant.getLastName() != null && !participant.getLastName().isEmpty()) {
+              nameList.add(participant.getLastName());
+            }
+            if (nameList != null && !nameList.isEmpty()) {
+              name = String.join(" ", nameList);
+              if (name == null || name.isEmpty()) {
+                name = null;
               }
             }
-            String gender = "";
-            if (participant.getGender() != null) {
+
+            String gender = null;
+            if (participant.getGender() != null && !participant.getGender().isEmpty()) {
               gender = participant.getGender();
             }
-            String age = "";
-            if (participant.getAge() != null) {
+            String age = null;
+            if (participant.getAge() != null && participant.getAge().getRange() != null
+              && !participant.getAge().getRange().isEmpty()) {
               age = participant.getAge().getRange();
             }
-            String citizenship = "";
-            if (participant.getLocElementsByCountryOfInstitucion() != null) {
-              citizenship = participant.getLocElementsByCountryOfInstitucion().getName();
+            String citizenship = null;
+            if (participant.getLocElementsByCitizenship() != null) {
+              citizenship = participant.getLocElementsByCitizenship().getName();
             }
-            String institution = "";
+            String institution = null;
             if (participant.getInstitutions() != null) {
               institution = participant.getInstitutions().getName();
             }
-            String country_institution = "";
+            String country_institution = null;
             if (participant.getLocElementsByCountryOfInstitucion() != null) {
               country_institution = participant.getLocElementsByCountryOfInstitucion().getName();
             }
-            String highest_degree = "";
-            if (participant.getHighestDegree() != null) {
-              highest_degree = participant.getHighestDegree().getName();
-            }
-            String personal_email = "";
-            if (participant.getPersonalEmail() != null) {
+            String personal_email = null;
+            if (participant.getPersonalEmail() != null && !participant.getPersonalEmail().isEmpty()) {
               personal_email = participant.getPersonalEmail();
             }
-            String job_email = "";
-            if (participant.getEmail() != null) {
+            String job_email = null;
+            if (participant.getEmail() != null && !participant.getEmail().isEmpty()) {
               job_email = participant.getEmail();
             }
-            String supervisor = "";
-            if (participant.getSupervisor() != null) {
+            String supervisor = null;
+            if (participant.getSupervisor() != null && !participant.getSupervisor().isEmpty()) {
               supervisor = participant.getSupervisor();
             }
 
             model.addRow(new Object[] {capdev_id, name, gender, age, citizenship, institution, country_institution,
-              highest_degree, personal_email, personal_email, job_email, supervisor});
+              personal_email, personal_email, job_email, supervisor});
           }
         }
       }
-
-
     }
-    return model;
-  }
 
-  public long getCapdevID() {
-    return capdevID;
-  }
-
-
-  private TypedTableModel getCapDevListTableModel() {
-    // Initialization of Model
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"title", "type", "category", "numParticipants", "numMen", "numWomen", "numOther", "researchArea",
-        "researchProgram", "startDate", "endDate", "duration", "duration_unit", "num_supporting_docs"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Date.class, Date.class, String.class, String.class, Integer.class});
-
-    for (CapacityDevelopment capdev : capDevs) {
-
-      String title = null;
-      if ((capdev.getTitle() != null)) {
-        title = capdev.getTitle();
-        String type = null;
-        if (capdev.getCapdevType() != null) {
-          type = capdev.getCapdevType().getName();
-        }
-        String category = null;
-        if (capdev.getCategory() == 1) {
-          category = "Individual";
-        }
-        if (capdev.getCategory() == 2) {
-          category = "Group";
-        }
-
-        String numParticipants = null;
-        if (capdev.getNumParticipants() != null) {
-          numParticipants = capdev.getNumParticipants().toString();
-          totalParticipants = totalParticipants + capdev.getNumParticipants();
-        }
-
-        String numMen = null;
-        if (capdev.getNumMen() != null) {
-          numMen = capdev.getNumMen().toString();
-          totalMen = totalMen + capdev.getNumMen();
-        }
-
-        String numWomen = null;
-        if (capdev.getNumWomen() != null) {
-          numWomen = capdev.getNumWomen().toString();
-          totalWomen = totalWomen + capdev.getNumWomen();
-        }
-
-        String numOther = null;
-        if (capdev.getNumOther() != null) {
-          numOther = capdev.getNumOther().toString();
-          totalOther = totalOther + capdev.getNumOther();
-        }
-
-        String researcharea = null;
-        if (capdev.getResearchArea() != null) {
-          researcharea = capdev.getResearchArea().getName();
-        }
-
-        String researchProgram = null;
-        if (capdev.getResearchProgram() != null) {
-          researchProgram = capdev.getResearchProgram().getName();
-        }
-
-        Date startDate = null;
-        if (capdev.getStartDate() != null) {
-          startDate = capdev.getStartDate();
-        }
-
-        Date endDate = null;
-        if (capdev.getEndDate() != null) {
-          endDate = capdev.getEndDate();
-        }
-
-        String duration = null;
-        String durationUnit = null;
-        if (capdev.getDuration() != null) {
-          duration = capdev.getDuration().toString();
-          if (capdev.getDurationUnit() != null) {
-            durationUnit = capdev.getDurationUnit();
-          }
-        }
-        Integer numSupportingDocs = null;
-        if (capdev.getCapdevSupportingDocs() != null) {
-          numSupportingDocs = capdev.getCapdevSupportingDocs().size();
-        }
-
-        model.addRow(new Object[] {title, type, category, numParticipants, numMen, numWomen, numOther, researcharea,
-          researchProgram, startDate, endDate, duration, durationUnit, numSupportingDocs});
-
-      }
-
-
-    }
     return model;
   }
 
@@ -460,7 +456,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     final TypedTableModel model =
       new TypedTableModel(new String[] {"country_name", "quantity"}, new Class[] {String.class, Integer.class,});
-
     final Map<LocElement, Integer> countries = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
       for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
@@ -486,13 +481,12 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   @Override
   public int getContentLength() {
-    return bytesPDF.length;
+    return bytesXLS.length;
   }
 
 
   @Override
   public String getContentType() {
-    // return "application/pdf";
     return "application/excel";
   }
 
@@ -501,12 +495,12 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"crp_name", "quantity", "crp"},
       new Class[] {String.class, Integer.class, String.class});
-
     for (final CapacityDevelopment capdev : capDevs) {
       if (capdev.getCrp() != null) {
         model.addRow(new Object[] {capdev.getCrp().getName(), 1, capdev.getCrp().getName()});
       }
     }
+
 
     return model;
   }
@@ -534,7 +528,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       model.addRow(new Object[] {entry.getKey().getName(), entry.getValue()});
     }
 
-
     return model;
   }
 
@@ -550,7 +543,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     final StringBuffer fileName = new StringBuffer();
-    fileName.append("CapDevSummary-CIAT" + "-");
+    fileName.append("CapDevSummary-CIAT-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
@@ -572,16 +565,22 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     }
   }
 
-  private TypedTableModel getFoundingTypeTableModel() {
+  private TypedTableModel getFundingTypeTableModel() {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"funding_type", "quantity", "fundingTypes"},
       new Class[] {String.class, Integer.class, String.class});
 
-    for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
-        if (participant.getParticipant().getFellowship() != null) {
-          model.addRow(new Object[] {participant.getParticipant().getFellowship().getName(), 1,
-            participant.getParticipant().getFellowship().getName()});
+    for (CapacityDevelopment capdev : capDevs) {
+      if (capdev.getCapdevParticipant() != null) {
+        List<CapdevParticipant> participants =
+          capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        if (participants != null) {
+          for (CapdevParticipant capdev_participant : participants) {
+            if (capdev_participant.getParticipant().getFellowship() != null) {
+              model.addRow(new Object[] {capdev_participant.getParticipant().getFellowship().getName(), 1,
+                capdev_participant.getParticipant().getFellowship().getName()});
+            }
+          }
         }
       }
     }
@@ -593,7 +592,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"groupType", "groupQuantity", "group_types"},
       new Class[] {String.class, Integer.class, String.class});
-
     final List<CapacityDevelopment> groups =
       capDevs.stream().filter(i -> i.getCategory() == 2).collect(Collectors.toList());
     for (final CapacityDevelopment capdev : groups) {
@@ -601,42 +599,20 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
         model.addRow(new Object[] {capdev.getCapdevType().getName(), 1, capdev.getCapdevType().getName()});
       }
     }
-
-
     return model;
   }
 
-  private TypedTableModel getHigestDegreeTableModel() {
-    // Initialization of Model
-    final TypedTableModel model = new TypedTableModel(new String[] {"degree", "quantity", "degrees", "degreeName"},
-      new Class[] {String.class, Integer.class, String.class, String.class});
 
-    for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
-        if (participant.getParticipant().getHighestDegree() != null) {
-          model.addRow(new Object[] {participant.getParticipant().getHighestDegree().getName(), 1,
-            participant.getParticipant().getHighestDegree().getName(),
-            participant.getParticipant().getHighestDegree().getName()});
-        }
-      }
-    }
-
-
-    return model;
-  }
-
-  private TypedTableModel getIndividualTypeTableModel() {
+  private TypedTableModel getIndividualTypesTableModel() {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"interventionType", "quantity", "individual_types"},
       new Class[] {String.class, Integer.class, String.class});
-
 
     final List<CapacityDevelopment> individuals =
       capDevs.stream().filter(i -> i.getCategory() == 1).collect(Collectors.toList());
 
     for (final CapacityDevelopment capdev : individuals) {
       if (capdev.getCapdevType() != null) {
-
         model.addRow(new Object[] {capdev.getCapdevType().getName(), 1, capdev.getCapdevType().getName()});
       }
     }
@@ -648,18 +624,15 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesPDF);
+      inputStream = new ByteArrayInputStream(bytesXLS);
     }
     return inputStream;
   }
 
   private TypedTableModel getInstitutionsTableModel() {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"institution_name", "institution_type", "quantity", "other_institutions"},
-        new Class[] {String.class, String.class, Integer.class, String.class});
-
-    String other_institutions = "";
+    TypedTableModel model = new TypedTableModel(new String[] {"institution_name", "institution_type", "quantity"},
+      new Class[] {String.class, String.class, Integer.class});
 
     Map<Institution, Integer> institucions = new HashMap<>();
     for (CapacityDevelopment capdev : capDevs) {
@@ -669,22 +642,15 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
             int quantity = institucions.get(participant.getParticipant().getInstitutions()) + 1;
             institucions.put(participant.getParticipant().getInstitutions(), quantity);
           } else {
-
             institucions.put(participant.getParticipant().getInstitutions(), 1);
           }
-          if (participant.getParticipant().getInstitutionsSuggested() != null) {
-            if (!participant.getParticipant().getInstitutionsSuggested().equals("")) {
-              other_institutions += "●" + participant.getParticipant().getInstitutionsSuggested() + "\n";
-            }
-          }
-
         }
       }
     }
 
     for (Map.Entry<Institution, Integer> entry : institucions.entrySet()) {
-      model.addRow(new Object[] {entry.getKey().getName(), entry.getKey().getInstitutionType().getName(),
-        entry.getValue(), other_institutions});
+      model.addRow(
+        new Object[] {entry.getKey().getName(), entry.getKey().getInstitutionType().getName(), entry.getValue()});
     }
 
     return model;
@@ -720,22 +686,11 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   }
 
 
-  public Long getIsFrom() {
-    return isFrom;
-  }
-
-
-  private TypedTableModel getMasterTableModel() {
+  private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    final TypedTableModel model = new TypedTableModel(new String[] {"title"}, new Class[] {String.class});
-    // Set short title
-    String title = "";
-    if ((capdev.getTitle() != null) && !capdev.getTitle().isEmpty()) {
-      title += capdev.getTitle();
-    }
-
-
-    // model.addRow(new Object[] {title});
+    final TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
+      new Class[] {String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, this.year});
     return model;
   }
 
@@ -755,7 +710,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"program_name", "quantity", "programs_name"},
       new Class[] {String.class, Integer.class, String.class});
-
     for (final CapacityDevelopment capdev : capDevs) {
       if (capdev.getResearchProgram() != null) {
         model.addRow(new Object[] {capdev.getResearchProgram().getName(), 1, capdev.getResearchProgram().getName()});
@@ -766,21 +720,10 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   }
 
 
-  public Long getResearchAreaID() {
-    return researchAreaID;
-  }
-
-
-  public Long getResearchProgramID() {
-    return researchProgramID;
-  }
-
-
   private TypedTableModel getTargetGroupsTableModel() {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"group_name", "quantity", "target_group"},
       new Class[] {String.class, String.class, String.class});
-
     final Map<TargetGroup, Integer> targetGroupsMap = new HashMap<>();
     for (final CapacityDevelopment capdev : capDevs) {
       for (final CapdevTargetgroup targetGroup : capdev.getCapdevTargetgroup()) {
@@ -799,7 +742,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       model.addRow(new Object[] {entry.getKey().getName(), entry.getValue(), entry.getKey().getName()});
     }
 
-
     return model;
   }
 
@@ -811,117 +753,24 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() throws Exception {
-    capDevs = new ArrayList<CapacityDevelopment>();
     try {
-      researchAreaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("researchAreaID")));
-      researchProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("researchProgramID")));
-      year = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("year")));
-      isFrom = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("isFrom")));
-
+      if (this.getRequest().getParameter("year") != null) {
+        year = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("year")));
+      }
     } catch (Exception e) {
-
       LOG.error("Failed to get capdev from Database. Exception: " + e.getMessage());
       throw e;
-
+    }
+    if (capdevService.findAll() != null) {
+      capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
+      Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
     }
 
-
-    if (isFrom == 1) {
-      if ((researchAreaID != -1) && (year == 0)) {
-        capDevs = capdevService.findAll().stream().filter(
-          cdl -> cdl.isActive() && (cdl.getResearchArea() != null) && (cdl.getResearchArea().getId() == researchAreaID))
-          .collect(Collectors.toList());
-      }
-
-      if ((researchAreaID == -1) && (year != 0)) {
-        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
-          .filter(cdl -> cdl.isActive() && (cdl.getStartDate() != null)).collect(Collectors.toList());
-        for (CapacityDevelopment capdev : capdevs) {
-          Calendar startDate = Calendar.getInstance();
-          startDate.setTime(capdev.getStartDate());
-          int anio = startDate.get(Calendar.YEAR);
-          if (anio == year) {
-            capDevs.add(capdev);
-          }
-        }
-      }
-      if ((researchAreaID != -1) && (year != 0)) {
-        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
-          .filter(cdl -> cdl.isActive() && (cdl.getResearchArea() != null)
-            && ((cdl.getResearchArea().getId() == researchAreaID) && (cdl.getStartDate() != null)))
-          .collect(Collectors.toList());
-        for (CapacityDevelopment capdev : capdevs) {
-          Calendar startDate = Calendar.getInstance();
-          startDate.setTime(capdev.getStartDate());
-          int anio = startDate.get(Calendar.YEAR);
-          if (anio == year) {
-            capDevs.add(capdev);
-          }
-        }
-
-      }
-      if ((researchAreaID == -1) && (year == 0)) {
-        capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
-      }
-    }
-
-    if (isFrom == 2) {
-      if ((researchProgramID != -1) && (year == 0)) {
-        capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive() && (cdl.getResearchProgram() != null)
-          && (cdl.getResearchProgram().getId() == researchProgramID)).collect(Collectors.toList());
-      }
-
-      if ((researchProgramID == -1) && (year != 0)) {
-        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
-          .filter(cdl -> cdl.isActive() && (cdl.getStartDate() != null)).collect(Collectors.toList());
-        for (CapacityDevelopment capdev : capdevs) {
-          Calendar startDate = Calendar.getInstance();
-          startDate.setTime(capdev.getStartDate());
-          int anio = startDate.get(Calendar.YEAR);
-          if (anio == year) {
-            capDevs.add(capdev);
-          }
-        }
-      }
-      if ((researchProgramID != -1) && (year != 0)) {
-        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
-          .filter(cdl -> cdl.isActive() && (cdl.getResearchProgram() != null)
-            && ((cdl.getResearchProgram().getId() == researchProgramID) && (cdl.getStartDate() != null)))
-          .collect(Collectors.toList());
-        for (CapacityDevelopment capdev : capdevs) {
-          Calendar startDate = Calendar.getInstance();
-          startDate.setTime(capdev.getStartDate());
-          int anio = startDate.get(Calendar.YEAR);
-          if (anio == year) {
-            capDevs.add(capdev);
-          }
-        }
-
-      }
-      if ((researchProgramID == -1) && (year == 0)) {
-        capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
-      }
-    }
-
-
-    Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-
-    // capdev = capdevService.getCapacityDevelopmentById(capdevID);
   }
 
 
-  public void setBytesPDF(byte[] bytesPDF) {
-    this.bytesPDF = bytesPDF;
-  }
-
-
-  public void setCapdev(CapacityDevelopment capdev) {
-    this.capdev = capdev;
-  }
-
-
-  public void setCapdevID(long capdevID) {
-    this.capdevID = capdevID;
+  public void setBytesXLS(byte[] bytesXLS) {
+    this.bytesXLS = bytesXLS;
   }
 
 
@@ -932,21 +781,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
-  }
-
-
-  public void setIsFrom(Long isFrom) {
-    this.isFrom = isFrom;
-  }
-
-
-  public void setResearchAreaID(Long researchAreaID) {
-    this.researchAreaID = researchAreaID;
-  }
-
-
-  public void setResearchProgramID(Long researchProgramID) {
-    this.researchProgramID = researchProgramID;
   }
 
 

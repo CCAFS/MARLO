@@ -1,5 +1,5 @@
 [#ftl]
-[#macro relationsMacro element ]
+[#macro relationsMacro element labelText=true ]
   [#local className = ((element.class.name)?split('.')?last)!''/]
   [#local composedID = "${className}-${(element.id)!}"]
   [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
@@ -21,7 +21,7 @@
     [#if projects?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-projects-${composedID}">
-        <span class="icon-20 project"></span> <strong>${projects?size}</strong> [@s.text name="global.project" /](s)
+        <span class="icon-20 project"></span> <strong>${projects?size}</strong> [#if labelText][@s.text name="global.Project" /](s)[/#if]
       </button>
       
       [#-- Modal --]
@@ -72,7 +72,7 @@
     [#if deliverables?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-deliverables-${composedID}">
-        <span class="icon-20 deliverable"></span> <strong>${deliverables?size}</strong> Deliverable(s)
+        <span class="icon-20 deliverable"></span> <strong>${deliverables?size}</strong> [#if labelText] Deliverable(s)[/#if]
       </button>
       
       [#-- Modal --]
@@ -84,7 +84,7 @@
               <h4 class="modal-title" id="myModalLabel">
                
                  [#if className=="ProjectBudget"]
-                Deliverables funded by this funding source in this [@s.text name="global.project" /]
+                Deliverables funded by this funding source in this [@s.text name="global.Project" /]
                 [#else]
                   Deliverables that are contributing to this [@s.text name="global.${className}" /] 
                 [/#if]

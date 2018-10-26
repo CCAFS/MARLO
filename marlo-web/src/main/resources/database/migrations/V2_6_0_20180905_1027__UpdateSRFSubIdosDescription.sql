@@ -1,0 +1,6 @@
+update srf_sub_idos SET description = 'Adoption of CGIAR materials with enhanced genetic gains' where srf_sub_idos.id = 11;
+update srf_sub_idos SET description = 'Enhanced adaptive capacity to climate risks (More sustainably managed agro-ecosystems)' where srf_sub_idos.id = 29;
+update srf_sub_idos SET description = 'maintain both (for now) with the same wording though, i.e. ‘Reduced net greenhouse gas emissions from agriculture, forests and other forms of land-use (More sustainably managed agro-ecosystems)' where srf_sub_idos.id = 30;
+update srf_sub_idos SET description = 'maintain both (for now) with the same wording though, i.e. ‘Reduced net greenhouse gas emissions from agriculture, forests and other forms of land-use (Mitigation and adaptation achieved)' where srf_sub_idos.id = 31;
+update srf_sub_idos SET description = 'Enhanced capacity to deal with climactic risks and extremes (Mitigation and adaptation achieved)' where srf_sub_idos.id = 34;
+update srf_sub_idos SET description = 'Technologies that reduce women`s labor and energy expenditure adopted' where srf_sub_idos.id = 37;

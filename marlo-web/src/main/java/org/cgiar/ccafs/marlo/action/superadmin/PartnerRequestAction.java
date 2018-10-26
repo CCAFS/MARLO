@@ -126,8 +126,6 @@ public class PartnerRequestAction extends BaseAction {
           PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
           partnerRequest.setAcepted(new Boolean(true));
           partnerRequest.setAceptedDate(new Date());
-          partnerRequest.setActive(false);
-          partnerRequest.setModifiedBy(this.getCurrentUser());
           // Store the list of user to send the email
           users.add(partnerRequest.getCreatedBy());
           // verify if the location has been added previously
@@ -190,7 +188,6 @@ public class PartnerRequestAction extends BaseAction {
     partnerRequest.setAcepted(new Boolean(true));
     partnerRequest.setAceptedDate(new Date());
     partnerRequest.setActive(false);
-    partnerRequest.setModifiedBy(this.getCurrentUser());
     partnerRequestManager.savePartnerRequest(partnerRequest);
     // inactive the parent partnerRequest
     PartnerRequest partnerRequestParent =
@@ -303,7 +300,6 @@ public class PartnerRequestAction extends BaseAction {
         sendNotification = Boolean.valueOf(
           StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
       } catch (Exception e) {
-        System.out.println(e.getMessage());
         justification = "";
       }
 

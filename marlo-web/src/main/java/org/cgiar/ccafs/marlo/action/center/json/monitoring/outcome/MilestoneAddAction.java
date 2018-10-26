@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +88,6 @@ public class MilestoneAddAction extends BaseAction {
     Map<String, Object> milestoneData = new HashMap<>();
     CenterMilestone milestone = new CenterMilestone();
     milestone.setResearchOutcome(outcome);
-    milestone.setActive(true);
-    milestone.setActiveSince(new Date());
-    milestone.setCreatedBy(this.getCurrentUser());
-    milestone.setModifiedBy(this.getCurrentUser());
     milestone.setImpactPathway(false);
 
     // CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(Long.parseLong(StringUtils.trim(((String[])
@@ -138,10 +133,6 @@ public class MilestoneAddAction extends BaseAction {
         monitoringData.put("index", i);
 
         CenterMonitoringMilestone monitoringMilestone = new CenterMonitoringMilestone();
-        monitoringMilestone.setActive(true);
-        monitoringMilestone.setActiveSince(new Date());
-        monitoringMilestone.setCreatedBy(this.getCurrentUser());
-        monitoringMilestone.setModifiedBy(this.getCurrentUser());
         monitoringMilestone.setResearchMilestone(milestone);
         monitoringMilestone.setMonitoringOutcome(monitoringOutcome);
         monitoringMilestone.setModificationJustification("Added in Monitoring " + this.getActualPhase().getYear());

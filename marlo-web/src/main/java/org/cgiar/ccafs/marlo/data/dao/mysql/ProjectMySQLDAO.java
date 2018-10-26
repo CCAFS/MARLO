@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
@@ -41,6 +43,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   private CrpProgramDAO crpProgramDAO;
   private APConfig apConfig;
 
+  private Logger LOG = LoggerFactory.getLogger(ProjectMySQLDAO.class);
 
   @Inject
   public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO,
@@ -107,6 +110,9 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
             super.executeUpdateQuery(query.toString());
           } catch (Exception e) {
 
+            // Adding logging, but really we should re-throw the exception.
+            LOG.error("Unable to execute query: " + query, e);
+
           }
 
 
@@ -117,8 +123,8 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     } catch (Exception e)
 
     {
-
-      e.printStackTrace();
+      // Adding logging, but really we should re-throw the exception.
+      LOG.error("Unable to execute query: " + query, e);
       return false;
     }
 
@@ -128,7 +134,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   @Override
   public void deleteProject(Project project) {
-
 
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
@@ -164,6 +169,44 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     }
     return null;
 
+  }
+
+  @Override
+  public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select distinct p.id as projectId,pi.id as info from projects p inner join projects_info pi on pi.project_id=p.id");
+    query.append(" where p.is_active");
+    query.append(" and pi.is_active");
+    if (year != 0) {
+      query.append(" and YEAR(pi.start_date) <= " + year);
+      query.append(" and YEAR(pi.end_date) >= " + year);
+    }
+    query.append(" and pi.id_phase =" + phase.getId());
+    if (projectStatuses != null && projectStatuses.length > 0) {
+      int size = projectStatuses.length;
+      if (size == 1) {
+        query.append(" and pi.status = " + projectStatuses[0]);
+      } else {
+
+        for (int i = 0; i < size; i++) {
+          projectStatuses[i] = "pi.status=" + projectStatuses[i];
+        }
+        query.append(" and (");
+        query.append(String.join(" or ", projectStatuses));
+        query.append(" )");
+      }
+    }
+    query.append(" ORDER BY p.id ASC");
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<Project> projects = new ArrayList<Project>();
+    for (Map<String, Object> map : list) {
+      Project project = this.find(Long.parseLong(map.get("projectId").toString()));
+      project.setProjectInfo(projectInfoDAO.find(Long.parseLong(map.get("info").toString())));
+      projects.add(project);
+    }
+    return projects;
   }
 
   @Override
@@ -231,25 +274,34 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return list;
   }
 
+
   @Override
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
-
+    List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id not in (438,462)");
-    List<Map<String, Object>> list =
-      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+      + "' and project_id is not null and  permission_id not in (438,462,467)");
+
+    if (super.getTemTableUserId() == userId) {
+      list = super.findCustomQuery(builder.toString());
+    } else {
+      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    }
+
     return list;
   }
 
   @Override
   public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
-
+    List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id  in (110,195)");
-    List<Map<String, Object>> list =
-      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    if (super.getTemTableUserId() == userId) {
+      list = super.findCustomQuery(builder.toString());
+    } else {
+      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    }
     return list;
 
   }

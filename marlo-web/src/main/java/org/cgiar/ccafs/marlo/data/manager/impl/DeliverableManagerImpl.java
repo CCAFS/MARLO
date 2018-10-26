@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,6 +113,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getDeliverablesByPhase(long phase) {
+    return deliverableDAO.getDeliverablesByPhase(phase);
+  }
+
+  @Override
   public Deliverable saveDeliverable(Deliverable deliverable) {
 
     return deliverableDAO.save(deliverable);
@@ -121,15 +127,25 @@ public class DeliverableManagerImpl implements DeliverableManager {
   public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
     Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
 
-    Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
-        this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
-          deliverable);
+    boolean isPublication = resultDeliverable.getIsPublication() != null && resultDeliverable.getIsPublication();
+    if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.PLANNING)
+      && deliverable.getDeliverableInfo().getPhase().getNext() != null && !isPublication) {
+      this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
+        deliverable);
+    }
+    if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (deliverable.getDeliverableInfo().getPhase().getNext() != null
+        && deliverable.getDeliverableInfo().getPhase().getNext().getNext() != null && !isPublication) {
+        Phase upkeepPhase = deliverable.getDeliverableInfo().getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverablePhase(upkeepPhase, deliverable.getId(), deliverable);
+        }
       }
     }
+
     return resultDeliverable;
   }
+
 
   public void saveDeliverablePhase(Phase next, long deliverableID, Deliverable deliverable) {
     Phase phase = phaseDAO.find(next.getId());
@@ -137,19 +153,36 @@ public class DeliverableManagerImpl implements DeliverableManager {
     List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
       .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
       .collect(Collectors.toList());
+
+    if (deliverablesInfo == null || deliverablesInfo.isEmpty()) {
+      deliverablesInfo = new ArrayList<>();
+      deliverablesInfo.add(new DeliverableInfo());
+    }
+
     for (DeliverableInfo deliverableInfo : deliverablesInfo) {
       deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
-      if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+
+      if (deliverableInfo.getCrpClusterKeyOutput() != null
+        && deliverableInfo.getCrpClusterKeyOutput().getId() != null) {
+
         CrpClusterKeyOutput crpClusterKeyOutput =
           crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
           crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
-        List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
-          .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
-          .collect(Collectors.toList());
-        if (!clusterKeyOutputs.isEmpty()) {
-          deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+        if (crpClusterOfActivity != null) {
+          List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+            .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
+            .collect(Collectors.toList());
+          if (!clusterKeyOutputs.isEmpty()) {
+            deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+          } else {
+            deliverableInfo.setCrpClusterKeyOutput(null);
+          }
+        } else {
+          deliverableInfo.setCrpClusterKeyOutput(null);
         }
+
       }
 
       deliverableInfo.setPhase(phase);
@@ -161,4 +194,5 @@ public class DeliverableManagerImpl implements DeliverableManager {
       this.saveDeliverablePhase(phase.getNext(), deliverableID, deliverable);
     }
   }
+
 }

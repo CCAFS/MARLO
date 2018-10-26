@@ -24,6 +24,14 @@ import java.util.List;
 public interface FundingSourceBudgetDAO {
 
   /**
+   * A batch method to delete all funding sources budgets for a particular
+   * funding source id.
+   * 
+   * @param fundingSourceId
+   */
+  public void deleteAllFundingSourceBudgetForFundingSource(long fundingSourceId);
+
+  /**
    * This method removes a specific fundingSourceBudget value from the database.
    * 
    * @param fundingSourceBudgetId is the fundingSourceBudget identifier.
@@ -47,13 +55,13 @@ public interface FundingSourceBudgetDAO {
    */
   public FundingSourceBudget find(long id);
 
+
   /**
    * This method gets a list of fundingSourceBudget that are active
    * 
    * @return a list from FundingSourceBudget null if no exist records
    */
   public List<FundingSourceBudget> findAll();
-
 
   /**
    * Get a FundingSourceBudget for a specific funding source and year

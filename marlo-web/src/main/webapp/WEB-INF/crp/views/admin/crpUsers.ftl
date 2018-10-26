@@ -46,7 +46,7 @@
             [#list rolesCrp as role]
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
-                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronym}</a></li>
+                <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronymDimanic}</a></li>
               [/#if]
             [/#list]
           </ul>

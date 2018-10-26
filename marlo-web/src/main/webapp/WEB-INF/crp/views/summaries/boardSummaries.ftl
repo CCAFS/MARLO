@@ -17,9 +17,9 @@
 
 [#assign reportsTypes = [
   [#-- PROJECT REPORTS --]
-  { "slug": "projects", "title":"summaries.board.options.projects", "reportsList": [
+  { "slug": "projects", "active": true, "title":"summaries.board.options.projects", "reportsList": [
     { "active": true,
-      "available": true,
+      "available": !centerGlobalUnit,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
       "namespace": "/projects",
@@ -28,7 +28,7 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowProjectID": true
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.genderContributionSummary", 
       "description": "summaries.board.report.genderContributionSummary.description",
@@ -38,25 +38,37 @@
       "cycles": [ "Planning", "Reporting" ],
       "allowKeyWords": true
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.impactPathwayContributionsSummary", 
       "description": "summaries.board.report.impactPathwayContributionsSummary.description",
       "namespace": "/projects",
       "action": "${crpSession}/OutcomesContributionsSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Planning" ]
+      "cycles": [ "Planning","Reporting" ]
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
       "description": "summaries.board.report.outcomeCaseStudies.description",
       "namespace": "/projects",
       "action": "${crpSession}/caseStudySummary",
-      "formats": [ "PDF", "Excel" ],
-      "cycles": [ "Reporting" ]
+      "formats": [ "PDF" ],
+      "cycles": [ "Planning", "Reporting" ],
+      "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Studies Type",
+          "name":   "studyType",
+          "data" : [ 
+            { "label": "All",                 "value": "all"},
+            { "label": "Outcome Case Study",  "value": "outcome_case_study"}, 
+            { "label": "Others",              "value": "others"}
+          ] 
+        }
+      ]
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.projectHighlights", 
       "description": "summaries.board.report.projectHighlights.description",
@@ -65,7 +77,7 @@
       "formats": [ "PDF", "Excel" ],
       "cycles": [ "Reporting" ]
     },
-    { "active": action.hasSpecificities("crp_leverages_module"),
+    { "active": action.hasSpecificities("crp_leverages_module") && !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.leverages", 
       "description": "summaries.board.report.leverages.description",
@@ -74,7 +86,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.projectsList", 
       "description": "summaries.board.report.projectsList.description",
@@ -85,7 +97,7 @@
     }
   ]},
   [#-- PARTNERS REPORTS --]
-  { "slug": "partners", "title":"summaries.board.options.partners", "reportsList": [
+  { "slug": "partners", "active": !centerGlobalUnit, "title":"summaries.board.options.partners", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.leadProjectInstitutionsSummary", 
@@ -108,7 +120,7 @@
     }
   ]},
   [#-- DELIVERABLES REPORTS --]
-  { "slug": "deliverables", "title":"summaries.board.options.deliverables", "reportsList": [
+  { "slug": "deliverables", "active": !centerGlobalUnit, "title":"summaries.board.options.deliverables", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.expectedDeliverables", 
@@ -120,17 +132,17 @@
       "allowPpaPartners": true 
     },
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.reportedDeliverables", 
       "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
       "action": "${crpSession}/DeliverablesReportingSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Reporting" ]
+      "cycles": [ "Reporting", "Upkeep" ]
     }
   ]},
   [#-- BUDGET REPORTS --]
-  { "slug": "budget", "title":"summaries.board.options.budget", "reportsList": [
+  { "slug": "budget", "active": !centerGlobalUnit, "title":"summaries.board.options.budget", "reportsList": [
     { "active": true,
       "available": true,
       "title": "summaries.board.report.powb", 
@@ -158,6 +170,30 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     }
+  ]},
+  [#-- MONITORING --]
+  { "slug": "monitoring", "active": centerGlobalUnit, "title":"summaries.board.options.monitoring", "reportsList": [
+    { "active": true,
+      "available": false,
+      "title": "summaries.board.report.monitoringOutcome", 
+      "description": "summaries.board.report.monitoringOutcome.description", 
+      "namespace": "/centerSummaries",
+      "action": "${crpSession}/centerMonitoringOutcomes",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning" ]
+    }
+  ]},
+  [#-- CAP DEV --]
+  { "slug": "capdev", "active": centerGlobalUnit, "title":"summaries.board.options.capdev", "reportsList": [
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.capdevInterventions", 
+      "description": "summaries.board.report.capdevInterventions.description", 
+      "namespace": "/centerSummaries",
+      "action": "${crpSession}/capdevSummaries",
+      "formats": [ "Excel" ],
+      "cycles": [ "Planning" ]
+    }
   ]}
 ]/]
 
@@ -170,31 +206,34 @@
     
 <section class="container">
   <article id="" class="">
-    
-    
-      [#--  Reports Tabs --]
-      <div class="summariesButtons col-md-3">
-        [#list reportsTypes as reportType]
+  
+    [#--  Reports Tabs --]
+    <div class="summariesButtons col-md-3">
+      [#list reportsTypes as reportType]
+        [#if reportType.active]
           <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
             <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
           </div>
-        [/#list]
-      </div>
-      [#--  Reports Content --]
-      <div class="summariesContent col-md-9" style="min-height:550px;">
-        <h3 class="headTitle text-center">Summaries</h3>
-        <div class="loading" style="display:none"></div>
-        <div class="summariesOptions">
-          [#list reportsTypes as reportType]
+        [/#if]
+      [/#list]
+    </div>
+    [#--  Reports Content --]
+    <div class="summariesContent col-md-9" style="min-height:550px;">
+      <h3 class="headTitle text-center">Summaries</h3>
+      <div class="loading" style="display:none"></div>
+      <div class="summariesOptions">
+        [#list reportsTypes as reportType]
+          [#if reportType.active]
             <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
               [#-- Temporal Validation (action.canAcessSumaries())--]
               [#list reportType.reportsList as report]
-                [#if report.active][@reportMacro report /][/#if]
+                [#if report.active][@reportMacro report=report index=report_index /][/#if]
               [/#list]
             </div>
-          [/#list] 
-        </div>
+          [/#if]
+        [/#list] 
       </div>
+    </div>
       
   </article>
 </section>
@@ -202,7 +241,7 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
-[#macro reportMacro report]
+[#macro reportMacro report index]
 
 <div class="summariesFiles simpleBox ${(report.allowProjectID??)?string('allowProjectID','')}">
   [#if !(report.available)]<p class="text-center note">This report is under maintenance and will be available soon.</p>[/#if]
@@ -225,33 +264,24 @@
   [#if report.available]
   <div class="extraOptions" style="display: none;">
     <hr />
-    [@s.form  target="_blank" action=report.action  method="GET" namespace=report.namespace cssClass=""]
+    [@s.form  target="_blank" action="${report.action}"  method="GET" namespace="${report.namespace}" cssClass=""]
       [#-- Parameters --]
       <div class="form-group row">
+        [#assign reportPhases = (action.getPhasesByCycles(report.cycles))![] ]
         [#-- Cycles (Planning/Reporting) --]
-        [#if report.cycles??]
-          [#if report.cycles?size > 1]
+        [#if reportPhases??]
+         
           <div class="col-md-4">
             <label for="">Cycle:</label>
-            <select name="cycle" id="">
-              [#list report.cycles as cycle ]
-              <option value="${cycle}" [#if (actualPhase.description == cycle)!false]selected[/#if]>${cycle}</option>
+            <select name="phaseID" id="">
+              [#list reportPhases as phase ]
+              <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
               [/#list]  
             </select>
           </div>
-          [#else]
-            <input type="hidden" name="cycle" value="${report.cycles[0]}" />
-          [/#if]
+         
         [/#if]
-        [#-- Years --]
-        <div class="col-md-4">
-          <label for="">Year:</label>
-          <select name="year" id="">
-            [#list years as year ]
-            <option value="${year}" [#if (actualPhase.year == year?number)!false]selected[/#if]>${year}</option>
-            [/#list]  
-          </select>
-        </div>
+        
         [#-- Formats (PDF/Excel) --]
         [#if report.formats??]
           [#if report.formats?size > 1]
@@ -291,6 +321,19 @@
         <div class="btn btn-danger btn-xs removeAllTags" role="button">Remove all keywords</div>
       </div>
       [/#if]
+      
+      [#-- Components --]
+      [#list (report.components)![] as component]
+        <div class="form-group">
+          [#local customID = "${index}-${component.name}"]
+          <label for="${customID}">${component.label}:</label>
+          [#if component.type == "radio"]
+            [#list (component.data)![] as data]
+              <br />[@customForm.radioFlat id="${customID}-${data.value}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=true /]
+            [/#list]
+          [/#if]
+        </div>
+      [/#list]
       
       [#--  Partner Type --]
       [#if report.partnerType??]

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectFocusDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -44,8 +45,6 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   public ProjectFocusManagerImpl(ProjectFocusDAO projectFocusDAO, PhaseDAO phaseDAO) {
     this.projectFocusDAO = projectFocusDAO;
     this.phaseDAO = phaseDAO;
-
-
   }
 
   public void addProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
@@ -54,15 +53,10 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
       .collect(Collectors.toList());
-    if ( projectFocuses.isEmpty()) {
+    if (projectFocuses.isEmpty()) {
 
       ProjectFocus projectFocusAdd = new ProjectFocus();
-      projectFocusAdd.setActive(true);
-      projectFocusAdd.setActiveSince(projectFocus.getActiveSince());
-      projectFocusAdd.setCreatedBy(projectFocus.getCreatedBy());
       projectFocusAdd.setCrpProgram(projectFocus.getCrpProgram());
-      projectFocusAdd.setModificationJustification(projectFocus.getModificationJustification());
-      projectFocusAdd.setModifiedBy(projectFocus.getModifiedBy());
       projectFocusAdd.setPhase(phase);
       projectFocusAdd.setProject(projectFocus.getProject());
       projectFocusDAO.save(projectFocusAdd);
@@ -85,9 +79,20 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
 
     projectFocusDAO.deleteProjectFocus(projectFocusId);
     ProjectFocus projectFocus = this.getProjectFocusById(projectFocusId);
-    if (projectFocus.getPhase().getNext() != null) {
+    if (projectFocus.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectFocus.getPhase().getNext() != null) {
       this.deletProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
+    // if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
+    // }
+    // }
+    // }
+
   }
 
   public void deletProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
@@ -131,10 +136,21 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   public ProjectFocus saveProjectFocus(ProjectFocus projectFocus) {
 
     ProjectFocus focus = projectFocusDAO.save(projectFocus);
-
-    if (projectFocus.getPhase().getNext() != null) {
+    if (projectFocus.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectFocus.getPhase().getNext() != null) {
       this.addProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (projectFocus.getPhase().getDescription().equals(APConstants.REPORTING)) {
+    // if (projectFocus.getPhase().getNext() != null && projectFocus.getPhase().getNext().getNext() != null) {
+    // Phase upkeepPhase = projectFocus.getPhase().getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addProjectFocusPhase(upkeepPhase, projectFocus.getProject().getId(), projectFocus);
+    // }
+    // }
+    // }
+
+
     return focus;
   }
 

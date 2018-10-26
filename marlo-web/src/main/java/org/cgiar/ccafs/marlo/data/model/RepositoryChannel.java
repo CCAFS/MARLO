@@ -24,12 +24,9 @@ import com.google.gson.annotations.Expose;
  * @date Nov 8, 2017
  * @time 8:42:04 AM: Creation of class
  */
-public class RepositoryChannel implements java.io.Serializable {
+public class RepositoryChannel extends MarloSoftDeleteableEntity implements java.io.Serializable {
 
   private static final long serialVersionUID = -1855854307294714464L;
-
-  @Expose
-  private Long id;
 
   @Expose
   private String shortName;
@@ -39,9 +36,6 @@ public class RepositoryChannel implements java.io.Serializable {
 
   @Expose
   private String urlExample;
-
-  @Expose
-  private boolean active;
 
 
   public RepositoryChannel() {
@@ -60,19 +54,14 @@ public class RepositoryChannel implements java.io.Serializable {
       return false;
     }
     RepositoryChannel other = (RepositoryChannel) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
-  }
-
-
-  public Long getId() {
-    return id;
   }
 
   public String getLogDeatil() {
@@ -97,21 +86,8 @@ public class RepositoryChannel implements java.io.Serializable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setName(String name) {
@@ -129,8 +105,8 @@ public class RepositoryChannel implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "RepositoryChannel [id=" + id + ", shortName=" + shortName + ", name=" + name + ", urlExample= " + urlExample
-      + "]";
+    return "RepositoryChannel [id=" + this.getId() + ", shortName=" + shortName + ", name=" + name + ", urlExample= "
+      + urlExample + "]";
   }
 
 }

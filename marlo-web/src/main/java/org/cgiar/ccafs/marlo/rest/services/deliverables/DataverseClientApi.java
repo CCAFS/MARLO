@@ -20,8 +20,12 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.Author;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.ibm.icu.text.SimpleDateFormat;
 import org.json.JSONArray;
@@ -29,97 +33,265 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Generalization of Dataverse
+ * 
+ * @author avalencia
+ */
 public class DataverseClientApi extends MetadataClientApi {
 
   private static final Logger LOG = LoggerFactory.getLogger(DataverseClientApi.class);
-  private final String DATAVERSE_URL = "https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:";
-  private final String DX_URL = "http://dx.doi.org/";
-  private final String REST_URL =
-    "https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id?key=c1580888-185f-4250-8f44-b98ca5e7b01b&persistentId=doi:{0}";
-  private RestConnectionUtil xmlReaderConnectionUtil;
+  private RestConnectionUtil restConnectionUtil;
 
+  // Metadata identifiers
+  private final String publicationDate = "publicationDate", data = "data", persistentUrl = "persistentUrl",
+    latestVersion = "latestVersion", metadataBlocks = "metadataBlocks", citation = "citation",
+    geospatial = "geospatial", fields = "fields", typeName = "typeName", title = "title", value = "value",
+    dsDescription = "dsDescription", dsDescriptionValue = "dsDescriptionValue", language = "language",
+    geographicCoverage = "geographicCoverage", country = "country", keyword = "keyword", keywordValue = "keywordValue",
+    author = "author", authorName = "authorName", authorIdentifierScheme = "authorIdentifierScheme",
+    authorIdentifier = "authorIdentifier", ORCID = "ORCID", otherGeographicCoverage = "otherGeographicCoverage";
 
   public DataverseClientApi() {
-    xmlReaderConnectionUtil = new RestConnectionUtil();
+    restConnectionUtil = new RestConnectionUtil();
   }
 
   @Override
   public MetadataModel getMetadata(String link) {
     MetadataModel metadataModel = new MetadataModel();
     JSONObject jo = new JSONObject();
-
     try {
-      String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
+      String metadata = restConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
-      System.out.println(jo);
-      jo = jo.getJSONObject("data");
-      JSONObject citation = jo.getJSONObject("metadata_blocks").getJSONObject("citation");
-      System.out.println(citation);
-      metadataModel.setTitle(citation.get("title").toString());
-      JSONObject timestamps = jo.getJSONObject("timestamps");
-      SimpleDateFormat dt = new SimpleDateFormat("yyyyy-MM-dd hh:mm:ss");
-      metadataModel.setPublicationDate(dt.parse(timestamps.get("publicationdate").toString()));
-      JSONArray deJsonObject = citation.getJSONArray("dsDescription");
-      for (Object object : deJsonObject) {
-        JSONObject jsonObject = (JSONObject) object;
-        metadataModel.setDescription(jsonObject.getString("dsDescriptionValue"));
-      }
-      StringBuilder keywords = new StringBuilder();
-      JSONArray keywordArray = citation.getJSONArray("keyword");
-      for (Object object : keywordArray) {
-        JSONObject jsonObject = (JSONObject) object;
-        if (keywords.length() == 0) {
-          keywords.append(jsonObject.get("keywordValue"));
-        } else {
-          keywords.append(", " + jsonObject.get("keywordValue"));
-        }
-      }
-      metadataModel.setKeywords(keywords.toString());
-      List<Author> authors = new ArrayList<Author>();
-      JSONArray authorsArray = citation.getJSONArray("author");
-      for (Object object : authorsArray) {
-        JSONObject jsonObject = (JSONObject) object;
-        Author author = new Author(jsonObject.getString("authorName"));
-        String names[] = author.getFirstName().split(", ");
-        if (names.length == 2) {
-          author.setFirstName(names[1]);
-          author.setLastName(names[0]);
+      jo = jo.getJSONObject(data);
+      if (jo != null && jo.length() > 0) {
+        try {
+          if (jo.has(publicationDate)) {
+            String dateInString = (String) jo.get(publicationDate);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = formatter.parse(dateInString);
+            metadataModel.setPublicationDate(date);
+          }
+        } catch (ParseException e) {
+          e.printStackTrace();
+          LOG.warn(e.getMessage());
         }
 
-        if (jsonObject.has("authorIdentifier")) {
-          author.setOrcidId(jsonObject.getString("authorIdentifier"));
+        if (jo.has(persistentUrl)) {
+          String persistentUrlValue = (String) jo.get(persistentUrl);
+          if (persistentUrlValue != null && !persistentUrlValue.isEmpty()) {
+            if (persistentUrlValue.contains("doi")) {
+              metadataModel.setDoi(persistentUrlValue);
+            }
+            if (persistentUrlValue.contains("handle")) {
+              metadataModel.setHandle(persistentUrlValue);
+            }
+          }
         }
-        authors.add(author);
+        if (jo.has(latestVersion)) {
+          JSONObject latestVersionJsonObject = (JSONObject) jo.get(latestVersion);
+          if (latestVersionJsonObject.has(metadataBlocks)) {
+            JSONObject metadataObject = (JSONObject) latestVersionJsonObject.get(metadataBlocks);
+            List<JSONObject> metadataObjects = new ArrayList<JSONObject>();
+            if (metadataObject.has(citation)) {
+              JSONObject citationObject = (JSONObject) metadataObject.get(citation);
+              metadataObjects.add(citationObject);
+            }
+            if (metadataObject.has(geospatial)) {
+              JSONObject geospatialObject = (JSONObject) metadataObject.get(geospatial);
+              metadataObjects.add(geospatialObject);
+            }
+            if (metadataObjects != null && metadataObjects.size() > 0) {
+              for (JSONObject metadataJSONObject : metadataObjects) {
+                if (metadataJSONObject.has(fields)) {
+                  JSONArray fieldsMetadataJsonArray = metadataJSONObject.getJSONArray(fields);
+                  if (fieldsMetadataJsonArray != null && fieldsMetadataJsonArray.length() > 0) {
+                    for (Object fieldObject : fieldsMetadataJsonArray) {
+                      JSONObject jsonObject = (JSONObject) fieldObject;
+                      if (jsonObject.has(typeName)) {
+                        String typeNameObject = (String) jsonObject.get(typeName);
+
+                        switch (typeNameObject) {
+                          case title:
+                            metadataModel.setTitle(jsonObject.getString(value));
+                            break;
+
+                          case dsDescription:
+                            if (jsonObject.has(value)) {
+                              JSONArray valuesJsonArray = jsonObject.getJSONArray(value);
+                              if (valuesJsonArray != null && valuesJsonArray.length() > 0) {
+                                for (Object valueObject : valuesJsonArray) {
+                                  JSONObject valueJsonObject = (JSONObject) valueObject;
+                                  if (valueJsonObject.has(dsDescriptionValue)) {
+                                    JSONObject descriptionValueObject =
+                                      (JSONObject) valueJsonObject.get(dsDescriptionValue);
+                                    if (descriptionValueObject.has(value)) {
+                                      metadataModel.setDescription((String) descriptionValueObject.get(value));
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                            break;
+
+                          case language:
+                            if (jsonObject.has(value)) {
+                              JSONArray languagesJsonArray = jsonObject.getJSONArray(value);
+                              if (languagesJsonArray != null && languagesJsonArray.length() > 0) {
+                                Set<String> languages = new HashSet<String>();
+                                for (Object languageObject : languagesJsonArray) {
+                                  languages.add((String) languageObject);
+                                }
+                                if (languages != null && languages.size() > 0) {
+                                  metadataModel.setLanguage(String.join(", ", languages));
+                                }
+                              }
+                            }
+                            break;
+
+                          case geographicCoverage:
+                            if (jsonObject.has(value)) {
+                              JSONArray geographicJsonArray = jsonObject.getJSONArray(value);
+                              if (geographicJsonArray != null && geographicJsonArray.length() > 0) {
+                                Set<String> countries = new HashSet<String>();
+                                for (Object geographicObject : geographicJsonArray) {
+                                  JSONObject geographicJsonObject = (JSONObject) geographicObject;
+                                  if (geographicJsonObject.has(country)
+                                    || geographicJsonObject.has(otherGeographicCoverage)) {
+                                    JSONObject countryJsonObject = null;
+                                    if (geographicJsonObject.has(country)) {
+                                      countryJsonObject = (JSONObject) geographicJsonObject.get(country);
+                                    }
+                                    if (geographicJsonObject.has(otherGeographicCoverage)) {
+                                      countryJsonObject =
+                                        (JSONObject) geographicJsonObject.get(otherGeographicCoverage);
+                                    }
+
+                                    if (countryJsonObject != null && countryJsonObject.length() > 0) {
+                                      countries.add((String) countryJsonObject.get(value));
+                                    }
+                                  }
+
+                                }
+                                if (countries != null && countries.size() > 0) {
+                                  metadataModel.setCountry(String.join(", ", countries));
+                                }
+
+                              }
+                            }
+
+                            break;
+
+                          case keyword:
+                            if (jsonObject.has(value)) {
+                              JSONArray keywordJsonArray = jsonObject.getJSONArray(value);
+                              if (keywordJsonArray != null && keywordJsonArray.length() > 0) {
+                                String keywords = "";
+                                for (Object keywordObject : keywordJsonArray) {
+                                  JSONObject keywordJsonObject = (JSONObject) keywordObject;
+                                  if (keywordJsonObject.has(keywordValue)) {
+                                    JSONObject keywordValueJsonObject =
+                                      (JSONObject) keywordJsonObject.get(keywordValue);
+                                    if (keywordValueJsonObject != null && keywordValueJsonObject.length() > 0) {
+                                      if (keywords != null && keywords.isEmpty()) {
+                                        keywords = (String) keywordValueJsonObject.get(value);
+                                      } else {
+                                        keywords = keywords + ", " + (String) keywordValueJsonObject.get(value);
+                                      }
+                                    }
+                                  }
+                                }
+                                metadataModel.setKeywords(keywords);
+                              }
+                            }
+                            break;
+
+                          case author:
+                            if (jsonObject.has(value)) {
+                              JSONArray authorJsonArray = jsonObject.getJSONArray(value);
+                              if (authorJsonArray != null && authorJsonArray.length() > 0) {
+                                List<Author> authors = new ArrayList<Author>();
+                                for (Object authorObject : authorJsonArray) {
+                                  JSONObject authorJsonObject = (JSONObject) authorObject;
+                                  if (authorJsonObject.has(authorName)) {
+                                    JSONObject authorNameJsonObject = (JSONObject) authorJsonObject.get(authorName);
+                                    Author author =
+                                      new Author(((String) authorNameJsonObject.get(value)).replaceAll(",", ""));
+                                    String names[] = author.getFirstName().split(" ");
+                                    // Name validations
+                                    if (names.length > 0) {
+                                      if (names.length == 1) {
+                                        author.setFirstName(names[0]);
+                                      } else if (names.length == 2) {
+                                        author.setFirstName(names[0]);
+                                        author.setLastName(names[1]);
+                                      } else if (names.length == 3) {
+                                        if (names[1].contains(".")) {
+                                          author.setFirstName(names[0] + " " + names[1]);
+                                          author.setLastName(names[2]);
+                                        } else {
+                                          author.setFirstName(names[0]);
+                                          author.setLastName(names[1] + " " + names[2]);
+                                        }
+                                      } else {
+                                        author.setFirstName(names[0] + " " + names[1]);
+                                        String lastName = "";
+                                        for (int i = 2; i < names.length; i++) {
+                                          if (i + 1 == names.length) {
+                                            lastName += names[i];
+                                          } else {
+                                            lastName += names[i] + " ";
+                                          }
+                                        }
+                                        author.setLastName(lastName);
+                                      }
+                                      if (authorJsonObject.has(authorIdentifierScheme)) {
+                                        JSONObject authorIdentifierSchemeJsonObject =
+                                          (JSONObject) authorJsonObject.get(authorIdentifierScheme);
+                                        String authorIdentifierScheme =
+                                          authorIdentifierSchemeJsonObject.getString(value);
+                                        if (authorIdentifierScheme != null && !authorIdentifierScheme.isEmpty()
+                                          && authorIdentifierScheme.equals(ORCID)) {
+                                          JSONObject authorIdentifierJsonObject =
+                                            (JSONObject) authorJsonObject.get(authorIdentifier);
+                                          String authorIdentifier = authorIdentifierJsonObject.getString(value);
+                                          if (authorIdentifier != null && !authorIdentifier.isEmpty()) {
+                                            author.setOrcidId(authorIdentifier);
+                                          }
+                                        }
+
+                                      }
+                                      authors.add(author);
+                                    }
+                                  }
+                                }
+
+                                Author[] authorsArr = new Author[authors.size()];
+                                authorsArr = authors.toArray(authorsArr);
+                                metadataModel.setAuthors(authorsArr);
+                              }
+                            }
+                            break;
+
+
+                          default:
+                            break;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-      Author[] authorsArr = new Author[authors.size()];
-      authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthors(authorsArr);
-      metadataModel.setDoi(this.getId());
     } catch (Exception e) {
+      e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
-      jo = null;
     }
-
     return metadataModel;
-  }
 
-  /**
-   * with the link evaluate host extract the ido and format into the rest url
-   * 
-   * @return the link to get the metadata
-   */
-  @Override
-  public String parseLink(String link) {
-    // if the link contains https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi: we remove it from the link
-    if (link.contains(DATAVERSE_URL)) {
-      this.setId(link.replace(DATAVERSE_URL, ""));
-    }
-    // if the link http://dx.doi.org/ we remove it from the link
-    if (link.contains(DX_URL)) {
-      this.setId(link.replace(DX_URL, ""));
-    }
-    String linkRest = (REST_URL.replace("{0}", this.getId()));
-    return linkRest;
   }
 
 }

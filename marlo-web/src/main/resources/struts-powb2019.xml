@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+   
+  <!-- CRP Plan of Work and Budget (POWB) -->
+  <package name="powb2019" namespace="/powb2019" extends="marlo-default">
+    
+    <!--  1.1 Adjustments/ Changes to Your Theories of Change -->
+    <action name="{crp}/adjustmentsChanges" class="org.cgiar.ccafs.marlo.action.powb.y2019.ToCAdjustments2019Action">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_adjustmentsChanges.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/adjustmentsChanges</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.1  Expected Progress Towards Outcomes  -->
+    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_expectedProgress.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/expectedProgress</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+
+    <!--  2.2 Planned Studies -->
+    <action name="{crp}/plannedStudies" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedStudiesAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedStudies.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/plannedStudies</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+    
+    <!--  2.3 Planned Collaborations -->
+    <action name="{crp}/plannedCollaborations" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedColaborationAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedCollaboration.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/plannedCollaborations</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+ 
+    <!--  3.1  Planned Budget  -->
+    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.FinancialPlanAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedBudget.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/plannedBudget</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+    
+    <!--  4.1 Program Changes -->
+    <action name="{crp}/programChanges" class="org.cgiar.ccafs.marlo.action.powb.y2019.ToCAdjustments2019Action">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb2019/powb2019_programChanges.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/programChanges</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    
+  </package>
+</struts>

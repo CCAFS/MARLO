@@ -22,13 +22,12 @@ import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,23 +43,23 @@ public class ActivityManagerImpl implements ActivityManager {
 
 
   private ActivityDAO activityDAO;
-
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
   private DeliverableActivityDAO deliverableActivityDAO;
-
+  private DeliverableActivityManager deliverableActivityManager;
   private ProjectPartnerPersonDAO projectPartnerPersonDAO;
-  // Managers
 
 
   @Inject
   public ActivityManagerImpl(ActivityDAO activityDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO,
-    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO) {
+    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO,
+    DeliverableActivityManager deliverableActivityManager) {
     this.activityDAO = activityDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
     this.deliverableActivityDAO = deliverableActivityDAO;
     this.projectPartnerPersonDAO = projectPartnerPersonDAO;
+    this.deliverableActivityManager = deliverableActivityManager;
   }
 
   /**
@@ -71,16 +70,11 @@ public class ActivityManagerImpl implements ActivityManager {
    * @param phase the current phase
    */
   public void cloneActivity(Activity activityAdd, Activity activity, Phase phase) {
-    activityAdd.setActive(true);
-    activityAdd.setActiveSince(new Date());
     activityAdd.setActivityProgress(activity.getActivityProgress());
     activityAdd.setActivityStatus(activity.getActivityStatus());
     activityAdd.setComposeID(activity.getComposeID());
-    activityAdd.setCreatedBy(activity.getCreatedBy());
     activityAdd.setDescription(activity.getDescription());
     activityAdd.setEndDate(activity.getEndDate());
-    activityAdd.setModificationJustification(activity.getModificationJustification());
-    activityAdd.setModifiedBy(activity.getCreatedBy());
     activityAdd.setPhase(phase);
     activityAdd.setProject(projectDAO.find(activity.getProject().getId()));
     activityAdd.setProjectPartnerPerson(this.getPartnerPerson(phase, activity.getProjectPartnerPerson()));
@@ -93,18 +87,12 @@ public class ActivityManagerImpl implements ActivityManager {
    * 
    * @param deliverableActivityAdd deliverableActivity to clone
    * @param deliverableActivity base deliverableActivity
-   * @param activity the activity base
    * @param activityAdd the new activity base
    */
   public void cloneDeliverableActivity(DeliverableActivity deliverableActivityAdd,
-    DeliverableActivity deliverableActivity, Activity activity, Activity activityAdd, Phase phase) {
-    deliverableActivityAdd.setActive(true);
-    deliverableActivityAdd.setActiveSince(activity.getActiveSince());
+    DeliverableActivity deliverableActivity, Activity activityAdd, Phase phase) {
     deliverableActivityAdd.setActivity(activityAdd);
-    deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
     deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
-    deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
-    deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
     deliverableActivityAdd.setPhase(phase);
   }
 
@@ -123,7 +111,7 @@ public class ActivityManagerImpl implements ActivityManager {
     if (activity.getDeliverables() != null) {
       for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
         DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-        this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
+        this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activityAdd, phase);
         deliverableActivityDAO.save(deliverableActivityAdd);
       }
     }
@@ -136,9 +124,10 @@ public class ActivityManagerImpl implements ActivityManager {
     List<Activity> activities =
       phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && activity.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());
-    for (Activity activityDB : activities) {
-      activityDB.setActive(false);
-      activityDAO.save(activityDB);
+    if (activities != null) {
+      for (Activity activityDB : activities) {
+        activityDAO.deleteActivity(activityDB.getId());
+      }
     }
 
     if (phase.getNext() != null) {
@@ -151,14 +140,23 @@ public class ActivityManagerImpl implements ActivityManager {
   public void deleteActivity(long activityId) {
 
     Activity activity = this.getActivityById(activityId);
-    activity.setActive(false);
-    activity = activityDAO.save(activity);
+    activityDAO.deleteActivity(activityId);
+
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (activity.getPhase().getNext() != null) {
         this.deletActivityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletActivityPhase(upkeepPhase, activity.getProject().getId(), activity);
+    // }
+    // }
+    // }
   }
 
   @Override
@@ -203,21 +201,43 @@ public class ActivityManagerImpl implements ActivityManager {
 
     Activity resultActivity = activityDAO.save(activity);
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
+
+    this.saveCurrentPhaseDeliverables(resultActivity, activity.getDeliverables(), currentPhase);
+
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (activity.getPhase().getNext() != null) {
         this.saveActvityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
       }
     }
+
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveActvityPhase(upkeepPhase, activity.getProject().getId(), activity);
+    // }
+    // }
+    // }
     return resultActivity;
   }
 
+  /**
+   * Save activities for next phase
+   * 
+   * @param next
+   * @param projecID
+   * @param activity
+   */
   public void saveActvityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
 
     List<Activity> activities =
       phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
-    if (activities.isEmpty()) {
+
+    // Create new Activity
+    if (activities == null || activities.isEmpty()) {
       Activity activityAdd = new Activity();
       this.cloneActivity(activityAdd, activity, phase);
       activityDAO.save(activityAdd);
@@ -226,49 +246,73 @@ public class ActivityManagerImpl implements ActivityManager {
         activityAdd.setComposeID(activity.getComposeID());
         activityDAO.save(activityAdd);
       }
-      if (activity.getDeliverables() != null) {
-        for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-          DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-          this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
-          deliverableActivityDAO.save(deliverableActivityAdd);
-        }
-      }
+      this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
     } else {
+      // Update activity
+
       Activity activityAdd = activities.get(0);
       this.cloneActivity(activityAdd, activity, phase);
       activityDAO.save(activityAdd);
-      if (activity.getDeliverables() == null) {
-        activity.setDeliverables(new ArrayList<DeliverableActivity>());
-      }
-      for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-        if (activityAdd.getDeliverableActivities().stream()
-          .filter(c -> c.isActive() && c.getDeliverable().equals(deliverableActivity.getDeliverable()))
-          .collect(Collectors.toList()).isEmpty()) {
-          DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-          this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
-          deliverableActivityDAO.save(deliverableActivityAdd);
-        }
-      }
-      for (DeliverableActivity deliverableActivity : activityAdd.getDeliverableActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        if (activity.getDeliverables().stream()
-          .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())
-          .isEmpty()) {
-          deliverableActivity.setActive(false);
-          deliverableActivityDAO.save(deliverableActivity);
-        }
-
-      }
-
-
+      this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
     }
 
-    if (phase.getNext() != null)
-
-    {
+    if (phase.getNext() != null) {
       this.saveActvityPhase(phase.getNext(), projecID, activity);
     }
 
+
+  }
+
+  /**
+   * Save/Delete activityDeliverable of the current phase
+   */
+  private void saveCurrentPhaseDeliverables(Activity activityUI, List<DeliverableActivity> deliverableActivitiesUI,
+    Phase currentPhase) {
+    List<DeliverableActivity> deliverableActivitiesDB =
+      activityUI.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList());
+    if (deliverableActivitiesUI != null) {
+
+      // Delete deliverableActivities distinct from DB
+      for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
+        if (!deliverableActivitiesUI.contains(deliverableActivity)) {
+          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+        }
+      }
+
+      // Add deliverableActivity if not exist
+      for (DeliverableActivity deliverableActivity : deliverableActivitiesUI) {
+
+        if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
+          // New DeliverableActivity
+          DeliverableActivity deliverableActivityNew = new DeliverableActivity();
+          this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
+          deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+          // This is to add DeliverableActivity to generate correct auditlog.
+          activityUI.getDeliverableActivities().add(deliverableActivityNew);
+        } else {
+          // Check if already exists in DB, then save
+          List<DeliverableActivity> deliverableActivities = currentPhase.getDeliverableActivities().stream()
+            .filter(da -> da.isActive() && da.getActivity() != null
+              && da.getActivity().getId().longValue() == activityUI.getId().longValue()
+              && da.getDeliverable().equals(deliverableActivity.getDeliverable()))
+            .collect(Collectors.toList());
+          if (deliverableActivities == null || deliverableActivities.isEmpty()) {
+            DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
+            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activityUI, currentPhase);
+            deliverableActivityDAO.save(deliverableActivityAdd);
+          }
+        }
+
+      }
+    } else {
+      // delete all from db
+      if (deliverableActivitiesDB != null && !deliverableActivitiesDB.isEmpty()) {
+        for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
+          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+        }
+      }
+
+    }
 
   }
 }

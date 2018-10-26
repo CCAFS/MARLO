@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
@@ -49,7 +48,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -79,8 +77,9 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
   // PDF bytes
   private byte[] bytesPDF;
   // Services
-  private CrpProgramManager programService;
-  private ICenterCycleManager cycleService;
+  private final CrpProgramManager programService;
+  private final ICenterCycleManager cycleService;
+  private final ResourceManager resourceManager;
   // Params
   private CrpProgram researchProgram;
   private CenterCycle researchCycle;
@@ -88,25 +87,22 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
 
   @Inject
   public ImpactSubmissionSummaryAction(APConfig config, CrpProgramManager programService,
-    ICenterCycleManager cycleService) {
+    ICenterCycleManager cycleService, ResourceManager resourceManager) {
     super(config);
     this.programService = programService;
     this.cycleService = cycleService;
+    this.resourceManager = resourceManager;
   }
 
   @Override
   public String execute() throws Exception {
 
-
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager =
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
     try {
       String res = this.getClass().getResource("/pentaho/center/ImpactPathway.prpt").toString();
 
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/center/ImpactPathway.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/center/ImpactPathway.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -122,7 +118,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      System.out.println("Pentaho SubReports: " + hm);
+      // System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
       String masterQueryName = "main";
@@ -418,7 +414,7 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
         if (programImpact.isEmpty()) {
           programImpact = "&lt;Not Defined&gt;";
         }
-        if (researchOutcome.getTargetUnit() != null) {
+        if (researchOutcome.getSrfTargetUnit() != null) {
           targetUnit = researchOutcome.getSrfTargetUnit().getName();
         }
         if (targetUnit.isEmpty()) {

@@ -43,7 +43,6 @@
             <div class="loading" style="display:none"></div>
             <p class="warning-info" style="display:none"></p> 
             <div id="" class="tickBox-wrapper fullBlock">
-              [@customForm.checkbox name="isCCAFS" value="" i18nkey="users.isCCAFS" /]
               <div class="tickBox-toggle">
                 <div class="halfPartBlock">[@customForm.input name="firstName" type="text" i18nkey="users.firstName"/] </div>
                 <div class="halfPartBlock">[@customForm.input name="lastName" type="text" i18nkey="users.lastName"/] </div>
@@ -66,6 +65,9 @@
           <span class="contact name">{composedName}</span>  
           <span class="listButton select">[@s.text name="form.buttons.select" /]</span>
           <span class="contactId" style="display:none">{userId}</span>
+          <span class="userFName" style="display:none">{userFName}</span>
+          <span class="userLName" style="display:none">{userLName}</span>
+          <span class="userEmail" style="display:none">{userEmail}</span>
         </li> 
       </ul>  
       

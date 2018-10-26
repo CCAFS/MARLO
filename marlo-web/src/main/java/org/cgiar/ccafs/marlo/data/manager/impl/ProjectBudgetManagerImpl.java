@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,15 +40,12 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
 
-  // Managers
-
 
   @Inject
   public ProjectBudgetManagerImpl(ProjectBudgetDAO projectBudgetDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO) {
     this.projectBudgetDAO = projectBudgetDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
-
   }
 
   @Override
@@ -59,11 +55,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   public void cloneBudget(ProjectBudget projectBudgetAdd, ProjectBudget budget, Phase phase) {
-    projectBudgetAdd.setActive(true);
-    projectBudgetAdd.setActiveSince(new Date());
-    projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
-    projectBudgetAdd.setModifiedBy(budget.getCreatedBy());
-    projectBudgetAdd.setCreatedBy(budget.getCreatedBy());
     projectBudgetAdd.setPhase(phase);
     projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
     projectBudgetAdd.setAmount(budget.getAmount());
@@ -73,8 +64,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     projectBudgetAdd.setGenderValue(budget.getGenderValue());
     projectBudgetAdd.setInstitution(budget.getInstitution());
     projectBudgetAdd.setYear(budget.getYear());
-
-
   }
 
   @Override
@@ -118,6 +107,15 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
         this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
+    // }
+    // }
+    // }
 
   }
 
@@ -200,6 +198,15 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
         this.saveBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.saveBudgetPhase(upkeepPhase, projectBudget.getProject().getId(), projectBudget);
+    // }
+    // }
+    // }
     return resultBudget;
   }
 }

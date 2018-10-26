@@ -4,6 +4,7 @@
 <!-- Generated May 17, 2017 3:36:30 PM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
     <class name="org.cgiar.ccafs.marlo.data.model.Parameter" table="parameters"  optimistic-lock="none">
+        <cache usage="read-write"/>
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
@@ -12,7 +13,7 @@
             <column name="key" length="500" />
         </property>
         <property name="description" type="string">
-            <column name="description" length="65535" />
+            <column name="description" sql-type="TEXT" />
         </property>
         <property name="format" type="java.lang.Integer">
             <column name="format" />

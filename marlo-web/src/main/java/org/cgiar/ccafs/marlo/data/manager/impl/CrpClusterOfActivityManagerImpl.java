@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
@@ -79,11 +80,6 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
         && c.getIdentifier().equals(crpCluster.getIdentifier())).collect(Collectors.toList());
     if (clusters.isEmpty()) {
       CrpClusterOfActivity clusterAdd = new CrpClusterOfActivity();
-      clusterAdd.setActive(true);
-      clusterAdd.setActiveSince(crpCluster.getActiveSince());
-      clusterAdd.setCreatedBy(crpCluster.getCreatedBy());
-      clusterAdd.setModificationJustification(crpCluster.getModificationJustification());
-      clusterAdd.setModifiedBy(crpCluster.getModifiedBy());
       clusterAdd.setPhase(phase);
       clusterAdd.setCrpProgram(crpCluster.getCrpProgram());
       clusterAdd.setDescription(crpCluster.getDescription());
@@ -125,11 +121,6 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
     if (crpClusterOfActivity.getKeyOutputs() != null) {
       for (CrpClusterKeyOutput crpClusteKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
         CrpClusterKeyOutput crpClusteKeyOutputAdd = new CrpClusterKeyOutput();
-        crpClusteKeyOutputAdd.setActive(true);
-        crpClusteKeyOutputAdd.setActiveSince(crpClusterOfActivity.getActiveSince());
-        crpClusteKeyOutputAdd.setCreatedBy(crpClusterOfActivity.getCreatedBy());
-        crpClusteKeyOutputAdd.setModificationJustification("");
-        crpClusteKeyOutputAdd.setModifiedBy(crpClusterOfActivity.getCreatedBy());
         crpClusteKeyOutputAdd.setContribution(crpClusteKeyOutput.getContribution());
         crpClusteKeyOutputAdd.setKeyOutput(crpClusteKeyOutput.getKeyOutput());
         crpClusteKeyOutputAdd.setComposeID(crpClusteKeyOutput.getComposeID());
@@ -144,13 +135,11 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
         if (crpClusteKeyOutput.getKeyOutputOutcomes() != null) {
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusteKeyOutput.getKeyOutputOutcomes()) {
             CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
-            crpClusterKeyOutputOutcomeAdd.setActive(true);
-            crpClusterKeyOutputOutcomeAdd.setActiveSince(crpClusterOfActivity.getActiveSince());
-            crpClusterKeyOutputOutcomeAdd.setCreatedBy(crpClusterOfActivity.getCreatedBy());
-            crpClusterKeyOutputOutcomeAdd.setModificationJustification("");
-            crpClusterKeyOutputOutcomeAdd.setModifiedBy(crpClusterOfActivity.getCreatedBy());
             crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusteKeyOutputAdd);
-            crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
+            CrpProgramOutcome crpProgramOutcome =
+              crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+            crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpProgramOutcomeDAO
+              .getCrpProgramOutcome(crpProgramOutcome.getComposeID(), crpClusterOfActivityAdd.getPhase()));
             crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
           }
         }
@@ -171,11 +160,6 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
     if (crpClusterOfActivity.getLeaders() != null) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getLeaders()) {
         CrpClusterActivityLeader crpClusterActivityLeaderAdd = new CrpClusterActivityLeader();
-        crpClusterActivityLeaderAdd.setActive(true);
-        crpClusterActivityLeaderAdd.setActiveSince(crpClusterOfActivity.getActiveSince());
-        crpClusterActivityLeaderAdd.setCreatedBy(crpClusterOfActivity.getCreatedBy());
-        crpClusterActivityLeaderAdd.setModifiedBy(crpClusterOfActivity.getCreatedBy());
-        crpClusterActivityLeaderAdd.setModificationJustification("");
         crpClusterActivityLeaderAdd.setUser(crpClusterActivityLeader.getUser());
         crpClusterActivityLeaderAdd.setCrpClusterOfActivity(crpClusterOfActivityAdd);
         crpClusterActivityLeaderDAO.save(crpClusterActivityLeaderAdd);
@@ -245,8 +229,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
       if (crpClusterOfActivity.getLeaders() == null || crpClusterOfActivity.getLeaders().stream()
         .filter(c -> c.getUser() != null && c.getUser().getId().equals(leader.getUser().getId()))
         .collect(Collectors.toList()).isEmpty()) {
-        leader.setActive(false);
-        crpClusterActivityLeaderDAO.save(leader);
+        crpClusterActivityLeaderDAO.deleteCrpClusterActivityLeader(leader.getId());
       }
     }
     if (crpClusterOfActivity.getLeaders() != null) {
@@ -254,16 +237,9 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
         if (crpClusterOfActivityPrev.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive() && c.getUser().getId().equals(leader.getUser().getId()))
           .collect(Collectors.toList()).isEmpty()) {
-
           CrpClusterActivityLeader leaderAdd = new CrpClusterActivityLeader();
-
           leaderAdd.setCrpClusterOfActivity(crpClusterOfActivityPrev);
           leaderAdd.setUser(leader.getUser());
-          leaderAdd.setModifiedBy(crpClusterOfActivityPrev.getModifiedBy());
-          leaderAdd.setActive(true);
-          leaderAdd.setActiveSince(crpClusterOfActivityPrev.getActiveSince());
-          leaderAdd.setModificationJustification(crpClusterOfActivityPrev.getModificationJustification());
-          leaderAdd.setCreatedBy(crpClusterOfActivityPrev.getCreatedBy());
           crpClusterActivityLeaderDAO.save(leaderAdd);
 
         }
@@ -284,8 +260,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
       if (crpClusterOfActivity.getKeyOutputs() == null || crpClusterOfActivity.getKeyOutputs().stream()
         .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        crpClusterKeyOutput.setActive(false);
-        crpClusterKeyOutputDAO.save(crpClusterKeyOutput);
+        crpClusterKeyOutputDAO.deleteCrpClusterKeyOutput(crpClusterKeyOutput.getId());
       }
     }
     if (crpClusterOfActivity.getKeyOutputs() != null) {
@@ -294,11 +269,6 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           .filter(c -> c.isActive() && c.getComposeID().equals(crpClusterKeyOutput.getComposeID()))
           .collect(Collectors.toList()).isEmpty()) {
           CrpClusterKeyOutput crpClusterKeyOutputAdd = new CrpClusterKeyOutput();
-          crpClusterKeyOutputAdd.setModifiedBy(crpClusterOfActivity.getModifiedBy());
-          crpClusterKeyOutputAdd.setActive(true);
-          crpClusterKeyOutputAdd.setActiveSince(crpClusterOfActivity.getActiveSince());
-          crpClusterKeyOutputAdd.setModificationJustification(crpClusterOfActivity.getModificationJustification());
-          crpClusterKeyOutputAdd.setCreatedBy(crpClusterOfActivity.getModifiedBy());
           crpClusterKeyOutputAdd.setComposeID(crpClusterKeyOutput.getComposeID());
           crpClusterKeyOutputAdd.setContribution(crpClusterKeyOutput.getContribution());
           crpClusterKeyOutputAdd.setCrpClusterOfActivity(crpClusterOfActivityPrev);
@@ -314,14 +284,13 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           if (crpClusterKeyOutput.getKeyOutputOutcomes() != null) {
             for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
               CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
-              crpClusterKeyOutputOutcomeAdd.setActive(true);
-              crpClusterKeyOutputOutcomeAdd.setActiveSince(crpClusterKeyOutputAdd.getActiveSince());
               crpClusterKeyOutputOutcomeAdd.setContribution(crpClusterKeyOutputOutcome.getContribution());
-              crpClusterKeyOutputOutcomeAdd.setCreatedBy(crpClusterKeyOutputAdd.getCreatedBy());
               crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusterKeyOutputAdd);
-              crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
-              crpClusterKeyOutputOutcomeAdd.setModificationJustification("");
-              crpClusterKeyOutputOutcomeAdd.setModifiedBy(crpClusterKeyOutputAdd.getModifiedBy());
+              // get outcome of the current phase
+              CrpProgramOutcome crpProgramOutcome =
+                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+              crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpProgramOutcomeDAO
+                .getCrpProgramOutcome(crpProgramOutcome.getComposeID(), crpClusterOfActivityPrev.getPhase()));
               crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
             }
           }
@@ -340,8 +309,10 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
             if (crpClusterKeyOutputOutcome != null && crpClusterKeyOutputOutcome.getCrpProgramOutcome() != null
               && crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId() != null) {
-              crpClusterKeyOutputOutcome.setCrpProgramOutcome(
-                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId()));
+              CrpProgramOutcome crpProgramOutcome =
+                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+              crpClusterKeyOutputOutcome.setCrpProgramOutcome(crpProgramOutcomeDAO
+                .getCrpProgramOutcome(crpProgramOutcome.getComposeID(), crpClusterOfActivityPrev.getPhase()));
             } else {
               crpClusterKeyOutputOutcome.setCrpProgramOutcome(null);
             }
@@ -354,8 +325,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
                 && c.getCrpProgramOutcome().getComposeID()
                   .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
               .collect(Collectors.toList()).isEmpty()) {
-              crpClusterKeyOutputOutcome.setActive(false);
-              crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcome);
+              crpClusterKeyOutputOutcomeDAO.deleteCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome.getId());
             }
           }
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
@@ -366,14 +336,9 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
                     .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
                 .collect(Collectors.toList()).isEmpty()) {
                 CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
-                crpClusterKeyOutputOutcomeAdd.setActive(true);
-                crpClusterKeyOutputOutcomeAdd.setActiveSince(crpClusterKeyOutputtoUpdate.getActiveSince());
                 crpClusterKeyOutputOutcomeAdd.setContribution(crpClusterKeyOutputOutcome.getContribution());
-                crpClusterKeyOutputOutcomeAdd.setCreatedBy(crpClusterKeyOutputtoUpdate.getCreatedBy());
                 crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusterKeyOutputtoUpdate);
                 crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
-                crpClusterKeyOutputOutcomeAdd.setModificationJustification("");
-                crpClusterKeyOutputOutcomeAdd.setModifiedBy(crpClusterKeyOutputtoUpdate.getModifiedBy());
                 crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
               }
             }

@@ -23,8 +23,8 @@
 			<column name="modified_by" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="researchArea"
 			class="org.cgiar.ccafs.marlo.data.model.CenterArea" fetch="select">
@@ -35,19 +35,22 @@
 			<column name="crp" />
 		</many-to-one>
 		<many-to-one name="researchProgram"
-			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
 			<column name="research_program" />
 		</many-to-one>
 		<property name="title" type="string">
 			<column name="title" length="500" />
 		</property>
+		<property name="otherFunding" type="string">
+      <column name="other_funding" length="500" />
+    </property>
 		<property name="category" type="int">
 			<column name="category" />
 		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="global" type="java.lang.Boolean">
@@ -57,7 +60,7 @@
 			<column name="is_regional" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 		<property name="ctFirstName" type="string">
 			<column name="ct_firstName" length="45" />

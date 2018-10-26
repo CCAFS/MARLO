@@ -23,12 +23,12 @@ a {
   background: #179457 url(./../../global/images/footerBackground-center.png) repeat-x 0 0;
 }
 
-.footer a{
-  color:white;
+.footer a {
+  color: white;
 }
+
 .footer:before {
   background: none;
-     
 }
 
 .addButton {
@@ -59,7 +59,7 @@ ul.horizontalSubMenu li.active {
 }
 
 #secondaryMenu > p {
-  color: #7b9074; 
+  color: #7b9074;
 }
 
 #secondaryMenu .menuList p.active {
@@ -96,6 +96,7 @@ ul.horizontalSubMenu li.active {
 #dashboardContent li.active a {
   color: #7b9074 !important;
 }
+
 #dashboardContent li a:hover {
   background-color: #f5f5f5 !important;
 }
@@ -123,7 +124,6 @@ ul.horizontalSubMenu li.active {
   background: #8ea786;
 }
 
-
 #secondaryMenu ul p.menuTitle {
   background: #25a76a;
 }
@@ -145,13 +145,12 @@ ul.horizontalSubMenu li.active {
   background-color: #35ad75 !important;
 }
 
-
 .phaseTag span.planning {
   background-color: #35ad75 !important;
 }
 
 /** CSS sectionSubMenu  **/
-.sectionSubMenu{
+.sectionSubMenu {
   margin: 15px 0;
 }
 
@@ -159,9 +158,7 @@ ul.horizontalSubMenu li.active {
   padding: 4px 42px;
 }
 
-.sectionSubMenu .nav-tabs>li.active>a, 
-.sectionSubMenu .nav-tabs>li.active>a:focus, 
-.sectionSubMenu .nav-tabs>li.active>a:hover {
+.sectionSubMenu .nav-tabs>li.active>a, .sectionSubMenu .nav-tabs>li.active>a:focus, .sectionSubMenu .nav-tabs>li.active>a:hover {
   color: #fff !important;
   background-color: #389767;
 }
@@ -172,53 +169,51 @@ ul.horizontalSubMenu li.active {
   color: #b1afaf;
 }
 
-.relVal{
+.relVal {
   position: relative;
-  margin-bottom:25px;
+  margin-bottom: 25px;
 }
 
-.relVal label{
-	margin-bottom:15px;
+.relVal label {
+  margin-bottom: 15px;
 }
 
-.missingSelect{
-  border: 1px solid #F44;
-  border-bottom: 1px solid #F44;
+.missingSelect {
+  /* border: 1px solid #F44; */
+  /* border-bottom: 1px solid #F44; */
+  /* border-radius: 6px; */
 }
 
 span.errorTag {
-    position: absolute;
-    text-align: center;
-    color: rgb(148, 125, 3);
-    background: url(./../../global/images/errorTag.png);
-    background-size: 100% 100%;
-    width: 50px;
-    cursor: help;
-    height: 22px;
-    padding: 3px;
-    z-index: 99;
+  position: absolute;
+  text-align: center;
+  color: rgb(148, 125, 3);
+  background: url(./../../global/images/errorTag.png);
+  background-size: 100% 100%;
+  width: 50px;
+  cursor: help;
+  height: 22px;
+  padding: 3px;
+  z-index: 99;
 }
 
-.sectionSubMenu .nav-tabs>li.active:after, 
-.sectionSubMenu .nav-tabs>li.active:before {
-	top: 92%;
-	left: 50%;
-	border: solid transparent;
-	content: " ";
-	width: 0;
-	position: absolute;
-	pointer-events: none;
+.sectionSubMenu .nav-tabs>li.active:after, .sectionSubMenu .nav-tabs>li.active:before {
+  top: 92%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  width: 0;
+  position: absolute;
+  pointer-events: none;
 }
 
 .sectionSubMenu .nav-tabs>li.active:after {
-	border-top-color:  #389767;
-	border-width: 8px 20px 0 20px;;
-	margin-left: -20px;
+  border-top-color: #389767;
+  border-width: 8px 20px 0 20px;
+  margin-left: -20px;
 }
 
-
-
-.sectionSubMenu .tab-pane ul  {
+.sectionSubMenu .tab-pane ul {
   padding: 8px;
   margin: 0;
 }
@@ -230,20 +225,48 @@ span.errorTag {
 }
 
 .sectionSubMenu .tab-pane ul li.active {
-  font-weight:bold;
+  font-weight: bold;
 }
 
-.sectionSubMenu .tab-pane ul li.active a{
+.sectionSubMenu .tab-pane ul li.active a {
   color: #6d6d6d;
 }
 
 .sectionSubMenu .tab-content>.tab-pane {
-   background-color: #f1f1f1;
-   border-left: 1px solid #ddd;
-   border-right: 1px solid #ddd;
-   border-bottom: 1px solid #ddd;
+  background-color: #f1f1f1;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 #secondaryMenu > p small {
   color: #6ccc9f;
+}
+
+.picker__day--highlighted:hover, .picker--focused .picker__day--highlighted {
+  background: #68bb93;
+}
+
+.picker__day--infocus:hover, .picker__day--outfocus:hover {
+  background: #68bb93;
+}
+
+.picker__day--highlighted {
+  border-color: #58a580;
+}
+
+.approachesList ul {
+  margin: 0;
+  padding: 0;
+}
+
+.inputContainer input:checked ~ .checkmark {
+  background-color: #25a76a;
+  border-color: #239c63;
+}
+
+
+.inputContainer:hover input:checked ~ .checkmark {
+  background-color: #27b371;
+  border-color: #25af6e;
 }

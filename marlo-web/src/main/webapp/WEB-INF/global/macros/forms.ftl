@@ -1,5 +1,5 @@
 [#ftl]
-[#macro text name readText=false param="" ][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
+[#macro text name readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
 [#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText=""]
   <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
@@ -10,32 +10,31 @@
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
+    [#-- Get Custom Value --]
+    [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
     [#if editable]
       [#-- Condition to add input group to field --]
       [#if inputGroupText != ""]<div class="input-group"><span class="input-group-addon">${inputGroupText}</span>[/#if]
-      <input type="${type}" id="${name}" name="${name}" value="[#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if]"  class="form-control input-sm ${className} ${required?string('required','optional')}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if] [#if placeholder?has_content]placeholder="[@s.text name=placeholder /]"[/#if]/>
+      <input type="${type}" id="${name}" name="${name}" value="${customValue}" class="form-control input-sm ${className} ${required?string('required','optional')}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if] [#if placeholder?has_content]placeholder="[@s.text name=placeholder /]"[/#if]/>
       [#if inputGroupText != ""]</div>[/#if]
       [#-- End condition --]
     [#else]
-      <input type="hidden" id="${name}" name="${name}" value="[#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if]" class="form-control input-sm ${className} ${required?string('required','optional')}"/>
-      [#assign requiredText][#if required && editable ]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 
-      <p>
-        [#if value=="-NULL"] 
-          [#assign customValue][@s.property value="${name?string}"/][/#assign] 
-          [#if !(customValue)?has_content]${requiredText}[@s.text name="form.values.fieldEmpty" /][#else]${customValue}[/#if]
-        [#else]
-          [#if !value?has_content]${requiredText}[@s.text name="form.values.fieldEmpty" /][#else]${value}[/#if] 
-        [/#if]
-      </p>
+      [#local isCurrencyInput = className?contains("currencyInput") ]
+      [#local requiredText][#if required && editable ]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#local] 
+      [#-- Hidden input --]
+      <input type="hidden" id="${name}" name="${name}" value="${customValue}" class="form-control input-sm ${className} ${required?string('required','optional')}"/>
+      [#-- Show custom value --]
+      <p>[#if (customValue?has_content)!false] [#if isCurrencyInput]<nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>[#else]${customValue}[/#if]  [#else]${requiredText}[@s.text name="form.values.fieldEmpty" /][/#if]</p>
     [/#if]
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" powbInclude=false]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
-    [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
+    [#-- Get Custom Value --]
+    [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#--  Help Text --]
@@ -47,17 +46,14 @@
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
-      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')}" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
+      <textarea rows="4" name="${name}" id="${name}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')} [#if allowTextEditor]allowTextEditor[/#if]" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
     [#else]
-      <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 
-      <p>
-        [#if value=="-NULL"] 
-          [#assign customValue][@s.property value="${name?string}"/][/#assign] 
-          [#if !(customValue)?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${customValue?replace('\n', '<br>')}[/#if]
-        [#else]
-          [#if !value?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${value?replace('\n', '<br>')}[/#if] 
-        [/#if]
+      [#-- Hidden input --]
+      <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
+      [#-- Show custom value --]
+      <p class="${allowTextEditor?string('decodeHTML trumbowyg-editor', '')}">
+        [#if (customValue?has_content)!false]${customValue?replace('\n', '<br>')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
       </p>
     [/#if] 
   </div>
@@ -210,6 +206,35 @@
       [/#if]  
     </div> 
   </div>
+[/#macro]
+
+[#macro selectGroup name list element  subListName="" keyFieldName="" displayFieldName="" i18nkey="" paramText="" disabled=false required=false className="" help="" helpIcon=true header=true showTitle=true placeholder="form.select.placeholder" editable=true]
+  [#local valueSelected = (element[keyFieldName])!-1 /]
+  [#if showTitle]
+    <label for="">[@s.text name=i18nkey /]:[@req required=required && editable /]
+      [#--  Help Text --]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+    </label>
+  [/#if]
+  [#if editable]
+    <select name="${name}" id="${name}" class="setSelect2 ${className}">
+      [#if header]<option value="-1">[@s.text name=placeholder /]</option>[/#if]
+      [#list list as groupsList]
+        [#if groupsList[subListName]?has_content]
+          <optgroup label="${groupsList[displayFieldName]}">
+            [#list groupsList[subListName] as option]<option value="${option[keyFieldName]}"  [#if option[keyFieldName] == valueSelected]selected[/#if]>${option[displayFieldName]}</option>[/#list]
+          </optgroup>
+        [#else]
+          [#if !(groupsList['parent']?has_content)]
+            <option value="${groupsList[keyFieldName]}" [#if groupsList[keyFieldName] == valueSelected]selected[/#if]>${groupsList[displayFieldName]}</option>
+          [/#if]
+        [/#if]
+      [/#list]
+    </select>
+  [#else]
+    <p>[#if (element[keyFieldName]??)!false]${(element[displayFieldName])!(element.name)!'null'}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
+    <input type="hidden" name="${name}" value="${valueSelected}" />
+  [/#if]
 [/#macro]
 
 [#macro inputFile name template=false className="" fileUrl="" fileName="" editable=true]
@@ -365,7 +390,7 @@
   </div>
 [/#macro]
 
-[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass=""]
+[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
@@ -378,10 +403,11 @@
     [#if editable]
       <div class="button-wrap">
         [#-- Yes Button --]
-        <label for="yes-button-${name}" class="yes-button-label button-label [#if customValue == "true"]radio-checked[/#if]">${yesLabel}</label>
+        <label for="yes-button-${name}" class="yes-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
         [#-- No Button --]
-        <label for="no-button-${name}" class="no-button-label button-label [#if customValue == "false" || !(customValue?has_content)]radio-checked[/#if]">${noLabel}</label>
-        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  [#if !(customValue?has_content)]value="false"[/#if] [#if customValue == "false"]value="false"[#elseif customValue == "true"]value="true"[/#if] />
+        <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
+        [#-- Hidden Input --]
+        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="${(customValue)!-1}" />
       </div>
       [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 
     [#else]
@@ -389,6 +415,33 @@
     [/#if]
   </div>
 [/#macro]
+
+[#macro yesNoInputDeliverable name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+  [#if value == ""]
+    [#assign customValue][@s.property value="${name}"/][/#assign]
+  [#else]
+    [#assign customValue=value /]
+  [/#if]
+  <div class="onoffswitch ${changedField(name)} ${cssClass}">
+    [#if label?has_content]
+      <label for="${name}">[@s.text name=label/]</label>
+    [/#if]
+    <div class="button-wrap radio-inline">  
+      [#if editable]
+        [#-- Yes Button --]
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
+        [#-- No Button --]
+        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue == "false")!false]checked[/#if] />
+        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]"> ${noLabel} </label>
+      [#else]
+        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+      [/#if]
+    </div>
+  </div>
+[/#macro]
+
+
 
 [#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   [#if editable]
@@ -401,11 +454,32 @@
   [/#if]
 [/#macro]
 
-[#macro checkBoxFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   <div class="inputsFlat">
+    [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
-    <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] </label>
+    <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 
+      [#--  Help Text --]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+    </label>
+    [#else]
+      ${checked?string('Yes', 'No')}
+    [/#if]
   </div>
+[/#macro]
+
+[#macro checkmark id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="true" checked=true cssClass="" cssClassLabel="" centered=false]
+  <label class="inputContainer ${cssClassLabel}"> 
+    [#if editable]
+      <input id="${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] >
+      <span class="checkmark centered-${centered?string}"></span>
+      [#if label?has_content]<span class="labelText ${cssClassLabel}">${label}</span>[/#if]
+    [#else]
+      <p class="checked-${checked?string}">
+        [#if label?has_content]<span class="${cssClassLabel}">${label}</span>[/#if] 
+      </p>
+    [/#if]
+  </label>
 [/#macro]
 
 [#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass=""]
@@ -427,6 +501,12 @@
       [#if path?has_content]</a>[/#if]
       [#if isEditable]<span class="removeIcon"> </span>[/#if]
     </p>
+    [#-- Progress Bar --]
+    <div class="progress" style="height: 5px; display: none;">
+      <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+        <span class="sr-only"></span>
+      </div>
+    </div>
   </div>
 [/#macro]
 
@@ -449,3 +529,41 @@
   [/#if]
   [#return '']
 [/#function]
+
+[#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+  [#local composedID = "${elementType}${id}" /]
+  <div class="panel tertiary" listname="${name}" style="position:relative">
+    <div class="panel-head"><label for="">[@s.text name=label /]:[@req required=required && editable /]</label></div>
+    <div class="panel-body" style="min-height: 30px;">
+      <div class="loading listComponentLoading" style="display:none"></div>
+      <ul class="list listType-${composedID}">
+        [#if elementList?has_content]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
+        [/#if]
+      </ul>
+      [#if editable]
+        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
+      [#else]
+        [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
+      [/#if]
+    </div>
+    [#-- Element item Template --]
+    <ul style="display:none">
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
+    </ul>
+  </div>
+[/#macro]
+
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  [#local composedID = "${type}${id}" /]
+  <li id="relationElement-${composedID}-${template?string('template', index)}" class="relationElement indexLevel-${indexLevel}">
+    [#-- Hidden Inputs --]
+    <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+    [#-- Remove button --]
+    [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#-- Title --]
+    <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
+  </li>
+[/#macro]

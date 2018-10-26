@@ -93,7 +93,8 @@ public class CrpProjectPhases extends BaseAction {
     }
 
 
-    Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+    Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+      this.getActualPhase().getUpkeep(), this.getCrpID());
     phasesProjects = new ArrayList<Project>();
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       phasesProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
@@ -113,7 +114,7 @@ public class CrpProjectPhases extends BaseAction {
       if (!projectInfos.isEmpty()) {
         project.setProjectInfo(projectInfos.get(projectInfos.size() - 1));
       } else {
-        System.out.println(project.getId());
+        // System.out.println(project.getId());
       }
 
     }
@@ -132,7 +133,8 @@ public class CrpProjectPhases extends BaseAction {
 
   @Override
   public String save() {
-    Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+    Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+      this.getActualPhase().getUpkeep(), this.getCrpID());
 
     if (phasesProjects == null) {
       phasesProjects = new ArrayList<>();

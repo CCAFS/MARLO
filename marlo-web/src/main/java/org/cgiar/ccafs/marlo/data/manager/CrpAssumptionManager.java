@@ -20,7 +20,7 @@ import java.util.List;
 
 
 /**
- * @author Christian Garcia
+ * @author CCAFS
  */
 
 public interface CrpAssumptionManager {

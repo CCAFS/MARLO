@@ -48,16 +48,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /***
@@ -665,10 +665,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
       Path path = this.getAutoSaveFilePath();
 
 
@@ -676,11 +672,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
         if (ipProjectIndicator != null) {
           if (ipProjectIndicator.getId() == null || ipProjectIndicator.getId() == -1) {
-            ipProjectIndicator.setActive(true);
-            ipProjectIndicator.setCreatedBy(this.getCurrentUser());
-            ipProjectIndicator.setModifiedBy(this.getCurrentUser());
             ipProjectIndicator.setModificationJustification(this.getJustification());
-            ipProjectIndicator.setActiveSince(new Date());
 
 
             ipProjectIndicator.setId(null);
@@ -689,16 +681,12 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
           } else {
             IpProjectIndicator projectIndicatorDB =
               ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
-            ipProjectIndicator.setActive(true);
-            ipProjectIndicator.setCreatedBy(projectIndicatorDB.getCreatedBy());
-            ipProjectIndicator.setModifiedBy(this.getCurrentUser());
             ipProjectIndicator.setModificationJustification(this.getJustification());
             ipProjectIndicator.setDescription(projectIndicatorDB.getDescription());
             ipProjectIndicator.setGender(projectIndicatorDB.getGender());
 
             ipProjectIndicator.setYear(projectIndicatorDB.getYear());
             ipProjectIndicator.setProject(project);
-            ipProjectIndicator.setActiveSince(projectIndicatorDB.getActiveSince());
             ipProjectIndicator.setIpIndicator(projectIndicatorDB.getIpIndicator());
 
           }
@@ -714,7 +702,11 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_CCFASOTUCOME_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName);
 
 

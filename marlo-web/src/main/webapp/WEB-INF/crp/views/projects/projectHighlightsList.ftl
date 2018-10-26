@@ -85,6 +85,7 @@
         <th class="name">Highlight Name</th>
         <th class="type">Author</th>
         <th class="year">Year</th>
+        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
         <th class="removeHighlight">Remove</th> 
       </tr>
     </thead>
@@ -94,11 +95,22 @@
           [#assign dlurl][@s.url namespace=namespace action='${crpSession}/highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
           <tr>
             <td class="id" ><a href="${dlurl}">${hl.id}</a></td> 
-            <td class="name"><a href="${dlurl}">[#if hl.title?trim?has_content]${hl.title}[#else]Untitled[/#if]</a></td>
-            <td class="type">[#if hl.title?trim?has_content]${hl.author}[#else]Not defined[/#if]</td>
-            <td class="year">[#if hl.title?trim?has_content]${hl.year}[#else]Not defined[/#if]</td>
+            <td class="name">
+              [#if reportingActive && ((hl.projectHighlightInfo.year == currentCycleYear)!false)]
+                <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
+              [/#if]
+              <a href="${dlurl}">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.title}[#else]Untitled[/#if]</a>
+            </td>
+            <td class="type">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.author}[#else]Not defined[/#if]</td>
+            <td class="year">[#if hl.projectHighlightInfo.title?trim?has_content]${hl.projectHighlightInfo.year}[#else]Not defined[/#if]</td>
+            [#-- Summary PDF download --]
+          <td>
+            <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectHighlightSummary'][@s.param name='highlightID']${hl.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
+              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>            
+          </td>
             <td class="removeHighlight-row text-center">
-              [#if canEdit  && (hl.year gte  currentCycleYear) ]
+              [#if canEdit  && (hl.projectHighlightInfo.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${hl.id}" class="removeHighlight" href="#" title="" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
                 </a>

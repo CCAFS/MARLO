@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.home;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -46,7 +48,8 @@ import org.slf4j.LoggerFactory;
  */
 public class LoginAction extends BaseAction {
 
-
+  //Test Cambios Jenkins
+  
   private static final long serialVersionUID = 8819133560997109925L;
 
 
@@ -65,22 +68,24 @@ public class LoginAction extends BaseAction {
   private Long globalUnit;
 
   // Managers
-  private UserManager userManager;
+  private final UserManager userManager;
 
   // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private final GlobalUnitManager crpManager;
 
 
-  private CrpUserManager crpUserManager;
+  private final CrpUserManager crpUserManager;
+
+  private final CustomParameterManager customParameterManager;
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager) {
+    CrpUserManager crpUserManager, CustomParameterManager customParameterManager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
-
+    this.customParameterManager = customParameterManager;
   }
 
   @Override
@@ -216,7 +221,11 @@ public class LoginAction extends BaseAction {
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
         this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
         // put the crp parameters in the session
-        for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
+
+        List<CustomParameter> customParameters =
+          customParameterManager.getAllCustomParametersByGlobalUnitId(loggedCrp.getId());
+
+        for (CustomParameter parameter : customParameters) {
           if (parameter.isActive()) {
             this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
           }
@@ -338,10 +347,6 @@ public class LoginAction extends BaseAction {
 
   public void setUser(User user) {
     this.user = user;
-  }
-
-  public void setUserManager(UserManager userManager) {
-    this.userManager = userManager;
   }
 
   @Override

@@ -98,53 +98,44 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 
 function checkFiandable() {
   var $fairCompliant = $('.fairCompliant.findable');
+  var isDisseminated = $('.type-findable label.radio-checked').classParam('value');
+
   // If the deliverables is disseminated
-  if($('.findable input').val() == "true") {
+  var channelSelected = $('select.disseminationChannel').val();
+  var inputURL = $('input.deliverableDisseminationUrl').val();
+  // Channel selected is OTHER and valid URL
+  if((channelSelected == "other") && (inputURL != "")) {
     $fairCompliant.addClass('achieved');
-  } else {
+  }
+
+  // If is Sync
+  if($('#fillMetadata input:hidden').val() === "true") {
+    $fairCompliant.addClass('achieved');
+  }
+
+  if(isDisseminated == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 }
 
 function checkAccessible() {
   var $fairCompliant = $('.fairCompliant.accessible');
+  var isOpenAccessVal = $('.type-accessible label.radio-checked').classParam('value');
+
   // Is this deliverable Open Access?
-  if($('.accessible input').val() == "true") {
+  if(isOpenAccessVal == "true") {
     $fairCompliant.addClass('achieved');
-  } else {
+  }
+  if(isOpenAccessVal == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 }
 
 function checkInteroperable() {
   var $fairCompliant = $('.fairCompliant.interoperable');
-  // If the deliverables is disseminated
-  if($('.findable input').val() == "true") {
-    var channelSelected = $('select.disseminationChannel').val();
-    // If is disseminated in CGSpace or Dataverse
-    if((channelSelected == "cgspace") || (channelSelected == "dataverse")) {
-      // If is dissemination URL filled correctly
-      var inputURL = $('input.deliverableDisseminationUrl').val();
-      if(inputURL != "") {
-
-        // If CGSpace
-        if((channelSelected == "cgspace")) {
-          if((inputURL.indexOf("cgspace") >= 0) || (inputURL.indexOf("hdl") >= 0) || (inputURL.indexOf("handle") >= 0)) {
-            $fairCompliant.addClass('achieved');
-          }
-        }
-        // If Dataverse
-        if((channelSelected == "dataverse")) {
-          if(inputURL.indexOf("dataverse") >= 0) {
-            $fairCompliant.addClass('achieved');
-          }
-        }
-      }
-    } else if((channelSelected == "other")) {
-      // If other
-
-    }
-
+  // If the deliverables is disseminated and already connected with MARLO
+  var channelSelected = $('select.disseminationChannel').val();
+  if(channelSelected != "-1") {
     // If is Synced
     if($('#fillMetadata input:hidden').val() === "true") {
       $fairCompliant.addClass('achieved');
@@ -154,22 +145,22 @@ function checkInteroperable() {
 
 function checkReusable() {
   var $fairCompliant = $('.fairCompliant.reusable');
+  var adoptedLicenseVal = $('.type-license label.radio-checked').classParam('value');
+
   // If has the deliverable adopted a license
-  if($('.license input').val() == "true") {
+  if(adoptedLicenseVal == "true") {
     // If is different to "Other"
-    var inputChecked = $('input[name="deliverable.license"]:checked').val();
-    if(!(typeof inputChecked === "undefined")
-        && !((inputChecked == "OTHER") || (inputChecked == "CC_BY_ND") || (inputChecked == "CC_BY_NC_ND"))) {
+    var inputChecked = $('input[name="deliverable.deliverableInfo.license"]:checked').val();
+    if(!(typeof inputChecked === "undefined") && (inputChecked != "OTHER")) {
       $fairCompliant.addClass('achieved');
     } else {
       // Does this license allow modifications?
-      if(($('.licenceModifications input').val() == "true") && ($('input.otherLicense').val() != "")) {
+      if($('input.otherLicense').val() != "") {
         $fairCompliant.addClass('achieved');
-      } else {
-        $fairCompliant.addClass('not-achieved');
       }
     }
-  } else {
+  }
+  if(adoptedLicenseVal == "false") {
     $fairCompliant.addClass('not-achieved');
   }
 
@@ -183,6 +174,8 @@ function checkFAIRCompliant() {
   checkInteroperable();
   checkReusable();
 }
+
+/** Quality Check * */
 function checkQualityAssurance() {
   var qualityAssurance = $("input.qualityAssurance:checked");
   var value = qualityAssurance.val();
@@ -241,7 +234,6 @@ function checkCollection() {
 }
 
 function checkGolData() {
-  console.log("checking golden data");
   var $red = $("#red");
   var $yellow = $("#yellow");
   var $green = $("#green");

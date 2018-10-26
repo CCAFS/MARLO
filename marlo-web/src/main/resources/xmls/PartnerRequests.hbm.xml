@@ -22,21 +22,21 @@
 			<column name="rejected_by" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="institutionType"
 			class="org.cgiar.ccafs.marlo.data.model.InstitutionType" fetch="select">
 			<column name="institution_type_id" />
 		</many-to-one>
 		<property name="partnerName" type="string">
-			<column name="partner_name" length="65535" />
+			<column name="partner_name" sql-type="TEXT" />
 		</property>
 		<property name="acronym" type="string">
 			<column name="acronym" length="45" />
 		</property>
 		<property name="webPage" type="string">
-			<column name="web_page" length="65535" />
+			<column name="web_page" sql-type="TEXT" />
 		</property>
 		<property name="acepted" type="java.lang.Boolean">
 			<column name="acepted" />
@@ -44,14 +44,14 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp">
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 		<property name="rejectJustification" type="string">
-			<column name="reject_justification" length="65535" />
+			<column name="reject_justification" sql-type="TEXT" />
 		</property>
 		<many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" not-null="false" />
@@ -60,7 +60,7 @@
       <column name="is_office" not-null="true" />
     </property>		
     <property name="requestSource" type="string">
-      <column name="request_source" length="65535" />
+      <column name="request_source" sql-type="TEXT" />
     </property>    
     <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
       fetch="select">

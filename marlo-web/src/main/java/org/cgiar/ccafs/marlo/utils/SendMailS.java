@@ -226,17 +226,19 @@ public class SendMailS {
 
     // Get a Properties object
     Properties properties = System.getProperties();
+    String[] ccEmails = null;
     if (ccEmail != null) {
       ccEmail = ccEmail.replaceAll(", " + toEmail, "");
-
+      ccEmails = ccEmail.split(", ");
     }
-    String[] ccEmails = ccEmail.split(", ");
+
 
     ccEmail = new String();
     Set<String> noRepeatEmails = new HashSet<>();
-
-    for (String string : ccEmails) {
-      noRepeatEmails.add(string.trim());
+    if (ccEmails != null) {
+      for (String string : ccEmails) {
+        noRepeatEmails.add(string.trim());
+      }
     }
     for (String string : noRepeatEmails) {
       ccEmail = ccEmail + ", " + string;

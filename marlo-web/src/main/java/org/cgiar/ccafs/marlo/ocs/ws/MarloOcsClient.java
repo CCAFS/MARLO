@@ -65,7 +65,6 @@ public class MarloOcsClient {
     if (agreementOCS.getId() == null) {
       return null;
     } else {
-      System.out.println(agreementOCS.getDescription());
       return agreementOCS;
     }
   }
@@ -87,7 +86,6 @@ public class MarloOcsClient {
     if (resourceInfoOCS.getId() == null) {
       return null;
     } else {
-      System.out.println(resourceInfoOCS.getFirstName());
       return resourceInfoOCS;
     }
   }

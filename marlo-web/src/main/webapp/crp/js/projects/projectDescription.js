@@ -43,6 +43,8 @@ $(document).ready(function() {
     }
 
     var crpProgramId = liaisonInstitutionsPrograms[liasonInstitutionID];
+    console.log('liasonInstitutionID', liasonInstitutionID);
+    console.log('crpProgramId', crpProgramId);
     if(crpProgramId != -1) {
       $('input[value="' + crpProgramId + '"]').prop("checked", true);
       $('#projectFlagshipsBlock input').trigger('change');
@@ -113,28 +115,60 @@ $(document).ready(function() {
   }
 
   $('#projectFlagshipsBlock input').on('change', function() {
-    console.log(flagshipsIds());
+        
+    var urlAction = "clusterByFPsAction";
+    
+    var $inputSelected = $(this);
+    if($inputSelected.hasClass('getCenterOutcomes')){
+      urlAction = "centerOutcomeByProgramAction";
+      $coreSelect = $('select.elementType-centerOutcome')
+    }
+    
+    var selectedPrograms = flagshipsIds();
+    if(!selectedPrograms){
+      return;
+    }
+    
     $.ajax({
-        url: baseURL + '/clusterByFPsAction.do',
+        url: baseURL + '/'+ urlAction+'.do',
         data: {
-          flagshipID: flagshipsIds(),
+          flagshipID: selectedPrograms,
+          programID: selectedPrograms,
           phaseID: phaseID
         },
         beforeSend: function() {
+          $coreSelect.parents('.panel').find('.listComponentLoading').fadeIn();
           $('.loading.clustersBlock').fadeIn();
           $coreSelect.empty();
           $coreSelect.addOption(-1, 'Select an option');
         },
         success: function(data) {
-          console.log(data.clusters);
-          $.each(data.clusters, function(i,e) {
+          var optionsArray = data.clusters;
+          if($inputSelected.hasClass('getCenterOutcomes')){
+            optionsArray = data.outcomes;
+          }
+          // console.log(data.clusters);
+          $.each(optionsArray, function(i,e) {
             $coreSelect.addOption(e.id, e.description);
           });
         },
         complete: function(){
+          $coreSelect.parents('.panel').find('.listComponentLoading').fadeOut();
           $('.loading.clustersBlock').fadeOut();
         }
     });
+  });
+  
+  $('.additionalPrograms input[type="checkbox"], #projectWorking  input[type="checkbox"]').on('click', function(e) {
+    
+    var programID = ($(this).attr('id')).split("-")[1];
+    var liaisonID = getKeyByValue(liaisonInstitutionsPrograms, programID);
+    var selectedLiaisonID = $('select.liaisonInstitutionSelect').val();
+    if(liaisonID == selectedLiaisonID){
+      e.preventDefault();
+      $(this).prop('checked', true);
+      $(this).parent().animateCss('shake');
+    }
   });
 
   // No regional programmatic focus
@@ -224,7 +258,7 @@ $(document).ready(function() {
 
   $statuses.on('change', function(e) {
     var statusID= $(this).val();
-    if(isStatusCancelled(statusID) || isStatusComplete(statusID) || isStatusExtended(statusID)) {
+    if(isStatusCancelled(statusID) || isStatusExtended(statusID)) {
       $statusDescription.show(400);
     } else {
       $statusDescription.hide(400);
@@ -232,7 +266,10 @@ $(document).ready(function() {
   });
 
   $endDate.on('change', changeStatus);
-  $endDate.trigger('change');
+  if (editable){
+    $endDate.trigger('change');
+  }
+  
 
   /** Functions */
 
@@ -245,7 +282,9 @@ $(document).ready(function() {
     if(year <= currentReportingYear) {
       $statuses.removeOption(2);
     } else {
-      $statuses.addOption(2, implementationStatus);
+      if(!reportingActive){
+        $statuses.addOption(2, implementationStatus);
+      }
     }
     $statuses.select2();
   }

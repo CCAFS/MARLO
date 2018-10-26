@@ -115,7 +115,7 @@
         [#-- Monitoring reports --]
         <div id="monitoring-contentOptions" style="display:none">
         
-        [#--Monitoring Outcomes--]
+          [#--Monitoring Outcomes--]
           <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="outcomesContributionSummary" value="centerMonitoringOutcomes"/>
@@ -160,7 +160,7 @@
         [#-- -- -- capdev reports -- -- --]
         <div id="capdev-contentOptions" style="display:none">
         
-        [#--  capdev  report by research area --]
+          [#--  capdev  report by research area --]
           <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>

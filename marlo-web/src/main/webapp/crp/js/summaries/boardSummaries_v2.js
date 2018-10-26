@@ -32,7 +32,8 @@ function attachEvents() {
   $('.removeAllTags').on('click', removeAllTags);
   
   // Update project List
-  $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
+  // $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
+    $('[name="phaseID"]').on('change', changePhaseParameters);
 }
 
 // ************************************************ Functions *******************************************************//
@@ -40,7 +41,7 @@ function attachEvents() {
 function changePhaseParameters(){
   var $parent = $(this).parents('.summariesFiles');
   if($parent.hasClass('allowProjectID')){
-    getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
+    getProjectsByCycleYear($parent, $parent.find('[name="phaseID"]').val());
   }
 }
 
@@ -70,7 +71,7 @@ function selectReport() {
   // Update the project list if necessary
   var $parent = $(this);
   if($parent.hasClass('allowProjectID')){
-    getProjectsByCycleYear($parent, $parent.find('[name="cycle"]').val(), $parent.find('[name="year"]').val());
+    getProjectsByCycleYear($parent, $parent.find('[name="phaseID"]').val());
   }
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
@@ -101,16 +102,16 @@ function selectSummariesSection(e) {
  * @param {Number} year
  * @returns
  */
-function getProjectsByCycleYear(parent, cycle, year) {
+function getProjectsByCycleYear(parent, phaseID) {
   var $parent = $(parent);
   $parent.find(".allProjectsSelect").empty();
   $parent.find('.loading').fadeIn();
   $.ajax({
-      url: baseURL + "/projectList.do?",
+      url: baseURL + "/projectListByPhase.do?",
       type: 'GET',
       data: {
-        cycle: cycle,
-        year: year,
+        // cycle: cycle,
+        // year: year,
         phaseID: phaseID
       },
       success: function(m) {

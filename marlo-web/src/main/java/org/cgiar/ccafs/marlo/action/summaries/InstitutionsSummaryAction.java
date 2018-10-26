@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -53,7 +53,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -87,6 +86,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     return bd.doubleValue();
   }
 
+  private final ResourceManager resourceManager;
+
   // Parameters
   private long startTime;
   HashMap<InstitutionType, Set<Institution>> institutionsPerType = new HashMap<InstitutionType, Set<Institution>>();
@@ -103,8 +104,10 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   InputStream inputStream;
 
   @Inject
-  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
-    super(config, crpManager, phaseManager);
+  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ResourceManager resourceManager, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -138,16 +141,17 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   }
 
   private void createIntitutionsProjectsList() {
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && (p.getProject().getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList())) {
 
-      List<ProjectPartner> projectPartnerList = globalUnitProject.getProject().getProjectPartners().stream()
+    // Status of projects
+    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId()};
+
+    // Get projects with the status defined
+    List<Project> projectList =
+      this.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedYear(), statuses);
+
+    for (Project project : projectList) {
+
+      List<ProjectPartner> projectPartnerList = project.getProjectPartners().stream()
         .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList());
 
@@ -166,7 +170,6 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
       for (ProjectPartner projectPartner : projectPartnerList) {
         if (projectPartner.getInstitution() != null) {
-          Project project = projectPartner.getProject();
           Institution institution = projectPartner.getInstitution();
           InstitutionType institutionType = institution.getInstitutionType();
           List<InstitutionLocation> institutionLocation = institution.getInstitutionsLocations().stream()
@@ -233,13 +236,15 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -390,6 +395,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     } else {
       fileName.append("ProjectLeadingInstitutionsSummary-");
     }
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

@@ -18,11 +18,14 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableUserDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -65,6 +68,23 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
     }
     return null;
 
+  }
+
+  @Override
+  public DeliverableUser findDeliverableUserByPhaseAndDeliverableUser(Phase phase, DeliverableUser deliverableUser) {
+    String query =
+      "select distinct du from DeliverableUser du " + "where phase.id = :phaseId and deliverable.id= :deliverableId "
+        + "and du.firstName = :duFirstName and du.lastName = :duLastName and du.elementId = :duElementId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverableUser.getDeliverable().getId());
+    createQuery.setParameter("duFirstName", deliverableUser.getFirstName());
+    createQuery.setParameter("duLastName", deliverableUser.getLastName());
+    createQuery.setParameter("duElementId", deliverableUser.getElementId());
+
+    Object findSingleResult = super.findSingleResult(DeliverableUser.class, createQuery);
+    DeliverableUser deliverableUserResult = (DeliverableUser) findSingleResult;
+    return deliverableUserResult;
   }
 
   @Override

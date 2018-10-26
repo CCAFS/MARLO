@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ public class CrpParametersAction extends BaseAction {
   private final Logger LOG = LoggerFactory.getLogger(CrpParametersAction.class);
 
   // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private GlobalUnitManager globalUnitManager;
 
 
   private CustomParameterManager crpParameterManager;
@@ -58,12 +57,12 @@ public class CrpParametersAction extends BaseAction {
   private List<GlobalUnit> crps;
 
   @Inject
-  public CrpParametersAction(APConfig config, GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
-    ParameterManager parameterManager) {
+  public CrpParametersAction(APConfig config, GlobalUnitManager globalUnitManager,
+    CustomParameterManager crpParameterManager, ParameterManager parameterManager) {
 
     super(config);
     this.parameterManager = parameterManager;
-    this.crpManager = crpManager;
+    this.globalUnitManager = globalUnitManager;
     this.crpParameterManager = crpParameterManager;
   }
 
@@ -80,22 +79,26 @@ public class CrpParametersAction extends BaseAction {
   public void prepare() throws Exception {
 
     super.prepare();
-    crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
-    for (GlobalUnit crp : crps) {
+    crps = globalUnitManager.findAll().stream().filter(c -> c.isMarlo() && c.isActive()).collect(Collectors.toList());
+    for (GlobalUnit globalUnit : crps) {
 
-      crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      globalUnit.setParameters(
+        globalUnit.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-      List<Parameter> parameters = parameterManager.findAll().stream()
-        .filter(c -> c.getGlobalUnitType() != null && c.getGlobalUnitType().getId() != null
-          && c.getGlobalUnitType().getId() == crp.getGlobalUnitType().getId() && c.getCustomParameters().stream()
-            .filter(p -> p.isActive() && p.getCrp().getId().equals(crp.getId())).collect(Collectors.toList()).isEmpty())
-        .collect(Collectors.toList());
+      List<Parameter> parameters =
+        parameterManager.findAll().stream()
+          .filter(c -> c.getGlobalUnitType() != null && c.getGlobalUnitType().getId() != null
+            && c.getGlobalUnitType().getId() == globalUnit.getGlobalUnitType().getId()
+            && c.getCustomParameters().stream()
+              .filter(p -> p.isActive() && p.getCrp().getId().equals(globalUnit.getId())).collect(Collectors.toList())
+              .isEmpty())
+          .collect(Collectors.toList());
 
       for (Parameter parameter : parameters) {
         CustomParameter customParameter = new CustomParameter();
         customParameter.setParameter(parameter);
         customParameter.setValue(parameter.getDefaultValue());
-        crp.getParameters().add(customParameter);
+        globalUnit.getParameters().add(customParameter);
 
       }
     }
@@ -117,51 +120,41 @@ public class CrpParametersAction extends BaseAction {
   public String save() {
     if (this.canAccessSuperAdmin()) {
 
-      for (GlobalUnit crp : crps) {
+      for (GlobalUnit globalUnit : crps) {
 
-        if (crp.getParameters() == null) {
-          crp.setParameters(new ArrayList<CustomParameter>());
+        if (globalUnit.getParameters() == null) {
+          globalUnit.setParameters(new ArrayList<CustomParameter>());
         }
-        GlobalUnit crpDB = crpManager.getGlobalUnitById(crp.getId());
-        long globalUnitTypeId = crpDB.getGlobalUnitType().getId();
-        for (CustomParameter parameter : crpDB.getCustomParameters().stream().filter(c -> c.isActive())
+        GlobalUnit globalUnitDB = globalUnitManager.getGlobalUnitById(globalUnit.getId());
+        // long globalUnitTypeId = globalUnit = globalUnitDB.getGlobalUnitType().getId();
+        for (CustomParameter customParameter : globalUnitDB.getCustomParameters().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
-          if (!crp.getParameters().contains(parameter)) {
-            LOG.debug("CRP Parameter key: " + parameter.getParameter().getKey());
-            crpParameterManager.deleteCustomParameter(parameter.getId());
+          if (!globalUnit.getParameters().contains(customParameter)) {
+            LOG.debug("CRP Parameter key: " + customParameter.getParameter().getKey());
+            crpParameterManager.deleteCustomParameter(customParameter.getId());
           }
         }
 
-        for (CustomParameter parameter : crp.getParameters()) {
+        for (CustomParameter customParameterClient : globalUnit.getParameters()) {
 
-          if (parameter != null) {
-            if (parameter.getId() == null || parameter.getId().intValue() == -1) {
-              parameter.setId(null);
-              parameter.setActiveSince(new Date());
-              parameter.setActive(true);
-              parameter.setCreatedBy(this.getCurrentUser());
-              parameter.setCrp(crpDB);
+          if (customParameterClient != null) {
+            if (customParameterClient.getId() == null || customParameterClient.getId().intValue() == -1) {
+              customParameterClient.setId(null);
+              customParameterClient.setCrp(globalUnitDB);
 
-              Parameter parameterDB = parameterManager.getParameterById(parameter.getParameter().getId());
+              Parameter parameterDB = parameterManager.getParameterById(customParameterClient.getParameter().getId());
 
-              parameter.setParameter(parameterDB);
-              parameter.setModificationJustification("");
-              parameter.setModifiedBy(this.getCurrentUser());
-              crpParameterManager.saveCustomParameter(parameter);
+              customParameterClient.setParameter(parameterDB);
+              customParameterClient = crpParameterManager.saveCustomParameter(customParameterClient);
             } else {
-
-              CustomParameter customParameterDB = crpParameterManager.getCustomParameterById(parameter.getId());
-              parameter.setActiveSince(customParameterDB.getActiveSince());
-              parameter.setActive(true);
-              parameter.setCreatedBy(customParameterDB.getCreatedBy());
-              parameter.setCrp(crpDB);
-              Parameter parameterDB =
-                // parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId);
-                parameterManager.getParameterById(parameter.getParameter().getId());
-              parameter.setParameter(parameterDB);
-              parameter.setModificationJustification("");
-              parameter.setModifiedBy(this.getCurrentUser());
-              crpParameterManager.saveCustomParameter(parameter);
+              CustomParameter customParameterDb =
+                crpParameterManager.getCustomParameterById(customParameterClient.getId());
+              // Parameter parameterDB =
+              // // parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId);
+              // parameterManager.getParameterById(customParameterClient.getParameter().getId());
+              // customParameterDb.setParameter(parameterDB);
+              customParameterDb.setValue(customParameterClient.getValue());
+              customParameterDb = crpParameterManager.saveCustomParameter(customParameterDb);
             }
 
           }

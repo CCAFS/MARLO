@@ -403,11 +403,14 @@ public class CrpIndicatorsAction extends BaseAction {
     }
 
     currentLiaisonInstitution = liaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
-    currentLiaisonInstitution.setActiveSince(new Date());
-    currentLiaisonInstitution.setModifiedBy(this.getCurrentUser());
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPLIAISON_INDICATORS_REPORT);
+    /**
+     * The following is required because we need to update something on the @IpLiaisonInstitution if we want a row
+     * created in the auditlog table.
+     */
+    this.setModificationJustification(currentLiaisonInstitution);
     liaisonInstitutionManager.save(currentLiaisonInstitution, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();

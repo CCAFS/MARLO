@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -164,7 +163,6 @@ public class GuestUsersAction extends BaseAction {
 
       newUser = new User();
 
-      newUser.setActiveSince(new Date());
       newUser.setFirstName(user.getFirstName());
       newUser.setLastName(user.getLastName());
       newUser.setUsername(user.getUsername());
@@ -172,14 +170,12 @@ public class GuestUsersAction extends BaseAction {
       newUser.setCgiarUser(user.isCgiarUser());
       newUser.setAutoSave(user.isAutoSave());
       newUser.setEmail(user.getEmail());
-      newUser.setModificationJustification(" ");
-      newUser.setModifiedBy(this.getCurrentUser());
 
 
       if (!user.isCgiarUser()) {
         newUser.setPassword(user.getPassword());
       }
-      newUser = userManager.saveUser(newUser, this.getCurrentUser());
+      newUser = userManager.saveUser(newUser);
 
 
     } else {
@@ -188,13 +184,11 @@ public class GuestUsersAction extends BaseAction {
 
       newUser.setActive(user.isActive());
       newUser.setAutoSave(user.isAutoSave());
-      newUser.setModificationJustification(" ");
-      newUser.setModifiedBy(this.getCurrentUser());
 
       if (!user.isCgiarUser()) {
         newUser.setPassword(user.getPassword());
       }
-      newUser = userManager.saveUser(newUser, this.getCurrentUser());
+      newUser = userManager.saveUser(newUser);
     }
 
 
@@ -208,11 +202,6 @@ public class GuestUsersAction extends BaseAction {
             CrpUser newCrpUser = new CrpUser();
             newCrpUser.setCrp(crp);
             newCrpUser.setUser(newUser);
-            newCrpUser.setActiveSince(new Date());
-            newCrpUser.setCreatedBy(this.getCurrentUser());
-            newCrpUser.setModifiedBy(this.getCurrentUser());
-            newCrpUser.setModificationJustification(" ");
-            newCrpUser.setActive(true);
 
             newCrpUser = crpUserManager.saveCrpUser(newCrpUser);
 
@@ -288,12 +277,12 @@ public class GuestUsersAction extends BaseAction {
 
     // Send pdf
     String contentType = "application/pdf";
-    String fileName = "Introduction_To_MARLO_v2.2.pdf";
+    String fileName = "Introduction_To_MARLO_v2.4.pdf";
     byte[] buffer = null;
     InputStream inputStream = null;
 
     try {
-      inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
+      inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.4.pdf");
       buffer = readFully(inputStream);
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block

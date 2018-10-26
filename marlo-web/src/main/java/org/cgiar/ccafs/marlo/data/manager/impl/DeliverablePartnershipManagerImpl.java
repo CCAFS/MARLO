@@ -96,11 +96,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
     if (deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
-      deliverablePartnershipAdd.setActive(true);
-      deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
-      deliverablePartnershipAdd.setCreatedBy(deliverablePartnership.getCreatedBy());
-      deliverablePartnershipAdd.setModificationJustification(deliverablePartnership.getModificationJustification());
-      deliverablePartnershipAdd.setModifiedBy(deliverablePartnership.getModifiedBy());
       deliverablePartnershipAdd.setPhase(phase);
       deliverablePartnershipAdd.setDeliverable(deliverablePartnership.getDeliverable());
       deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
@@ -124,11 +119,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public DeliverablePartnership copyDeliverablePartnership(DeliverablePartnership deliverablePartnership, Phase phase) {
     DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
-    deliverablePartnershipAdd.setActive(true);
-    deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
-    deliverablePartnershipAdd.setCreatedBy(deliverablePartnership.getCreatedBy());
-    deliverablePartnershipAdd.setModificationJustification(deliverablePartnership.getModificationJustification());
-    deliverablePartnershipAdd.setModifiedBy(deliverablePartnership.getModifiedBy());
     deliverablePartnershipAdd.setPhase(phase);
     deliverablePartnershipAdd.setDeliverable(deliverablePartnership.getDeliverable());
     deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
@@ -145,15 +135,22 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
 
-
     DeliverablePartnership deliverablePartnership = this.getDeliverablePartnershipById(deliverablePartnershipId);
     Phase currentPhase = phaseDAO.find(deliverablePartnership.getPhase().getId());
-    deliverablePartnership.setActive(false);
-    deliverablePartnershipDAO.save(deliverablePartnership);
+    deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnership.getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (deliverablePartnership.getPhase().getNext() != null) {
         this.deleteDeliverablePartnership(deliverablePartnership.getPhase().getNext(),
           deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
+      }
+    }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteDeliverablePartnership(upkeepPhase, deliverablePartnership.getDeliverable().getId(),
+            deliverablePartnership);
+        }
       }
     }
   }
@@ -186,11 +183,14 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     List<DeliverablePartnership> deliverablePartnerships =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
         projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
-
-    for (DeliverablePartnership dePartnership : deliverablePartnerships) {
-      dePartnership.setActive(false);
-      deliverablePartnershipDAO.save(dePartnership);
+    if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
+      for (DeliverablePartnership dePartnership : deliverablePartnerships) {
+        if (dePartnership != null && dePartnership.getId() != null) {
+          deliverablePartnershipDAO.deleteDeliverablePartnership(dePartnership.getId());
+        }
+      }
     }
+
 
     if (phase.getNext() != null) {
       this.deleteDeliverablePartnership(phase.getNext(), deliverableID, deliverablePartnership);
@@ -205,6 +205,12 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public List<DeliverablePartnership> findAll() {
     return deliverablePartnershipDAO.findAll();
+  }
+
+  @Override
+  public List<DeliverablePartnership> findByDeliverablePhaseAndType(long deliverableId, long phaseId,
+    String partnerType) {
+    return deliverablePartnershipDAO.findByDeliverablePhaseAndType(deliverableId, phaseId, partnerType);
   }
 
   @Override
@@ -268,6 +274,15 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
           deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
       }
     }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addDeliverablePartnershipPhase(upkeepPhase, deliverablePartnership.getDeliverable().getId(),
+            deliverablePartnership);
+        }
+      }
+    }
     return dePartnership;
   }
 
@@ -280,6 +295,15 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       if (partnershipDBUpdated.getPhase().getNext() != null) {
         this.updateDeliverablePartnershipPhase(partnershipDBUpdated.getPhase().getNext(),
           partnershipDBUpdated.getDeliverable().getId(), partnershipDBUpdated, partnershipDBpreview);
+      }
+    }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.updateDeliverablePartnershipPhase(upkeepPhase, partnershipDBUpdated.getDeliverable().getId(),
+            partnershipDBUpdated, partnershipDBpreview);
+        }
       }
     }
     return dePartnership;
@@ -338,11 +362,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
     if (deliverablePartnershipsUpdated.isEmpty() && !deliverablePartnershipsDB.isEmpty()) {
       for (DeliverablePartnership deliverablePartnershipDB : deliverablePartnershipsDB) {
-        deliverablePartnershipDB.setActive(true);
-        deliverablePartnershipDB.setActiveSince(partnershipDBUpdated.getActiveSince());
-        deliverablePartnershipDB.setCreatedBy(partnershipDBUpdated.getCreatedBy());
-        deliverablePartnershipDB.setModificationJustification(partnershipDBUpdated.getModificationJustification());
-        deliverablePartnershipDB.setModifiedBy(partnershipDBUpdated.getModifiedBy());
         deliverablePartnershipDB.setPhase(phase);
         deliverablePartnershipDB.setDeliverable(partnershipDBUpdated.getDeliverable());
         deliverablePartnershipDB.setPartnerType(partnershipDBUpdated.getPartnerType());

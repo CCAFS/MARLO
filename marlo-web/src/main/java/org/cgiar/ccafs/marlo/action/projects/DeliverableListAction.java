@@ -17,11 +17,9 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -61,40 +59,28 @@ public class DeliverableListAction extends BaseAction {
   private static final long serialVersionUID = -823169163612346982L;
 
 
-  private List<Integer> allYears;
-
+  // Managers
   private GlobalUnitManager crpManager;
-
-
-  private long deliverableID;
-
   private DeliverableManager deliverableManager;
-
-
-  private DeliverableFundingSourceManager deliverableFundingSourceManager;
-  private FundingSourceManager fundingSourceManager;
-  // Front-end
-  private List<Deliverable> deliverables;
-  private List<DeliverableType> deliverablesType;
-
   private PhaseManager phaseManager;
   private DeliverableTypeManager deliverableTypeManager;
-
   private DeliverableInfoManager deliverableInfoManager;
+  private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
+
+  // Front-end
+  private List<Integer> allYears;
+  private long deliverableID;
+  private List<Deliverable> deliverables;
+  private List<DeliverableType> deliverablesType;
   private GlobalUnit loggedCrp;
   private Project project;
-
   private long projectID;
-  // Managers
-  private ProjectManager projectManager;
-
-  private SectionStatusManager sectionStatusManager;
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
-    DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager, FundingSourceManager fundingSourceManager) {
+    DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -103,8 +89,6 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableManager = deliverableManager;
     this.phaseManager = phaseManager;
-    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
-    this.fundingSourceManager = fundingSourceManager;
   }
 
   @Override
@@ -114,32 +98,30 @@ public class DeliverableListAction extends BaseAction {
 
     deliverable.setProject(project);
     deliverable.setCreateDate(new Date());
-    deliverable.setCreatedBy(this.getCurrentUser());
-    deliverable.setActive(true);
-    deliverable.setActiveSince(new Date());
     deliverable.setPhase(this.getActualPhase());
     deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
 
     Phase phase = this.getActualPhase();
-    boolean hasNext = true;
-    while (hasNext) {
-
-      phase = phaseManager.getPhaseById(phase.getId());
-      DeliverableInfo deliverableInfo = new DeliverableInfo();
-      deliverableInfo.setDeliverable(deliverable);
-      deliverableInfo.setPhase(phase);
-      deliverableInfo.setYear(this.getCurrentCycleYear());
-      deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-      deliverableInfo.setModifiedBy(this.getCurrentUser());
-      deliverableInfo.setModificationJustification("New expected deliverable created");
-      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
-
-
-      if (phase.getNext() != null) {
-        phase = phase.getNext();
-      } else {
-        hasNext = false;
+    phase = phaseManager.getPhaseById(phase.getId());
+    DeliverableInfo deliverableInfo = new DeliverableInfo();
+    deliverableInfo.setDeliverable(deliverable);
+    deliverableInfo.setPhase(phase);
+    deliverableInfo.setYear(this.getCurrentCycleYear());
+    deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+    deliverableInfo.setModificationJustification("New expected deliverable created");
+    deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+    // Replicate only for Planning
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addDeliverablePhase(phase.getNext(), deliverable);
+        }
+      }
+    } else {
+      if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+        this.addDeliverablePhase(phase.getNext(), deliverable);
       }
     }
 
@@ -149,6 +131,20 @@ public class DeliverableListAction extends BaseAction {
     }
 
     return INPUT;
+  }
+
+  public void addDeliverablePhase(Phase phase, Deliverable deliverable) {
+    phase = phaseManager.getPhaseById(phase.getId());
+    DeliverableInfo deliverableInfo = new DeliverableInfo();
+    deliverableInfo.setDeliverable(deliverable);
+    deliverableInfo.setPhase(phase);
+    deliverableInfo.setYear(this.getCurrentCycleYear());
+    deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+    deliverableInfo.setModificationJustification("New expected deliverable created");
+    deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+    if (phase.getNext() != null) {
+      this.addDeliverablePhase(phase.getNext(), deliverable);
+    }
   }
 
   public boolean canEdit(long deliverableID) {
@@ -183,7 +179,6 @@ public class DeliverableListAction extends BaseAction {
     projectID = deliverable.getProject().getId();
 
     if (deliverable != null) {
-      deliverable.setActiveSince(new Date());
       deliverableManager.saveDeliverable(deliverable);
       deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));
@@ -205,6 +200,11 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
+  /**
+   * @param open: Load Ongoing and Extended if true
+   * @param closed: Load Cancelled if true, Completed if false
+   * @return
+   */
   public List<Deliverable> getDeliverables(boolean open, boolean closed) {
 
     try {
@@ -222,7 +222,7 @@ public class DeliverableListAction extends BaseAction {
             .collect(Collectors.toList());
           return openA;
         } else {
-
+          // Reporting
           List<Deliverable> openA = deliverables.stream()
             .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
               && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
@@ -233,23 +233,25 @@ public class DeliverableListAction extends BaseAction {
                   || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
             .collect(Collectors.toList());
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+          if (closed) {
+            openA.addAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+                && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
-                .getCurrentCycleYear()
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+            openA.addAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                  .getCurrentCycleYear()
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
+          }
 
           openA.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase())
             .isRequieriedReporting(this.getCurrentCycleYear())
@@ -303,24 +305,26 @@ public class DeliverableListAction extends BaseAction {
               .collect(Collectors.toList());
           }
 
+          if (closed) {
+            openA.removeAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+                && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
 
-          openA.removeAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+            openA.removeAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                  .getCurrentCycleYear()
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
+          }
 
-          openA.removeAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
-                .getCurrentCycleYear()
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
 
           openA.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase())
             .isRequieriedReporting(this.getCurrentCycleYear())
@@ -382,16 +386,16 @@ public class DeliverableListAction extends BaseAction {
 
         if (project.getDeliverables() != null) {
 
-          List<DeliverableInfo> infos = phase.getDeliverableInfos()
-            .stream().filter(c -> c.getDeliverable().getProject() != null
-              && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
-            .collect(Collectors.toList());
+          List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
           deliverables = new ArrayList<>();
-          for (DeliverableInfo deliverableInfo : infos) {
-            Deliverable deliverable = deliverableInfo.getDeliverable();
-            deliverable.setDeliverableInfo(deliverableInfo);
-            deliverables.add(deliverable);
+          if (infos != null && !infos.isEmpty()) {
+            for (DeliverableInfo deliverableInfo : infos) {
+              Deliverable deliverable = deliverableInfo.getDeliverable();
+              deliverable.setDeliverableInfo(deliverableInfo);
+              deliverables.add(deliverable);
+            }
           }
+
 
           for (Deliverable deliverable : deliverables) {
             deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));

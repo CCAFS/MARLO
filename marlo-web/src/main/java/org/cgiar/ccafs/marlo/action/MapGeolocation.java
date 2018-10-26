@@ -87,7 +87,6 @@ public class MapGeolocation extends BaseAction {
 
         StringBuilder jsonNew = new StringBuilder();
         String output;
-        System.out.println("Output from Server .... \n");
         while ((output = br.readLine()) != null) {
           jsonNew.append(output);
         }

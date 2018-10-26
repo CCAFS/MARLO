@@ -21,8 +21,10 @@
       [#if area.researchPrograms?has_content]
       <ul>
         [#list area.researchPrograms as program]
-          [#assign isProgramActive = (program.id == crpProgramID)/]           
-          <li class="${isProgramActive?string('active','')}"> <a href="[@s.url][@s.param name="crpProgramID" value=program.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${program.name}</a> </li>
+          [#if program.active]
+            [#assign isProgramActive = (program.id == crpProgramID)/]           
+            <li class="${isProgramActive?string('active','')}"> <a href="[@s.url][@s.param name="crpProgramID" value=program.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${program.name}</a> </li>
+          [/#if]
         [/#list]
       </ul>
       [#else]

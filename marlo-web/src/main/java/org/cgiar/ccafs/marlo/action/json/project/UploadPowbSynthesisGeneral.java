@@ -65,6 +65,7 @@ public class UploadPowbSynthesisGeneral extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    fileFileName = fileFileName.replace(' ', '_');
     FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getFundingSourceFileResearchPath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
     FileManager.copyFile(file, this.getFundingSourceFileResearchPath() + fileDB.getFileName());

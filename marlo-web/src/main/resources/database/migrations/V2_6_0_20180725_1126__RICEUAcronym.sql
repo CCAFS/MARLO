@@ -1,0 +1,1 @@
+UPDATE global_units set acronym = 'Rice' where id = 16;

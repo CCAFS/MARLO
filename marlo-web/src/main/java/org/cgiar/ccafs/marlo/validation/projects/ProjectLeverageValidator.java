@@ -49,8 +49,8 @@ public class ProjectLeverageValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.LEVERAGES.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
+      + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -59,7 +59,7 @@ public class ProjectLeverageValidator extends BaseValidator {
   public void validate(BaseAction action, Project project, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(project, action.getCrpID(),action);
+      Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
@@ -83,14 +83,26 @@ public class ProjectLeverageValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
-          if (project.getLeverages().get(c).getCrpProgram() != null) {
-            this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
+          if (action.isPhaseOne()) {
+            if (project.getLeverages().get(c).getIpProgram() != null) {
+              this.validateFlagship(action, project.getLeverages().get(c).getIpProgram().getId(), c);
+            } else {
+              action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
+              action.addMissingField("project.leverages[" + c + ".flagship");
+              action.getInvalidFields().put("input-project.leverages[" + c + "].ipProgram.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           } else {
-            action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
-            action.addMissingField("project.leverages[" + c + ".flagship");
-            action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
-              InvalidFieldsMessages.EMPTYFIELD);
+            if (project.getLeverages().get(c).getCrpProgram() != null) {
+              this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
+            } else {
+              action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
+              action.addMissingField("project.leverages[" + c + ".flagship");
+              action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
+
 
           this.validateBudget(action, project.getLeverages().get(c).getBudget(), c);
 
@@ -107,7 +119,7 @@ public class ProjectLeverageValidator extends BaseValidator {
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.LEVERAGES.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.LEVERAGES.getStatus(), action);
   }
 
 
@@ -124,8 +136,14 @@ public class ProjectLeverageValidator extends BaseValidator {
     if (flagship.longValue() == -1 || flagship == null) {
       action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
       action.addMissingField("project.leverages[" + c + ".flagship");
-      action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
-        InvalidFieldsMessages.EMPTYFIELD);
+      if (action.isPhaseOne()) {
+        action.getInvalidFields().put("input-project.leverages[" + c + "].ipProgram.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
     }
   }
 

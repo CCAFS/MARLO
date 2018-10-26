@@ -57,6 +57,16 @@ public interface ProjectDAO {
    */
   public List<Project> findAll();
 
+  /**
+   * This method gets a list of project that are active by a given Phase and statuses identifier. With the start and end
+   * date of the project within the given year.
+   * year = 0 ignore year filter
+   * status = empty ignore status filter
+   * 
+   * @return a list from Project null if no exist records
+   */
+  public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses);
+
   public List<Project> getCompletedProjects(long crpId, long idPhase);
 
   public List<Project> getNoPhaseProjects(long crpId, Phase phase);

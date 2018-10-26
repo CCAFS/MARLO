@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,10 +64,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
     CenterDeliverable supportingDoc = new CenterDeliverable();
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     supportingDoc.setCapdev(capdev);
-    supportingDoc.setActive(true);
-    supportingDoc.setActiveSince(new Date());
-    supportingDoc.setCreatedBy(this.getCurrentUser());
-    supportingDoc.setModifiedBy(this.getCurrentUser());
     deliverableID = centerDeliverableSErvice.saveDeliverable(supportingDoc).getId();
 
     return SUCCESS;
@@ -78,10 +73,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
   @Override
   public String delete() {
     long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("deliverableID")));
-    CenterDeliverable supportingDoc = centerDeliverableSErvice.getDeliverableById(supportingDocID);
-    supportingDoc.setActive(false);
-    supportingDoc.setModifiedBy(this.getCurrentUser());
-    centerDeliverableSErvice.saveDeliverable(supportingDoc);
+    centerDeliverableSErvice.deleteDeliverable(supportingDocID);
     return SUCCESS;
   }
 
@@ -113,7 +105,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    System.out.println(this.getRequest().getRequestURL());
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));

@@ -29,7 +29,7 @@
 		
 		<action name="{center}/submitCapDev"
       class="org.cgiar.ccafs.marlo.action.center.capdev.CapDevSubmissionAction">
-      <result name="input">/WEB-INF/center/views/capDev/detailCapdev.ftl
+      <result name="input">/WEB-INF/center/views/capDev/capdevDescription.ftl
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/detailCapdev</param>
@@ -54,7 +54,7 @@
 		<action name="{center}/detailCapdev"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction">
 			<interceptor-ref name="centerCapdevStack" />
-			<result name="input">/WEB-INF/center/views/capDev/detailCapdev.ftl
+			<result name="input">/WEB-INF/center/views/capDev/capdevDescription.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/detailCapdev</param>
@@ -115,7 +115,7 @@
 		<action name="{center}/descriptionCapdev"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction">
 			<interceptor-ref name="centerCapdevStack" />
-			<result name="input">/WEB-INF/center/views/capDev/capdevDescription.ftl
+			<result name="input">/WEB-INF/center/views/capDev/capdevAditional.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/descriptionCapdev</param>

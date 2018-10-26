@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.NoPhaseException;
@@ -103,6 +104,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean editParameter = false;
     boolean canSwitchProject = false;
 
+
     // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
 
 
@@ -123,7 +125,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
           List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
             .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
-              && c.getYear() == baseAction.getActualPhase().getYear())
+              && c.getYear() == baseAction.getActualPhase().getYear() && c.getUpkeep())
             .collect(Collectors.toList());
           if (phases.size() > 0) {
             baseAction.setPhaseID(phases.get(0).getId());
@@ -161,7 +163,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
             canSwitchProject = true;
           }
 
-          if (baseAction.isSubmit(projectId)) {
+          if (baseAction.isSubmit(projectId) && !baseAction.getActualPhase().getUpkeep()) {
             canEdit = false;
 
           }
@@ -189,18 +191,24 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
+        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+          System.out.println(cal.get(Calendar.YEAR));
+          System.out.println(baseAction.getActualPhase().getYear());
+          if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+            if (baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+              canEdit = false;
+              canSwitchProject = false;
+            }
+          }
+        }
+
         String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
         if (baseAction.isReportingActive()
           && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
           canEdit = false;
-        }
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
-
-          || project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-          canEdit = false;
-          baseAction.setEditStatus(true);
         }
         if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
           .equals(APConstants.REPORTING)
@@ -239,7 +247,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
         // Check the permission if user want to edit or save the form
-        if (editParameter || parameters.get("save") != null) {
+        if (editParameter || parameters.get("save").isDefined()) {
           hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
             : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
         }
@@ -253,6 +261,17 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           baseAction.setCanEditPhase(false);
         }
 
+        // Check if is a Shared project (Crp to Center)
+        if (!globalUnitProject.isOrigin()) {
+          canEdit = false;
+          if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.SHARED_PROJECT_PERMISSION, params))) {
+              canEdit = true;
+            }
+          }
+
+        }
+
         if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
           if (baseAction.isReportingActive()) {
             canEdit = false;
@@ -262,9 +281,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           baseAction.setEditStatus(false);
         }
         // Set the variable that indicates if the user can edit the section
-        baseAction.setEditableParameter(editParameter && canEdit && globalUnitProject.isOrigin());
+        baseAction.setEditableParameter(editParameter && canEdit);
         baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
-        baseAction.setCanEdit(canEdit && globalUnitProject.isOrigin());
+        baseAction.setCanEdit(canEdit);
         baseAction.setEditStatus(baseAction.isEditStatus() && globalUnitProject.isOrigin());
 
       } else {

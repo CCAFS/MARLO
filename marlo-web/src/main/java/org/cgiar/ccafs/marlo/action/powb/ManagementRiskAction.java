@@ -46,7 +46,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,8 +132,8 @@ public class ManagementRiskAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -250,9 +249,11 @@ public class ManagementRiskAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(
-            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getInstitution() == null)
+            .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -332,11 +333,6 @@ public class ManagementRiskAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getPowbManagementRisk() == null) {
           PowbManagementRisk managementRisk = new PowbManagementRisk();
-          managementRisk.setActive(true);
-          managementRisk.setActiveSince(new Date());
-          managementRisk.setCreatedBy(this.getCurrentUser());
-          managementRisk.setModifiedBy(this.getCurrentUser());
-          managementRisk.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setPowbManagementRisk(managementRisk);
           managementRisk.setPowbSynthesis(powbSynthesis);
@@ -395,9 +391,12 @@ public class ManagementRiskAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
+      /**
+       * The following is required because we need to update something on the PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();

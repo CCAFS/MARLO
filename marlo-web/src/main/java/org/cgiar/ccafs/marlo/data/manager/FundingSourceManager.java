@@ -14,7 +14,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
+import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSummary;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
@@ -53,6 +56,8 @@ public interface FundingSourceManager {
   public List<FundingSource> findAll();
 
 
+  public List<FundingSourceSummary> getClosedFundingSourceSummaries(GlobalUnit globalUnit, Phase phase);
+
   public List<FundingSource> getFundingSource(long userId, String crp);
 
   /**
@@ -62,6 +67,8 @@ public interface FundingSourceManager {
    * @return a FundingSource object.
    */
   public FundingSource getFundingSourceById(long fundingSourceID);
+
+  public List<FundingSourceSummary> getOngoingFundingSourceSummaries(GlobalUnit globalUnit, Phase phase);
 
   /**
    * This method saves the information of the given fundingSource
@@ -73,7 +80,8 @@ public interface FundingSourceManager {
    */
   public FundingSource saveFundingSource(FundingSource fundingSource);
 
-  public FundingSource saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName, Phase phase);
+  public FundingSource saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName,
+    Phase phase);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -82,7 +90,7 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSources(String query, int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that use the specific finance code
@@ -100,8 +108,8 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
-    long phaseID);
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
+    int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -112,7 +120,9 @@ public interface FundingSourceManager {
    * @return the list of FundingSource
    */
 
-  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID);
+  public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
+    long phaseID);
+
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -125,6 +135,5 @@ public interface FundingSourceManager {
 
   public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year,
     long crpID);
-
 
 }

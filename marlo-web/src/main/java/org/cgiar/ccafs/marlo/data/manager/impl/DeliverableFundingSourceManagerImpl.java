@@ -64,13 +64,8 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
       .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
         && deliverableFundingSource.getFundingSource().getId().equals(c.getFundingSource().getId()))
       .collect(Collectors.toList());
-    if ( deliverableFundingSources.isEmpty()) {
+    if (deliverableFundingSources.isEmpty()) {
       DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
-      deliverableFundingSourceAdd.setActive(true);
-      deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
-      deliverableFundingSourceAdd.setCreatedBy(deliverableFundingSource.getCreatedBy());
-      deliverableFundingSourceAdd.setModificationJustification(deliverableFundingSource.getModificationJustification());
-      deliverableFundingSourceAdd.setModifiedBy(deliverableFundingSource.getModifiedBy());
       deliverableFundingSourceAdd.setPhase(phase);
       deliverableFundingSourceAdd.setDeliverable(deliverableFundingSource.getDeliverable());
       deliverableFundingSourceAdd.setFundingSource(deliverableFundingSource.getFundingSource());
@@ -88,11 +83,6 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   public DeliverableFundingSource copyDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource,
     Phase phase) {
     DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
-    deliverableFundingSourceAdd.setActive(true);
-    deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
-    deliverableFundingSourceAdd.setCreatedBy(deliverableFundingSource.getCreatedBy());
-    deliverableFundingSourceAdd.setModificationJustification(deliverableFundingSource.getModificationJustification());
-    deliverableFundingSourceAdd.setModifiedBy(deliverableFundingSource.getModifiedBy());
     deliverableFundingSourceAdd.setPhase(phase);
     deliverableFundingSourceAdd.setDeliverable(deliverableFundingSource.getDeliverable());
     deliverableFundingSourceAdd.setFundingSource(deliverableFundingSource.getFundingSource());
@@ -103,16 +93,29 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   @Override
   public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
 
-
     DeliverableFundingSource deliverableFundingSource =
       this.getDeliverableFundingSourceById(deliverableFundingSourceId);
-    deliverableFundingSource.setActive(false);
-    this.saveDeliverableFundingSource(deliverableFundingSource);
+
+    deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSource.getId());
+
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    boolean isPublication = deliverableFundingSource.getDeliverable().getIsPublication() != null
+      && deliverableFundingSource.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
         this.deleteDeliverableFundingSource(deliverableFundingSource.getPhase().getNext(),
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteDeliverableFundingSource(upkeepPhase, deliverableFundingSource.getDeliverable().getId(),
+            deliverableFundingSource);
+        }
       }
     }
 
@@ -129,9 +132,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
       .collect(Collectors.toList());
 
     for (DeliverableFundingSource deFundingSource : fundingSources) {
-      deFundingSource.setActive(false);
-      deliverableFundingSourceDAO.save(deFundingSource);
-
+      deliverableFundingSourceDAO.deleteDeliverableFundingSource(deFundingSource.getId());
     }
 
     if (phase.getNext() != null) {
@@ -165,12 +166,25 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
 
     DeliverableFundingSource deliverableFundingSourceDB = deliverableFundingSourceDAO.save(deliverableFundingSource);
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+    boolean isPublication = deliverableFundingSourceDB.getDeliverable().getIsPublication() != null
+      && deliverableFundingSourceDB.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
         this.addDeliverableFundingSourcePhase(deliverableFundingSource.getPhase().getNext(),
           deliverableFundingSource.getDeliverable().getId(), deliverableFundingSource);
       }
     }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.addDeliverableFundingSourcePhase(upkeepPhase, deliverableFundingSource.getDeliverable().getId(),
+            deliverableFundingSource);
+        }
+      }
+    }
+
     return deliverableFundingSourceDB;
   }
 

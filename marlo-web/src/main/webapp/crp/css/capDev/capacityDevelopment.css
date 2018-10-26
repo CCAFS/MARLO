@@ -252,8 +252,8 @@ a button.downloadButtonHome:hover{
 }
 
 .participantMessage{
-	text-align: center;
-	margin: 0 3%  2%;
+	/* text-align: center; */
+	/* margin: 0 3%  2%; */
 }
 
 .warning{
@@ -414,4 +414,28 @@ img.capDevIconDisable{
 
 .listSelectBlock {
   padding-left: 8px;
+}
+
+.buttons-field {
+  width: 40%;
+  float: right;
+  /* margin-top: 22px; */
+  text-align: center;
+}
+
+.url-field {
+  width: 59%;
+  float: left;
+}
+
+li.discipline {
+  position: relative;
+}
+
+li.targetGroup {
+  position: relative;
+}
+
+li.capdevPartner {
+  position: relative;
 }

@@ -70,5 +70,4 @@ public interface InstitutionTypeManager {
    */
   public InstitutionType saveInstitutionType(InstitutionType institutionType);
 
-
 }

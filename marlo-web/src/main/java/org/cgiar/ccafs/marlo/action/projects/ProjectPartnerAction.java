@@ -34,8 +34,13 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPartnershipResearchPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -55,13 +60,18 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
+import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -83,9 +93,9 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,15 +141,13 @@ public class ProjectPartnerAction extends BaseAction {
     return baos.toByteArray();
   }
 
+  // Managers
   private final ProjectPartnerManager projectPartnerManager;
-
   private final ProjectPartnerPersonManager projectPartnerPersonManager;
-
   private DeliverablePartnershipManager deliverablePartnershipManager;
-
   private final ProjectPartnerContributionManager projectPartnerContributionManager;
-
-  private final ProjectPartnerOverallManager projectPartnerOverallManager;
+  private final ProjectPartnerPartnershipManager projectPartnerPartnershipManager;
+  private final ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager;
   private final InstitutionManager institutionManager;
   private final InstitutionTypeManager institutionTypeManager;
   private final LocElementManager locationManager;
@@ -154,28 +162,31 @@ public class ProjectPartnerAction extends BaseAction {
   private final GlobalUnitManager crpManager;
   private final CrpUserManager crpUserManager;
   private final GlobalUnitProjectManager globalUnitProjectManager;
+  private final RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
+  private final RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private final RepIndRegionManager repIndRegionManager;
+  private final ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager;
+  private final AuditLogManager auditLogManager;
 
 
+  // Variables
   private final ProjectPartnersValidator projectPartnersValidator;
-
   private long projectID;
   private GlobalUnit loggedCrp;
   private Project project;
-  private ProjectComponentLesson projectComponentLesson;
-
   // Model for the view
   private List<InstitutionType> intitutionTypes;
   private Map<String, String> partnerPersonTypes; // List of partner person types (CP, PL, PC).
   private List<LocElement> countries;
-
   private List<Institution> allInstitutions; // Is used to list all the partner institutions that have the system.
   private List<Institution> allPPAInstitutions; // Is used to list all the PPA partners institutions
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
   private List<User> allUsers; // will be used to list all the project leaders that have the system.
+  private List<RepIndPhaseResearchPartnership> allRepIndResearchPhases;
+  private List<RepIndGeographicScope> allRepIndGeographicScope;
+  private List<RepIndRegion> allRepIndRegions;
   private Role plRole;
   private Role pcRole;
-  private ProjectPartnerOverall partnerOverall;
-  private final AuditLogManager auditLogManager;
   private String transaction;
   private final HistoryComparator historyComparator;
   // Util
@@ -184,8 +195,7 @@ public class ProjectPartnerAction extends BaseAction {
   @Inject
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
     InstitutionManager institutionManager, LocElementManager locationManager, ProjectManager projectManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, GlobalUnitManager crpManager,
-    ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
+    CrpPpaPartnerManager crpPpaPartnerManager, GlobalUnitManager crpManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMailS sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
@@ -193,7 +203,12 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager,
     ProjectPartnerLocationManager projectPartnerLocationManager,
     DeliverablePartnershipManager deliverablePartnershipManager, InstitutionLocationManager institutionLocationManager,
-    ProjectInfoManager projectInfoManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectInfoManager projectInfoManager, GlobalUnitProjectManager globalUnitProjectManager,
+    RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
+    ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
+    ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager,
+    ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -209,7 +224,6 @@ public class ProjectPartnerAction extends BaseAction {
     this.crpManager = crpManager;
     this.institutionLocationManager = institutionLocationManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
-    this.projectPartnerOverallManager = projectPartnerOverallManager;
     this.sendMail = sendMail;
     this.roleManager = roleManager;
     this.projectPartnerContributionManager = projectPartnerContributionManager;
@@ -218,7 +232,12 @@ public class ProjectPartnerAction extends BaseAction {
     this.crpUserManager = crpUserManager;
     this.projectInfoManager = projectInfoManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
-
+    this.repIndPhaseResearchPartnershipManager = repIndPhaseResearchPartnershipManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.repIndRegionManager = repIndRegionManager;
+    this.projectPartnerPartnershipManager = projectPartnerPartnershipManager;
+    this.projectPartnerPartnershipLocationManager = projectPartnerPartnershipLocationManager;
+    this.projectPartnerPartnershipResearchPhaseManager = projectPartnerPartnershipResearchPhaseManager;
   }
 
   public void addCrpUser(User user) {
@@ -231,11 +250,6 @@ public class ProjectPartnerAction extends BaseAction {
       .collect(Collectors.toList());
 
     if (userCrp == null || userCrp.isEmpty()) {
-      crpUser.setActive(true);
-      crpUser.setActiveSince(new Date());
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
   }
@@ -286,6 +300,15 @@ public class ProjectPartnerAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+  private void deletePartnershipLocations(List<ProjectPartnerPartnershipLocation> locationsDB) {
+    if (locationsDB != null) {
+      for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
+        projectPartnerPartnershipLocationManager
+          .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
+      }
+    }
+  }
+
   public List<Activity> getActivitiesLedByUser(long userID) {
     Project project = projectManager.getProjectById(projectID);
     List<Activity> activities = project.getActivities().stream()
@@ -297,13 +320,24 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   public List<Institution> getAllInstitutions() {
     return allInstitutions;
   }
 
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
+  }
+
+  public List<RepIndGeographicScope> getAllRepIndGeographicScope() {
+    return allRepIndGeographicScope;
+  }
+
+  public List<RepIndRegion> getAllRepIndRegions() {
+    return allRepIndRegions;
+  }
+
+  public List<RepIndPhaseResearchPartnership> getAllRepIndResearchPhases() {
+    return allRepIndResearchPhases;
   }
 
   public List<User> getAllUsers() {
@@ -317,7 +351,7 @@ public class ProjectPartnerAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
@@ -340,14 +374,14 @@ public class ProjectPartnerAction extends BaseAction {
           Deliverable deliverable = deliverablePartnership.getDeliverable();
           deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
           if (!deliverablesLeads.contains(deliverable)) {
-            if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+            if (deliverable.getDeliverableInfo() != null
+              && deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
               if (deliverable.isActive()) {
                 deliverablesLeads.add(deliverable);
               }
-
             } else {
-              if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus()
+                .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                 if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
                   && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
 
@@ -358,7 +392,6 @@ public class ProjectPartnerAction extends BaseAction {
               }
             }
           }
-
         }
       }
 
@@ -367,23 +400,6 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
-
-    /*
-     * Project project = projectManager.getProjectById(projectID);
-     * List<Deliverable> deliverablesLeads = new ArrayList<>();
-     * List<Deliverable> deliverables =
-     * project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-     * for (Deliverable deliverable : deliverables) {
-     * if (!deliverable.getDeliverablePartnerships().stream()
-     * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-     * && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
-     * .collect(Collectors.toList()).isEmpty()) {
-     * deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-     * deliverablesLeads.add(deliverable);
-     * }
-     * }
-     * return deliverablesLeads;
-     */
     List<Deliverable> deliverablesLeads = new ArrayList<>();
     ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(userID);
     if (partnerPerson != null) {
@@ -393,9 +409,10 @@ public class ProjectPartnerAction extends BaseAction {
       for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
         Deliverable deliverable = deliverablePartnership.getDeliverable();
         deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-        if (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || deliverable.getDeliverableInfo().getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+          && (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || deliverable.getDeliverableInfo().getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
           if (!deliverablesLeads.contains(deliverable)) {
             if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
 
@@ -505,34 +522,28 @@ public class ProjectPartnerAction extends BaseAction {
           config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
         message.append(this.getText("email.bye"));
 
-        // Saving the new user configuration.
-        // user.setActive(true);
-        // userManager.saveUser(user, this.getCurrentUser());
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
         mapUser.put("password", password);
         this.getUsersToActive().add(mapUser);
         // Send UserManual.pdf
         String contentType = "application/pdf";
-        String fileName = "Introduction_To_MARLO_v2.2.pdf";
+        String fileName = "Introduction_To_MARLO_v2.4.pdf";
         byte[] buffer = null;
         InputStream inputStream = null;
 
         try {
-          inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
+          inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.4.pdf");
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (IOException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } finally {
           if (inputStream != null) {
             try {
               inputStream.close();
             } catch (IOException e) {
-              // TODO Auto-generated catch block
               e.printStackTrace();
             }
           }
@@ -839,6 +850,10 @@ public class ProjectPartnerAction extends BaseAction {
         project = history;
         project
           .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (ProjectPartner projectPartner : project.getPartners()) {
+          projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
+            .filter(ppp -> ppp.isActive()).collect(Collectors.toList()));
+        }
         ProjectPartner leader = project.getLeader();
         if (leader != null) {
           // First we remove the element from the array.
@@ -892,6 +907,14 @@ public class ProjectPartnerAction extends BaseAction {
               }
             }
           }
+          k = 0;
+          for (ProjectPartnerPartnership projectPartnerPartnership : projectPartner.getProjectPartnerPartnerships()) {
+            specialList.put(APConstants.PROJECT_PARTNER_PARTNERSHIP_COUNTRY_RELATION, "partnershipLocationsIds");
+            differences.addAll(historyComparator.getDifferencesList(projectPartnerPartnership, transaction, specialList,
+              "project.partners[" + i + "].projectPartnerPartnership[" + k + "]",
+              "project.projectPartner.partnerPartnerships", 2));
+            k++;
+          }
 
           i++;
         }
@@ -942,8 +965,11 @@ public class ProjectPartnerAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
+
+        // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+        project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(this.getActualPhase()).getPhase());
+
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 
@@ -1007,8 +1033,30 @@ public class ProjectPartnerAction extends BaseAction {
 
             }
           }
+          if (pp.getProjectPartnerPartnership() != null) {
+            ProjectPartnerPartnership projectPartnerPartnership = pp.getProjectPartnerPartnership();
+            // Countries
+            if (projectPartnerPartnership.getPartnershipLocationsIsosText() != null) {
+              String[] locationsIsos = projectPartnerPartnership.getPartnershipLocationsIsosText().replace("[", "")
+                .replace("]", "").split(",");
+              List<String> locations = new ArrayList<>();
+              for (String value : Arrays.asList(locationsIsos)) {
+                locations.add(value.trim());
+              }
+              projectPartnerPartnership.setPartnershipLocationsIsos(locations);
+            }
 
-
+            // Research Phases
+            if (projectPartnerPartnership.getResearchPhasesIdsText() != null) {
+              String[] researchPhasesIds =
+                projectPartnerPartnership.getResearchPhasesIdsText().replace("[", "").replace("]", "").split(",");
+              List<Long> researchPhases = new ArrayList<>();
+              for (String value : Arrays.asList(researchPhasesIds)) {
+                researchPhases.add(Long.parseLong(value.trim()));
+              }
+              projectPartnerPartnership.setResearchPhasesIds(researchPhases);
+            }
+          }
         }
 
         this.setDraft(true);
@@ -1016,7 +1064,6 @@ public class ProjectPartnerAction extends BaseAction {
 
         this.setDraft(false);
 
-        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           project.setPartners(project.getProjectPartners().stream()
             .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
@@ -1036,21 +1083,7 @@ public class ProjectPartnerAction extends BaseAction {
           project.setPartners(partnes);
 
         }
-        if (!project.getPartners().isEmpty()) {
-          if (this.isReportingActive()) {
-
-            ProjectPartner partner =
-              project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()).get(0);
-
-            List<ProjectPartnerOverall> overalls = partner.getProjectPartnerOveralls().stream()
-              .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList());
-            if (!overalls.isEmpty()) {
-              project.setOverall(overalls.get(0).getOverall());
-              partnerOverall = overalls.get(0);
-            }
-          }
-
-        }
+        this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner projectPartner : project.getPartners()) {
           projectPartner.setSelectedLocations(new ArrayList<>());
           for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
@@ -1063,24 +1096,85 @@ public class ProjectPartnerAction extends BaseAction {
             .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectPartner.setPartnerPersons(
             projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        }
-        this.projectPPAPartners = new ArrayList<ProjectPartner>();
-        for (ProjectPartner pp : project.getPartners()) {
 
-          if (this.isPPA(pp.getInstitution())) {
-            this.projectPPAPartners.add(pp);
+          // Parnership
+          if (projectPartner.getProjectPartnerPartnerships() != null) {
+            projectPartner.setPartnerPartnerships(new ArrayList<>(projectPartner.getProjectPartnerPartnerships()
+              .stream().filter(c -> c.isActive()).collect(Collectors.toList())));
+
+            if (projectPartner.getPartnerPartnerships().size() > 0) {
+              projectPartner.setProjectPartnerPartnership(projectPartner.getPartnerPartnerships().get(0));
+
+              // Partnership Locations
+              if (projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations() == null) {
+                projectPartner.getProjectPartnerPartnership().setPartnershipLocations(new ArrayList<>());
+              } else {
+                List<ProjectPartnerPartnershipLocation> locations =
+                  projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
+                    .filter(pl -> pl.isActive()).collect(Collectors.toList());
+                projectPartner.getProjectPartnerPartnership().setPartnershipLocations(locations);
+
+              }
+              if (projectPartner.getProjectPartnerPartnership().getPartnershipLocations() != null) {
+                for (ProjectPartnerPartnershipLocation location : projectPartner.getProjectPartnerPartnership()
+                  .getPartnershipLocations()) {
+                  projectPartner.getProjectPartnerPartnership().getPartnershipLocationsIsos()
+                    .add(location.getLocation().getIsoAlpha2());
+                }
+              }
+
+              // Partnership Research Phases
+              if (projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases() == null) {
+                projectPartner.getProjectPartnerPartnership().setPartnershipResearchPhases(new ArrayList<>());
+              } else {
+                List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases =
+                  projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases().stream()
+                    .filter(rf -> rf.isActive()).collect(Collectors.toList());
+                projectPartner.getProjectPartnerPartnership().setPartnershipResearchPhases(partnershipResearchPhases);
+              }
+
+              if (projectPartner.getProjectPartnerPartnership().getPartnershipResearchPhases() != null) {
+                for (ProjectPartnerPartnershipResearchPhase partnershipResearchPhase : projectPartner
+                  .getProjectPartnerPartnership().getPartnershipResearchPhases()) {
+                  projectPartner.getProjectPartnerPartnership().getResearchPhasesIds()
+                    .add(partnershipResearchPhase.getRepIndPhaseResearchPartnership().getId());
+                }
+              }
+
+            } else {
+              projectPartner.setProjectPartnerPartnership(new ProjectPartnerPartnership());
+            }
+
+          }
+
+          if (this.isPPA(projectPartner.getInstitution())) {
+            this.projectPPAPartners.add(projectPartner);
 
           }
 
           List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
-
-          List<ProjectPartnerContribution> partnerContributions = pp.getProjectPartnerContributions().stream()
-            .filter(c -> c.isActive() && c.getProjectPartner().isActive()).collect(Collectors.toList());
+          List<ProjectPartnerContribution> partnerContributions = projectPartner.getProjectPartnerContributions()
+            .stream().filter(c -> c.isActive() && c.getProjectPartner().isActive()).collect(Collectors.toList());
           for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
             contributors.add(projectPartnerContribution);
           }
-          pp.setPartnerContributors(contributors);
+          projectPartner.setPartnerContributors(contributors);
+
+          Institution institution = projectPartner.getInstitution();
+          if (institution != null) {
+            List<InstitutionLocation> institutionLocations = new ArrayList<>();
+            institutionLocations.addAll(institution.getLocations());
+            for (InstitutionLocation institutionLocation : institutionLocations) {
+              if (projectPartner.getSelectedLocations() != null) {
+                if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
+                  institution.getLocations().remove(institutionLocation);
+
+                }
+              }
+
+            }
+          }
         }
 
         if (this.isLessonsActive()) {
@@ -1091,33 +1185,18 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
 
-    for (ProjectPartner projectPartner : project.getPartners()) {
-
-      Institution institution = projectPartner.getInstitution();
-      if (institution != null) {
-        List<InstitutionLocation> institutionLocations = new ArrayList<>();
-        institutionLocations.addAll(institution.getLocations());
-        for (InstitutionLocation institutionLocation : institutionLocations) {
-          if (projectPartner.getSelectedLocations() != null) {
-            if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
-              institution.getLocations().remove(institutionLocation);
-
-            }
-          }
-
-        }
-      }
-
-    }
-
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
     plRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PL_ROLE)));
     pcRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PC_ROLE)));
 
     // Getting the list of all institutions
-
-    if (!project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
+    Project projectDb = projectManager.getProjectById(project.getId());
+    Boolean isLeaderEdit = projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader();
+    Boolean isAdministrative = projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative();
+    project.getProjectInfo().setProjectEditLeader(isLeaderEdit);
+    project.getProjectInfo().setAdministrative(isAdministrative);
+    if (!isLeaderEdit) {
       allInstitutions = new ArrayList<>();
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
         .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
@@ -1146,6 +1225,11 @@ public class ProjectPartnerAction extends BaseAction {
 
     // Getting all partner types
     intitutionTypes = institutionTypeManager.findAll();
+    if (this.isReportingActive()) {
+      allRepIndResearchPhases = repIndPhaseResearchPartnershipManager.findAll();
+      allRepIndGeographicScope = repIndGeographicScopeManager.findAll();
+      allRepIndRegions = repIndRegionManager.findAll();
+    }
 
 
     ProjectPartner leader = project.getLeader();
@@ -1170,10 +1254,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     if (this.isHttpPost()) {
-
-      // project.setProjectInfo(null);
       project.getPartners().clear();
-
     }
 
   }
@@ -1195,8 +1276,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
 
-
         } else {
+
           // Check to see if the user has priviliges for this crp
           Institution inst = institutionManager.getInstitutionById(previouslyEnteredPartner.getInstitution().getId());
           if (!inst.getCrpPpaPartners().stream()
@@ -1214,10 +1295,11 @@ public class ProjectPartnerAction extends BaseAction {
     for (ProjectPartnerPerson partnerPerson : projectPartnerDB.getProjectPartnerPersons()) {
       if (projectPartnerClient.getPartnerPersons() == null
         || !projectPartnerClient.getPartnerPersons().contains(partnerPerson)) {
-        for (DeliverablePartnership deliverablePartnership : partnerPerson.getDeliverablePartnerships().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
-          deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
-        }
+        // Disable delete of deliverable partnership
+        // for (DeliverablePartnership deliverablePartnership : partnerPerson.getDeliverablePartnerships().stream()
+        // .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        // deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+        // }
         projectPartnerPersonManager.deleteProjectPartnerPerson(partnerPerson.getId());
       }
     }
@@ -1238,6 +1320,24 @@ public class ProjectPartnerAction extends BaseAction {
 
 
       for (ProjectPartner projectPartnerDB : partnersDB) {
+        if (!this.isCenterGlobalUnit()) {
+          // Delete CIAT (Center) Shared Project Relation
+          List<GlobalUnit> centerIns = new ArrayList<>();
+          centerIns = projectPartnerDB.getInstitution().getGlobalUnits().stream()
+            .filter(i -> i.getGlobalUnitType().getId().equals(4) && i.isActive()).collect(Collectors.toList());
+
+          if (!centerIns.isEmpty()) {
+            for (GlobalUnit globalUnit : centerIns) {
+              GlobalUnitProject globalUnitProject =
+                globalUnitProjectManager.findByProjectAndGlobalUnitId(projectDB.getId(), globalUnit.getId());
+
+              if (globalUnitProject != null && !globalUnitProject.isOrigin()) {
+                globalUnitProjectManager.deleteGlobalUnitProject(globalUnitProject.getId());
+              }
+            }
+          }
+          //
+        }
         this.removeDeletedPartners(projectPartnerDB);
       }
       if (project.getPartners() != null) {
@@ -1247,73 +1347,86 @@ public class ProjectPartnerAction extends BaseAction {
           ProjectPartner projectPartnerDB = null;
           if (projectPartnerClient.getId() == null) {
 
-
-            projectPartnerClient.setActive(true);
-
-            projectPartnerClient.setCreatedBy(this.getCurrentUser());
-            projectPartnerClient.setModifiedBy(this.getCurrentUser());
-            projectPartnerClient.setModificationJustification("");
-            projectPartnerClient.setActiveSince(new Date());
             projectPartnerClient.setProject(project);
             projectPartnerClient.setPhase(this.getActualPhase());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerClient);
+
+            if (!this.isCenterGlobalUnit()) {
+              // Shared project if the partner is a Center
+              List<GlobalUnit> centerIns = new ArrayList<>();
+              centerIns = projectPartnerDB.getInstitution().getGlobalUnits().stream()
+                .filter(i -> i.getGlobalUnitType().getId().equals(4) && i.isActive()).collect(Collectors.toList());
+
+              if (!centerIns.isEmpty()) {
+
+                GlobalUnit centerGlobalUnit = centerIns.get(0);
+
+                GlobalUnitProject globalUnitProject =
+                  globalUnitProjectManager.findByProjectAndGlobalUnitId(projectDB.getId(), centerGlobalUnit.getId());
+
+                if (globalUnitProject == null) {
+                  // Setting the Global Unit Project
+                  GlobalUnitProject globalUnitProjectNew = new GlobalUnitProject();
+                  globalUnitProjectNew.setProject(project);
+                  globalUnitProjectNew.setGlobalUnit(loggedCrp);
+                  globalUnitProjectNew.setOrigin(false);
+                  globalUnitProjectManager.saveGlobalUnitProject(globalUnitProjectNew);
+                }
+
+              }
+            }
+
           } else {
             projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
-            projectPartnerDB.setActive(true);
             projectPartnerDB.setProject(project);
-            projectPartnerDB.setCreatedBy(projectPartnerDB.getCreatedBy());
             projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
-            projectPartnerDB.setModifiedBy(this.getCurrentUser());
-            projectPartnerDB.setModificationJustification("");
             projectPartnerDB.setPhase(projectPartnerDB.getPhase());
-            projectPartnerDB.setActiveSince(projectPartnerDB.getActiveSince());
             projectPartnerDB.setPartnerPersons(projectPartnerClient.getPartnerPersons());
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
+            projectPartnerDB.setHasPartnerships(projectPartnerClient.getHasPartnerships());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
+
+            if (!this.isCenterGlobalUnit()) {
+              // Shared project if the partner is a Center
+              List<GlobalUnit> centerIns = new ArrayList<>();
+              centerIns = projectPartnerDB.getInstitution().getGlobalUnits().stream()
+                .filter(i -> i.getGlobalUnitType().getId().equals(4) && i.isActive()).collect(Collectors.toList());
+
+              if (!centerIns.isEmpty()) {
+
+                GlobalUnit centerGlobalUnit = centerIns.get(0);
+
+                GlobalUnitProject globalUnitProject =
+                  globalUnitProjectManager.findByProjectAndGlobalUnitId(projectDB.getId(), centerGlobalUnit.getId());
+
+                if (globalUnitProject == null) {
+                  // Setting the Global Unit Project
+                  GlobalUnitProject globalUnitProjectNew = new GlobalUnitProject();
+                  globalUnitProjectNew.setProject(project);
+                  globalUnitProjectNew.setGlobalUnit(loggedCrp);
+                  globalUnitProjectNew.setOrigin(false);
+                  globalUnitProjectManager.saveGlobalUnitProject(globalUnitProjectNew);
+                }
+
+              }
+            }
           }
 
-          // projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
 
           this.removeProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
           this.saveLocations(projectPartnerClient, projectPartnerDB);
-
+          this.saveProjectPartnership(projectPartnerClient, projectPartnerDB);
+          // This is to add projectPartner to generate correct auditlog.
+          projectPartnerDB
+            .setInstitution(institutionManager.getInstitutionById(projectPartnerDB.getInstitution().getId()));
+          projectDB.getProjectPartners().add(projectPartnerDB);
 
         }
       }
-      if (this.isReportingActive()) {
-        Project projectReporting = projectManager.getProjectById(projectID);
-
-        List<ProjectPartner> partnersReporting = new ArrayList<>(
-          projectReporting.getProjectPartners().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
-
-        if (!partnersReporting.isEmpty()) {
-          for (ProjectPartner partner : partnersReporting) {
-            List<ProjectPartnerOverall> overalls = new ArrayList<>(partner.getProjectPartnerOveralls().stream()
-              .filter(ppo -> ppo.isActive() && ppo.getYear() == this.getActualPhase().getYear())
-              .collect(Collectors.toList()));
-
-            ProjectPartnerOverall overall = new ProjectPartnerOverall();
-            if (overalls.isEmpty()) {
-              overall.setProjectPartner(partner);
-              overall.setYear(this.getActualPhase().getYear());
-            } else {
-              overall = overalls.get(0);
-            }
-
-            if (project.getOverall() != null) {
-              overall.setOverall(project.getOverall());
-              projectPartnerOverallManager.saveProjectPartnerOverall(overall);
-            }
-          }
-        }
-
-      }
-
-
       if (this.isLessonsActive() && this.isReportingActive()) {
         this.saveLessons(loggedCrp, project);
       }
@@ -1326,20 +1439,26 @@ public class ProjectPartnerAction extends BaseAction {
 
       this.updateRoles(previousCoordinators, project.getCoordinatorPersons(this.getActualPhase()), pcRole);
       // project = projectManager.getProjectById(projectID);
-      projectDB.setActiveSince(new Date());
-      projectDB.setCreatedBy(this.getCurrentUser());
-      projectDB.setModifiedBy(this.getCurrentUser());
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-
-        projectInfoManager.saveProjectInfo(projectDB.getProjectInfo());
-        projectDB.setProjectInfo(project.getProjectInfo());
+      if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
+        && project.getProjectInfo().getPartnerOverall() != null) {
+        projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
       }
+
+      if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+        projectDB.getProjectInfo().setNewPartnershipsPlanned(project.getProjectInfo().getNewPartnershipsPlanned());
+      }
+
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(projectDB);
       projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
 
       this.addUsers();
@@ -1406,14 +1525,11 @@ public class ProjectPartnerAction extends BaseAction {
           institutionLocationManager.findByLocation(locElement.getId(), projectPartnerClient.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
         partnerLocation.setInstitutionLocation(institutionLocation);
-        partnerLocation.setActive(true);
-        partnerLocation.setActiveSince(new Date());
-        partnerLocation.setCreatedBy(this.getCurrentUser());
-        partnerLocation.setModificationJustification("");
-        partnerLocation.setModifiedBy(this.getCurrentUser());
         partnerLocation.setProjectPartner(projectPartnerDB);
         partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
         LOG.debug("Saving : " + partnerLocation);
+        // This is to add projectPartnerLocation to generate correct auditlog.
+        projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
       }
     }
 
@@ -1423,11 +1539,6 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectPartner saveProjectPartner(ProjectPartner projectPartnerClient, Project projectDB) {
     if (projectPartnerClient.getId() == null) {
       // New entity
-      projectPartnerClient.setActive(true);
-      projectPartnerClient.setCreatedBy(this.getCurrentUser());
-      projectPartnerClient.setModifiedBy(this.getCurrentUser());
-      projectPartnerClient.setModificationJustification("");
-      projectPartnerClient.setActiveSince(new Date());
       projectPartnerClient.setProject(projectDB);
 
       projectPartnerClient = projectPartnerManager.saveProjectPartner(projectPartnerClient);
@@ -1435,10 +1546,7 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       // Existing entity
       ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
-      projectPartnerDB.setActive(true);
       projectPartnerDB.setProject(projectDB);
-      projectPartnerDB.setModifiedBy(this.getCurrentUser());
-      projectPartnerDB.setModificationJustification("");
       projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
       projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
       projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
@@ -1467,12 +1575,6 @@ public class ProjectPartnerAction extends BaseAction {
          * PartnerContributors
          */
         if (partnerContributionClient.getId() == null) {
-          partnerContributionClient.setActive(true);
-
-          partnerContributionClient.setCreatedBy(this.getCurrentUser());
-          partnerContributionClient.setModifiedBy(this.getCurrentUser());
-          partnerContributionClient.setModificationJustification("");
-          partnerContributionClient.setActiveSince(new Date());
           partnerContributionClient.setProjectPartner(projectPartnerClient);
           // This looks like we are setting the partnerContribution to the first PPA partner???
           if (partnerContributionClient.getProjectPartnerContributor().getId() == null) {
@@ -1489,6 +1591,9 @@ public class ProjectPartnerAction extends BaseAction {
           }
           partnerContributionClient =
             projectPartnerContributionManager.saveProjectPartnerContribution(partnerContributionClient);
+          // This is to add projectPartnerContribution to generate correct auditlog.
+          projectPersonDB.getProjectPartnerContributions().add(partnerContributionClient);
+
         }
       }
     }
@@ -1503,12 +1608,6 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
 
       if (partnerPersonClient.getId() == null) {
-        partnerPersonClient.setActive(true);
-
-        partnerPersonClient.setCreatedBy(this.getCurrentUser());
-        partnerPersonClient.setModifiedBy(this.getCurrentUser());
-        partnerPersonClient.setModificationJustification("");
-        partnerPersonClient.setActiveSince(new Date());
         partnerPersonClient.setProjectPartner(projectPartnerDB);
         if (partnerPersonClient.getUser() == null || (partnerPersonClient.getUser().getId() == null
           || partnerPersonClient.getUser().getId().longValue() == -1)) {
@@ -1526,9 +1625,6 @@ public class ProjectPartnerAction extends BaseAction {
 
         ProjectPartnerPerson dbPerson =
           projectPartnerPersonManager.getProjectPartnerPersonById(partnerPersonClient.getId());
-        dbPerson.setActive(true);
-        dbPerson.setModifiedBy(this.getCurrentUser());
-        dbPerson.setModificationJustification("");
         dbPerson.setContactType(partnerPersonClient.getContactType());
         if (partnerPersonClient.getUser() == null || (partnerPersonClient.getUser().getId() == null
           || partnerPersonClient.getUser().getId().longValue() == -1)) {
@@ -1558,6 +1654,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (partnerPersonClient.getUser() != null && partnerPersonClient.getUser().getId() != null) {
           ProjectPartnerPerson projectPartnerPersonDB =
             this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
+          // This is to add projectPartnerPerson to generate correct auditlog.
+          projectPartnerDB.getProjectPartnerPersons().add(projectPartnerPersonDB);
         }
       }
 
@@ -1572,11 +1670,7 @@ public class ProjectPartnerAction extends BaseAction {
             .collect(Collectors.toList()).isEmpty()) {
             CrpUser crpUser = new CrpUser();
             crpUser.setUser(userDB);
-            crpUser.setActiveSince(new Date());
-            crpUser.setCreatedBy(this.getCurrentUser());
             crpUser.setCrp(loggedCrp);
-            crpUser.setModificationJustification("");
-            crpUser.setModifiedBy(this.getCurrentUser());
             crpUserManager.saveCrpUser(crpUser);
 
           }
@@ -1587,15 +1681,144 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+  private void saveProjectPartnership(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
+    if (projectPartnerClient.getProjectPartnerPartnership() != null) {
+      ProjectPartnerPartnership partnershipClient = projectPartnerClient.getProjectPartnerPartnership();
+      ProjectPartnerPartnership partnershipUpdate = new ProjectPartnerPartnership();
+
+      if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+        partnershipUpdate =
+          projectPartnerPartnershipManager.getProjectPartnerPartnershipById(partnershipClient.getId());
+      } else {
+        partnershipUpdate.setProjectPartner(projectPartnerClient);
+      }
+
+      partnershipUpdate.setMainArea(partnershipClient.getMainArea());
+
+      // Save to avoid null exception in relation with partnership_locations
+      if (partnershipUpdate.getId() == null || partnershipUpdate.getId() == -1) {
+        projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+      }
+
+      // Partnership Phases Save and Delete
+      List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhasesDB = new ArrayList<>();
+      if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+        partnershipResearchPhasesDB = projectPartnerPartnershipResearchPhaseManager
+          .findParnershipResearchPhaseByPartnership(partnershipClient.getId());
+      }
+      if (partnershipResearchPhasesDB == null) {
+        partnershipResearchPhasesDB = new ArrayList<>();
+      }
+
+      if (partnershipClient.getResearchPhasesIds() != null && !partnershipClient.getResearchPhasesIds().isEmpty()) {
+        List<ProjectPartnerPartnershipResearchPhase> partnershipResearchClienteList = new ArrayList<>();
+        for (Long researchPhasesIds : partnershipClient.getResearchPhasesIds()) {
+          ProjectPartnerPartnershipResearchPhase partnershipResearchPhaseSave =
+            new ProjectPartnerPartnershipResearchPhase();
+          partnershipResearchPhaseSave.setRepIndPhaseResearchPartnership(
+            repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(researchPhasesIds));
+          partnershipResearchPhaseSave.setProjectPartnerPartnership(partnershipUpdate);
+          if (!partnershipResearchPhasesDB.contains(partnershipResearchPhaseSave)) {
+            projectPartnerPartnershipResearchPhaseManager
+              .saveProjectPartnerPartnershipResearchPhase(partnershipResearchPhaseSave);
+            partnershipUpdate.getProjectPartnerPartnershipResearchPhases().add(partnershipResearchPhaseSave);
+          }
+          partnershipResearchClienteList.add(partnershipResearchPhaseSave);
+        }
+        for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhaseDB : partnershipResearchPhasesDB) {
+          if (!partnershipResearchClienteList.contains(projectPartnerPartnershipResearchPhaseDB)) {
+            projectPartnerPartnershipResearchPhaseManager
+              .deleteProjectPartnerPartnershipResearchPhase(projectPartnerPartnershipResearchPhaseDB.getId());
+          }
+        }
+      } else {
+        // Delete DB Research Phases
+        for (ProjectPartnerPartnershipResearchPhase projectPartnerPartnershipResearchPhase : partnershipResearchPhasesDB) {
+          projectPartnerPartnershipResearchPhaseManager
+            .deleteProjectPartnerPartnershipResearchPhase(projectPartnerPartnershipResearchPhase.getId());
+        }
+      }
+
+
+      // Partnership Locations
+      List<ProjectPartnerPartnershipLocation> locationsDB = new ArrayList<>();
+      if (partnershipClient.getId() != null && partnershipClient.getId() != -1) {
+        locationsDB =
+          projectPartnerPartnershipLocationManager.findParnershipLocationByPartnership(partnershipClient.getId());
+      }
+      if (partnershipClient.getGeographicScope() != null && partnershipClient.getGeographicScope().getId() != -1) {
+        partnershipUpdate.setGeographicScope(partnershipClient.getGeographicScope());
+        RepIndGeographicScope repIndGeographicScope =
+          repIndGeographicScopeManager.getRepIndGeographicScopeById(partnershipUpdate.getGeographicScope().getId());
+
+        // Global
+        if (repIndGeographicScope.getId().equals(this.getReportingIndGeographicScopeGlobal())) {
+
+          partnershipUpdate.setRegion(null);
+          this.deletePartnershipLocations(locationsDB);
+
+        } else
+        // Regional
+        if (repIndGeographicScope.getId().equals(this.getReportingIndGeographicScopeRegional())) {
+
+          if (partnershipClient.getRegion() != null && partnershipClient.getRegion().getId() != -1) {
+            partnershipUpdate.setRegion(partnershipClient.getRegion());
+          } else {
+            partnershipUpdate.setRegion(null);
+          }
+          this.deletePartnershipLocations(locationsDB);
+
+        } else {
+          // Multi-national || National || Sub-national
+          // Save Locations
+
+          if (partnershipClient.getPartnershipLocationsIsos() != null
+            || !partnershipClient.getPartnershipLocationsIsos().isEmpty()) {
+            if (locationsDB == null) {
+              locationsDB = new ArrayList<>();
+            }
+
+            List<ProjectPartnerPartnershipLocation> locationsSave = new ArrayList<>();
+            for (String locationIsoAlpha2 : partnershipClient.getPartnershipLocationsIsos()) {
+              ProjectPartnerPartnershipLocation locationPartnership = new ProjectPartnerPartnershipLocation();
+              locationPartnership.setLocation(locationManager.getLocElementByISOCode(locationIsoAlpha2));
+              locationPartnership.setProjectPartnerPartnership(partnershipUpdate);
+              locationsSave.add(locationPartnership);
+              if (!locationsDB.contains(locationPartnership)) {
+                projectPartnerPartnershipLocationManager.saveProjectPartnerPartnershipLocation(locationPartnership);
+                partnershipUpdate.getProjectPartnerPartnershipLocations().add(locationPartnership);
+              }
+            }
+            for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : locationsDB) {
+              if (!locationsSave.contains(projectPartnerPartnershipLocation)) {
+                projectPartnerPartnershipLocationManager
+                  .deleteProjectPartnerPartnershipLocation(projectPartnerPartnershipLocation.getId());
+              }
+            }
+          }
+
+        }
+
+      } else {
+        partnershipUpdate.setGeographicScope(null);
+        partnershipUpdate.setRegion(null);
+        this.deletePartnershipLocations(locationsDB);
+      }
+
+      projectPartnerPartnershipManager.saveProjectPartnerPartnership(partnershipUpdate);
+      projectPartnerDB.getProjectPartnerPartnerships().add(partnershipUpdate);
+
+    }
+
+  }
+
   public void setAllInstitutions(List<Institution> allInstitutions) {
     this.allInstitutions = allInstitutions;
   }
 
-
   public void setAllPPAInstitutions(List<Institution> allPPAInstitutions) {
     this.allPPAInstitutions = allPPAInstitutions;
   }
-
 
   public void setAllUsers(List<User> allUsers) {
     this.allUsers = allUsers;
@@ -1702,57 +1925,6 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
     }
-    /*
-     * else if (previousPartnerPerson != null && partnerPerson == null) {
-     * List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
-     * if (rolesUser != null) {
-     * rolesUser =
-     * rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-     * if (!rolesUser.isEmpty()) {
-     * if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
-     * .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-     * .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
-     * .collect(Collectors.toList()).size() == 0) {
-     * userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-     * this.checkCrpUserByRole(previousPartnerPerson.getUser());
-     * }
-     * }
-     * }
-     * // Notifying user that is not the project leader anymore
-     * this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
-     * } else if (previousPartnerPerson != null && partnerPerson != null) {
-     * if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
-     * UserRole userRole = new UserRole();
-     * userRole.setRole(role);
-     * userRole.setUser(partnerPerson.getUser());
-     * role = roleManager.getRoleById(role.getId());
-     * if (!role.getUserRoles().contains(userRole)) {
-     * userRoleManager.saveUserRole(userRole);
-     * this.addCrpUser(partnerPerson.getUser());
-     * }
-     * // Notifying user is assigned as Project Leader/Coordinator.
-     * this.notifyRoleAssigned(partnerPerson.getUser(), role);
-     * // Deleting role.
-     * List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
-     * if (rolesUser != null) {
-     * rolesUser =
-     * rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
-     * if (!rolesUser.isEmpty()) {
-     * if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
-     * .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-     * .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
-     * .collect(Collectors.toList()).size() == 0) {
-     * userRoleManager.deleteUserRole(rolesUser.get(0).getId());
-     * this.checkCrpUserByRole(previousPartnerPerson.getUser());
-     * }
-     * }
-     * }
-     * // Notifying user that is not the project leader anymore
-     * this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
-     * }
-     * }
-     */
-    // this.clearPermissionsCache();
   }
 
 
@@ -1859,7 +2031,6 @@ public class ProjectPartnerAction extends BaseAction {
             if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
               projectPartner
                 .setInstitution(institutionManager.getInstitutionById(projectPartner.getInstitution().getId()));
-
             }
 
             if (projectPartner.getPartnerPersons() != null) {
@@ -1877,6 +2048,28 @@ public class ProjectPartnerAction extends BaseAction {
                 projectPartnerContribution.getProjectPartnerContributor()
                   .setInstitution(institutionManager.getInstitutionById(
                     projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+              }
+            }
+            if (projectPartner.getProjectPartnerPartnership() != null
+              && projectPartner.getProjectPartnerPartnership().getId().longValue() != -1) {
+              projectPartner.setProjectPartnerPartnership(projectPartnerPartnershipManager
+                .getProjectPartnerPartnershipById(projectPartner.getProjectPartnerPartnership().getId()));
+              // Partnership Locations
+              List<ProjectPartnerPartnershipLocation> partnerPartnershipLocations =
+                projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipLocations().stream()
+                  .filter(p -> p.isActive()).collect(Collectors.toList());
+              for (ProjectPartnerPartnershipLocation projectPartnerPartnershipLocation : partnerPartnershipLocations) {
+                projectPartner.getProjectPartnerPartnership().getPartnershipLocations()
+                  .add(projectPartnerPartnershipLocation);
+              }
+
+              // Partnership Research Phases
+              List<ProjectPartnerPartnershipResearchPhase> partnershipResearchPhases =
+                projectPartner.getProjectPartnerPartnership().getProjectPartnerPartnershipResearchPhases().stream()
+                  .filter(rf -> rf.isActive()).collect(Collectors.toList());
+              for (ProjectPartnerPartnershipResearchPhase partnershipResearchPhase : partnershipResearchPhases) {
+                projectPartner.getProjectPartnerPartnership().getPartnershipResearchPhases()
+                  .add(partnershipResearchPhase);
               }
             }
           }

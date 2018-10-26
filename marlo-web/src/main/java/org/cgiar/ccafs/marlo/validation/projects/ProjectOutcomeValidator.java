@@ -22,8 +22,11 @@ import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -49,6 +52,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
   private final ProjectManager projectManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
   private final CrpMilestoneManager crpMilestoneManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
 
 
   // GlobalUnit Manager
@@ -56,20 +60,21 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    GlobalUnitManager crpManager, CrpMilestoneManager crpMilestoneManager) {
+    GlobalUnitManager crpManager, CrpMilestoneManager crpMilestoneManager, SrfTargetUnitManager srfTargetUnitManager) {
 
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpManager = crpManager;
     this.crpMilestoneManager = crpMilestoneManager;
+    this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
   private Path getAutoSaveFilePath(ProjectOutcome project, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OUTCOME.getStatus().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
-      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
+      + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -93,6 +98,24 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
     }
 
+    if (projectOutcome.getExpectedUnit() != null) {
+      if (projectOutcome.getExpectedUnit().getId() == null
+        || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+        projectOutcome.setExpectedUnit(null);
+      } else {
+        projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+      }
+    }
+
+    if (projectOutcome.getAchievedUnit() != null) {
+      if (projectOutcome.getAchievedUnit().getId() == null
+        || projectOutcome.getAchievedUnit().getId().longValue() == -1) {
+        projectOutcome.setAchievedUnit(null);
+      } else {
+        projectOutcome.setAchievedUnit(projectOutcome.getAchievedUnit());
+      }
+    }
+
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
     if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
@@ -105,11 +128,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
       this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
     } else {
       action.addMissingField("");
       this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
     }
 
 
@@ -124,6 +149,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       projectMilestone
         .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(projectMilestone.getCrpMilestone().getId()));
       if (projectMilestone.getCrpMilestone().getYear() == action.getCurrentCycleYear()) {
+
 
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {
@@ -142,20 +168,26 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-
-        if (!(this.isValidString(projectMilestone.getNarrativeTarget())
-          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
-          action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
-          action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (!action.isReportingActive()) {
+          if (!(this.isValidString(projectMilestone.getNarrativeTarget())
+            && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
+        if (action.isReportingActive()) {
+          if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
+            && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 100)) {
+            action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeAchieved",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
 
       }
-
-
     }
-
 
   }
 
@@ -182,6 +214,20 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategies",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+    if (action.isReportingActive()) {
+      if (!(this.isValidString(projectNextuser.getKnowledgeReport())
+        && this.wordCount(projectNextuser.getKnowledgeReport()) <= 200)) {
+        action.addMessage(action.getText("projectOutcomeNextUser.reportOnProgress.readText"));
+        action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].knowledgeReport",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (!(this.isValidString(projectNextuser.getStrategiesReport())
+        && this.wordCount(projectNextuser.getStrategiesReport()) <= 100)) {
+        action.addMessage(action.getText("projectOutcomeNextUser.strategiesEncourage.readText"));
+        action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategiesReport",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
 
   }
 
@@ -198,62 +244,48 @@ public class ProjectOutcomeValidator extends BaseValidator {
     endDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
-    if (!action.isProjectNew(project.getId()) && action.isReportingActive()) {
-      this.validateLessonsLearnOutcome(action, projectOutcome);
-      if (action.getValidationMessage().toString().contains("Lessons")) {
-        this.replaceAll(action.getValidationMessage(), "Lessons",
-          "Lessons regarding partnerships and possible implications for the coming planning cycle");
-        action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
-          InvalidFieldsMessages.EMPTYFIELD);
+    projectOutcome.setCrpProgramOutcome(
+      crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+    if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+      || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+
+      if (projectOutcome.getExpectedValue() == null || projectOutcome.getExpectedValue().longValue() < 0) {
+        action.addMessage(action.getText("projectOutcome.expectedValue"));
+        action.getInvalidFields().put("input-projectOutcome.expectedValue", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-    if (action.isPlanningActive()) {
-      projectOutcome.setCrpProgramOutcome(
-        crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
-      if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
-        || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
-
-        if (projectOutcome.getExpectedValue() == null || projectOutcome.getExpectedValue().longValue() < 0) {
-          action.addMessage(action.getText("projectOutcome.expectedValue"));
-          action.getInvalidFields().put("input-projectOutcome.expectedValue", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
 
 
-      if (!(this.isValidString(projectOutcome.getNarrativeTarget())
-        && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
-        action.addMessage(action.getText("projectOutcome.narrativeTarget"));
-        action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // TODO: Validate outcome gender here
-
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
-
-        if (!(this.isValidString(projectOutcome.getGenderDimenssion())
-          && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
-          action.addMessage(action.getText("projectOutcome.genderDimenssion"));
-          action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-
-
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
-
-        if (!(this.isValidString(projectOutcome.getYouthComponent())
-          && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
-          action.addMessage(action.getText("projectOutcome.youthComponent"));
-          action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-
-
+    if (!(this.isValidString(projectOutcome.getNarrativeTarget())
+      && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
+      action.addMessage(action.getText("projectOutcome.narrativeTarget"));
+      action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
-    if (projectOutcome.getMilestones() != null || projectOutcome.getMilestones().size() > 0) {
+    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
+
+      if (!(this.isValidString(projectOutcome.getGenderDimenssion())
+        && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
+        action.addMessage(action.getText("projectOutcome.genderDimenssion"));
+        action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
+    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
+
+      if (!(this.isValidString(projectOutcome.getYouthComponent())
+        && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
+        action.addMessage(action.getText("projectOutcome.youthComponent"));
+        action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
+    if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
         List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
           .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
@@ -266,20 +298,16 @@ public class ProjectOutcomeValidator extends BaseValidator {
         }
       }
 
-    } else {
-      action.addMessage(action.getText("projectOutcome.milestones"));
-      action.getInvalidFields().put("list-projectOutcome.milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
     }
 
 
     if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
+      // TODO: check validation for reporting 2018
       if (projectOutcome.getIndicators() != null) {
         for (int i = 0; i < projectOutcome.getIndicators().size(); i++) {
           this.validateProjectOutcomeIndicator(action, projectOutcome.getIndicators().get(i), i);
         }
       }
-
     }
 
 
@@ -293,6 +321,60 @@ public class ProjectOutcomeValidator extends BaseValidator {
         action.getInvalidFields().put("input-projectOutcome.nextUsers",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Next User"}));
       }
+    }
+
+    if (action.isReportingActive()) {
+      if (!action.isProjectNew(project.getId())) {
+
+        if (projectOutcome.getProjectComponentLesson() != null) {
+          ProjectComponentLesson lesson = projectOutcome.getProjectComponentLesson();
+          if (!(this.isValidString(lesson.getLessons()))) {
+            action.addMessage(action.getText("projectOutcome.lessons.reporting.readText"));
+            action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
+              action.getText(InvalidFieldsMessages.EMPTYLIST));
+          }
+        }
+      }
+      if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() != null) {
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
+
+        if (action.getCurrentCycleYear() == calendarEnd.get(Calendar.YEAR)) {
+          if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+            || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+
+            if (projectOutcome.getAchievedValue() == null || projectOutcome.getAchievedValue().longValue() < 0) {
+              action.addMessage(action.getText("projectOutcome.achievedValue"));
+              action.getInvalidFields().put("input-projectOutcome.achievedValue", InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+          if (!(this.isValidString(projectOutcome.getNarrativeAchieved())
+            && this.wordCount(projectOutcome.getNarrativeAchieved()) <= 100)) {
+            action.addMessage(action.getText("projectOutcome.narrativeAchieved"));
+            action.getInvalidFields().put("input-projectOutcome.narrativeAchieved", InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+
+      if (action.hasSpecificities(APConstants.CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS)) {
+        if (projectOutcome.getCommunications() != null && projectOutcome.getCommunications().size() > 0) {
+          int i = 0;
+          for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+            if (projectCommunication.getYear() == action.getCurrentCycleYear()) {
+              if (!(this.isValidString(projectCommunication.getCommunication())
+                && this.wordCount(projectCommunication.getCommunication()) <= 100)) {
+                action.addMessage(action.getText("projectOutcome.communicationEngagement"));
+                action.getInvalidFields().put("input-projectOutcome.communications[" + i + "].communication",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+            i++;
+          }
+        }
+      }
+
+
     }
 
 

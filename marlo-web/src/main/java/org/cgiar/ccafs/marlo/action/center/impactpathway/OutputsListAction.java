@@ -25,15 +25,15 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
-import org.cgiar.ccafs.marlo.data.model.CenterLeader;
-import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -115,12 +115,7 @@ public class OutputsListAction extends BaseAction {
   @Override
   public String add() {
     CenterOutput output = new CenterOutput();
-
-    output.setActive(true);
-    output.setActiveSince(new Date());
     output.setDateAdded(new Date());
-    output.setCreatedBy(this.getCurrentUser());
-    output.setModifiedBy(this.getCurrentUser());
     output = outputService.saveResearchOutput(output);
     output.setCenterProgram(selectedProgram);
     outputID = output.getId();
@@ -145,7 +140,6 @@ public class OutputsListAction extends BaseAction {
 
     if (output != null) {
       output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
-      output.setModifiedBy(this.getCurrentUser());
 
       List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
         output.getCenterOutputsOutcomes().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
@@ -274,38 +268,32 @@ public class OutputsListAction extends BaseAction {
           crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
+          // TODO crpProgram
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads =
-            new ArrayList<>(user.getResearchLeaders().stream()
+          List<CrpProgramLeader> userAreaLeads =
+            new ArrayList<>(user.getCrpProgramLeaders().stream()
               .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+                && rl.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && rl.getCrpProgram().getResearchArea() != null)
               .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
-            areaID = userAreaLeads.get(0).getResearchArea().getId();
+            areaID = userAreaLeads.get(0).getCrpProgram().getResearchArea().getId();
           } else {
             // Check if the User is a Program Leader
-            List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            List<CrpProgramLeader> userProgramLeads = new ArrayList<>(user.getCrpProgramLeaders().stream()
               .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+                && rl.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && rl.getCrpProgram().getResearchArea() != null)
               .collect(Collectors.toList()));
             if (!userProgramLeads.isEmpty()) {
-              crpProgramID = userProgramLeads.get(0).getResearchProgram().getId();
+              crpProgramID = userProgramLeads.get(0).getCrpProgram().getId();
             } else {
-              // Check if the User is a Scientist Leader
-              List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
-                .filter(rl -> rl.isActive()
-                  && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
-                .collect(Collectors.toList()));
-              if (!userScientistLeader.isEmpty()) {
-                crpProgramID = userScientistLeader.get(0).getResearchProgram().getId();
-              } else {
-                List<CrpProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
-                  .collect(Collectors.toList());
-                Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
-                CrpProgram rp = rps.get(0);
-                crpProgramID = rp.getId();
-                areaID = rp.getResearchArea().getId();
-              }
+              List<CrpProgram> rps = researchAreas.get(0).getResearchPrograms().stream().filter(r -> r.isActive())
+                .collect(Collectors.toList());
+              Collections.sort(rps, (rp1, rp2) -> rp1.getId().compareTo(rp2.getId()));
+              CrpProgram rp = rps.get(0);
+              crpProgramID = rp.getId();
+              areaID = rp.getResearchArea().getId();
             }
           }
         }
@@ -322,13 +310,14 @@ public class OutputsListAction extends BaseAction {
           } catch (Exception e) {
             User user = userService.getUser(this.getCurrentUser().getId());
 
-            List<CenterLeader> userLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            List<CrpProgramLeader> userLeads = new ArrayList<>(user.getCrpProgramLeaders().stream()
               .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+                && rl.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && rl.getCrpProgram().getResearchArea() != null)
               .collect(Collectors.toList()));
 
             if (!userLeads.isEmpty()) {
-              crpProgramID = userLeads.get(0).getResearchProgram().getId();
+              crpProgramID = userLeads.get(0).getCrpProgram().getId();
             } else {
               if (!researchPrograms.isEmpty()) {
                 crpProgramID = researchPrograms.get(0).getId();

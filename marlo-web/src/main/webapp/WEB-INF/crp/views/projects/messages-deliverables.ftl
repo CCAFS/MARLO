@@ -9,8 +9,8 @@
       <p>[@s.text name="project.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${deliverable.modifiedBy.composedName?html}</span>[/@s.param]
-          [@s.param]<span>${deliverable.activeSince?datetime}</span>[/@s.param]
+          [@s.param]<span>${(deliverable.modifiedBy.composedName?html)!}</span>[/@s.param]
+          [@s.param]<span>${(deliverable.activeSince?datetime)!}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
@@ -29,7 +29,7 @@
   [/#if]
   
   [#-- Privileges Message --]
-  [#if (!canEdit && !(transaction??) && !(submission?has_content)) || crpClosed]
+  [#if (!canEdit && !(transaction??)) || crpClosed]
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
@@ -66,7 +66,7 @@
       <div class="layer"></div>
       <div class="content">
         <span class="glyphicon glyphicon-lock"></span>
-        <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+        <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][@s.param name="phaseID" value="${(actualPhase.id)!}" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
       </div> 
     </div>
   [/#if]

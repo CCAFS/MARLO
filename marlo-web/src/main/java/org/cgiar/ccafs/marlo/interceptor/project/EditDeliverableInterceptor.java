@@ -19,11 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -58,14 +61,17 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private final DeliverableManager deliverableManager;
   private final ProjectManager projectManager;
   private final GlobalUnitManager crpManager;
+  private GlobalUnit loggedCrp;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
-    PhaseManager phaseManager, GlobalUnitManager crpManager) {
+    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.projectManager = projectManager;
     this.deliverableManager = deliverableManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   public Boolean canEditDeliverable(Deliverable deliverable, Phase phase) {
@@ -128,9 +134,35 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
 
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
+    Project project = projectManager.getProjectById(deliverable.getProject().getId());
+
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
+
     if (deliverable != null && deliverable.isActive()) {
+
+      if (!globalUnitProject.isOrigin()) {
+        Phase ph = baseAction.getActualPhase();
+        GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+        List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
+          .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
+            && c.getYear() == baseAction.getActualPhase().getYear())
+          .collect(Collectors.toList());
+        if (phases.size() > 0) {
+          baseAction.setPhaseID(phases.get(0).getId());
+          project.getProjecInfoPhase(phases.get(0));
+        }
+
+        phase = baseAction.getActualPhase();
+        phase = phaseManager.getPhaseById(phase.getId());
+      }
+
 
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
 
@@ -149,9 +181,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           canEdit = true;
         }
 
-        if (baseAction.isSubmit(deliverable.getProject().getId())) {
+        if (baseAction.isSubmit(deliverable.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
           canEdit = false;
-
         }
 
         if (baseAction.isCrpClosed()) {
@@ -175,7 +206,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit =
           ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin() || baseAction.canAcessCrpAdmin())) ? true
             : baseAction.hasPermission(
@@ -186,31 +217,54 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canSwitchProject = true;
       }
 
+      if (baseAction
+        .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
+        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            canEdit = false;
+          }
+        }
 
-      if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
-        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-          canEdit = false;
+
+        if (baseAction.isReportingActive()
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getYear() == baseAction
+            .getCurrentCycleYear()) {
+          canEdit = true;
+        }
+
+        if (baseAction.isReportingActive()
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() == baseAction
+            .getCurrentCycleYear()) {
+          canEdit = true;
         }
       }
 
+      if (phase.getProjectPhases().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == deliverable.getProject().getId())
+        .collect(Collectors.toList()).isEmpty()) {
+        List<ProjectInfo> infos =
+          deliverable.getProject().getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
-      if (baseAction.isReportingActive()
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getYear() == baseAction.getCurrentCycleYear()) {
-        canEdit = true;
+        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
       }
 
-      if (baseAction.isReportingActive()
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear() != null
-        && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() == baseAction
-          .getCurrentCycleYear()) {
-        canEdit = true;
+      if (baseAction.isPlanningActive()) {
+        if (!this.canEditDeliverable(deliverable, phase)) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
 
       if (phase.getProjectPhases().stream()
@@ -225,31 +279,19 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
       }
-      if (!this.canEditDeliverable(deliverable, phase)) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
+
+      if (baseAction.isPlanningActive()) {
+        if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+          || deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
 
-      if (phase.getProjectPhases().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == deliverable.getProject().getId())
-        .collect(Collectors.toList()).isEmpty()) {
-        List<ProjectInfo> infos =
-          deliverable.getProject().getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-
-        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
-      }
-      if (!baseAction.getActualPhase().getEditable()) {
-        canEdit = false;
-      }
-      if (deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
-
-        || deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
-      }
+      // TODO What is This?
       if (deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
         .equals(APConstants.REPORTING)
         && deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
@@ -265,6 +307,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         // If the user is not asking for edition privileges we don't need to validate them.
 
       }
+
+      // Check if is a Shared project (Crp to Center)
+      if (!globalUnitProject.isOrigin()) {
+        canEdit = false;
+      }
+
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
         baseAction.setCanEditPhase(false);
@@ -276,7 +324,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
       baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
-      baseAction.setCanSwitchProject(canSwitchProject);
+      baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
 
     } else {
       throw new NullPointerException();

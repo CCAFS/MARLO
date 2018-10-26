@@ -11,7 +11,7 @@
 
 <div class="buttons">
   <div class="buttons-content">
-    [#-- History Log --]
+    [#-- History Log--]
     [#if action.getListLog(fundingSource)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=action.getListLog(fundingSource) itemName="fundingSourceID" itemId=fundingSource.id /]

@@ -25,15 +25,29 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceBudget, Long>
   implements FundingSourceBudgetDAO {
 
+  private Logger LOG = LoggerFactory.getLogger(FundingSourceBudgetMySQLDAO.class);
 
   @Inject
   public FundingSourceBudgetMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
+  }
+
+
+  @Override
+  public void deleteAllFundingSourceBudgetForFundingSource(long fundingSourceId) {
+    int rowCount = this.getSessionFactory().getCurrentSession()
+      .createQuery("UPDATE FundingSourceBudget fsb SET active = FALSE WHERE fsb.fundingSource.id = :fundingSourceId")
+      .setParameter("fundingSourceId", fundingSourceId).executeUpdate();
+
+    LOG.debug(rowCount + " FundingSourceBudget rows were set to inactive");
+
   }
 
 
@@ -43,7 +57,6 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
     fundingSourceBudget.setActive(false);
     super.update(fundingSourceBudget);
   }
-
 
   @Override
   public boolean existFundingSourceBudget(long fundingSourceBudgetID) {
@@ -82,6 +95,7 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
     }
     return null;
   }
+
 
   @Override
   public FundingSourceBudget save(FundingSourceBudget fundingSourceBudget) {

@@ -44,28 +44,29 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-      [#-- Section Messages --]
+        [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-      
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>  
           <div id="projectContributionsCrpList" class="borderBox">
             [#-- Your project contributes to the flagships --]
             <div class="form-group">
               <p>
-                <strong>[@s.text name="projectContributionsCrpList.flagships" /]</strong><br />
+                <strong>[@s.text name="projectContributionsCrpList.flagships" /]:</strong><br />
                 [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
                 <div class="clearfix"></div>
               </p>
             </div>
             
+            [#if reportingActive && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
+            
             [#-- Project Outcomes List --]
             <table id="projectOutcomesList" class="table table-striped table-hover ">
               <thead>
                 <tr>
-                  <th>Flagship</th>
+                  <th>[@s.text name="global.flagship" /]</th>
                   <th>Outcome 2022</th>
+                  <th></th>
                   <th>Status</th>
                   <th>Remove</th>
                 </tr>
@@ -85,7 +86,6 @@
             
             [#-- Add a new Outcomes --]
             [#if canEdit]
-              [#if !reportingActive]
               <div class="addNewOutcome">
                 <div class="outcomesListBlock">
                   <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
@@ -97,56 +97,9 @@
                   </a>
                 </div>
               </div>
-              [/#if]
             [/#if] 
           </div> 
-           
-          [#-- Further Flagship Contributions  --]
-          [#if reportingActive]
-            <br />
-            <h3 class="headTitle">[@customForm.text name="projectContributionsCrpList.flagshipContribution" /] </h3>
-            [#-- Tabs --]
-            <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
-              [#list startYear .. endYear as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
-              [/#list]
-            </ul> 
-            [#-- Tabs Content --]
-            <div class="tab-content projectOutcomeYear-content">
-              [#list startYear .. endYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-                  [#-- Contribution(s) to other flagships outcomes --]
-                  [@customForm.text name="projectContributionsCrpList.projectContributedOtherFlagships" readText=!editable /]
-                  [#-- Others impact pathways contributions --]
-                  <div class="otherContributionsBlock">
-                    [#if project.otherContributions?has_content]
-                      [#list project.otherContributions as element]
-                        [@otherContributionMacro element=element name="" index=element_index /] 
-                      [/#list]
-                    [#else]
-                      [@otherContributionMacro element={} name="" index=0 /] 
-                      [#-- <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div> --]
-                    [/#if]
-                  </div>
-                  [#-- Add contribution button --]
-                  [#if editable] 
-                    <div class="addOtherContribution bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="projectOtherContributions.addOtherContribution"/]</div>
-                  [/#if]
-                  <div class="clearfix"></div> 
-                </div>
-              [/#list]
-            </div>
-          [/#if]
-          
-          [#if reportingActive]  
-            [#-- Section Buttons & hidden inputs--]
-            [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-          [#else]
-            [#-- Hidden parameters --]
-            <input type="hidden" name="projectID" value="${projectID}"/>
-          [/#if]
-          
-        [/@s.form] 
+      
       </div>
     </div>  
 </section>
@@ -169,23 +122,40 @@
       <td class="text-center">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</td>
       [#-- Title --]
       <td>
+        [#-- isThisComplete --]
+        [#local objectStatus = (action.getProjectOutcomeStatus(projectOutcome.id))!{}]
+        [#if objectStatus?has_content]
+          [#if !(objectStatus.missingFields)?has_content]
+            [#assign isThisComplete = true /]
+          [#else]
+            [#assign isThisComplete = false /]
+          [/#if]
+        [#else]
+            [#assign isThisComplete = false /]
+        [/#if]
+      
         [#-- Draft Tag --]
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+        
+        [#-- Report --]
+        [#if reportingActive && !isThisComplete]
+          <span class="label label-primary" title="Required for reporting"><span class="glyphicon glyphicon-flash" ></span> Report</span>
+        [/#if]
+        
         <a href="${projectOutcomeUrl}">
           ${projectOutcome.crpProgramOutcome.description}
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
             [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
         </a>
-       [#if !isTemplate]
-        <div class="pull-right">
-          [@popUps.relationsMacro element=projectOutcome /]
-        </div>
-      [/#if]
+        
+      </td>
+      <td>
+        [#if !isTemplate][@popUps.relationsMacro element=projectOutcome labelText=false /]</div>[/#if]
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
-        [#if action.getProjectOutcomeStatus(projectOutcome.id)??]
+        [#if action.getProjectOutcomeStatus(projectOutcome.id)?? ]
           [#if !((action.getProjectOutcomeStatus(projectOutcome.id)).missingFields)?has_content]
             <span class="icon-20 icon-check" title="Complete"></span>
           [#else]
@@ -197,7 +167,7 @@
       </td>
       [#-- Remove Contribution--]
       <td class="text-center">
-        [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" )]
+        [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" ) && !action.isCenterGlobalUnit() ]
           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
             <img src="${baseUrl}/global/images/trash.png" />
           </a>

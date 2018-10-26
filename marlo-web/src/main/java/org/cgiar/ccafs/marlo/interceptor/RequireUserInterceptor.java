@@ -45,17 +45,29 @@ public class RequireUserInterceptor extends AbstractInterceptor {
     LOG.debug("=> RequireUserInterceptor");
     Map<String, Object> session = invocation.getInvocationContext().getSession();
     User user = (User) session.get(APConstants.SESSION_USER);
-    if (user != null) {
+    if (user != null && user.getId() != null) {
       BaseAction action = (BaseAction) invocation.getAction();
+      // set the session to the BaseAction.
+      action.setSession(session);
       if (action.getActualPhase() != null) {
         return invocation.invoke();
       } else {
-        return BaseAction.NOT_LOGGED;
+        /**
+         * This is problematic as any exceptions caught in the action.getActualPhase method, return
+         * a default phase.
+         */
+        return this.sendUserToLoginScreen(session);
       }
     } else {
-      return BaseAction.NOT_LOGGED;
+      return this.sendUserToLoginScreen(session);
     }
 
+  }
+
+  private String sendUserToLoginScreen(Map<String, Object> session) {
+    // Clear the session - to avoid a half complete session.
+    session.clear();
+    return BaseAction.NOT_LOGGED;
   }
 
 }

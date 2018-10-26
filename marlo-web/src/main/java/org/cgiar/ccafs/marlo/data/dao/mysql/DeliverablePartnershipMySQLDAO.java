@@ -78,6 +78,23 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
 
 
   @Override
+  public List<DeliverablePartnership> findByDeliverablePhaseAndType(long deliverableId, long phaseId,
+    String partnerType) {
+    String query =
+      "select dp from DeliverablePartnership as dp inner join dp.projectPartner as pp left join dp.projectPartnerPerson as ppp where dp.active is true "
+        + "and dp.partnerType = :partnerType and dp.deliverable.id = :deliverableId and dp.phase.id = :phaseId and "
+        + "pp.phase.id = :phaseId and pp.id =dp.projectPartner.id order by dp.id DESC";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("partnerType", partnerType);
+    createQuery.setParameter("phaseId", phaseId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+    return deliverablePartnerships;
+  }
+
+  @Override
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
     Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType) {
     StringBuilder query = new StringBuilder();
@@ -88,6 +105,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     query.append("WHERE ");
     query.append("dp.deliverable_id = " + deliverableID);
     query.append(" and dp.id_phase = " + phase);
+    query.append(" and dp.is_active = 1");
     query.append(" and dp.partner_type = '" + partnerType + "'");
     query.append(" and dp.project_partner_id = " + projectPartnerId);
     if (projectPartnerPersonId != null) {
@@ -100,7 +118,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       query.append(" and dp.division_id IS NULL");
     }
-
+    query.append(" order by dp.id DESC");
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<DeliverablePartnership> DeliverablePartnerships = new ArrayList<>();
@@ -126,6 +144,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
 
     return deliverablePartnerships;
   }
+
 
   @Override
   public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,

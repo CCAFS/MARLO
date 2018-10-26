@@ -21,6 +21,10 @@ import org.cgiar.ccafs.marlo.data.dao.CrpOutcomeSubIdoDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dao.PowbIndAssesmentRiskDAO;
+import org.cgiar.ccafs.marlo.data.dao.PowbIndFollowingMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.dao.PowbIndMilestoneRiskDAO;
+import org.cgiar.ccafs.marlo.data.dao.RepIndGenderYouthFocusLevelDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
@@ -28,6 +32,10 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk;
+import org.cgiar.ccafs.marlo.data.model.PowbIndFollowingMilestone;
+import org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +55,10 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   private CrpAssumptionDAO crpAssumptionDAO;
   private CrpMilestoneDAO crpMilestoneDAO;
   private CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO;
+  private PowbIndFollowingMilestoneDAO powbIndFollowingMilestoneDAO;
+  private PowbIndAssesmentRiskDAO powbIndAssesmentRiskDAO;
+  private PowbIndMilestoneRiskDAO powbIndMilestoneRiskDAO;
+  private RepIndGenderYouthFocusLevelDAO repIndGenderYouthFocusLevelDAO;
 
   private PhaseDAO phaseMySQLDAO;
 
@@ -56,14 +68,19 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   @Inject
   public CrpProgramOutcomeManagerImpl(CrpProgramOutcomeDAO crpProgramOutcomeDAO,
     CrpOutcomeSubIdoDAO crpOutcomeSubIdoDAO, CrpAssumptionDAO crpAssumptionDAO, PhaseDAO phaseMySQLDAO,
-    CrpMilestoneDAO crpMilestoneDAO, CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO) {
+    CrpMilestoneDAO crpMilestoneDAO, CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO,
+    PowbIndFollowingMilestoneDAO powbIndFollowingMilestoneDAO, PowbIndAssesmentRiskDAO powbIndAssesmentRiskDAO,
+    PowbIndMilestoneRiskDAO powbIndMilestoneRiskDAO, RepIndGenderYouthFocusLevelDAO repIndGenderYouthFocusLevelDAO) {
     this.crpProgramOutcomeDAO = crpProgramOutcomeDAO;
     this.crpOutcomeSubIdoDAO = crpOutcomeSubIdoDAO;
     this.crpAssumptionDAO = crpAssumptionDAO;
     this.crpProgramOutcomeIndicatorDAO = crpProgramOutcomeIndicatorDAO;
     this.crpMilestoneDAO = crpMilestoneDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
-
+    this.powbIndFollowingMilestoneDAO = powbIndFollowingMilestoneDAO;
+    this.powbIndAssesmentRiskDAO = powbIndAssesmentRiskDAO;
+    this.powbIndMilestoneRiskDAO = powbIndMilestoneRiskDAO;
+    this.repIndGenderYouthFocusLevelDAO = repIndGenderYouthFocusLevelDAO;
 
   }
 
@@ -80,11 +97,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     if (crpProgramOutcome.getIndicators() != null) {
       for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcome.getIndicators()) {
         CrpProgramOutcomeIndicator crpIndicatorAdd = new CrpProgramOutcomeIndicator();
-        crpIndicatorAdd.setActive(true);
-        crpIndicatorAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-        crpIndicatorAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
-        crpIndicatorAdd.setModificationJustification("");
-        crpIndicatorAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
         crpIndicatorAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
         crpIndicatorAdd.setIndicator(crpProgramOutcomeIndicator.getIndicator());
         crpIndicatorAdd.setComposeID(crpProgramOutcomeIndicator.getComposeID());
@@ -112,11 +124,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     if (crpProgramOutcome.getMilestones() != null) {
       for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
         CrpMilestone crpMilestoneAdd = new CrpMilestone();
-        crpMilestoneAdd.setActive(true);
-        crpMilestoneAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-        crpMilestoneAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
-        crpMilestoneAdd.setModificationJustification("");
-        crpMilestoneAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
         crpMilestoneAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
         crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
         crpMilestoneAdd.setTitle(crpMilestone.getTitle());
@@ -148,11 +155,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         && c.getComposeID().equals(outcome.getComposeID())).collect(Collectors.toList());
     if (outcomes.isEmpty()) {
       CrpProgramOutcome outcomeAdd = new CrpProgramOutcome();
-      outcomeAdd.setActive(true);
-      outcomeAdd.setActiveSince(outcome.getActiveSince());
-      outcomeAdd.setCreatedBy(outcome.getCreatedBy());
-      outcomeAdd.setModificationJustification(outcome.getModificationJustification());
-      outcomeAdd.setModifiedBy(outcome.getModifiedBy());
       outcomeAdd.setPhase(phase);
       outcomeAdd.setCrpProgram(outcome.getCrpProgram());
       outcomeAdd.setSrfTargetUnit(outcome.getSrfTargetUnit());
@@ -213,11 +215,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     if (crpProgramOutcome.getSubIdos() != null) {
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
         CrpOutcomeSubIdo crpOutcomeSubIdoAdd = new CrpOutcomeSubIdo();
-        crpOutcomeSubIdoAdd.setActive(true);
-        crpOutcomeSubIdoAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-        crpOutcomeSubIdoAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
-        crpOutcomeSubIdoAdd.setModificationJustification("");
-        crpOutcomeSubIdoAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
         crpOutcomeSubIdoAdd.setContribution(crpOutcomeSubIdo.getContribution());
         crpOutcomeSubIdoAdd.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
         crpOutcomeSubIdoAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
@@ -225,13 +222,8 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           CrpAssumption crpAssumptionAdd = new CrpAssumption();
-          crpAssumptionAdd.setActive(true);
-          crpAssumptionAdd.setActiveSince(crpProgramOutcome.getActiveSince());
-          crpAssumptionAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
           crpAssumptionAdd.setCrpOutcomeSubIdo(crpOutcomeSubIdoAdd);
           crpAssumptionAdd.setDescription(crpAssumption.getDescription());
-          crpAssumptionAdd.setModificationJustification("");
-          crpAssumptionAdd.setModifiedBy(crpProgramOutcome.getModifiedBy());
           crpAssumptionDAO.save(crpAssumptionAdd);
 
         }
@@ -288,8 +280,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       if (programOutcome.getSubIdos() == null || programOutcome.getSubIdos().stream()
         .filter(c -> c.getSrfSubIdo() != null && c.getSrfSubIdo().equals(outcomeSubIdo.getSrfSubIdo()))
         .collect(Collectors.toList()).isEmpty()) {
-        outcomeSubIdo.setActive(false);
-        crpOutcomeSubIdoDAO.save(outcomeSubIdo);
+        crpOutcomeSubIdoDAO.deleteCrpOutcomeSubIdo(outcomeSubIdo.getId());
       }
     }
     if (programOutcome.getSubIdos() != null) {
@@ -301,11 +292,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           CrpOutcomeSubIdo outcomeSubIdoAdd = new CrpOutcomeSubIdo();
 
           outcomeSubIdoAdd.setCrpProgramOutcome(programOutcomePrev);
-          outcomeSubIdoAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
-          outcomeSubIdoAdd.setActive(true);
-          outcomeSubIdoAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          outcomeSubIdoAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
-          outcomeSubIdoAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
           outcomeSubIdoAdd.setContribution(outcomeSubIdo.getContribution());
           outcomeSubIdoAdd.setSrfSubIdo(outcomeSubIdo.getSrfSubIdo());
           crpOutcomeSubIdoDAO.save(outcomeSubIdoAdd);
@@ -327,8 +313,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       if (programOutcome.getIndicators() == null || programOutcome.getIndicators().stream()
         .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpProgramOutcomeIndicator.getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        crpProgramOutcomeIndicator.setActive(false);
-        crpProgramOutcomeIndicatorDAO.save(crpProgramOutcomeIndicator);
+        crpProgramOutcomeIndicatorDAO.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
       }
     }
     if (programOutcome.getIndicators() != null) {
@@ -340,11 +325,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
 
 
           CrpProgramOutcomeIndicator crpIndicatorAdd = new CrpProgramOutcomeIndicator();
-          crpIndicatorAdd.setActive(true);
-          crpIndicatorAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          crpIndicatorAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
-          crpIndicatorAdd.setModificationJustification("");
-          crpIndicatorAdd.setModifiedBy(programOutcomePrev.getCreatedBy());
           crpIndicatorAdd.setCrpProgramOutcome(programOutcomePrev);
           crpIndicatorAdd.setIndicator(crpProgramOutcomeIndicator.getIndicator());
           crpIndicatorAdd.setComposeID(crpProgramOutcomeIndicator.getComposeID());
@@ -382,8 +362,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       if (programOutcome.getMilestones() == null || programOutcome.getMilestones().stream()
         .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpMilestone.getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        crpMilestone.setActive(false);
-        crpMilestoneDAO.save(crpMilestone);
+        crpMilestoneDAO.deleteCrpMilestone(crpMilestone.getId());
       }
     }
     if (programOutcome.getMilestones() != null) {
@@ -395,16 +374,78 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           CrpMilestone crpMilestoneAdd = new CrpMilestone();
 
           crpMilestoneAdd.setCrpProgramOutcome(programOutcomePrev);
-          crpMilestoneAdd.setModifiedBy(programOutcomePrev.getModifiedBy());
-          crpMilestoneAdd.setActive(true);
-          crpMilestoneAdd.setActiveSince(programOutcomePrev.getActiveSince());
-          crpMilestoneAdd.setModificationJustification(programOutcomePrev.getModificationJustification());
-          crpMilestoneAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           crpMilestoneAdd.setTitle(crpMilestone.getTitle());
           crpMilestoneAdd.setValue(crpMilestone.getValue());
           crpMilestoneAdd.setYear(crpMilestone.getYear());
+
+
+          /* POWB 2019 */
+
+
+          crpMilestoneAdd.setPowbMilestoneOtherRisk(crpMilestone.getPowbMilestoneOtherRisk());
+          crpMilestoneAdd.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
+
+
+          if (crpMilestone.getPowbIndAssesmentRisk() != null) {
+            if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
+              PowbIndAssesmentRisk powbIndAssesmentRisk =
+                powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
+              crpMilestoneAdd.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+            }
+          }
+
+          if (crpMilestone.getPowbIndMilestoneRisk() != null) {
+            if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
+              PowbIndMilestoneRisk powbIndMilestoneRisk =
+                powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
+              crpMilestoneAdd.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+            }
+          }
+
+          if (crpMilestone.getPowbIndFollowingMilestone() != null) {
+            if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
+              PowbIndFollowingMilestone powbIndFollowingMilestone =
+                powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
+              crpMilestoneAdd.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+            }
+          }
+
+          if (crpMilestone.getYouthFocusLevel() != null) {
+            if (crpMilestone.getYouthFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
+              crpMilestoneAdd.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          if (crpMilestone.getClimateFocusLevel() != null) {
+            if (crpMilestone.getClimateFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
+              crpMilestoneAdd.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          if (crpMilestone.getCapdevFocusLevel() != null) {
+            if (crpMilestone.getCapdevFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
+              crpMilestoneAdd.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          if (crpMilestone.getGenderFocusLevel() != null) {
+            if (crpMilestone.getGenderFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
+              crpMilestoneAdd.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          /* */
+
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
           if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().length() == 0) {
@@ -421,6 +462,68 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           milestonetoUpdate.setYear(crpMilestone.getYear());
           milestonetoUpdate.setValue(crpMilestone.getValue());
+          /* POWB 2019 */
+
+          milestonetoUpdate.setPowbMilestoneOtherRisk(crpMilestone.getPowbMilestoneOtherRisk());
+          milestonetoUpdate.setPowbMilestoneVerification(crpMilestone.getPowbMilestoneVerification());
+
+          if (crpMilestone.getPowbIndAssesmentRisk() != null) {
+            if (crpMilestone.getPowbIndAssesmentRisk().getId() != null) {
+              PowbIndAssesmentRisk powbIndAssesmentRisk =
+                powbIndAssesmentRiskDAO.find(crpMilestone.getPowbIndAssesmentRisk().getId());
+              milestonetoUpdate.setPowbIndAssesmentRisk(powbIndAssesmentRisk);
+            }
+          }
+
+          if (crpMilestone.getPowbIndMilestoneRisk() != null) {
+            if (crpMilestone.getPowbIndMilestoneRisk().getId() != null) {
+              PowbIndMilestoneRisk powbIndMilestoneRisk =
+                powbIndMilestoneRiskDAO.find(crpMilestone.getPowbIndMilestoneRisk().getId());
+              milestonetoUpdate.setPowbIndMilestoneRisk(powbIndMilestoneRisk);
+            }
+          }
+
+          if (crpMilestone.getPowbIndFollowingMilestone() != null) {
+            if (crpMilestone.getPowbIndFollowingMilestone().getId() != null) {
+              PowbIndFollowingMilestone powbIndFollowingMilestone =
+                powbIndFollowingMilestoneDAO.find(crpMilestone.getPowbIndFollowingMilestone().getId());
+              milestonetoUpdate.setPowbIndFollowingMilestone(powbIndFollowingMilestone);
+            }
+          }
+
+          if (crpMilestone.getYouthFocusLevel() != null) {
+            if (crpMilestone.getYouthFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getYouthFocusLevel().getId());
+              milestonetoUpdate.setYouthFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          if (crpMilestone.getClimateFocusLevel() != null) {
+            if (crpMilestone.getClimateFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getClimateFocusLevel().getId());
+              milestonetoUpdate.setClimateFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          if (crpMilestone.getCapdevFocusLevel() != null) {
+            if (crpMilestone.getCapdevFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getCapdevFocusLevel().getId());
+              milestonetoUpdate.setCapdevFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          if (crpMilestone.getGenderFocusLevel() != null) {
+            if (crpMilestone.getGenderFocusLevel().getId() != null) {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+                repIndGenderYouthFocusLevelDAO.find(crpMilestone.getGenderFocusLevel().getId());
+              milestonetoUpdate.setGenderFocusLevel(repIndGenderYouthFocusLevel);
+            }
+          }
+
+          /*  */
           crpMilestoneDAO.save(milestonetoUpdate);
         }
       }

@@ -155,7 +155,7 @@ p.contributioRem {
 
 /* Tabs */
 
-.tab-content {
+.tab-content.impactpathwayTabContent{
     border: 1px solid #d1d1d1;
     padding: 25px 1.5em 25px 1.5em;
     border-radius: 0px 4px 4px 4px;

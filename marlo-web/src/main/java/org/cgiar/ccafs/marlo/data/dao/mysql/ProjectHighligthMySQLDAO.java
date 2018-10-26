@@ -17,12 +17,14 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -81,11 +83,12 @@ public class ProjectHighligthMySQLDAO extends AbstractMarloDAO<ProjectHighlight,
   }
 
   @Override
-  public ProjectHighlight save(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
+  public ProjectHighlight save(ProjectHighlight projectHighlight, String section, List<String> relationsName,
+    Phase phase) {
     if (projectHighlight.getId() == null) {
-      super.saveEntity(projectHighlight, section, relationsName);
+      super.saveEntity(projectHighlight, section, relationsName, phase);
     } else {
-      projectHighlight = super.update(projectHighlight, section, relationsName);
+      projectHighlight = super.update(projectHighlight, section, relationsName, phase);
     }
     return projectHighlight;
   }

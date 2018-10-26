@@ -16,19 +16,23 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ProjectHighlightInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,6 +45,7 @@ public class ProjectHighListAction extends BaseAction {
 
   // Manager
   private ProjectHighligthManager projectHighligthManager;
+  private ProjectHighlightInfoManager projectHighlightInfoManager;
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
 
@@ -50,61 +55,62 @@ public class ProjectHighListAction extends BaseAction {
   // Model for the front-end
   private long projectID;
   private long higlightID;
-
   private List<Integer> allYears;
 
   @Inject
   public ProjectHighListAction(APConfig config, ProjectHighligthManager projectHighligthManager,
-    SectionStatusManager sectionStatusManager, ProjectManager projectManager) {
+    SectionStatusManager sectionStatusManager, ProjectManager projectManager,
+    ProjectHighlightInfoManager projectHighlightInfoManager) {
     super(config);
     this.projectHighligthManager = projectHighligthManager;
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
+    this.projectHighlightInfoManager = projectHighlightInfoManager;
   }
 
   @Override
   public String add() {
     ProjectHighlight projectHighlight = new ProjectHighlight();
     // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
-    projectHighlight.setYear(new Long(this.getCurrentCycleYear()));
-    projectHighlight.setModifiedBy(this.getCurrentUser());
-    projectHighlight.setActiveSince(new Date());
-    projectHighlight.setAuthor("");
     // newDeliverable.setContributor("");
     // newDeliverable.setCoverage("");
-    projectHighlight.setCreatedBy(this.getCurrentUser());
-    projectHighlight.setDescription("");
 
-
-    projectHighlight.setActive(true);
     // newDeliverable.setIsGlobal(false);
-    projectHighlight.setKeywords("");
     // newDeliverable.setLeader(0);
-    projectHighlight.setLinks("");
     // newDeliverable.setObjectives("");
-    projectHighlight.setPartners("");
     projectHighlight.setProject(project);
     // newDeliverable.setPublisher("");
     // newDeliverable.setRelation("");
-    projectHighlight.setResults("");
     // newDeliverable.setRights("");
     Calendar cal = Calendar.getInstance();
     cal.set(Calendar.YEAR, this.getCurrentCycleYear());
     cal.set(Calendar.DAY_OF_YEAR, 1);
     Date start = cal.getTime();
-    projectHighlight.setStartDate(start);
+
     cal.set(Calendar.YEAR, this.getCurrentCycleYear());
     cal.set(Calendar.MONTH, 11); // 11 = december
     cal.set(Calendar.DAY_OF_MONTH, 31); // new years eve
 
 
-    projectHighlight.setEndDate(cal.getTime());
-    projectHighlight.setStatus(new Long(1));
-    projectHighlight.setSubject("");
-    projectHighlight.setTitle("");
-    projectHighlight.setModificationJustification("");
-
     projectHighlight = projectHighligthManager.saveProjectHighligth(projectHighlight);
+    ProjectHighlightInfo projectHighlightInfo = new ProjectHighlightInfo();
+    projectHighlightInfo.setKeywords("");
+    projectHighlightInfo.setStartDate(start);
+    projectHighlightInfo.setYear(new Long(this.getCurrentCycleYear()));
+
+    projectHighlightInfo.setAuthor("");
+
+    projectHighlightInfo.setDescription("");
+    projectHighlightInfo.setLinks("");
+    projectHighlightInfo.setPartners("");
+    projectHighlightInfo.setResults("");
+    projectHighlightInfo.setEndDate(cal.getTime());
+    projectHighlightInfo.setStatus(new Long(1));
+    projectHighlightInfo.setSubject("");
+    projectHighlightInfo.setTitle("");
+    projectHighlightInfo.setProjectHighlight(projectHighlight);
+    projectHighlightInfo.setPhase(this.getActualPhase());
+    projectHighlightInfoManager.saveProjectHighlightInfo(projectHighlightInfo);
     higlightID = projectHighlight.getId();
 
     if (higlightID > 0) {
@@ -185,8 +191,12 @@ public class ProjectHighListAction extends BaseAction {
 
     List<ProjectHighlight> hightLihglihts =
       project.getProjectHighligths().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    project.setHighligths(hightLihglihts);
-
+    project.setHighligths(new ArrayList<ProjectHighlight>());
+    for (ProjectHighlight projectHighlight : hightLihglihts) {
+      if (projectHighlight.getProjectHighlightInfo(this.getActualPhase()) != null) {
+        project.getHighligths().add(projectHighlight);
+      }
+    }
     // Initializing Section Statuses:
 
 

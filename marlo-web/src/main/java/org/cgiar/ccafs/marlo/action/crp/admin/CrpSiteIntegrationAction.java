@@ -45,7 +45,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,11 +127,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
       .collect(Collectors.toList());
 
     if (userCrp == null || userCrp.isEmpty()) {
-      crpUser.setActive(true);
-      crpUser.setActiveSince(new Date());
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
   }
@@ -238,9 +232,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
         config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
 
-      // Saving the new user configuration.
-      // user.setActive(true);
-      // userManager.saveUser(user, this.getCurrentUser());
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
       mapUser.put("password", password);
@@ -249,12 +240,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
       // Send UserManual.pdf
       String contentType = "application/pdf";
-      String fileName = "Introduction_To_MARLO_v2.2.pdf";
+      String fileName = "Introduction_To_MARLO_v2.4.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/custom/Introduction_To_MARLO_v2.2.pdf");
+        inputStream = this.getClass().getResourceAsStream("/custom/Introduction_To_MARLO_v2.4.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
@@ -401,11 +392,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
         siteIntegration.setLocElement(locElement);
         siteIntegration.setCrp(loggedCrp);
-        siteIntegration.setActive(true);
-        siteIntegration.setModifiedBy(this.getCurrentUser());
-        siteIntegration.setCreatedBy(this.getCurrentUser());
-        siteIntegration.setModificationJustification("");
-        siteIntegration.setActiveSince(new Date());
 
         locElement.setIsSiteIntegration(true);
         locElementManager.saveLocElement(locElement);
@@ -418,11 +404,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
             sitesLeader.setCrpsSiteIntegration(siteIntegration);
             sitesLeader.setUser(userSiteLeader);
-            sitesLeader.setActive(true);
-            sitesLeader.setModifiedBy(this.getCurrentUser());
-            sitesLeader.setCreatedBy(this.getCurrentUser());
-            sitesLeader.setModificationJustification("");
-            sitesLeader.setActiveSince(new Date());
             crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
 
             UserRole userRole = new UserRole(slRole, userSiteLeader);
@@ -444,11 +425,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
               sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
               sitesLeader.setUser(userSiteLeader);
-              sitesLeader.setActive(true);
-              sitesLeader.setModifiedBy(this.getCurrentUser());
-              sitesLeader.setCreatedBy(this.getCurrentUser());
-              sitesLeader.setModificationJustification("");
-              sitesLeader.setActiveSince(new Date());
               crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
 
               UserRole userRole = new UserRole(slRole, userSiteLeader);

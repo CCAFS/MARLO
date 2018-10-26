@@ -50,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +117,8 @@ public class ProjectCaseStudyAction extends BaseAction {
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
   private String transaction;
+
+  private CaseStudy caseStudyDB;
 
   @Inject
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
@@ -357,11 +358,14 @@ public class ProjectCaseStudyAction extends BaseAction {
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive() && cs.isCreated())
-        .collect(Collectors.toList()).get(0).getProject().getId();
+      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive()).collect(Collectors.toList()).get(0)
+        .getProject().getId();
     }
 
     project = projectManager.getProjectById(projectID);
+
+
+    caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CASE_STUDY_BASE_PERMISSION, params));
@@ -401,16 +405,12 @@ public class ProjectCaseStudyAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_PROJECTS_RELATION);
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_INDICATORS_RELATION);
       CaseStudy caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
-      caseStudy.setActiveSince(new Date());
-      caseStudy.setModifiedBy(this.getCurrentUser());
       caseStudy.setModificationJustification(this.getJustification());
-      caseStudy.setCreatedBy(caseStudyDB.getCreatedBy());
       if (file != null) {
         caseStudy.setFile(this.getFileDB(caseStudyDB.getFile(), file, fileFileName, this.getCaseStudyPath()));
 
         FileManager.copyFile(file, this.getCaseStudyPath() + fileFileName);
         LOG.info("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
-        System.out.println("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
 
       }
 
@@ -428,9 +428,11 @@ public class ProjectCaseStudyAction extends BaseAction {
         }
       }
       for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
+        // This logic seems wrong. Shouldn't objects with null id be persisted to the database as new objects?
         if (caseStudyProject.getId() == null || caseStudyProject.getId().longValue() == -1) {
           caseStudyProject.setCreated(false);
           caseStudyProject.setCaseStudy(caseStudy);
+          // Setting the id to null will create a new instance. -- not sure if the developer knows what they are doing.
           caseStudyProject.setId(null);
           caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
         }
@@ -455,9 +457,11 @@ public class ProjectCaseStudyAction extends BaseAction {
           }
         }
       }
-
-      caseStudy.setActive(true);
-
+      /**
+       * The following is required because we need to update something on the @CaseStudy if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(caseStudy);
       caseStudyManager.saveCaseStudy(caseStudy, this.getActionName(), relationsName);
 
       if (path.toFile().exists()) {

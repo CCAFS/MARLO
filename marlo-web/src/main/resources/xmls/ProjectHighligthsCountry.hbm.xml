@@ -4,17 +4,20 @@
 <!-- Generated Dec 5, 2016 1:23:27 PM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
     <class name="org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry" table="project_highlights_country"  optimistic-lock="none">
-        <id name="id" type="java.lang.Integer">
+        <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
         </id>
         <many-to-one name="projectHighligth" class="org.cgiar.ccafs.marlo.data.model.ProjectHighlight" fetch="select">
             <column name="project_highlights_id" not-null="true" />
         </many-to-one>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
         
           <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
             <column name="id_country" not-null="true" />
         </many-to-one>
- 
+
     </class>
 </hibernate-mapping>

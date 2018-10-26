@@ -43,7 +43,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -332,8 +331,13 @@ public class ProjectPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
-      projectDB.setActiveSince(new Date());
-      projectDB.setModifiedBy(this.getCurrentUser());
+
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in the
+       * auditlog table.
+       */
+      this.setModificationJustification(projectDB);
+
       projectDB = projectService.saveCenterProject(projectDB, this.getActionName(), relationsName);
 
       project = projectDB;
@@ -415,11 +419,6 @@ public class ProjectPartnersAction extends BaseAction {
         if (projectPartner.getId() == null) {
 
           CenterProjectPartner partnerNew = new CenterProjectPartner();
-          partnerNew.setActive(true);
-          partnerNew.setActiveSince(new Date());
-          partnerNew.setCreatedBy(this.getCurrentUser());
-          partnerNew.setModifiedBy(this.getCurrentUser());
-          partnerNew.setModificationJustification("");
           partnerNew.setProject(projectSave);
 
           Institution institution = institutionService.getInstitutionById(projectPartner.getInstitution().getId());
@@ -431,11 +430,6 @@ public class ProjectPartnersAction extends BaseAction {
             for (CenterProjectPartnerPerson partnerPerson : projectPartner.getUsers()) {
 
               CenterProjectPartnerPerson partnerPersonNew = new CenterProjectPartnerPerson();
-              partnerPersonNew.setActive(true);
-              partnerPersonNew.setActiveSince(new Date());
-              partnerPersonNew.setCreatedBy(this.getCurrentUser());
-              partnerPersonNew.setModifiedBy(this.getCurrentUser());
-              partnerPersonNew.setModificationJustification("");
 
               partnerPersonNew.setProjectPartner(partnerNew);
 
@@ -455,12 +449,6 @@ public class ProjectPartnersAction extends BaseAction {
               if (partnerPerson.getId() == null) {
 
                 CenterProjectPartnerPerson partnerPersonNew = new CenterProjectPartnerPerson();
-                partnerPersonNew.setActive(true);
-                partnerPersonNew.setActiveSince(new Date());
-                partnerPersonNew.setCreatedBy(this.getCurrentUser());
-                partnerPersonNew.setModifiedBy(this.getCurrentUser());
-                partnerPersonNew.setModificationJustification("");
-
 
                 partnerPersonNew.setProjectPartner(partnerNew);
 

@@ -78,12 +78,38 @@ public class Permission {
   public static final String POWB_SYNTHESIS_MANAGE_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage";
   public static final String POWB_SYNTHESIS_SUBMISSION_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage:canSubmmit";
 
+  // Report Synthesis
+  public static final String REPORT_SYNTHESIS_PERMISSION = "crp:{0}:reportSynthesis:{1}:canEdit";
+  public static final String REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:crpProgress";
+  public static final String REPORT_SYNTHESIS_MELIA_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:melia";
+  public static final String REPORT_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:governance";
+  public static final String REPORT_SYNTHESIS_FINANCIAL_SUMMARY_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:financial";
+  public static final String REPORT_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:risks";
+  public static final String REPORT_SYNTHESIS_CROSS_CUTTING_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:ccDimensions";
+  public static final String REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:flagshipProgress";
+  public static final String REPORT_SYNTHESIS_PROGRAM_VARIANCE_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:plannedVariance";
+  public static final String REPORT_SYNTHESIS_FUNDING_USE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:fundingUse";
+  public static final String REPORT_SYNTHESIS_EFFICIENCY_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:efficiency";
+  public static final String REPORT_SYNTHESIS_EXTERNAL_PARTNERSHIP_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:externalPartnerships";
+  public static final String REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:influence";
+  public static final String REPORT_SYNTHESIS_CONTROL_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:control";
+
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
 
+  public static final String REPORT_SYNTHESIS_CROSS_CGIAR_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:crossPartnerships";
 
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
 
+  public static final String SHARED_PROJECT_BASE_PERMISSION = "crp:{0}:sharedProjects";
+  public static final String SHARED_PROJECT_PERMISSION = "crp:{0}:sharedProjects:canEdit";
 
   public static final String PROJECT__SWITCH = "crp:{0}:project:{1}:projectSwitch";
   public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:canEdit";
@@ -112,15 +138,24 @@ public class Permission {
   public static final String PROJECT_CASE_STUDY_EDIT_PERMISSION = "crp:{0}:project:{1}:caseStudies:canEdit";
   public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities";
   public static final String PROJECT_EXPECTED_STUDIES_BASE_PERMISSION = "crp:{0}:project:{1}:expectedStudies";
+  public static final String PROJECT_EXPECTED_STUDIES_EDIT_PERMISSION = "crp:{0}:project:{1}:expectedStudies:canEdit";
+
+  public static final String STUDIES_BASE_PERMISSION = "crp:{0}:studies:{1}";
+  public static final String STUDIES_EDIT_PERMISSION = "crp:{0}:studies:{1}:canEdit";
+  public static final String STUDIES_FULL_EDIT_PERMISSION = "crp:{0}:studies:*";
+
+  public static final String PROJECT_INNOVATIONS_BASE_PERMISSION = "crp:{0}:project:{1}:innovations";
+  public static final String PROJECT_INNOVATIONS_EDIT_PERMISSION = "crp:{0}:project:{1}:innovations:canEdit";
 
   public static final String PROJECT_FUNDING_SOURCE_BASE_PERMISSION = "crp:{0}:fundingSource:{1}:canEdit";
   public static final String PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION = "crp:{0}:fundingSource:{1}:budget";
   public static final String PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION = "crp:{0}:fundingSource:budget";
 
 
-  public static final String PUBLICATION_ADD = "crp:{0}:publication:add";
-  public static final String PUBLICATION_INSTITUTION = "crp:{0}:publication:{1}:*";
   public static final String PUBLICATION_FULL_PERMISSION = "crp:{0}:publication:*";
+  public static final String PUBLICATION_PERMISSION = "crp:{0}:publication:{1}:*";
+
+  public static final String PUBLICATION_ADD = "crp:{0}:publication:add";
   public static final String PUBLICATION_BASE_INSTITUTION = "crp:{0}:publication:{1}";
   public static final String PUBLICATION_BASE_FULL_PERMISSION = "crp:{0}:publication";
 
@@ -169,6 +204,11 @@ public class Permission {
   public static final String CENTER_PROJECT_SUBMISSION_PERMISSION =
     "center:{0}:area:{1}:program:{2}:project:{3}:submitProject";
 
+
+  // CapDev
+  public static final String CAP_DEV_FULL_PERMISSION = "crp:{0}:capDev:*";
+  public static final String CAP_DEV_PERMISSION = "crp:{0}:capDev";
+
   /**
    * REST API Permissions
    */
@@ -192,4 +232,12 @@ public class Permission {
   public static final String CRPS_UPDATE_REST_API_PERMISSION = "api:crps:update";
   public static final String CRPS_DELETE_REST_API_PERMISSION = "api:crps:delete";
   public static final String CRPS_FULL_REST_API_PERMISSION = "api:crps:*";
+
+
+  // CrpProgram
+  public static final String CRP_PROGRAM_READ_REST_API_PERMISSION = "api:crpProgram:read";
+  public static final String CRP_PROGRAM_CREATE_REST_API_PERMISSION = "api:crpProgram:create";
+  public static final String CRP_PROGRAM_UPDATE_REST_API_PERMISSION = "api:crpProgram:update";
+  public static final String CRP_PROGRAM_DELETE_REST_API_PERMISSION = "api:crpProgram:delete";
+  public static final String CRP_PROGRAM_FULL_REST_API_PERMISSION = "api:crpProgram:*";
 }

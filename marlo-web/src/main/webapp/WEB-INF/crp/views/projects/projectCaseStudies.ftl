@@ -29,14 +29,11 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="projectCaseStudies.help" /] </p>
+    <p class="col-md-10"> [@s.text name="projectStudies.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
-[#if (!availabePhase)!false]
-  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
-[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -50,20 +47,29 @@
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
         
         [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
-          <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudiestitle" /]</h3>
           
-          [#-- Outcome case studies list --]
+          [#-- Studies list --]
+          <h3 class="headTitle">[@s.text name="projectStudies.caseStudiestitle" /]</h3>
           <div id="caseStudiesBlock" class="simpleBox">
             [@tableList list=(project.caseStudies)![]  /]
           </div>
           [#-- Add a new --]
           [#if action.canEdit()] 
-          <div class="text-right"> 
+          <div class="text-right">
             <a class="button-blue" href="[@s.url action='${crpSession}/addNewCaseStudy'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="projectCaseStudies.addCaseStudy" /]
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addOutcomeCaseStudy" /]
+            </a>
+            <a class="button-blue" href="[@s.url action='${crpSession}/addNewCaseStudy'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addStudy" /]
             </a>
           </div>
           [/#if]
+          
+          [#-- Previous Studies List --]
+          <h3 class="headTitle">Previous Studies</h3>
+          <div id="caseStudiesBlock" class="simpleBox">
+            [@tableList list=(project.caseStudies)![] previousTable=true /]
+          </div>
          
         [/@s.form]
   
@@ -72,7 +78,7 @@
       
     </div>  
 </section>
-[/#if]
+
 [#-- Internal parameters --]
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
@@ -83,16 +89,19 @@
 
 [#-- -- MACROS -- --]
 
-[#macro tableList list ]
+[#macro tableList list previousTable=false]
   [@s.set var="counter" value=0/]
   <table id="projectHighlights" class="table table-striped table-hover ">
     <thead>
       <tr>
         <th class="id" >ID</th> 
-        <th class="name">Case Study Title</th>
-        <th class="type">Owner</th>
+        <th class="name">Study Title</th>
+        <th class="type">Type</th>
+        <th class="owner">Owner</th>
         <th class="year">Year</th>
+        [#if !previousTable]
         <th class="removeHighlight">Remove</th> 
+        [/#if]
       </tr>
     </thead>
     <tbody>
@@ -102,17 +111,20 @@
           <tr>
             <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
             <td class="name"><a href="${dlurl}">[#if item.title?trim?has_content]${item.title}[#else]Untitled[/#if]</a></td>
+            <td class="type">Outcome Case Study</td>
             <td class="owner">[#if item.owner?trim?has_content]P${item.owner.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if item.year?trim?has_content]${item.year}[#else]Not defined[/#if]</td>
+            [#if !previousTable]
             <td class="removeHighlight-row text-center">
               [#if canEdit && action.canDelete(item.owner.id) && (item.year gte  currentCycleYear) && action.canEdit() ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
-                  <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectCaseStudies.removeCaseStudy" /]" /> 
+                  <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>
               [#else]
-                <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectCaseStudies.cantDeleteCaseStudy" /]" />
+                <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectStudies.cantDeleteCaseStudy" /]" />
               [/#if]
-            </td> 
+            </td>
+            [/#if] 
           </tr> 
         [/#list]
     [/#if]  

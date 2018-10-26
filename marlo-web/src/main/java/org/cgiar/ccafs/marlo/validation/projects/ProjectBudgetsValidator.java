@@ -57,8 +57,8 @@ public class ProjectBudgetsValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGET.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
+      + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -86,7 +86,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
     hasErros = false;
     if (project != null) {
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(project, action.getCrpID(),action);
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");
@@ -144,7 +144,6 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
 
       if (!action.getFieldErrors().isEmpty()) {
-        System.out.println(action.getFieldErrors());
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -153,7 +152,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.BUDGET.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGET.getStatus(), action);
 
       // Saving missing fields.
 

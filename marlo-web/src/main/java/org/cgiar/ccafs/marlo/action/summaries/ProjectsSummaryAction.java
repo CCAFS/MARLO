@@ -19,11 +19,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -41,12 +42,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -78,18 +79,21 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   private long startTime;
 
   // Managers
-  private CrpProgramManager crpProgramManager;
+  private final CrpProgramManager crpProgramManager;
+  private final ResourceManager resourceManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
   Set<Long> projectsList = new HashSet<Long>();
 
+
   @Inject
   public ProjectsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager) {
-    super(config, crpManager, phaseManager);
+    CrpProgramManager crpProgramManager, ResourceManager resourceManager, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.crpProgramManager = crpProgramManager;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -118,14 +122,15 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
+        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -201,6 +206,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -245,23 +252,19 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Integer.class, Integer.class, Integer.class, Integer.class, Long.class},
       0);
+    // Status of projects
+    String[] statuses = null;
 
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList())) {
-      Long projectId = globalUnitProject.getProject().getId();
-      String projectTitle = globalUnitProject.getProject().getProjectInfo().getTitle();
+    // Get projects with the status defined
+    List<Project> activeProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
+    for (Project project : activeProjects) {
+      Long projectId = project.getId();
+      String projectTitle = project.getProjectInfo().getTitle();
       String managementLiaison = null;
-      if (globalUnitProject.getProject().getProjectInfo().getLiaisonInstitution() != null) {
-        managementLiaison = globalUnitProject.getProject().getProjectInfo().getLiaisonInstitution().getComposedName();
-        if (globalUnitProject.getProject().getProjectInfo().getLiaisonUser() != null) {
-          managementLiaison +=
-            " - " + globalUnitProject.getProject().getProjectInfo().getLiaisonUser().getComposedName();
+      if (project.getProjectInfo().getLiaisonInstitution() != null) {
+        managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
+        if (project.getProjectInfo().getLiaisonUser() != null) {
+          managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
         }
         managementLiaison = managementLiaison.replaceAll("<", "&lt;");
         managementLiaison = managementLiaison.replaceAll(">", "&gt;");
@@ -269,7 +272,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
       String flagships = null;
       // get Flagships related to the project sorted by acronym
-      for (ProjectFocus projectFocuses : globalUnitProject.getProject().getProjectFocuses().stream()
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
@@ -284,7 +287,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       // If has regions, add the regions to regionsArrayList
       // Get Regions related to the project sorted by acronym
       if (this.hasProgramnsRegions()) {
-        for (ProjectFocus projectFocuses : globalUnitProject.getProject().getProjectFocuses().stream()
+        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
             && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
@@ -295,8 +298,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
             regions += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
           }
         }
-        if (globalUnitProject.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
-          && globalUnitProject.getProject().getProjectInfo().getNoRegional()) {
+        if (project.getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+          && project.getProjectInfo().getNoRegional()) {
           if (regions != null && !regions.isEmpty()) {
             LOG.warn("Project is global and has regions selected");
           }
@@ -309,7 +312,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       String institutionLeader = null;
       String projectLeaderName = null;
 
-      ProjectPartnerPerson projectLeader = globalUnitProject.getProject().getLeaderPersonDB(this.getSelectedPhase());
+      ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getSelectedPhase());
       if (projectLeader != null) {
         institutionLeader = projectLeader.getProjectPartner().getInstitution().getComposedName();
         projectLeaderName = projectLeader.getComposedName();
@@ -318,33 +321,34 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       }
 
       Set<Activity> activitiesSet = new HashSet();
-      for (Activity activity : globalUnitProject.getProject().getActivities().stream()
-        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(a -> a.isActive()
+      for (Activity activity : project
+        .getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(a -> a.isActive()
           && (a.getActivityStatus() == 2) && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         activitiesSet.add(activity);
       }
       Integer activitiesOnGoing = activitiesSet.size();
       Set<Deliverable> deliverablesSet = new HashSet();
-      for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream()
+      for (Deliverable deliverable : project.getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
-            || (d.getDeliverableInfo().getStatus() != null
-              && d.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
-              && d.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+        .filter(
+          d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && d.getDeliverableInfo().isActive()
+            && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
+              || (d.getDeliverableInfo().getStatus() != null
+                && d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                && d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear() == 2017)
+              || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
+                && d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {
         deliverablesSet.add(deliverable);
       }
       Integer expectedDeliverables = deliverablesSet.size();
 
       Set<ProjectOutcome> projectOutcomeSet = new HashSet();
-      for (ProjectOutcome projectOutcome : globalUnitProject.getProject().getProjectOutcomes().stream()
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         projectOutcomeSet.add(projectOutcome);
@@ -352,13 +356,13 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Integer outcomes = projectOutcomeSet.size();
 
       Set<ProjectExpectedStudy> projectExpectedStudySet = new HashSet();
-      for (ProjectExpectedStudy projectExpectedStudy : globalUnitProject.getProject().getProjectExpectedStudies()
-        .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase() == this.getActualPhase().getId())
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(projectExpectedStudy);
       }
-      for (ExpectedStudyProject expectedStudyProject : globalUnitProject.getProject().getExpectedStudyProjects()
-        .stream().filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase().equals(this.getActualPhase()))
+      for (ExpectedStudyProject expectedStudyProject : project.getExpectedStudyProjects().stream()
+        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase() == this.getActualPhase().getId())
         .collect(Collectors.toList())) {
         projectExpectedStudySet.add(expectedStudyProject.getProjectExpectedStudy());
       }

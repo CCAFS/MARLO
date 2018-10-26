@@ -53,6 +53,14 @@ public interface FundingSourceLocationsManager {
 
 
   /**
+   * This will return all fundingSourceLocations for a single FundingSourceId, preventing N+1 issues
+   * 
+   * @return
+   */
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId);
+
+
+  /**
    * This method gets a fundingSourceLocations object by a given fundingSourceLocations identifier.
    * 
    * @param fundingSourceLocationsID is the fundingSourceLocations identifier.

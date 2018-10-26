@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -65,7 +66,6 @@ import javax.inject.Inject;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -110,10 +110,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   Set<Long> projectsList = new HashSet<Long>();
 
   // Managers
-  private GenderTypeManager genderTypeManager;
-  private CrpProgramManager crpProgramManager;
-  private CrossCuttingScoringManager crossCuttingScoringManager;
-  private CrpPpaPartnerManager crpPpaPartnerManager;
+  private final GenderTypeManager genderTypeManager;
+  private final CrpProgramManager crpProgramManager;
+  private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final CrpPpaPartnerManager crpPpaPartnerManager;
+  private final ResourceManager resourceManager;
+
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -123,12 +125,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
-    CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager) {
-    super(config, crpManager, phaseManager);
+    CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager,
+    ResourceManager resourceManager, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
+    this.resourceManager = resourceManager;
   }
 
 
@@ -178,13 +182,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ExpectedDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -206,7 +212,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
       this.fillSubreport((SubReport) hm.get("details"), "details");
       masterReport.getParameterValues().put("total_deliv", currentPhaseDeliverables.size());
       masterReport.getParameterValues().put("total_projects", projectsList.size());
@@ -226,7 +231,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
-
   }
 
   private void fillSubreport(SubReport subReport, String query) {
@@ -295,7 +299,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
       .collect(Collectors.toList())) {
       for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
-        && d.getDeliverableInfo(this.getSelectedPhase()) != null
+        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
           || (d.getDeliverableInfo().getStatus() != null
             && d.getDeliverableInfo().getStatus().intValue() == Integer
@@ -327,22 +331,22 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       List<DeliverablePartnership> partnershipsList = deliverable.getDeliverablePartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
       // Set responible;
-      DeliverablePartnership responisble = null;
+      DeliverablePartnership responsible = null;
       if (partnershipsList.stream()
         .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).size() > 0) {
-        responisble = partnershipsList.stream()
+        responsible = partnershipsList.stream()
           .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
           .collect(Collectors.toList()).get(0);
       }
 
-      if (responisble != null) {
-        if (responisble.getProjectPartner() != null) {
-          institutionsResponsibleList.add(responisble.getProjectPartner().getInstitution());
+      if (responsible != null) {
+        if (responsible.getProjectPartner() != null) {
+          institutionsResponsibleList.add(responsible.getProjectPartner().getInstitution());
         }
-        if (responisble.getProjectPartnerPerson() != null) {
+        if (responsible.getProjectPartnerPerson() != null) {
           individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
-          ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+          ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
           if (responsibleppp.getProjectPartner() != null) {
             if (responsibleppp.getProjectPartner().getInstitution() != null) {
               if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
@@ -360,9 +364,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (responsibleppp.getUser() != null) {
             individual += responsibleppp.getUser().getComposedName();
           }
-          if (responisble.getPartnerDivision() != null && responisble.getPartnerDivision().getAcronym() != null
-            && !responisble.getPartnerDivision().getAcronym().isEmpty()) {
-            individual += " (" + responisble.getPartnerDivision().getAcronym() + ")";
+          if (responsible.getPartnerDivision() != null && responsible.getPartnerDivision().getAcronym() != null
+            && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
+            individual += " (" + responsible.getPartnerDivision().getAcronym() + ")";
           }
           individual += "</span>";
         }
@@ -409,6 +413,25 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
             }
             individual += "</span>";
+          } else {
+
+            // get deliverable information from deliverablePartnership
+
+            if (deliverablePartnership.getProjectPartner() != null) {
+              if (deliverablePartnership.getProjectPartner().getInstitution() != null) {
+                if (deliverablePartnership.getProjectPartner().getInstitution().getAcronym() != null
+                  && !deliverablePartnership.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
+                  ppaResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution().getAcronym());
+                } else {
+                  ppaResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution().getName());
+                }
+              }
+            }
+
+            if (deliverablePartnership.getPartnerDivision() != null
+              && deliverablePartnership.getPartnerDivision().getAcronym() != null
+              && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
+            }
           }
         }
       }
@@ -690,7 +713,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           keyOutput += deliverableInfo.getCrpClusterKeyOutput().getKeyOutput();
           // Get Outcomes Related to the KeyOutput
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : deliverableInfo.getCrpClusterKeyOutput()
-            .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive() && ko.getCrpProgramOutcome() != null)
+            .getCrpClusterKeyOutputOutcomes().stream()
+            .filter(
+              ko -> ko.isActive() && ko.getCrpProgramOutcome() != null && ko.getCrpProgramOutcome().getPhase() != null
+                && ko.getCrpProgramOutcome().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             outcomes += " • ";
             if (crpClusterKeyOutputOutcome.getCrpProgramOutcome().getCrpProgram() != null
@@ -702,6 +728,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         }
         if (keyOutput.isEmpty()) {
           keyOutput = null;
+        }
+        if (outcomes.isEmpty()) {
+          outcomes = null;
         }
 
         String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
@@ -728,6 +757,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             projectTitle = deliverable.getProject().getProjectInfo().getTitle();
           }
           // Get project leader
+
           if (deliverable.getProject().getLeader(this.getSelectedPhase()) != null) {
             ProjectPartner leader = deliverable.getProject().getLeader(this.getSelectedPhase());
             if (leader.getInstitution() != null) {
@@ -930,6 +960,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ExpectedDeliverablesSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

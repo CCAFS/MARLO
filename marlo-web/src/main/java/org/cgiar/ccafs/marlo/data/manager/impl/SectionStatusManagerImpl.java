@@ -62,30 +62,33 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
-  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByCaseStudy(caseStudyID, cycle, year, sectionName);
+  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByCaseStudy(caseStudyID, cycle, year, upkeep, sectionName);
   }
 
   @Override
   public SectionStatus getSectionStatusByCrpIndicators(long liaisonInstitutionID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    return sectionStatusDAO.getSectionStatusByCrpIndicators(liaisonInstitutionID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year,
+    Boolean upkeep) {
+    return sectionStatusDAO.getSectionStatusByCrpProgam(crpProgramID, sectionName, cylce, year, upkeep);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, Boolean upkeep,
     String sectionName) {
-    return sectionStatusDAO.getSectionStatusByCrpIndicators(liaisonInstitutionID, cycle, year, sectionName);
+    return sectionStatusDAO.getSectionStatusByDeliverable(deliverableID, cycle, year, upkeep, sectionName);
   }
 
   @Override
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year) {
-    return sectionStatusDAO.getSectionStatusByCrpProgam(crpProgramID, sectionName, cylce, year);
-  }
-
-  @Override
-  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByDeliverable(deliverableID, cycle, year, sectionName);
-  }
-
-  @Override
-  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year, Boolean upkeep,
     String sectionName) {
-    return sectionStatusDAO.getSectionStatusByFundingSource(fundingSource, cycle, year, sectionName);
+    return sectionStatusDAO.getSectionStatusByFundingSource(fundingSource, cycle, year, upkeep, sectionName);
   }
 
   @Override
@@ -95,40 +98,63 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
-  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByIpProgram(ipProgramID, cycle, year, sectionName);
-  }
-
-  @Override
-  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year,
+  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, Boolean upkeep,
     String sectionName) {
-    return sectionStatusDAO.getSectionStatusByPowbSynthesis(powbSynthesisID, cycle, year, sectionName);
+    return sectionStatusDAO.getSectionStatusByIpProgram(ipProgramID, cycle, year, upkeep, sectionName);
   }
 
   @Override
-  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByProject(projectID, cycle, year, sectionName);
+  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByPowbSynthesis(powbSynthesisID, cycle, year, upkeep, sectionName);
   }
 
   @Override
-  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByProjectCofunded(projectID, cycle, year, sectionName);
+  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProject(projectID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectCofunded(projectID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectExpectedStudy(long expectedID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectExpectedStudy(expectedID, cycle, year, upkeep, sectionName);
   }
 
   @Override
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectHighlight(projectHighlightID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
+    Boolean upkeep, String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectInnovation(projectInnovationID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName) {
-    return sectionStatusDAO.getSectionStatusByProjectHighlight(projectHighlightID, cycle, year, sectionName);
+    return sectionStatusDAO.getSectionStatusByProjectOutcome(projectID, cycle, year, upkeep, sectionName);
   }
 
   @Override
-  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusByProjectOutcome(projectID, cycle, year, sectionName);
+  public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByReportSynthesis(powbSynthesisID, cycle, year, upkeep, sectionName);
   }
 
   @Override
-  public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, String sectionName) {
-    return sectionStatusDAO.getSectionStatusBySynteshisMog(ipProgramID, cycle, year, sectionName);
+  public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusBySynteshisMog(ipProgramID, cycle, year, upkeep, sectionName);
   }
 
   @Override

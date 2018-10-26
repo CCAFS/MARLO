@@ -151,6 +151,22 @@
   background-position: -92px -173px;
 }
 
+#capdev.summariesSection span {
+  background-position: 5px -125px;
+}
+
+#capdev.summariesSection.current span {
+  background-position: -93px -126px;
+}
+
+#monitoring.summariesSection span {
+  background-position: 5px -220px;
+}
+
+#monitoring.summariesSection.current span {
+  background-position: -93px -220px;
+}
+
 .headerBlock {
   margin-top: 5px;
 }

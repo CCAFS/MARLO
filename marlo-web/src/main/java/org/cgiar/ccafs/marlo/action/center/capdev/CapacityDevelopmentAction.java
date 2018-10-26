@@ -22,14 +22,11 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
-import org.cgiar.ccafs.marlo.data.model.CenterArea;
-import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,10 +74,6 @@ public class CapacityDevelopmentAction extends BaseAction {
     CapacityDevelopment capacityDevelopmentDB = new CapacityDevelopment();
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
-    capdev.setActive(true);
-    capdev.setActiveSince(new Date());
-    capdev.setCreatedBy(this.getCurrentUser());
-    capdev.setModifiedBy(this.getCurrentUser());
 
     /*
      * projectID allows verified if the request to create a CapDev come from projects/capdev section or capacity
@@ -96,15 +89,16 @@ public class CapacityDevelopmentAction extends BaseAction {
       projectID = -1;
       projectDB = null;
     }
-    if (projectDB != null) {
-      capdev.setProject(projectDB);
-      CenterProgram program = projectDB.getResearchProgram();
-      CenterArea researchArea = program.getResearchArea();
-
-      capdev.setResearchArea(researchArea);
-      capdev.setResearchProgram(program);
-
-    }
+    // TODO Adjust when CAPDEV prject is Online
+    // if (projectDB != null) {
+    // capdev.setProject(projectDB);
+    // CrpProgram program = projectDB.getResearchProgram();
+    // CenterArea researchArea = program.getResearchArea();
+    //
+    // capdev.setResearchArea(researchArea);
+    // capdev.setResearchProgram(program);
+    //
+    // }
     capacityDevelopmentDB = capdevService.saveCapacityDevelopment(capdev);
     capdevID = capacityDevelopmentDB.getId();
     if (capdevID > 0) {
@@ -119,10 +113,8 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   @Override
   public String delete() {
-    capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    capdev.setActive(false);
-    capdev.setModifiedBy(this.getCurrentUser());
-    capdevService.saveCapacityDevelopment(capdev);
+
+    capdevService.deleteCapacityDevelopment(capdevID);
 
     if (projectID > 0) {
 

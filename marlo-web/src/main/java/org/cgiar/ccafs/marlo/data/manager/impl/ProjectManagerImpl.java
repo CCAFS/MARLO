@@ -66,7 +66,11 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
+    return projectDAO.getActiveProjectsByPhase(phase, year, projectStatuses);
+  }
 
+  @Override
   public List<Project> getCompletedProjects(long crpId, long idPhase) {
     return projectDAO.getCompletedProjects(crpId, idPhase);
   }
@@ -88,14 +92,17 @@ public class ProjectManagerImpl implements ProjectManager {
 
   @Override
   public List<Project> getUserProjects(long userId, String crp) {
-
     List<Project> projects = new ArrayList<>();
 
     List<Map<String, Object>> view = projectDAO.getUserProjects(userId, crp);
 
     if (view != null) {
       for (Map<String, Object> map : view) {
-        projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
+        long projectId = (Long.parseLong(map.get("project_id").toString()));
+        Project project = this.getProjectById(projectId);
+        if (project != null) {
+          projects.add(project);
+        }
       }
     }
 

@@ -13,20 +13,24 @@
 			class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
 			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
-
+		<property name="name" type="string">
+      <column name="name" sql-type="TEXT" not-null="true" />
+    </property>	
 		<property name="description" type="string">
-			<column name="description" length="65535" not-null="true" />
+			<column name="description" sql-type="TEXT" not-null="true" />
 		</property>
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>
+		<property name="upkeep" type="java.lang.Boolean">
+      <column name="upkeep" not-null="true"/>
+    </property>		
 		<property name="editable" type="java.lang.Boolean">
 			<column name="editable" />
 		</property>
 		<property name="visible" type="java.lang.Boolean">
 			<column name="visible" />
 		</property>
-
 		<property name="startDate" type="date">
 			<column name="start_date" length="10" />
 		</property>
@@ -205,6 +209,171 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" />
 		</set>
-
+		<set name="reportSynthesis" table="report_synthesis" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" />
+    </set>
+		<set name="projectHighlightInfos" table="project_highlights_info"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo" />
+		</set>
+		<set name="projectLeverages" table="project_leverage" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" />
+		</set>
+		<set name="projectHighligthsTypes" table="project_highlights_types"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightType" />
+		</set>
+		<set name="projectHighlightCountries" table="project_highlights_country"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry" />
+		</set>
+		<set name="projectInnovationInfos" table="project_innovation_info"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo" />
+		</set>
+		<set name="projectInnovationDeliverables" table="project_innovation_deliverables"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable" />
+		</set>
+		<set name="projectInnovationCountries" table="project_innovation_countries"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry" />
+		</set>
+		<set name="projectInnovationOrganizations" table="project_innovation_organizations"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization" />
+		</set>
+		<set name="projectInnovationCrps" table="project_innovation_crps"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp" />
+		</set>
+		<set name="deliverableIntellectualAssets" table="deliverable_intellectual_assets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="phase" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset" />
+		</set>
+		<set name="projectExpectedStudyInfos" table="project_expected_study_info"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo" />
+		</set>
+		<set name="projectExpectedStudySubIdos" table="project_expected_study_sub_ido"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo" />
+		</set>
+		<set name="expectedStudyProjects" table="expected_study_projects"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject" />
+		</set>
+		<set name="projectExpectedStudyFlagships" table="project_expected_study_flagships"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship" />
+		</set>
+		<set name="projectExpectedStudyCountries" table="project_expected_study_countries"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry" />
+		</set>
+		<set name="projectExpectedStudyCrps" table="project_expected_study_crp"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp" />
+		</set>
+		<set name="projectExpectedStudyInstitutions" table="project_expected_study_institutions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution" />
+		</set>
+		<set name="projectExpectedStudySrfTargets" table="project_expected_study_srf_targets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="id_phase" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget" />
+		</set>
+		<set name="deliverableActivities" table="deliverable_activities"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
+    </set>
+    <set name="deliverableLocations" table="deliverable_locations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLocation" />
+    </set>
+    <set name="projectExpectedStudyRegions" table="project_expected_study_regions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion" />
+    </set>
+    <set name="deliverableGeographicRegions" table="deliverable_geographic_regions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion" />
+    </set>
 	</class>
 </hibernate-mapping>

@@ -19,12 +19,14 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.HTMLParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,7 +48,6 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -69,7 +70,9 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsSummaryAction.class);
   // Managers
-  private ProjectHighligthManager projectHighLightManager;
+  private final ProjectHighligthManager projectHighLightManager;
+  private final ResourceManager resourceManager;
+  private final HTMLParser HTMLParser;
   // Parameters
   private long startTime;
   private String selectedFormat;
@@ -86,9 +89,12 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
 
   @Inject
   public ProjectHighlightsSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
-    super(config, crpManager, phaseManager);
+    ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager, ResourceManager resourceManager,
+    HTMLParser HTMLParser, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.projectHighLightManager = projectHighLightManager;
+    this.resourceManager = resourceManager;
+    this.HTMLParser = HTMLParser;
   }
 
   /**
@@ -127,18 +133,20 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsExcel.prpt"),
-          MasterReport.class);
+        reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsExcel.prpt"), MasterReport.class);
       } else {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsPDF.prpt"),
-          MasterReport.class);
+        reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsPDF.prpt"), MasterReport.class);
       }
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -241,6 +249,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectHighlightsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
@@ -302,35 +311,37 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
-      .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
-      .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == this.getSelectedYear()
-        && ph.getProject().getGlobalUnitProjects().stream()
-          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
-        && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && ph.getProject().getProjectInfo().getReporting())
+      .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getProject().isActive()
+        && ph.getProjectHighlightInfo(this.getSelectedPhase()) != null && ph.getProjectHighlightInfo().getYear() != null
+        && ph.getProjectHighlightInfo().getYear() == this.getSelectedYear()
+        && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null)
+      .sorted((ph1, ph2) -> Long.compare(ph1.getProject().getId(), ph2.getProject().getId()))
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
         highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null,
-        image = null, imageurl = null, imageName = null;
+        image = "", imageurl = null, imageName = null;
       Long yearReported = null;
       int width = 244;
       int heigth = 163;
-      if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
-        title = projectHighlight.getTitle();
+      if (projectHighlight.getProjectHighlightInfo().getTitle() != null
+        && !projectHighlight.getProjectHighlightInfo().getTitle().isEmpty()) {
+        title = projectHighlight.getProjectHighlightInfo().getTitle();
       }
-      if (projectHighlight.getAuthor() != null && !projectHighlight.getAuthor().isEmpty()) {
-        author = projectHighlight.getAuthor();
+      if (projectHighlight.getProjectHighlightInfo().getAuthor() != null
+        && !projectHighlight.getProjectHighlightInfo().getAuthor().isEmpty()) {
+        author = projectHighlight.getProjectHighlightInfo().getAuthor();
       }
-      if (projectHighlight.getSubject() != null && !projectHighlight.getSubject().isEmpty()) {
-        subject = projectHighlight.getSubject();
+      if (projectHighlight.getProjectHighlightInfo().getSubject() != null
+        && !projectHighlight.getProjectHighlightInfo().getSubject().isEmpty()) {
+        subject = projectHighlight.getProjectHighlightInfo().getSubject();
       }
-      if (projectHighlight.getPublisher() != null && !projectHighlight.getPublisher().isEmpty()) {
-        publisher = projectHighlight.getPublisher();
+      if (projectHighlight.getProjectHighlightInfo().getPublisher() != null
+        && !projectHighlight.getProjectHighlightInfo().getPublisher().isEmpty()) {
+        publisher = projectHighlight.getProjectHighlightInfo().getPublisher();
       }
-      if (projectHighlight.getYear() != null) {
-        yearReported = projectHighlight.getYear();
+      if (projectHighlight.getProjectHighlightInfo().getYear() != null) {
+        yearReported = projectHighlight.getProjectHighlightInfo().getYear();
       }
       for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
         .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
@@ -342,28 +353,28 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
             highlightsTypes +=
               "<br>● " + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
           }
-
         }
       }
       if (highlightsTypes.isEmpty()) {
         highlightsTypes = null;
       }
-      if (projectHighlight.isGlobal() == true) {
+      if (projectHighlight.getProjectHighlightInfo().isGlobal() == true) {
         highlightsIsGlobal = "Yes";
       } else {
         highlightsIsGlobal = "No";
       }
-      if (projectHighlight.getStartDate() != null) {
-        startDate = formatter.format(projectHighlight.getStartDate());
+      if (projectHighlight.getProjectHighlightInfo().getStartDate() != null) {
+        startDate = formatter.format(projectHighlight.getProjectHighlightInfo().getStartDate());
       }
-      if (projectHighlight.getEndDate() != null) {
-        endDate = formatter.format(projectHighlight.getEndDate());
+      if (projectHighlight.getProjectHighlightInfo().getEndDate() != null) {
+        endDate = formatter.format(projectHighlight.getProjectHighlightInfo().getEndDate());
       }
-      if (projectHighlight.getKeywords() != null && !projectHighlight.getKeywords().isEmpty()) {
-        keywords = projectHighlight.getKeywords();
+      if (projectHighlight.getProjectHighlightInfo().getKeywords() != null
+        && !projectHighlight.getProjectHighlightInfo().getKeywords().isEmpty()) {
+        keywords = projectHighlight.getProjectHighlightInfo().getKeywords();
       }
       int countriesFlag = 0;
-      for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighligthCountries().stream()
+      for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighlightCountries().stream()
         .filter(phc -> phc.isActive()).collect(Collectors.toList())) {
 
         if (projectHighlightCountry.getLocElement() != null) {
@@ -379,34 +390,59 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
       if (countries.isEmpty()) {
         countries = null;
       }
-      if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
-        highlightDesc = projectHighlight.getDescription();
+      if (projectHighlight.getProjectHighlightInfo().getDescription() != null
+        && !projectHighlight.getProjectHighlightInfo().getDescription().isEmpty()) {
+        if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+          highlightDesc = projectHighlight.getProjectHighlightInfo().getDescription();
+        } else {
+          highlightDesc = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getDescription());
+        }
       }
-      if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
-        introduction = projectHighlight.getObjectives();
+      if (projectHighlight.getProjectHighlightInfo().getObjectives() != null
+        && !projectHighlight.getProjectHighlightInfo().getObjectives().isEmpty()) {
+        if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+          introduction = projectHighlight.getProjectHighlightInfo().getObjectives();
+        } else {
+          introduction = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getObjectives());
+        }
       }
-      if (projectHighlight.getResults() != null && !projectHighlight.getResults().isEmpty()) {
-        results = projectHighlight.getResults();
+      if (projectHighlight.getProjectHighlightInfo().getResults() != null
+        && !projectHighlight.getProjectHighlightInfo().getResults().isEmpty()) {
+        if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+          results = projectHighlight.getProjectHighlightInfo().getResults();
+        } else {
+          results = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getResults());
+        }
       }
-      if (projectHighlight.getPartners() != null && !projectHighlight.getPartners().isEmpty()) {
-        partners = projectHighlight.getPartners();
+      if (projectHighlight.getProjectHighlightInfo().getPartners() != null
+        && !projectHighlight.getProjectHighlightInfo().getPartners().isEmpty()) {
+        if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+          partners = projectHighlight.getProjectHighlightInfo().getPartners();
+        } else {
+          partners = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getPartners());
+        }
       }
-      if (projectHighlight.getLinks() != null && !projectHighlight.getLinks().isEmpty()) {
-        links = projectHighlight.getLinks();
+      if (projectHighlight.getProjectHighlightInfo().getLinks() != null
+        && !projectHighlight.getProjectHighlightInfo().getLinks().isEmpty()) {
+        if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
+          links = projectHighlight.getProjectHighlightInfo().getLinks();
+        } else {
+          links = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getLinks());
+        }
       }
       if (projectHighlight.getProject() != null) {
         projectId = projectHighlight.getProject().getId().toString();
       }
-      if (projectHighlight.getFile() != null) {
+      if (projectHighlight.getProjectHighlightInfo().getFile() != null) {
         double pageWidth = 612 * 0.4;
         double pageHeigth = 792 * 0.4;
         double imageWidth = 244;
         double imageHeigth = 163;
-        image =
-          this.getHightlightImagePath(projectHighlight.getProject().getId()) + projectHighlight.getFile().getFileName();
+        image = this.getHightlightImagePath(projectHighlight.getProject().getId())
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         imageurl = this.getHighlightsImagesUrl(projectHighlight.getProject().getId().toString())
-          + projectHighlight.getFile().getFileName();
-        imageName = projectHighlight.getFile().getFileName();
+          + projectHighlight.getProjectHighlightInfo().getFile().getFileName();
+        imageName = projectHighlight.getProjectHighlightInfo().getFile().getFileName();
         Image imageFile = null;
         LOG.info("image.getURL.replace " + image);
         File url;
@@ -416,8 +452,8 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           LOG.warn("Failed to get image File. Url was set to null. Exception: " + e.getMessage());
           url = null;
           image = "";
-          imageurl = "";
-          imageName = "";
+          imageurl = null;
+          imageName = null;
         }
         if (url != null && url.exists()) {
           try {
@@ -437,23 +473,23 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           } catch (BadElementException e) {
             LOG.warn("BadElementException getting image: " + e.getMessage());
             image = "";
-            imageurl = "";
-            imageName = "";
+            imageurl = null;
+            imageName = null;
           } catch (MalformedURLException e) {
             LOG.warn("MalformedURLException getting image: " + e.getMessage());
             image = "";
-            imageurl = "";
-            imageName = "";
+            imageurl = null;
+            imageName = null;
           } catch (IOException e) {
             LOG.warn("IOException getting image: " + e.getMessage());
             image = "";
-            imageurl = "";
-            imageName = "";
+            imageurl = null;
+            imageName = null;
           }
         } else {
           image = "";
-          imageurl = "";
-          imageName = "";
+          imageurl = null;
+          imageName = null;
         }
       }
       Long phaseID = this.getSelectedPhase().getId();

@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -63,6 +64,17 @@ public class SrfSloMySQLDAO extends AbstractMarloDAO<SrfSlo, Long> implements Sr
     List<SrfSlo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public SrfSlo findBySmoCode(String smoCode) {
+    String query = "from " + SrfSlo.class.getName() + " where smo_code=" + smoCode;
+    List<SrfSlo> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
     }
     return null;
 

@@ -111,7 +111,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
-        if (baseAction.isSubmit(projectHighlight.getProject().getId())) {
+        if (baseAction.isSubmit(projectHighlight.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
           canEdit = false;
 
         }
@@ -136,9 +136,9 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params));
       }
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
@@ -146,15 +146,19 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
       }
 
 
-      if (projectHighlight.getStatus() != null) {
-        if (projectHighlight.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getStatus() != null) {
+        if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
         }
       }
 
-      if (projectHighlight.getYear() != baseAction.getCurrentCycleYear()) {
-        canEdit = false;
-      }
+      /*
+       * if (projectHighlight.getProjectHighlightInfo(baseAction.getActualPhase()).getYear() != baseAction
+       * .getCurrentCycleYear()) {
+       * canEdit = false;
+       * }
+       */
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
