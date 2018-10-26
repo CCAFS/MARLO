@@ -8865,16 +8865,14 @@
   bottom: 10px;
   right: 10px;
   cursor: pointer;
-  background: #7d8293;
+  background: #0000008f;
   text-align: center;
   padding: 5px;
   border-radius: 4px;
-  font-family: sans-serif;
-  font-weight: 600;
+  font-family: 'Montserrat',sans-serif;
+  font-weight: 500;
   color: #fff;
   font-size: 14px;
-  height: 30px;
-  width: 75px
 }
 
 .swagger-ui .scheme-container {
@@ -9063,9 +9061,9 @@ keyframes blinker { 50%{
   padding: 5px 23px;
   -webkit-transition: all .3s;
   transition: all .3s;
-  border: 2px solid gray;
+  border: 2px solid #cac9c99e;
   border-radius: 4px;
-  background: transparent;
+  background: #ffffffbf;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
   font-family: "Open Sans",sans-serif;
@@ -9088,10 +9086,10 @@ keyframes blinker { 50%{
 }
 
 .swagger-ui .btn.cancel {
-  border-color: #ff6060;
-  background-color: transparent;
+  border-color: #ca4c4c;
+  background-color: #ca4c4c;
   font-family: sans-serif;
-  color: #ff6060
+  color: #ffffff
 }
 
 .swagger-ui .btn.authorize {
@@ -9112,9 +9110,9 @@ keyframes blinker { 50%{
 }
 
 .swagger-ui .btn.execute {
-  background-color: #4990e2;
+  background-color: #4681c5;
   color: #fff;
-  border-color: #4990e2
+  border-color: #4681c5
 }
 
 .swagger-ui .btn-group {

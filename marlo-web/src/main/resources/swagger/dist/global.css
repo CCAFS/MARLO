@@ -1,0 +1,21 @@
+.headerTitle {
+  font-family: 'Montserrat',sans-serif;
+}
+
+.cTitle{
+  font-size: 350%;
+  font-weight: 800;
+  margin: auto;
+}
+
+.sTitle{
+  font-size: 85%;
+  font-weight: 300;
+  margin: auto;
+}
+
+.clarisaHeader {
+  height: 30%;
+  width: 100%;
+  padding: 2%;
+}
