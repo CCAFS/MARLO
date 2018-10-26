@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -47,6 +49,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 
 @RestController
+@Api(description = "Test to view the interface actions", tags = "Global Units")
 @ApiIgnore
 public class GlobalUnitController {
 
@@ -66,13 +69,13 @@ public class GlobalUnitController {
     this.globalUnitMapper = globalUnitMapper;
   }
 
-  @RequiresPermissions(Permission.CRPS_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{globalUnit}/globalUnits", method = RequestMethod.POST,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<GlobalUnitDTO> createGlobalUnit(@PathVariable String globalUnit,
-    @Valid @RequestBody GlobalUnitDTO globalUnitDTO) {
+
+  @ApiOperation(value = "Create a Global Unit", response = GlobalUnitDTO.class, tags = "Global Units")
+  @RequestMapping(value = "/globalUnits", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<GlobalUnitDTO> createGlobalUnit(@Valid @RequestBody GlobalUnitDTO globalUnitDTO) {
     LOG.debug("Create a new globalUnit with : {}", globalUnitDTO);
     GlobalUnit newGlobalUnit = globalUnitMapper.globalUnitDTOToGlobalUnit(globalUnitDTO);
+    newGlobalUnit.setId(null);
     newGlobalUnit = globalUnitManager.saveGlobalUnit(newGlobalUnit);
 
     return new ResponseEntity<GlobalUnitDTO>(globalUnitMapper.globalUnitToGlobalUnitDTO(newGlobalUnit),
@@ -80,6 +83,7 @@ public class GlobalUnitController {
   }
 
   @RequiresPermissions(Permission.CRPS_DELETE_REST_API_PERMISSION)
+  @ApiOperation(value = "Delete a Global Unit", response = Void.class, tags = "Global Units")
   @RequestMapping(value = "/{globalUnit}/globalUnits/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteGlobalUnit(@PathVariable String globalUnit, @PathVariable Long id) {
@@ -89,6 +93,8 @@ public class GlobalUnitController {
   }
 
   @RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
+  @ApiOperation(value = "View All Global Units", response = GlobalUnitDTO.class, responseContainer = "List",
+    tags = "Global Units")
   @RequestMapping(value = "/{globalUnit}/globalUnits", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<GlobalUnitDTO> getAllGlobalUnits(@PathVariable String globalUnit) {
@@ -108,6 +114,7 @@ public class GlobalUnitController {
   }
 
   @RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
+  @ApiOperation(value = "View a Global Unit", response = GlobalUnitDTO.class, tags = "Global Units")
   @RequestMapping(value = "/{globalUnit}/globalUnits/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<GlobalUnitDTO> getGlobalUnit(@PathVariable String globalUnit, @PathVariable Long id) {
@@ -119,6 +126,7 @@ public class GlobalUnitController {
 
 
   @RequiresPermissions(Permission.CRPS_UPDATE_REST_API_PERMISSION)
+  @ApiOperation(value = "Update a Global Unit", response = GlobalUnitDTO.class, tags = "Global Units")
   @RequestMapping(value = "/{globalUnit}/globalUnits/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<GlobalUnitDTO> updateGlobalUnit(@PathVariable String globalUnit, @PathVariable Long id,
