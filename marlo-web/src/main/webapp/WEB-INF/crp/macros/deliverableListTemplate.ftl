@@ -23,15 +23,7 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#if action.getDeliverableStatus(deliverable.id)??]
-          [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
-            [#assign isDeliverableComplete = true /]
-          [#else]
-            [#assign isDeliverableComplete = false /]
-          [/#if]
-        [#else]
-            [#assign isDeliverableComplete = false /]
-        [/#if]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
         
         <tr>
           [#-- ID --]
@@ -49,10 +41,12 @@
             
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
-
+            
+            [#-- Report --]
             [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
+            
             [#if deliverable.deliverableInfo.title?has_content]
                 <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${deliverable.deliverableInfo.title}">
                 [#if deliverable.deliverableInfo.title?length < 120] 
@@ -81,7 +75,7 @@
             None
           [#else]
             ${(deliverable.deliverableInfo.year)!'None'}
-            [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
+            [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3) && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1) ]
               Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
           [/#if]
@@ -120,7 +114,7 @@
             [/#if]
             [#-- Remove icon --]
             [#if isDeliverableNew]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="Remove deliverable">
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
                 <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
               </a>
             [/#if]
@@ -156,15 +150,7 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#if action.getDeliverableStatus(deliverable.id)??]
-          [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
-            [#assign isDeliverableComplete = true /]
-          [#else]
-            [#assign isDeliverableComplete = false /]
-          [/#if]
-        [#else]
-            [#assign isDeliverableComplete = false /]
-        [/#if]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
         
         <tr>
           [#-- ID --]
@@ -212,7 +198,7 @@
           None
           [#else]
           ${(deliverable.deliverableInfo.year)!'None'}
-            [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
+            [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3)  && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1)]
               Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
           [/#if]
@@ -266,11 +252,15 @@
                 <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}">
                  <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'None'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'None'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
-                   [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
-                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
-                   [#else] 
-                     <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
-                   [/#if]
+                 [#if deliverableFundingSource.fundingSource.fundingSourceInfo?has_content]
+                  [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
+                    <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
+                  [#else] 
+                    <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
+                  [/#if]
+                 [#else]
+                  <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
+                 [/#if] 
                 </div>
               [/#list]
             [#else]

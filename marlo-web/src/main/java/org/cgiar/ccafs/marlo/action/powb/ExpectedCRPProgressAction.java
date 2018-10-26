@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -182,18 +181,12 @@ public class ExpectedCRPProgressAction extends BaseAction {
         if (powbExpectedCrpProgress.getId() == null) {
 
           powbExpectedCrpProgressNew = new PowbExpectedCrpProgress();
-          powbExpectedCrpProgressNew.setActive(true);
-          powbExpectedCrpProgressNew.setCreatedBy(this.getCurrentUser());
-          powbExpectedCrpProgressNew.setModifiedBy(this.getCurrentUser());
-          powbExpectedCrpProgressNew.setModificationJustification("");
-          powbExpectedCrpProgressNew.setActiveSince(new Date());
           powbExpectedCrpProgressNew.setPowbSynthesis(powbSynthesis);
 
         } else {
 
           powbExpectedCrpProgressNew =
             powbExpectedCrpProgressManager.getPowbExpectedCrpProgressById(powbExpectedCrpProgress.getId());
-          powbExpectedCrpProgressNew.setModifiedBy(this.getCurrentUser());
 
 
         }
@@ -226,8 +219,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -284,11 +277,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
         }
         i++;
       }
-
-
-    } else
-
-    {
+    } else {
       powbSynthesis.setExpectedCrpProgresses(new ArrayList<>());
     }
 
@@ -466,6 +455,42 @@ public class ExpectedCRPProgressAction extends BaseAction {
   }
 
 
+  /**
+   * Table only for the specific Flagship
+   */
+  public void loadTableA() {
+    flagships = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getId() == liaisonInstitution.getCrpProgram().getId())
+      .collect(Collectors.toList());
+    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+    for (CrpProgram crpProgram : flagships) {
+      crpProgram.setMilestones(new ArrayList<>());
+      crpProgram.setW1(new Double(0));
+      crpProgram.setW3(new Double(0));
+
+      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+        crpProgramOutcome.setSubIdos(
+          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        if (!crpProgram.getMilestones().isEmpty()) {
+          validOutcomes.add(crpProgramOutcome);
+        }
+      }
+      crpProgram.setOutcomes(validOutcomes);
+      this.loadFlagShipBudgetInfo(crpProgram);
+
+    }
+  }
+
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -521,9 +546,11 @@ public class ExpectedCRPProgressAction extends BaseAction {
     } catch (NumberFormatException e) {
       User user = userManager.getUser(this.getCurrentUser().getId());
       if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(
-          user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-            && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+            && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+            && lu.getLiaisonInstitution().getInstitution() == null)
+          .collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
           boolean isLeader = false;
           for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -668,6 +695,9 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
     if (this.isPMU()) {
       this.loadTablePMU();
+    } else {
+      // TABLE A POWB 2019: Specific Flagship only
+      this.loadTableA();
     }
 
     // Base Permission
@@ -689,9 +719,12 @@ public class ExpectedCRPProgressAction extends BaseAction {
       this.expectedProgressNewData();
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
       relationsName.add(APConstants.SYNTHESIS_EXPECTED_RELATION);
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
 

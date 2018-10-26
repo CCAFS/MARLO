@@ -54,7 +54,10 @@ $(document).ready(function() {
  */
 function setPhaseID(phaseID) {
   var currentURL = new Uri(window.location.href);
-  console.log(currentURL.deleteQueryParam('phaseID').addQueryParam('phaseID', phaseID));
+  // Update Phase ID
+  currentURL.deleteQueryParam('phaseID').addQueryParam('phaseID', phaseID);
+  // Clean transaction ID
+  currentURL.deleteQueryParam('transactionId');
 
   // Execute a change of phase
   $.ajax({
@@ -68,9 +71,9 @@ function setPhaseID(phaseID) {
       },
       success: function(data) {
         // $('.timeline-loader').fadeOut();
-        window.location.href = currentURL;
       },
       complete: function() {
+        window.location.href = currentURL;
       }
   });
 }

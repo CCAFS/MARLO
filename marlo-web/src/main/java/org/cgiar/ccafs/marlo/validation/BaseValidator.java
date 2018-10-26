@@ -19,8 +19,11 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -28,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +95,18 @@ public class BaseValidator {
       return !string.trim().isEmpty();
     }
     return false;
+  }
+
+  /**
+   * Validate a Basic Url Structure (http://, https:// or ftp://)
+   * 
+   * @param url - The Url to Validate
+   * @return true if is a valid Url
+   */
+  protected boolean isValidUrl(String url) {
+    UrlValidator urlValidator = new UrlValidator();
+    boolean bReturn = urlValidator.isValid(url);
+    return bReturn;
   }
 
   /**
@@ -286,6 +302,7 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
+
   /**
    * ******************************************************************************************
    * ************************* CENTER METHOD **************************************************
@@ -317,25 +334,26 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
    * @param deliverable is a deliverable.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(Deliverable deliverable, String cycle, int year, String sectionName,
+  protected void saveMissingFields(Deliverable deliverable, String cycle, int year, Boolean upkeep, String sectionName,
     BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setDeliverable(deliverable);
       status.setSectionName(sectionName);
       status.setProject(deliverable.getProject());
@@ -349,26 +367,29 @@ public class BaseValidator {
 
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.
    * 
    * @param fundingSource is a funding Source
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName,
-    BaseAction action) {
+  protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, Boolean upkeep,
+    String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
     int a = 0;
     LOG.debug("save MissingField :" + a);
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByFundingSource(fundingSource.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByFundingSource(fundingSource.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setFundingSource(fundingSource);
       status.setSectionName(sectionName);
       fundingSource.getSectionStatuses().add(status);
@@ -385,19 +406,21 @@ public class BaseValidator {
    * 
    * @param ipLiaisonInstitution is a ipLiaisonInstitution.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(IpLiaisonInstitution ipLiaisonInstitution, String cycle, int year,
+  protected void saveMissingFields(IpLiaisonInstitution ipLiaisonInstitution, String cycle, int year, Boolean upkeep,
     String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
-    SectionStatus status =
-      sectionStatusManager.getSectionStatusByCrpIndicators(ipLiaisonInstitution.getId(), cycle, year, sectionName);
+    SectionStatus status = sectionStatusManager.getSectionStatusByCrpIndicators(ipLiaisonInstitution.getId(), cycle,
+      year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setIpLiaisonInstitution(ipLiaisonInstitution);;
       status.setSectionName(sectionName);
 
@@ -410,23 +433,26 @@ public class BaseValidator {
 
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
    * @param deliverable is a deliverable.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(IpProgram program, String cycle, int year, String sectionName, BaseAction action) {
+  protected void saveMissingFields(IpProgram program, String cycle, int year, Boolean upkeep, String sectionName,
+    BaseAction action) {
     // Reporting missing fields into the database.
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByIpProgram(program.getId(), cycle, year, sectionName);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByIpProgram(program.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setIpProgram(program);
       status.setSectionName(sectionName);
 
@@ -444,19 +470,21 @@ public class BaseValidator {
    * 
    * @param powbSynthesis is a powbSynthesis.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(PowbSynthesis powbSynthesis, String cycle, int year, String sectionName,
-    BaseAction action) {
+  protected void saveMissingFields(PowbSynthesis powbSynthesis, String cycle, int year, Boolean upkeep,
+    String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setPowbSynthesis(powbSynthesis);
       status.setSectionName(sectionName);
 
@@ -475,24 +503,58 @@ public class BaseValidator {
 
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
    * 
    * @param caseStudy is a Case Study.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(Project project, CaseStudy caseStudy, String cycle, int year, String sectionName,
-    BaseAction action) {
+  protected void saveMissingFields(Project project, CaseStudy caseStudy, String cycle, int year, Boolean upkeep,
+    String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByCaseStudy(caseStudy.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByCaseStudy(caseStudy.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setCaseStudy(caseStudy);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+
+  /**
+   * This method saves the missing fields into the database for a section at project expected study.
+   * 
+   * @param expectedStudy is a Project Expected Study.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectExpectedStudy expectedStudy, String cycle, int year,
+    Boolean upkeep, String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status = sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(), cycle,
+      year, upkeep, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setProjectExpectedStudy(expectedStudy);
       status.setSectionName(sectionName);
       status.setProject(project);
 
@@ -509,18 +571,20 @@ public class BaseValidator {
    * 
    * @param highlight is a Project Highlight.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(Project project, ProjectHighlight highlight, String cycle, int year,
+  protected void saveMissingFields(Project project, ProjectHighlight highlight, String cycle, int year, Boolean upkeep,
     String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setProjectHighlight(highlight);
       status.setSectionName(sectionName);
       status.setProject(project);
@@ -534,21 +598,55 @@ public class BaseValidator {
 
 
   /**
-   * This method saves the missing fields into the database for a section at project level.
+   * This method saves the missing fields into the database for a section at project Innovation.
    * 
-   * @param project is a project.
+   * @param innovation is a Project Innovation.
    * @param cycle could be 'Planning' or 'Reporting'
-   * @param sectionName is the name of the section inside deliverables.
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section.
    */
-  protected void saveMissingFields(Project project, String cycle, int year, String sectionName, BaseAction action) {
+  protected void saveMissingFields(Project project, ProjectInnovation innovation, String cycle, int year,
+    Boolean upkeep, String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
-
-    SectionStatus status = sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, sectionName);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setProjectInnovation(innovation);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project level.
+   * 
+   * @param project is a project.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(Project project, String cycle, int year, Boolean upkeep, String sectionName,
+    BaseAction action) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, upkeep, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setProject(project);
       status.setSectionName(sectionName);
 
@@ -573,19 +671,21 @@ public class BaseValidator {
    * 
    * @param projectOutcome is a project Outcome.
    * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(ProjectOutcome projectOutcome, String cycle, int year, String sectionName,
-    BaseAction action) {
+  protected void saveMissingFields(ProjectOutcome projectOutcome, String cycle, int year, Boolean upkeep,
+    String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(), cycle, year, sectionName);
+      sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setProjectOutcome(projectOutcome);
       status.setSectionName(sectionName);
       status.setProject(projectOutcome.getProject());
@@ -599,23 +699,61 @@ public class BaseValidator {
 
 
   /**
+   * This method saves the missing fields into the database for a section at annual report synthesis level.
+   * 
+   * @param reportSynthesis is a reportSynthesis.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(ReportSynthesis reportSynthesis, String cycle, int year, Boolean upkeep,
+    String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle, year, upkeep, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setReportSynthesis(reportSynthesis);
+      status.setSectionName(sectionName);
+
+    }
+
+    // Validate if the form have missing fileds in project sections issue #1209
+    String sMissingField = action.getMissingFields().toString();
+    if (sMissingField.length() > 0) {
+      status.setMissingFields(sMissingField);
+    } else {
+      status.setMissingFields("");
+    }
+
+    sectionStatusManager.saveSectionStatus(status);
+
+  }
+
+  /**
    * This method saves the missing fields into the database for a section at ImpactPathway.
    * 
    * @param crpProgram is a CrpProgram.
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section (description, partners, etc.).
    */
   protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName, int year, String cyle,
-    BaseAction action) {
+    Boolean upkeep, BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
-      sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName, cyle, year);
+      sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName, cyle, year, upkeep);
     if (status == null) {
 
       status = new SectionStatus();
       status.setSectionName(sectionName);
       status.setCycle(cyle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setCrpProgram(crpProgram);
 
     }
@@ -632,13 +770,15 @@ public class BaseValidator {
    * This method saves the missing fields into the database for a section at Project.
    * 
    * @param project is a Project.
+   * @param upkeep could be '0' or '1'
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsProject(Project project, String sectionName, String cycle, int year,
+  protected void saveMissingFieldsProject(Project project, String sectionName, String cycle, int year, Boolean upkeep,
     BaseAction action) {
     // Reporting missing fields into the database.
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName, cycle, year);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName, cycle, year, upkeep);
     if (status == null) {
 
       status = new SectionStatus();
@@ -682,19 +822,6 @@ public class BaseValidator {
 
   }
 
-  protected void validateLessonsLearnOutcome(BaseAction action, ProjectOutcome project) {
-    if (project.getProjectComponentLesson() != null) {
-      ProjectComponentLesson lesson = project.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
-        // Let them save.
-        action.addMessage("Lessons");
-
-        action.addMissingField("projectLessons.lessons");
-
-      }
-    }
-
-  }
 
   /**
    * This method counts the number of words in a given text.
@@ -703,7 +830,11 @@ public class BaseValidator {
    * @return the number of words.
    */
   protected int wordCount(String text) {
-    text = text.trim();
-    return text.isEmpty() ? 0 : text.split("\\s+").length;
+    if (text != null) {
+      text = text.trim();
+      return text.isEmpty() ? 0 : text.split("\\s+").length;
+    } else {
+      return 0;
+    }
   }
 }

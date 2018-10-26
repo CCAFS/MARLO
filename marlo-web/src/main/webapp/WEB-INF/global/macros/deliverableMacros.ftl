@@ -1,219 +1,461 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
-[#macro deliverableLicenseMacro ]
-<div class="simpleBox">
-  <div class="form-group row">
-    <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req /]</label>
-    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] </div>  
+[#macro deliverableGeographicScope]
+  <div class="block-geographicScope">
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.select name="deliverable.deliverableInfo.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
+      </div>
+    </div>
+    
+    [#assign scopeID = (deliverable.deliverableInfo.geographicScope.id)!-1 ]  
+    [#assign isRegional = ((scopeID == action.reportingIndGeographicScopeRegional)) ]
+    [#assign isMultiNational = ((scopeID == action.reportingIndGeographicScopeMultiNational)) ]
+    [#assign isNational = ((scopeID == action.reportingIndGeographicScopeNational)) ]
+    [#assign isSubNational = ((scopeID == action.reportingIndGeographicScopeSubNational)) ]
+    
+    [#-- Region --]
+    <div class="form-group row">
+      <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
+        [#--  [@customForm.selectGroup name="deliverable.deliverableInfo.region.id" list=(repIndRegions)![] element=(deliverable.deliverableInfo.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="deliverable.region" required=true className="" editable=editable /]--]
+      [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
+      </div>
+    </div>
+    
+    [#-- Countries --]
+    <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+      [#-- Multinational, National and Subnational scope --]
+      [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
+    </div>
   </div>
-  [#-- Deliverable type computer software --]
-  <div class="radio-block licenseOptions-block" style="display:${((deliverable.adoptedLicense)!false)?string('block','none')}">
-    <hr />
-    [#if editable]
-      <div class="licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="MIT" [#if ((deliverable.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License</div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="GNU" [#if ((deliverable.licenseType) == "GNU")!false]checked="checked"[/#if]/> GNU General Public License</div>
-      </div>
-      [#-- Deliverable type data --]
-      <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_LICENSES" [#if ((deliverable.licenseType) == "CC_LICENSES")!false]checked="checked"[/#if]/> CC licenses version 4.0</div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_PUBLIC" [#if ((deliverable.licenseType) == "CC_PUBLIC")!false]checked="checked"[/#if]/> CC Public Domain Dedication (CC0 1.0)</div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="OPEN_DATA" [#if ((deliverable.licenseType) == "OPEN_DATA")!false]checked="checked"[/#if]/> Open Data Commons (ODC)</div>
-      </div>
-      [#-- Deliverable type other research types --]
-      <div class=" licenseOptions" style="display:block;">
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_BY" [#if ((deliverable.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_BY_SA" [#if ((deliverable.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_BY_ND" [#if ((deliverable.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_BY_NC" [#if ((deliverable.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_BY_NC_SA" [#if ((deliverable.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="CC_BY_NC_ND" [#if ((deliverable.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></div>
-        <div class="radio"><input type="radio" name="deliverable.license" id="" value="OTHER" [#if ((deliverable.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other</div>
-      </div>
-      [#-- Other --]
-      <div class="licenseOptions">
-        <div class="form-group row">
-          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];" >
-            [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
-          </div>
-          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];" >
-            <label class="col-md-6" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
-            <div class="col-md-6">
-              [@customForm.yesNoInput name="deliverable.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
-            </div>  
-          </div>
-        </div>
-      </div>
-    [#else]
-      [#-- Deliverable type computer software --]
-      <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
-        [#if deliverable.licenseType?? && deliverable.licenseType == "MIT"]<p class="checked">MIT License</p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "GNU"]<p class="checked">GNU General Public License</p>[/#if]
-      </div>
-      [#-- Deliverable type data --]
-      <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_LICENSES"]<p class="checked">CC licenses version 4.0</p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_PUBLIC"]<p class="checked">CC Public Domain Dedication (CC0 1.0)</p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "OPEN_DATA"]<p class="checked">Open Data Commons (ODC)</p>[/#if]
-      </div>
-      [#-- Deliverable type other research types --]
-      <div class="licenseOptions" style="display:block;">
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY"]<p class="checked">CC-BY <small>(allow modifications and commercial use)</small></p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_SA"]<p class="checked">CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_ND"]<p class="checked">CC-BY-ND <small>(allow commercial use but no modifications)</small></p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC"]<p class="checked">CC-BY-NC <small>(allow modifications but no commercial use)</small></small></p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC_SA"]<p class="checked">CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></p>[/#if]
-        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC_ND"]<p class="checked">CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></small></p>[/#if]
-      </div>
-      [#-- Other --]
-      <div class="licenseOptions">
-        [#if deliverable.licenseType?? && deliverable.licenseType == "OTHER"]
-          <p class="checked"> Other </p>
-          <div class="form-group row">
-            <div class="col-md-6 licence-modifications">
-              [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
-            </div>
-            <div class="col-md-6 licence-modifications">
-              <label class="col-md-6" for="">Does this license allows modifications?</label>
-              <div class="col-md-6">[@customForm.yesNoInput name="deliverable.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] </div>  
-            </div>
-          </div>
+[/#macro]
+
+[#macro deliverableCrossCuttingMacro label="deliverable.crossCuttingDimensions" ]
+  [#-- Does this deliverable have a cross-cutting dimension --]
+  <div class="form-group">
+    <label for="">[@customForm.text name=label readText=!editable/] [@customForm.req required=editable/]</label>
+    <div class="row">
+      <div class="col-md-12">
+        [#if editable]
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   class="crosscutingDimension"  id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    class="crosscutingDimension"  id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" class="crosscutingDimension"  id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       class=""                      id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+        [#else]
+          [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p> <input type="hidden" name="deliverable.deliverableInfo.crossCuttingGender" value="true">[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingYouth" value="true">[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingCapacity" value="true">[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingNa" value="true">[/#if]
+          
+          [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
+          [#if (!deliverable.deliverableInfo.crossCuttingGender?has_content) && (!deliverable.deliverableInfo.crossCuttingYouth?has_content) && (!deliverable.deliverableInfo.crossCuttingCapacity?has_content) && (!deliverable.deliverableInfo.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
         [/#if]
       </div>
+    </div>
+  </div>
+  
+  [#-- If gender dimension, select with ones --]
+  <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
+  [#if !action.hasSpecificities('crp_one_gender')]
+    [#if deliverable.genderLevels?has_content]
+      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label></div>
+      <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
+        <ul class="list">
+          [#list deliverable.genderLevels as element]
+            <li class="genderLevel clearfix">
+              <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
+              <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
+              <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
+              <div class="clearfix"></div>
+            </li>
+          [/#list]
+        </ul>
+      </div>
+    [/#if]  
+  [#else]
+    [#if ((deliverable.genderLevels[0])?? && deliverable.genderLevels[0].descriptionGenderLevel??)]
+    <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
+    <div class="input"> 
+      <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
+      <input type="hidden" name="deliverable.genderLevels[0].genderLevel" value="${(deliverable.genderLevels[0].genderLevel)!}" />
+    </div>
     [/#if]
+  [/#if]
+  </div>
+  
+  [#-- Cross-cutting dimensions blocks --]
+  <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" help="deliverable.ccDimension.gender.help" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" help="deliverable.ccDimension.youth.help" listName="crossCuttingScoresMap"  required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  
+  [#-- Gender Types List --]
+  <div style="display:none">
+    [#if genderLevels?has_content]
+      [#list genderLevels as element]
+        <span id="genderLevel-${(element.id)!}">
+          <span class="description">${(element.description)!}</span><br />
+          <i><span class="completeDescription">${(element.completeDescription)!}</span></i>
+        </span>
+      [/#list]
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro deliverableLicenseMacro ]
+<div class="simpleBox">
+  <div class="form-group row yesNoInputDeliverable">
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=editable /]</label>
+    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
+  </div>
+  [#-- Deliverable type computer software --]
+  [#local licenceOptions = [
+    { "name": "computerLicense",
+      "display": displayDeliverableRule(deliverable, deliverableComputerLicense)!,
+      "options": [
+        {"name": "MIT"},
+        {"name": "GNU"}
+      ]
+    },
+    { "name": "dataLicense",
+      "display": displayDeliverableRule(deliverable, deliverableDataLicense),
+      "options": [
+        {"name": "CC_LICENSES"},
+        {"name": "CC_PUBLIC"}
+        {"name": "OPEN_DATA"}
+      ]
+    },
+    { "name": "otherLicenses",
+      "display": "block",
+      "options": [
+        {"name": "CC_BY"},
+        {"name": "CC_BY_SA"}
+        {"name": "CC_BY_ND"},
+        {"name": "CC_BY_NC"},
+        {"name": "CC_BY_NC_SA"},
+        {"name": "CC_BY_NC_ND"},
+        {"name": "OTHER"}
+      ]
+    }
+  
+  ] /]
+  
+  <div class="block-license" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
+    <hr />
+    [#list licenceOptions as licenseType]
+      <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
+        [#list licenseType.options as option]
+          [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
+          [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
+          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="licenceOption" cssClassLabel="font-normal" /]</p>
+        [/#list]
+      </div>
+    [/#list]
+    
+    [#-- Other (Please specify)--]
+    <div class="licenseOptions">
+      <div class="form-group row">
+        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
+          [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+        </div>
+        <div class="col-md-6 licence-modifications yesNoInputDeliverable" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
+          <label class="col-md-6 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
+          <div class="col-md-6">
+            [@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
+          </div>  
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 [/#macro]
 
 
 [#macro isOpenaccessMacro ]
-<div class="simpleBox form-group">
-<input type="hidden"  name="deliverable.dissemination.id" value="${(deliverable.dissemination.id)!"-1"}" />
-  <div class="row ">
-    <label class="col-md-9" for="">Is this deliverable Open Access? [@customForm.req /]</label>
-    <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
-    </div>
-  </div> 
-  <div class="openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
-    <hr />
-    [#if editable]
-    <label for="">Select the Open Access restriction:[@customForm.req /]</label>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination?? && deliverable.dissemination.intellectualProperty?? && (deliverable.dissemination.intellectualProperty))]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if deliverable.dissemination?? &&  deliverable.dissemination.limitedExclusivity?? && (deliverable.dissemination.limitedExclusivity)]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedUseAgreement" [#if deliverable.dissemination?? &&  deliverable.dissemination.restrictedUseAgreement?? && (deliverable.dissemination.restrictedUseAgreement)]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="effectiveDateRestriction"[#if deliverable.dissemination?? &&  deliverable.dissemination.effectiveDateRestriction?? && (deliverable.dissemination.effectiveDateRestriction)]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="notDisseminated" [#if (deliverable.dissemination?? &&  deliverable.dissemination.notDisseminated?? && (deliverable.dissemination.notDisseminated))]checked="checked"[/#if]>Not Disseminated</label>
-    </div>
-    [#else]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.intellectualProperty?? && deliverable.dissemination.intellectualProperty]<p class="checked">Intellectual Property Rights (confidential information) </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.limitedExclusivity?? && deliverable.dissemination.limitedExclusivity]<p class="checked">Limited Exclusivity Agreements </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.restrictedUseAgreement?? && deliverable.dissemination.restrictedUseAgreement]<p class="checked">Restricted Use Agreement - Restricted access (if so, what are these periods?) </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.effectiveDateRestriction?? && deliverable.dissemination.effectiveDateRestriction]<p class="checked">Effective Date Restriction - embargoed periods (if so, what are these periods?) </p>[/#if]
-    [#if (deliverable.dissemination??) &&  deliverable.dissemination.notDisseminated?? && deliverable.dissemination.notDisseminated]<p class="checked">Not Disseminated </p>[/#if]
-    [/#if]
-    <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination??) && (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
-      <div class="col-md-5">
-        [@customForm.input name="deliverable.dissemination.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!'restrictedAccessUntil'}" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
+  [#local customName = "deliverable.dissemination"]
+  <div class="simpleBox form-group">
+    <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
+    <div class="row yesNoInputDeliverable">
+      <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
+      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
+    </div> 
+    <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
+      <hr />
+      [#local oaRestrictions = [
+        {"value": "intellectualProperty", "isChecked": (deliverable.dissemination.intellectualProperty)!false },
+        {"value": "limitedExclusivity", "isChecked": (deliverable.dissemination.limitedExclusivity)!false }
+        {"value": "restrictedUseAgreement", "isChecked": (deliverable.dissemination.restrictedUseAgreement)!false }
+        {"value": "effectiveDateRestriction", "isChecked": (deliverable.dissemination.effectiveDateRestriction)!false }
+        {"value": "notDisseminated", "isChecked": (deliverable.dissemination.notDisseminated)!false }
+      ] /]
+      
+      <label for="">Select the Open Access restriction:[@customForm.req required=editable /]</label>
+      [#list oaRestrictions as restriction]
+        [#local restrictionLabel][@s.text name="deliverable.oaRestriction.${restriction.value}" /][/#local]
+        <p>[@customForm.radioFlat id="oaRestrictions-${restriction_index}" name="${customName}.type" label="${restrictionLabel}" editable=editable value="${restriction.value}" checked=restriction.isChecked cssClass="" cssClassLabel="font-normal" /]</p>
+      [/#list]
+
+      <div class="row restrictionDate-block" style="display:[#if ((deliverable.dissemination.restrictedUseAgreement)!false) || ((deliverable.dissemination.effectiveDateRestriction)!false) ]block[#else]none [/#if];">
+        <div class="col-md-5">
+          [@customForm.input name="${customName}.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!'restrictedAccessUntil'}" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
+        </div>
       </div>
     </div>
+  </div>
+[/#macro]
+
+[#macro intellectualAsset ]
+  [#local customName = "deliverable.intellectualAsset"]
+  <div class="simpleBox form-group">
+    <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
+    <div class="row yesNoInputDeliverable">
+      <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
+      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" neutral=true /]  </div>
+    </div> 
+    <div class="block-intellectualAsset" style="display:${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
+      <hr />
+      [#-- Applicant(s) / owner(s) (Center or partner) --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.applicant" i18nkey="intellectualAsset.applicants" className="" required=true editable=editable /]
+      </div>
+      [#-- Type --]
+      <div class="form-group">
+        <label for="">[@s.text name="intellectualAsset.type" /]:[@customForm.req required=editable /] </label> <br />
+        [#local isPatent = ((deliverable.intellectualAsset.type == 1)!false) /]
+        [#local isPVP = ((deliverable.intellectualAsset.type == 2)!false) /]
+        [@customForm.radioFlat id="intellectualAssetType-yes" name="${customName}.type" label="Patent"  value="1"  checked=isPatent cssClass="iaType" cssClassLabel="font-normal" editable=editable /]
+        [@customForm.radioFlat id="intellectualAssetType-no"  name="${customName}.type" label="PVP"     value="2"  checked=isPVP cssClass="iaType" cssClassLabel="font-normal" editable=editable /]
+      </div>
+      [#-- Title --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.title" i18nkey="intellectualAsset.title" className="" required=true editable=editable /]
+      </div>
+      
+      <div class="form-group row block-patent" style="display:${isPatent?string('block', 'none')}">
+        [#-- Type of filling --]
+        <div class="col-md-6">
+          [@customForm.select name="${customName}.fillingType.id" className="setSelect2" i18nkey="intellectualAsset.fillingType" listName="repIndFillingTypes" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+        </div>
+        [#-- Patent status --]
+        <div class="col-md-6">
+          [@customForm.select name="${customName}.patentStatus.id" className="setSelect2" i18nkey="intellectualAsset.patentStatus" listName="repIndPatentStatuses" keyFieldName="id" displayFieldName="name" editable=editable required=editable /]
+        </div>
+      </div>
+      [#-- Patent Type --]
+      <div class="form-group block-patent" style="display:${isPatent?string('block', 'none')}">
+        <label for="">[@s.text name="intellectualAsset.patentType" /]:[@customForm.req required=editable /] </label><br />
+        [@customForm.radioFlat id="iaPatentType-application" name="${customName}.patentType" label="Application"      value="1"   checked=((deliverable.intellectualAsset.patentType == 1)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+        [@customForm.radioFlat id="iaPatentType-registration"  name="${customName}.patentType" label="Registration"   value="2"   checked=((deliverable.intellectualAsset.patentType == 2)!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+      </div>
+      <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
+        [#-- Variety name --]
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.varietyName" i18nkey="intellectualAsset.varietyName" className="" required=true editable=editable /]
+        </div>
+        [#-- Status --]
+        <div class="col-md-6">
+           [@customForm.select name="${customName}.status" className="setSelect2" i18nkey="intellectualAsset.status" listName="statuses" editable=editable required=editable /]
+        </div>
+      </div>
+      <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
+        [#-- Country --]
+        <div class="col-md-6">
+          [@customForm.select name="${customName}.country.isoAlpha2" value="'${(deliverable.intellectualAsset.country.isoAlpha2)!'-1'}'" className="setSelect2" i18nkey="intellectualAsset.country" listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" editable=editable required=editable /]
+        </div>
+        [#-- Application/registration number --]
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.appRegNumber" i18nkey="intellectualAsset.appRegNumber" className="numericInput" required=true editable=editable /]
+        </div>
+      </div>
+      <div class="form-group row block-pvp" style="display:${isPVP?string('block', 'none')}">
+        [#-- Breeder and crop --]
+        <div class="col-md-6">
+          [@customForm.input name="${customName}.breederCrop" i18nkey="intellectualAsset.breederCrop" className="" required=true editable=editable /]
+        </div>
+      </div>
+      
+      <div class="form-group row">
+        [#-- Date of filling --]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.dateFilling" value="${(deliverable.intellectualAsset.dateFilling?date?string.medium)!}" i18nkey="intellectualAsset.dateFilling" className="datePicker dateLabel" required=true editable=editable /]
+        </div>
+        [#-- Date of registration/Grant --]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.dateRegistration" value="${(deliverable.intellectualAsset.dateRegistration?date?string.medium)!}" i18nkey="intellectualAsset.dateRegistration" className="datePicker dateLabel" required=true editable=editable /]
+        </div>
+        [#-- Date of Expiry / renewal --]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.dateExpiry" value="${(deliverable.intellectualAsset.dateExpiry?date?string.medium)!}" i18nkey="intellectualAsset.dateExpiry" className="datePicker dateLabel" required=true editable=editable /]
+        </div>
+      </div>
+      
+      
+      [#-- Additional information --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.additionalInformation" i18nkey="intellectualAsset.additionalInformation" help="deliverable.intellectualAsset.title.help" className="" required=true editable=editable /]
+      </div>
+      [#-- Link of published application/ registration --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.link" i18nkey="intellectualAsset.link" className="" required=true editable=editable /]
+      </div>
+      [#-- Public communication relevant to the application/registration --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.publicCommunication" i18nkey="intellectualAsset.publicCommunication" className="" required=true editable=editable /]
+      </div>
+      
+    </div>
+  </div>
+[/#macro]
+
+[#-- Does this deliverable involve Participants and Trainees? --]
+[#macro deliverableParticipantsMacro ]
+[#local customName = "deliverable.deliverableParticipant" /]
+<div class="simpleBox">
+  <div class="form-group row yesNoInputDeliverable">
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
+    <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
+  </div>
+  
+  <div class="block-involveParticipants" style="display:${((deliverable.deliverableParticipant.hasParticipants)!false)?string('block','none')}">
+    <hr />
+    [#-- Title Event/Activity --]
+    <div class="form-group">
+      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=editable editable=editable /]
+    </div>
+    
+    [#-- Type of activity --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+      </div>
+      [#-- Formal training: Academic Degree --]
+      <div class="col-md-6 block-academicDegree" style="display:${((deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false)?string('block','none')}">
+        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Total number of Participants: --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=editable editable=editable /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+      <div class="col-md-6 femaleNumbers">
+        [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+    </div>
+    
+    [#-- Type of Participant(s): --]
+    <div class="form-group row">
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
+      </div>
+    </div>
+    
   </div>
 </div>
 [/#macro]
 
 
 [#macro alreadyDisseminatedMacro ]
-<div class="simpleBox form-group">
-  <div class=" row">
-    <span class="col-md-9">
-      <label  for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
-      <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
-    </span>
-    <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="findable text-center" /] 
-    </div>  
+  [#local name = "deliverable.dissemination"  /]
+  <div class="simpleBox form-group">
+    <div class=" row yesNoInputDeliverable">
+      <span class="col-md-9">
+        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
+        <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
+      </span>
+      <div class="col-md-3">
+        [@customForm.yesNoInputDeliverable name="${name}.alreadyDisseminated"  editable=editable inverse=false cssClass="type-findable text-center" /] 
+      </div>  
+    </div>
+    <div class="block-findable findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
+      <hr />
+      [@findableOptions /]
+    </div>
   </div>
-  <div class="findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
-    <hr />
-    [@findableOptions /]
-  </div>
-</div>
 [/#macro]
 
 [#macro findableOptions ]
-[#local isSynced = (deliverable.dissemination.synced)!false ]
-<div class="form-group row disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
-  [#-- Note --]
-  <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
-  <div class="col-md-4">
-    [#if editable]
-      [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
-    [#else]
-    <div class="input">
-      <label for="disChannel" style="display:block;">Dissemination channel:</label>
-      <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
-    </div>
-    [/#if]
-  </div>
-  <div class="col-md-8">
-    [#if editable]
-      [#list repositoryChannels  as channel]
-        [#if channel.shortName != "other"]
-          [#-- Examples & instructions --]
-          [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
-        [/#if]
-      [/#list]
-    [/#if]
-  </div>
-</div>
-
-[#assign channelsArray = [] /] 
-<ul id="channelsList" style="display:none">
-  [#list repositoryChannels  as channel]
-    [#if channel.shortName != "other"]
-      <li>
-        [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
-        <span class="id">${channel.shortName}</span>
-        <span class="name">${channel.name}</span>
-      </li>
-    [/#if]
-  [/#list]
-</ul>
-<div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
-  <div class="form-group" > 
-    <div class="url-field">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
-    </div>
-    <div class="buttons-field">
-      [#if editable]
-        [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
-        <div id="fillMetadata" style="display:${showSync?string('block','none')};">
-          <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
-          [#-- Sync Button --]
-          <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
-          <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
-            [#-- Update Button --]
-            <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
-            [#-- Unsync Button --]
-            <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
-          </div>
+  [#local isSynced = (deliverable.dissemination.synced)!false ]
+  [#local customName = "deliverable.dissemination" /]
+  <div class="disseminationChannelBlock" style="display:${isSynced?string('none','block')};">
+    [#-- Note --]
+    <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
+    <div class="form-group row">
+      <div class="col-md-4">
+        [#if editable]
+          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+        [#else]
+        <div class="input">
+          <label for="disChannel" style="display:block;">Dissemination channel:</label>
+          <p>${((deliverable.dissemination.disseminationChannel?upper_case)!)!'Prefilled if available'}</p>
         </div>
-      [/#if]
+        [/#if]
+      </div>
+      <div class="col-md-8">
+        [#if editable]
+          [#list (repositoryChannels)![]  as channel]
+            [#if channel.shortName != "other"]
+              [#-- Examples & instructions --]
+              [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
+            [/#if]
+          [/#list]
+        [/#if]
+      </div>
     </div>
   </div>
-  <div class="clearfix"></div>
-</div>
-<div id="metadata-output"></div>
+  
+  [#assign channelsArray = [] /] 
+  <ul id="channelsList" style="display:none">
+    [#list (repositoryChannels)![]  as channel]
+      [#if channel.shortName != "other"]
+        <li>
+          [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
+          <span class="id">${channel.shortName}</span>
+          <span class="name">${channel.name}</span>
+        </li>
+      [/#if]
+    [/#list]
+  </ul>
+  [#local channelSelected = (deliverable.dissemination.disseminationChannel)!'-1' /]
+  <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
+    <div class="form-group" > 
+      <div class="url-field">
+        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
+      </div>
+      <div class="buttons-field">
+        [#if editable]
+          [#local showSync = (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]
+          <div id="fillMetadata" style="display:${showSync?string('block','none')};">
+            <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
+            [#-- Sync Button --]
+            <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+            <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
+              [#-- Update Button --]
+              <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+              [#-- Unsync Button --]
+              <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
+            </div>
+          </div>
+        [/#if]
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div id="metadata-output"></div>
 [/#macro]
 
 [#macro channelExampleMacro name="" url="" ]
@@ -223,143 +465,145 @@
   </div>
 [/#macro]
 
-[#macro deliverableMetadataMacro ]
-<div class="form-group ">
-  [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
-</div>
-<div class="form-group ">
-  [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
-</div>
-<div class="form-group row">
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
-  </div>
-</div>
-<div class="form-group row">
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
-  </div>
-</div>  
-<div class="form-group ">
-  [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
-</div>
-<div class="form-group row">
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
-  </div>
-</div>
- 
-<hr />
- 
-[#-- Creator/Authors --]
-<div class="form-group">
-  <label for="">[@s.text name="metadata.creator" /]:  </label>
-  [#-- Hidden input --]
-  [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
-  [#-- Some Instructions  --]
-  [#if editable]
-    <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
-    [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
-    </div>
-  [/#if]
-  [#-- Authors List --]
-  <div class="authorsList simpleBox row" >
-    [#if deliverable.users?has_content]
-      [#list deliverable.users as author]
-        [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
-      [/#list]
-    [#else]
-      <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
-    [/#if]
-  </div>
-  [#-- Add an author --]
-  [#if editable]
-  <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
-  <label for="">Add an Author:</label>
+[#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
   <div class="form-group">
-    <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
-    <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
-    <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
-    <div class="pull-right" style="width:14%">
-      <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
-    </div>
+    [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
-  <div class="clearfix"></div>
+  <div class="form-group">
+    [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
-  [/#if] 
-</div>
-
-<div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
-  <br />
-  <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
-  <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
   <div class="form-group row">
-    <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
-    <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
-    <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
-  </div>
-  <div class="form-group">
-    [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
-  </div>
-  <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:[@customForm.req required=isJournalArticle() /]
-    <div class="checkbox">
-      [#if editable]
-        <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
-        <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
-        <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
-      [#else]
-        <p [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
-        <p [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
-        <p [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
-      [/#if]
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
     </div>
-  </div> 
-  
-  <hr />
-  <div class="row">
-    <div class="col-md-9">
-      <label>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
-      <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
     </div>
-    <div class="col-md-3">[@customForm.yesNoInput name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
   </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
+    </div>
+  </div>
+  <div class="form-group"> 
+    [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
+  </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="handles" encodedName="marlo.handle" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
+    </div>
+  </div>
+   
   <hr />
-  
+   
+  [#-- Creator/Authors --]
   <div class="form-group">
-    <label for="">[@s.text name="project.deliverable.dissemination.publicationContribution" /]</label>
-    <div class="flagshipList simpleBox">
-      [#if deliverable.crps?has_content]
-        [#list deliverable.crps as flagShips]
-          [@deliverableMacros.flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
+    <label for="">[@s.text name="metadata.creator" /]:  </label>
+    [#-- Hidden input --]
+    [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
+    [#-- Some Instructions  --]
+    [#if editable]
+      <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+      [@s.text name = "project.deliverable.dissemination.authorsInfo" /]
+      </div>
+    [/#if]
+    [#-- Authors List --]
+    <div class="authorsList simpleBox row" >
+      [#if deliverable.users?has_content]
+        [#list deliverable.users as author]
+          [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
         [/#list]
       [#else]
-        <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.Notflagships" /]</p> 
+        <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
     </div>
+    [#-- Add an author --]
     [#if editable]
-      <div class="form-group row">
-        <div class="col-md-5">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
-        </div>
-        <div class="col-md-7">
-          [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName="programs"   multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
-        </div>
+    <div class="dottedBox authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
+    <label for="">Add an Author:</label>
+    <div class="form-group">
+      <div class="pull-left" style="width:25%"><input class="form-control input-sm lName"  placeholder="Last Name" type="text" /> </div>
+      <div class="pull-left" style="width:25%"><input class="form-control input-sm fName"  placeholder="First Name" type="text" /> </div>
+      <div class="pull-left" style="width:36%"><input class="form-control input-sm oId"    placeholder="ORCID (e.g. orcid.org/0000-0002-6066...)" type="text" title="ORCID is a nonprofit helping create a world in which all who participate in research, scholarship and innovation are uniquely identified and connected to their contributions and affiliations, across disciplines, borders, and time."/> </div>
+      <div class="pull-right" style="width:14%">
+        <div id="" class="addAuthor text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
       </div>
+    </div>
+    <div class="clearfix"></div>
+    </div>
     [/#if] 
   </div>
   
-</div>
-
+  <div class="publicationMetadataBlock" style="display:${displayDeliverableRule(deliverable, deliverablePublicationMetadata)!};">
+    <br />
+    <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
+    <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
+    [#if editable] <p class="note">[@s.text name="project.deliverable.dissemination.journalFields" /]</p> [/#if]
+    <div class="form-group row">
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+    </div>
+    <div class="form-group">
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
+    </div>
+    <div class="form-group">
+      <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
+      <div class="checkbox">
+        [#if editable]
+          <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if (deliverable.publication.isiPublication)!false]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
+          <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if (deliverable.publication.nasr)!false]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
+          <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if (deliverable.publication.coAuthor)!false]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
+        [#else]
+          <p [#if (deliverable.publication.isiPublication)!false]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
+          <p [#if (deliverable.publication.nasr)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
+          <p [#if (deliverable.publication.coAuthor)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
+        [/#if]
+      </div>
+    </div> 
+    
+    <hr />
+    <div class="row yesNoInputDeliverable">
+      <div class="col-md-9">
+        <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
+        <p class="message"><i><small>[@s.text name="project.deliverable.dissemination.acknowledgeQuestion.help" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</small></i></p>
+      </div>
+      <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
+    </div>
+    <hr />
+    
+    <div class="form-group">
+      <label for="">[@s.text name="project.deliverable.dissemination.publicationContribution" /]</label>
+      <div class="flagshipList simpleBox">
+        [#if deliverable.crps?has_content]
+          [#list deliverable.crps as flagShips]
+            [@deliverableMacros.flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
+          [/#list]
+        [#else]
+          <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.Notflagships" /]</p> 
+        [/#if]
+      </div>
+      [#if editable]
+        <div class="form-group row">
+          <div class="col-md-${allowFlagships?string('5','12')}">
+            [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName=crpsListName keyFieldName="id"  displayFieldName="composedName" className="crpSelect" editable=editable/]
+          </div>
+          [#if allowFlagships]
+            <div class="col-md-7">
+              [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" paramText="${(crpSession)!'CRP'}" listName=flagshipslistName keyFieldName="id"  displayFieldName="composedName" className="flaghsipSelect" editable=editable/]
+            </div>
+          [/#if]
+        </div>
+      [/#if] 
+    </div>
+    
+  </div>
 [/#macro]
 
 
@@ -388,12 +632,12 @@
     <hr />
     
     <div class="col-md-4">
-    [#list answers as answer]
+    [#list (answers)![] as answer]
       <div class="radio radio-block">
         [#if editable]
         <label><input type="radio" class="qualityAssurance" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
         [#else]
-        <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
+        <p [#if (deliverable.qualityCheck.qualityAssurance.id==answer.id)!false] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
         [/#if]
       </div>
     [/#list]
@@ -429,7 +673,7 @@
     <hr />
     
     <div class="col-md-4">
-    [#list answers as answer]
+    [#list (answers)![] as answer] 
       <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataDictionary" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
@@ -470,7 +714,7 @@
     <hr />
     
     <div class="col-md-4">
-    [#list answers as answer]
+    [#list (answers)![] as answer]
       <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataTools" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
@@ -628,19 +872,23 @@
 
 [#macro flagshipMacro element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
-  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox"  style="display:${isTemplate?string('none','block')}">
+  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if]
+    [#-- Hidden Inputs --]
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
-    <input class="idCrp" type="hidden" name="${customName}.crpPandr.id" value="${(element.crpPandr.id)!}" />
-    <input class="idFlagship" type="hidden" name="${customName}.ipProgram.id" value="${(element.ipProgram.id)!}" />
-    <span class="name">${(element.crpPandr.acronym?upper_case)!((element.crpPandr.name?upper_case)!)} - ${(element.ipProgram.acronym)!}</span>
+    <input class="idGlobalUnit" type="hidden" name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!}" />
+    <input class="idCRPProgram" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!}" />
+    [#-- Title --]
+    <span class="name">
+      [#if (element.globalUnit.id??)!false]${(element.globalUnit.composedName)!}[/#if]
+      [#if (element.crpProgram.id??)!false]${(element.crpProgram.composedName)!}[/#if]
+    </span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
 
-
-[#function checkDeliverableTypes]
-  [#if (deliverable.deliverableType.deliverableType.id==49)!false]
+[#function displayDeliverableRule element ruleName]
+  [#if (action.hasDeliverableRule(element.deliverableInfo, ruleName))!false ]
     [#return "block"]
   [#else]
     [#return "none"]
@@ -648,11 +896,3 @@
   [#return "none"]
 [/#function]
 
-[#function isJournalArticle]
-  [#if (deliverable.deliverableType.id==63 || deliverable.deliverableType.id==79)!false]
-    [#return true]
-  [#else]
-    [#return false]
-  [/#if]
-  [#return false]
-[/#function]

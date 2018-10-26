@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "CRP Phases" /]
+[#assign title = "Phases" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["bootstrap-select","jquery-ui", "pickadate"] /]
 [#assign customJS = [ 
@@ -37,7 +37,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
-        <h4 class="sectionTitle">CRP Phases</h4>
+        <h4 class="sectionTitle">Phases</h4>
         <div class="borderBox row ">
           [#if phases??]
             [#list phasesAction as phase]
@@ -49,11 +49,13 @@
                 [#-- Hidden Inputs --]
                 <input type="hidden" name="${customName}.id" value="${phase.id}" />
                 <input type="hidden" name="${customName}.description" value="${phase.description}" />
+                <input type="hidden" name="${customName}.name" value="${phase.name}" />
+                <input type="hidden" name="${customName}.upkeep" value="${phase.upkeep?string}" />
                 <input type="hidden" name="${customName}.year" value="${phase.year}" />
                 <input type="hidden" name="${customName}.next.id" value="${(phase.next.id)!}" />
                 <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />
                 [#-- Title --]
-                <h4> ${(phase.description)!} ${(phase.year)!}</h4><hr />
+                <h4> ${(phase.name)!} ${(phase.year)!}</h4><hr />
                 <div class="form-group row"> 
                   [#-- Visible Phase --]
                   <div class="col-md-6">

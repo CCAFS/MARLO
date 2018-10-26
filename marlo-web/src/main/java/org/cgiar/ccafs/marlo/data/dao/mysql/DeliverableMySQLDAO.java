@@ -20,10 +20,13 @@ import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -67,6 +70,32 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     }
     return null;
 
+  }
+
+  @Override
+  public List<Deliverable> getDeliverablesByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append(
+      "WHERE d.is_active = 1 AND d.project_id IS NOT NULL AND (d.is_publication IS NULL OR d.is_publication = 0) AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
   }
 
   @Override

@@ -300,7 +300,8 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+    phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+      this.getActualPhase().getUpkeep(), this.getCrpID());
     phasesProjects = new ArrayList<Project>();
     for (ProjectPhase projectPhase : phase.getProjectPhases()) {
       phasesProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
@@ -324,10 +325,14 @@ public class CrpUsersAction extends BaseAction {
               c -> c.getContactType().equals(role.getAcronym()) && c.getProjectPartner().isActive() && c.isActive())
             .collect(Collectors.toList())) {
             if (phasesProjects.contains(projectPartnerPerson.getProjectPartner().getProject())) {
-              if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              if (projectPartnerPerson.getProjectPartner().getProject()
+                .getProjecInfoPhase(this.getActualPhase()) != null
+                && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || projectPartnerPerson.getProjectPartner().getProject()
+                  .getProjecInfoPhase(this.getActualPhase()) != null
+                  && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                 users.add(userRole);
               }
 

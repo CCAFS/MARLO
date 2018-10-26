@@ -56,9 +56,11 @@ public interface ProjectPartnerPersonDAO {
   public List<ProjectPartnerPerson> findAll();
 
 
+  public List<ProjectPartnerPerson> findAllActiveForProjectPartner(long projectPartnerId);
+
+
   public List<ProjectPartnerPerson> findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(long deliverableId,
     long partnerId);
-
 
   public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId);
 

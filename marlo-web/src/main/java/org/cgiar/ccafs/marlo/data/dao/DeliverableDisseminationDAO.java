@@ -16,7 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -54,6 +56,13 @@ public interface DeliverableDisseminationDAO {
    */
   public List<DeliverableDissemination> findAll();
 
+
+  /**
+   * This method gets a deliverableDissemination object by a given deliverableDissemination phase and deliverable.
+   * 
+   * @return a DeliverableDissemination object.
+   */
+  public DeliverableDissemination findDisseminationByPhaseAndDeliverable(Phase phase, Deliverable deliverable);
 
   /**
    * This method saves the information of the given deliverableDissemination

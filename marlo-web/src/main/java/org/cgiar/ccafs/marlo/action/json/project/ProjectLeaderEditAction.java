@@ -220,15 +220,17 @@ public class ProjectLeaderEditAction extends BaseAction {
   }
 
 
-  private void saveMissingFields(Project project, String cycle, int year, String sectionName) {
+  private void saveMissingFields(Project project, String cycle, int year, Boolean upkeep, String sectionName) {
     // Reporting missing fields into the database.
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, sectionName);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
 
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
+      status.setUpkeep(upkeep);
       status.setProject(project);
       status.setSectionName(sectionName);
 

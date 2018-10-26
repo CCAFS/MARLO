@@ -139,6 +139,14 @@ function getInputElement(fieldName,message) {
     $radioFlatLabel.addClass('fieldError');
   }
 
+  // Find yesNoInputDeliverable button
+  var $yesNoInputDeliverableLabel = $(elementQuery).parents('.yesNoInputDeliverable').find('label.yesNoLabel');
+  if($yesNoInputDeliverableLabel) {
+    $yesNoInputDeliverableLabel.addClass('fieldError');
+    $(elementQuery).removeClass("fieldError");
+    $(elementQuery).attr("title", "");
+  }
+
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 

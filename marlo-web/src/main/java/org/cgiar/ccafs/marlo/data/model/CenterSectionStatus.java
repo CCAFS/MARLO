@@ -16,16 +16,12 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
+public class CenterSectionStatus extends MarloSoftDeleteableEntity implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -5830242271701358980L;
 
-
-  private Long id;
-
   private CrpProgram researchProgram;
-
 
   private CenterOutcome researchOutcome;
   private CenterOutput researchOutput;
@@ -40,21 +36,6 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
   public CenterSectionStatus() {
   }
 
-  public CenterSectionStatus(CrpProgram researchProgram, CenterOutcome researchOutcome, CenterOutput researchOutput,
-    String sectionName, String missingFields, String cycle, Integer year) {
-    this.researchProgram = researchProgram;
-    this.researchOutcome = researchOutcome;
-    this.researchOutput = researchOutput;
-    this.sectionName = sectionName;
-    this.missingFields = missingFields;
-    this.cycle = cycle;
-    this.year = year;
-  }
-
-  public CenterSectionStatus(String sectionName) {
-    this.sectionName = sectionName;
-  }
-
   public CapacityDevelopment getCapacityDevelopment() {
     return capacityDevelopment;
   }
@@ -65,11 +46,6 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
 
   public CenterDeliverable getDeliverable() {
     return deliverable;
-  }
-
-  @Override
-  public Long getId() {
-    return this.id;
   }
 
   @Override
@@ -118,11 +94,6 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
     return this.year;
   }
 
-  @Override
-  public boolean isActive() {
-    return true;
-  }
-
   public void setCapacityDevelopment(CapacityDevelopment capacityDevelopment) {
     this.capacityDevelopment = capacityDevelopment;
   }
@@ -135,12 +106,15 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
+  }
+
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+    User u = new User();
+    u.setId(new Long(3));
+    u = modifiedBy;
   }
 
   public void setProject(CenterProject project) {
@@ -169,7 +143,7 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CenterSectionStatus [id=" + id + ", researchProgram=" + researchProgram + ", researchOutcome="
+    return "CenterSectionStatus [id=" + this.getId() + ", researchProgram=" + researchProgram + ", researchOutcome="
       + researchOutcome + ", researchOutput=" + researchOutput + ", project=" + project + ", deliverable=" + deliverable
       + ", sectionName=" + sectionName + ", cycle=" + cycle + ", year=" + year + "]";
   }

@@ -22,8 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
@@ -72,6 +73,20 @@ public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartne
   }
 
   @Override
+  public List<ProjectPartnerPerson> findAllActiveForProjectPartner(long projectPartnerId) {
+    String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
+      + "inner join projectPartnerPerson.projectPartner as projectPartner "
+      + "where projectPartnerPerson.active is true " + "and projectPartner.id = :projectPartnerId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectPartnerId", projectPartnerId);
+
+    List<ProjectPartnerPerson> projectPartnerPersons = createQuery.list();
+
+    return projectPartnerPersons;
+  }
+
+  @Override
   public List<ProjectPartnerPerson> findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(long deliverableId,
     long partnerId) {
     String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
@@ -95,7 +110,7 @@ public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartne
   public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId) {
     String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
       + "inner join projectPartnerPerson.projectPartner as projectPartner "
-      + "where projectPartnerPerson.active is true " + "and projectPartner.id = :projectPartnerId";
+      + "where projectPartner.id = :projectPartnerId";
 
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectPartnerId", projectPartnerId);

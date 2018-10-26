@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.DeliverableParticipant"
+		table="deliverable_participants" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="deliverable"
+			class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+			<column name="deliverable_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="phase_id" not-null="true" />
+		</many-to-one>
+		<property name="hasParticipants" type="java.lang.Boolean">
+			<column name="has_participants" />
+		</property>
+		<property name="eventActivityName" type="string">
+			<column name="event_activity_name" sql-type="TEXT" />
+		</property>
+		<many-to-one name="repIndTypeActivity"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity" fetch="select">
+			<column name="rep_ind_type_activity_id" />
+		</many-to-one>
+		<property name="academicDegree" type="string">
+			<column name="academic_degree" sql-type="TEXT" />
+		</property>
+		<property name="participants" type="java.lang.Double">
+			<column name="participants" precision="30" scale="0" />
+		</property>
+		<property name="estimateParticipants" type="java.lang.Boolean">
+			<column name="estimate_participants" />
+		</property>
+		<property name="females" type="java.lang.Double">
+			<column name="females" precision="30" scale="0" />
+		</property>
+		<property name="estimateFemales" type="java.lang.Boolean">
+			<column name="estimate_females" />
+		</property>
+		<property name="dontKnowFemale" type="java.lang.Boolean">
+			<column name="dont_know_female" />
+		</property>
+		<many-to-one name="repIndTypeParticipant"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant" fetch="select">
+			<column name="rep_ind_type_participant_id" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by">
+				<comment>foreign key to the table users</comment>
+			</column>
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT"
+				not-null="true" />
+		</property>
+	</class>
+</hibernate-mapping>

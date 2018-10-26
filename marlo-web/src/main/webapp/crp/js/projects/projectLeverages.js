@@ -26,6 +26,11 @@ function addLeverage() {
   var $item = $('#leverage-template').clone(true).removeAttr("id");
   $list.append($item);
   $item.show('slow');
+
+  $item.find('select').select2({
+    width: '100%'
+  });
+
   checkNextUsersItems($list);
   updateIndexes();
 }

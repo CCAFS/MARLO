@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -72,7 +73,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -122,10 +122,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   // Parameter for tables E and F
   Double totalw1w2 = 0.0, totalw3Bilateral = 0.0, grandTotal = 0.0;
   // Managers
-  private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
-  private PowbExpenditureAreasManager powbExpenditureAreasManager;
-  private ProjectExpectedStudyManager projectExpectedStudyManager;
-  private PowbSynthesisManager powbSynthesisManager;
+  private final PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
+  private final PowbExpenditureAreasManager powbExpenditureAreasManager;
+  private final ProjectExpectedStudyManager projectExpectedStudyManager;
+  private final PowbSynthesisManager powbSynthesisManager;
+  private final ResourceManager resourceManager;
   // RTF bytes
   private byte[] bytesRTF;
 
@@ -137,12 +138,14 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, PowbSynthesisManager powbSynthesisManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
-    super(config, crpManager, phaseManager);
+    ProjectExpectedStudyManager projectExpectedStudyManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -213,13 +216,15 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/POWBTemplate.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/POWBTemplate.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
@@ -652,7 +657,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+        .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID
           && ps.getProject().getGlobalUnitProjects().stream().filter(
             gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
@@ -1146,7 +1151,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
       if (project.isActive()) {
-        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        project.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
         if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
           if (project.getProjectInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
@@ -1158,12 +1163,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       }
     }
     for (Project project : myProjects) {
-      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
-      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
-      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w1 = project.getCoreBudget(this.getSelectedPhase().getYear(), this.getSelectedPhase());
+      double w3 = project.getW3Budget(this.getSelectedPhase().getYear(), this.getSelectedPhase());
+      double bilateral = project.getBilateralBudget(this.getSelectedPhase().getYear(), this.getSelectedPhase());
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
-          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
+          && c.getPhase().equals(this.getSelectedPhase()) && c.getYear() == this.getSelectedPhase().getYear())
         .collect(Collectors.toList());
       double percentageW1 = 0;
       double percentageW3 = 0;
@@ -1208,12 +1213,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       crpProgram.setW3(new Double(0));
 
       crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList()));
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getSelectedPhase().getYear())
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -1286,13 +1291,13 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
           boolean addDeliverable = false;
 
           if (deliverable.isActive() && deliverableInfo.getNewExpectedYear() != null
-            && deliverableInfo.getNewExpectedYear() >= this.getActualPhase().getYear()
+            && deliverableInfo.getNewExpectedYear() >= this.getSelectedPhase().getYear()
             && deliverableInfo.getStatus() != null
             && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
             addDeliverable = true;
           }
 
-          if (deliverable.isActive() && deliverableInfo.getYear() >= this.getActualPhase().getYear()
+          if (deliverable.isActive() && deliverableInfo.getYear() >= this.getSelectedPhase().getYear()
             && deliverableInfo.getStatus() != null
             && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
             addDeliverable = true;

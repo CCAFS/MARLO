@@ -293,6 +293,11 @@ function isPOWBSection() {
   return url.includes("/powb/");
 }
 
+function isAnnualReportSection() {
+  var url = window.location.href;
+  return url.includes("/annualReport/");
+}
+
 /**
  * Search from url that has GET parameters
  */
@@ -314,7 +319,7 @@ function getParameterByName(name,url) {
 /**
  * Get Parameter from a class, example:
  * <p class="parameter-100">, the function will return 100
- *
+ * 
  * @param selector
  *          <p class="parameter-100">
  *          </p>
@@ -341,9 +346,9 @@ function getSerializeForm() {
   $("form").each(function(indexForm,form) {
     result += "<strong> Form #" + indexForm + "</strong></br>";
     $.each($(form).serializeArray(), function(i,a) {
-      if(a.value) {
-        result += '<p>' + a.name + ' : <span>' + a.value + '</span></p>';
-      }
+      // if(a.value) {
+      result += '<p>' + a.name + ' : <span>' + a.value + '</span></p>';
+      // }
     });
   });
   return result;
@@ -425,6 +430,12 @@ jQuery.fn.clearOptions = function(arrIds) {
     }
   }
 };
+
+function strip(html) {
+  var tmp = document.createElement("DIV");
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || "";
+}
 
 /**
  * Escape HTML text
@@ -520,30 +531,40 @@ function applyCharCounter($textArea,charCount) {
 
 /* Add a word counter to a specific text area */
 function applyWordCounter($textArea,wordCount) {
+  console.log();
+  var eventType = 'keyup ';
+  if($textArea.hasClass('allowTextEditor')) {
+    eventType += ' tbwchange tbwfocus tbwblur tbwpaste ';
+  }
+
   var message = "<p class='charCount'>(<span>" + wordCount + "</span> words remaining of " + wordCount + ")</p>";
   $textArea.parent().append(message);
   $textArea.parent().find(".charCount").find("span").text(wordCount - word_count($textArea));
-  $textArea.on("keyup", function(event) {
-    var valueLength = $(event.target).val().length;
-    var $charCount = $(event.target).parent().find(".charCount");
-    if((word_count($(event.target)) > wordCount)
-        || ((valueLength == 0) && $(event.target).hasClass("required") && $('.hasMissingFields').exists() && $(
-            event.target).attr('id') != 'justification')) {
-      $(event.target).addClass('fieldError');
+  $textArea.on(eventType, function() {
+    var content = $(this).val();
+    var valueLength = content.length;
+    var $charCount = $(this).closest('.textArea, .input').find(".charCount");
+    var hasMissingFields = $('.hasMissingFields').exists();
+    var required = $(this).hasClass("required");
+    var noJustification = ($(this).attr('id') != 'justification');
+
+    if((word_count($(this)) > wordCount) || ((valueLength == 0) && required && hasMissingFields && noJustification)) {
+      $(this).addClass('fieldError');
       $charCount.addClass('fieldError');
     } else {
-      $(event.target).removeClass('fieldError');
+      $(this).removeClass('fieldError');
       $charCount.removeClass('fieldError');
     }
     // Set count value
-    $charCount.find("span").text(wordCount - word_count($(event.target)));
+    $charCount.find("span").text(wordCount - word_count($(this)));
 
   });
-  $textArea.trigger("keyup");
+  $textArea.trigger(eventType);
 }
 
 function word_count(field) {
   var value = $.trim($(field).val());
+  value = $.trim(value.replace(/<\/?[^>]+>/ig, " "));
   if(typeof value === "undefined" || value.length == 0) {
     return 0;
   } else {
@@ -561,8 +582,24 @@ function validateField($input) {
   }
 }
 
+/**
+ * Validate if and URL is valid
+ * 
+ * @param str
+ * @returns
+ */
+function isValidURL(str) {
+  regexp =
+      /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+  if(regexp.test(str)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // Validate Email
-function isEmail(email){
+function isEmail(email) {
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
   if(!emailReg.test(email)) {
     return false;
@@ -676,3 +713,16 @@ Number.prototype.toCurrencyFormat = function(n,x,s,c) {
   var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')', num = this.toFixed(Math.max(0, ~~n));
   return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
 };
+
+/**
+ * Function to get a key in an object by its value
+ * 
+ * @param object
+ * @param value
+ * @returns key
+ */
+function getKeyByValue(obj,value) {
+  return Object.keys(obj).filter(function(key) {
+    return obj[key] == value
+  })[0];
+}

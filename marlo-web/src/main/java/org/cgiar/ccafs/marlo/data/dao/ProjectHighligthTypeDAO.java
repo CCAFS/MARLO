@@ -56,6 +56,15 @@ public interface ProjectHighligthTypeDAO {
 
 
   /**
+   * This method gets a projectHighligthType object list by a given highlight and phase identifier.
+   * 
+   * @param higlightID is the highlight identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectHighlightType object.
+   */
+  public List<ProjectHighlightType> getHighlightTypebyPhase(long higlightID, long phaseID);
+
+  /**
    * This method saves the information of the given projectHighligthType
    * 
    * @param projectHighlightType - is the projectHighligthType object with the new information to be added/updated.

@@ -17,14 +17,17 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -40,7 +43,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,38 +66,40 @@ public class ProjectLeveragesAction extends BaseAction {
 
   // Manager
   private ProjectManager projectManager;
-
   private InstitutionManager institutionManager;
-
-  private IpProgramManager crpProgrammManager;
+  private IpProgramManager ipProgrammManager;
   private ProjectLeverageManager projectLeverageManager;
+  private GlobalUnitManager crpManager;
+  private AuditLogManager auditLogManager;
+  private CrpProgramManager crpProgramManager;
+
+  // Variables
   private long projectID;
   private Project project;
   private Map<String, String> allInstitutions;
-  private Map<String, String> flagships;
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private List<IpProgram> flagshipsPhaseOne;
+  private List<CrpProgram> flagshipsPhaseTwo;
   private ProjectLeverageValidator projectLeverageValidator;
   private HistoryComparator historyComparator;
   private GlobalUnit loggedCrp;
   private String transaction;
-  private AuditLogManager auditLogManager;
 
 
   @Inject
   public ProjectLeveragesAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
-    IpProgramManager crpProgrammManager, AuditLogManager auditLogManager, GlobalUnitManager crpManager,
+    IpProgramManager ipProgrammManager, AuditLogManager auditLogManager, GlobalUnitManager crpManager,
     ProjectLeverageManager projectLeverageManager, ProjectLeverageValidator projectLeverageValidator,
-    HistoryComparator historyComparator) {
+    HistoryComparator historyComparator, CrpProgramManager crpProgramManager) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
+    this.ipProgrammManager = ipProgrammManager;
     this.projectLeverageManager = projectLeverageManager;
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
     this.historyComparator = historyComparator;
     this.projectLeverageValidator = projectLeverageValidator;
+    this.crpProgramManager = crpProgramManager;
   }
 
   @Override
@@ -130,13 +134,19 @@ public class ProjectLeveragesAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Map<String, String> getFlagships() {
-    return flagships;
+
+  public List<IpProgram> getFlagshipsPhaseOne() {
+    return flagshipsPhaseOne;
+  }
+
+  public List<CrpProgram> getFlagshipsPhaseTwo() {
+    return flagshipsPhaseTwo;
   }
 
 
@@ -148,7 +158,6 @@ public class ProjectLeveragesAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -156,6 +165,7 @@ public class ProjectLeveragesAction extends BaseAction {
   public ProjectManager getProjectManager() {
     return projectManager;
   }
+
 
   public String getProjectRequest() {
     return APConstants.PROJECT_REQUEST_ID;
@@ -165,41 +175,37 @@ public class ProjectLeveragesAction extends BaseAction {
     return transaction;
   }
 
-
   public void leveragesNewData(List<ProjectLeverage> projectLeverages) {
 
     for (ProjectLeverage projectLeverage : projectLeverages) {
       if (projectLeverage != null) {
         if (projectLeverage.getId() == null || projectLeverage.getId() == -1) {
-          projectLeverage.setActive(true);
-          projectLeverage.setCreatedBy(this.getCurrentUser());
-          projectLeverage.setModifiedBy(this.getCurrentUser());
           projectLeverage.setModificationJustification(this.getJustification());
-          projectLeverage.setActiveSince(new Date());
           projectLeverage.setYear(this.getCurrentCycleYear());
-
-
           projectLeverage.setProject(project);
+          projectLeverage.setPhase(this.getActualPhase());
 
         } else {
           ProjectLeverage projectLeverageDB = projectLeverageManager.getProjectLeverageById(projectLeverage.getId());
-          projectLeverage.setActive(true);
-          projectLeverage.setCreatedBy(projectLeverageDB.getCreatedBy());
-          projectLeverage.setModifiedBy(this.getCurrentUser());
+
           projectLeverage.setModificationJustification(this.getJustification());
           projectLeverage.setYear(projectLeverageDB.getYear());
           projectLeverage.setProject(project);
-          projectLeverage.setActiveSince(projectLeverageDB.getActiveSince());
+          projectLeverage.setPhase(this.getActualPhase());
 
         }
       }
       if (projectLeverage.getInstitution().getId().intValue() == -1) {
         projectLeverage.setInstitution(null);
       }
-      if (projectLeverage.getCrpProgram().getId().intValue() == -1) {
+      if (projectLeverage.getIpProgram() == null || projectLeverage.getIpProgram().getId().intValue() == -1) {
+        projectLeverage.setIpProgram(null);
+      }
+      if (projectLeverage.getCrpProgram() == null || projectLeverage.getCrpProgram().getId().intValue() == -1) {
         projectLeverage.setCrpProgram(null);
       }
       projectLeverageManager.saveProjectLeverage(projectLeverage);
+      project.getProjectLeverages().add(projectLeverage);
     }
 
   }
@@ -210,8 +216,9 @@ public class ProjectLeveragesAction extends BaseAction {
     Project projectBD = projectManager.getProjectById(projectID);
 
 
-    projectLeveragesPrew = projectBD.getProjectLeverages().stream()
-      .filter(a -> a.isActive() && a.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
+    projectLeveragesPrew =
+      projectBD.getProjectLeverages().stream().filter(a -> a.isActive() && a.getYear() == this.getCurrentCycleYear()
+        && a.getPhase() != null && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
     for (ProjectLeverage projectLeverage : projectLeveragesPrew) {
@@ -222,6 +229,7 @@ public class ProjectLeveragesAction extends BaseAction {
 
   }
 
+
   @Override
   public String next() {
     String result = this.save();
@@ -231,6 +239,7 @@ public class ProjectLeveragesAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -254,8 +263,9 @@ public class ProjectLeveragesAction extends BaseAction {
         List<HistoryDifference> differences = new ArrayList<>();
         Map<String, String> specialList = new HashMap<>();
         int i = 0;
-        project
-          .setLeverages(project.getProjectLeverages().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setLeverages(project.getProjectLeverages().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
         for (ProjectLeverage leverage : project.getLeverages()) {
           int[] index = new int[1];
           index[0] = i;
@@ -265,6 +275,16 @@ public class ProjectLeveragesAction extends BaseAction {
         }
 
         this.setDifferences(differences);
+
+        // load crpProgram relations
+        if (project.getProjectLeverages() != null && !project.getProjectLeverages().isEmpty()) {
+          for (ProjectLeverage projectLeverage : project.getProjectLeverages()) {
+            if (projectLeverage.getCrpProgram() != null && projectLeverage.getCrpProgram().getId() != null) {
+              projectLeverage
+                .setCrpProgram(crpProgramManager.getCrpProgramById(projectLeverage.getCrpProgram().getId()));
+            }
+          }
+        }
 
       } else {
         this.transaction = null;
@@ -314,12 +334,15 @@ public class ProjectLeveragesAction extends BaseAction {
         }
         this.setDraft(true);
       } else {
-        project.setLeverages(project.getProjectLeverages().stream()
-          .filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
-        project.setLeveragesClosed(project.getProjectLeverages().stream()
-          .filter(c -> c.isActive() && c.getYear() != this.getCurrentCycleYear()).collect(Collectors.toList()));
+        project.setLeverages(
+          project.getProjectLeverages().stream().filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()
+            && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        project.setLeveragesClosed(
+          project.getProjectLeverages().stream().filter(c -> c.isActive() && c.getYear() != this.getCurrentCycleYear()
+            && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
         project.getLeverages().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         project.getLeveragesClosed().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         this.setDraft(false);
       }
     }
@@ -332,13 +355,24 @@ public class ProjectLeveragesAction extends BaseAction {
     for (Institution institution : allInstitutions) {
       this.allInstitutions.put(String.valueOf(institution.getId()), institution.getComposedName());
     }
-    this.flagships = new HashMap<>();
-    // Getting the information of the Flagships program for the View
-    List<IpProgram> ipProgramFlagships = crpProgrammManager.findAll().stream()
-      .filter(c -> c.getIpProgramType().getId().intValue() == 4).collect(Collectors.toList());
-    for (IpProgram ipProgram : ipProgramFlagships) {
-      this.flagships.put(String.valueOf(ipProgram.getId()), ipProgram.getComposedName());
+    this.flagshipsPhaseOne = new ArrayList<>();
+    this.flagshipsPhaseTwo = new ArrayList<>();
+    if (this.isPhaseOne()) {
+      // Getting the information of the Flagships program for the View
+      List<IpProgram> ipProgramFlagships = ipProgrammManager.findAll().stream()
+        .filter(c -> c.getIpProgramType().getId().intValue() == 4).collect(Collectors.toList());
+      for (IpProgram ipProgram : ipProgramFlagships) {
+        flagshipsPhaseOne.add(ipProgram);
+      }
+    } else {
+      List<CrpProgram> crpProgramFlagships = this.getLoggedCrp().getCrpPrograms().stream()
+        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .sorted((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym())).collect(Collectors.toList());
+      for (CrpProgram crpProgram : crpProgramFlagships) {
+        flagshipsPhaseTwo.add(crpProgram);
+      }
     }
+
     if (this.isHttpPost()) {
 
       if (project.getLeverages() != null) {
@@ -359,22 +393,18 @@ public class ProjectLeveragesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
-
       this.leveragesPreviousData(project.getLeverages(), true);
       this.leveragesNewData(project.getLeverages());
-      /*
-       * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
-       * this.activitiesNewData(project.getClosedProjectActivities());
-       */
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_LEVERAGES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
@@ -405,8 +435,17 @@ public class ProjectLeveragesAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
+
   public void setAllInstitutions(Map<String, String> allInstitutions) {
     this.allInstitutions = allInstitutions;
+  }
+
+  public void setFlagshipsPhaseOne(List<IpProgram> flagshipsPhaseOne) {
+    this.flagshipsPhaseOne = flagshipsPhaseOne;
+  }
+
+  public void setFlagshipsPhaseTwo(List<CrpProgram> flagshipsPhaseTwo) {
+    this.flagshipsPhaseTwo = flagshipsPhaseTwo;
   }
 
 

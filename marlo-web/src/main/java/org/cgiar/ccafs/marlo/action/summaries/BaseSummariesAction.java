@@ -19,14 +19,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -67,14 +65,22 @@ public class BaseSummariesAction extends BaseAction {
   private int selectedYear;
   private String selectedCycle;
   private Phase selectedPhase;
+  private String downloadByUser;
+
   // Managers
   private GlobalUnitManager crpManager;
+
+
   private PhaseManager phaseManager;
 
-  public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
+  protected ProjectManager projectManager;
+
+  public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ProjectManager projectManager) {
     super(config);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+    this.projectManager = projectManager;
   }
 
   /**
@@ -99,6 +105,7 @@ public class BaseSummariesAction extends BaseAction {
       if (extentionDate != null) {
         extentionYear = this.getIntYearFromDate(extentionDate);
       }
+
       if (startYear <= this.getSelectedYear()
         && (endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
           .parseInt(FundingStatusEnum.Ongoing.getStatusId())
@@ -115,39 +122,18 @@ public class BaseSummariesAction extends BaseAction {
   }
 
   /**
-   * Method to return a set of Projects filtered by active with status On-Going/Extended into the
-   * selectedYear()
+   * This method gets a list of project that are active by a given Phase and statuses identifier. With the start and end
+   * date of the project within the given year
+   * year = 0 ignore year filter
+   * status = empty ignore status filter
    * 
    * @return set of active projects
    */
-  protected Set<Project> getActiveProjectsOnPhase() {
-    Set<Project> activeProjects = new HashSet<>();
-    List<GlobalUnitProject> globalUnitProjectList = this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(g -> g.getProject() != null && g.getProject().isActive() && g.getProject().getProjectPhases() != null
-        && g.getProject().getProjectPhases().size() > 0
-        && g.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && g.getProject().getProjectInfo().isActive() && g.getProject().getProjectInfo().getStatus() != null
-        && g.getProject().getProjectInfo().getStartDate() != null
-        && g.getProject().getProjectInfo().getEndDate() != null
-        && (g.getProject().getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || g.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList());
-    if (globalUnitProjectList != null && globalUnitProjectList.size() > 0) {
-      for (GlobalUnitProject globalUnitProject : globalUnitProjectList) {
-        ProjectInfo projectInfo = globalUnitProject.getProject().getProjectInfo();
-        Date endDate = projectInfo.getEndDate();
-        Date startDate = projectInfo.getStartDate();
-        int endYear = this.getIntYearFromDate(endDate);
-        int startYear = this.getIntYearFromDate(startDate);
-        if (startYear <= this.getSelectedYear() && endYear >= this.getSelectedYear()) {
-          activeProjects.add((globalUnitProject.getProject()));
-        }
-      }
-    }
+  protected List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] statuses) {
+    List<Project> activeProjects = projectManager.getActiveProjectsByPhase(phase, year, statuses);
     return activeProjects;
   }
+
 
   /**
    * Get all subreports and store then in a hash map.
@@ -206,6 +192,9 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
+  public String getDownloadByUser() {
+    return downloadByUser;
+  }
 
   protected void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -267,45 +256,68 @@ public class BaseSummariesAction extends BaseAction {
     return selectedCycle;
   }
 
-
   public Phase getSelectedPhase() {
     return selectedPhase;
   }
+
 
   public int getSelectedYear() {
     return selectedYear;
   }
 
+  public void setDownloadByUser(String downloadByUser) {
+    this.downloadByUser = downloadByUser;
+  }
+
   public void setGeneralParameters() {
+    Map<String, Parameter> parameters = this.getParameters();
+
+    // Get logged crp
     try {
       this.setLoggedCrp((GlobalUnit) this.getSession().get(APConstants.SESSION_CRP));
       this.setLoggedCrp(crpManager.getGlobalUnitById(loggedCrp.getId()));
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+      // Get CRP by action name
+      String[] actionParts = this.getActionName().split("/");
+      if (actionParts.length > 0) {
+        String crpAcronym = actionParts[0];
+        this.setLoggedCrp(crpManager.findGlobalUnitByAcronym(crpAcronym));
+      }
     }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Parameter> parameters = this.getParameters();
-      this.setSelectedYear(
-        Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      this.setSelectedYear(this.getCurrentCycleYear());
+
+    // Get Phase
+    if (parameters.get(APConstants.PHASE_ID).isDefined()) {
+      try {
+        this.setSelectedPhase(phaseManager.getPhaseById(
+          Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
+        this.setSelectedYear(selectedPhase.getYear());
+        this.setSelectedCycle(this.selectedPhase.getDescription());
+      } catch (Exception e) {
+        LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+      }
+
+    } else {
+      // Get Phase from year and cycle parameters
+      if (parameters.get(APConstants.YEAR_REQUEST).isDefined() && parameters.get(APConstants.CYCLE).isDefined()) {
+        try {
+          this.setSelectedYear(
+            Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
+          this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
+          this.setSelectedPhase(phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false,
+            loggedCrp.getId().longValue()));
+        } catch (Exception e) {
+          LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+        }
+      }
     }
-    // Get cycle
-    try {
-      Map<String, Parameter> parameters = this.getParameters();
-      this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      this.setSelectedCycle(this.getCurrentCycle());
+
+    // Get current user
+    if (this.getCurrentUser() != null) {
+      this.setDownloadByUser(this.getCurrentUser().getComposedCompleteName());
+    } else {
+      this.setDownloadByUser("unLoggedUser");
     }
-    // Get phase
-    this.setSelectedPhase(
-      phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), loggedCrp.getId().longValue()));
   }
 
 

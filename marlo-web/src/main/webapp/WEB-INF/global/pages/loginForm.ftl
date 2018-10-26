@@ -36,7 +36,7 @@
           <div class="col-sm-12">
             [#-- Email input --]
             <div class="login-input-container" id="login-email">
-              <input id="user.email" class="login-input user-email form-control" type="text" name="user.email" value="" required/>
+              <input id="user.email" class="login-input user-email form-control" type="text" name="user.email" value="" tabindex=0 required/>
               <label for="user.email">[@s.text name="login.email"/]</label>
             </div>
             [#-- CRP Session (hidden input) --]
@@ -60,7 +60,7 @@
           <div class="col-sm-12">
             [#-- Password input --]
             <div class="login-input-container hidden" id="login-password" >
-              <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=1 required/>
+              <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=0 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
             [#-- Error messages --]
@@ -107,8 +107,8 @@
 </div>
 
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="">
-    <img class="selection-bar-image animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="" tabindex="">
+    <img class="selection-bar-image animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}"/>
     <div class="selection-bar-acronym hidden">${element.acronym}</div>
   </li>
 [/#macro]

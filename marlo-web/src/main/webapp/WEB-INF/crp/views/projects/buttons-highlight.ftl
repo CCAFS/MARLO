@@ -4,6 +4,8 @@
 <input name="highlightID" type="hidden" value="${highlightID}" />
 <input type="hidden"  name="className" value="${(highlight.class.name)!}"/>
 <input type="hidden"  name="id" value="${(highlight.id)!}"/>
+<input type="hidden"  name="highlight.projectHighlightInfo.id" value="${(highlight.projectHighlightInfo.id)!}"/>
+
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
@@ -22,7 +24,7 @@
   [/#if--]
   
   <div class="buttons-content">
-    [#-- History Log --]
+    [#-- History Log  --]
     [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=recordsList itemName="highlightID" itemId=highlightID /]

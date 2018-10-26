@@ -93,13 +93,15 @@ $(document).ready(function() {
 });
 
 function filterTablesBy(query) {
+  var query = $.trim(query);
   console.log(query);
-  $('.dataTables_wrapper').find('.dataTables_filter input').val(query).trigger('keyup');
+  var $searchField = $('.dataTables_wrapper').find('.dataTables_filter input');
+  $searchField.val(query).trigger('keyup');
+  $searchField.addClass("fieldFocus");
 }
 
 function filterByProgram() {
-  $(this).parents('.dataTables_wrapper').find('.dataTables_filter input').val($(this).text()).trigger('keyup');
-  $(this).parents('.dataTables_wrapper').find('.dataTables_filter input').addClass("fieldFocus");
+  filterTablesBy($(this).text());
 }
 
 // Justification popup global vars

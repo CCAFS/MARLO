@@ -50,6 +50,18 @@
       class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
       <column name="powb_synthesis_id" />
     </many-to-one>
+    <many-to-one name="projectInnovation"
+      class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+      <column name="project_innovation_id" />
+    </many-to-one>
+    <many-to-one name="projectExpectedStudy"
+      class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
+      <column name="project_expected_id" />
+    </many-to-one>
+    <many-to-one name="reportSynthesis"
+      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" fetch="select">
+      <column name="report_synthesis_id" />
+    </many-to-one>
 		<property name="sectionName" type="string">
 			<column name="section_name" not-null="true">
 				<comment>Some section name (would be the action name)</comment>
@@ -66,5 +78,8 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="year" />
 		</property>
+		<property name="upkeep" type="java.lang.Boolean">
+      <column name="upkeep" not-null="true"/>
+    </property> 
 	</class>
 </hibernate-mapping>

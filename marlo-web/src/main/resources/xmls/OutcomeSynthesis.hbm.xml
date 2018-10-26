@@ -24,13 +24,13 @@
             <column name="achieved" precision="11" />
         </property>
         <property name="synthesisAnual" type="string">
-            <column name="synthesis_anual" length="65535" />
+            <column name="synthesis_anual" sql-type="TEXT" />
         </property>
         <property name="synthesisGender" type="string">
-            <column name="synthesis_gender" length="65535" />
+            <column name="synthesis_gender" sql-type="TEXT" />
         </property>
         <property name="discrepancy" type="string">
-            <column name="discrepancy" length="65535" />
+            <column name="discrepancy" sql-type="TEXT" />
         </property>
         <property name="achievedExpected" type="java.lang.Double">
             <column name="achieved_expected" precision="11" />

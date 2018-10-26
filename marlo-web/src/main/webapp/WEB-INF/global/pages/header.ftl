@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/pages/bowerComponents.ftl" as components /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-[#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "pusher-websocket-iso", "noty", "countdown", "animate.css", "autogrow-textarea", "jReject" ] /]
+[#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "pusher-js", "noty", "countdown", "animate.css", "autogrow-textarea", "jReject" ] /]
 <!doctype html>
   <html lang="en">
   <head>
@@ -59,10 +59,10 @@
       ga('create', 'UA-86349544-1', 'cgiar.org');
       ga('set', 'userId', '${(currentUser.composedID)!"Unknown"}' ); // Set the user ID using signed-in user_id.
       ga('send', 'pageview');
-    
+
     </script>
   </head>
-  <body >
+  <body class="mode-${editable?string('editable', 'readOnly')}">
     [#if !(avoidHeader!false)]
       <header class="clearfix" style="display: ${((includeHeader)??)?string('none','block')}">
         [#-- MARLO Admin Menu --]
@@ -70,6 +70,7 @@
         
         <div class="container">
           <div class="marlo-header">
+            [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
                 <div id="title" >MARLO</div>    
@@ -77,27 +78,19 @@
                 <div class="clearfix"></div>
               </a>
             </div>
-            
-            [#-- Image/Logo--]
+            [#-- GlobalUnit Image/Logo--]
             [#if namespace?contains('superadmin')]
               <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
             [#else]
               [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
-            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
-            <h4 class="">
-              [#-- Planning / Reporting tag --]
-              
-              [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
-            </h4>
-            </a>
+            [#-- Testing Environment --]
+            [#if !config.production]<h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
+            [#-- Closed --]
+            <h4 class="">[#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]</h4>
           </div>
-          [#if namespace?contains('superadmin')]
-            <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
-          [#else]
-            [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
-          [/#if]
+          
         </div>
       </header>
     [/#if]

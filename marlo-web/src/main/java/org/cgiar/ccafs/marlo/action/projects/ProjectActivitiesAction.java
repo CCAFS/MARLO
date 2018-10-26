@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -47,7 +46,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,55 +66,36 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private static final long serialVersionUID = 2146101620783927003L;
 
-
+  // Variables
   private ProjectActivitiesValidator activitiesValidator;
-
-  private ActivityManager activityManager;
-
-
-  private AuditLogManager auditLogManager;
-
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-
-
-  private DeliverableActivityManager deliverableActivityManager;
-
   private HistoryComparator historyComparator;
-
-  private DeliverableManager deliverableManager;
-
-  private ProjectPartnerManager projectPartnerManager;
-
   private GlobalUnit loggedCrp;
-
   private List<ProjectPartnerPerson> partnerPersons;
-
   private Project project;
-
   private long projectID;
-
-  private ProjectManager projectManager;
-
-  private ProjectPartnerPersonManager projectPartnerPersonManager;
-
   private Map<String, String> status;
-
   private String transaction;
+
+  // Managers
+  private ActivityManager activityManager;
+  private AuditLogManager auditLogManager;
+  private GlobalUnitManager crpManager;
+  private DeliverableManager deliverableManager;
+  private ProjectPartnerManager projectPartnerManager;
+  private ProjectManager projectManager;
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   @Inject
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
-    DeliverableActivityManager deliverableActivityManager, DeliverableManager deliverableManager,
-    AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
-    HistoryComparator historyComparator, ProjectPartnerManager projectPartnerManager) {
+    DeliverableManager deliverableManager, AuditLogManager auditLogManager,
+    ProjectActivitiesValidator activitiesValidator, HistoryComparator historyComparator,
+    ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.activityManager = activityManager;
-    this.deliverableActivityManager = deliverableActivityManager;
     this.deliverableManager = deliverableManager;
     this.auditLogManager = auditLogManager;
     this.historyComparator = historyComparator;
@@ -124,167 +103,16 @@ public class ProjectActivitiesAction extends BaseAction {
     this.projectPartnerManager = projectPartnerManager;
   }
 
-  public void activitiesNewData(List<Activity> activities) {
-
-    for (Activity activity : activities) {
-      if (activity != null) {
-        if (activity.getId() == null || activity.getId() == -1) {
-
-          Activity activityNew = new Activity();
-          activityNew.setActive(true);
-          activityNew.setCreatedBy(this.getCurrentUser());
-          activityNew.setModifiedBy(this.getCurrentUser());
-          activityNew.setModificationJustification("");
-          activityNew.setActiveSince(new Date());
-
-
-          Project project = projectManager.getProjectById(this.project.getId());
-
-          activityNew.setProject(project);
-          activityNew.setTitle(activity.getTitle());
-          activityNew.setDescription(activity.getDescription());
-          activityNew.setStartDate(activity.getStartDate());
-          activityNew.setEndDate(activity.getEndDate());
-          activityNew.setPhase(this.getActualPhase());
-          if (activity.getActivityStatus() != -1) {
-            activityNew.setActivityStatus(activity.getActivityStatus());
-          } else {
-            activityNew.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-          }
-
-          activityNew.setActivityProgress(activity.getActivityProgress());
-
-          try {
-            ProjectPartnerPerson partnerPerson =
-              projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
-            activityNew.setProjectPartnerPerson(partnerPerson);
-          } catch (Exception e) {
-            activityNew.setProjectPartnerPerson(null);
-          }
-
-
-          activityNew = activityManager.saveActivity(activityNew);
-
-          if (activity.getDeliverables() != null) {
-            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-
-              DeliverableActivity deliverableActivityNew = new DeliverableActivity();
-
-              deliverableActivityNew.setActivity(activityNew);
-              deliverableActivityNew.setActive(true);
-              deliverableActivityNew.setCreatedBy(this.getCurrentUser());
-              deliverableActivityNew.setModifiedBy(this.getCurrentUser());
-              deliverableActivityNew.setModificationJustification("");
-              deliverableActivityNew.setActiveSince(new Date());
-              deliverableActivityNew.setPhase(this.getActualPhase());
-              Deliverable deliverable =
-                deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-
-              deliverableActivityNew.setDeliverable(deliverable);
-
-              deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
-
-
-            }
-          }
-        } else {
-
-          Activity activityUpdate = activityManager.getActivityById(activity.getId());
-          activityUpdate.setActive(true);
-          activityUpdate.setCreatedBy(this.getCurrentUser());
-          activityUpdate.setModifiedBy(this.getCurrentUser());
-          activityUpdate.setModificationJustification("");
-          activityUpdate.setActiveSince(new Date());
-          activityUpdate.setPhase(this.getActualPhase());
-          activityUpdate.setTitle(activity.getTitle());
-          activityUpdate.setDescription(activity.getDescription());
-          activityUpdate.setStartDate(activity.getStartDate());
-          activityUpdate.setEndDate(activity.getEndDate());
-          if (activity.getActivityStatus() != -1) {
-            activityUpdate.setActivityStatus(activity.getActivityStatus());
-          } else {
-            activityUpdate.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-          }
-          activityUpdate.setActivityProgress(activity.getActivityProgress());
-
-
-          if (activity.getProjectPartnerPerson() != null
-            && activity.getProjectPartnerPerson().getId().longValue() != -1) {
-            ProjectPartnerPerson partnerPerson =
-              projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
-            activityUpdate.setProjectPartnerPerson(partnerPerson);
-          } else {
-            activityUpdate.setProjectPartnerPerson(null);
-          }
-
-
-          activityUpdate = activityManager.saveActivity(activityUpdate);
-
-          if (activity.getDeliverables() != null) {
-
-            List<DeliverableActivity> deliverableActivitiesPrew = activityUpdate.getDeliverableActivities().stream()
-              .filter(da -> da.isActive()).collect(Collectors.toList());
-
-            for (DeliverableActivity deliverableActivity : deliverableActivitiesPrew) {
-              if (!activity.getDeliverables().contains(deliverableActivity)) {
-
-                deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
-              }
-            }
-
-            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-              if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
-
-                DeliverableActivity deliverableActivityNew = new DeliverableActivity();
-
-                deliverableActivityNew.setActivity(activityUpdate);
-                deliverableActivityNew.setActive(true);
-                deliverableActivityNew.setCreatedBy(this.getCurrentUser());
-                deliverableActivityNew.setModifiedBy(this.getCurrentUser());
-                deliverableActivityNew.setModificationJustification("");
-                deliverableActivityNew.setActiveSince(new Date());
-                deliverableActivityNew.setPhase(this.getActualPhase());
-
-                Deliverable deliverable =
-                  deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-
-                deliverableActivityNew.setDeliverable(deliverable);
-
-                deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
-              }
-            }
-          }
-        }
-      }
-
-    }
-
-  }
-
-  public void activitiesPreviousData(List<Activity> activities, boolean activitiesOpen) {
-
+  public void activitiesPreviousData(Project projectBD) {
     List<Activity> activitiesPrew;
-    Project projectBD = projectManager.getProjectById(projectID);
-
-
     activitiesPrew = projectBD.getActivities().stream()
       .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
-
     for (Activity activity : activitiesPrew) {
-      if (!activities.contains(activity)) {
-
-        for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities().stream()
-          .filter(da -> da.isActive()).collect(Collectors.toList())) {
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
-        }
-
+      if (!project.getProjectActivities().contains(activity)) {
         activityManager.deleteActivity(activity.getId());
       }
     }
-
   }
-
 
   @Override
   public String cancel() {
@@ -309,6 +137,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
     return SUCCESS;
   }
+
 
   public List<Activity> getActivities(boolean open) {
 
@@ -341,12 +170,11 @@ public class ProjectActivitiesAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public int getIndexActivities(long id) {
     Activity activity = new Activity();
@@ -354,6 +182,7 @@ public class ProjectActivitiesAction extends BaseAction {
     return project.getProjectActivities().indexOf(activity);
 
   }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -363,10 +192,10 @@ public class ProjectActivitiesAction extends BaseAction {
     return partnerPersons;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -406,14 +235,35 @@ public class ProjectActivitiesAction extends BaseAction {
           differences.addAll(historyComparator.getDifferencesList(activity, transaction, specialList,
             "project.projectActivities[" + i + "]", "project", 1));
           i++;
+
+
+          if (activity.getDeliverableActivities() != null && !activity.getDeliverableActivities().isEmpty()) {
+            for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities()) {
+              if (deliverableActivity.getDeliverable() != null
+                && deliverableActivity.getDeliverable().getId() != null) {
+
+                if (deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId()) != null) {
+                  Deliverable deliverable =
+                    deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+                  deliverableActivity.setDeliverable(deliverable);
+                  deliverableActivity.getDeliverable().getDeliverableInfo(this.getActualPhase());
+                }
+
+              }
+
+            }
+          }
         }
 
         this.setDifferences(differences);
+
+
       } else {
         this.transaction = null;
 
         this.setTransaction("-1");
       }
+
 
     } else {
       project = projectManager.getProjectById(projectID);
@@ -444,8 +294,6 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         for (Activity activity : project.getProjectActivities()) {
-
-          activity.setActive(true);
           if (activity.getDeliverables() != null) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
               if (deliverableActivity.getId() == -1) {
@@ -458,25 +306,16 @@ public class ProjectActivitiesAction extends BaseAction {
           }
         }
 
-        /*
-         * for (Activity activity : project.getClosedProjectActivities()) {
-         * if (activity.getDeliverables() != null) {
-         * for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-         * if (deliverableActivity.getId() == -1) {
-         * Deliverable deliverable =
-         * deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-         * deliverableActivity.setDeliverable(deliverable);
-         * }
-         * }
-         * }
-         * }
-         */
-
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+
+        // GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+
+        List<Activity> activities = project.getActivities().stream()
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+        project.setProjectActivities(new ArrayList<Activity>(activities));
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {
@@ -489,21 +328,7 @@ public class ProjectActivitiesAction extends BaseAction {
             }
           }
         }
-        /*
-         * project
-         * .setClosedProjectActivities(
-         * new ArrayList<Activity>(project.getActivities().stream()
-         * .filter(a -> a.isActive()
-         * && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-         * || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-         * .collect(Collectors.toList())));
-         * if (project.getClosedProjectActivities() != null) {
-         * for (Activity closedActivity : project.getClosedProjectActivities()) {
-         * closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(closedActivity.getDeliverableActivities()
-         * .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
-         * }
-         * }
-         */
+
       }
 
       status = new HashMap<>();
@@ -579,28 +404,36 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
+      Project projectBD = projectManager.getProjectById(projectID);
+      List<Activity> activitiesDB = projectBD.getActivities().stream()
+        .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      this.activitiesPreviousData(projectBD);
+      // Check activities from UI
+      if (project.getProjectActivities() != null && !project.getProjectActivities().isEmpty()) {
+        this.saveActivitiesNewData();
+      } else {
+        // Delete activities
+        if (activitiesDB != null && !activitiesDB.isEmpty()) {
+          for (Activity activity : activitiesDB) {
+            activityManager.deleteActivity(activity.getId());
+          }
+        }
+      }
 
-      this.activitiesPreviousData(project.getProjectActivities(), true);
-      this.activitiesNewData(project.getProjectActivities());
-      /*
-       * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
-       * this.activitiesNewData(project.getClosedProjectActivities());
-       */
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -630,6 +463,70 @@ public class ProjectActivitiesAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+
+  public void saveActivitiesNewData() {
+
+    for (Activity activityUI : project.getProjectActivities()) {
+      if (activityUI != null) {
+
+        // New Activity
+        if (activityUI.getId() == null || activityUI.getId() == -1) {
+
+          activityUI.setProject(project);
+          activityUI.setPhase(this.getActualPhase());
+          if (activityUI.getActivityStatus() == -1) {
+            activityUI.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+          }
+          try {
+            ProjectPartnerPerson partnerPerson =
+              projectPartnerPersonManager.getProjectPartnerPersonById(activityUI.getProjectPartnerPerson().getId());
+            activityUI.setProjectPartnerPerson(partnerPerson);
+          } catch (Exception e) {
+            activityUI.setProjectPartnerPerson(null);
+          }
+          // Save new activity and deliverable activities
+          activityUI = activityManager.saveActivity(activityUI);
+          // This is to add Activity to generate correct auditlog.
+          project.getActivities().add(activityUI);
+        } else {
+          // Update Activity
+          Activity activityUpdate = activityManager.getActivityById(activityUI.getId());
+          activityUpdate.setPhase(this.getActualPhase());
+          activityUpdate.setTitle(activityUI.getTitle());
+          activityUpdate.setDescription(activityUI.getDescription());
+          activityUpdate.setStartDate(activityUI.getStartDate());
+          activityUpdate.setEndDate(activityUI.getEndDate());
+          if (activityUI.getActivityStatus() != -1) {
+            activityUpdate.setActivityStatus(activityUI.getActivityStatus());
+          } else {
+            activityUpdate.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+          }
+          activityUpdate.setActivityProgress(activityUI.getActivityProgress());
+
+
+          if (activityUI.getProjectPartnerPerson() != null
+            && activityUI.getProjectPartnerPerson().getId().longValue() != -1) {
+            ProjectPartnerPerson partnerPerson =
+              projectPartnerPersonManager.getProjectPartnerPersonById(activityUI.getProjectPartnerPerson().getId());
+            activityUpdate.setProjectPartnerPerson(partnerPerson);
+          } else {
+            activityUpdate.setProjectPartnerPerson(null);
+          }
+          // Set deliverables here to add inside saveActivity
+          activityUpdate.setDeliverables(activityUI.getDeliverables());
+
+          // Save new activity and deliverable activities
+          activityUpdate = activityManager.saveActivity(activityUpdate);
+          // This is to add Activity to generate correct auditlog.
+          project.getActivities().add(activityUpdate);
+        }
+      }
+
+
+    }
+
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

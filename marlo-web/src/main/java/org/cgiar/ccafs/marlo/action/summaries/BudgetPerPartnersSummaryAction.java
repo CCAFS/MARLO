@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -28,9 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -56,7 +55,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -94,9 +92,11 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
 
   // Managers
-  private ProjectBudgetManager projectBudgetManager;
-  private CrpProgramManager programManager;
-  private InstitutionManager institutionManager;
+  private final ProjectBudgetManager projectBudgetManager;
+  private final CrpProgramManager programManager;
+  private final InstitutionManager institutionManager;
+  private final ResourceManager resourceManager;
+
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -105,11 +105,12 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   @Inject
   public BudgetPerPartnersSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
-    PhaseManager phaseManager) {
-    super(config, crpManager, phaseManager);
+    PhaseManager phaseManager, ResourceManager resourceManager, ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.projectBudgetManager = projectBudgetManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -331,14 +332,17 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
+    resourceManager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/BudgetPerPartners.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/BudgetPerPartners.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -421,32 +425,12 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
         Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Long.class},
       0);
 
-    List<Project> projects = new ArrayList<>();
+    // Status of projects
+    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId()};
 
-    for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && p.getProject().getProjectPhases() != null && p.getProject().getProjectPhases().size() > 0
-        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && p.getProject().getProjectInfo().isActive() && p.getProject().getProjectInfo().getStatus() != null
-        && p.getProject().getProjectInfo().getStartDate() != null
-        && p.getProject().getProjectInfo().getEndDate() != null
-        && (p.getProject().getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList())) {
-      ProjectInfo projectInfo = projectPhase.getProject().getProjectInfo();
-      Date endDate = projectInfo.getEndDate();
-      Date startDate = projectInfo.getStartDate();
-      int endYear = this.getIntYearFromDate(endDate);
-      int startYear = this.getIntYearFromDate(startDate);
-      if (startYear <= this.getSelectedYear() && endYear >= this.getSelectedYear()) {
-        projects.add((projectPhase.getProject()));
-      }
-    }
+    // Get projects with the status defined
+    List<Project> projects = this.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedYear(), statuses);
 
-    // sort projects by id
-    projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
@@ -743,6 +727,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -921,7 +906,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
         if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

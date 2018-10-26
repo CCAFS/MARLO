@@ -56,6 +56,16 @@ public interface ProjectHighligthCountryDAO {
 
 
   /**
+   * This method gets a projectHighlightCountry object list by a given highlight and phase identifier.
+   * 
+   * @param higlightID is the highlight identifier.
+   * @param phaseID is the phase identifier.
+   * @return a projectHighlightCountry object list.
+   */
+  public List<ProjectHighlightCountry> getHighlightCountrybyPhase(long higlightID, long phaseID);
+
+
+  /**
    * This method saves the information of the given projectHighligthCountry
    * 
    * @param projectHighlightCountry - is the projectHighligthCountry object with the new information to be

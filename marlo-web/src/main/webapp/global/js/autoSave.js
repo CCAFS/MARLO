@@ -37,9 +37,11 @@ function autoSave() {
         method: 'POST',
         url: baseURL + '/autosaveWriter.do',
         data: {
-          autoSave: JSON.stringify($('form:first').serializeObject())
+            autoSave: JSON.stringify($('form:first').serializeObject()),
+            phaseID: phaseID
         },
         beforeSend: function(xhr,opts) {
+          console.log("autoSaveActive", autoSaveActive);
           if(autoSaveActive) {
             $draftTag.text('... Saving');
           } else {
@@ -173,6 +175,13 @@ function validateThisSection() {
     validateService = "/validatePowbSynthesisSection.do";
   }
 
+  // Validate Annual Report Synthesis section
+  if(isAnnualReportSection()) {
+    sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
+    sectionData.synthesisID = $('input[name="synthesisID"]').val() || $('#synthesisID').text();
+    validateService = "/validateAnnualReportSynthesisSection.do";
+  }
+
   $.ajax({
       url: baseURL + validateService,
       data: sectionData,
@@ -188,6 +197,8 @@ function validateThisSection() {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
           } else {
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
+            // Hide Submit Button
+            $('.projectSubmitButton, .completed-mode').hide();
           }
         }
         $sectionMenu.removeClass('loadingSection');

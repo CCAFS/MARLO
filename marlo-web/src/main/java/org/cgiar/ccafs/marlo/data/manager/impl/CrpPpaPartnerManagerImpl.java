@@ -52,11 +52,6 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
       .collect(Collectors.toList());
     if (outcomes.isEmpty()) {
       CrpPpaPartner crpPpaPartnerAdd = new CrpPpaPartner();
-      crpPpaPartnerAdd.setActive(true);
-      crpPpaPartnerAdd.setActiveSince(crpPpaPartner.getActiveSince());
-      crpPpaPartnerAdd.setCreatedBy(crpPpaPartner.getCreatedBy());
-      crpPpaPartnerAdd.setModificationJustification(crpPpaPartner.getModificationJustification());
-      crpPpaPartnerAdd.setModifiedBy(crpPpaPartner.getModifiedBy());
       crpPpaPartnerAdd.setPhase(phase);
       crpPpaPartnerAdd.setCrp(crpPpaPartner.getCrp());
       crpPpaPartnerAdd.setInstitution(crpPpaPartner.getInstitution());

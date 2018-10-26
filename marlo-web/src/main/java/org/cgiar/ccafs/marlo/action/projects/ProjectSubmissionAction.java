@@ -80,9 +80,6 @@ public class ProjectSubmissionAction extends BaseAction {
   private PhaseManager phaseManager;
 
 
-  private boolean complete;
-
-
   private long projectID;
 
   private Project project;
@@ -106,25 +103,21 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    complete = false;
     if (this.hasPermission("submitProject")) {
-      if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions().stream()
-          .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-            && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-          .collect(Collectors.toList());
+      List<Submission> submissions = project.getSubmissions().stream()
+        .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
+          && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        .collect(Collectors.toList());
 
-        if (submissions.isEmpty()) {
-          this.submitProject();
-          complete = true;
-        } else {
-          long submissionId = submissions.get(0).getId();
-          Submission submission = submissionManager.getSubmissionById(submissionId);
-          submission.setUser(userManager.getUser(submission.getUser().getId()));
-          this.setSubmission(submission);
-          complete = true;
-        }
+      if (submissions.isEmpty()) {
+        this.submitProject();
+      } else {
+        long submissionId = submissions.get(0).getId();
+        Submission submission = submissionManager.getSubmissionById(submissionId);
+        submission.setUser(userManager.getUser(submission.getUser().getId()));
+        this.setSubmission(submission);
       }
+
 
       return INPUT;
     } else {
@@ -158,11 +151,6 @@ public class ProjectSubmissionAction extends BaseAction {
   }
 
 
-  public boolean isComplete() {
-    return complete;
-  }
-
-
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -183,6 +171,7 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project != null) {
       String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_MANAGE_BASE_PERMISSION, params));
+      project.getProjecInfoPhase(this.getActualPhase());
       // Initializing Section Statuses:
       // this.initializeProjectSectionStatuses(project, String.valueOf(this.getActualPhase().getYear()));
     }
@@ -295,7 +284,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[6];
+    String[] values = new String[7];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crp;
     values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
@@ -303,13 +292,18 @@ public class ProjectSubmissionAction extends BaseAction {
     values[4] = String.valueOf(this.getActualPhase().getYear());
     values[5] = this.getActualPhase().getDescription().toLowerCase();
     // Message to download the pdf
-    /*
-     * values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
-     * + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-     * + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
-     */
+    if (!this.isPlanningActive()) {
+      values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
+        + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
+        + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
+    }
 
-    message.append(this.getText("submit.email.message", values));
+    if (this.isPlanningActive()) {
+      message.append(this.getText("submit.email.message", values));
+    } else {
+      message.append(this.getText("submit.email.message.noPDF", values));
+    }
+
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     // message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -319,36 +313,38 @@ public class ProjectSubmissionAction extends BaseAction {
     ByteBuffer buffer = null;
     String fileName = null;
     String contentType = null;
-    try {
-      // Set the parameters that are assigned in the prepare by reportingSummaryAction
-      reportingSummaryAction.setSession(this.getSession());
-      reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
-      reportingSummaryAction.setLoggedCrp(loggedCrp);
-      reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
-      reportingSummaryAction.setProjectID(projectID);
-      Project project = projectManager.getProjectById(projectID);
-      Set<Submission> submissions = new HashSet<>();
-      submissions.add(this.getSubmission());
-      project.setSubmissions(submissions);
-      reportingSummaryAction.setProject(project);
-      reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
-      reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
-        reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
-      reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
-      reportingSummaryAction.loadProvider(this.getSession());
-      reportingSummaryAction.execute();
-      // Getting the file data.
-      //
-      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
-      fileName = this.getFileName();
-      contentType = "application/pdf";
-      //
-    } catch (Exception e) {
-      e.printStackTrace();
-      // // Do nothing.
-      LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+    // Allow for Reporting when Reporting-PDF is completed
+    if (this.isPlanningActive()) {
+      try {
+        // Set the parameters that are assigned in the prepare by reportingSummaryAction
+        reportingSummaryAction.setSession(this.getSession());
+        reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
+        reportingSummaryAction.setLoggedCrp(loggedCrp);
+        reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
+        reportingSummaryAction.setProjectID(projectID);
+        Project project = projectManager.getProjectById(projectID);
+        Set<Submission> submissions = new HashSet<>();
+        submissions.add(this.getSubmission());
+        project.setSubmissions(submissions);
+        reportingSummaryAction.setProject(project);
+        reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
+        reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
+          reportingSummaryAction.getSelectedYear(), this.getActualPhase().getUpkeep(), loggedCrp.getId().longValue()));
+        reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
+        reportingSummaryAction.loadProvider(this.getSession());
+        reportingSummaryAction.execute();
+        // Getting the file data.
+        //
+        buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
+        fileName = this.getFileName();
+        contentType = "application/pdf";
+        //
+      } catch (Exception e) {
+        e.printStackTrace();
+        // // Do nothing.
+        LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+      }
     }
-
 
     if (buffer != null && fileName != null && contentType != null) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
@@ -356,11 +352,6 @@ public class ProjectSubmissionAction extends BaseAction {
     } else {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
-  }
-
-
-  public void setComplete(boolean complete) {
-    this.complete = complete;
   }
 
   public void setCycleName(String cycleName) {

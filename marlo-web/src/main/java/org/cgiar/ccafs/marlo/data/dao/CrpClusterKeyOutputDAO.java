@@ -54,6 +54,12 @@ public interface CrpClusterKeyOutputDAO {
    */
   public List<CrpClusterKeyOutput> findAll();
 
+  /**
+   * This method gets a list of crpClusterKeyOutput that are active with the globalUnit and phase
+   * 
+   * @return a list from CrpClusterKeyOutput null if no exist records
+   */
+  public List<CrpClusterKeyOutput> findCrpClusterKeyOutputByGlobalUnitAndPhase(long globalUnitID, long phaseId);
 
   /**
    * This method saves the information of the given crpClusterKeyOutput

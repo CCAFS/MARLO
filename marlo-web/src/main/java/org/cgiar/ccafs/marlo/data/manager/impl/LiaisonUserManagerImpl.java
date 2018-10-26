@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -70,6 +70,11 @@ public class LiaisonUserManagerImpl implements LiaisonUserManager {
   @Override
   public LiaisonUser getLiaisonUserByUserId(long userID, long crpID) {
     return liaisonUserDAO.findByUser(userID, crpID);
+  }
+
+  @Override
+  public List<LiaisonUser> getLiaisonUsersByUserId(long userID, long crpID) {
+    return liaisonUserDAO.findLiasonUsersByUser(userID, crpID);
   }
 
   @Override

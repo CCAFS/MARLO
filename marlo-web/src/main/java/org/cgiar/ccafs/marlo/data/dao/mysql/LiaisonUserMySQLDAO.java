@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -87,6 +88,17 @@ public class LiaisonUserMySQLDAO extends AbstractMarloDAO<LiaisonUser, Long> imp
     List<LiaisonUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public List<LiaisonUser> findLiasonUsersByUser(long id, long crpID) {
+    String query = "from " + LiaisonUser.class.getName() + " where user_id=" + id + " and global_unit_id=" + crpID
+      + " and is_active=1";
+    List<LiaisonUser> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
     }
     return null;
   }

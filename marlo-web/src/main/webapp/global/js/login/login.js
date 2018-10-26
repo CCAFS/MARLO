@@ -236,10 +236,13 @@ function loadAvailableItems(email){
           $(".crps-select .name-type-container.type-"+data.crps[i].idType).removeClass("hidden");
 
           // If the user has access to less than 7 crps, show images in select bar, if doesn't, show acronyms boxes
+          // Additionally set tabindex to make crp change accessible by keyboard
           if(data.crps.length<7){
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
+            $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').attr('tabindex','0');
           }else{
             $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').removeClass("hidden");
+            $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').attr('tabindex','0');
           }
 
           // If user has a crp cookie, click it

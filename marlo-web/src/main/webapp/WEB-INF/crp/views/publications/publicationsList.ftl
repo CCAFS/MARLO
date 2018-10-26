@@ -8,7 +8,7 @@
   "${baseUrlMedia}/css/projects/projectDeliverable.css"
   ] 
 /]
-[#assign currentSection = "publications" /]
+[#assign currentSection = "additionalReporting" /]
 [#assign currentStage = (filterBy)!"all" /]
 
 
@@ -20,8 +20,8 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/publicationsListTemplate.ftl" as publicationsList /]
 
-
 <section class="container">
+  [#if reportingActive]
   <article class="row" id="mainInformation">
     <div class="col-md-12">
     
@@ -33,7 +33,7 @@
       [#-- Section Buttons --]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewPublication'/]">[@s.text name="publicationsList.addPublication" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewPublication'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="publicationsList.addPublication" /]</span></a>
           <div class="clearfix"></div>
         </div>
       </div>
@@ -48,7 +48,11 @@
     </div>
     
   </article>
+  [#else]
+    <div class="borderBox text-center">[@s.text name="global.availableReporting" /]</div>
+  [/#if]
 </section>
+
 [@customForm.confirmJustification action="deletePublication.do" namespace="/${currentSection}" nameId="deliverableID" title="Remove Publications" /]
 
 

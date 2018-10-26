@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -162,7 +161,7 @@ public class OutcomesAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = outcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = outcome.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+    String autoSaveFile = outcome.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -397,8 +396,12 @@ public class OutcomesAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
 
-    outcomeDb.setActiveSince(new Date());
-    outcomeDb.setModifiedBy(this.getCurrentUser());
+    /**
+     * The following is required because we need to update something on the @CenterOutcome if we want a row created
+     * in the auditlog table.
+     */
+    this.setModificationJustification(outcomeDb);
+
     outcomeDb = outcomeService.saveResearchOutcome(outcomeDb, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
@@ -449,14 +452,10 @@ public class OutcomesAction extends BaseAction {
         if (researchMilestone.getId() == null) {
           CenterMilestone milestone = new CenterMilestone();
           milestone.setResearchOutcome(outcomeSave);
-          milestone.setActive(true);
-          milestone.setActiveSince(new Date());
-          milestone.setCreatedBy(this.getCurrentUser());
-          milestone.setModifiedBy(this.getCurrentUser());
           milestone.setImpactPathway(true);
 
           SrfTargetUnit targetUnit =
-            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getTargetUnit().getId());
+            srfTargetUnitManager.getSrfTargetUnitById(researchMilestone.getSrfTargetUnit().getId());
           milestone.setSrfTargetUnit(targetUnit);
           if (targetUnit.getId() != -1) {
             milestone.setValue(researchMilestone.getValue());
@@ -512,7 +511,6 @@ public class OutcomesAction extends BaseAction {
 
 
           if (hasChanges) {
-            milestonePrew.setModifiedBy(this.getCurrentUser());
             milestoneService.saveCenterMilestone(milestonePrew);
           }
         }

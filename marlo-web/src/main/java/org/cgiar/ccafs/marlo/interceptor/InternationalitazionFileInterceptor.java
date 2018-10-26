@@ -16,16 +16,21 @@
 
 package org.cgiar.ccafs.marlo.interceptor;
 
+import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Project;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -33,6 +38,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
@@ -46,16 +52,24 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
   private final GlobalUnitManager crpManager;
 
   private final LocalizedTextProvider localizedTextProvider;
+  private final GlobalUnitProjectManager globalUnitProjectManager;
+  private final CustomParameterManager customParameterManager;
+  private final ProjectManager projectManager;
+  private final GlobalUnitManager globalUnitManager;
+  private Map<String, Parameter> parameters;
 
-  private CustomParameterManager crpParameterManager;
 
   @Inject
-  public InternationalitazionFileInterceptor(GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
-    LocalizedTextProvider localizedTextProvider) {
+  public InternationalitazionFileInterceptor(GlobalUnitManager crpManager,
+    CustomParameterManager customParameterManager, LocalizedTextProvider localizedTextProvider,
+    ProjectManager projectManager, GlobalUnitProjectManager globalUnitProjectManager,
+    GlobalUnitManager globalUnitManager) {
     this.crpManager = crpManager;
-    this.crpParameterManager = crpParameterManager;
+    this.customParameterManager = customParameterManager;
     this.localizedTextProvider = localizedTextProvider;
-
+    this.projectManager = projectManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
+    this.globalUnitManager = globalUnitManager;
   }
 
   @Override
@@ -86,29 +100,51 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
 
-      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else {
-
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      BaseAction baseAction = (BaseAction) invocation.getAction();
+      parameters = invocation.getInvocationContext().getParameters();
+      GlobalUnit globalUnit = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+      try {
+        String projectParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
+        long projectId = Long.parseLong(projectParameter);
+        Project project = projectManager.getProjectById(projectId);
+        if (project != null && globalUnit.getGlobalUnitType().getId() == 4) {
+          GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(project.getId());
+          // GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());
+          pathFile = pathFile + globalUnitProject.getGlobalUnit().getAcronym().toLowerCase();
+          this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+        } else {
+          if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+            pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+            this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+          } else {
+            this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+          }
+        }
+      } catch (Exception e) {
+        if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+          pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+          this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+        } else {
+          this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        }
       }
     }
 
     GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-    if (crp != null) {
+    if (crp != null && crp.getId() != null) {
       GlobalUnit loggedCrp = crpManager.getGlobalUnitById(crp.getId());
 
       if (this.isCrpRefresh(loggedCrp)) {
-        for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
+
+        List<CustomParameter> customParameters =
+          customParameterManager.getAllCustomParametersByGlobalUnitId(loggedCrp.getId());
+
+        for (CustomParameter parameter : customParameters) {
           if (parameter.isActive()) {
             if (parameter.getParameter().getKey().equals(APConstants.CRP_REFRESH)) {
               session.put(parameter.getParameter().getKey(), "false");
               parameter.setValue("false");
-              crpParameterManager.saveCustomParameter(parameter);
+              customParameterManager.saveCustomParameter(parameter);
             } else {
               session.put(parameter.getParameter().getKey(), parameter.getValue());
             }
@@ -129,10 +165,13 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   public boolean isCrpRefresh(GlobalUnit crp) {
     try {
-      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Boolean.parseBoolean(crpManager.getGlobalUnitById(crp.getId()).getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
-        .getValue());
+
+      // Run a query to get Parameter object with value crp_refresh and check if it true or false.
+      CustomParameter crpRefresh =
+        customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_REFRESH, crp.getId());
+
+      return Boolean.parseBoolean(crpRefresh.getValue());
+
     } catch (Exception e) {
       return false;
     }

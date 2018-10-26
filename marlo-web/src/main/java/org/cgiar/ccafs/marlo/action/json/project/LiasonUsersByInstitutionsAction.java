@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -57,19 +58,21 @@ public class LiasonUsersByInstitutionsAction extends BaseAction {
     liasonsUsers = new ArrayList<Map<String, Object>>();
     Map<String, Object> liasonsUser;
     List<LiaisonUser> liaisonUsers = liasonUserManager.getLiasonUsersByInstitutionId(liasonIntitutionId);
-    for (LiaisonUser liaisonUser : liaisonUsers) {
-      try {
-        liasonsUser = new HashMap<String, Object>();
-        liasonsUser.put("id", liaisonUser.getId());
-        liasonsUser.put("description", liaisonUser.getComposedName());
-        liasonsUser.put("active", liaisonUser.isActive());
-        this.liasonsUsers.add(liasonsUser);
-      } catch (Exception e) {
-        logger.error("unable to add liasonUser to liasonUsers list", e);
-        /**
-         * Original code swallows the exception and didn't even log it. Now we at least log it,
-         * but we need to revisit to see if we should continue processing or re-throw the exception.
-         */
+    if (liaisonUsers != null) {
+      for (LiaisonUser liaisonUser : liaisonUsers) {
+        try {
+          liasonsUser = new HashMap<String, Object>();
+          liasonsUser.put("id", liaisonUser.getId());
+          liasonsUser.put("description", liaisonUser.getComposedName());
+          liasonsUser.put("active", liaisonUser.isActive());
+          this.liasonsUsers.add(liasonsUser);
+        } catch (Exception e) {
+          logger.error("unable to add liasonUser to liasonUsers list", e);
+          /**
+           * Original code swallows the exception and didn't even log it. Now we at least log it,
+           * but we need to revisit to see if we should continue processing or re-throw the exception.
+           */
+        }
       }
     }
     return SUCCESS;

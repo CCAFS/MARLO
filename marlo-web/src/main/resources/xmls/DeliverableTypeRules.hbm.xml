@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 30, 2017 10:01:52 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule" table="deliverable_type_rules" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>      
+        <many-to-one name="deliverableType" class="org.cgiar.ccafs.marlo.data.model.DeliverableType" fetch="select">
+            <column name="deliverable_type" not-null="true">
+                <comment>Foreign key to the table deliverable_type</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="deliverableRule" class="org.cgiar.ccafs.marlo.data.model.DeliverableRule" fetch="select">
+            <column name="deliverable_rule" not-null="true">
+                <comment>Foreign key to the table deliverable_rule</comment>
+            </column>
+        </many-to-one>       
+    </class>
+</hibernate-mapping>

@@ -91,7 +91,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     }
 
     // Check the permission if user want to edit or save the form
-    if (editParameter || parameters.get("save") != null) {
+    if (editParameter || parameters.get("save").isDefined()) {
       hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
         .hasPermission(baseAction.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, crp.getAcronym()));
     }

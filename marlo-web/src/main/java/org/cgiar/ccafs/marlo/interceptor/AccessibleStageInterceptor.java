@@ -17,12 +17,11 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
@@ -44,7 +43,10 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
   private GlobalUnit loggedCrp;
 
-  public AccessibleStageInterceptor() {
+  private final CustomParameterManager customParameterManager;
+
+  public AccessibleStageInterceptor(CustomParameterManager customParamaterManager) {
+    this.customParameterManager = customParamaterManager;
   }
 
   @Override
@@ -74,13 +76,14 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
   }
 
   public String sectionActive(String section) {
-    List<CustomParameter> parameters = loggedCrp.getCustomParameters().stream()
-      .filter(p -> p.getParameter().getKey().equals(section) && p.isActive()).collect(Collectors.toList());
 
-    if (parameters.size() == 0) {
+    CustomParameter customParameter =
+      customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(section, loggedCrp.getId());
+
+    if (customParameter == null) {
       return "false";
     } else {
-      return parameters.get(0).getValue();
+      return customParameter.getValue();
     }
   }
 }

@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -66,15 +64,18 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
   // PDF bytes
   private byte[] bytesPDF;
   // Services
-  private ICenterProgramManager programService;
+  private final ICenterProgramManager programService;
+  private final ResourceManager resourceManager;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
 
   @Inject
-  public ImpactPathwayOutcomesSummaryAction(APConfig config, ICenterProgramManager programService) {
+  public ImpactPathwayOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
+    ResourceManager resourceManager) {
     super(config);
     this.programService = programService;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -105,12 +106,10 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
 
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager =
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
+
     try {
 
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/center/ImpactPathwayOutcomes.prpt"), MasterReport.class);
 
       // Get main report
@@ -123,7 +122,7 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      System.out.println("Pentaho SubReports: " + hm);
+      // System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
       String masterQueryName = "main";

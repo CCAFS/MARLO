@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -37,7 +38,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -89,6 +89,8 @@ public class ProjectListAction extends BaseAction {
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
+  private ProjectPartnerManager projectPartnerManager;
+
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
@@ -101,7 +103,7 @@ public class ProjectListAction extends BaseAction {
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
     ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -113,6 +115,7 @@ public class ProjectListAction extends BaseAction {
     this.sectionStatusManager = sectionStatusManager;
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
   public String addAdminProject() {
@@ -212,7 +215,6 @@ public class ProjectListAction extends BaseAction {
       projectPhaseManager.saveProjectPhase(projectPhase);
     }
     ProjectInfo projectInfo = new ProjectInfo();
-    projectInfo.setModifiedBy(this.getCurrentUser());
     projectInfo.setModificationJustification("New expected Project created");
     projectInfo.setType(type);
     projectInfo.setLiaisonUser(liaisonUser);
@@ -232,6 +234,7 @@ public class ProjectListAction extends BaseAction {
       status = new SectionStatus();
       status.setCycle(this.getCurrentCycle());
       status.setYear(this.getCurrentCycleYear());
+      status.setUpkeep(this.isUpKeepActive());
       status.setProject(project);
       status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
 
@@ -278,11 +281,7 @@ public class ProjectListAction extends BaseAction {
     if (liaisonUser != null) {
 
       Project project = new Project();
-      project.setCreatedBy(this.getCurrentUser());
-      project.setActive(true);
-      project.setActiveSince(new Date());
       project.setCreateDate(new Date());
-      project.setModifiedBy(this.getCurrentUser());
       project = projectManager.saveProject(project);
       projectID = project.getId();
 
@@ -290,15 +289,12 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProject = new GlobalUnitProject();
       globalUnitProject.setProject(project);
       globalUnitProject.setGlobalUnit(loggedCrp);
-      globalUnitProject.setActive(true);
-      globalUnitProject.setActiveSince(new Date());
-      globalUnitProject.setModifiedBy(this.getCurrentUser());
-      globalUnitProject.setCreatedBy(this.getCurrentUser());
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
 
-      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+        this.getActualPhase().getUpkeep(), this.getCrpID());
 
       this.addProjectOnPhase(phase, project, liaisonInstitution, liaisonUser, type, admin);
 
@@ -318,10 +314,6 @@ public class ProjectListAction extends BaseAction {
 
     } else {
       Project project = new Project();
-      project.setCreatedBy(this.getCurrentUser());
-      project.setActive(true);
-      project.setModifiedBy(this.getCurrentUser());
-      project.setActiveSince(new Date());
       project.setCreateDate(new Date());
       project = projectManager.saveProject(project);
       projectID = project.getId();
@@ -330,26 +322,37 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProject = new GlobalUnitProject();
       globalUnitProject.setProject(project);
       globalUnitProject.setGlobalUnit(loggedCrp);
-      globalUnitProject.setActive(true);
-      globalUnitProject.setActiveSince(new Date());
-      globalUnitProject.setModifiedBy(this.getCurrentUser());
-      globalUnitProject.setCreatedBy(this.getCurrentUser());
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+        this.getActualPhase().getUpkeep(), this.getCrpID());
       ProjectInfo projectInfo = new ProjectInfo();
-      projectInfo.setModifiedBy(this.getCurrentUser());
       projectInfo.setModificationJustification("New expected Project created");
       projectInfo.setType(type);
       projectInfo.setLiaisonUser(liaisonUser);
       projectInfo.setLiaisonInstitution(liaisonInstitution);
       projectInfo.setScale(0);
       projectInfo.setCofinancing(false);
-      projectInfo.setProjectEditLeader(false);
+
+      if (this.isCenterGlobalUnit()) {
+        projectInfo.setProjectEditLeader(true);
+
+        // Create Center Partner
+        ProjectPartner projectPartner = new ProjectPartner();
+        projectPartner.setProject(project);
+        projectPartner.setInstitution(loggedCrp.getInstitution());
+        projectPartner.setPhase(this.getActualPhase());
+        projectPartnerManager.saveProjectPartner(projectPartner);
+
+      } else {
+        projectInfo.setProjectEditLeader(false);
+      }
+
       projectInfo.setPresetDate(new Date());
       projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       projectInfo.setAdministrative(new Boolean(admin));
-      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
+
       if (phase != null) {
         ProjectPhase projectPhase = new ProjectPhase();
         projectPhase.setPhase(phase);
@@ -365,9 +368,9 @@ public class ProjectListAction extends BaseAction {
         status = new SectionStatus();
         status.setCycle(this.getCurrentCycle());
         status.setYear(this.getCurrentCycleYear());
+        status.setUpkeep(this.isUpKeepActive());
         status.setProject(project);
         status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-
 
       }
       status.setMissingFields("");
@@ -390,8 +393,9 @@ public class ProjectListAction extends BaseAction {
       boolean permission = this.hasPermissionNoBase(permissionStr);
       if (permission) {
         Project project = projectManager.getProjectById(projectID);
-        project.setActive(false);
         try {
+          project.setModifiedBy(this.getCurrentUser());
+          project.setModificationJustification("Deleted by : " + this.getCurrentUser().getComposedCompleteName());
           projectManager.deleteProject(project);
           for (ProjectPhase projectPhase : project.getProjectPhases()) {
             projectPhaseManager.deleteProjectPhase(projectPhase.getId());
@@ -454,51 +458,34 @@ public class ProjectListAction extends BaseAction {
 
     centerProjects = new ArrayList<>();
 
-    List<GlobalUnit> globalUnits = new ArrayList<>(crpManager.findAll().stream()
-      .filter(crp -> crp.isActive() && crp.isMarlo() && crp.isLogin() && crp.getGlobalUnitType().getId() == 1)
-      .collect(Collectors.toList()));
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects().stream()
+      .filter(gp -> gp.isActive() && !gp.isOrigin()).collect(Collectors.toList()));
 
-    for (GlobalUnit globalUnit : globalUnits) {
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
 
-      Phase phase = globalUnit.getPhases().stream().filter(p -> p.isActive() && p.getEditable() && p.getVisible())
-        .collect(Collectors.toList()).get(0);
+      Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
 
-      List<ProjectInfo> projectInfos =
-        new ArrayList<>(phase.getProjectInfos().stream()
-          .filter(pi -> pi.isActive() && (pi.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-            || pi.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId())))
-          .collect(Collectors.toList()));
+      GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
 
-      for (ProjectInfo projectInfo : projectInfos) {
-
-        Project project = projectManager.getProjectById(projectInfo.getProject().getId());
-        project.setProjectInfo(projectInfo);
-        List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
-          .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
-
-        for (ProjectPartner projectPartner : projectPartners) {
+      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+        this.getActualPhase().getUpkeep(), globalUnitProjectOrigin.getGlobalUnit().getId());
 
 
-          if (projectPartner.getProjectPartnerPersons() != null) {
-            for (ProjectPartnerPerson person : projectPartner.getProjectPartnerPersons().stream()
-              .filter(pp -> pp.isActive()).collect(Collectors.toList())) {
-              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-                if (projectPartner.getInstitution().equals(loggedCrp.getInstitution())) {
-                  project.setCurrentPhase(phase);
+      project.getProjecInfoPhase(phase);
 
-                  centerProjects.add(project);
-                  break;
-                }
-              }
+      if (project.getProjectInfo() != null) {
+        if (project.getProjectInfo().getProjectEditLeader()) {
+          ProjectInfo info = project.getProjectInfo();
+          if ((info.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || info.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))) {
+            if (this.isSubmit(project.getId())) {
+              project.setCurrentPhase(phase);
+              centerProjects.add(project);
             }
           }
-
-
         }
       }
-
     }
-
   }
 
   /**
@@ -599,19 +586,29 @@ public class ProjectListAction extends BaseAction {
       this.loadFlagshipgsAndRegions(myProjects);
       this.loadFlagshipgsAndRegions(allProjects);
     }
-    closedProjects = projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+    closedProjects = new ArrayList<>();
+    List<Project> completedProjects =
+      projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
 
-    if (closedProjects != null) {
-      // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
-      myProjects.removeAll(closedProjects);
-      if (allProjects != null) {
-        allProjects.removeAll(closedProjects);
+    // Skip closed projects for Reporting
+    if (this.isPlanningActive()) {
+      if (completedProjects != null) {
+        for (Project project : completedProjects) {
+          closedProjects.add(project);
+        }
       }
-      Set<Project> uniqueProjects = new HashSet<>();
-      uniqueProjects.addAll(closedProjects);
-      closedProjects.clear();
-      closedProjects.addAll(uniqueProjects);
-      this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
+
+      if (closedProjects != null) {
+        myProjects.removeAll(closedProjects);
+        if (allProjects != null) {
+          allProjects.removeAll(closedProjects);
+        }
+        Set<Project> uniqueProjects = new HashSet<>();
+        uniqueProjects.addAll(closedProjects);
+        closedProjects.clear();
+        closedProjects.addAll(uniqueProjects);
+        this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
+      }
     }
 
     if (this.isCenterGlobalUnit()) {

@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -74,8 +75,8 @@ public class ProjectPartnersValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.PARTNERS.getStatus().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
-      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
+      + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -110,48 +111,12 @@ public class ProjectPartnersValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
-
-      if (project.getPartners() != null && !project.getPartners().isEmpty()) {
-
-        if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-          if (!this.isValidString(project.getOverall())) {
-            action.addMessage(
-              action.getText("Please provide Partnerships overall performance over the last reporting period"));
-            action.addMissingField("project.partners.overall");
-            action.getInvalidFields().put("input-project.overall", InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
-      }
-
-
-      if (project.getPartners() == null || project.getPartners().isEmpty()) {
-        action.addMissingField("project.partners.empty");
-        action.getInvalidFields().put("list-project.partners",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
-      }
-      if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-        /*
-         * if (!action.isProjectNew(project.getId())) {
-         * this.validateLessonsLearn(action, project);
-         * if (action.getValidationMessage().toString().contains("Lessons")) {
-         * this.replaceAll(action.getValidationMessage(), "Lessons",
-         * "Lessons regarding partnerships and possible implications for the coming planning cycle");
-         * action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * }/
-         */
-
-        if (project.getProjectInfo().getNewPartnershipsPlanned() == null
-          || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
-          action.addMissingField("project.projectInfo.newPartnershipsPlanned");
-          action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
-            action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
-        }
-      }
-
-      this.validateCCAFSProject(action, project);
+      this.validateEmptyPartners(action, project);
+      this.validateReportingOverall(action, project);
+      this.validateReportingLessons(action, project);
+      this.validatePlanningNewPartnershipsPlanned(action, project);
+      this.validateProjectLeader(action, project);
+      this.validateProjectPartners(action, project);
 
       if (!action.getFieldErrors().isEmpty()) {
         hasErros = true;
@@ -162,147 +127,190 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.PARTNERS.getStatus(), action);
+        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.PARTNERS.getStatus(), action);
     }
 
     return hasErros;
   }
 
-  private void validateCCAFSProject(BaseAction action, Project project) {
-    this.validateInstitutionsEmpty(action, project);
-    this.validateProjectLeader(action, project);
+
+  private void validateContactPersons(BaseAction action, Project project, ProjectPartner partner, int c) {
     if (action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS)) {
-      this.validateContactPersons(action, project);
-    }
-    if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
-      this.validateOffices(action, project);
-    }
-  }
+      try {
+        int j = 0;
+        this.validatePersonResponsibilities(action, project, c, partner);
+        // Validate CRP PPA Partners
+        this.validatePartnerContributors(action, project, partner, c);
+
+        Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
 
 
-  /**
-   * This method validates all the required fields within contact person.
-   * 
-   * @param action this action.
-   * @param project the project with the partners on it.
-   */
-  private void validateContactPersons(BaseAction action, Project project) {
-    try {
-      if (project != null) {
-        int c = 0, j = 0;
-        for (ProjectPartner partner : project.getPartners()) {
+        if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
+          if (!inst.getCrpPpaPartners().stream()
+            .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+            .collect(Collectors.toList()).isEmpty()) {
+            action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
+              new String[] {partner.getInstitution().getName()}));
+            action.addMissingField("project.partner[" + c + "].contactPersons.empty");
+          }
+
+        } else {
           j = 0;
-          // Validating that the partner has a least one contact person
-          if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-            if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
-              this.validatePersonResponsibilities(action, c, partner);
-            }
-          }
-          if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-            Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
-            if (inst.getCrpPpaPartners().stream()
-              .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
-              .collect(Collectors.toList()).isEmpty()) {
-
-
-              if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
-                action.addMissingField("project.partners[" + c + "].partnerContributors");
-                action.getInvalidFields().put("list-project.partners[" + c + "].partnerContributors",
-                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
-
-              }
-
-
-            }
-          }
-          Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
-
-
-          if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
+          // iterating all the contact persons.
+          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
             if (!inst.getCrpPpaPartners().stream()
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
               .collect(Collectors.toList()).isEmpty()) {
-              action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
-                new String[] {partner.getInstitution().getName()}));
-              action.addMissingField("project.partner[" + c + "].contactPersons.empty");
+              this.validatePersonType(action, c, j, person);
+
+              this.validateUser(action, c, j, person);
             }
 
-          } else {
-            j = 0;
-            // iterating all the contact persons.
-            for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-              if (!inst.getCrpPpaPartners().stream()
-                .filter(
-                  insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
-                .collect(Collectors.toList()).isEmpty()) {
-                this.validatePersonType(action, c, j, person);
+            j++;
 
-                this.validateUser(action, c, j, person);
-              }
-
-              j++;
-
-            }
           }
-          c++;
         }
+      } catch (Exception e) {
+        LOG.error("unable to validate contact persons for project " + project,
+          e);/**
+              * Original code swallows the exception and didn't even log it. Now we at least log it,
+              * but we need to revisit to see if we should continue processing or re-throw the exception.
+              */
       }
-    } catch (Exception e) {
-      LOG.error("unable to validate contact persons for project " + project,
-        e);/**
-            * Original code swallows the exception and didn't even log it. Now we at least log it,
-            * but we need to revisit to see if we should continue processing or re-throw the exception.
-            */
+    }
+
+  }
+
+  private void validateEmptyInstitution(BaseAction action, ProjectPartner partner, int i) {
+    if (partner.getInstitution() == null || partner.getInstitution().getId() == -1) {
+      action.addFieldError("project.partners[" + i + "].institution.id",
+        action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
+      // No need to add missing fields because field error doesn't allow to save into the database.
     }
   }
 
-  // Validate that an institution is selected.
-  private void validateInstitutionsEmpty(BaseAction action, Project project) {
-    int c = 0;
-    for (ProjectPartner partner : project.getPartners()) {
-      if (partner.getInstitution() == null || partner.getInstitution().getId() == -1) {
 
-        action.addFieldError("project.partners[" + c + "].institution.id",
-          action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
-        // No need to add missing fields because field error doesn't allow to save into the database.
-
-
-      }
-      c++;
+  private void validateEmptyPartners(BaseAction action, Project project) {
+    if (project.getPartners() == null || project.getPartners().isEmpty()) {
+      action.addMissingField("project.partners.empty");
+      action.getInvalidFields().put("list-project.partners",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
     }
   }
 
-  private void validateOffices(BaseAction action, Project project) {
-    int c = 0;
-
-    for (ProjectPartner partner : project.getPartners()) {
-      if (partner.getSelectedLocations() == null) {
+  private void validateOffices(BaseAction action, Project project, ProjectPartner partner, int c) {
+    if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
+      if (partner.getSelectedLocations() == null || partner.getSelectedLocations().isEmpty()) {
 
         action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
         action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
-      } else {
 
-        if (partner.getSelectedLocations().isEmpty()) {
-          action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
-          action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
-        }
       }
+    }
+  }
 
-      c++;
+
+  private void validatePartnerContributors(BaseAction action, Project project, ProjectPartner partner, int c) {
+    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+      Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
+      if (inst.getCrpPpaPartners().stream()
+        .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+        .collect(Collectors.toList()).isEmpty()) {
+
+        if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
+          action.addMissingField("project.partners[" + c + "].partnerContributors");
+          action.getInvalidFields().put("list-project.partners[" + c + "].partnerContributors",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+        }
+
+      }
+    }
+  }
+
+  private void validatePartnership(BaseAction action, Project project, ProjectPartner partner, int c) {
+    if (action.isReportingActive()) {
+      try {
+        ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
+
+        if (projectPartnerPartnership == null || partner.getHasPartnerships() == null) {
+          action.addMessage("Please provide partnership formal partner");
+          action.addMissingField("project.partners[" + c + "].hasPartnerships");
+          action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if (projectPartnerPartnership.getResearchPhasesIds() == null
+          || projectPartnerPartnership.getResearchPhasesIds().isEmpty()) {
+          action.addMessage("Please provide partnership research phase");
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.researchPhasesIds");
+          action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.researchPhasesIds",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope() == null
+          || projectPartnerPartnership.getGeographicScope().getId() == -1) {
+          action.addMessage("Please provide partnership geographic scope");
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.geographicScope.id");
+          action.getInvalidFields().put(
+            "input-project.partners[" + c + "].projectPartnerPartnership.geographicScope.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (projectPartnerPartnership == null || projectPartnerPartnership.getGeographicScope().getId()
+            .equals(action.getReportingIndGeographicScopeRegional())) {
+            if (projectPartnerPartnership.getRegion() == null || projectPartnerPartnership.getRegion().getId() == -1) {
+              action.addMessage("Please provide partnership region");
+              action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.region.id");
+              action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.region.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+          if (projectPartnerPartnership == null
+            || projectPartnerPartnership.getGeographicScope().getId()
+              .equals(action.getReportingIndGeographicScopeMultiNational())
+            || projectPartnerPartnership.getGeographicScope().getId()
+              .equals(action.getReportingIndGeographicScopeNational())
+            || projectPartnerPartnership.getGeographicScope().getId()
+              .equals(action.getReportingIndGeographicScopeSubNational())) {
+            if (projectPartnerPartnership.getPartnershipLocationsIsos() == null
+              || projectPartnerPartnership.getPartnershipLocationsIsos().isEmpty()) {
+              action.addMessage("Please provide partnership countries");
+              action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.partnershipLocationsIsos");
+              action.getInvalidFields().put(
+                "input-project.partners[" + c + "].projectPartnerPartnership.partnershipLocationsIsos",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+        }
+
+        if (projectPartnerPartnership == null || !this.isValidString(projectPartnerPartnership.getMainArea())) {
+          action.addMessage("Please provide partnership main area");
+          action.addMissingField("project.partners[" + c + "].projectPartnerPartnership.mainArea");
+          action.getInvalidFields().put("input-project.partners[" + c + "].projectPartnerPartnership.mainArea",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      } catch (Exception e) {
+        LOG.error("Unable to validate partner partnership for Project: " + project + " - Partner: " + partner, e);
+      }
     }
 
   }
 
-  private void validatePersonResponsibilities(BaseAction action, int partnerCounter, ProjectPartner partner) {
-    if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
+  private void validatePersonResponsibilities(BaseAction action, Project project, int partnerCounter,
+    ProjectPartner partner) {
+    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+      if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
+        if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
 
-      action.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
-      action.getInvalidFields().put("input-project.partners[" + partnerCounter + "].responsibilities",
-        InvalidFieldsMessages.EMPTYFIELD);
+          action.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
+          action.getInvalidFields().put("input-project.partners[" + partnerCounter + "].responsibilities",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
     }
-
   }
 
   private void validatePersonType(BaseAction action, int partnerCounter, int personCounter,
@@ -314,6 +322,18 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
+  private void validatePlanningNewPartnershipsPlanned(BaseAction action, Project project) {
+    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader() && !action.isReportingActive()) {
+
+      if (project.getProjectInfo().getNewPartnershipsPlanned() == null
+        || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
+        action.addMissingField("project.projectInfo.newPartnershipsPlanned");
+        action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
+          action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
+      }
+    }
+  }
+
 
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
@@ -321,6 +341,55 @@ public class ProjectPartnersValidator extends BaseValidator {
       action.addMessage(action.getText("projectPartners.types.PL").toLowerCase());
       action.getInvalidFields().put("list-project.partners", action.getText("projectPartners.types.PL"));
       action.addMissingField("project.leader");
+    }
+  }
+
+  private void validateProjectPartners(BaseAction action, Project project) {
+    int c = 0;
+    if (project != null) {
+      for (ProjectPartner partner : project.getPartners()) {
+        this.validateEmptyInstitution(action, partner, c);
+        this.validateContactPersons(action, project, partner, c);
+        this.validateOffices(action, project, partner, c);
+        this.validatePartnership(action, project, partner, c);
+
+        c++;
+      }
+    }
+
+
+  }
+
+  private void validateReportingLessons(BaseAction action, Project project) {
+    if (project.getPartners() != null && !project.getPartners().isEmpty()) {
+      if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+        if (project.getProjectComponentLesson() != null) {
+          if (!this.isValidString(project.getProjectComponentLesson().getLessons())) {
+            action.addMessage(action.getText("projectPartners.lessons.reporting"));
+            action.addMissingField("projectPartners.lessons.reporting");
+            action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          action.addMessage(action.getText("projectPartners.lessons.reporting"));
+          action.addMissingField("projectPartners.lessons.reporting");
+          action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      }
+    }
+  }
+
+  private void validateReportingOverall(BaseAction action, Project project) {
+    if (project.getPartners() != null && !project.getPartners().isEmpty()) {
+      if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+        if (!this.isValidString(project.getProjectInfo().getPartnerOverall())) {
+          action.addMessage("Please provide Partnerships overall performance over the last reporting period");
+          action.addMissingField("project.projectInfo.partnerOverall");
+          action.getInvalidFields().put("input-project.projectInfo.partnerOverall", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
     }
   }
 

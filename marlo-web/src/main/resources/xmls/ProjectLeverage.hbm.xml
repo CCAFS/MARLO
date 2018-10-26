@@ -3,43 +3,61 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Dec 12, 2016 8:46:53 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" table="project_leverage"  optimistic-lock="none">
-        <id name="id" type="java.lang.Long">
-            <column name="id" />
-            <generator class="identity" />
-        </id>
-        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
-            <column name="flagship" />
-        </many-to-one>
-        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-            <column name="institution" />
-        </many-to-one>
-        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
-            <column name="project_id" not-null="true" />
-        </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" not-null="true" />
-        </many-to-one>
-        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" not-null="true" />
-        </many-to-one>
-        <property name="title" type="string">
-            <column name="title" length="500" not-null="true" />
-        </property>
-        <property name="year" type="java.lang.Integer">
-            <column name="year" />
-        </property>
-        <property name="budget" type="java.lang.Double">
-            <column name="budget" precision="22" scale="0" />
-        </property>
-        <property name="active" type="boolean">
-            <column name="is_active" not-null="true" />
-        </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" not-null="true" />
-        </property>
-        <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" not-null="true" />
-        </property>
-    </class>
+	<class name="org.cgiar.ccafs.marlo.data.model.ProjectLeverage"
+		table="project_leverage" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="ipProgram"
+			class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
+			<column name="ip_program" />
+		</many-to-one>
+		<many-to-one name="crpProgram"
+			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+			<column name="program_id" />
+		</many-to-one>
+		<many-to-one name="institution"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="institution" />
+		</many-to-one>
+		<many-to-one name="project"
+			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+			<column name="project_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="title" type="string">
+			<column name="title" length="500" not-null="true" />
+		</property>
+		<property name="year" type="java.lang.Integer">
+			<column name="year" />
+		</property>
+		<property name="budget" type="java.lang.Double">
+			<column name="budget" precision="22" scale="0" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT"
+				not-null="true" />
+		</property>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="id_phase" />
+		</many-to-one>
+		<property name="composeID" type="string">
+			<column name="composed_id" length="20" />
+		</property>
+	</class>
 </hibernate-mapping>

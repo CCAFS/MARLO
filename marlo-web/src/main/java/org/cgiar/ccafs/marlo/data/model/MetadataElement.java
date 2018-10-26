@@ -27,11 +27,9 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class MetadataElement implements Serializable, IAuditLog {
+public class MetadataElement extends MarloBaseEntity implements Serializable, IAuditLog {
 
   private static final long serialVersionUID = 5792114060838051002L;
-  @Expose
-  private Integer id;
   @Expose
   private String schema;
   @Expose
@@ -52,18 +50,6 @@ public class MetadataElement implements Serializable, IAuditLog {
   public MetadataElement() {
   }
 
-  public MetadataElement(String schema, String element, String qualifier, String econdedName, String status,
-    String vocabulary, String definitation, Set<DeliverableMetadataElement> deliverableMetadataElements) {
-    this.schema = schema;
-    this.element = element;
-    this.qualifier = qualifier;
-    this.econdedName = econdedName;
-    this.status = status;
-    this.vocabulary = vocabulary;
-    this.definitation = definitation;
-    this.deliverableMetadataElements = deliverableMetadataElements;
-  }
-
   public String getDefinitation() {
     return definitation;
   }
@@ -81,12 +67,6 @@ public class MetadataElement implements Serializable, IAuditLog {
   public String getElement() {
     return element;
   }
-
-  @Override
-  public Integer getId() {
-    return id;
-  }
-
 
   @Override
   public String getLogDeatil() {
@@ -152,8 +132,9 @@ public class MetadataElement implements Serializable, IAuditLog {
     this.element = element;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
   }
 
   public void setQualifier(String qualifier) {
@@ -174,9 +155,9 @@ public class MetadataElement implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "MetadataElement [id=" + id + ", schema=" + schema + ", element=" + element + ", qualifier=" + qualifier
-      + ", econdedName=" + econdedName + ", status=" + status + ", vocabulary=" + vocabulary + ", definitation="
-      + definitation + "]";
+    return "MetadataElement [id=" + this.getId() + ", schema=" + schema + ", element=" + element + ", qualifier="
+      + qualifier + ", econdedName=" + econdedName + ", status=" + status + ", vocabulary=" + vocabulary
+      + ", definitation=" + definitation + "]";
   }
 
 }

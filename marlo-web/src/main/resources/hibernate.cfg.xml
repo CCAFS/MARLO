@@ -17,6 +17,10 @@
 		<property name="generate_statistics">false</property>
 		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
 		<property name="hibernate.current_session_context_class">thread</property>
+    <!-- The following property will validate the hibernate hbm.xml files against the schema.
+     This is a recommended setting, but we have an issue where some of our entities are using
+     mysql INT primary keys instead of BIGINT so validation fails.  -->
+<!--     <property name="hibernate.hbm2ddl.auto">validate</property> -->
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
@@ -240,5 +244,79 @@
     <mapping resource="xmls/PowbCollaboration.hbm.xml" />
     <mapping resource="xmls/PowbCollaborationGlobalUnits.hbm.xml"/>
     <mapping resource="xmls/PowbCollaborationRegions.hbm.xml"/>
+    <mapping resource="xmls/ProjectHighlightsInfo.hbm.xml"/>
+    <mapping resource="xmls/DeliverableRules.hbm.xml"/>
+    <mapping resource="xmls/DeliverableTypeRules.hbm.xml"/>
+    <mapping resource="xmls/RepIndGenderYouthFocusLevels.hbm.xml"/>
+    <mapping resource="xmls/RepIndGeographicScopes.hbm.xml"/>
+    <mapping resource="xmls/RepIndInnovationTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndLandUseTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndOrganizationTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndPhaseResearchPartnerships.hbm.xml"/>
+    <mapping resource="xmls/RepIndPolicyInvestimentTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndRegions.hbm.xml"/>
+    <mapping resource="xmls/RepIndStageInnovations.hbm.xml"/>
+    <mapping resource="xmls/RepIndTypeActivities.hbm.xml"/>
+    <mapping resource="xmls/RepIndTypeParticipants.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovations.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationInfo.hbm.xml"/>
+    <mapping resource="xmls/ProjectPartnerPartnerships.hbm.xml"/>
+    <mapping resource="xmls/ProjectPartnerPartnershipLocation.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationCountries.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationDeliverables.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationOrganizations.hbm.xml"/>
+    <mapping resource="xmls/ProjectInnovationCrps.hbm.xml"/>    
+    <mapping resource="xmls/DeliverableIntellectualAssets.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyCountries.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyCrp.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyFlagships.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyInfo.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyInstitutions.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudySrfTargets.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudySubIdo.hbm.xml"/>
+    <mapping resource="xmls/StudyTypes.hbm.xml"/>  
+    <mapping resource="xmls/RepIndStageStudies.hbm.xml"/>  
+    <mapping resource="xmls/RepIndStageProcess.hbm.xml"/>
+    <mapping resource="xmls/DeliverableParticipants.hbm.xml"/>
+    <mapping resource="xmls/RepIndFillingTypes.hbm.xml"/>
+    <mapping resource="xmls/RepIndPatentStatuses.hbm.xml"/>
+    <mapping resource="xmls/ProjectPartnerPartnershipResearchPhases.hbm.xml"/>
+    <mapping resource="xmls/RepIndContributionOfCrp.hbm.xml"/>
+    <mapping resource="xmls/RepIndDegreeInnovation.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesis.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgress.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressStudies.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrpProgressTargets.hbm.xml"/>    
+    <mapping resource="xmls/ReportSynthesisFinancialSummaries.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFinancialSummaryBudgets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisGovernances.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisRisks.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensions.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionInnovations.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCuttingDimensionAssets.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFlagshipProgress.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressMilestones.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisProgramVariances.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFundingUseSummaries.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisFundingUseExpendituryAreas.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisEfficiency.hbm.xml"/>   
+    <mapping resource="xmls/RepIndSynthesisIndicator.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisIndicators.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisIndicatorGenerals.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisExternalPartnerships.hbm.xml"/>   
+    <mapping resource="xmls/ReportSynthesisExternalPartnershipProjects.hbm.xml"/>
+    <mapping resource="xmls/RepIndCollaborationType.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCgiar.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisCrossCgiarCollaborations.hbm.xml"/> 
+    <mapping resource="xmls/ReportSynthesisMelia.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisMeliaEvaluations.hbm.xml"/>
+    <mapping resource="xmls/ReportSynthesisMeliaStudies.hbm.xml"/>
+    <mapping resource="xmls/ProjectCenterOutcomes.hbm.xml"/>
+    <mapping resource="xmls/PowbIndAssesmentRisk.hbm.xml"/>
+    <mapping resource="xmls/PowbIndFollowingMilestones.hbm.xml"/>
+    <mapping resource="xmls/PowbIndMilestoneRisks.hbm.xml"/>
+    <mapping resource="xmls/DeliverableLocations.hbm.xml"/>
+    <mapping resource="xmls/ProjectExpectedStudyRegions.hbm.xml"/> 
+    <mapping resource="xmls/DeliverableGeographicRegions.hbm.xml"/>    
 	</session-factory>
 </hibernate-configuration>

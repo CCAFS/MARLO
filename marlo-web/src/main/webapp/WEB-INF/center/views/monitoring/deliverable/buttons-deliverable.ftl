@@ -13,7 +13,7 @@
 
 <div class="buttons">
   <div class="buttons-content">
-    [#-- History Log --]
+    [#-- History Log TODO: Fix history --]
     [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
       [@logHistory.logList list=recordsList itemName="deliverableID" itemId=deliverable.id /]

@@ -29,10 +29,34 @@
   margin-top: 60px;
 }
 
-.tab-content {
-  border: 1px solid #ddd;
-  padding: 10px 14px;
-  border-top: none;
+/* Bootstrap Tabs */
+
+.tab-content>.active {
+  display: block;
+  /* background-color: #f5f5f5; */
+  padding: 12px 14px;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+  
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border-top: 4px solid #1882aa;
+  border-bottom-color: transparent;
+  font-weight: bold;
+  /* color: #0377a3; */
+  /* background-color: #f5f5f5; */
+}
+
+.nav-tabs>li>a.fieldError{
+  color: #ff4444 !important;
+}
+
+.nav-tabs>li>a {
+  color: #6f6f6f;
+  border-radius: 0 0 0;
+  padding: 14px 22px !important;
+  border: 1px solid #f1f1f1;
 }
 
 ul.nav li a {
@@ -673,4 +697,8 @@ td:last-child {
 
 tr:hover .icon-container {
   display: inline-block;
+}
+
+[class^="block-"] {
+ padding:0 1em;
 }

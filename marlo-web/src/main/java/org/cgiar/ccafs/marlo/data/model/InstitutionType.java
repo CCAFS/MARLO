@@ -21,13 +21,10 @@ import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
-public class InstitutionType implements java.io.Serializable, IAuditLog {
+public class InstitutionType extends MarloBaseEntity implements java.io.Serializable, IAuditLog {
 
 
   static final long serialVersionUID = -943657365260109270L;
-
-  @Expose
-  private Long id;
 
   @Expose
   private String name;
@@ -44,24 +41,15 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean subDepartmentActive;
 
+  @Expose
+  private RepIndOrganizationType repIndOrganizationType;
+
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
 
   public InstitutionType() {
   }
-
-  public InstitutionType(String name) {
-    this.name = name;
-  }
-
-
-  public InstitutionType(String name, String acronym, Set<Institution> institutions) {
-    this.name = name;
-    this.acronym = acronym;
-    this.institutions = institutions;
-  }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -75,11 +63,11 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
       return false;
     }
     InstitutionType other = (InstitutionType) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -90,13 +78,9 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     return this.acronym;
   }
 
+
   public String getDescription() {
     return description;
-  }
-
-  @Override
-  public Long getId() {
-    return this.id;
   }
 
   public Set<Institution> getInstitutions() {
@@ -134,6 +118,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     return old;
   }
 
+  public RepIndOrganizationType getRepIndOrganizationType() {
+    return repIndOrganizationType;
+  }
+
   public Boolean getSubDepartmentActive() {
     return subDepartmentActive;
   }
@@ -142,7 +130,7 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
@@ -160,12 +148,13 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.description = description;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   public void setInstitutions(Set<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+  @Override
+  public void setModifiedBy(User modifiedBy) {
+
   }
 
   public void setName(String name) {
@@ -176,13 +165,19 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.old = old;
   }
 
+  public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
+    this.repIndOrganizationType = repIndOrganizationType;
+  }
+
   public void setSubDepartmentActive(Boolean subDepartmentActive) {
     this.subDepartmentActive = subDepartmentActive;
   }
 
   @Override
   public String toString() {
-    return "InstitutionType [id=" + id + ", name=" + name + ", acronym=" + acronym + ", description=" + description
-      + ", old=" + old + ", subDepartmentActive=" + subDepartmentActive + "]";
+    return "InstitutionType [id=" + this.getId() + ", name=" + name + ", acronym=" + acronym + ", subDepartmentActive="
+      + subDepartmentActive + ", repIndOrganizationType=" + repIndOrganizationType + "]";
   }
+
+
 }

@@ -17,11 +17,15 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -57,13 +61,18 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   private PhaseManager phaseManager;
   private final ProjectOutcomeManager projectOutcomeManager;
   private final ProjectManager projectManager;
+  private final GlobalUnitManager crpManager;
+  private GlobalUnit loggedCrp;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   @Inject
   public EditProjectOutcomeInterceptor(ProjectOutcomeManager projectOutcomeManager, ProjectManager projectManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
     this.projectOutcomeManager = projectOutcomeManager;
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
+    this.crpManager = crpManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   @Override
@@ -113,11 +122,36 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
     ProjectOutcome project = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
     phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
+
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
+    Project theProject = projectManager.getProjectById(project.getProject().getId());
+
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(theProject.getId(), loggedCrp.getId());
     if (project != null && project.isActive()) {
+
+      if (!globalUnitProject.isOrigin()) {
+        Phase ph = baseAction.getActualPhase();
+        GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(theProject.getId());
+        List<Phase> phases = globalUnitProjectOrigin.getGlobalUnit().getPhases().stream()
+          .filter(c -> c.isActive() && c.getDescription().equals(baseAction.getActualPhase().getDescription())
+            && c.getYear() == baseAction.getActualPhase().getYear())
+          .collect(Collectors.toList());
+        if (phases.size() > 0) {
+          baseAction.setPhaseID(phases.get(0).getId());
+          theProject.getProjecInfoPhase(phases.get(0));
+        }
+
+        phase = baseAction.getActualPhase();
+        phase = phaseManager.getPhaseById(phase.getId());
+      }
 
       String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-        if (!baseAction.isSubmit(project.getProject().getId())) {
+        if (!baseAction.isSubmit(project.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
 
           canSwitchProject = true;
         }
@@ -133,7 +167,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
         }
 
-        if (baseAction.isSubmit(project.getProject().getId())) {
+        if (baseAction.isSubmit(project.getProject().getId()) && !baseAction.getActualPhase().getUpkeep()) {
           canEdit = false;
 
         }
@@ -158,7 +192,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       }
 
       // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
+      if (editParameter || parameters.get("save").isDefined()) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION, params));
       }
@@ -197,14 +231,16 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         baseAction.setEditStatus(true);
 
       }
-      if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
-
-        || project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
+      if (baseAction.isPlanningActive()) {
+        if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+          || project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+          canEdit = false;
+          baseAction.setEditStatus(true);
+        }
       }
+
       if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
         .equals(APConstants.REPORTING)
         && project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
@@ -219,6 +255,11 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         // If the user is not asking for edition privileges we don't need to validate them.
 
       }
+
+      // Check if is a Shared project (Crp to Center)
+      if (!globalUnitProject.isOrigin()) {
+        canEdit = false;
+      }
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
         baseAction.setCanEditPhase(false);
@@ -229,7 +270,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       }
       baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
-      baseAction.setCanSwitchProject(canSwitchProject);
+      baseAction.setCanSwitchProject(canSwitchProject && globalUnitProject.isOrigin());
 
     } else {
       throw new NullPointerException();

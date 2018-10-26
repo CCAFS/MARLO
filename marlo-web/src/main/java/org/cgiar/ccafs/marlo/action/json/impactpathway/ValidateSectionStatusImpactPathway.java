@@ -104,7 +104,7 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
 
     }
     sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, sectionName,
-      this.getActualPhase().getDescription(), this.getActualPhase().getYear());
+      this.getActualPhase().getDescription(), this.getActualPhase().getYear(), this.getActualPhase().getUpkeep());
     section = new HashMap<String, Object>();
     section.put("sectionName", sectionStatus.getSectionName());
     section.put("missingFields", sectionStatus.getMissingFields());

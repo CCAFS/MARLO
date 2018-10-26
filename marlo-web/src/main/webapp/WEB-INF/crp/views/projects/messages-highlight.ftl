@@ -23,7 +23,8 @@
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      <p>[@s.text name="project.message.submittedOn" ][@s.param]${(submission.dateTime)!}[/@s.param][/@s.text]</p>
+      [#assign lastSubmission =action.getProjectSubmissions(projectID)?last /]
+      <p>[@s.text name="project.message.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]
   
@@ -56,7 +57,7 @@
     <div class="layer"></div>
     <div class="content">
       <span class="glyphicon glyphicon-lock"></span>
-      <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="highlightID" value=highlightID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+      <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="highlightID" value=highlightID /][@s.param name="phaseID" value="${(actualPhase.id)!}" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
     </div>
   </div>
 

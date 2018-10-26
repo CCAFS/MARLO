@@ -38,8 +38,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class ReadExcelFile {
 
-  private static final String[] HEAD_TEMPLATE = {"Identification number", "Name", "Last Name", "Gender", "Citizenship",
-    "Highest degree", "Institution", "Country of institution", "Email", "Suggest Intitution"};
+  private static final String[] HEAD_TEMPLATE = {"Name", "Last Name", "Gender", "Citizenship", "Email"};
   private int totalRows;
   private int totalColumns;
 

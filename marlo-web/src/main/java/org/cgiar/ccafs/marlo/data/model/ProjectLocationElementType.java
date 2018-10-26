@@ -18,13 +18,10 @@ package org.cgiar.ccafs.marlo.data.model;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProjectLocationElementType implements java.io.Serializable {
+public class ProjectLocationElementType extends MarloBaseEntity implements java.io.Serializable {
 
 
   private static final long serialVersionUID = -127486425529773813L;
-
-  private Long id;
-
 
   private LocElementType locElementType;
 
@@ -38,19 +35,6 @@ public class ProjectLocationElementType implements java.io.Serializable {
   public ProjectLocationElementType() {
   }
 
-
-  public ProjectLocationElementType(LocElementType locElementType, Project project, Boolean isGlobal) {
-    this.locElementType = locElementType;
-    this.project = project;
-    this.isGlobal = isGlobal;
-  }
-
-
-  public Long getId() {
-    return id;
-  }
-
-
   public Boolean getIsGlobal() {
     return isGlobal;
   }
@@ -61,10 +45,6 @@ public class ProjectLocationElementType implements java.io.Serializable {
 
   public Project getProject() {
     return project;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setIsGlobal(Boolean isGlobal) {
@@ -81,8 +61,8 @@ public class ProjectLocationElementType implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "ProjectLocationElementType [id=" + id + ", locElementType=" + locElementType + ", project=" + project
-      + ", isGlobal=" + isGlobal + "]";
+    return "ProjectLocationElementType [id=" + this.getId() + ", locElementType=" + locElementType + ", project="
+      + project + ", isGlobal=" + isGlobal + "]";
   }
 
 }

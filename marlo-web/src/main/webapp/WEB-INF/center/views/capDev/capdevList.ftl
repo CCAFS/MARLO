@@ -1,11 +1,15 @@
 [#ftl]
-
+[#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css", 
-					  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"] /]
+[#assign customCSS = [
+    "${baseUrl}/global/css/customDataTable.css", 
+    "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
+  ] 
+/]
 
 [#assign customJS = [
- 	"${baseUrlMedia}/js/capDev/capdevList.js"] 
+    "${baseUrlMedia}/js/capDev/capdevList.js"
+  ] 
 /]
 
 [#assign currentSection = "capdev" /]
@@ -30,7 +34,7 @@
    <div class="download-template-button">
      <a href="[@s.url action='${centerSession}/downloadFile' /]" >
         <button type="button" class="capdevButtons downloadButtonHome" title="Download template to upload the list of participants">
-          [@s.text name="capdev.downloadTemplate" /]
+          <span class="glyphicon glyphicon-download-alt"></span> [@s.text name="capdev.downloadTemplate" /]
         </button>
       </a>
     </div>
@@ -39,6 +43,7 @@
   <h3 class="sectionTitle">Latest CAPDEV Interventions</h3><hr />
   <div>[@capdevList.capdevList capdevs=capDevs canValidate=true canEdit=editable namespace="/capdev" defaultAction="${(centerSession)!}/detailCapdev" /]</div>
   
+  [#if (action.isCapDevManager())!false]
   <div class="row form-group">
     <div class="addButtons botones">
       <div class="buttons-content" >
@@ -49,18 +54,17 @@
       </div>
     </div>
   </div>
+  [/#if]
 
 
   <div class="row form-group conventionContainer">
     <div class="itemName">
       <div class="col-md-1"> Annexes:</div>
       <div class="col-md-2">
-        <img src="${baseUrl}/center/images/capdev/participants.png" class="capDevIconConvention" />
-        <div>Lista of participants</div>
+        <span class="icon-20 outcomesCont"></span> List of participants
       </div>
       <div class="col-md-2">
-        <img src="${baseUrl}/center/images/capdev/deliverable.png" class="capDevIconConvention" />
-        <div>Supporting documents</div>
+        <span class="icon-20 deliverable "></span> Supporting documents
       </div>
       <div class="col-md-7">
         If an icon is highlighted, it means that the capacity development intervention has any of those: list of participants or supporting documents, or has both.

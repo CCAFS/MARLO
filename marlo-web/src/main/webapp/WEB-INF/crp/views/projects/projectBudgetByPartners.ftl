@@ -97,8 +97,7 @@
                           </tr>
                         </table>
                       </div>
-                    </div>
-                    
+                    </div>                   
                     [#if projectPPAPartners?has_content]
                       [#list projectPPAPartners as projectPartner]
                        [#if action.existOnYear(projectPartner.id,year)]
@@ -271,12 +270,20 @@
       [/#if]
     [/#if]
     
-    [#-- Project Title --]
+    
     <p class="checked">
       [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
-      <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> -
+      [#-- Finance Code --]
+      [#if (element.fundingSource.fundingSourceInfo.financeCode?has_content)!false]
+        [#assign isSynced = (element.fundingSource.fundingSourceInfo.synced)!false ]
+        [#-- Code --]
+        <span [#if isSynced]title="Synced on ${(element.fundingSource.fundingSourceInfo.syncedDate)!''}" style="color: #2aa4c9;"[/#if]>${element.fundingSource.fundingSourceInfo.financeCode}</span> |
+      [/#if]
+      [#-- Funding Source Title --]
+      <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span>  </small>
+      [#-- Funding Source remaining budget --]
       [#if (isYearEditable(selectedYear)) || isTemplate]
-        <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
+        - <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
       [/#if]
     </p> 
     

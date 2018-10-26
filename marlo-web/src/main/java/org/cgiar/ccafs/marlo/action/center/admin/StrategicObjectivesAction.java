@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,12 +102,6 @@ public class StrategicObjectivesAction extends BaseAction {
       for (CenterObjective researchObjective : objectives) {
         if (researchObjective.getId() == null || researchObjective.getId() == -1) {
           CenterObjective researchObjectiveNew = new CenterObjective();
-
-          researchObjectiveNew.setActive(true);
-          researchObjectiveNew.setCreatedBy(this.getCurrentUser());
-          researchObjectiveNew.setModifiedBy(this.getCurrentUser());
-          researchObjectiveNew.setActiveSince(new Date());
-          researchObjectiveNew.setModificationJustification("");
           researchObjectiveNew.setResearchCenter(loggedCenter);
           researchObjectiveNew.setObjective(researchObjective.getObjective());
 

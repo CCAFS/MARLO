@@ -63,7 +63,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -197,8 +196,8 @@ public class PowbCollaborationAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -321,19 +320,12 @@ public class PowbCollaborationAction extends BaseAction {
         if (powbCollaborationGlobalUnit.getId() == null) {
 
           powbCollaborationGlobalUnitNew = new PowbCollaborationGlobalUnit();
-          powbCollaborationGlobalUnitNew.setActive(true);
-          powbCollaborationGlobalUnitNew.setCreatedBy(this.getCurrentUser());
-          powbCollaborationGlobalUnitNew.setModifiedBy(this.getCurrentUser());
-          powbCollaborationGlobalUnitNew.setModificationJustification("");
-          powbCollaborationGlobalUnitNew.setActiveSince(new Date());
           powbCollaborationGlobalUnitNew.setPowbSynthesis(powbSynthesis);
 
         } else {
 
           powbCollaborationGlobalUnitNew =
             powbCollaborationGlobalUnitManager.getPowbCollaborationGlobalUnitById(powbCollaborationGlobalUnit.getId());
-          powbCollaborationGlobalUnitNew.setModifiedBy(this.getCurrentUser());
-
 
         }
         powbCollaborationGlobalUnitNew.setFlagship(powbCollaborationGlobalUnit.getFlagship());
@@ -522,8 +514,8 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
 
-    List<FundingSourceLocation> locationsFunding = locElement.getFundingSourceLocations()
-      .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+    List<FundingSourceLocation> locationsFunding = locElement
+      .getFundingSourceLocations().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
         && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
       .collect(Collectors.toList());
     locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));
@@ -663,9 +655,11 @@ public class PowbCollaborationAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(
-            user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getInstitution() == null)
+            .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             boolean isLeader = false;
             for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -767,11 +761,6 @@ public class PowbCollaborationAction extends BaseAction {
         // Check if ToC relation is null -create it
         if (powbSynthesis.getCollaboration() == null) {
           PowbCollaboration powbCollaboration = new PowbCollaboration();
-          powbCollaboration.setActive(true);
-          powbCollaboration.setActiveSince(new Date());
-          powbCollaboration.setCreatedBy(this.getCurrentUser());
-          powbCollaboration.setModifiedBy(this.getCurrentUser());
-          powbCollaboration.setModificationJustification("");
           // create one to one relation
           powbSynthesis.setCollaboration(powbCollaboration);
           powbCollaboration.setPowbSynthesis(powbSynthesis);
@@ -931,19 +920,12 @@ public class PowbCollaborationAction extends BaseAction {
         if (powbCollaborationRegion.getId() == null) {
 
           powbCollaborationRegionNew = new PowbCollaborationRegion();
-          powbCollaborationRegionNew.setActive(true);
-          powbCollaborationRegionNew.setCreatedBy(this.getCurrentUser());
-          powbCollaborationRegionNew.setModifiedBy(this.getCurrentUser());
-          powbCollaborationRegionNew.setModificationJustification("");
-          powbCollaborationRegionNew.setActiveSince(new Date());
           powbCollaborationRegionNew.setPowbSynthesis(powbSynthesis);
 
         } else {
 
           powbCollaborationRegionNew =
             powbCollaborationRegionManager.getPowbCollaborationRegionById(powbCollaborationRegion.getId());
-          powbCollaborationRegionNew.setModifiedBy(this.getCurrentUser());
-
 
         }
         powbCollaborationRegionNew.setLiaisonInstitution(powbCollaborationRegion.getLiaisonInstitution());
@@ -969,11 +951,6 @@ public class PowbCollaborationAction extends BaseAction {
 
       if (powCollabrotionDB == null) {
         powCollabrotionDB = new PowbCollaboration();
-        powCollabrotionDB.setActive(true);
-        powCollabrotionDB.setActiveSince(new Date());
-        powCollabrotionDB.setCreatedBy(this.getCurrentUser());
-        powCollabrotionDB.setModifiedBy(this.getCurrentUser());
-        powCollabrotionDB.setModificationJustification("");
         // create one to one relation
         powCollabrotionDB.setPowbSynthesis(powbSynthesis);
         // save the changes
@@ -1000,9 +977,12 @@ public class PowbCollaborationAction extends BaseAction {
 
 
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
-      powbSynthesis.setActiveSince(new Date());
 
+      /**
+       * The following is required because we need to update something on the PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
 
 

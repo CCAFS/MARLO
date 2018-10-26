@@ -36,55 +36,35 @@ function addDisseminationEvents() {
   // YES/NO Event for deliverables
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
+    var type = $(this).parent().parent().classParam('type');
+    var inverted = $(this).parent().parent().classParam('inverted') === "true";
+
+    // Set value
+    // $(this).parent().find('input').val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
-
+    // Show block if exist
+    if(inverted) {
+      valueSelected = !valueSelected;
+    }
+    if(valueSelected) {
+      $('.block-' + type).slideDown();
+    } else {
+      $('.block-' + type).slideUp();
+    }
+    // Check FAIR Principles
     checkFAIRCompliant();
   });
 
-  // Is this deliverable Open Access
-  $(".accessible .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(!valueSelected) {
-      $(".openAccessOptions").show("slow");
-    } else {
-      $(".openAccessOptions").hide("slow");
-    }
-  });
-
   // Is this deliverable already disseminated
-  $(".findable .button-label").on("click", function() {
+  $(".type-findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
-      $(".findableOptions").hide("slow");
       $(".dataSharing").show("slow");
       unSyncDeliverable();
     } else {
-      $(".findableOptions").show("slow");
       $(".dataSharing").hide("slow");
     }
-  });
-
-  // Does the publication acknowledge
-  $(".acknowledge .button-label").on("click", function() {
-    // Do Something
-  });
-
-  // Have you adopted a license
-  $(".license .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(!valueSelected) {
-      $(".licenseOptions-block").hide("slow");
-    } else {
-      $(".licenseOptions-block").show("slow");
-    }
-  });
-
-  // Does this license allow modifications?
-  $(".licenceModifications .button-label").on("click", function() {
-    // Do Something
   });
 
   // Add Author
@@ -114,7 +94,7 @@ function addDisseminationEvents() {
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
   // Other license type
-  $("input[name='deliverable.license']").on("change", function() {
+  $('.licenseOptions input[type="radio"].licenceOption').on("change", function() {
     if($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
     } else {
@@ -125,23 +105,19 @@ function addDisseminationEvents() {
 
   // Add many flagships
   $(".flaghsipSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "" && option.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.idFlagship[value='" + option.val() + "']").exists()) {
+    var CRPProgram = $(this).find("option:selected");
+    if(CRPProgram.val() != "" && CRPProgram.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.idCRPProgram[value='" + CRPProgram.val() + "']").exists()) {
       } else {
-        var composedText = currentCrpSession.toUpperCase() + " - " + option.text();
-        var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
-        addFlagship(option.val(), v, composedText, "");
+        addFlagship(CRPProgram.val(), CRPProgram.text());
       }
     }
   });
   $(".crpSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "" && option.val() != "-1") {
-      if(!($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists())) {
-        var composedText = option.text().toUpperCase();
-        var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
-        addCrp("", v, composedText, option.val());
+    var globalUnit = $(this).find("option:selected");
+    if(globalUnit.val() != "" && globalUnit.val() != "-1") {
+      if(!($(".flagshipList").find(".flagships input.idGlobalUnit[value='" + globalUnit.val() + "']").exists())) {
+        addCrp(globalUnit.val(), globalUnit.text());
       }
     }
   });
@@ -197,30 +173,135 @@ function addDisseminationEvents() {
       }
     });
   }
+
+  // 
+  $('input.iaType').on('change', function() {
+    if(this.value == 1) {
+      // Patent
+      $('.block-patent').slideDown();
+      $('.block-pvp').slideUp();
+    } else {
+      // PVP
+      $('.block-pvp').slideDown();
+      $('.block-patent').slideUp();
+    }
+  });
+
+  $('.block-intellectualAsset .datePicker').pickadate({
+      format: "mmm d, yyyy",
+      formatSubmit: "yyyy-mm-dd",
+      hiddenName: true,
+      selectYears: true,
+      selectMonths: true
+  });
+
+  // Does this deliverable involve Participants and Trainees?
+  $('#estimateFemales').on('change', function() {
+    $('#dontKnowFemale').prop('checked', false);
+    $(this).parents('.femaleNumbers').find('input[type="text"]').prop('disabled', false);
+  });
+  $('#dontKnowFemale').on('change', function() {
+    $('#estimateFemales').prop('checked', false);
+    $(this).parents('.femaleNumbers').find('input[type="text"]').prop('disabled', $(this).is(':checked'));
+  });
+
+  $('.trainingType').on('change', function() {
+    console.log(this.value);
+    if(this.value == 1) {
+      $('.block-academicDegree').show();
+    } else {
+      $('.block-academicDegree').hide();
+    }
+  });
+
+  // Setting Numeric Inputs
+  $('form input.numericInput').numericInput();
+
+  // Set countries flag
+  $('.nationalBlock').find("select").select2({
+      maximumSelectionLength: 0,
+      placeholder: "Select a country(ies)",
+      templateResult: formatStateCountries,
+      templateSelection: formatStateCountries,
+      width: '100%'
+  });
+
+  // Deliverable Geographic Scope
+  $(".geographicScopeSelect").on('change', function() {
+    var $partner = $(this).parents('.block-geographicScope');
+    var $regionalBlock = $partner.find('.regionalBlock');
+    var $nationalBlock = $partner.find('.nationalBlock');
+
+    var isGlobal = this.value == 1;
+    var isRegional = this.value == 2;
+    var isMultiNational = this.value == 3;
+    var isNational = this.value == 4;
+    var isSubNational = this.value == 5;
+
+    // Regions
+    if(isRegional) {
+      $regionalBlock.show();
+    } else {
+      $regionalBlock.hide();
+      // Clean selected region
+      $regionalBlock.find("select").val("-1").trigger('change');
+    }
+
+    if(isGlobal || isRegional) {
+      // Clean selected countries
+      $nationalBlock.find("select").val(null).trigger('change');
+    }
+
+    // Countries
+    if(isMultiNational || isNational || isSubNational) {
+      if(isMultiNational) {
+        $nationalBlock.find("select").select2({
+            maximumSelectionLength: 0,
+            placeholder: "Select a country(ies)",
+            templateResult: formatStateCountries,
+            templateSelection: formatStateCountries,
+            width: '100%'
+        });
+      } else {
+        $nationalBlock.find("select").select2({
+            maximumSelectionLength: 1,
+            placeholder: "Select a country(ies)",
+            templateResult: formatStateCountries,
+            templateSelection: formatStateCountries,
+            width: '100%'
+        });
+      }
+      $nationalBlock.show();
+    } else {
+      $nationalBlock.hide();
+    }
+
+  }).trigger('change');
+
 }
 
-function addFlagship(id,text,title,crpId) {
+function addFlagship(idCRPProgram,text) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
+  var tooltip = text.length > 60 ? text.substr(0, 60) + ' ... ' : text;
   $item.find(".name").text(text);
-  $item.find(".name").attr("title", title);
+  $item.find(".name").attr("title", tooltip);
   $item.find(".idElemento").val("-1");
-  $item.find(".idCrp").val(crpId);
-  $item.find(".idFlagship").val(id);
+  $item.find(".idCRPProgram").val(idCRPProgram);
   $list.append($item);
   $item.show('slow');
   checkNextFlagshipItems($list);
   updateFlagship();
 }
 
-function addCrp(id,text,title,crpId) {
+function addCrp(idGlobalUnit,text) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
+  var tooltip = text.length > 60 ? text.substr(0, 60) + ' ... ' : text;
   $item.find(".name").text(text);
-  $item.find(".name").attr("title", title);
+  $item.find(".name").attr("title", tooltip);
   $item.find(".idElemento").val("-1");
-  $item.find(".idCrp").val(crpId);
-  $item.find(".idFlagship").val(id);
+  $item.find(".idGlobalUnit").val(idGlobalUnit);
   $list.append($item);
   $item.show('slow');
   checkNextFlagshipItems($list);
@@ -281,15 +362,16 @@ function checkDoiUrl() {
 
 function openAccessRestriction() {
   if($(this).val() == "restrictedUseAgreement") {
-    $(".restrictionDate-block").find("label").text("Restricted access until");
+    $(".restrictionDate-block").find("label").text("Restricted access until:*");
     $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedAccessUntil");
     $(".restrictionDate-block").show("slow");
   } else if($(this).val() == "effectiveDateRestriction") {
-    $(".restrictionDate-block").find("label").text("Restricted embargoed date");
+    $(".restrictionDate-block").find("label").text("Restricted embargoed date:*");
     $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedEmbargoed");
     $(".restrictionDate-block").show("slow");
   } else {
     $(".restrictionDate-block").hide("slow");
+    $(".restrictionDate-block input.restrictionDate").val("");
   }
 }
 
@@ -441,17 +523,19 @@ function setMetadata(data) {
   }
 
   // Open Access Validation
-  var $input = $(".accessible ").parent().find('input');
-  if(data.openacess == "Open Access") {
-    $input.val(true);
-    $(".accessible ").parent().find("label").removeClass("radio-checked");
-    $(".openAccessOptions").hide("slow");
-    $(".accessible .yes-button-label ").addClass("radio-checked");
+  var $input = $(".type-accessible ").parent();
+  if(data.openAccess === "true") {
+    $input.find('input.yesInput').prop("checked", true);
+    console.log($input.find('input.yesInput'));
+    $(".type-accessible ").parent().find("label").removeClass("radio-checked");
+    $(".block-accessible").hide("slow");
+    $(".type-accessible .yes-button-label ").addClass("radio-checked");
   } else {
-    $input.val(false);
-    $(".accessible ").parent().find("label").removeClass("radio-checked");
-    $(".openAccessOptions").show("slow");
-    $(".accessible .no-button-label ").addClass("radio-checked");
+    $input.find('input.noInput').prop("checked", true);
+    console.log($input.find('input.noInput'));
+    $(".type-accessible ").parent().find("label").removeClass("radio-checked");
+    $(".block-accessible").show("slow");
+    $(".type-accessible .no-button-label ").addClass("radio-checked");
   }
 
   syncDeliverable();
@@ -585,5 +669,24 @@ function validateAuthors(lastName,firstName) {
   } else {
     return false;
   }
-
 }
+
+/**
+ * Format select2: Add Countries flags
+ * 
+ * @param state
+ * @returns
+ */
+function formatStateCountries(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var $state;
+  if(state.id != -1) {
+    $state = $('<span>' + flag + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
+  }
+  return $state;
+};

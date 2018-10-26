@@ -26,8 +26,8 @@
 			<column name="project_leader_id" />
 		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="projectStatus"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProjectStatus" fetch="select">
@@ -38,16 +38,16 @@
 			<column name="program_id" />
 		</many-to-one>
 		<property name="description" type="string">
-			<column name="description" length="65535" />
+			<column name="description" sql-type="TEXT" />
 		</property>
 		<property name="name" type="string">
-			<column name="name" length="65535" />
+			<column name="name" sql-type="TEXT" />
 		</property>
 		<property name="ocsCode" type="string">
-      <column name="ocs_code" length="65535" />
+      <column name="ocs_code" sql-type="TEXT" />
     </property>
 		<property name="suggestedName" type="string">
-			<column name="suggested_name" length="65535" />
+			<column name="suggested_name" sql-type="TEXT" />
 		</property>
 		<property name="dateCreated" type="timestamp">
 			<column name="date_created" length="19" />
@@ -73,14 +73,14 @@
 		<property name="region" type="java.lang.Boolean">
 			<column name="is_region" />
 		</property>
-		<property name="activeSince" type="timestamp">
-			<column name="active_since" length="19" />
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="syncDate" type="timestamp">
 			<column name="sync_date" length="19" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535" />
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 		<one-to-one name="projectCrosscutingTheme"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme"

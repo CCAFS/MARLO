@@ -149,7 +149,7 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
       case FLAGSHIP_PLANS:
         if (this.isFlagship(powbSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-            phase.getYear(), sectionName);
+            phase.getYear(), phase.getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             sectionStatus = new SectionStatus();
@@ -169,7 +169,7 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
 
         if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-            phase.getYear(), sectionName);
+            phase.getYear(), phase.getUpkeep(), sectionName);
 
           if (sectionStatus == null) {
             sectionStatus = new SectionStatus();
@@ -183,7 +183,7 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
 
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-          phase.getYear(), sectionName);
+          phase.getYear(), phase.getUpkeep(), sectionName);
         if (sectionStatus == null) {
           sectionStatus = new SectionStatus();
           sectionStatus.setMissingFields("No section");

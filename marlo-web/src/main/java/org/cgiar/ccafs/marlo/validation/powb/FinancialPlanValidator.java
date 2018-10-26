@@ -48,9 +48,8 @@ public class FinancialPlanValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = PowbSynthesisSectionStatusEnum.FINANCIAL_PLAN.getStatus().replace("/", "_");
-    String autoSaveFile =
-      powbSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
-        + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getName()
+      + "_" + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -73,7 +72,6 @@ public class FinancialPlanValidator extends BaseValidator {
 
       int i = 0;
       for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : powbSynthesis.getPowbFinancialPlannedBudgetList()) {
-        System.out.println(powbFinancialPlannedBudget.getId());
         this.validateFinancialPlannedBudget(powbFinancialPlannedBudget, action, i);
         i++;
       }
@@ -90,7 +88,7 @@ public class FinancialPlanValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.FINANCIAL_PLAN.getStatus(), action);
+        action.getActualPhase().getUpkeep(), PowbSynthesisSectionStatusEnum.FINANCIAL_PLAN.getStatus(), action);
     }
 
   }

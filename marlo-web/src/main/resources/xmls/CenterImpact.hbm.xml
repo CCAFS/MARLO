@@ -12,12 +12,12 @@
 		<property name="active" type="boolean">
       <column name="is_active" not-null="true" />
     </property>
-    <property name="activeSince" type="timestamp">
-      <column name="active_since" length="19" not-null="false" />
+    <property name="activeSince" type="timestamp" update="false">
+      <column name="active_since" length="19" not-null="true" />
     </property>
     <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-      fetch="select">
-      <column name="created_by" not-null="false" />
+      fetch="select" update="false">
+      <column name="created_by" not-null="true" />
     </many-to-one>
     <many-to-one name="researchImpactStatement" class="org.cgiar.ccafs.marlo.data.model.CenterImpactStatement"
       fetch="select">
@@ -32,7 +32,7 @@
       <column name="modified_by" not-null="false" />
     </many-to-one>
     <property name="modificationJustification" type="string">
-      <column name="modification_justification" length="65535"
+      <column name="modification_justification" sql-type="TEXT"
         not-null="false" />
     </property>
     <property name="color" type="string">
@@ -42,7 +42,7 @@
       <column name="short_name" />
     </property>
 		  <property name="description" type="string">
-      <column name="description" length="65535" not-null="true" />
+      <column name="description" sql-type="TEXT" not-null="true" />
     </property>
     <many-to-one name="researchProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram"
       fetch="select">

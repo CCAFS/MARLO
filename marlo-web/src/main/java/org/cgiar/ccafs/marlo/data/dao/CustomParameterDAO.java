@@ -55,6 +55,10 @@ public interface CustomParameterDAO {
   public List<CustomParameter> findAll();
 
 
+  public List<CustomParameter> getAllCustomParametersByGlobalUnitId(long globalUnitId);
+
+  public CustomParameter getCustomParematerByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId);
+
   /**
    * This method saves the information of the given customParameter
    * 

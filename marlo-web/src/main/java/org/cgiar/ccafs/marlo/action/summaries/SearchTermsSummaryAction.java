@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -56,7 +57,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -92,8 +92,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
 
   // Managers
-  private CrpProgramManager programManager;
-  private CrossCuttingScoringManager crossCuttingScoringManager;
+  private final CrpProgramManager programManager;
+  private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -101,10 +102,12 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   @Inject
   public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager) {
-    super(config, crpManager, phaseManager);
+    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -161,13 +164,15 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/crp/SearchTerms.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/SearchTerms.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -183,6 +188,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         if (parameters.isEmpty()) {
           // Empty keys
         } else {
+          // String parametersNotEspecialChar = parameters.replaceAll("[^a-zA-Z0-9]+", "");
           keys = Arrays.asList(parameters.split(","));
         }
       }
@@ -406,7 +412,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           for (Deliverable deliverable : project.getDeliverables().stream()
             .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-              && d.getDeliverableInfo().getPhase().equals(this.getSelectedPhase()))
+              && d.getDeliverableInfo().isActive() && d.getDeliverableInfo().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             String devTitle = "";
             // Pattern case insensitive
@@ -500,6 +506,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("SearchTermsSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -555,15 +563,15 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       // date format for star and end dates
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
-      List<Project> projects = new ArrayList<>();
       if (this.getSelectedPhase() != null) {
 
-        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-          .sorted((f1, f2) -> Long.compare(f1.getProject().getId(), f2.getProject().getId()))
-          .filter(f -> f.getProject() != null && f.getProject().isActive()).collect(Collectors.toList())) {
-          projects.add((projectPhase.getProject()));
-        }
-        for (Project project : projects) {
+        // Status of projects
+        String[] statuses = null;
+
+        // Get projects with the status defined
+        List<Project> activeProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
+
+        for (Project project : activeProjects) {
           ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
           String title = projectInfo.getTitle();
           String summary = projectInfo.getSummary();

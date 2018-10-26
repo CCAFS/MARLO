@@ -52,8 +52,8 @@ public class OutcomesValidator extends BaseValidator {
     GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = outcome.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.OUTCOME.getStatus().replace("/", "_");
-    String autoSaveFile = outcome.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription()
-      + "_" + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = outcome.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getName() + "_"
+      + baseAction.getActualPhase().getYear() + "_" + center.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -104,9 +104,8 @@ public class OutcomesValidator extends BaseValidator {
 
     if (milestone.getSrfTargetUnit() == null) {
       baseAction.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
-      baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].targetUnit.id",
+      baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].srfTargetUnit.id",
         InvalidFieldsMessages.EMPTYFIELD);
-
 
     } else {
       if (milestone.getSrfTargetUnit().getId() != -1 && milestone.getValue() != null) {
@@ -114,18 +113,10 @@ public class OutcomesValidator extends BaseValidator {
           baseAction.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
           baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].value",
             InvalidFieldsMessages.EMPTYFIELD);
-
         }
       }
     }
 
-    if (!this.isValidNumber(String.valueOf(milestone.getValue()))) {
-      if (milestone.getTargetUnit().getId() != -1) {
-        baseAction.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
-        baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].value",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
 
   }
 
@@ -162,7 +153,7 @@ public class OutcomesValidator extends BaseValidator {
 
     if (outcome.getSrfTargetUnit() == null) {
       baseAction.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
-      baseAction.getInvalidFields().put("input-outcome.targetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-outcome.srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
 
 
     } else {

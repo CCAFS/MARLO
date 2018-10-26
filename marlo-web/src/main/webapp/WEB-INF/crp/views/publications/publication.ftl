@@ -1,17 +1,17 @@
 [#ftl]
 [#assign title = "MARLO Publication" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri"] /]
+[#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/publications/publication.js",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js", 
+  "${baseUrlMedia}/js/publications/publication.js?20180529",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180529", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20180529",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180612", 
   "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrl}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css" ] /]
-[#assign currentSection = "publications" /]
+[#assign currentSection = "additionalReporting" /]
 
 [#assign breadCrumb = [
   {"label":"publicationsList", "nameSpace":"publications", "action":"${crpSession}/publicationsList"},
@@ -21,7 +21,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
-
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#assign customName = "deliverable" /]
 
     
@@ -59,16 +59,21 @@
     <div class="borderBox">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="publication.title" required=true className="" editable=editable /]
+        [@customForm.input name="${customName}.deliverableInfo.title" i18nkey="publication.title" required=true className="" editable=editable /]
+      </div>
+      
+      [#-- Description --] 
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.deliverableInfo.description" value="${(deliverable.deliverableInfo.description)!}" i18nkey="project.deliverable.generalInformation.description"  placeholder="" className="limitWords-50" required=true editable=editable /]
       </div>
       
       [#-- Subtype & year of completition --]
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+          [@customForm.select name="${customName}.deliverableInfo.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
         </div>
         <div class="col-md-6">
-          [@customForm.input name="${customName}.year" i18nkey="publication.year" required=true className="" editable=false /]
+          [@customForm.input name="${customName}.deliverableInfo.year" i18nkey="publication.year" required=true className="" editable=false /]
         </div>
       </div>
       
@@ -85,7 +90,7 @@
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="" label=""  showTitle=false listName="institutions"  required=true className="leadPartnersSelect" editable=editable /]
+              [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName"  showTitle=false listName="institutions"  required=true className="leadPartnersSelect" editable=editable /]
             [/#if] 
           </div>
         </div>
@@ -94,73 +99,103 @@
       [#-- Flagships & Regions --]
       <div class="form-group row">
         [#-- Flagships --]
-        <div class="col-md-6">
-          <h5>[@s.text name="publication.flagships" /]:[@customForm.req required=editable/] </h5>
-          <div id="" class="dottedBox">
-            [#if editable]
-              [@s.fielderror cssClass="fieldError" fieldName="${customName}.flagshipValue"/]
-              [@s.checkboxlist name="${customName}.flagshipValue" list="programs" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
-            [#else]
-              <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
-              [#if deliverable.programs?has_content]
-                [#list deliverable.programs as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
-              [/#if]
-            [/#if]
-          </div>
-        </div>
-        [#-- Regions --] 
-        <div class="col-md-6"> 
-          [#if regions?has_content] 
-            <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
+        [#if flagshipsList??]
+          <div class="col-md-6">
+            <h5>[@s.text name="publication.flagships" /]:[@customForm.req required=editable/] </h5>
             <div id="" class="dottedBox">
               [#if editable]
-                [@s.fielderror cssClass="fieldError" fieldName="${customName}.regionsValue"/]
-                [@s.checkboxlist name="${customName}.regionsValue" list="regions" cssClass="checkboxInput rpInput" value="regionsIds" /]
-              [#else] 
-                <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
-                [#if  deliverable.regions?has_content]
-                  [#list deliverable.regions as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
+                [#list flagshipsList as element]
+                  [@customForm.checkBoxFlat id="flagship-${element.id}" name="${customName}.flagshipValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((flagshipIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput fpInput" cssClassLabel="font-normal" /]
+                [/#list]
+              [#else]
+                <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
+                [#if deliverable.programs?has_content]
+                  [#list deliverable.programs as element]<p class="checked">${(element.crpProgram.composedName)!'null'}</p>[/#list]
                 [/#if]
               [/#if]
             </div>
-          [/#if]
-        </div>
+          </div>
+        [/#if]
+        
+        [#-- Regions --] 
+        [#if regionsList?has_content] 
+          <div class="col-md-6"> 
+            <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
+            <div id="" class="dottedBox">
+              [#if editable]
+                [#assign noRegionalLabel][@s.text name="project.noRegional" /][/#assign]                
+                [@customForm.checkBoxFlat id="noRegional" name="deliverable.deliverableInfo.isLocationGlobal" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((deliverable.deliverableInfo.isLocationGlobal)!false) cssClass="" cssClassLabel="font-italic" /]
+                [#list regionsList as element]
+                  [@customForm.checkBoxFlat id="region-${element.id}" name="${customName}.regionsValue" label="${element.composedName}" value="${element.id}" editable=editable checked=((regionsIds?seq_contains('${element.id}'))!false) cssClass="checkboxInput rpInput" /]
+                [/#list]
+              [#else] 
+                <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
+                [#if  deliverable.regions?has_content]
+                  [#list deliverable.regions as element]<p class="checked">${(element.crpProgram.composedName)!'null'}</p>[/#list]
+                [/#if]
+              [/#if]
+            </div>
+          </div>
+        [/#if]
       </div>
       
-      [#-- Cross cutting dimensions--]
+      [#-- Key Outputs select --]
       <div class="form-group">
-        <label for="">[@customForm.text name="${customName}.crossCuttingDimensions" readText=!editable/]:[@customForm.req required=editable/]</label>
-        <div class="col-md-12">
-          [#if editable]
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-            <label class="checkbox-inline"><input type="checkbox" name="${customName}.crossCuttingNa"       id="na"       value="true" [#if (deliverable.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+        [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+      </div>
+      
+      [#-- Funding Source --]
+      [#if !phaseOne]
+      <div class="panel tertiary">
+       <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+        <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
+          <ul class="list">
+          [#if deliverable.fundingSources?has_content]
+            [#list deliverable.fundingSources as element]
+              <li class="fundingSources clearfix">
+                [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
+                <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
+                <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
+                <span class="name">
+                  <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.fundingSourceInfo.budgetType.name)!} [#if (element.fundingSource.fundingSourceInfo.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
+                  <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
+                </span>
+                <div class="clearfix"></div>
+              </li>
+            [/#list]
+            <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>   
           [#else]
-            [#if (deliverable.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-            [#if (deliverable.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-            [#if (deliverable.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-            [#if (deliverable.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+            <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+          [/#if]
+          </ul>
+          [#if editable ]
+            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
           [/#if]
         </div>
-        <div class="clearfix"></div>
       </div>
-      [#-- If gender dimension, select with ones --]
-      <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
-       <div class="panel-head"><label for=""> [@customForm.text name="${customName}.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-        <div id="genderLevelsList" class="panel-body"  listname="deliverable.genderLevels" style="position: relative;" > 
-          <ul class="list">
-          [#if deliverable?? && deliverable.genderLevels?has_content]
-            [#list deliverable.genderLevels as element]
-              [@genderLevelMacro element=element name="${customName}.genderLevels" index=element_index /]
-            [/#list]
-          [#else]
-            <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
-          [/#if]  
-          </ul>
-          [#if editable ][@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/][/#if] 
-        </div>
+      [#-- Funding source List --]
+      <div style="display:none">
+        [#if fundingSources?has_content]
+          [#list fundingSources as element]
+            <span id="fundingSource-${(element.id)!}">
+              <strong>FS${(element.id)!} - ${(element.fundingSourceInfo.budgetType.name)!} [#if (element.w1w2)!false] (Co-Financing) [/#if]</strong> <br />
+              <span class="description">${(element.fundingSourceInfo.title)!}</span><br />
+            </span>
+          [/#list]
+        [/#if]
       </div>
+      [/#if]
+      
+      [#-- Geographic Scope  --]
+      <div class="form-group simpleBox">
+        [@deliverableMacros.deliverableGeographicScope /]
+      </div>
+      
+      [#--  Cross Cutting --]
+      <div class="form-group simpleBox">
+        [@deliverableMacros.deliverableCrossCuttingMacro label="publication.crossCuttingDimensions" /]
+      </div>
+      
     </div>
     
     <h3 class="headTitle"> Publication Dissemination</h3> 
@@ -170,6 +205,12 @@
         <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
         [@deliverableMacros.findableOptions /]
       </div>
+      
+      [#--  Intellectual Asset--]
+      [@deliverableMacros.intellectualAsset /]
+      
+      [#--  Does this deliverable involve Participants and Trainees? --]
+      [@deliverableMacros.deliverableParticipantsMacro /]
       
       [#-- Is this deliverable Open Access? --]
       [@deliverableMacros.isOpenaccessMacro /]
@@ -181,7 +222,7 @@
     <h3 class="headTitle"> Publication Metadata</h3> 
     <div class="borderBox">
       [#-- Metadata (included publications) --]
-      [@deliverableMacros.deliverableMetadataMacro /]
+      [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" allowFlagships=false /]
     </div> 
     
     [#-- Section Buttons & hidden inputs--]
@@ -202,6 +243,17 @@
 
 [#-- Author template --]
 [@deliverableMacros.authorMacro element={} index="-1" name="${customName}.users"  isTemplate=true /]
+
+[#-- Funding Source list template --]
+<ul style="display:none">
+  <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
+    <div class="removeFundingSource removeIcon" title="Remove funding source"></div>
+    <input class="id" type="hidden" name="deliverable.fundingSources[-1].id" value="" />
+    <input class="fId" type="hidden" name="deliverable.fundingSources[-1].fundingSource.id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

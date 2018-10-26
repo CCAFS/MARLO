@@ -57,3 +57,17 @@
 </div>
 [/#macro]
 
+
+[#macro underConstruction title="" show=true width="" height="" ]
+  <span class="under-construction-icon" style="display:${show?string('inline','none')};" title="[@s.text name="${title}" /]">
+    <img src="${baseUrl}/global/images/under-construction.png" width="${width!'10px'}" height="${height!'10px'}" />
+  </span>
+[/#macro]
+
+[#macro tag label="" tooltip=""]
+  <span class="doc-badge pull-right" title="[@s.text name="${tooltip}" /]">
+    <img src="${baseUrl}/global/images/icons/file-doc.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
+  </span>
+[/#macro]
+
+[#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]

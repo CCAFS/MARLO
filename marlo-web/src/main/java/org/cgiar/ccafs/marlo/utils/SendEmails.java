@@ -1,4 +1,5 @@
 package org.cgiar.ccafs.marlo.utils;
+
 import org.cgiar.ccafs.marlo.ApplicationContextConfig;
 import org.cgiar.ccafs.marlo.action.json.project.ProjectLeaderEditAction;
 import org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction;
@@ -102,8 +103,8 @@ public class SendEmails {
     action.getSession().put(APConstants.CRP_PL_ROLE, "91");
     action.getSession().put(APConstants.CRP_LESSONS_ACTIVE, true);
     action.setPhaseID(new Long(7));
-    List<Phase> phases = globalUnitManager.getGlobalUnitById(21).getPhases().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList());
+    List<Phase> phases = globalUnitManager.getGlobalUnitById(21L).getPhases().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList());
     phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     Map<Long, Phase> allPhasesMap = new HashMap<>();
     for (Phase phase : phases) {
@@ -194,7 +195,7 @@ public class SendEmails {
     action.getSession().put(APConstants.CRP_PL_ROLE, "106");
     action.setPhaseID(new Long(8));
     action.getSession().put(APConstants.CRP_LESSONS_ACTIVE, true);
-    phases = globalUnitManager.getGlobalUnitById(22).getPhases().stream().filter(c -> c.isActive())
+    phases = globalUnitManager.getGlobalUnitById(22L).getPhases().stream().filter(c -> c.isActive())
       .collect(Collectors.toList());
     phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     allPhasesMap = new HashMap<>();
@@ -269,6 +270,9 @@ public class SendEmails {
       user = userDAO.getUser(user.getId());
 
       if (!user.isActive()) {
+        /**
+         * So inactive users are being set to active once they are notified????
+         */
         user.setActive(true);
         // user = userDAO.saveUser(user);
         String toEmail = user.getEmail();
@@ -298,7 +302,8 @@ public class SendEmails {
           if (crpAdmins.isEmpty()) {
             crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
           } else {
-            crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+            crpAdmins +=
+              ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
           }
         }
 
@@ -307,9 +312,6 @@ public class SendEmails {
             password, action.getText("email.support", new String[] {crpAdmins})}));
         // message.append(action);
 
-        // Saving the new user configuration.
-        // user.setActive(true);
-        // userManager.saveUser(user, this.getCurrentUser());
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
         mapUser.put("password", password);
@@ -318,12 +320,12 @@ public class SendEmails {
         users.add(user);
         // Send UserManual.pdf
         String contentType = "application/pdf";
-        String fileName = "Introduction_To_MARLO_v2.2.pdf";
+        String fileName = "Introduction_To_MARLO_v2.4.pdf";
         byte[] buffer = null;
         InputStream inputStream = null;
 
         try {
-          inputStream = action.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
+          inputStream = action.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.4.pdf");
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
           // TODO Auto-generated catch block

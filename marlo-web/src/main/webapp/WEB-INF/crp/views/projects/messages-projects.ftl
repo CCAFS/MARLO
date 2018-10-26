@@ -1,52 +1,73 @@
 [#ftl]
-
 [#-- Projects data information --]
 [#include "/WEB-INF/crp/views/projects/dataInfo-projects.ftl" /]
+
+
+
+[#assign audit = {
+    "id": projectID,
+    "element": project,
+    "name": "projectID"
+  } 
+/]
 
 [#-- History Message --]
 [#if transaction??]
   <div class="history-mode text-center animated flipInX">
     [#if transaction == "-1"]
-      <p>[@s.text name="project.message.historyNotFound" /]</p>
+      <p>[@s.text name="message.historyNotFound" /]</p>
     [#else]
-      <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${project.modifiedBy.composedName?html}</span>[/@s.param]
-          [@s.param]<span>${project.activeSince?datetime}</span>[/@s.param]
-          [@s.param]<a href="[@s.url][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
-         [/@s.text]
+      <p>
+        [@s.text name="message.historyVersion" ]
+          [@s.param]<span>${audit.element.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${audit.element.activeSince?datetime}</span>[/@s.param]
+          [@s.param]<a href="[@s.url][@s.param name=audit.name value=audit.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
+        [/@s.text]
       </p>
       [#-- Differences --]
       [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
       [#-- Justification --]
-      <p><i>${(project.modificationJustification)!}</i></p>
+      <p><i>${(audit.element.modificationJustification)!}</i></p>
     [/#if]
   </div>
 [#else]
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      [#assign lastSubmission =action.getProjectSubmissions(projectID)?last /]
-      <p>[@s.text name="project.message.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
+      [#assign lastSubmission =action.getProjectSubmissions(audit.id)?last /]
+      <p>
+        [@s.text name="message.submittedOn" ]
+          [@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param]
+          [@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param]
+          [@s.param][@s.text name="global.${((audit.element.class.name)?split('.')?last)!''}"/][/@s.param]
+        [/@s.text]
+        [#if centerGlobalUnit]in ${(project.projectInfo.phase.crp.acronym)!}[/#if]
+      </p>
     </div>
   [/#if]
  
   [#-- Privileges Message --]
-  [#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
+  [#if (!canEdit && !(transaction??)) || crpClosed]
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
-     [#if !action.getActualPhase().editable]
+      [#if !action.getActualPhase().editable]
         <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
+      [/#if]
+      
+      [#--  Project --]
+      [#if project??]
+        [#if project.projectInfo.isProjectEditLeader()]
+          [#if !(action.hasPermission("statusDescription")) ]
+            <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+          [/#if]
+        [#else]
+          [#if !editStatus]
+            <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
+          [/#if]    
         [/#if]
-      [#if project.projectInfo.isProjectEditLeader()]
-        [#if !(action.hasPermission("statusDescription")) ]
-        <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-        [/#if]
-      [#else]
-      [#if !editStatus]
-        <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
-        [/#if]    
-      [/#if]    
+      [/#if]
+          
     [/#if]
   [/#if]
   
@@ -54,7 +75,11 @@
   [#-- Completed Message--]
   [#if (canSubmit && !submission && completed) && !crpClosed]
     <div class="completed-mode text-center animated flipInX">
-      <p>[@s.text name="project.message.completed" /]</p>
+      <p>
+        [@s.text name="message.completed"]
+          [@s.param]project[/@s.param]
+        [/@s.text]
+      </p>
     </div>
   [/#if]
   
@@ -62,20 +87,19 @@
   [#if !(isListSection??)]
     <div id="concurrenceMessage" class="text-center" style="display:none">
       <p><span class="glyphicon glyphicon-flash"></span> 
-      [@s.text name="project.message.sectionSaved"]
+      [@s.text name="message.sectionSaved"]
         [@s.param]<span class="person"></span>[/@s.param]
         [@s.param] <a href="#" onclick="location.reload()">click here</a> [/@s.param]
       [/@s.text]
       </p>
     </div>
     
-    
     [#-- Concurrence Hidden Block --]
     <div id="concurrenceBlock" class="text-center" style="display:none">
       <div class="layer"></div>
       <div class="content">
         <span class="glyphicon glyphicon-lock"></span>
-        <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+        <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=audit.name value=audit.id /][@s.param name="phaseID" value="${(actualPhase.id)!}" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
       </div> 
     </div>
   [/#if]
@@ -84,5 +108,3 @@
   [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
-
-

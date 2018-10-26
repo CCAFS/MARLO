@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -61,13 +63,16 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
-   StringBuilder builder = new StringBuilder();
+    List<Map<String, Object>> list = new ArrayList<>();
+    StringBuilder builder = new StringBuilder();
     builder.append(" select * from user_permission");
-    List<Map<String, Object>> list =
-      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    if (super.getTemTableUserId() == userId) {
+      list = super.findCustomQuery(builder.toString());
+    } else {
+      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    }
     list = list.stream().filter(c -> c.get("crp_acronym").equals(crpId)).collect(Collectors.toList());
     return list;
-
   }
 
 

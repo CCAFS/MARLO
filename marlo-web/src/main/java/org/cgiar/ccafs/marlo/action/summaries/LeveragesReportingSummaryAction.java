@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -34,7 +35,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -57,7 +57,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(LeveragesReportingSummaryAction.class);
   // Managers
-  private ProjectLeverageManager projectLeverageManager;
+  private final ProjectLeverageManager projectLeverageManager;
+  private final ResourceManager resourceManager;
+
   // Parameters
   private long startTime;
   // XLSX bytes
@@ -67,9 +69,11 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Inject
   public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager) {
-    super(config, crpManager, phaseManager);
+    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager,
+    ProjectManager projectManager) {
+    super(config, crpManager, phaseManager, projectManager);
     this.projectLeverageManager = projectLeverageManager;
+    this.resourceManager = resourceManager;
   }
 
   /**
@@ -98,12 +102,14 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   @Override
   public String execute() throws Exception {
-    ClassicEngineBoot.getInstance().start();
+
+    if (this.getSelectedPhase() == null) {
+      return NOT_FOUND;
+    }
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
     try {
-      Resource reportResource = manager
+      Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/LeveragesReportingExcel.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
@@ -190,6 +196,7 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("LeveragesReportingSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -220,14 +227,11 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
         Long.class},
       0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
-      .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
-        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null
-        && pl.getProject().getGlobalUnitProjects().stream()
-          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
-        && pl.getProject().isActive() && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
-      .collect(Collectors.toList())) {
-
+      .filter(
+        pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear() && pl.getProject() != null
+          && pl.getProject().isActive() && pl.getPhase() != null && pl.getPhase().equals(this.getSelectedPhase())
+          && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null)
+      .sorted((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId())).collect(Collectors.toList())) {
 
       String title = null, partnerName = null, flagship = null;
       Long projectID = null, phaseID = null;
@@ -243,9 +247,16 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       if (projectLeverage.getYear() != null) {
         leverageYear = projectLeverage.getYear();
       }
-      if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
-        flagship = projectLeverage.getCrpProgram().getComposedName();
+      if (projectLeverage.isPhaseOneLeverage()) {
+        if (projectLeverage.getIpProgram() != null && !projectLeverage.getIpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getIpProgram().getComposedName();
+        }
+      } else {
+        if (projectLeverage.getCrpProgram() != null && !projectLeverage.getCrpProgram().getComposedName().isEmpty()) {
+          flagship = projectLeverage.getCrpProgram().getComposedName();
+        }
       }
+
       if (projectLeverage.getBudget() != null) {
         budget = projectLeverage.getBudget();
       }
@@ -262,9 +273,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.getBaseUrl()});
     return model;
   }
 

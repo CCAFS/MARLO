@@ -39,7 +39,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -236,25 +235,16 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     for (ProjectOutcomePandr outcomePandr : outcomesPandr) {
       if (outcomePandr != null) {
         if (outcomePandr.getId() == null || outcomePandr.getId() == -1) {
-          outcomePandr.setActive(true);
-          outcomePandr.setCreatedBy(this.getCurrentUser());
-          outcomePandr.setModifiedBy(this.getCurrentUser());
           outcomePandr.setModificationJustification(this.getJustification());
-          outcomePandr.setActiveSince(new Date());
-
           outcomePandr.setId(null);
           outcomePandr.setProject(project);
 
         } else {
           ProjectOutcomePandr outcomePandrDB =
             projectOutcomePandrManager.getProjectOutcomePandrById(outcomePandr.getId());
-          outcomePandr.setActive(true);
-          outcomePandr.setCreatedBy(outcomePandrDB.getCreatedBy());
-          outcomePandr.setModifiedBy(this.getCurrentUser());
           outcomePandr.setModificationJustification(this.getJustification());
           outcomePandr.setYear(outcomePandrDB.getYear());
           outcomePandr.setProject(project);
-          outcomePandr.setActiveSince(outcomePandrDB.getActiveSince());
           if (outcomePandr.getYear() != this.getCurrentCycleYear()) {
             outcomePandr.setAnualProgress(outcomePandrDB.getAnualProgress());
             outcomePandr.setComunication(outcomePandrDB.getComunication());
@@ -415,9 +405,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
 
       this.ouctomesNewData(project.getOutcomesPandr());
       /*
@@ -431,7 +418,11 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OUTCOMES_PANDR_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row
+       * created in the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

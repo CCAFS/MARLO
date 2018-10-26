@@ -88,11 +88,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
         if (projectMilestone != null) {
           ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
-          projectMilestoneAdd.setActive(true);
-          projectMilestoneAdd.setActiveSince(projectOutcome.getActiveSince());
-          projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
-          projectMilestoneAdd.setModificationJustification("");
-          projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
           projectMilestoneAdd.setCrpMilestone(crpMilestoneDAO.getCrpMilestone(
             projectMilestone.getCrpMilestone().getComposeID(), projectOutcomeAdd.getCrpProgramOutcome()));
 
@@ -139,11 +134,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectIndicator.setCrpProgramOutcomeIndicator(
           crpProgramOutcomeIndicatorDAO.find((projectIndicator.getCrpProgramOutcomeIndicator().getId())));
         ProjectOutcomeIndicator projectIndicatorAdd = new ProjectOutcomeIndicator();
-        projectIndicatorAdd.setActive(true);
-        projectIndicatorAdd.setActiveSince(projectOutcome.getActiveSince());
-        projectIndicatorAdd.setCreatedBy(projectOutcome.getCreatedBy());
-        projectIndicatorAdd.setModificationJustification("");
-        projectIndicatorAdd.setModifiedBy(projectOutcome.getCreatedBy());
         projectIndicatorAdd.setCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicator(
           projectIndicator.getCrpProgramOutcomeIndicator().getComposeID(), projectOutcomeAdd.getCrpProgramOutcome()));
         projectIndicatorAdd.setValue(projectIndicator.getValue());
@@ -168,11 +158,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     if (projectOutcome.getNextUsers() != null) {
       for (ProjectNextuser projectNextuser : projectOutcome.getNextUsers()) {
         ProjectNextuser projectNextuserAdd = new ProjectNextuser();
-        projectNextuserAdd.setActive(true);
-        projectNextuserAdd.setActiveSince(projectOutcome.getActiveSince());
-        projectNextuserAdd.setCreatedBy(projectOutcome.getCreatedBy());
-        projectNextuserAdd.setModificationJustification("");
-        projectNextuserAdd.setModifiedBy(projectOutcome.getCreatedBy());
         projectNextuserAdd.setKnowledge(projectNextuser.getKnowledge());
         projectNextuserAdd.setNextUser(projectNextuser.getNextUser());
         projectNextuserAdd.setProjectOutcome(projectOutcomeAdd);
@@ -203,11 +188,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       .collect(Collectors.toList());
     if (projectOutcomes.isEmpty()) {
       ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
-      projectOutcomeAdd.setActive(true);
-      projectOutcomeAdd.setActiveSince(projectOutcome.getActiveSince());
-      projectOutcomeAdd.setCreatedBy(projectOutcome.getCreatedBy());
-      projectOutcomeAdd.setModificationJustification(projectOutcome.getModificationJustification());
-      projectOutcomeAdd.setModifiedBy(projectOutcome.getModifiedBy());
       projectOutcomeAdd.setPhase(phase);
       projectOutcomeAdd.setAchievedUnit(projectOutcome.getAchievedUnit());
       projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
@@ -291,11 +271,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       .collect(Collectors.toList());
     if (projectOutcomes.isEmpty()) {
       ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
-      projectOutcomeAdd.setActive(true);
-      projectOutcomeAdd.setActiveSince(projectOutcome.getActiveSince());
-      projectOutcomeAdd.setCreatedBy(projectOutcome.getCreatedBy());
-      projectOutcomeAdd.setModificationJustification(projectOutcome.getModificationJustification());
-      projectOutcomeAdd.setModifiedBy(projectOutcome.getModifiedBy());
       projectOutcomeAdd.setPhase(phase);
       projectOutcomeAdd.setAchievedUnit(projectOutcome.getAchievedUnit());
       projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
@@ -334,6 +309,15 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectOutcome);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.deletProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
+    // }
+    // }
+    // }
 
   }
 
@@ -345,8 +329,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         && projectOutcome.getCrpProgramOutcome().getComposeID().equals(c.getCrpProgramOutcome().getComposeID()))
       .collect(Collectors.toList());
     for (ProjectOutcome outcome : outcomes) {
-      outcome.setActive(false);
-      projectOutcomeDAO.save(outcome);
+      projectOutcomeDAO.deleteProjectOutcome(outcome.getId());
     }
 
     if (phase.getNext() != null) {
@@ -388,6 +371,15 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectOutcome);
       }
     }
+    // Uncomment this line to allow reporting replication to upkeep
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
+    // }
+    // }
+    // }
     return resultProjectOutcome;
   }
 
@@ -419,8 +411,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           && c.getCrpProgramOutcomeIndicator().getComposeID()
             .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        projectOutcomeIndicator.setActive(false);
-        projectOutcomeIndicatorDAO.save(projectOutcomeIndicator);
+        projectOutcomeIndicatorDAO.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+
       }
     }
     if (projectOutcome.getIndicators() != null) {
@@ -436,11 +428,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             .collect(Collectors.toList()).isEmpty()) {
 
             ProjectOutcomeIndicator projectOutcomeIndicatorAdd = new ProjectOutcomeIndicator();
-            projectOutcomeIndicatorAdd.setActive(true);
-            projectOutcomeIndicatorAdd.setActiveSince(projectOutcome.getActiveSince());
-            projectOutcomeIndicatorAdd.setCreatedBy(projectOutcome.getCreatedBy());
-            projectOutcomeIndicatorAdd.setModificationJustification("");
-            projectOutcomeIndicatorAdd.setModifiedBy(projectOutcome.getCreatedBy());
             projectOutcomeIndicatorAdd.setCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDAO
               .getCrpProgramOutcomeIndicator(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID(),
                 this.getProjectOutcomeById(projectOutcomePrev.getId()).getCrpProgramOutcome()));
@@ -497,8 +484,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         .filter(c -> c != null && c.getCrpMilestone() != null && c.getCrpMilestone().getComposeID() != null
           && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        projectMilestone.setActive(false);
-        projectMilestoneDAO.save(projectMilestone);
+        projectMilestoneDAO.deleteProjectMilestone(projectMilestone.getId());
       }
     }
     if (projectOutcome.getMilestones() != null) {
@@ -511,11 +497,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             .collect(Collectors.toList()).isEmpty()) {
 
             ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
-            projectMilestoneAdd.setActive(true);
-            projectMilestoneAdd.setActiveSince(projectOutcome.getActiveSince());
-            projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
-            projectMilestoneAdd.setModificationJustification("");
-            projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
             projectMilestoneAdd
               .setCrpMilestone(crpMilestoneDAO.getCrpMilestone(projectMilestone.getCrpMilestone().getComposeID(),
                 this.getProjectOutcomeById(projectOutcomePrev.getId()).getCrpProgramOutcome()));
@@ -577,8 +558,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       if (projectOutcome.getNextUsers() == null || projectOutcome.getNextUsers().stream()
         .filter(c -> c.getComposeID() != null && c.getComposeID().equals(projectNextuser.getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
-        projectNextuser.setActive(false);
-        projectNextuserDAO.save(projectNextuser);
+        projectNextuserDAO.deleteProjectNextuser(projectNextuser.getId());
       }
     }
     if (projectOutcome.getNextUsers() != null) {
@@ -589,11 +569,6 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
           ProjectNextuser projectNextuserAdd = new ProjectNextuser();
 
-          projectNextuserAdd.setActive(true);
-          projectNextuserAdd.setActiveSince(projectOutcome.getActiveSince());
-          projectNextuserAdd.setCreatedBy(projectOutcome.getCreatedBy());
-          projectNextuserAdd.setModificationJustification("");
-          projectNextuserAdd.setModifiedBy(projectOutcome.getCreatedBy());
           projectNextuserAdd.setKnowledge(projectNextuser.getKnowledge());
           projectNextuserAdd.setNextUser(projectNextuser.getNextUser());
           projectNextuserAdd.setProjectOutcome(projectOutcomePrev);

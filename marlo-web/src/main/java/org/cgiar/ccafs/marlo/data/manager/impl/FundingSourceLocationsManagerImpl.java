@@ -65,25 +65,20 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
           .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
             && c.getLocElement() != null
             && fundingSourceLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     } else {
       locations.addAll(phase.getFundingSourceLocations().stream()
         .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getLocElementType() != null
-          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
+          && c.getLocElementType() != null && fundingSourceLocation.getLocElementType().getId().longValue() == c
+            .getLocElementType().getId().longValue())
         .collect(Collectors.toList()));
     }
 
 
     if (locations.isEmpty()) {
       FundingSourceLocation fundingSourceLocationAdd = new FundingSourceLocation();
-      fundingSourceLocationAdd.setActive(true);
-      fundingSourceLocationAdd.setActiveSince(fundingSourceLocation.getActiveSince());
-      fundingSourceLocationAdd.setCreatedBy(fundingSourceLocation.getCreatedBy());
       fundingSourceLocationAdd.setLocElement(fundingSourceLocation.getLocElement());
       fundingSourceLocationAdd.setLocElementType(fundingSourceLocation.getLocElementType());
-      fundingSourceLocationAdd.setModificationJustification(fundingSourceLocation.getModificationJustification());
-      fundingSourceLocationAdd.setModifiedBy(fundingSourceLocation.getModifiedBy());
       fundingSourceLocationAdd.setPhase(phase);
       fundingSourceLocationAdd.setFundingSource(fundingSourceLocation.getFundingSource());
       fundingSourceLocationsDAO.save(fundingSourceLocationAdd);
@@ -114,17 +109,16 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
           .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
             && c.getLocElement() != null
             && fundingSourceLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     } else {
       locations.addAll(phase.getFundingSourceLocations().stream()
         .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getLocElementType() != null
-          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
+          && c.getLocElementType() != null && fundingSourceLocation.getLocElementType().getId().longValue() == c
+            .getLocElementType().getId().longValue())
         .collect(Collectors.toList()));
     }
     for (FundingSourceLocation location : locations) {
-      location.setActive(false);
-      this.fundingSourceLocationsDAO.save(location);
+      this.fundingSourceLocationsDAO.deleteFundingSourceLocations(location.getId());
     }
 
     if (phase.getNext() != null) {
@@ -139,15 +133,14 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
 
     // fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocationsId);
-    FundingSourceLocation fundingSourceLocations = this.getFundingSourceLocationsById(fundingSourceLocationsId);
-    fundingSourceLocations.setActive(false);
-    fundingSourceLocations = fundingSourceLocationsDAO.save(fundingSourceLocations);
-    Phase currentPhase = phaseDAO.find(fundingSourceLocations.getPhase().getId());
+    FundingSourceLocation fundingSourceLocation = this.getFundingSourceLocationsById(fundingSourceLocationsId);
+    fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocation.getId());
+    Phase currentPhase = phaseDAO.find(fundingSourceLocation.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 
-      if (fundingSourceLocations.getPhase().getNext() != null) {
-        this.deleteFundingSourceLocationPhase(fundingSourceLocations.getPhase().getNext(),
-          fundingSourceLocations.getFundingSource().getId(), fundingSourceLocations);
+      if (fundingSourceLocation.getPhase().getNext() != null) {
+        this.deleteFundingSourceLocationPhase(fundingSourceLocation.getPhase().getNext(),
+          fundingSourceLocation.getFundingSource().getId(), fundingSourceLocation);
       }
     }
   }
@@ -163,6 +156,11 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
 
     return fundingSourceLocationsDAO.findAll();
 
+  }
+
+  @Override
+  public List<FundingSourceLocation> findAllByFundingSourceId(Long fundingSourceId) {
+    return fundingSourceLocationsDAO.findAllByFundingSourceId(fundingSourceId);
   }
 
   @Override

@@ -71,10 +71,18 @@ $(document)
 
           // Event when the user select the contact person
           $dialogContent.find("span.select, span.name").on("click", function() {
-            var userId = $(this).parent().find(".contactId").text();
-            var composedName = $(this).parent().find(".name").text();
+            var $parent = $(this).parent()
+
+            var user = {
+                id: $parent.find(".contactId").text(),
+                composedName: $parent.find(".name").text(),
+                fName: $parent.find(".userFName").text(),
+                lName: $parent.find(".userLName").text(),
+                email: $parent.find(".userEmail").text()
+            }
+
             // Add user
-            addUser(composedName, userId);
+            addUser(user.composedName, user.id, user);
           });
 
           // Event to find an user according to search field
@@ -102,19 +110,13 @@ $(document)
                     var user = {};
                     user.actionName = $('#actionName').val();
                     user.email = ($dialogContent.find("#email").val().trim()).toLowerCase();
-                    var isCGIAREmail = ((user.email).indexOf("cgiar") > -1);
-                    if(!isCGIAREmail) {
-                      $('#isCCAFS').prop('checked', true);
-                      $dialogContent.find(".tickBox-toggle").show();
-                    } else {
-                      $('#isCCAFS').prop('checked', false);
-                      $dialogContent.find(".tickBox-toggle").hide();
-                    }
-
-                    if($dialogContent.find("#isCCAFS").is(':checked') && !isCGIAREmail) {
-                      user.firstName = $dialogContent.find("#firstName").val();
-                      user.lastName = $dialogContent.find("#lastName").val();
-                    }
+                    /*
+                     * var isCGIAREmail = ((user.email).indexOf("cgiar") > -1); if(!isCGIAREmail) {
+                     * $('#isCCAFS').prop('checked', true); $dialogContent.find(".tickBox-toggle").show(); } else {
+                     * $('#isCCAFS').prop('checked', false); $dialogContent.find(".tickBox-toggle").hide(); }
+                     * if($dialogContent.find("#isCCAFS").is(':checked') && !isCGIAREmail) { user.firstName =
+                     * $dialogContent.find("#firstName").val(); user.lastName = $dialogContent.find("#lastName").val(); }
+                     */
 
                     user.isActive = $dialogContent.find("#isActive").val();
 
@@ -128,9 +130,15 @@ $(document)
                     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                     if(!emailReg.test(user.email)) {
                       invalidFields.push('valid email');
+                      $dialogContent.find(".tickBox-toggle").hide();
+                    } else {
+                      $dialogContent.find(".tickBox-toggle").show();
+                      user.firstName = $dialogContent.find("#firstName").val();
+                      user.lastName = $dialogContent.find("#lastName").val();
                     }
 
                     if(invalidFields.length > 0) {
+                      $dialogContent.find(".tickBox-toggle").hide();
                       var msj = "Please enter a " + invalidFields.join(', ');
                       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
                     } else {
@@ -140,12 +148,17 @@ $(document)
                               data: user,
                               beforeSend: function() {
                                 $dialogContent.find('.loading').show();
+                                $dialogContent.find(".tickBox-toggle").hide();
                               },
                               success: function(data) {
                                 if(data.message) {
                                   $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
+                                  if(data.showInputs) {
+                                    $dialogContent.find(".tickBox-toggle").show();
+                                  }
                                 } else {
-                                  addUser(data.users[0].composedName, data.users[0].id);
+                                  var user = data.users[0];
+                                  addUser(user.composedName, user.id, user);
                                   addUserMessage($('#created-message').val());
                                 }
                               },
@@ -156,7 +169,6 @@ $(document)
                                 var errorInfo =
                                     "<p id='errorInfo' class='error-info'>This user cannot be created. Check that the email address is correct, and/or contact MARLOSupport@cgiar.org.</p>"
                                 $(".create-user-block").prepend(errorInfo);
-                                console.log("Holi error" + data);
                               }
                           });
                     }
@@ -176,13 +188,12 @@ $(document)
             $dialogContent.find(".search-loader").fadeOut("slow");
           }
 
-          addUser =
-              function(composedName,userId) {
-                $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass(
-                    'animated flash');
-                $elementSelected.parents('.userField ').find("input.userId").val(userId);
-                dialog.dialog("close");
-              }
+          addUser = function(composedName,userId,user) {
+            var $userField = $elementSelected.parents('.userField ');
+            $userField.find("input.userName").val(composedName).addClass('animated flash');
+            $userField.find("input.userId").val(userId);
+            dialog.dialog("close");
+          }
 
           addUserMessage =
               function(message) {
@@ -228,6 +239,9 @@ $(document)
                       var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
                       $item.find('.name').html(escapeHtml(user.composedName));
                       $item.find('.contactId').html(user.id);
+                      $item.find('.userFName').html(user.fName);
+                      $item.find('.userLName').html(user.lName);
+                      $item.find('.userEmail').html(user.email);
                       if(i == usersFound - 1) {
                         $item.addClass('last');
                       }

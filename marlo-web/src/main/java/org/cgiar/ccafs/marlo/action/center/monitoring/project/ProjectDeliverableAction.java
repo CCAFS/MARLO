@@ -51,7 +51,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -299,11 +298,10 @@ public class ProjectDeliverableAction extends BaseAction {
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
 
       is_capdev = String.valueOf(deliverable.isCapdevD());
-      capdevs =
-        capdevService
-          .findAll().stream().filter(c -> (c.getProject() != null)
-            && (c.getProject().getId() == deliverable.getProject().getId()) && c.isActive())
-          .collect(Collectors.toList());
+      capdevs = capdevService.findAll().stream()
+        .filter(
+          c -> (c.getProject() != null) && (c.getProject().getId() == deliverable.getProject().getId()) && c.isActive())
+        .collect(Collectors.toList());
       Collections.sort(capdevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
       Path path = this.getAutoSaveFilePath();
 
@@ -487,8 +485,13 @@ public class ProjectDeliverableAction extends BaseAction {
       relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
       relationsName.add(APConstants.DELIVERABLE_OUTPUTS_RELATION);
       deliverable = deliverableService.getDeliverableById(deliverableID);
-      deliverable.setActiveSince(new Date());
-      deliverable.setModifiedBy(this.getCurrentUser());
+
+      /**
+       * The following is required because we need to update something on the @Deliverable if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(deliverable);
+
       deliverableService.saveDeliverable(deliverable, this.getActionName(), relationsName);
 
       final Path path = this.getAutoSaveFilePath();
@@ -569,11 +572,6 @@ public class ProjectDeliverableAction extends BaseAction {
         if ((deliverableDocument.getId() == null) || (deliverableDocument.getId() == -1)) {
           final CenterDeliverableDocument documentSave = new CenterDeliverableDocument();
 
-          documentSave.setActive(true);
-          documentSave.setCreatedBy(this.getCurrentUser());
-          documentSave.setModifiedBy(this.getCurrentUser());
-          documentSave.setActiveSince(new Date());
-          documentSave.setModificationJustification("");
           documentSave.setLink(deliverableDocument.getLink());
 
           final CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
@@ -593,8 +591,6 @@ public class ProjectDeliverableAction extends BaseAction {
           }
 
           if (hasChanges) {
-            documentPrew.setModifiedBy(this.getCurrentUser());
-            documentPrew.setActiveSince(new Date());
             deliverableDocumentService.saveDeliverableDocument(documentPrew);
           }
 
@@ -622,12 +618,6 @@ public class ProjectDeliverableAction extends BaseAction {
       for (final CenterDeliverableOutput deliverableOutput : deliverable.getOutputs()) {
         if ((deliverableOutput.getId() == null) || (deliverableOutput.getId() == -1)) {
           final CenterDeliverableOutput deliverableOutputSave = new CenterDeliverableOutput();
-
-          deliverableOutputSave.setActive(true);
-          deliverableOutputSave.setCreatedBy(this.getCurrentUser());
-          deliverableOutputSave.setModifiedBy(this.getCurrentUser());
-          deliverableOutputSave.setActiveSince(new Date());
-          deliverableOutputSave.setModificationJustification("");
 
           final CenterOutput output =
             outputService.getResearchOutputById(deliverableOutput.getResearchOutput().getId());

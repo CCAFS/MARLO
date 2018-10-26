@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -140,11 +139,6 @@ public class CrpPpaPartnersAction extends BaseAction {
   private void addCrpUserIfNotExist(User user) {
     if (!crpUserManager.existActiveCrpUser(user.getId(), loggedCrp.getId())) {
       CrpUser crpUser = new CrpUser(loggedCrp, user);
-      crpUser.setActive(true);
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setActiveSince(new Date());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
       crpUserManager.saveCrpUser(crpUser);
     }
   }
@@ -340,7 +334,7 @@ public class CrpPpaPartnersAction extends BaseAction {
         .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
       for (UserRole userRole : userRoles) {
         if (crpAdmins.isEmpty()) {
-          crpAdmins += userRole.getUser().getComposedCompleteName()+ " (" + userRole.getUser().getEmail() + ")";
+          crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         } else {
           crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         }
@@ -350,9 +344,6 @@ public class CrpPpaPartnersAction extends BaseAction {
         config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
       message.append(this.getText("email.bye"));
 
-      // Saving the new user configuration.
-      // user.setActive(true);
-      // userManager.saveUser(user, this.getCurrentUser());
       // Saving crpUser
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
@@ -362,12 +353,12 @@ public class CrpPpaPartnersAction extends BaseAction {
 
       // Send UserManual.pdf
       String contentType = "application/pdf";
-      String fileName = "Introduction_To_MARLO_v2.2.pdf";
+      String fileName = "Introduction_To_MARLO_v2.4.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
+        inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.4.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         e.printStackTrace();
@@ -580,7 +571,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       List<CrpPpaPartner> ppaPartnerReview =
         new ArrayList<>(crpPpaPartnerManager.findAll().stream().filter(ppa -> ppa.isActive()
           && ppa.getCrp().getId() == loggedCrp.getId() && ppa.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
       if (ppaPartnerReview != null) {
 
 
@@ -601,11 +592,6 @@ public class CrpPpaPartnersAction extends BaseAction {
           partner.setCrp(loggedCrp);
           Institution institution = institutionManager.getInstitutionById(partner.getInstitution().getId());
           partner.setInstitution(institution);
-          partner.setActive(true);
-          partner.setCreatedBy(this.getCurrentUser());
-          partner.setModifiedBy(this.getCurrentUser());
-          partner.setModificationJustification("");
-          partner.setActiveSince(new Date());
           partner.setPhase(this.getActualPhase());
           partner = crpPpaPartnerManager.saveCrpPpaPartner(partner);
           // save liaison institution if don't exists
@@ -676,9 +662,9 @@ public class CrpPpaPartnersAction extends BaseAction {
                   if (liaisonInstitution != null) {
                     liaisonUserManager.saveLiaisonUser(liaisonUserSave);
                     // If is new user active it
-                    if (!liaisonUser.getUser().isActive()) {
-                      this.notifyNewUserCreated(liaisonUser.getUser());
-                    }
+
+                    this.notifyNewUserCreated(liaisonUser.getUser());
+
                     this.addCrpUserIfNotExist(liaisonUser.getUser());
                     // add userRole
                     if (cpRole != null) {

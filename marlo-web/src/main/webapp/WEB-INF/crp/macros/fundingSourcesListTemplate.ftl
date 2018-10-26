@@ -17,7 +17,7 @@
         <th id="endDate" >[@s.text name="projectsList.endDate" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.originalDonor" /]</th>
-        <th id="fieldCheck" >[@s.text name="message.fieldsCheck.required" /]</th>
+        <th id="fieldCheck" ></th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -25,7 +25,7 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]
+        [#assign isCompleted = project.hasRequiredFields!false /]
         
         <tr>
         [#-- ID --]
@@ -52,10 +52,11 @@
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
-            ${(project.fundingSourceInfo.budgetType.name)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project))!0)?number?string(",##0.00")}</span></small></p>
+            [#--  ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>--]
+            ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${(project.fundingSourceBudgetPerPhase!0)?number?string(",##0.00")}</span></small></p>
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
-          [#-- Finance Code --]
+          [#-- Finance Code --]          
           <td style="position:relative">
             [#if project.fundingSourceInfo.financeCode?has_content]
               [#assign isSynced = (project.fundingSourceInfo.synced)!false ]
@@ -64,7 +65,7 @@
               [#-- Code --]
               <span [#if isSynced]style="color: #2aa4c9;"[/#if]>${project.fundingSourceInfo.financeCode}</span>
             [#else]
-              <p class="text-muted">Not defined</p>
+              <p class="text-muted" style="opacity:0.5">Not defined</p>
             [/#if]
           </td>
           [#-- Project Status 
@@ -73,38 +74,47 @@
           </td>
           --]
           [#-- Center Lead --]
-          <td class=""> 
+          <td class="institutionLead"> 
             [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
-                [#if institutionLead_index!=0]
-                  <hr />
-                [/#if]
-                  <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
-                  <div class="clearfix"></div>
+                [#if institutionLead_index!=0]<hr />[/#if]
+                ${(institutionLead.acronym)!institutionLead.name}
               [/#list]
-              [#else]
+            [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]
           </td>
-          
-           <td class="">
-            <span class="hidden">${project?index}</span>
-            ${(project.fundingSourceInfo.endDate)!'Not defined'}
+          [#-- End Date --]
+          <td class="">
+            [#if (project.fundingSourceInfo.status)?? || project.fundingSourceInfo.status=4]
+              [#local fsEndDate][#if (project.fundingSourceInfo.extensionDate??)!false]${(project.fundingSourceInfo.extensionDate)!}[#else]${(project.fundingSourceInfo.endDate)!}[/#if][/#local]
+            [#else]
+              [#local fsEndDate]${(project.fundingSourceInfo.endDate)!}[/#local]
+            [/#if]
+            
+            [#if fsEndDate?has_content]
+              [#local fsYear = fsEndDate?date?string('yyyy')?number ]
+              [#local validDate = (fsYear >= actualPhase.year)!false ]
+              <span class="hidden">${fsYear}</span>
+              <nobr><p class="${(!validDate)?string('fieldError', '')}">${fsEndDate}</p></nobr>
+            [#else]
+              <p style="opacity:0.5">Not defined</p>
+            [/#if]
+            
           </td>
-          
           [#-- Direct Donor --]
-          <td class=""> 
-            ${(project.fundingSourceInfo.directDonor.composedNameLoc)!'Not defined'}
+          <td class="" title="${(project.fundingSourceInfo.directDonorName)!}">
+            ${(project.fundingSourceInfo.directDonorAcronym)!'<p style="opacity:0.5">Not defined</p>'}
           </td>
           
           [#-- Original Donor --]
-          <td class=""> 
-            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
+          <td class="" title="${(project.fundingSourceInfo.originalDonorName)!}"> 
+            ${(project.fundingSourceInfo.originalDonorAcronym)!'<p style="opacity:0.5">Not defined</p>'}
           </td>
           
           [#-- Field Check --]
           <td class=""> 
-            [#if isCompleted]
+            [#if isCompleted && !hasDraft]
               <span class="hide">true</span>  <span class="icon-20 icon-check" title="[@s.text name="message.fieldsCheck.complete" /]"></span>
             [#else]
               [#if hasDraft]
@@ -157,8 +167,6 @@
     [#if projects?has_content]
       [#list projects as project]
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#assign isCompleted = (action.getFundingSourceStatus(project.id))!false /]
-        
         <tr>
         [#-- ID --]
         <td class="projectId">
@@ -203,7 +211,7 @@
                 [#if institutionLead_index!=0]
                   <hr />
                 [/#if]
-                  <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
+                  <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
                   <div class="clearfix"></div>
               [/#list]
               [#else]

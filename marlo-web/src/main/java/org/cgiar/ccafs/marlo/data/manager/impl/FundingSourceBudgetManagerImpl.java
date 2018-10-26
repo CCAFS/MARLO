@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,12 +51,7 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
   public void cloneFundingSourceBudget(FundingSourceBudget fundingSourceBudgetAdd,
     FundingSourceBudget fundingSourceBudget, Phase phase) {
     fundingSourceBudgetAdd.setFundingSource(fundingSourceBudget.getFundingSource());
-    fundingSourceBudgetAdd.setActive(true);
-    fundingSourceBudgetAdd.setActiveSince(new Date());
-    fundingSourceBudgetAdd.setCreatedBy(fundingSourceBudget.getCreatedBy());
     fundingSourceBudgetAdd.setBudget(fundingSourceBudget.getBudget());
-    fundingSourceBudgetAdd.setModifiedBy(fundingSourceBudget.getCreatedBy());
-    fundingSourceBudgetAdd.setModificationJustification(fundingSourceBudget.getModificationJustification());
     fundingSourceBudgetAdd.setYear(fundingSourceBudget.getYear());
     fundingSourceBudgetAdd.setPhase(phase);
 
@@ -86,8 +80,7 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
         && c.getYear().equals(fundingSourceBudget.getYear()))
       .collect(Collectors.toList());
     for (FundingSourceBudget fundingSourceBudgetDB : budgets) {
-      fundingSourceBudgetDB.setActive(false);
-      fundingSourceBudgetDAO.save(fundingSourceBudgetDB);
+      fundingSourceBudgetDAO.deleteFundingSourceBudget(fundingSourceBudgetDB.getId());
     }
 
     if (phase.getNext() != null) {

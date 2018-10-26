@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsFlagshipManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -49,7 +48,6 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -69,39 +67,28 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
 
   private static final long serialVersionUID = 8935913606376386782L;
 
-
+  // Manager
   private CrpProgramManager crpProgramManager;
-
   private BudgetTypeManager budgetTypeManager;
-
   private ProjectManager projectManager;
-
   private ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager;
-
   private AuditLogManager auditLogManager;
-
   private GlobalUnitManager crpManager;
-
-  private long projectID;
-
-  private GlobalUnit loggedCrp;
-
-  private Project project;
-
-  private String transaction;
-
-  private List<BudgetType> budgetTypesList;
-
-  private ProjectBudgetsFlagshipValidator validator;
-  private ProjectFocusManager projectFocusManager;
   private PhaseManager phaseManager;
+
+  // Variables
+  private long projectID;
+  private GlobalUnit loggedCrp;
+  private Project project;
+  private String transaction;
+  private List<BudgetType> budgetTypesList;
+  private ProjectBudgetsFlagshipValidator validator;
 
   @Inject
   public ProjectBudgetByFlagshipAction(APConfig config, CrpProgramManager crpProgramManager,
     BudgetTypeManager budgetTypeManager, ProjectManager projectManager,
     ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager, AuditLogManager auditLogManager,
-    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, ProjectFocusManager projectFocusManager,
-    PhaseManager phaseManager) {
+    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, PhaseManager phaseManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.budgetTypeManager = budgetTypeManager;
@@ -111,7 +98,6 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     this.crpManager = crpManager;
     this.validator = validator;
     this.phaseManager = phaseManager;
-    this.projectFocusManager = projectFocusManager;
 
   }
 
@@ -148,9 +134,11 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
 
   public boolean existOnYear(Long focusID, int year) {
 
-    Phase phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year, this.getCrpID());
+    Phase phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year,
+      this.getActualPhase().getUpkeep(), this.getCrpID());
     if (phase == null) {
-      phase = phaseManager.findCycle(APConstants.PLANNING, APConstants.FIRST_YEAR, this.getCrpID());
+      phase = phaseManager.findCycle(APConstants.PLANNING, APConstants.FIRST_YEAR, this.getActualPhase().getUpkeep(),
+        this.getCrpID());
     }
     if (phase != null) {
       List<ProjectFocus> focus =
@@ -170,7 +158,7 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
@@ -463,8 +451,11 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -515,13 +506,8 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       for (ProjectBudgetsFlagship budgetsFlagshipUI : project.getBudgetsFlagship()) {
         if (budgetsFlagshipUI != null) {
           if (budgetsFlagshipUI.getId() == null) {
-            budgetsFlagshipUI.setCreatedBy(this.getCurrentUser());
 
-            budgetsFlagshipUI.setActiveSince(new Date());
-            budgetsFlagshipUI.setActive(true);
             budgetsFlagshipUI.setProject(project);
-            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
-            budgetsFlagshipUI.setModificationJustification("");
             budgetsFlagshipUI.setPhase(this.getActualPhase());
 
             if (budgetsFlagshipUI.getCrpProgram() != null) {
@@ -533,14 +519,8 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
             ProjectBudgetsFlagship ProjectBudgetDB =
               projectBudgetsFlagshipManager.getProjectBudgetsFlagshipById(budgetsFlagshipUI.getId());
             ProjectBudgetDB.setAmount(budgetsFlagshipUI.getAmount());
-            budgetsFlagshipUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
             budgetsFlagshipUI.setPhase(this.getActualPhase());
-            budgetsFlagshipUI.setActiveSince(ProjectBudgetDB.getActiveSince());
-            budgetsFlagshipUI.setActive(true);
             budgetsFlagshipUI.setProject(project);
-            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
-            budgetsFlagshipUI.setModificationJustification("");
-            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
             budgetsFlagshipUI = projectBudgetsFlagshipManager.saveProjectBudgetsFlagship(budgetsFlagshipUI);
           }
 

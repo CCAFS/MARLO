@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-  console.log('Init');
-
   // Setting Numeric Inputs
   $('form input.currencyInput, input.percentageInput').numericInput();
 
@@ -49,7 +47,7 @@ $(document).ready(function() {
 
 /**
  * Get total amount of expenditure area (W1W2)
- * 
+ *
  * @returns {number} total
  */
 function getTotalExpenditureArea() {
@@ -64,7 +62,7 @@ function getTotalExpenditureArea() {
 
 /**
  * Get total budget per category (All types included)
- * 
+ *
  * @param {string} category
  * @returns {number} total
  */
@@ -78,7 +76,7 @@ function getTotalByCategory(category) {
 
 /**
  * Get total budget per type (All categories included)
- * 
+ *
  * @param {string} type
  * @returns {number} total
  */
@@ -92,7 +90,7 @@ function getTotalByType(type) {
 
 /**
  * Get grand total budget
- * 
+ *
  * @returns {number} total
  */
 function getGrandTotal() {

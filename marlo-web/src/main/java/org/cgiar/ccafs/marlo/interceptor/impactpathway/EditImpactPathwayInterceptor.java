@@ -67,20 +67,20 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   }
 
   long getCrpProgramId() {
+    GlobalUnit loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Long loggedCrpId = loggedCrp.getId();
     try {
       // return Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
       return Long.parseLong(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]);
     } catch (Exception e) {
-      GlobalUnit loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-
-      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-
       User user = (User) session.get(APConstants.SESSION_USER);
       user = userManager.getUser(user.getId());
       if (user.getCrpProgramLeaders() != null) {
         List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpProgram().isActive()
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(loggedCrpId))
           .collect(Collectors.toList());
         if (!userLeads.isEmpty()) {
           return userLeads.get(0).getCrpProgram().getId();
@@ -180,7 +180,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
         }
         // Check the permission if user want to edit or save the form
-        if (editParameter || parameters.get("save") != null) {
+        if (editParameter || parameters.get("save").isDefined()) {
           hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(baseAction
             .generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym(), crpProgramID + ""));
         }

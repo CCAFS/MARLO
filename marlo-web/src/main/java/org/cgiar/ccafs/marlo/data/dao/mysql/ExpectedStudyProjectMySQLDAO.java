@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
-public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudyProject, Long> implements ExpectedStudyProjectDAO {
+public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudyProject, Long>
+  implements ExpectedStudyProjectDAO {
 
 
   @Inject
@@ -37,8 +39,7 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
   @Override
   public void deleteExpectedStudyProject(long expectedStudyProjectId) {
     ExpectedStudyProject expectedStudyProject = this.find(expectedStudyProjectId);
-    expectedStudyProject.setActive(false);
-    this.save(expectedStudyProject);
+    this.delete(expectedStudyProject);
   }
 
   @Override
@@ -59,7 +60,7 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
 
   @Override
   public List<ExpectedStudyProject> findAll() {
-    String query = "from " + ExpectedStudyProject.class.getName() + " where is_active=1";
+    String query = "from " + ExpectedStudyProject.class.getName();
     List<ExpectedStudyProject> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

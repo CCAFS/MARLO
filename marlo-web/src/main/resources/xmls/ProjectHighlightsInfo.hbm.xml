@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 3, 2018 8:20:58 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo" table="project_highlights_info" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="file" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_id" />
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="projectHighlight" class="org.cgiar.ccafs.marlo.data.model.ProjectHighlight" fetch="select">
+            <column name="project_highlight_id" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="title" sql-type="TEXT" not-null="true" />
+        </property>
+        <property name="author" type="string">
+            <column name="author" sql-type="TEXT" not-null="true" />
+        </property>
+        <property name="startDate" type="date">
+            <column name="start_date" length="10" />
+        </property>
+        <property name="endDate" type="date">
+            <column name="end_date" length="10" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" sql-type="TEXT" />
+        </property>
+        <property name="results" type="string">
+            <column name="results" sql-type="TEXT" />
+        </property>
+        <property name="global" type="boolean">
+            <column name="is_global" not-null="true" />
+        </property>
+        <property name="publisher" type="string">
+            <column name="publisher" sql-type="TEXT" />
+        </property>
+        <property name="objectives" type="string">
+            <column name="objectives" sql-type="TEXT" />
+        </property>
+        <property name="partners" type="string">
+            <column name="partners" sql-type="TEXT" />
+        </property>
+        <property name="links" type="string">
+            <column name="links" sql-type="TEXT" />
+        </property>
+        <property name="keywords" type="string">
+            <column name="keywords" sql-type="TEXT" />
+        </property>
+        <property name="subject" type="string">
+            <column name="subject" sql-type="TEXT" />
+        </property>
+        <property name="year" type="java.lang.Long">
+            <column name="year" />
+        </property>
+        <property name="status" type="java.lang.Long">
+            <column name="status" />
+        </property>
+    </class>
+</hibernate-mapping>

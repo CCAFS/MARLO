@@ -20,18 +20,16 @@ function init() {
 
   $(".fundingSource").select2({
       templateResult: formatState,
-      templateSelection: formatState
+      templateSelection: formatState,
+      width: "100%"
   });
 
   $(".genderLevelsSelect").select2({
-    templateResult: formatStateGenderType
+      templateResult: formatStateGenderType,
+      width: "100%"
   });
 
   $('.helpMessage3').on("click", openDialog);
-
-  /* Events select */
-  subTypes();
-  keyOutputs();
 
   // justificationByStatus($(".status").find("option:selected").val());
   // validateCurrentDate();
@@ -124,15 +122,15 @@ function init() {
 
   // CHANGE STATUS
   $statuses.on("change", function() {
-    justificationByStatus($(this).val());
+    justificationByStatus(this.value);
   });
 
   $(".yearExpected").on("change", validateCurrentDate);
 
   // New Expected year should be greater than current reporting cycle year
   if(reportingActive) {
-    $('#newExpectedYear select option[value=' + currentCycleYear + ']').attr('disabled', 'disabled')
-    $('#newExpectedYear select').trigger("change.select2");
+    // $('#newExpectedYear select option[value=' + currentCycleYear - 1 + ']').attr('disabled', 'disabled')
+    // $('#newExpectedYear select').trigger("change.select2");
   }
 
   /** Funding source * */
@@ -199,7 +197,8 @@ function init() {
     if($(this).is(':checked')) {
       $('#gender-levels').slideDown();
       $(".genderLevelsSelect").select2({
-        templateResult: formatStateGenderType
+          templateResult: formatStateGenderType,
+          width: "100%"
       });
     } else {
       $('#gender-levels').slideUp();
@@ -216,22 +215,71 @@ function init() {
     $('.ccDimension').slideUp();
   });
 
+  $('.typeSelect').on('change', function() {
+    var $subTypeSelect = $(".subTypeSelect");
+    $subTypeSelect.empty();
+    $subTypeSelect.append("<option value='-1' >Select an option... </option>");
+    $subTypeSelect.trigger("change.select2");
+    var option = $(this).find("option:selected");
+
+    if(option.val() != "-1") {
+      $.ajax({
+          url: baseURL + "/deliverableSubType.do",
+          type: 'GET',
+          dataType: "json",
+          data: {
+              deliverableTypeId: option.val(),
+              phaseID: phaseID
+          }
+      }).success(function(m) {
+        for(var i = 0; i < m.deliverableSubTypes.length; i++) {
+          $subTypeSelect.addOption(m.deliverableSubTypes[i].id, m.deliverableSubTypes[i].name)
+        }
+      });
+    }
+    $subTypeSelect.trigger('change');
+  });
+
   $(".subTypeSelect").on("change", function() {
-    var subTypeOption = $(this).find("option:selected");
-    // Data
-    if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
-      $(".dataLicense").show("slow");
+    var subTypeOption = $(this).find("option:selected").val();
+    var typeOption = $('.typeSelect').find("option:selected").val();
+    // Show or hide publication metadata
+    if(hasDeliverableRule('publicationMetadata', [
+        subTypeOption, typeOption
+    ])) {
+      $(".publicationMetadataBlock").show("slow");
+    } else {
+      $(".publicationMetadataBlock").hide("slow");
+    }
+    // Compliance Check Rule
+    if(hasDeliverableRule('complianceCheck', [
+        subTypeOption, typeOption
+    ])) {
       $("#complianceCheck").show("slow");
     } else {
-      $(".dataLicense").hide("slow");
       $("#complianceCheck").hide("slow");
     }
+    // Data License
+    if(hasDeliverableRule('dataLicense', [
+        subTypeOption, typeOption
+    ])) {
+      $(".dataLicense").show("slow");
+    } else {
+      $(".dataLicense").hide("slow");
+      // Clear data licenses
+      $('.computerLicense input').prop("checked", false);
+    }
     // Computer software
-    if(subTypeOption.val() == "52") {
+    if(hasDeliverableRule('computerLicense', [
+        subTypeOption, typeOption
+    ])) {
       $(".computerLicense").show("slow");
     } else {
       $(".computerLicense").hide("slow");
+      // Clear computer licenses
+      $('.computerLicense input').prop("checked", false);
     }
+
   });
 }
 
@@ -415,18 +463,26 @@ function justificationByStatus(statusId) {
     $statusDescription.show().hide(400);
   }
 
-  console.log($('#newExpectedYear select').val());
+  var isCompletedWithoutExpectedYear =
+      (!reportingActive && isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""));
 
-  if(isStatusExtended(statusId) || (isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""))) {
+  if(isStatusExtended(statusId) || isCompletedWithoutExpectedYear) {
     $('#newExpectedYear').show();
     $('#newExpectedYear select').attr('disabled', false);
-    if(isStatusComplete(statusId) && ($('#newExpectedYear select').val() != "")) {
+    if(isCompletedWithoutExpectedYear) {
       $('#newExpectedYear select').attr('disabled', true);
     } else {
       $('#newExpectedYear select').attr('disabled', false);
     }
   } else {
     $('#newExpectedYear').hide();
+  }
+
+  var $yearOverlay = $('#deliverableYear .overlay');
+  if(isStatusExtended(statusId)) {
+    $yearOverlay.show();
+  } else {
+    $yearOverlay.hide();
   }
 
   $statusDescription.find('textarea').val('');
@@ -491,7 +547,6 @@ function updateProjectPartnersSelects() {
   });
 
   $("select.partner.id").each(function(i,select) {
-    console.log("-- Select #" + i);
     $(select).find('option').attr('disabled', false).prop('disabled', false);
     $.each(selectedValues, function(i,optionValue) {
       if(optionValue != -1) {
@@ -500,55 +555,6 @@ function updateProjectPartnersSelects() {
     });
     $(select).trigger("select2.change");
   });
-}
-
-function subTypes() {
-  var url = baseURL + "/deliverableSubType.do";
-  var typeSelect = $(".typeSelect");
-  var subTypeSelect = $(".subTypeSelect");
-  typeSelect.on("change", function() {
-
-    subTypeSelect.empty();
-    subTypeSelect.append("<option value='-1' >Select an option... </option>");
-    subTypeSelect.trigger("change.select2");
-    var option = $(this).find("option:selected");
-
-    if(option.val() != "-1") {
-      var data = {
-          deliverableTypeId: option.val(),
-          phaseID: phaseID
-      }
-      $.ajax({
-          url: url,
-          type: 'GET',
-          dataType: "json",
-          data: data
-      }).success(
-          function(m) {
-            for(var i = 0; i < m.deliverableSubTypes.length; i++) {
-              subTypeSelect.append("<option value='" + m.deliverableSubTypes[i].id + "' >"
-                  + m.deliverableSubTypes[i].name + "</option>");
-            }
-          });
-    }
-    // show or hide publication metadata
-    if(option.val() == "49") {
-      $(".publicationMetadataBlock").show("slow");
-    } else {
-      $(".publicationMetadataBlock").hide("slow");
-    }
-  });
-}
-
-function keyOutputs() {
-  /*
-   * var url = baseURL + "/keyOutputList.do"; var keyOutputSelect = $(".keyOutput"); keyOutputSelect.empty();
-   * keyOutputSelect.append("<option value='-1' >Select an option... </option>");
-   * keyOutputSelect.trigger("change.select2"); var option = $(this).find("option:selected"); var data = {
-   * clusterActivityID: option.val() } $.ajax({ url: url, type: 'GET', dataType: "json", data: data }).success(
-   * function(m) { console.log(m); for(var i = 0; i < m.keyOutputs.length; i++) { keyOutputSelect.append("<option
-   * value='" + m.keyOutputs[i].id + "' >" + m.keyOutputs[i].description + "</option>"); } });
-   */
 }
 
 function checkItems(block) {
@@ -605,4 +611,19 @@ function formatStateGenderType(state) {
   }
   var $state = $("#genderLevel-" + state.id).clone(true);
   return $state;
+}
+
+function hasDeliverableRule(rule,arrValues) {
+  var result = 0;
+  $.each(arrValues, function(index,value) {
+    if(($.inArray(value, getDeliverableTypesByRule(rule))) != -1) {
+      result++;
+    }
+  });
+  return(result > 0);
+}
+
+function getDeliverableTypesByRule(rule) {
+  var result = $('#getDeliverableTypesByRule-' + rule).val().split(", ");
+  return result;
 }

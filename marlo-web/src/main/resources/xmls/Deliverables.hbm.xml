@@ -11,41 +11,43 @@
 		</id>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
-			<column name="project_id"  />
-			 </many-to-one>
-			   <many-to-one name="crp"
-      class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
-      <column name="global_unit_id"  />
+			<column name="project_id" />
 		</many-to-one>
-		        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
-            <column name="id_phase" />
-        </many-to-one>
-		
-		 <set name="deliverableInfos" table="deliverables_info" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableInfo" />
-        </set>
+		<many-to-one name="crp"
+			class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+			<column name="global_unit_id" />
+		</many-to-one>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="id_phase" />
+		</many-to-one>
+
+		<set name="deliverableInfos" table="deliverables_info" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableInfo" />
+		</set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		
-        <property name="isPublication" type="java.lang.Boolean">
-      <column name="is_publication" />
-    </property>
-    
-		<property name="activeSince" type="timestamp">
+
+		<property name="isPublication" type="java.lang.Boolean">
+			<column name="is_publication" />
+		</property>
+
+		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="createDate" type="timestamp">
 			<column name="create_date" length="19" not-null="true" />
 		</property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="false" />
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
 		</many-to-one>
-		
+
 		<set name="deliverablePartnerships" table="deliverable_partnerships"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -76,7 +78,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource" />
 		</set>
-		
+
 		<set name="deliverableGenderLevels" table="deliverable_gender_levels"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -101,8 +103,9 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile" />
 		</set>
-		<set name="deliverablePublicationMetadatas" order-by="id" table="deliverable_publications_metada"
-			inverse="true" lazy="true" fetch="select">
+		<set name="deliverablePublicationMetadatas" order-by="id"
+			table="deliverable_publications_metada" inverse="true" lazy="true"
+			fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
 			</key>
@@ -130,35 +133,71 @@
 			<key>
 				<column name="deliverable_id" not-null="true" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
 		</set>
-		
-		 <set name="deliverableCrps" order-by="id" table="deliverable_crps" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableCrp" />
-        </set>
-		
-<set name="deliverableUsers" table="deliverable_users" inverse="true" order-by="id" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUser" />
-        </set>
-        
-         <set name="deliverablePrograms" table="deliverable_programs" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableProgram" />
-        </set>
-        <set name="deliverableLeaders" table="deliverable_leaders" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLeader" />
-        </set>
-        
+
+		<set name="deliverableCrps" order-by="id" table="deliverable_crps"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableCrp" />
+		</set>
+
+		<set name="deliverableUsers" table="deliverable_users" inverse="true"
+			order-by="id" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUser" />
+		</set>
+
+		<set name="deliverablePrograms" table="deliverable_programs"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableProgram" />
+		</set>
+		<set name="deliverableLeaders" table="deliverable_leaders"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLeader" />
+		</set>
+		<set name="deliverableIntellectualAssets" table="deliverable_intellectual_assets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset" />
+		</set>
+		<set name="deliverableParticipants" table="deliverable_participants"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableParticipant" />
+		</set>
+		<set name="deliverableGeographicRegions" table="deliverable_geographic_regions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion" />
+		</set>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="modified_by" />
+    </many-to-one>
+    <property name="modificationJustification" type="string">
+      <column name="modification_justification" sql-type="TEXT"
+        not-null="true" />
+    </property>		
 	</class>
 </hibernate-mapping>

@@ -19,10 +19,13 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthTypeDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -66,6 +69,28 @@ public class ProjectHighligthTypeMySQLDAO extends AbstractMarloDAO<ProjectHighli
       return list;
     }
     return null;
+
+  }
+
+  @Override
+  public List<ProjectHighlightType> getHighlightTypebyPhase(long higlightID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT project_highlights_types.id as typeId FROM project_highlights ");
+    query.append(
+      "INNER JOIN project_highlights_types ON project_highlights_types.project_highlights_id = project_highlights.id ");
+    query.append("INNER JOIN phases ON project_highlights_types.id_phase = phases.id ");
+    query.append("WHERE project_highlights.id = ");
+    query.append(higlightID);
+    query.append(" AND phases.id = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ProjectHighlightType> projectHighlightTypes = new ArrayList<ProjectHighlightType>();
+    for (Map<String, Object> map : list) {
+      ProjectHighlightType projectHighlightType = this.find(Long.parseLong(map.get("typeId").toString()));
+      projectHighlightTypes.add(projectHighlightType);
+    }
+    return projectHighlightTypes;
 
   }
 

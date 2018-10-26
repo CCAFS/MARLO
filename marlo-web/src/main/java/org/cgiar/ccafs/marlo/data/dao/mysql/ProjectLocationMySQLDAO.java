@@ -22,8 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -80,9 +81,9 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
   }
 
   @Override
-  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId) {
+  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId, Long phaseId) {
     String query = "from " + ProjectLocation.class.getName() + " where project_id='" + projectId
-      + "' and loc_element_id='" + LocElementId + "'";
+      + "' and loc_element_id='" + LocElementId + "' and id_phase=" + phaseId;
     List<ProjectLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

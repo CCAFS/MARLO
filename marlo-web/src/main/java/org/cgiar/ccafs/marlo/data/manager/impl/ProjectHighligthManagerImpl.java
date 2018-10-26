@@ -17,12 +17,13 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -74,8 +75,9 @@ public class ProjectHighligthManagerImpl implements ProjectHighligthManager {
   }
 
   @Override
-  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
-    return projectHighligthDAO.save(projectHighlight, section, relationsName);
+  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section,
+    List<String> relationsName, Phase phase) {
+    return projectHighligthDAO.save(projectHighlight, section, relationsName, phase);
   }
 
 }

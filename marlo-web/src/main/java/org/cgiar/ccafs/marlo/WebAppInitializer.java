@@ -35,11 +35,19 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class WebAppInitializer implements WebApplicationInitializer {
 
+  private static final String ALL_REQUESTS = "/*";
+
+  private static final String[] NON_STATIC_RESOURCE_REQUESTS = {"*.do", "*.json", "/", "/api/*"};
+
+  private static final String REST_API_REQUESTS = "/api/*";
+
+  private static final String[] STRUTS2_REQUESTS = {"*.do", "*.json", "/"};
+
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
     AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
-    appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class,
-      MarloShiroConfiguration.class);
+    appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class, MarloShiroConfiguration.class,
+      MarloBusinessIntelligenceConfiguration.class);
 
     ContextLoaderListener contextLoaderListener = new ContextLoaderListener(appContext);
     servletContext.addListener(contextLoaderListener);
@@ -47,7 +55,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
     FilterRegistration.Dynamic removeSessionFromUrlFilter =
       servletContext.addFilter("RemoveSessionFromUrlFilter", new DelegatingFilterProxy("RemoveSessionFromUrlFilter"));
-    removeSessionFromUrlFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+    removeSessionFromUrlFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
     /**
      * Need to use the DelegatingFilterProxy to allow the SessionFactory to be injected.
      */
@@ -57,8 +65,8 @@ public class WebAppInitializer implements WebApplicationInitializer {
      * URL patterns are to exclude creating transactions for fetching static resources.
      */
     marloOpenSessionInViewFilter.setInitParameter("targetFilterLifecycle", "true");
-    marloOpenSessionInViewFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "*.do", "*.json",
-      "/", "/api/*");
+    marloOpenSessionInViewFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
+      NON_STATIC_RESOURCE_REQUESTS);
 
     /**
      * Need to use the DelegatingFilterProxy to allow the shiroFilter to be instantiated properly.
@@ -66,7 +74,11 @@ public class WebAppInitializer implements WebApplicationInitializer {
     FilterRegistration.Dynamic shiroFilter =
       servletContext.addFilter("shiroFilter", new DelegatingFilterProxy("shiroFilter"));
     shiroFilter.setInitParameter("targetFilterLifecycle", "true");
-    shiroFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+    shiroFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
+
+    FilterRegistration.Dynamic addUserIdFilter =
+      servletContext.addFilter("AddUserIdFilter", new DelegatingFilterProxy("AddUserIdFilter"));
+    addUserIdFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, NON_STATIC_RESOURCE_REQUESTS);
 
 
     /** This should ignore the /api/* mapping **/
@@ -74,17 +86,17 @@ public class WebAppInitializer implements WebApplicationInitializer {
       servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
     struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
     struts2Filter.setInitParameter("targetFilterLifecycle", "true");
-    struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "*.do", "*.json", "/");
+    struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
 
     /** Catch any REST errors in case the Spring MVC dispatcher servlet has not been executed **/
     FilterRegistration.Dynamic exceptionHandlerFilter =
       servletContext.addFilter("ExceptionHandlerFilter", new DelegatingFilterProxy("ExceptionHandlerFilter"));
-    exceptionHandlerFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/api/*");
+    exceptionHandlerFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, REST_API_REQUESTS);
 
     /** Ensure our REST requests have a valid session values for authorization **/
     FilterRegistration.Dynamic addSessionToRestRequestFilter = servletContext.addFilter("AddSessionToRestRequestFilter",
       new DelegatingFilterProxy("AddSessionToRestRequestFilter"));
-    addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/api/*");
+    addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, REST_API_REQUESTS);
 
     /** Now add the Spring MVC dispatacher servlet config for our REST api **/
     AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
@@ -94,7 +106,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     ServletRegistration.Dynamic dispatcher =
       servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
     dispatcher.setLoadOnStartup(1);
-    dispatcher.addMapping("/api/*");
+    dispatcher.addMapping(REST_API_REQUESTS);
 
 
   }

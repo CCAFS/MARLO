@@ -46,7 +46,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,10 +109,6 @@ public class CRPStaffingAction extends BaseAction {
   private void createEmptyCrpStaffing() {
     if (powbSynthesis.getCrpStaffing() == null && this.isPMU()) {
       PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
-      newPowbCrpStaffing.setActive(true);
-      newPowbCrpStaffing.setCreatedBy(this.getCurrentUser());
-      newPowbCrpStaffing.setModifiedBy(this.getCurrentUser());
-      newPowbCrpStaffing.setActiveSince(new Date());
       newPowbCrpStaffing.setStaffingIssues("");
       powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
       newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
@@ -134,8 +129,8 @@ public class CRPStaffingAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -333,9 +328,12 @@ public class CRPStaffingAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      powbSynthesis.setActiveSince(new Date());
-      powbSynthesis.setModifiedBy(this.getCurrentUser());
       relationsName.add(APConstants.SYNTHESIS_CRP_STAFFING_CATEGORIES_RELATION);
+      /**
+       * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(powbSynthesis);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -359,10 +357,6 @@ public class CRPStaffingAction extends BaseAction {
 
   private void saveNewCategory(PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory) {
     PowbSynthesisCrpStaffingCategory newPowbCrpStaffingCategories = new PowbSynthesisCrpStaffingCategory();
-    newPowbCrpStaffingCategories.setActive(true);
-    newPowbCrpStaffingCategories.setCreatedBy(this.getCurrentUser());
-    newPowbCrpStaffingCategories.setModifiedBy(this.getCurrentUser());
-    newPowbCrpStaffingCategories.setActiveSince(new Date());
     newPowbCrpStaffingCategories.setPowbSynthesis(powbSynthesis);
     newPowbCrpStaffingCategories
       .setPowbCrpStaffingCategory(powbSynthesisCrpStaffingCategory.getPowbCrpStaffingCategory());
@@ -394,9 +388,6 @@ public class CRPStaffingAction extends BaseAction {
   private void saveUpdateCategory(PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory) {
     PowbSynthesisCrpStaffingCategory powbCrpStaffingCategories = powbSynthesisCrpStaffingCategoryManager
       .getPowbSynthesisCrpStaffingCategoryById(powbSynthesisCrpStaffingCategory.getId());
-    powbCrpStaffingCategories.setActive(true);
-    powbCrpStaffingCategories.setModifiedBy(this.getCurrentUser());
-    powbCrpStaffingCategories.setActiveSince(new Date());
     if (powbSynthesisCrpStaffingCategory.getFemale() != null) {
       powbCrpStaffingCategories.setFemale(powbSynthesisCrpStaffingCategory.getFemale());
     } else {
@@ -426,8 +417,6 @@ public class CRPStaffingAction extends BaseAction {
     if (PowbCrpStaffingDB.getId() == null) {
       PowbCrpStaffingDB.setId(powbSynthesisID);
     }
-    PowbCrpStaffingDB.setActiveSince(new Date());
-    PowbCrpStaffingDB.setModifiedBy(this.getCurrentUser());
     PowbCrpStaffingDB.setStaffingIssues(powbSynthesis.getCrpStaffing().getStaffingIssues());
     PowbCrpStaffingDB = powbCrpStaffingManager.savePowbCrpStaffing(PowbCrpStaffingDB);
   }

@@ -46,7 +46,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,10 +108,6 @@ public class FlagshipPlansAction extends BaseAction {
   private void createEmptyFlagshipPlan() {
     if (powbSynthesis.getPowbFlagshipPlans() == null && this.isFlagship()) {
       PowbFlagshipPlans newPowbFlagshipPlans = new PowbFlagshipPlans();
-      newPowbFlagshipPlans.setActive(true);
-      newPowbFlagshipPlans.setCreatedBy(this.getCurrentUser());
-      newPowbFlagshipPlans.setModifiedBy(this.getCurrentUser());
-      newPowbFlagshipPlans.setActiveSince(new Date());
       newPowbFlagshipPlans.setPlanSummary("");
       newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setPowbFlagshipPlans(newPowbFlagshipPlans);
@@ -134,8 +129,8 @@ public class FlagshipPlansAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -329,8 +324,6 @@ public class FlagshipPlansAction extends BaseAction {
     if (powbFlagshipPlan.getId() == null) {
       powbFlagshipPlan.setId(powbSynthesisID);
     }
-    powbFlagshipPlan.setActiveSince(new Date());
-    powbFlagshipPlan.setModifiedBy(this.getCurrentUser());
     if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
       if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() == null) {
         powbFlagshipPlan.setFlagshipProgramFile(null);
@@ -343,8 +336,11 @@ public class FlagshipPlansAction extends BaseAction {
     List<String> relationsName = new ArrayList<>();
 
     powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    powbSynthesis.setActiveSince(new Date());
-    powbSynthesis.setModifiedBy(this.getCurrentUser());
+    /**
+     * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
+     * the auditlog table.
+     */
+    this.setModificationJustification(powbSynthesis);
     powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
   }
 
@@ -366,9 +362,11 @@ public class FlagshipPlansAction extends BaseAction {
     } catch (NumberFormatException e) {
       User user = userManager.getUser(this.getCurrentUser().getId());
       if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(
-          user.getLiasonsUsers().stream().filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-            && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList()));
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+            && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+            && lu.getLiaisonInstitution().getInstitution() == null)
+          .collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
           boolean isLeader = false;
           for (LiaisonUser liaisonUser : liaisonUsers) {

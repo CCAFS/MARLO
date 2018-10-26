@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -72,6 +72,11 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
     return liaisonInstitutionDAO.find(liaisonInstitutionID);
   }
 
+
+  @Override
+  public List<LiaisonInstitution> getLiaisonInstitutionByUserId(Long userId, Long crpId) {
+    return liaisonInstitutionDAO.findLiaisonInstitutionByUserId(userId, crpId);
+  }
 
   @Override
   public LiaisonInstitution getLiasonInstitutionByInstitutionId(Long institutionId, long crpID) {

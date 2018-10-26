@@ -1,0 +1,13 @@
+.trumbowyg-editor, .trumbowyg-textarea {
+  min-height: 200px;
+  padding: 10px;
+}
+
+.trumbowyg-box, .trumbowyg-editor {
+  min-height: 200px !important;
+  margin: 0px auto;
+}
+
+.trumbowyg-editor del{
+  background-color: white;
+}

@@ -1,0 +1,1 @@
+UPDATE project_expected_studies set `year` = 2018 where `year` IS NULL;

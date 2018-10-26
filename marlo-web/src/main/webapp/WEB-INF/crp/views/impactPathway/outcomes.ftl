@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20180510", 
   "${baseUrl}/global/js/autoSave.js", 
   "${baseUrl}/global/js/impactGraphic.js",
   "${baseUrl}/global/js/fieldsValidation.js" 
@@ -211,7 +211,7 @@
     </ul>
   
     <!-- Tab panes -->
-    <div class="tab-content">
+    <div class="tab-content impactpathwayTabContent">
       [#-- Outcome Sub-IDOs List --]
       <div role="tabpanel" class="tab-pane fade in active" id="subIdos-tab-${index}">
         [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
@@ -288,7 +288,7 @@
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
         [#if outcome.milestones?has_content]
           [#list outcome.milestones as milestone]
-            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable && action.canEditMileStone(milestone) /]
+            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable canEditMilestone=action.canEditMileStone(milestone) /]
           [/#list]
         [#else]
           <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
@@ -310,8 +310,9 @@
 [/#macro]
 
 
-[#macro milestoneMacro milestone name index isTemplate=false editable=true]
-  [#assign milestoneCustomName = "${name}[${index}]" /]
+[#macro milestoneMacro milestone name index isTemplate=false editable=true canEditMilestone=true]
+  [#local milestoneCustomName = "${name}[${index}]" /]
+  [#local editableMilestone = editable && canEditMilestone]
   <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead green sm">
       <span class="index">${index+1}</span>
@@ -321,9 +322,9 @@
      <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
      
     [#-- Remove Button --]
-    [#if editable && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
+    [#if editableMilestone && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
-    [#elseif editable]
+    [#elseif editableMilestone]
       <div class="removeElement sm disable" title="[@s.text name="global.CrpMilestone"/] can not be deleted"></div>
     [/#if]
     
@@ -335,27 +336,82 @@
     
     [#-- Milestone Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editable /]
+      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     <div class="row form-group target-block">
       [#-- Target Year --]
       <div class="col-md-4">
-        [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editable  disabled=!editable/]
-        [#if !editable][#if (milestone.year??) && (milestone.year != -1)]${(milestone.year)!}[/#if][/#if]
+        [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone  disabled=!editable/]
+        [#if !editableMilestone][#if (milestone.year??) && (milestone.year != -1)]${(milestone.year)!}[/#if][/#if]
       </div>
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4">
-        [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+        [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editableMilestone  /]
         [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if--]
       </div>
       [/#if]
       [#-- Target Value --]
       [#local showTargetValue = (targetUnitList?has_content) && (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
-        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
+        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editableMilestone /]
       </div>
     </div>
+    
+    [#-- POWB 2019 REQUIREMENTS --]
+    [#if true]
+    [#local reqMilestonesFields = (milestone.year == actualPhase.year)!false /]
+    <hr />
+    <div class="form-group">
+      [#-- Indicate of the following --]
+      <div class="form-group">
+        [@customForm.select name="${milestoneCustomName}.powbIndFollowingMilestone.id"  i18nkey="outcome.milestone.powbIndFollowingMilestone" className="" keyFieldName="id" displayFieldName="name" listName="followingMilestones" editable=editable required=reqMilestonesFields /]
+      </div>
+      [#-- Assessment of risk to achievement --]     
+      [#if globalUnitType != 3]
+        <div class="form-group listname="${milestoneCustomName}.powbIndAssesmentRisk.id">
+          <label>[@s.text name="outcome.milestone.powbIndAssesmentRisk" /]:[@customForm.req required=editable && reqMilestonesFields  /]</label> 
+          [#list (assessmentRisks)![] as assesment]
+            [@customForm.radioFlat id="${milestoneCustomName}-risk-${assesment.id}" name="${milestoneCustomName}.powbIndAssesmentRisk.id" label="${assesment.name}" value="${assesment.id}" checked=(milestone.powbIndAssesmentRisk.id == assesment.id)!false editable=editable cssClass="assesmentLevels" cssClassLabel=""/]
+          [/#list]
+          [#if !editable && (!(milestone.powbIndAssesmentRisk??))!true][@s.text name="form.values.fieldEmpty"/][/#if]
+        </div>
+        <div class="row form-group">
+          [#-- For medium/high please select the main risk --]
+          [#local showRisk = (milestone.powbIndAssesmentRisk.id >= 2)!false ]
+          <div class="col-md-6 milestoneRisk" style="display:${showRisk?string('block', 'none')}">
+            [@customForm.select name="${milestoneCustomName}.powbIndMilestoneRisk.id"  i18nkey="outcome.milestone.powbIndMilestoneRisk" className="risksOptions" keyFieldName="id" displayFieldName="name" listName="milestoneRisks" editable=editable required=reqMilestonesFields /]
+          </div>        
+          [#-- Other Risk --]
+          [#local showOtherRiskField = (milestone.powbIndMilestoneRisk.id == 7)!false ]
+          <div class="col-md-6 milestoneOtherRiskField" style="display:${showOtherRiskField?string('block', 'none')}">
+            [@customForm.input name="${milestoneCustomName}.powbMilestoneOtherRisk"  i18nkey="outcome.milestone.powbMilestoneOtherRisk" className="" editable=editable required=reqMilestonesFields /]
+          </div>
+        </div>
+      [/#if]
+      [#-- Means of verification --]
+      <div class="form-group">
+        [@customForm.textArea name="${milestoneCustomName}.powbMilestoneVerification" i18nkey="outcome.milestone.powbMilestoneVerification" required=true className="milestone-powbMilestoneVerification" editable=editable required=reqMilestonesFields /]
+      </div>
+      [#-- DAC Markers for the milestone --]
+      <div class="row form-group">
+        <p class="subTitle col-md-12"><i> [@s.text name="outcome.milestone.milestoneMarkers" /] </i> </p><br />
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.genderFocusLevel.id"  i18nkey="outcome.milestone.genderFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields  /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.youthFocusLevel.id"  i18nkey="outcome.milestone.youthFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.capdevFocusLevel.id"  i18nkey="outcome.milestone.capdevFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.select name="${milestoneCustomName}.climateFocusLevel.id"  i18nkey="outcome.milestone.climateFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields /]
+        </div>
+        <br />
+      </div>
+    </div>
+    [/#if]
     
   </div>
 [/#macro]

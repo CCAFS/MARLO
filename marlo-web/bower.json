@@ -33,7 +33,6 @@
     "bootstrap-select": "^1.10.0",
     "vanilla-color-picker": "^0.1.7",
     "countdown": "^2.2.0",
-    "pusher-websocket-iso": "pusher#^3.1.0",
     "cytoscape": "^2.7.5",
     "cytoscape-panzoom": "^2.4.0",
     "datatables.net-bs": "^1.10.12",
@@ -44,10 +43,12 @@
     "blueimp-file-upload": "^9.14.1",
     "qtip2": "^2.2.1",
     "jquery-pretty-text-diff": "^1.0.5",
-    "TimelineJS3": "^3.3.9",
     "jquery-tag-editor": "^1.0.20",
     "sly": "https://github.com/darsain/sly.git#^1.6.1",
-    "pickadate": "^3.5.6"
+    "pickadate": "^3.5.6",
+    "components-font-awesome": "^5.0.6",
+    "pusher-js": "pusher#^4.2.2",
+    "trumbowyg": "^2.11.0"
   },
   "overrides": {
     "jquery": {
@@ -119,6 +120,12 @@
         "lib/themes/classic.css",
         "lib/themes/classic.date.css",
         "lib/themes/classic.time.css"
+      ]
+    },
+    "trumbowyg": {
+      "main": [
+        "dist/trumbowyg.min.js",
+        "dist/ui/trumbowyg.min.css"
       ]
     }
   }

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 21, 2018 2:10:20 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress" table="report_synthesis_crp_progress" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="foreign">
+                <param name="property">reportSynthesis</param>
+            </generator>
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <one-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" constrained="true"></one-to-one>
+        
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="overallProgress" type="string">
+            <column name="overall_progress" sql-type="TEXT" />
+        </property>
+        <property name="summaries" type="string">
+            <column name="summaries" sql-type="TEXT" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT" />
+        </property>
+        <set name="reportSynthesisCrpProgressStudies" table="report_synthesis_crp_progress_studies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synhtesis_crp_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressStudy" />
+        </set>
+        <set name="reportSynthesisCrpProgressTargets" table="report_synthesis_crp_progress_targets" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_crp_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget" />
+        </set>
+    </class>
+</hibernate-mapping>

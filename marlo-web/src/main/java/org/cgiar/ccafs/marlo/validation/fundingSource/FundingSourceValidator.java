@@ -57,8 +57,8 @@ public class FundingSourceValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = "fundingSource";
-    String autoSaveFile =
-      fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -71,7 +71,8 @@ public class FundingSourceValidator extends BaseValidator {
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         fundingSourceInstitution
           .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
-        if (fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
+        if (fundingSourceInstitution.getInstitution().getAcronym() != null
+          && fundingSourceInstitution.getInstitution().getAcronym().equals("IFPRI")) {
           return true;
         }
       }
@@ -296,7 +297,7 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
     this.saveMissingFields(fundingSource, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), action);
+      action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), action);
 
 
   }

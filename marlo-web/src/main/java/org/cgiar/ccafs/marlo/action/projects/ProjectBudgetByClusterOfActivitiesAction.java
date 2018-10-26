@@ -50,7 +50,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -64,35 +63,22 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -7931655721857302103L;
 
 
+  // Manager
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
-
-
   private BudgetTypeManager budgetTypeManager;
-
-
   private ProjectManager projectManager;
-
-
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
-
-
   private GlobalUnitManager crpManager;
+  private AuditLogManager auditLogManager;
 
-
+  // Variables
   private long projectID;
-
-
   private GlobalUnit loggedCrp;
   private Project project;
   private String transaction;
-  private AuditLogManager auditLogManager;
   private ProjectBudgetsCoAValidator validator;
   private List<BudgetType> budgetTypesList;
 
@@ -153,7 +139,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
@@ -435,14 +421,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
     if (this.isHttpPost()) {
 
-
-      // if (project.getCrpActivities() != null) {
-      // project.getCrpActivities().clear();
-      // }
-      //
-      // if (project.getBudgetsCluserActvities() != null) {
-      // project.getBudgetsCluserActvities().clear();
-      // }
       if (project.getBudgetsCluserActvities() != null) {
         project.getBudgetsCluserActvities().clear();
       }
@@ -472,8 +450,11 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
+      /**
+       * The following is required because we need to update something on the @Project if we want a row created in
+       * the auditlog table.
+       */
+      this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
@@ -522,13 +503,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       for (ProjectBudgetsCluserActvity projectBudgetCluserActivityUI : project.getBudgetsCluserActvities()) {
         if (projectBudgetCluserActivityUI != null) {
           if (projectBudgetCluserActivityUI.getId() == null) {
-            projectBudgetCluserActivityUI.setCreatedBy(this.getCurrentUser());
 
-            projectBudgetCluserActivityUI.setActiveSince(new Date());
-            projectBudgetCluserActivityUI.setActive(true);
             projectBudgetCluserActivityUI.setProject(project);
-            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-            projectBudgetCluserActivityUI.setModificationJustification("");
             projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
 
             if (projectBudgetCluserActivityUI.getCrpClusterOfActivity() != null) {
@@ -537,20 +513,14 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
           } else {
-            ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
+            ProjectBudgetsCluserActvity projectBudgetCluserActivityDB = projectBudgetsCluserActvityManager
               .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
-            ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
-            ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
-            projectBudgetCluserActivityUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-            projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
-            projectBudgetCluserActivityUI.setActiveSince(ProjectBudgetDB.getActiveSince());
-            projectBudgetCluserActivityUI.setActive(true);
-            projectBudgetCluserActivityUI.setProject(project);
-            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-            projectBudgetCluserActivityUI.setModificationJustification("");
-            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-            projectBudgetCluserActivityUI =
-              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
+            projectBudgetCluserActivityDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
+            projectBudgetCluserActivityDB.setAmount(projectBudgetCluserActivityUI.getAmount());
+            projectBudgetCluserActivityDB.setPhase(this.getActualPhase());
+            projectBudgetCluserActivityDB.setProject(project);
+            projectBudgetCluserActivityDB =
+              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityDB);
           }
 
 

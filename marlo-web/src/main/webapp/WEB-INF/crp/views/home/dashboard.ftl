@@ -24,11 +24,11 @@
 [#assign timeline = [
   {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
   {"id":"2", "startDate":"12/01/2016", "endDate":"12/02/2016","what":"Create new projects according to new budget distribution; Assign W1/W2 budget to all projects.","who":"Finance Manager"},
-  {"id":"3", "startDate":"12/01/2016 ", "endDate":"12/06/2016","what":"Pre-set projects portfolio","who":"Flagship Leaders and Regional Program Leaders"},
-  {"id":"4", "startDate":"12/07/2016 ", "endDate":"01/16/2017","what":"MARLO opens for planning (Project Leaders) ","who":"Project Leaders"},
+  {"id":"3", "startDate":"12/01/2016", "endDate":"12/06/2016","what":"Pre-set projects portfolio","who":"Flagship Leaders and Regional Program Leaders"},
+  {"id":"4", "startDate":"12/07/2016", "endDate":"01/16/2017","what":"MARLO opens for planning (Project Leaders) ","who":"Project Leaders"},
   {"id":"5", "startDate":"12/19/2016", "endDate":"01/10/2017","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"Flagship Leaders and Regional Program Leaders"},
   {"id":"6", "startDate":"01/11/2017", "endDate":"01/13/2017","what":"PLs to make changes accordingly and submit the project","who":"Project Leaders"},
-  {"id":"5", "startDate":"01/16/2017", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"},
+  {"id":"5", "startDate":"01/16/2017", "endDate":"",          "what":"MARLO closes planning stage","who":"KDS Team"},
   {"id":"7", "startDate":"02/01/2017", "endDate":"02/17/2017","what":"Project Leaders and Contact Pounts will be responsible to input detailed information regarding their projects for 2016.","who":""},
   {"id":"8", "startDate":"02/20/2017", "endDate":"02/24/2017","what":"<small>Contact Points will be responsible to report on the CRP indicators and on any publications that are not directly linked to a particular project. <br>Regional Program Leaders will be responsible to complete the synthesis by MOG and by CCAFS Outcome, based on the information reported by Project Leaders.</small>","who":""},
   {"id":"9", "startDate":"02/27/2017", "endDate":"03/03/2017","what":"Flagship Program Leaders will be responsible to report on the CRP indicators, synthesis by MOG and synthesis by CCAFS Outcome based on the information reported by project leaders and Regional Program leaders.","who":""}
@@ -45,7 +45,6 @@
     [#-- What do you want to do --]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree">
-      
     
       [#if centerGlobalUnit]
         [#-- CENTER Impact patchway --]
@@ -68,8 +67,10 @@
         
         [#-- Summaries --]
         <div class="flex-container">
-          <div id="finalDes" class="option hvr-float disabled" title="This link is disabled">
-            <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
+          <div id="finalDes" class="option hvr-float"">
+            <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
+            </a>
           </div>
         </div>
       
@@ -147,9 +148,9 @@
     </div>     
     
     [#-- Dashboard --]   
-    <div id="dashboardContent" class="col-md-7">
-      <div class="homeTitle col-md-12"><strong>Dashboard</strong></div>
-      <div class=" col-md-12">
+    <div id="dashboardContent" class="col-md-12">
+      <div class="homeTitle col-md-12">[#-- <strong>Dashboard</strong> --]</div>
+      <div class="col-md-12">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">My projects</a></li>
           <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
@@ -169,7 +170,7 @@
             </div>
             <div id="contentGraph">
               [#-- Download button--]
-             [#--  <span id="buttonShowAll"><span class="glyphicon glyphicon-download-alt"></span></span>--]
+              [#--  <span id="buttonShowAll"><span class="glyphicon glyphicon-download-alt"></span></span>--]
               <div id="impactGraphic" ></div>
               [#-- Download button--]
               <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>

@@ -39,7 +39,7 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
   // Config required for Swagger UI if not using Spring Boot.
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+    registry.addResourceHandler("**").addResourceLocations("classpath:/swagger/dist/");
 
     registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
   }
@@ -54,11 +54,9 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
   private ApiInfo apiInfo() {
 
-    ApiInfo apiInfo = new ApiInfo("MARLO REST API",
-      "A list of operations provided by the MARLO REST API.  "
-        + "Please note that access to this page does not necessarily mean that you have authorization to perform all actions.",
-      "v1", "Terms of service URL - to be confirmed", new Contact("Hector Tobon", "", "h.f.tobon@cgiar.org"),
-      "License of API - To be confirmed", "API license URL - to be confirmed", Collections.emptyList());
+    ApiInfo apiInfo = new ApiInfo("Clarisa",
+      "Please note that access to this page does not necessarily mean that you have authorization to perform all actions.",
+      "v1", null, new Contact("Technical team", "", "MARLOSupport@cgiar.org"), null, null, Collections.emptyList());
 
     return apiInfo;
   }

@@ -1,0 +1,4 @@
+INSERT INTO `rep_ind_regions`(`name`, `sub_region`) VALUES ('Eastern Africa', (SELECT rg.id FROM rep_ind_regions rg WHERE rg.`name`="Sub-Saharan Africa"));
+INSERT INTO `rep_ind_regions`(`name`, `sub_region`) VALUES ('Middle Africa', (SELECT rg.id FROM rep_ind_regions rg WHERE rg.`name`="Sub-Saharan Africa"));
+INSERT INTO `rep_ind_regions`(`name`, `sub_region`) VALUES ('Southern Africa', (SELECT rg.id FROM rep_ind_regions rg WHERE rg.`name`="Sub-Saharan Africa"));
+INSERT INTO `rep_ind_regions`(`name`, `sub_region`) VALUES ('Western Africa', (SELECT rg.id FROM rep_ind_regions rg WHERE rg.`name`="Sub-Saharan Africa"));
