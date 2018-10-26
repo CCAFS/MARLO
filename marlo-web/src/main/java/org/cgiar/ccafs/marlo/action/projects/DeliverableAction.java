@@ -564,8 +564,8 @@ public class DeliverableAction extends BaseAction {
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
     if (deliverable.getOtherPartners() != null) {
-      List<DeliverablePartnership> deliverablePartnerships = deliverable
-        .getOtherPartners().stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
+      List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners()
+        .stream().filter(d -> d.isActive() && d.getProjectPartnerPerson() != null
           && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
         .collect(Collectors.toList());
 
@@ -1205,10 +1205,6 @@ public class DeliverableAction extends BaseAction {
         // Deliverable Geographic Regions List Autosave
         if (deliverable.getDeliverableRegions() != null) {
           for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
-            if (deliverableGeographicRegion.getLocElement().getId() == null
-              || deliverableGeographicRegion.getLocElement().getId() == -1) {
-              deliverable.getDeliverableRegions().remove(deliverableGeographicRegion);
-            }
             deliverableGeographicRegion
               .setLocElement(locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
           }
@@ -1436,7 +1432,8 @@ public class DeliverableAction extends BaseAction {
       this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
         .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
       repIndRegions = locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive()).collect(Collectors.toList());
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+        .collect(Collectors.toList());
       this.setCountries(locElementManager.findAll().stream()
         .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
