@@ -53,7 +53,7 @@
           [#-- Project Budget Type --]
           <td class=""> 
             [#--  ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>--]
-            ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${(project.fundingSourceBudgetPerPhase!0)?number?string(",##0.00")}</span></small></p>
+            ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]          

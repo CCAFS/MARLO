@@ -8,11 +8,17 @@ import com.google.gson.annotations.Expose;
  */
 public class RepIndGenderYouthFocusLevel extends MarloBaseEntity implements java.io.Serializable {
 
+
   private static final long serialVersionUID = -1677340768889594637L;
+
+
   @Expose
   private String name;
+
   @Expose
   private String definition;
+  @Expose
+  private String powbName;
 
   public RepIndGenderYouthFocusLevel() {
   }
@@ -34,12 +40,20 @@ public class RepIndGenderYouthFocusLevel extends MarloBaseEntity implements java
     return this.name;
   }
 
+  public String getPowbName() {
+    return powbName;
+  }
+
   public void setDefinition(String definition) {
     this.definition = definition;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPowbName(String powbName) {
+    this.powbName = powbName;
   }
 
 
