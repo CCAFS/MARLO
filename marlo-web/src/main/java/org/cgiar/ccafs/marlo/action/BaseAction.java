@@ -3228,10 +3228,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         for (Deliverable deliverable : deliverables) {
+
+
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus == null) {
+
+
             return false;
+          } else {
+            if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+              .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+              if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
+                sectionStatus.setMissingFields("");
+              }
+            }
           }
 
           if (sectionStatus.getMissingFields().length() != 0) {
@@ -4953,29 +4964,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return true;
         }
       }
-    }
 
-    List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
-      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
-      .collect(Collectors.toList());
-
-    if (sectionStatuses == null || sectionStatuses.isEmpty()) {
-      return false;
-    } else {
-      if (sectionStatuses.size() > 1) {
-        LOG.warn("There is more than one section status for D" + deliverableID);
-      }
-      SectionStatus sectionStatus = sectionStatuses.get(0);
-      if (sectionStatus.getMissingFields() != null) {
-        if (sectionStatus.getMissingFields().isEmpty()) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
+      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+        this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), "deliverableList");
+      if (sectionStatus == null) {
         return false;
       }
+
+      if (sectionStatus.getMissingFields().length() != 0) {
+        return false;
+      }
+
     }
+
+    return true;
+
   }
 
   public Boolean isDeliverableNew(long deliverableID) {
