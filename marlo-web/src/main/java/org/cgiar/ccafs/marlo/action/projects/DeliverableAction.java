@@ -3120,13 +3120,17 @@ public class DeliverableAction extends BaseAction {
           } else {
             DeliverablePartnership partnershipResponsibleDB =
               deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnershipOther.getId());
-            if (deliverablePartnershipOther.getProjectPartner().getId()
-              .equals(partnershipResponsibleDB.getProjectPartner().getId())) {
-              this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, deliverablePartnershipOther);
-            } else {
-              deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsibleDB.getId());
-              this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
-                DeliverablePartnershipTypeEnum.OTHER.getValue());
+            // If partnershipResponsibleDB was not previously deleted
+            if (partnershipResponsibleDB != null) {
+              if (deliverablePartnershipOther.getProjectPartner().getId()
+                .equals(partnershipResponsibleDB.getProjectPartner().getId())) {
+                this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, deliverablePartnershipOther);
+              } else {
+                deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsibleDB.getId());
+                this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
+                  DeliverablePartnershipTypeEnum.OTHER.getValue());
+              }
+
             }
           }
         }
