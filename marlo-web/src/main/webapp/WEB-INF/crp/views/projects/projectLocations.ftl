@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectLocations.js?20182504", 
+  "${baseUrlMedia}/js/projects/projectLocations.js?20181029", 
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
 /] 
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectLocations.css?20182504" ] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectLocations.css?20181029" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
 [#assign hideJustification = true /]
@@ -52,9 +52,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           <input class="projectInfo" type="hidden" name="project.id" value="${project.id}" />
           
-          <div class="row">
-            <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
-          </div>
+          <h3 class="headTitle ">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
               <div class="row">
@@ -75,15 +73,15 @@
                 </div>
                 
                   [#-- REGIONS SELECT --]
-                  <div class="row">
+                  <div class="">
+                    [#if action.hasSpecificities('crp_other_locations')]
                     <div class="regionsBox form-group col-md-12" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
                       <div class="panel tertiary col-md-12">
-                       <div class="panel-head">
-                         <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label>
-                         <br />
-                         <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
-                       </div>
-                       
+                        <div class="panel-head">
+                          <label for=""> [@customForm.text name="projectCofunded.selectRegions" readText=!editable /]:[@customForm.req required=editable /]</label><br />
+                          <small style="color: #a2a2a2;">([@s.text name="projectLocations.standardLocations" /])</small>
+                        </div>
+                        
                         <div id="regionList" class="panel-body" listname="project.projectRegions"> 
                           <ul class="list">
                           [#if project.projectRegions?has_content]
@@ -131,13 +129,14 @@
                         </div>
                       </div>
                     </div>
+                    [/#if]
                   </div>
                 </div>
-               </div>
+              </div>
                
-               <div class="borderBox">
+              <div class="borderBox">
                 [#-- RECOMMENDED LOCATIONS --]
-                <div class="col-md-12">
+                <div class="">
                   <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedLocations" /]:</h5>
                   <label for="">[@s.text name="projectLocations.locationsBelow" /]:</label>
                   <div class="simpleBox col-md-12">
@@ -172,129 +171,53 @@
                     </div>
                   </div>
                 </div>
+              </div>
               
-                [#-- OTHER LOCATIONS --]   
-                [#if action.hasSpecificities('crp_other_locations')]
-                  <div class="col-md-12">
-                    <span class="text-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal">[@s.text name="projectLocations.allLocationsMap" /]</span>
-                    <div class="icon-left-position allLocationsButton" data-toggle="modal" data-target=".allLocationsModal"><span class="glyphicon glyphicon-map-marker"></span></div>
-                    <h5 id="locations-list-title" class="sectionSubTitle">[@s.text name="projectLocations.locationsList" /]:</h5>
+              [#-- OTHER LOCATIONS --]   
+              [#if action.hasSpecificities('crp_other_locations')]
+              <div class="borderBox">
+                <div class="allLocationsButton btn btn-default pull-right" data-toggle="modal" data-target=".allLocationsModal">
+                  <img src="${baseUrl}/global/images/map.png" alt="" /> <span>[@s.text name="projectLocations.allLocationsMap" /]</span>
+                </div>
+                <h5 id="locations-list-title" class="sectionSubTitle">[@s.text name="projectLocations.locationsList" /]:</h5>
+                [#-- LOCATION LIST --]
+                <div class="">
+                  [#-- Add new location (Modal) --]
+                  [@addNewLocationModal /]
+                  [#-- All locations map (Modal) --]
+                  [@allLocationsMapModal /]
+                  [#-- Locations list table --]
+                  <div id="selectsContent" class="col-md-12" listname="project.locationsData">
+                    <div class="row">
+                      <table class="locationsDataTable">
+                        <tbody>
+                        [#if project.locationsData?has_content]
+                          [#list project.locationsData as locationLevels]
+                              [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
+                          [/#list]
+                        [#else]
+                          <p id="noLocationsAdded">[@s.text name="projectLocations.notLocationsAdded" /].</p>
+                        [/#if]
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                  
-                  [#-- LOCATION LIST --]
-                  <div class="col-md-12">
-                    [#-- START Add new location (Modal) --]
-                    <div id="addLocationModal" class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          
-                          <div class="locationForm-container">
-                            <h3 class="title">[@s.text name="projectLocations.addingNewLocation" /]</h3>
-                            <hr />
-                            <div class="form-group col-md-7">
-                              <div class="locLevelSelect-container">
-                                <label for="locLevelSelect" style="display:block;">[@s.text name="projectLocations.selectLocationLevel" /]:</label>
-                                <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
-                                  <option value="-1" >[@s.text name="projectLocations.selectOption" /]...</option>
-                                  [#list locationsLevels as locLevels]
-                                    [#list locLevels.locations as locations]
-                                      <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
-                                    [/#list]
-                                  [/#list]
-                                </select>
-                              </div>
-                              [#-- Select location(s) Form --]
-                              <div class="selectLocations" style="display:none;">
-                                <label for="">[@s.text name="projectLocations.selectLocations" /]</label>
-                                <select name="" data-placeholder="[@s.text name="projectLocations.selectPlaceholder" /]" id="countriesCmvs" multiple="true"></select>
-                              </div>
-                              [#-- Location name -Latitude -Longitude --]
-                              <div id="inputFormWrapper" class="inputFormCoordinates-container" style="display:none;">
-                                <div class="nameWrapper"><label for="">[@s.text name="projectLocations.locationName" /]:</label><input placeholder="Name (Required)" class="name form-control" type="text" /></div>
-                                <div class="latitudeWrapper"><label for="">[@s.text name="projectLocations.latitude" /]:</label><input placeholder="[@s.text name="projectLocations.latitude" /]" class="latitude form-control" type="text" value="" /></div>
-                                <div class="longitudeWrapper"><label for="">[@s.text name="projectLocations.longitude" /]:</label><input placeholder="[@s.text name="projectLocations.longitude" /]" class="longitude form-control " type="text"  value=""/></div>
-                              </div>
-                              [#-- add Location Button --]
-                              <div class="addLocationButton-container">
-                                <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="projectLocations.addLocations" /]</span>
-                              </div>
-                              [#-- Successfully added alert --]
-                              <div>
-                                <div id="alert-succesfully-added" class="alert alert-success" role="alert" style="display:none">[@s.text name="projectLocations.successfullyAdded" /]</div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          [#-- Add location MAP --]
-                          <div class="map-container col-md-5">
-                            <div id="add-location-map" class="col-md-12 map">
-                              <input id="pac-input" class="controls" type="text" placeholder="Search Box" style="display:none">
-                              <div id="map" class="col-md-12"></div>
-                            </div>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                    [#-- END Add new location (Modal) --]
-                    [#-- START All locations map (Modal) --]
-                    <div id="allLocationsModal" class="modal fade allLocationsModal" tabindex="-1" role="dialog" aria-labelledby="allLocations" aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          [#-- All locations list --]
-                          <div class="allLocations-container">
-                            <h3 class="title">[@s.text name="projectLocations.allLocations" /]</h3>
-                            <hr />
-                            
-                            <div class="form-group col-md-3 list-container">
-                            [#if project.locationsData?has_content]
-                              [#list project.locationsData as locationLevels]
-                                [@allLocationsListMacro element=locationLevels list=locationLevels.list?? && locationLevels.list/]
-                              [/#list]
-                            [/#if]
-                            </div>
-                          </div>
-                          [#-- All locations MAP --]
-                          <div class="map-container col-md-9">
-                            <div id="all-locations-map" class="col-md-12 map">
-                            </div>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                    [#-- END All locations map (Modal) --]
-                    [#-- Locations list table --]
-                    <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
-                      <div class="row">
-                        <table class="locationsDataTable">
-                          <tbody>
-                          [#if project.locationsData?has_content]
-                            [#list project.locationsData as locationLevels]
-                                [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
-                            [/#list]
-                          [#else]
-                            <p id="noLocationsAdded">[@s.text name="projectLocations.notLocationsAdded" /].</p>
-                          [/#if]
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
                   [#-- Add new location button --]
                   [#if editable && action.hasSpecificities('crp_other_locations')]
-                    <span id="addNewLocation-button" class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
+                    <div class="clearfix"></div>
+                    <div id="addNewLocation-button" class="bigAddButton text-center loc-button" data-toggle="modal" data-target=".addLocationModal"> 
+                      <span class="glyphicon glyphicon-plus"></span>[@s.text name="Add new location" /] 
+                    </div>
                   [/#if]
-                  </div>
-                [/#if]
+                </div>
               </div>
-              </div>
+              [/#if]
+            </div>
           </div> 
           
           [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
          
-          [/@s.form] 
+        [/@s.form] 
       </div>
     </div>  
 </section>
@@ -310,6 +233,95 @@
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
+
+[#macro addNewLocationModal]
+[#-- START Add new location (Modal) --]
+<div id="addLocationModal" class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      
+      <div class="locationForm-container">
+        <h3 class="title">[@s.text name="projectLocations.addingNewLocation" /]</h3>
+        <hr />
+        <div class="form-group col-md-7">
+          <div class="locLevelSelect-container">
+            <label for="locLevelSelect" style="display:block;">[@s.text name="projectLocations.selectLocationLevel" /]:</label>
+            <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
+              <option value="-1" >[@s.text name="projectLocations.selectOption" /]...</option>
+              [#list locationsLevels as locLevels]
+                [#list locLevels.locations as locations]
+                  <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
+                [/#list]
+              [/#list]
+            </select>
+          </div>
+          [#-- Select location(s) Form --]
+          <div class="selectLocations" style="display:none;">
+            <label for="">[@s.text name="projectLocations.selectLocations" /]</label>
+            <select name="" data-placeholder="[@s.text name="projectLocations.selectPlaceholder" /]" id="countriesCmvs" multiple="true"></select>
+          </div>
+          [#-- Location name -Latitude -Longitude --]
+          <div id="inputFormWrapper" class="inputFormCoordinates-container" style="display:none;">
+            <div class="nameWrapper"><label for="">[@s.text name="projectLocations.locationName" /]:</label><input placeholder="Name (Required)" class="name form-control" type="text" /></div>
+            <div class="latitudeWrapper"><label for="">[@s.text name="projectLocations.latitude" /]:</label><input placeholder="[@s.text name="projectLocations.latitude" /]" class="latitude form-control" type="text" value="" /></div>
+            <div class="longitudeWrapper"><label for="">[@s.text name="projectLocations.longitude" /]:</label><input placeholder="[@s.text name="projectLocations.longitude" /]" class="longitude form-control " type="text"  value=""/></div>
+          </div>
+          [#-- add Location Button --]
+          <div class="addLocationButton-container">
+            <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="projectLocations.addLocations" /]</span>
+          </div>
+          [#-- Successfully added alert --]
+          <div>
+            <div id="alert-succesfully-added" class="alert alert-success" role="alert" style="display:none">[@s.text name="projectLocations.successfullyAdded" /]</div>
+          </div>
+        </div>
+      </div>
+      
+      [#-- Add location MAP --]
+      <div class="map-container col-md-5">
+        <div id="add-location-map" class="col-md-12 map">
+          [#-- <input id="pac-input" class="controls" type="text" placeholder="Search Box" style="display:none"> --]
+          <div id="map" class="col-md-12"></div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+[#-- END Add new location (Modal) --]
+[/#macro]
+
+[#macro allLocationsMapModal]
+[#-- START All locations map (Modal) --]
+<div id="allLocationsModal" class="modal fade allLocationsModal" tabindex="-1" role="dialog" aria-labelledby="allLocations" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      [#-- All locations list --]
+      <div class="allLocations-container">
+        <h3 class="title">[@s.text name="projectLocations.allLocations" /]</h3>
+        <hr />
+        
+        <div class="form-group col-md-3 list-container">
+        [#if project.locationsData?has_content]
+          [#list project.locationsData as locationLevels]
+            [@allLocationsListMacro element=locationLevels list=locationLevels.list?? && locationLevels.list/]
+          [/#list]
+        [/#if]
+        </div>
+      </div>
+      [#-- All locations MAP --]
+      <div class="map-container col-md-9">
+        <div id="all-locations-map" class="col-md-12 map">
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+[#-- END All locations map (Modal) --]
+[/#macro]
 
 [#macro allLocationsListMacro element list]
 <div>
