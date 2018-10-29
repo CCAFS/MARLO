@@ -95,8 +95,18 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
     projectExpectedStudy = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
 
-    ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo(this.getActualPhase(),
-      projectExpectedStudy, "", "", "", "", "", "", "", "", "", "", "", "", "", this.getActualPhase().getYear());
+    /*
+     * ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo(this.getActualPhase(),
+     * projectExpectedStudy, "", "", "", "", "", "", "", "", "", "", "", "", "", this.getActualPhase().getYear());
+     */
+
+    ProjectExpectedStudyInfo projectExpectedStudyInfo = new ProjectExpectedStudyInfo();
+    projectExpectedStudyInfo.setPhase(this.getActualPhase());
+    projectExpectedStudyInfo.setProjectExpectedStudy(projectExpectedStudy);
+    projectExpectedStudyInfo.setYear(this.getActualPhase().getYear());
+
+    // when a project expected study is created, it is assigned by default status 2 = On going
+    projectExpectedStudyInfo.setStatus(2);
 
     long studyTypeID = -1;
     try {
