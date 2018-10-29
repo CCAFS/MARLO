@@ -186,13 +186,13 @@
                 [#-- Means Verification --]
                 <td class="">[#if (m.powbMilestoneVerification?has_content)!false]${m.powbMilestoneVerification}[#else] [@utils.prefilledTag /] [/#if]</td>
                 [#-- Gender --]
-                <td class="text-center"> [#if (m.genderFocusLevel?has_content)!false] <p class="dacMarker level-${m.genderFocusLevel.id}" title="${m.genderFocusLevel.name}">${m.genderFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.genderFocusLevel?has_content)!false] <p class="dacMarker level-${m.genderFocusLevel.id}" title="${m.genderFocusLevel.powbName}">${m.genderFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Youth --]
-                <td class="text-center"> [#if (m.youthFocusLevel?has_content)!false] <p class="dacMarker level-${m.youthFocusLevel.id}" title="${m.youthFocusLevel.name}">${m.youthFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.youthFocusLevel?has_content)!false] <p class="dacMarker level-${m.youthFocusLevel.id}" title="${m.youthFocusLevel.powbName}">${m.youthFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- CapDev --]
-                <td class="text-center"> [#if (m.capdevFocusLevel?has_content)!false] <p class="dacMarker level-${m.capdevFocusLevel.id}" title="${m.capdevFocusLevel.name}">${m.capdevFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.capdevFocusLevel?has_content)!false] <p class="dacMarker level-${m.capdevFocusLevel.id}" title="${m.capdevFocusLevel.powbName}">${m.capdevFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Climate Change --]
-                <td class="text-center"> [#if (m.climateFocusLevel?has_content)!false] <p class="dacMarker level-${m.climateFocusLevel.id}" title="${m.climateFocusLevel.name}">${m.climateFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.climateFocusLevel?has_content)!false] <p class="dacMarker level-${m.climateFocusLevel.id}" title="${m.climateFocusLevel.powbName}">${m.climateFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Assessment Risk --]
                 <td class="center">[#if (m.powbIndAssesmentRisk?has_content)!false]${m.powbIndAssesmentRisk.name}[#else] [@utilities.prefilledTag /] [/#if]</td>
                 [#-- For medium/high please select the main risk from the list --]
