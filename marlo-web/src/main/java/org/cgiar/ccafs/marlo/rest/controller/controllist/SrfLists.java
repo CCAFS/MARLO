@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(description = "List of the CGIAR's Strategy and Results Items", tags = "SRF List")
+@Api(description = "List of the CGIAR Strategy and Results Items", tags = "SRF List")
 @Named
 public class SrfLists {
 

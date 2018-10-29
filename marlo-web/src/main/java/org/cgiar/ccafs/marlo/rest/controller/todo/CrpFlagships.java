@@ -50,14 +50,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(value = "FlagshipService", description = "Service pertaining to CRP Flagship programs.")
-@ApiIgnore
+@Api(description = "Service pertaining to CRP Flagship programs", tags = "Flagships")
 public class CrpFlagships {
 
   private static final Logger LOG = LoggerFactory.getLogger(CrpFlagships.class);
@@ -88,7 +86,7 @@ public class CrpFlagships {
    * @param crpProgramDTO
    * @return
    */
-  @ApiOperation(value = "Add a CRP Flagship program", response = CrpProgramDTO.class)
+  @ApiOperation(value = "Add a CRP Flagship program", response = CrpProgramDTO.class, tags = "Flagships")
   @RequiresPermissions(Permission.CRP_PROGRAM_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/setFlagship", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -122,7 +120,7 @@ public class CrpFlagships {
    * @param id
    * @return
    */
-  @ApiOperation(value = "Delete a CRP Flagship program")
+  @ApiOperation(value = "Delete a CRP Flagship program", tags = "Flagships")
   @RequiresPermissions(Permission.CRP_PROGRAM_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/deleteFlagship/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -146,14 +144,14 @@ public class CrpFlagships {
     return ResponseEntity.ok().build();
   }
 
-
   /**
    * Get all The flagships with specific CGIAR Structure (Crp/Platform)
    * 
    * @param CGIARStructure
    * @return
    */
-  @ApiOperation(value = "View a CRP Flagship programs", response = Iterable.class)
+  @ApiOperation(value = "Get all The flagships with specific CGIAR Structure (Crp/Platform)", response = Iterable.class,
+    responseContainer = "List", tags = "Flagships")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIARStructure}/flagships", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -172,12 +170,12 @@ public class CrpFlagships {
     return crpProgramDTOs;
   }
 
+
   private User getCurrentUser() {
     Subject subject = SecurityUtils.getSubject();
     Long principal = (Long) subject.getPrincipal();
     User user = userManager.getUser(principal);
     return user;
   }
-
 
 }
