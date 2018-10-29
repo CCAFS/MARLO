@@ -132,17 +132,10 @@
                       </div>
                     </div>
                   </div>
-                  
-                <div class="form-group col-md-12 ">
-                  <hr />
                 </div>
-                [#-- NOTE --]
-                <div class="col-md-12">
-                  <div class="note left">
-                    <div id="popup" class="helpMessage3"></div>
-                    <p><b>NOTE: </b><small>[@s.text name="projectLocations.note" /] </small></p>
-                  </div>
-                </div>
+               </div>
+               
+               <div class="borderBox">
                 [#-- RECOMMENDED LOCATIONS --]
                 <div class="col-md-12">
                   <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedLocations" /]:</h5>

@@ -22,8 +22,9 @@
     border: 1px solid #d1d1d1;
     /* background-color: #f4f4f4; */
     margin-bottom: 6px;
-    border-radius: 4px;
-    line-height: 26px;
+    border-radius: 3px;
+    /* line-height: 26px; */
+    min-height: 26px;
 }
 
 .checkBox {
