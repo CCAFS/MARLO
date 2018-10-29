@@ -21,10 +21,11 @@
 .locations {
     border: 1px solid #d1d1d1;
     /* background-color: #f4f4f4; */
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     border-radius: 3px;
-    /* line-height: 26px; */
-    min-height: 26px;
+    line-height: 26px;
+    min-height: 43px;
+    position: relative;
 }
 
 .checkBox {
@@ -306,8 +307,8 @@ input[type="checkbox"]{
 }
 
 .fundingContent{
-  border:1px dashed #ccc; 
-  margin:-7px 0 10px 0;
+  border:1px dashed #ccc;
+  margin: -5px 0 10px 0;
   min-height:90px;
   max-height:90px;
   overflow: auto;
@@ -361,7 +362,7 @@ input[type="checkbox"]{
 
 table td {
   list-style: none;
-  padding-bottom: 9px;
+  padding: 9px;
   border-bottom: 1px solid #e7e7e7;
   font-size: 0.95em;
 }
