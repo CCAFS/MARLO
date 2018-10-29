@@ -2150,8 +2150,7 @@ public class DeliverableAction extends BaseAction {
     // Save form Information
     if (deliverable.getDeliverableRegions() != null) {
       for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
-        if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null
-          && deliverableRegion.getLocElement().getId() != -1) {
+        if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null) {
           DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
           deliverableRegionSave.setDeliverable(deliverable);
           deliverableRegionSave.setPhase(phase);

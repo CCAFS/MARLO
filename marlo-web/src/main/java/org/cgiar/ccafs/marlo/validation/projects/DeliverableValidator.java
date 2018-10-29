@@ -352,10 +352,9 @@ public class DeliverableValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (deliverableInfo.getRegion() == null || deliverableInfo.getRegion().getId() == -1) {
+        if (deliverable.getDeliverableRegions() == null) {
           action.addMessage(action.getText("deliverable.region"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.region.id",
-            InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableRegions", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
       if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
