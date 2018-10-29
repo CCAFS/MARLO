@@ -47,7 +47,7 @@
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
               <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.titlepowb2019"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               <div class="form-group">
-                [@tableOverallCRPCollaborationsMacro name="powbSynthesis.powbCollaborationGlobalUnitsList" crpPrograms=crpPrograms /]
+                [@tableOverallCRPCollaborationsMacro name="powbSynthesis.collaboration" crpPrograms=crpPrograms /]
               </div>
                  
             </div>
@@ -148,12 +148,11 @@
     </thead>
     <tbody>
     [#assign collaborations = [] ]
-    [#list crpPrograms as crpProgram]
-      [#if crpProgram.synthesis.powbCollaborationGlobalUnitsList??]
-        [#list crpProgram.synthesis.powbCollaborationGlobalUnitsList as coll]
+      [#if globalUnitCollaborations??]
+        [#list globalUnitCollaborations as coll]
           [#assign collaborations = collaborations + [coll] ]
           <tr>
-            <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
+            <td><span class="programTag" style="border-color:${(coll.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}" title="${coll.powbSynthesis.liaisonInstitution.crpProgram.composedName}">${coll.powbSynthesis.liaisonInstitution.crpProgram.acronym}</span></td>
             <td class="col-md-3"> 
               <strong>${(coll.globalUnit.acronym)!}</strong><br />
               <i>${(coll.globalUnit.globalUnitType.name)!}</i>
@@ -163,13 +162,12 @@
             </td>
             [#-- Include in POWB --]
             <td class="col-md-1 text-center">
-              [#local isCollaborationChecked = ((!powbSynthesis.powbCollaborationGlobalUnitsList.plannedCollabortionsIds?seq_contains(coll.id))!true) ]
-              [@customForm.checkmark id="coll-${(coll.id)!''}" name="${customName}.plannedCollabortions" value="${(coll.id)!''}" checked=isCollaborationChecked editable=editable centered=true/]
+              [#local isCollaborationChecked = ((!powbSynthesis.collaboration.collaborationsIds?seq_contains(coll.id))!true) ]
+              [@customForm.checkmark id="coll-${(coll.id)!''}" name="${customName}.collaborationsValue" value="${(coll.id)!''}" checked=isCollaborationChecked editable=editable centered=true/]
             </td>
           </tr>
         [/#list]
       [/#if]
-    [/#list]
     [#if !(collaborations?has_content)]
       <tr>
         <td colspan="4"> <p class="text-center">No Collaborations added.</p></td>
