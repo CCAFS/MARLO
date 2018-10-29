@@ -4,6 +4,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -12,22 +16,64 @@ import com.google.gson.annotations.Expose;
 public class PowbCollaboration extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -3847380223102408022L;
 
+
   private PowbSynthesis powbSynthesis;
+
+
   @Expose
   private String keyExternalPartners;
+
+
   @Expose
   private String cotributionsPlatafforms;
+
+
   @Expose
   private String crossCrp;
+
+
   @Expose
   private String effostornCountry;
 
+
+  // POWB 2019 PMU select Collaborations
+  private Set<PowbCollaborationGlobalUnitPmu> powbCollaborationGlobalUnitPmu =
+    new HashSet<PowbCollaborationGlobalUnitPmu>(0);
+  private List<PowbCollaborationGlobalUnitPmu> collaborationGlobalUnitPmu;
+  private List<PowbCollaborationGlobalUnit> collaborations;
+  private String collaborationsValue;
+
   public PowbCollaboration() {
+  }
+
+  public List<PowbCollaborationGlobalUnitPmu> getCollaborationGlobalUnitPmu() {
+    return collaborationGlobalUnitPmu;
+  }
+
+  public List<PowbCollaborationGlobalUnit> getCollaborations() {
+    return collaborations;
+  }
+
+  /**
+   * @return an array of integers.
+   */
+  public long[] getCollaborationsIds() {
+
+    List<PowbCollaborationGlobalUnit> collaborations = this.getCollaborations();
+    if (collaborations != null) {
+      long[] ids = new long[collaborations.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = collaborations.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+  public String getCollaborationsValue() {
+    return collaborationsValue;
   }
 
   public String getCotributionsPlatafforms() {
@@ -37,7 +83,6 @@ public class PowbCollaboration extends MarloAuditableEntity implements java.io.S
   public String getCrossCrp() {
     return crossCrp;
   }
-
 
   public String getEffostornCountry() {
     return effostornCountry;
@@ -55,14 +100,31 @@ public class PowbCollaboration extends MarloAuditableEntity implements java.io.S
     return sb.toString();
   }
 
+  public Set<PowbCollaborationGlobalUnitPmu> getPowbCollaborationGlobalUnitPmu() {
+    return powbCollaborationGlobalUnitPmu;
+  }
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
+  }
+
+
+  public void setCollaborationGlobalUnitPmu(List<PowbCollaborationGlobalUnitPmu> collaborationGlobalUnitPmu) {
+    this.collaborationGlobalUnitPmu = collaborationGlobalUnitPmu;
+  }
+
+  public void setCollaborations(List<PowbCollaborationGlobalUnit> collaborations) {
+    this.collaborations = collaborations;
+  }
+
+
+  public void setCollaborationsValue(String collaborationsValue) {
+    this.collaborationsValue = collaborationsValue;
   }
 
   public void setCotributionsPlatafforms(String cotributionsPlatafforms) {
     this.cotributionsPlatafforms = cotributionsPlatafforms;
   }
-
 
   public void setCrossCrp(String crossCrp) {
     this.crossCrp = crossCrp;
@@ -73,8 +135,13 @@ public class PowbCollaboration extends MarloAuditableEntity implements java.io.S
     this.effostornCountry = effostornCountry;
   }
 
+
   public void setKeyExternalPartners(String keyExternalPartners) {
     this.keyExternalPartners = keyExternalPartners;
+  }
+
+  public void setPowbCollaborationGlobalUnitPmu(Set<PowbCollaborationGlobalUnitPmu> powbCollaborationGlobalUnitPmu) {
+    this.powbCollaborationGlobalUnitPmu = powbCollaborationGlobalUnitPmu;
   }
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {

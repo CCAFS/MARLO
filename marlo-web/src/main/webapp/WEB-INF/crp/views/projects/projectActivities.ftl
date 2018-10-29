@@ -141,7 +141,7 @@
       
       [#-- Activity leader --]
       <div class="form-group">
-        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="project.activities.inputLeader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" editable=editable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="project.activities.inputLeader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedInstitutionName"  multiple=false required=true  className=" activityLeader" editable=editable/]
       </div>
       
       <div class="row activityStatusBlock ${reportingActive?string('fieldFocus','')}">

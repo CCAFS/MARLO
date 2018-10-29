@@ -65,6 +65,10 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
 
   }
 
+  public String getComposedInstitutionName() {
+    return this.projectPartner.getInstitution().getAcronymName() + " - " + this.user.getComposedName();
+  }
+
   public String getComposedName() {
     return this.user.getComposedName();
   }
