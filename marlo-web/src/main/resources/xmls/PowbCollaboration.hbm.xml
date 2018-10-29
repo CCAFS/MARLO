@@ -41,5 +41,11 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" sql-type="TEXT"  />
         </property>
+        <set name="powbCollaborationGlobalUnitPmu" table="powb_collaboration_global_unit_pmus" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="powb_collaboration_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnitPmu" />
+        </set>
     </class>
 </hibernate-mapping>
