@@ -3227,7 +3227,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
 
-
         for (Deliverable deliverable : deliverables) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
