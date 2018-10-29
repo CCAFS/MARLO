@@ -25,7 +25,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -54,9 +53,7 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
   private ApiInfo apiInfo() {
 
-    ApiInfo apiInfo = new ApiInfo("Clarisa",
-      "Please note that access to this page does not necessarily mean that you have authorization to perform all actions.",
-      "v1", null, new Contact("Technical team", "", "MARLOSupport@cgiar.org"), null, null, Collections.emptyList());
+    ApiInfo apiInfo = new ApiInfo(null, null, null, null, null, null, null, Collections.emptyList());
 
     return apiInfo;
   }

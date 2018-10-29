@@ -641,7 +641,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       geographicScopes = geographicScopeManager.findAll();
       regions = locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive()).collect(Collectors.toList());
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+        .collect(Collectors.toList());
       organizationTypes = organizationTypeManager.findAll();
       // Focus levels and Too early to tell was removed
       focusLevels = focusLevelManager.findAll().stream().filter(f -> f.getId() != 4).collect(Collectors.toList());

@@ -547,6 +547,11 @@ function onSelectElement() {
   var maxLimit = $(this).classParam('maxLimit');
   var $list = $('.listType-' + elementType);
   var counted = $list.find('li').length;
+  
+  // Select an option
+  if($option.val() == "-1"){
+    return;
+  }
 
   // Verify limit if applicable
   if((maxLimit > 0) && (counted >= maxLimit)) {

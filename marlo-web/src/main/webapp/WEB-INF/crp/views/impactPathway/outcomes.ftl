@@ -397,16 +397,16 @@
       <div class="row form-group">
         <p class="subTitle col-md-12"><i> [@s.text name="outcome.milestone.milestoneMarkers" /] </i> </p><br />
         <div class="col-md-3">
-          [@customForm.select name="${milestoneCustomName}.genderFocusLevel.id"  i18nkey="outcome.milestone.genderFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields  /]
+          [@customForm.select name="${milestoneCustomName}.genderFocusLevel.id"  i18nkey="outcome.milestone.genderFocusLevel" className="" keyFieldName="id" displayFieldName="powbName" listName="focusLevels" editable=editable required=reqMilestonesFields  /]
         </div>
         <div class="col-md-3">
-          [@customForm.select name="${milestoneCustomName}.youthFocusLevel.id"  i18nkey="outcome.milestone.youthFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields /]
+          [@customForm.select name="${milestoneCustomName}.youthFocusLevel.id"  i18nkey="outcome.milestone.youthFocusLevel" className="" keyFieldName="id" displayFieldName="powbName" listName="focusLevels" editable=editable required=reqMilestonesFields /]
         </div>
         <div class="col-md-3">
-          [@customForm.select name="${milestoneCustomName}.capdevFocusLevel.id"  i18nkey="outcome.milestone.capdevFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields /]
+          [@customForm.select name="${milestoneCustomName}.capdevFocusLevel.id"  i18nkey="outcome.milestone.capdevFocusLevel" className="" keyFieldName="id" displayFieldName="powbName" listName="focusLevels" editable=editable required=reqMilestonesFields /]
         </div>
         <div class="col-md-3">
-          [@customForm.select name="${milestoneCustomName}.climateFocusLevel.id"  i18nkey="outcome.milestone.climateFocusLevel" className="" keyFieldName="id" displayFieldName="name" listName="focusLevels" editable=editable required=reqMilestonesFields /]
+          [@customForm.select name="${milestoneCustomName}.climateFocusLevel.id"  i18nkey="outcome.milestone.climateFocusLevel" className="" keyFieldName="id" displayFieldName="powbName" listName="focusLevels" editable=editable required=reqMilestonesFields /]
         </div>
         <br />
       </div>
