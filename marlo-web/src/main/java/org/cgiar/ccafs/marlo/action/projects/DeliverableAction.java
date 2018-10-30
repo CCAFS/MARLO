@@ -803,31 +803,27 @@ public class DeliverableAction extends BaseAction {
 
   public List<Long> getSelectedPersons(long partnerID) {
 
-
     List<ProjectPartnerPerson> deliverablePartnerPersons = new ArrayList<ProjectPartnerPerson>();
 
     for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
-      .filter(o -> o.isActive() && o.getProjectPartner() != null && o.getProjectPartner().getId() == partnerID)
+      .filter(o -> o.isActive() && o.getProjectPartnerPerson() != null && o.getProjectPartner() != null
+        && o.getProjectPartner().getId() == partnerID && o.getProjectPartner().isActive())
       .collect(Collectors.toList())) {
-      if (deliverablePartnership.getProjectPartnerPerson() != null
-        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner().isActive()
-        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner() != null) {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+        deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
+      } else {
+        if (deliverablePartnership.getProjectPartnerPerson().isActive()) {
           deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
-        } else {
-          if (deliverablePartnership.getProjectPartnerPerson().isActive()) {
-            deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
-          }
         }
       }
+
     }
     List<Long> projectPartnerPersonIds =
       deliverablePartnerPersons.stream().map(e -> e.getId()).collect(Collectors.toList());
 
     return projectPartnerPersonIds;
-
   }
 
   public Map<String, String> getStatus() {
