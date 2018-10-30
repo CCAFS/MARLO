@@ -293,7 +293,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String financialPlanDescription = "";
 
     financialPlanDescription =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque volutpat convallis nunc, ut faucibus ex luctus a. Suspendisse ultricies tortor et velit pretium interdum. Nulla non maximus risus, quis dictum elit. Proin eleifend urna id augue eleifend efficitur. Donec non varius dui, id pretium sapien. Phasellus luctus tortor vitae erat posuere, at mollis erat dapibus. Mauris vitae euismod ligula, et lacinia lacus.\r\n"
+      "<b>Lorem ipsum dolor sit amet</b>, consectetur adipiscing elit. Pellentesque volutpat <i>convallis nunc, ut faucibus</i> ex luctus a. Suspendisse ultricies tortor et velit pretium interdum. Nulla non maximus risus, quis dictum elit. Proin eleifend urna id augue eleifend efficitur. Donec non varius dui, id pretium sapien. Phasellus luctus tortor vitae erat posuere, at mollis erat dapibus. Mauris vitae euismod ligula, et lacinia lacus.\r\n"
         + "\r\n"
         + "Donec nunc purus, sollicitudin non convallis non, imperdiet non massa. Nam bibendum risus diam, id suscipit magna pretium at. Nulla at dolor eleifend, mattis enim et, luctus lorem. Maecenas laoreet arcu a ligula ultrices, ut rhoncus sapien tincidunt. Etiam egestas mauris sit amet orci accumsan gravida. Etiam consectetur arcu sit amet elementum ullamcorper. In rhoncus mauris augue, eget accumsan felis egestas quis. Maecenas dictum dapibus tellus, vitae placerat metus venenatis et. Sed et nulla ultrices, lobortis diam sed, mattis lorem. Vivamus vitae ullamcorper dolor, vel commodo diam. Nulla auctor diam at justo scelerisque pretium.\r\n"
         + "\r\n"
@@ -317,8 +317,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
      * }
      */
 
-    // poiSummary.convertHTMLTags(document, financialPlanDescription);
-    poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+    poiSummary.convertHTMLTags(document, financialPlanDescription);
+    poiSummary.textHyperlink("www.de.com", "hiperlink text", document.createParagraph());
+    // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
 
   }
 

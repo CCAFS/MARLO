@@ -76,7 +76,7 @@ public class POISummary {
     expressionsList.add("<strike>");
     expressionsList.add("<s>");
     expressionsList.add("<del>");
-    expressionsList.add("<a>");
+    expressionsList.add("<a");
 
     expressionsListClose.add("</b>");
     expressionsListClose.add("</strong>");
@@ -106,19 +106,53 @@ public class POISummary {
 
   public void convertHTMLTags(XWPFDocument document, String text) {
     this.addExpressionsToList();
-
+    boolean isLink = false;
     int posInit = 0;
     int posFinal = 0;
+    String expressionListActual = "", textIndicatorLink = "";
 
     for (int i = 0; i < expressionsList.size(); i++) {
+      expressionListActual = expressionsList.get(i);
 
-      posInit = text.indexOf(expressionsList.get(i));
+      if (text.contains(expressionListActual)) {
+        for (int j = 0; j < text.length(); j++) {
+          if ((text.charAt(j) == expressionListActual.charAt(1))
+            && text.charAt(j + 1) == expressionListActual.charAt(2)) {
 
-      if (posInit >= 0) {
-        posFinal = text.indexOf(expressionsListClose.get(i));
-        startsPosList.add(posInit);
-        finalPosList.add(posFinal);
-        tagsAddList.add(expressionsList.get(i));
+            if (text.charAt(j + 3) == 'h' && text.charAt(4) == 'r') {
+              posInit = j + expressionListActual.length() + 9;
+              isLink = true;
+            } else {
+              posInit = j + expressionListActual.length();
+            }
+          }
+        }
+
+        // posInit = text.indexOf(expressionsList.get(i));
+
+        if (posInit >= 0) {
+          boolean foundLastLinkPos = false;
+          int postLasLink = 0;
+          for (int j = posInit; j < text.length(); j++) {
+
+            if (isLink) {
+              if (text.charAt(j) == '>') {
+                foundLastLinkPos = true;
+              }
+            } else {
+              if (text.charAt(j) == expressionsListClose.get(i).charAt(1)
+                && text.charAt(j + 1) == expressionsListClose.get(i).charAt(2)) {
+                posFinal = j;
+                textIndicatorLink = text.substring(postLasLink, posFinal);
+              }
+            }
+            // posFinal = text.indexOf(expressionsListClose.get(i));
+          }
+          // posFinal = text.indexOf(expressionsListClose.get(i));
+          startsPosList.add(posInit);
+          finalPosList.add(posFinal);
+          tagsAddList.add(expressionsList.get(i));
+        }
       }
     }
 
@@ -177,6 +211,7 @@ public class POISummary {
         } else {
           stringTemp = text;
         }
+
         paragraph = document.createParagraph();
         paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
@@ -255,6 +290,7 @@ public class POISummary {
       paragraphRun.setUnderline(UnderlinePatterns.NONE);
       paragraphRun.setItalic(false);
     }
+
 
   }
 
