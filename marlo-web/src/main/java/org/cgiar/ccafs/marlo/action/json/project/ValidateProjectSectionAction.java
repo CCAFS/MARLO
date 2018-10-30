@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -284,7 +285,15 @@ public class ValidateProjectSectionAction extends BaseAction {
             if (sectionStatus == null) {
               sectionStatus = new SectionStatus();
               sectionStatus.setMissingFields("No section");
+            } else {
+              if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+                .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
+                  sectionStatus.setMissingFields("");
+                }
+              }
             }
+
             if (sectionStatus.getMissingFields().length() > 0) {
               section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
             }
