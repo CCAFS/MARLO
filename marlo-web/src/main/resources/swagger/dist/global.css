@@ -4,7 +4,7 @@
 }
 
 .cTitle{
-  font-size: 380%;
+  font-size: 420%;
   font-weight: 900;
   margin: auto;
 }
@@ -26,7 +26,7 @@
   cursor: default;
 }
 
-.no-seleccionable {
+.no-selectable {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
