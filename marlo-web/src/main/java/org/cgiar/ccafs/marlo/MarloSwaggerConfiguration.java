@@ -25,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -47,7 +48,10 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
   public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2).select()
       .apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest")).paths(PathSelectors.any()).build()
-      .apiInfo(this.apiInfo());
+      .apiInfo(this.apiInfo()).tags(new Tag("1. SRF List", "List of the CGIAR Strategy and Results Items"),
+        new Tag("2. Institutions", "Service pertaining to legal institutions information stored in MARLO"));
+
+
   }
 
 

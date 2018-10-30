@@ -292,6 +292,15 @@ public class ValidateProjectSectionAction extends BaseAction {
                   sectionStatus.setMissingFields("");
                 }
               }
+
+
+              if (this.isPlanningActive()) {
+                if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+                  .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+                  sectionStatus.setMissingFields("");
+                }
+              }
+
             }
 
             if (sectionStatus.getMissingFields().length() > 0) {

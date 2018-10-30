@@ -3243,6 +3243,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 sectionStatus.setMissingFields("");
               }
             }
+
+            if (this.isPlanningActive()) {
+              if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+                .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+                sectionStatus.setMissingFields("");
+              }
+            }
           }
 
           if (sectionStatus.getMissingFields().length() != 0) {
@@ -4961,6 +4968,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (deliverableInfo.getStatus() != null
         && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
         if (deliverableInfo.getYear() > this.getActualPhase().getYear()) {
+          return true;
+        }
+      }
+
+      if (this.isPlanningActive()) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           return true;
         }
       }

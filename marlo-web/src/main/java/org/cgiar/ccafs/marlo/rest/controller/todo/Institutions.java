@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(description = "Service pertaining to legal institutions information stored in MARLO", tags = "Institutions")
+@Api(tags = "2. Institutions")
 public class Institutions {
 
   private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
@@ -153,8 +153,7 @@ public class Institutions {
     return ResponseEntity.ok().build();
   }
 
-  @ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List",
-    tags = "Institutions")
+  @ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionDTO> getAllInstitutions() {
@@ -172,7 +171,7 @@ public class Institutions {
     return user;
   }
 
-  @ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class, tags = "Institutions")
+  @ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
@@ -182,7 +181,7 @@ public class Institutions {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-
+  @ApiIgnore
   @RequiresPermissions(Permission.INSTITUTIONS_UPDATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
