@@ -17,8 +17,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
@@ -44,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -164,6 +167,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final DeliverableInfoManager deliverableInfoManager;
 
+  private final DeliverableLocationManager deliverableLocationManager;
+
+  private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -185,7 +192,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     DeliverableParticipantManager deliverableParticipantManager, PhaseManager phaseManager,
     GlobalUnitManager crpManager, ProjectCenterMappingValidator projectCenterMappingValidator,
     GlobalUnitProjectManager globalUnitProjectManager, DeliverableTypeManager deliverableTypeManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager, DeliverableLocationManager deliverableLocationManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -219,6 +227,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
   }
 
 
@@ -815,6 +825,30 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+
+        // Deliverable Countries List
+        if (deliverable.getDeliverableLocations() == null) {
+          deliverable.setCountries(new ArrayList<>());
+        } else {
+          List<DeliverableLocation> countries =
+            deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), phase.getId());
+          deliverable.setCountries(countries);
+        }
+
+        if (deliverable.getCountries() != null) {
+          for (DeliverableLocation country : deliverable.getCountries()) {
+            deliverable.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+          }
+        }
+
+        // Expected Study Geographic Regions List
+        if (deliverable.getDeliverableGeographicRegions() != null
+          && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
+          deliverable.setDeliverableRegions(new ArrayList<>(
+            deliverableGeographicRegionManager.getDeliverableGeographicRegionbyPhase(deliverable.getId(), phase.getId())
+              .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+              .collect(Collectors.toList())));
+        }
 
 
         if (action.isReportingActive()) {
