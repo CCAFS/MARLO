@@ -132,6 +132,7 @@
 [/#macro]
 
 [#macro tableA2Milestones  list=[] allowPopups=false id="" includeAllColumns=true  ]
+  [#local milestoneIndex = 0 ]
   <div class="">[#-- <div class="table-responsive"> --]
     <table id="table2A-POWB2019" class="table table-bordered">
       <thead>
@@ -208,8 +209,12 @@
                 [/#if]
                 [#-- Include in POWB --]
                 [#if flagship && !includeAllColumns]
-                  [#local isMilestoneChecked = ((!powbSynthesis.expectedProgress.milestonesIds?seq_contains(m.id))!true) /]
-                  <td class="text-center"> [@customForm.checkmark id="milestoneCheck-${(m.id)!''}" name="${customName}.milestonesValue" value="${(m.id)!''}" checked=isMilestoneChecked editable=editable centered=true/] </td> 
+                  <td class="text-center">
+                    [#local milestoneName = "${customName}.milestones[${milestoneIndex}]" ]
+                    <input type="hidden" name="${milestoneName}.id" value="${m.id}"/>
+                    [@customForm.checkmark id="m-${(m.id)!''}" name="${milestoneName}.isPowb" checked=(m.isPowb)!false editable=editable centered=true/] 
+                    [#local milestoneIndex = milestoneIndex + 1 ]
+                  </td>
                 [/#if]
               </tr>
             [/#list]
