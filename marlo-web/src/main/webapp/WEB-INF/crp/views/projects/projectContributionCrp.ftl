@@ -337,10 +337,10 @@
        --]
       [#-- DAC Markers --]
       <div class="form-group row">
-        <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.name)!prefilled} </div>
-        <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.name)!prefilled}</div>
-        <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.name)!prefilled}</div>
-        <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.name)!prefilled}</div>
+        <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
+        <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.powbName)!prefilled}</div>
+        <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.powbName)!prefilled}</div>
+        <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
       </div>
     </div>
     
