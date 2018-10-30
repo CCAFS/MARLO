@@ -190,7 +190,6 @@ public class AutoSaveWriterAction extends BaseAction {
       }
       if (nameClass.equals(Deliverable.class.getName())) {
         jSon = jSon.replaceAll("deliverable\\.", "");
-        jSon = jSon.replaceAll("participantLocationsIsos", "participantLocationsIsosText");
       }
       if (nameClass.equals(ReportSynthesis.class.getName())) {
         jSon = jSon.replaceAll("reportSynthesis\\.", "");
