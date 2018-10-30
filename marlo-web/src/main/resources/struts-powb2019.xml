@@ -19,7 +19,7 @@
     </action>
     
     <!--  2.1  Expected Progress Towards Outcomes  -->
-    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
+    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.y2019.ExpectedCRPProgress2019Action">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb2019/powb2019_expectedProgress.ftl</result>
       <result name="success" type="redirectAction">
