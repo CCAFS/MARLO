@@ -255,7 +255,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   private ProjectPartner getProjectPartner(Phase phase, ProjectPartner projectPartner) {
-    if (projectPartner.getId() != null) {
+    if (projectPartner != null && projectPartner.getId() != null) {
       projectPartner = projectPartnerDao.find(projectPartner.getId());
       return projectPartnerDao.getPartnerPhase(phase, projectPartner.getProject(), projectPartner.getInstitution());
     } else {
