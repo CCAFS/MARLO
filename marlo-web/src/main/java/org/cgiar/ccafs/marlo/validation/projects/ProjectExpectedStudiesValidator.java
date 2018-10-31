@@ -246,10 +246,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             // Validate Region
             if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
               .getRepIndRegion() != null) {
-              if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
-                .getId() == null
-                || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
-                  .getId() == -1) {
+              if (projectExpectedStudy.getStudyRegions() == null) {
                 action.addMessage(action.getText("Region"));
                 action.addMissingField("study.region");
                 action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",

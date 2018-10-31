@@ -79,11 +79,11 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
    */
   private static final long serialVersionUID = 87856461770557046L;
 
+
   // Managers
   private GlobalUnitManager crpManager;
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
 
   private PowbSynthesisManager powbSynthesisManager;
 
@@ -93,6 +93,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
   private UserManager userManager;
 
   private CrpProgramManager crpProgramManager;
+
 
   private FileDBManager fileDBManager;
 
@@ -104,13 +105,12 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
   private PowbSynthesis powbSynthesis;
 
   private Long liaisonInstitutionID;
+
   private LiaisonInstitution liaisonInstitution;
 
-
   private Long powbSynthesisID;
-
-
   private GlobalUnit loggedCrp;
+
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
@@ -119,10 +119,12 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   private CrpMilestoneManager crpMilestoneManager;
 
+
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
 
   private List<CrpProgram> flagships;
 
+  private List<CrpMilestone> milestones;
 
   @Inject
   public ExpectedCRPProgress2019Action(APConfig config, GlobalUnitManager crpManager,
@@ -162,6 +164,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return SUCCESS;
   }
 
+
   public void expectedProgressNewData() {
     if (powbSynthesis.getExpectedCrpProgresses() == null) {
       powbSynthesis.setExpectedCrpProgresses(new ArrayList<>());
@@ -169,13 +172,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
       PowbExpectedCrpProgress powbExpectedCrpProgressNew = null;
       if (powbExpectedCrpProgress != null) {
-
-
-        if (powbExpectedCrpProgress.getCrpMilestone() != null
-          && powbExpectedCrpProgress.getCrpMilestone().getId() > 0) {
-          powbExpectedCrpProgress.setCrpMilestone(
-            crpMilestoneManager.getCrpMilestoneById(powbExpectedCrpProgress.getCrpMilestone().getId()));
-        }
 
 
         if (powbExpectedCrpProgress.getId() == null) {
@@ -205,7 +201,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -223,6 +218,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public List<ProjectMilestone> getContributions(long milestoneID) {
     List<ProjectMilestone> milestones = new ArrayList<>();
@@ -263,7 +259,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return flagships;
   }
 
-
   public int getIndex(Long crpMilestoneID) {
     if (powbSynthesis.getExpectedCrpProgresses() != null) {
       int i = 0;
@@ -290,14 +285,15 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -307,10 +303,14 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return loggedCrp;
   }
 
+  public List<CrpMilestone> getMilestones() {
+    return milestones;
+  }
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   // Method to download link file
   public String getPath() {
@@ -361,7 +361,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return transaction;
   }
 
-
   public boolean isFlagship() {
     boolean isFP = false;
     if (liaisonInstitution != null) {
@@ -388,6 +387,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return isFP;
 
   }
+
 
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
     List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
@@ -454,7 +454,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
   }
 
-
   /**
    * Table only for the specific Flagship
    */
@@ -490,6 +489,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
     }
   }
+
 
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
@@ -532,7 +532,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -705,16 +704,34 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_EXPECTED_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (powbSynthesis.getExpectedCrpProgresses() != null) {
-        powbSynthesis.setExpectedCrpProgresses(null);
+
+      if (milestones != null) {
+        milestones.clear();
       }
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-      // this.expectedProgressNewData();
+
+
+      // POWB 2019 Include Milestones
+      if (this.isFlagship()) {
+        if (milestones != null && !milestones.isEmpty()) {
+          for (CrpMilestone milestone : milestones) {
+            Boolean isPowb = milestone.getIsPowb();
+
+            milestone = crpMilestoneManager.getCrpMilestoneById(milestone.getId());
+            milestone.setIsPowb(isPowb);
+
+            crpMilestoneManager.saveCrpMilestone(milestone);
+
+          }
+        }
+      }
+
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       relationsName.add(APConstants.SYNTHESIS_EXPECTED_RELATION);
@@ -758,10 +775,10 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
+
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -769,6 +786,10 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setMilestones(List<CrpMilestone> milestones) {
+    this.milestones = milestones;
   }
 
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
