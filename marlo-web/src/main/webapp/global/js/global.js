@@ -80,21 +80,24 @@ $(document).ready(function() {
   }
 
   // Save Button click (Loading state)
-  $('.button-save, .button-save span').on('click', function(e) {
+  $('button[name=save]').on('click', function(e) {
+    if($(this).hasClass('disabled')) {
+      e.preventDefault();
+      return;
+    }
     // Validate if there ia a justification
     var justification = $("form:first").find("textarea.justification");
     if(justification.exists() && justification.val().trim().length == 0) {
       e.preventDefault();
-      return
+      return;
     }
+
     // Turn save button in saving button
     turnSavingStateOn(this);
 
-  });
-  
-  $('[name=save]').on('click', function(e) {
     // Cancel Auto Save
     autoSaveActive = false;
+
   });
 
   // Yes / No Event
@@ -248,14 +251,17 @@ $(document).ready(function() {
       content: function() {
         return $(this).attr('title');
       },
-      position: { my: "left+15 center", at: "right center" }
+      position: {
+          my: "left+15 center",
+          at: "right center"
+      }
   });
 
   /* ADD TITLE TOOLTIP TO ALL REQUIRED SIGN */
-  $(".requiredTag").attr('title','This is a required field');
+  $(".requiredTag").attr('title', 'This is a required field');
 
   yesnoEvent = function(target) {
-    
+
   }
 
   /**
@@ -310,43 +316,49 @@ $(document).ready(function() {
 
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
-  
+
   if($.fn.trumbowyg) {
     $('.allowTextEditor').trumbowyg({
         btns: [
-          ['strong', 'em', 'del'],
-          ['superscript', 'subscript'],
-          ['link'],
-          ['unorderedList', 'orderedList'],
-          ['removeformat'],
-      ],
-      autogrow: true,
-      minimalLinks: true,
-      semantic: true,
-      removeformatPasted: true
+            [
+                'strong', 'em', 'del'
+            ], [
+                'superscript', 'subscript'
+            ], [
+              'link'
+            ], [
+                'unorderedList', 'orderedList'
+            ], [
+              'removeformat'
+            ],
+        ],
+        autogrow: true,
+        minimalLinks: true,
+        semantic: true,
+        removeformatPasted: true
     });
   }
 
-  $('.decodeHTML').each(function(i,e){
+  $('.decodeHTML').each(function(i,e) {
     $(this).html($(this).text());
   });
 
   // Accessible enter click when button is focus
   $("input[type='submit']").keyup(function(event) {
-    if (event.keyCode === 13) {
-        $(this).click();
+    if(event.keyCode === 13) {
+      $(this).click();
     }
   });
 
 });
 
-function turnSavingStateOn(button){
+function turnSavingStateOn(button) {
   $(button).addClass('disabled animated flipInY');
   $(button).find('.glyphicon').hide();
   $(button).find('.saveText').html('Saving ... <img src="' + baseURL + '/global/images/loading_3.gif" />');
 }
 
-function turnSavingStateOff(button){
+function turnSavingStateOff(button) {
   $(button).removeClass('disabled animated flipInY');
   $(button).find('.glyphicon').show();
   $(button).find('.saveText').html('Save');
@@ -433,19 +445,19 @@ function expandViewMoreBlock() {
  */
 
 function isStatusCancelled(statusId) {
-  return(statusId == "5")
+  return(statusId == "5");
 }
 
 function isStatusComplete(statusId) {
-  return(statusId == "3")
+  return(statusId == "3");
 }
 
 function isStatusExtended(statusId) {
-  return(statusId == "4")
+  return(statusId == "4");
 }
 
 function isStatusOnGoing(statusId) {
-  return(statusId == "2")
+  return(statusId == "2");
 }
 
 /**
@@ -530,9 +542,8 @@ function notificationError(message) {
   noty(notyOptions);
 }
 
-
 /* Set elementsListComponent function to the functioning of the customForm macro */
-function setElementsListComponent(){
+function setElementsListComponent() {
   // On select element
   $('select[class*="elementType-"]').on('change', onSelectElement);
 
@@ -547,9 +558,9 @@ function onSelectElement() {
   var maxLimit = $(this).classParam('maxLimit');
   var $list = $('.listType-' + elementType);
   var counted = $list.find('li').length;
-  
+
   // Select an option
-  if($option.val() == "-1"){
+  if($option.val() == "-1") {
     return;
   }
 
@@ -576,11 +587,11 @@ function onSelectElement() {
 
   // Clone the new element
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
-  
+
   console.log($element);
-  
+
   // Remove template tag
-  $element.find('input').each(function(i, e){
+  $element.find('input').each(function(i,e) {
     e.name = (e.name).replace("_TEMPLATE_", "");
     e.id = (e.id).replace("_TEMPLATE_", "");
   });

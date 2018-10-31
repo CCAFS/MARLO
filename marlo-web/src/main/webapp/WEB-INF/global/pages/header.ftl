@@ -36,7 +36,7 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20181026" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20181031" />
     <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global-center.css" />
