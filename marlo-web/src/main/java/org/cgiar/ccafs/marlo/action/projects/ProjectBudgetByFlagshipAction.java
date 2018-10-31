@@ -388,7 +388,8 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       List<CrpProgram> flagships = new ArrayList<>();
       List<ProjectFocus> projectFocuses = new ArrayList<>(projectBD.getProjectFocuses().stream()
         .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase())
-          && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+          && pf.getCrpProgram().getResearchArea() == null)
         .collect(Collectors.toList()));
       for (ProjectFocus projectFocus : projectFocuses) {
         flagships.add(projectFocus.getCrpProgram());

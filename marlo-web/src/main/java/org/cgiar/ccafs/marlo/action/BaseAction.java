@@ -1964,17 +1964,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the project contribute two or more flagships
    */
   public boolean getCountProjectFlagships(long projectID) {
-
-    Project project = projectManager.getProjectById(projectID);
-    if (project != null) {
-      if (project.getProjectFocuses() != null) {
-        List<ProjectFocus> projectFocuses = new ArrayList<>(project.getProjectFocuses().stream()
-          .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase())
-            && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList()));
-        if (projectFocuses != null) {
-          if (projectFocuses.size() >= 2) {
-            return true;
+    if (this.isCenterGlobalUnit()) {
+      Project project = projectManager.getProjectById(projectID);
+      if (project != null) {
+        if (project.getProjectFocuses() != null) {
+          List<ProjectFocus> projectFocuses = new ArrayList<>(project.getProjectFocuses().stream()
+            .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase())
+              && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && pf.getCrpProgram().getResearchArea() == null)
+            .collect(Collectors.toList()));
+          if (projectFocuses != null) {
+            if (projectFocuses.size() >= 2) {
+              return true;
+            }
           }
         }
       }
