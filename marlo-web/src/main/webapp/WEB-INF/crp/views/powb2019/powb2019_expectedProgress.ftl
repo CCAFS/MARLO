@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "powbSynthesis.expectedProgress" /]
+[#assign customName= "powbSynthesis" /]
 [#assign customLabel= "powbSynthesis.${currentStage}" /]
 
 
@@ -46,10 +46,8 @@
             [#-- Provide a short narrative of expected highlights of the CRP/PTF in the coming year --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}[0].narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(2000)}" editable=editable allowTextEditor=true   /]
-              <input type="hidden" name="${customName}[0].id" value="${customName}[0].id"/>              
+              [@customForm.textArea name="${customName}.expectedProgressNarrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(2000)}" editable=editable allowTextEditor=true   /]            
             </div>
-            
             [#if PMU]
             <div class="form-group">
               [@tableFlagshipSynthesis tableName="narrativeFlagshipsTable" list=tocList columns=["narrative"] /]
@@ -211,7 +209,7 @@
                 [#-- Include in POWB --]
                 [#if flagship && !includeAllColumns]
                   <td class="text-center">
-                    [#local milestoneName = "milestones[${milestoneIndex}]" ]
+                    [#local milestoneName = "powbSynthesis.milestones[${milestoneIndex}]" ]
                     <input type="hidden" name="${milestoneName}.id" value="${m.id}"/>
                     [@customForm.checkmark id="m-${(m.id)!''}" name="${milestoneName}.isPowb" checked=(m.isPowb)!false editable=editable centered=true/] 
                     [#local milestoneIndex = milestoneIndex + 1 ]
