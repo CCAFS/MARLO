@@ -1068,6 +1068,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
+      // Expected Study Regions List
+      if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
+        expectedStudy.setRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+            && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())));
+      }
+
       // Expected Study Crp List
       if (expectedStudy.getProjectExpectedStudyCrps() != null) {
         expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
