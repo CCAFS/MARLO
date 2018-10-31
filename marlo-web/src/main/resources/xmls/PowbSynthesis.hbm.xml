@@ -9,6 +9,9 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+		<property name="expectedProgressNarrative" type="string">
+      <column name="expected_progress_narrative" sql-type="TEXT" />
+    </property>
 		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
 			fetch="select">
 			<column name="id_phase" />

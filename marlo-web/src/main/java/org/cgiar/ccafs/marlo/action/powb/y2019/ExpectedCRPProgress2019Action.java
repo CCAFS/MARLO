@@ -124,7 +124,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   private List<CrpProgram> flagships;
 
-  private List<CrpMilestone> milestones;
 
   @Inject
   public ExpectedCRPProgress2019Action(APConfig config, GlobalUnitManager crpManager,
@@ -166,26 +165,15 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
 
   public void expectedProgressNewData() {
-    if (powbSynthesis.getExpectedCrpProgresses() == null) {
-      powbSynthesis.setExpectedCrpProgresses(new ArrayList<>());
-    }
+
     for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
       PowbExpectedCrpProgress powbExpectedCrpProgressNew = null;
       if (powbExpectedCrpProgress != null) {
 
-
-        if (powbExpectedCrpProgress.getId() == null) {
-
-          powbExpectedCrpProgressNew = new PowbExpectedCrpProgress();
-          powbExpectedCrpProgressNew.setPowbSynthesis(powbSynthesis);
-
-        } else {
-
-          powbExpectedCrpProgressNew =
-            powbExpectedCrpProgressManager.getPowbExpectedCrpProgressById(powbExpectedCrpProgress.getId());
+        powbExpectedCrpProgressNew =
+          powbExpectedCrpProgressManager.getPowbExpectedCrpProgressById(powbExpectedCrpProgress.getId());
 
 
-        }
         powbExpectedCrpProgressNew.setExpectedHighlights(powbExpectedCrpProgress.getExpectedHighlights());
         powbExpectedCrpProgressNew.setMeans(powbExpectedCrpProgress.getMeans());
         powbExpectedCrpProgressNew.setAssessment(powbExpectedCrpProgress.getAssessment());
@@ -193,7 +181,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
         powbExpectedCrpProgressNew =
           powbExpectedCrpProgressManager.savePowbExpectedCrpProgress(powbExpectedCrpProgressNew);
-
 
       }
 
@@ -303,9 +290,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return loggedCrp;
   }
 
-  public List<CrpMilestone> getMilestones() {
-    return milestones;
-  }
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -474,9 +458,12 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
+
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
           .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
           .collect(Collectors.toList()));
+
+
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
@@ -641,20 +628,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
         reader.close();
       } else {
         this.setDraft(false);
-        if (this.isFlagship()) {
-          powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
-            .filter(c -> c.isActive() && c.getCrpMilestone() != null).collect(Collectors.toList()));
-
-
-          powbSynthesis.getExpectedCrpProgresses()
-            .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
-        } else {
-          powbSynthesis.setExpectedCrpProgresses(powbSynthesis.getPowbExpectedCrpProgresses().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
-        }
-
       }
     }
     outcomes = new ArrayList<>();
@@ -705,8 +678,8 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
     if (this.isHttpPost()) {
 
-      if (milestones != null) {
-        milestones.clear();
+      if (powbSynthesis.getMilestones() != null) {
+        powbSynthesis.getMilestones().clear();
       }
     }
   }
@@ -716,11 +689,15 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
+      PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesis.getId());
+      powbSynthesisDB.setExpectedProgressNarrative(powbSynthesis.getExpectedProgressNarrative());
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesisDB);
+
 
       // POWB 2019 Include Milestones
       if (this.isFlagship()) {
-        if (milestones != null && !milestones.isEmpty()) {
-          for (CrpMilestone milestone : milestones) {
+        if (powbSynthesis.getMilestones() != null && !powbSynthesis.getMilestones().isEmpty()) {
+          for (CrpMilestone milestone : powbSynthesis.getMilestones()) {
             Boolean isPowb = milestone.getIsPowb();
 
             milestone = crpMilestoneManager.getCrpMilestoneById(milestone.getId());
@@ -733,8 +710,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       }
 
       List<String> relationsName = new ArrayList<>();
-      powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      relationsName.add(APConstants.SYNTHESIS_EXPECTED_RELATION);
+
       /**
        * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
        * the auditlog table.
@@ -788,9 +764,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setMilestones(List<CrpMilestone> milestones) {
-    this.milestones = milestones;
-  }
 
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
