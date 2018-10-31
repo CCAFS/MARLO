@@ -2577,21 +2577,20 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (deliverablePartnershipResponsibles.size() > 1) {
             LOG.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + ". Phase: "
               + this.getSelectedPhase().toString());
-            deliverablePartnershipResponsibles
-              .sort((d1, d2) -> d1.getProjectPartnerPerson().getId().compareTo(d2.getProjectPartnerPerson().getId()));
           }
           DeliverablePartnership responisble = deliverablePartnershipResponsibles.get(0);
 
           if (responisble != null) {
+            if (responisble.getProjectPartner() != null) {
+              if (responisble.getProjectPartner().getInstitution() != null) {
+                institution = responisble.getProjectPartner().getInstitution().getComposedName();
+              }
+            }
             if (responisble.getProjectPartnerPerson() != null) {
               ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
               leader =
                 responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-              if (responsibleppp.getProjectPartner() != null) {
-                if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                  institution = responsibleppp.getProjectPartner().getInstitution().getComposedName();
-                }
-              }
+
             }
           }
         }
