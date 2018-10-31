@@ -133,35 +133,35 @@
                   </div>
                 </div>
               </div>
-               
+              
+              
+              [#-- SUGGESTED LOCATIONS --]
+              [#if project.regionFS?has_content ||  project.countryFS?has_content] 
               <div class="borderBox">
-                [#-- RECOMMENDED LOCATIONS --]
                 <div class="">
                   <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedLocations" /]:</h5>
                   <label for="">[@s.text name="projectLocations.locationsBelow" /]:</label>
-                  <div class="simpleBox col-md-12">
-                    <div class="row recommendedList">
-                      [#-- RECOMMENDED REGIONS LIST --]
+                  <div class="simpleBox">
+                    <div class="recommendedList">
+                      [#-- SUGGESTED REGIONS LIST --]
                       [#if project.regionFS?has_content]
-                      <div class="regionsContent" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
-                        <div class="col-md-12" >
-                          <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedRegions" /]:</h5>
+                        <h5 class="sectionSubTitle text-gray">[@s.text name="projectLocations.suggestedRegions" /]:</h5>
+                        <div class="row regionsContent" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
+                          [#list project.regionFS as location]
+                            [@recommendedLocation element=location name="project.regionFS" index=location_index template=false /]
+                          [/#list]
                         </div>
-                        [#list project.regionFS as location]
-                          [@recommendedLocation element=location name="project.regionFS" index=location_index template=false /]
-                        [/#list]
-                      </div>
                       [#else]
                         [#assign recommendedRegions=0]
                       [/#if]
-                      [#-- RECOMMENDED COUNTRIES LIST --]
+                      [#-- SUGGESTED COUNTRIES LIST --]
                       [#if project.countryFS?has_content]
-                        <div class="col-md-12">
-                          <h5 class="sectionSubTitle">[@s.text name="projectLocations.suggestedCountries" /]:</h5>
+                        <h5 class="sectionSubTitle text-gray">[@s.text name="projectLocations.suggestedCountries" /]:</h5>
+                        <div class="row">
+                          [#list project.countryFS as location]
+                            [@recommendedLocation element=location name="project.countryFS" index=location_index template=false /]
+                          [/#list]
                         </div>
-                        [#list project.countryFS as location]
-                          [@recommendedLocation element=location name="project.countryFS" index=location_index template=false /]
-                        [/#list]
                       [#else]
                         [#assign recommendedCountries=0]
                       [/#if]
@@ -172,10 +172,10 @@
                   </div>
                 </div>
               </div>
+              [/#if]
               
-              [#-- OTHER LOCATIONS --]   
-              [#if action.hasSpecificities('crp_other_locations')]
-              <div class="borderBox">
+              [#-- OTHER LOCATIONS (MAP) --]   
+              <div class="borderBox" style="display:${action.hasSpecificities('crp_other_locations')?string('block', 'none')}">
                 <div class="allLocationsButton btn btn-default pull-right" data-toggle="modal" data-target=".allLocationsModal">
                   <img src="${baseUrl}/global/images/map.png" alt="" /> <span>[@s.text name="projectLocations.allLocationsMap" /]</span>
                 </div>
@@ -211,12 +211,11 @@
                   [/#if]
                 </div>
               </div>
-              [/#if]
+              
+              [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
             </div>
+            
           </div> 
-          
-          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-         
         [/@s.form] 
       </div>
     </div>  
