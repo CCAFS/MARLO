@@ -46,7 +46,8 @@
             [#-- Provide a short narrative of expected highlights of the CRP/PTF in the coming year --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(2000)}" editable=editable allowTextEditor=true   /]
+              [@customForm.textArea name="${customName}[0].narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(2000)}" editable=editable allowTextEditor=true   /]
+              <input type="hidden" name="${customName}[0].id" value="${customName}[0].id"/>              
             </div>
             
             [#if PMU]
@@ -210,7 +211,7 @@
                 [#-- Include in POWB --]
                 [#if flagship && !includeAllColumns]
                   <td class="text-center">
-                    [#local milestoneName = "${customName}.milestones[${milestoneIndex}]" ]
+                    [#local milestoneName = "milestones[${milestoneIndex}]" ]
                     <input type="hidden" name="${milestoneName}.id" value="${m.id}"/>
                     [@customForm.checkmark id="m-${(m.id)!''}" name="${milestoneName}.isPowb" checked=(m.isPowb)!false editable=editable centered=true/] 
                     [#local milestoneIndex = milestoneIndex + 1 ]
