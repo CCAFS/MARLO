@@ -12,64 +12,36 @@
 	rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans"
 	rel="stylesheet">
-
-<style>
-html {
-  box-sizing: border-box;
-  overflow: -moz-scrollbars-vertical;
-  overflow-y: scroll;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-body {
-  margin: 0;
-  background: #fafafa;
-}
-</style>
 </head>
 
 <body>
 	<header>
-		<div class="container">
-			<div class="clarisaHeader">
-				<center>
-					<div class="headerTitle">
-						<div class="cTitle no-selectable">CLARISA</div>
-						<div class="sTitle no-selectable">
-							CGIAR Level Agricultural Results<br> Interoperable System
-							Architecture
-						</div>
-					</div>
-				</center>
+		<ul class="nav no-selectable">
+			<li><a href="">Terms of Service</a></li>
+			<li><a href="">API License</a></li>
+			<li><a href="">Contact</a></li>
+		</ul>
+		<div class="clarisaHeader">
+			<div class="headerTitle no-selectable">
+				<img class="cgiar-logo" src="cgiarlogo.png" width="100px" draggable="false">
+				<div class="cTitle">CLARISA</div>
+				<div class="sTitle">
+					CGIAR Level Agricultural Results <br>Interoperable System Architecture
+				</div>
 			</div>
 		</div>
 	</header>
-	<div id="swagger-ui"></div>
-	<script src="./swagger-ui-bundle.js">
-    
-  </script>
-	<script src="./swagger-ui-standalone-preset.js">
-    
-  </script>
-	<!--Start of Tawk.to Script-->
-	<script type="text/javascript">
-    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-    (function() {
-      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-      s1.async = true;
-      s1.src = 'https://embed.tawk.to/5bd87ca965224c26405164ac/default';
-      s1.charset = 'UTF-8';
-      s1.setAttribute('crossorigin', '*');
-      s0.parentNode.insertBefore(s1, s0);
-    })();
-  </script>
-	<!--End of Tawk.to Script-->
-	
-  <script src="./swagger-ui-setup.js">
-  
-  </script>
+	<div class="container">
+		<div id="swagger-ui"></div>
+	</div>
+  <div class="chat-icon" onClick="javascript:void(Tawk_API.toggle())"><img src="chat-icon.png" width="100%" draggable="false"></div>
+	<footer class="clarisaFooter no-selectable">
+		<div class="credit">Resources taken from CCAFS | Developed by MARLO Team</div>
+		<script src="./swagger-ui-bundle.js"></script>
+		<script src="./swagger-ui-standalone-preset.js"></script>
+		<script type="text/javascript" src="./clarisa-tawkto.js"></script>
+		<script src="./swagger-ui-setup.js"></script>
+	</footer>
+
 </body>
 </html>
