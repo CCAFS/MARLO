@@ -305,7 +305,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         + "\r\n"
         + "Sed in elit sed justo consequat convallis et in est. Sed ante turpis, pellentesque et nunc vel, faucibus viverra libero. Sed egestas, ante vitae ornare egestas, turpis est eleifend lacus, nec fermentum leo est in lectus. Fusce vehicula lacus metus, ac feugiat diam pellentesque dictum. Phasellus ut nibh sed sapien varius ultrices. Maecenas luctus vehicula turpis. Morbi maximus neque sed lacinia gravida. Mauris ac pharetra mi. Aenean gravida rutrum nulla a rutrum. Maecenas quam diam, interdum vel ultrices eget, convallis vitae arcu. Maecenas ac elit urna. Curabitur eget ultricies neque. In sit amet cursus lectus.\r\n"
         + "\r\n"
-        + "Mauris vulputate velit at dictum aliquam. Nulla sed velit condimentum nisi rutrum vehicula. Donec nec est eu risus egestas suscipit. Phasellus vitae nisi id nisl tincidunt efficitur. Ut at mauris vitae tortor tempor dignissim ac sit amet leo. Aliquam ornare vestibulum eros, ac porta mi. Nulla euismod erat non ipsum tempor ornare. Curabitur hendrerit finibus tellus a accumsan. Praesent volutpat.";
+        + "Mauris vulputate velit at dictum aliquam. Nulla sed velit condimentum nisi rutrum vehicula. Donec nec est eu risus egestas suscipit. Phasellus vitae nisi id nisl tincidunt efficitur. Ut at mauris vitae tortor tempor dignissim ac sit amet leo. Aliquam ornare vestibulum eros, ac porta mi. Nulla euismod erat non ipsum tempor ornare. Curabitur hendrerit finibus tellus a accumsan. Praesent volutpat. \r\n <a href=\"https://www.w3schools.com\">Visit W3Schools</a> ";
 
     /*
      * if (powbSynthesisPMU != null) {
@@ -318,7 +318,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
      */
 
     poiSummary.convertHTMLTags(document, financialPlanDescription);
-    poiSummary.textHyperlink("www.de.com", "hiperlink text", document.createParagraph());
     // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
 
   }
