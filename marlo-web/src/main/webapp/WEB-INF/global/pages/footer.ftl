@@ -54,12 +54,12 @@
     
     [/#compress]
     
-    <div id="draggable-button">
+    <div id="draggable-button" class="hidden-print">
       <p><span class="glyphicon glyphicon-comment"></span> Chat </p> <span class="status"></span>
     </div>
     
     [#if !config.production && config.debug]
-      <div id="debugPanel" class="ui-widget-content">
+      <div id="debugPanel" class="ui-widget-content hidden-print">
         <div id="accordion">
           <h3>Debug Panel</h3>
           <div>
