@@ -341,6 +341,29 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
 
       if (responsible != null) {
+        if (responsible.getProjectPartnerPerson() == null) {
+
+          // get deliverable information when partner responsible does not have a person
+
+          if (responsible.getProjectPartner() != null) {
+            if (responsible.getProjectPartner().getInstitution() != null) {
+              if (responsible.getProjectPartner().getInstitution().getAcronym() != null
+                && !responsible.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
+                ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                  + responsible.getProjectPartner().getInstitution().getAcronym() + "</span>");
+              } else {
+                ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                  + responsible.getProjectPartner().getInstitution().getName() + "</span>");
+              }
+            }
+          }
+
+          if (responsible.getPartnerDivision() != null && responsible.getPartnerDivision().getAcronym() != null
+            && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
+          }
+
+
+        }
         if (responsible.getProjectPartner() != null) {
           institutionsResponsibleList.add(responsible.getProjectPartner().getInstitution());
         }
