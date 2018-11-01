@@ -32,25 +32,43 @@
         <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /]</h4>
         <div class="borderBox">
           <div class="loading" style="display:none"></div>
-          <div class="form-group row">
+          <div class="row grayBox">
             <div class="col-md-4">
-              <label for="globalUnitID">Global Unit:</label>
-              <select name="selectedGlobalUnitID" id="globalUnitID">
-                <option value="-1">Select an option...</option>
-                [#list (crps)![] as globalUnit]<option value="${globalUnit.id}">${globalUnit.acronym}</option>[/#list]
-              </select>
+              <div class="form-group">
+                <label for="globalUnitID">Global Unit:</label>
+                <select name="selectedGlobalUnitID" id="globalUnitID" class="form-control">
+                  <option value="-1">Select an option...</option>
+                  [#list (crps)![] as globalUnit]<option value="${globalUnit.id}">${globalUnit.acronym}</option>[/#list]
+                </select>
+              </div>
             </div>
             <div class="col-md-4">
-              <label for="phaseID">Phase:</label>
-              <select name="selectedPhaseID" id="phaseID">
-                <option value="">Select an option...</option>
-              </select>
+              <div class="form-group">
+                <label for="phaseID">Phase:</label>
+                <select name="selectedPhaseID" id="phaseID" class="form-control">
+                  <option value="">Select an option...</option>
+                </select>
+              </div>
             </div>
+            
           </div>
           <hr />
           <div class="form-group">
-            
-            <label for="toggleSelectAll" class="pull-right"><input type="checkbox" name="" id="toggleSelectAll" checked="checked"/> Select/Unselect All</label>
+            [#-- Filter --]
+            <div class="controls-block row form-group" style="">
+              <div class="col-md-7">
+                <div class="input-group">
+                  <input type="text" id="filterText" class="form-control" placeholder="Filter by IDs...">
+                  <span class="input-group-btn">
+                    <button id="filterButton" class="btn btn-default" type="button">Go!</button>
+                  </span>
+                </div><!-- /input-group -->
+              </div>
+              <div class="col-md-5">
+                <label for="toggleSelectAll" class="pull-right"><input type="checkbox" name="" id="toggleSelectAll" checked="checked"/> Select/Unselect All</label>
+              </div>
+            </div>
+            <small><i> Items Checked: <span class="count">0</span></i></small>
             <div id="deliverables-checkbox">
               <table class="table table-hover">
                 <thead>
@@ -59,9 +77,9 @@
                   </tr>
                 </thead>
                 <tbody>
+                  [#-- Filled by Javascript --]
                 </tbody>
               </table>
-              <small><i> Found: <span class="count">0</span></i></small>
             </div>
           </div>
           
