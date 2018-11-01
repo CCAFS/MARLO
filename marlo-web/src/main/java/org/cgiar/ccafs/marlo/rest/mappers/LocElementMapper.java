@@ -13,53 +13,25 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class LocElementDTO {
+@Mapper(componentModel = "jsr330")
+public interface LocElementMapper {
 
+  public abstract LocElement locElementDTOToLocElement(LocElementDTO locElement);
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private Long id;
+  public abstract LocElementDTO locElementToLocElementDTO(LocElement locElement);
 
-
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String isoAlpha2;
-
-
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String name;
-
-
-  public Long getId() {
-    return id;
-  }
-
-
-  public String getIsoAlpha2() {
-    return isoAlpha2;
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setIsoAlpha2(String isoAlpha2) {
-    this.isoAlpha2 = isoAlpha2;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+  public abstract LocElement updateLocElementFromLocElementDto(LocElementDTO locElementDTO,
+    @MappingTarget LocElement locElement);
 
 }
