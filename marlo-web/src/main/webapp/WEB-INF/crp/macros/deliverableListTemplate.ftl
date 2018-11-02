@@ -327,6 +327,8 @@
                 [/#if]
               [/#if]
             [/#list]
+          [#else]
+            <strong>${(dp.projectPartner.composedName)!}</strong>
           [/#if]
           </div>
         </div>
