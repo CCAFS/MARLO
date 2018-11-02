@@ -98,23 +98,29 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
     if (fundingSource != null) {
       String params[] = {crp.getAcronym(), fundingSource.getId() + ""};
-      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+
+      if (fundingSource.getCreatedBy().getId().equals(baseAction.getCurrentUser().getId())) {
         canEdit = true;
       } else {
-        // List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if ((baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
-          || baseAction
-            .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params))
-          || baseAction
-            .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, params)))) {
+
+        if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
           canEdit = true;
+        } else {
+          // List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
+          if ((baseAction
+            .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
+            || baseAction
+              .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params))
+            || baseAction
+              .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, params)))) {
+            canEdit = true;
 
-        }
+          }
 
-        if (baseAction.isCrpClosed()) {
-          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
-            canEdit = false;
+          if (baseAction.isCrpClosed()) {
+            if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+              canEdit = false;
+            }
           }
         }
       }
