@@ -729,7 +729,8 @@ function getKeyByValue(obj,value) {
 
 function postMessageToSlack(messageJson) {
   var xmlhttp = new XMLHttpRequest();
-  var webhook_url = 'https://hooks.slack.com/services/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';
+  // Webhook URLs for Your Workspace #marlo-notifications
+  var webhook_url = 'https://hooks.slack.com/services/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';
   xmlhttp.open('POST', webhook_url, false);
   xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   xmlhttp.send(messageJson);
