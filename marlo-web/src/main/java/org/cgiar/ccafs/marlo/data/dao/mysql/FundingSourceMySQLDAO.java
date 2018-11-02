@@ -136,6 +136,46 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   }
 
   @Override
+  public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypes(GlobalUnit globalUnit, Phase phase,
+    Set<Integer> statusTypes) {
+
+    /**
+     * Ideally it would be great if we could just fetch the required properties rather than the entity graph,
+     * but because we need to show multiple fundingSourceInstitutions we would need to detect and then
+     * remove duplicate fundingSources from the resultSet in the cases where there is more than one leadPartner.
+     * Therefore I have opted to do a HQL query instead, which will handle this scenario well.
+     */
+    String queryString = "SELECT DISTINCT f FROM FundingSource f " + "inner join fetch f.fundingSourceInfos fsi "
+      + "left join fetch fsi.budgetType " + "left join fetch f.fundingSourceInstitutions fsint "
+      + "left join fetch fsint.institution " + "left join fetch fsi.directDonor " + "left join fetch fsi.originalDonor "
+      + "left join fetch f.sectionStatuses ss " + "left join fetch f.fundingSourceBudgets fsb "
+      + "WHERE f.active = TRUE " + "AND f.crp = :globalUnit " + "AND fsi.phase = :phase "
+      + "AND ( fsint IS NULL OR fsint.phase = :phase ) " /** I think SectionStatus should be updated to use a phase **/
+      // + "AND ( ss IS NULL OR (ss.cycle = :phaseDescription AND ss.year = :phaseYear ) ) "
+      // Above: I don't know why this piece of code is here
+      // + "AND ( fsb IS NULL OR (fsb.year = :phaseYear AND fsb.phase = :phase ) ) "
+      // The above line should be what we use, but it appears we have some data corruption, excluding the year works for
+      // now, so using the below statement.
+      + "AND ( fsb IS NULL OR fsb.phase = :phase ) " + "AND ( fsi.status IS NULL OR ( fsi.status IN ( "
+      + statusTypes.stream().map(i -> i.toString()).collect(Collectors.joining(",")) + " ) ) ) "
+      + "ORDER BY fsi.endDate NULLS FIRST";
+
+    /**
+     * We are using PhaseDescription.PLANNING because if REPORTING is entered the section status results will
+     * filter out the results.
+     */
+    @SuppressWarnings("unchecked")
+    List<FundingSource> fundingSources = this.getSessionFactory().getCurrentSession().createQuery(queryString)
+      .setParameter("globalUnit", globalUnit).setParameter("phase", phase)
+      // .setParameter("phaseDescription", PhaseDescription.PLANNING.toString())
+      // .setParameter("phaseYear", phase.getYear())
+      .list();
+
+    return fundingSources;
+
+  }
+
+  @Override
   public FundingSource save(FundingSource fundingSource) {
     if (fundingSource.getId() == null) {
       super.saveEntity(fundingSource);
