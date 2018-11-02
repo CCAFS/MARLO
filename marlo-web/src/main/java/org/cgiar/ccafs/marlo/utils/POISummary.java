@@ -110,6 +110,7 @@ public class POISummary {
     String url = "";
     int posInit = 0;
     int posFinal = 0;
+    int postLastLink = 0;
     String expressionListActual = "", textIndicatorLink = "";
 
 
@@ -121,72 +122,71 @@ public class POISummary {
       expressionListActual = expressionsList.get(i);
 
       if (text.contains(expressionListActual)) {
-        boolean findStartTag = false;
-        int j = 0;
-        while (findStartTag == false) {
+
+        for (int j = 0; j < text.length(); j++) {
           /*
            * Getting open tags
            */
-
           if ((text.charAt(j) == expressionListActual.charAt(0))
             && text.charAt(j + 1) == expressionListActual.charAt(1)) {
 
-            findStartTag = true;
+            /*
+             * Detect start of a href tags
+             */
+            if (expressionListActual.contains("<a")) {
+              System.out.println("pos j + 3: " + text.charAt(j + 3) + " " + text.charAt(j + 4));
+            }
 
-            // Detect start of a href tags
-            System.out.println("test last index of " + text.lastIndexOf("</i>", j));
             if (text.charAt(j + 3) == 'h' && text.charAt(4) == 'r') {
               System.out.println("entro href");
               posInit = j + expressionListActual.length() + 3;
               isLink = true;
-              System.out.println("html  if");
+
+              /*
+               * search for the close url part
+               */
+              int k = j;
+              while (postLastLink == 0) {
+
+                if (text.charAt(k) == '>') {
+
+                  postLastLink = k + 1;
+                }
+                k++;
+              }
             } else {
               System.out.println("other if");
-              // Detect other tags
+              /*
+               * Detect other tags - diferent to html tags
+               */
               posInit = j;
-              // + expressionListActual.length();
             }
 
-
             startsPosList.add(posInit);
-
             tagsAddList.add(expressionsList.get(i));
           }
-          j++;
         }
 
         /*
          * Getting close tags
          */
 
-        int postLastLink = 0;
-        boolean findFinalTag = false;
-        int k = j;
-        while (findFinalTag == false) {
 
-          /*
-           * If exist href tag, detect the close of the link part
-           */
-          if (isLink) {
-            if (text.charAt(k) == '>') {
+        for (int k = 0; k < text.length(); k++) {
 
-              postLastLink = k + 1;
-            }
-          }
 
+          // If detect close tag
           if (text.charAt(k) == expressionsListClose.get(i).charAt(0)
             && text.charAt(k + 1) == expressionsListClose.get(i).charAt(1)
             && text.charAt(k + 2) == expressionsListClose.get(i).charAt(2)) {
-            findFinalTag = true;
             posFinal = k - 3;
 
-            if (isLink) {
+            if (isLink == true && expressionListActual.contains("<a")) {
               textIndicatorLink = text.substring(postLastLink, posFinal);
               url = text.substring(posInit, postLastLink);
             }
+            finalPosList.add(posFinal);
           }
-          finalPosList.add(posFinal);
-          k++;
         }
       }
     }
@@ -307,6 +307,7 @@ public class POISummary {
     }
 
     if (finalPosition < text.length()) {
+      System.out.println("last  text length " + text.length() + " finalpos " + finalPosition);
       stringTemp = text.substring(finalPosition, text.length());
       paragraph = document.createParagraph();
       paragraph.setAlignment(ParagraphAlignment.BOTH);
