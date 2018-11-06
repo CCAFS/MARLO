@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.authz.AuthorizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,7 +151,15 @@ public class FundingSourceListAction extends BaseAction {
 
     }
 
-    this.clearPermissionsCache();
+    // this.clearPermissionsCache();
+    // HJ : add the permission String
+    AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+      .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+
+
+    String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
+    info.getStringPermissions().add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
+
     if (fundingSourceID > 0) {
       return SUCCESS;
     }

@@ -45,6 +45,8 @@ import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.session.Session;
@@ -76,6 +78,8 @@ public class APCustomRealm extends AuthorizingRealm {
   private final Authenticator dbAuthenticator;
 
   private final Authenticator ldapAuthenticator;
+
+  private Cache<Object, AuthorizationInfo> authorizationCache;
 
   @Inject
   public APCustomRealm(@Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator,
@@ -188,6 +192,82 @@ public class APCustomRealm extends AuthorizingRealm {
 
 
   }
+
+  /**
+   * Methods to recall The Current AutorizationInfo
+   * 
+   * @return
+   */
+  private Cache<Object, AuthorizationInfo> getAuthorizationCacheLazy() {
+
+    if (this.authorizationCache == null) {
+
+
+      CacheManager cacheManager = this.getCacheManager();
+
+      if (cacheManager != null) {
+        String cacheName = this.getAuthorizationCacheName();
+
+        this.authorizationCache = cacheManager.getCache(cacheName);
+      } else {
+
+      }
+    }
+
+    return this.authorizationCache;
+  }
+
+  /**
+   * Methods to recall The Current AutorizationInfo
+   * 
+   * @return
+   */
+  @Override
+  public AuthorizationInfo getAuthorizationInfo(PrincipalCollection principals) {
+
+    if (principals == null) {
+      return null;
+    }
+
+    AuthorizationInfo info = null;
+
+
+    Cache<Object, AuthorizationInfo> cache = this.getAvailableAuthorizationCache();
+    if (cache != null) {
+
+      Object key = this.getAuthorizationCacheKey(principals);
+      info = cache.get(key);
+
+    }
+
+
+    if (info == null) {
+      // Call template method if the info was not found in a cache
+      info = this.doGetAuthorizationInfo(principals);
+      // If the info is not null and the cache has been created, then cache the authorization info.
+      if (info != null && cache != null) {
+
+        Object key = this.getAuthorizationCacheKey(principals);
+        cache.put(key, info);
+      }
+    }
+
+    return info;
+  }
+
+  /**
+   * Methods to recall The Current AutorizationInfo
+   * 
+   * @return
+   */
+  private Cache<Object, AuthorizationInfo> getAvailableAuthorizationCache() {
+    Cache<Object, AuthorizationInfo> cache = this.getAuthorizationCache();
+    if (cache == null && this.isAuthorizationCachingEnabled()) {
+      cache = this.getAuthorizationCacheLazy();
+    }
+    return cache;
+  }
+
 
   /**
    * Validate if the email entered beings a CGIAR Active directory.
