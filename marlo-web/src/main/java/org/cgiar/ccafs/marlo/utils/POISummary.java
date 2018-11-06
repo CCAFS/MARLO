@@ -52,8 +52,6 @@ public class POISummary {
 
   // LOG
   private static final Logger LOG = LoggerFactory.getLogger(POISummary.class);
-
-
   private final static String FONT_TYPE = "Calibri Light";
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
@@ -113,7 +111,6 @@ public class POISummary {
     int postLastLink = 0;
     String expressionListActual = "", textIndicatorLink = "";
 
-
     /*
      * runs through expressions list and checks if it is included in the text,
      * if it occurs, the text is scanned and the position of the label is detected
@@ -129,41 +126,29 @@ public class POISummary {
            */
           if ((text.charAt(j) == expressionListActual.charAt(0))
             && text.charAt(j + 1) == expressionListActual.charAt(1)) {
+            posInit = j;
+
+            startsPosList.add(posInit);
+            tagsAddList.add(expressionsList.get(i));
 
             /*
              * Detect start of a href tags
              */
-            if (expressionListActual.contains("<a")) {
-              System.out.println("pos j + 3: " + text.charAt(j + 3) + " " + text.charAt(j + 4));
-            }
+            if (text.charAt(j + 3) == 'h' && text.charAt(j) == 'r') {
 
-            if (text.charAt(j + 3) == 'h' && text.charAt(4) == 'r') {
-              System.out.println("entro href");
-              posInit = j + expressionListActual.length() + 3;
               isLink = true;
 
               /*
                * search for the close url part
                */
               int k = j;
-              while (postLastLink == 0) {
-
+              do {
                 if (text.charAt(k) == '>') {
-
                   postLastLink = k + 1;
                 }
                 k++;
-              }
-            } else {
-              System.out.println("other if");
-              /*
-               * Detect other tags - diferent to html tags
-               */
-              posInit = j;
+              } while (postLastLink == 0);
             }
-
-            startsPosList.add(posInit);
-            tagsAddList.add(expressionsList.get(i));
           }
         }
 
@@ -171,21 +156,23 @@ public class POISummary {
          * Getting close tags
          */
 
-
         for (int k = 0; k < text.length(); k++) {
-
 
           // If detect close tag
           if (text.charAt(k) == expressionsListClose.get(i).charAt(0)
             && text.charAt(k + 1) == expressionsListClose.get(i).charAt(1)
             && text.charAt(k + 2) == expressionsListClose.get(i).charAt(2)) {
             posFinal = k - 3;
+            finalPosList.add(posFinal);
 
             if (isLink == true && expressionListActual.contains("<a")) {
               textIndicatorLink = text.substring(postLastLink, posFinal);
-              url = text.substring(posInit, postLastLink);
+              System.out.println("postLastLink " + postLastLink + " pos final " + posFinal);
+
+              // The url substring should start after identifying the href tag and finish before closing the quotation
+              // marks
+              url = text.substring(posInit + 4, postLastLink - 2);
             }
-            finalPosList.add(posFinal);
           }
         }
       }
@@ -206,7 +193,6 @@ public class POISummary {
       if (startsPosList.contains(i)) {
         for (j = 0; j < startsPosList.size(); j++) {
           if (startsPosList.get(j) == i) {
-
             finalPosition = finalPosList.get(j);
             expression = tagsAddList.get(j);
           }
@@ -227,10 +213,10 @@ public class POISummary {
           paragraphRun.setItalic(false);
         }
         startPosition = i + expression.length();
+
         /*
          * Create paragraph with last position after the start of html tag until the close of this
          */
-
         if (finalPosition + expression.length() <= text.length()) {
           stringTemp = text.substring(startPosition, finalPosition + expression.length());
         } else {
@@ -250,6 +236,7 @@ public class POISummary {
           paragraphRun.setFontSize(11);
         }
 
+        // Apply the style to the paragraph depending on the identified expression
         switch (expression) {
           case "<b>":
             paragraphRun.setBold(true);
@@ -297,13 +284,11 @@ public class POISummary {
             paragraphRun.setBold(false);
             paragraphRun.setUnderline(UnderlinePatterns.NONE);
             paragraphRun.setItalic(false);
-
         }
-        startPosition = finalPosition + expression.length() + 1;
+        startPosition = finalPosition + expression.length() + 4;
         expression = "";
         i = finalPosition;
       }
-
     }
 
     if (finalPosition < text.length()) {
@@ -321,8 +306,6 @@ public class POISummary {
       paragraphRun.setUnderline(UnderlinePatterns.NONE);
       paragraphRun.setItalic(false);
     }
-
-
   }
 
   public void createTOC(XWPFDocument document) {
@@ -342,10 +325,6 @@ public class POISummary {
     }
   }
 
-  public void getHTMLTags(String text) {
-
-
-  }
 
   /**
    * Footer title
