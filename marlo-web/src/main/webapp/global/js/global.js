@@ -323,11 +323,7 @@ $(document).ready(function() {
             [
                 'strong', 'em', 'del'
             ], [
-                'superscript', 'subscript'
-            ], [
               'link'
-            ], [
-                'unorderedList', 'orderedList'
             ], [
               'removeformat'
             ],
