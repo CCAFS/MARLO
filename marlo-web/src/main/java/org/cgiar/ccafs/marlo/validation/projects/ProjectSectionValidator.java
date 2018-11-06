@@ -1076,6 +1076,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .collect(Collectors.toList())));
       }
 
+      // Expected Study Geographic Regions List
+      if (expectedStudy.getProjectExpectedStudyCountries() != null) {
+        expectedStudy.setStudyRegions(new ArrayList<>(
+          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
+            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList())));
+      }
+
       // Expected Study Crp List
       if (expectedStudy.getProjectExpectedStudyCrps() != null) {
         expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
