@@ -828,9 +828,9 @@ public class FundingSourceAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("canEdit")) {
+    FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+    if (this.hasPermission("canEdit") || fundingSourceDB.getCreatedBy().getId().equals(this.getCurrentUser().getId())) {
 
-      FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
       FundingSourceInfo fundingSourceInfoDB =
         fundingSourceInfoManager.getFundingSourceInfoById(fundingSource.getFundingSourceInfo().getId());
 
