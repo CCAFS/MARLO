@@ -200,6 +200,8 @@ public final class APConstants {
   public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
   public static final int PHASE_ONE_YEAR = 2016;
   public static final String REPORT_SYNTHESIS_ID = "synthesisID";
+  // POWB 2019 program Change section
+  public static final String POWB_PROGRAM_CHANGE_MODULE = "crp_powb_program_change";
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
