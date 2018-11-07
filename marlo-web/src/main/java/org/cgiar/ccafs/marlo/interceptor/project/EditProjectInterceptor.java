@@ -103,6 +103,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
     boolean canSwitchProject = false;
+    boolean isAdmin = false;
 
 
     // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
@@ -136,13 +137,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
         if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+          isAdmin = true;
           if (!baseAction.isSubmit(projectId)) {
-
             canSwitchProject = true;
           }
           canEdit = true;
-
-
         } else {
           // List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
           if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
@@ -199,7 +198,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
             .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
             if (baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
-              canEdit = false;
+              if (!isAdmin) {
+                canEdit = false;
+              }
               canSwitchProject = false;
             }
           }
