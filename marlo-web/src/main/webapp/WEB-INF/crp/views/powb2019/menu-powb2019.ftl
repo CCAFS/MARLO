@@ -18,7 +18,7 @@
     { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true, 'development': true }
     ]
   },
-  { 'title': '4. CCAFS Specific',        'show': true,
+  { 'title': '4. CCAFS Specific',        'show':  action.hasSpecificities(action.powbProgramChangeModule()),
     'items': [
     { 'slug': 'programChanges',          'name': 'powb.menu.programChanges',          'action': 'programChanges',       'active': true, 'development': true }
     ]
@@ -28,7 +28,7 @@
 
 [#assign submission = (action.isPowbSynthesisSubmitted(powbSynthesisID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmitPowb(powbSynthesisID))!false /]
-[#assign completed = (action.isCompletePowbSynthesis(powbSynthesisID))!false /]
+[#assign completed = (action.isCompletePowbSynthesis2019(powbSynthesisID))!false /]
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]
