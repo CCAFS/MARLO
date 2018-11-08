@@ -125,6 +125,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectPartnerManager = projectPartnerManager;
     this.phaseManager = phaseManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.projectSectionValidator = projectSectionValidator;
 
   }
 
