@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -100,6 +101,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
   private int budgetIndex;
   private long sharedPhaseID;
+  private ProjectSectionValidator<ProjectBudgetByPartnersAction> projectSectionValidator;
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
@@ -107,7 +109,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
     ProjectPartnerManager projectPartnerManager, PhaseManager phaseManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitProjectManager globalUnitProjectManager,
+    ProjectSectionValidator<ProjectBudgetByPartnersAction> projectSectionValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -825,6 +828,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudgetDB.setYear(projectBudget.getYear());
 
     projectBudgetManager.saveProjectBudget(projectBudgetDB);
+
+    this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID());
   }
 
 
