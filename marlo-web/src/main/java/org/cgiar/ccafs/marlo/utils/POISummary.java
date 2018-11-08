@@ -74,6 +74,7 @@ public class POISummary {
     expressionsList.add("<strike>");
     expressionsList.add("<s>");
     expressionsList.add("<del>");
+    expressionsList.add("<p>");
     expressionsList.add("<a");
 
     expressionsListClose.add("</b>");
@@ -84,6 +85,7 @@ public class POISummary {
     expressionsListClose.add("</strike>");
     expressionsListClose.add("</s>");
     expressionsListClose.add("</del>");
+    expressionsListClose.add("</p>");
     expressionsListClose.add("</a>");
   }
 
@@ -162,7 +164,7 @@ public class POISummary {
           if (text.charAt(k) == expressionsListClose.get(i).charAt(0)
             && text.charAt(k + 1) == expressionsListClose.get(i).charAt(1)
             && text.charAt(k + 2) == expressionsListClose.get(i).charAt(2)) {
-            posFinal = k - 3;
+            posFinal = k - expressionsListClose.get(i).length();
             finalPosList.add(posFinal);
 
             if (isLink == true && expressionListActual.contains("<a")) {
@@ -238,6 +240,9 @@ public class POISummary {
 
         // Apply the style to the paragraph depending on the identified expression
         switch (expression) {
+          /*
+           * Open tags detection
+           */
           case "<b>":
             paragraphRun.setBold(true);
             break;
@@ -256,10 +261,15 @@ public class POISummary {
             break;
           case "<del>":
             break;
+          case "<p>":
+            break;
           case "<a":
             System.out.println("url " + url);
             this.textHyperlink(url, text, paragraph);
             break;
+          /*
+           * Close tags detection
+           */
           case "</b>":
             paragraphRun.setBold(false);
             break;
@@ -277,6 +287,8 @@ public class POISummary {
           case "</strike>":
             break;
           case "</del>":
+            break;
+          case "</p>":
             break;
           case "</a>":
             break;
@@ -377,6 +389,22 @@ public class POISummary {
     ctHeader.setStringValue(text);
     XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
     headerParagraph.setAlignment(ParagraphAlignment.LEFT);
+    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+    parsHeader[0] = headerParagraph;
+    policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
+
+  public void pageRightHeader(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpHeader = CTP.Factory.newInstance();
+    CTR ctrHeader = ctpHeader.addNewR();
+    CTText ctHeader = ctrHeader.addNewT();
+    CTR ctr = CTR.Factory.newInstance();
+    ctr.addNewRPr().addNewU().setVal(STUnderline.SINGLE);
+    ctHeader.setStringValue(text);
+    XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+    headerParagraph.setAlignment(ParagraphAlignment.RIGHT);
     XWPFParagraph[] parsHeader = new XWPFParagraph[1];
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
@@ -938,6 +966,16 @@ public class POISummary {
     h1Run.setFontFamily("Calibri");
     h1Run.setFontSize(26);
     h1.setBorderBottom(Borders.SINGLE);
+  }
+
+  public void textHeadPrincipalTitlefirtsPageCRP(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.CENTER);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor("323E4F");
+    h1Run.setBold(true);
+    h1Run.setFontFamily("Calibri");
+    h1Run.setFontSize(26);
   }
 
   public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
