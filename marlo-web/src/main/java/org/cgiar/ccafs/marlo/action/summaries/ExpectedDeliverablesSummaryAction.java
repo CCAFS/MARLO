@@ -397,7 +397,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
             individual += " (" + responsible.getPartnerDivision().getAcronym() + ")";
           }
-
+          individual = individual.replace(" <", "<");
+          individual = individual.replace("> ", ">");
+          individual = individual.replace("  ", "");
           individual += "</span>";
         }
       }
@@ -421,8 +423,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (individual.isEmpty()) {
               individual += "<span style='font-family: Segoe UI;font-size: 10'>";
             } else {
+              individual = individual.substring(0, individual.length() - 1);
+              individual = individual + ",";
+              individual = individual.replace("  ", "");
+              individual = individual.replace(" <", "<");
+              individual = individual.replace("> ", ">");
+              individual = individual.replace(" ,", ",");
               individual += ", <span style='font-family: Segoe UI;font-size: 10'>";
             }
+
             ProjectPartnerPerson responsibleppp = deliverablePartnership.getProjectPartnerPerson();
             if (responsibleppp.getProjectPartner() != null) {
               if (responsibleppp.getProjectPartner().getInstitution() != null) {
