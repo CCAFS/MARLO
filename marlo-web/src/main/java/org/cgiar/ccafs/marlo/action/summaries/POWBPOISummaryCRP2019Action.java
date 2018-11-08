@@ -100,10 +100,10 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class POWBPOISummary2019Action extends BaseSummariesAction implements Summary {
+public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 2828551630719082089L;
-  private static Logger LOG = LoggerFactory.getLogger(POWBPOISummary2019Action.class);
+  private static Logger LOG = LoggerFactory.getLogger(POWBPOISummaryCRP2019Action.class);
 
   private static void addCustomHeadingStyle(XWPFDocument docxDocument, String strStyleId, int headingLevel) {
 
@@ -180,7 +180,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   // DOC bytes
   private byte[] bytesDOC;
 
-  public POWBPOISummary2019Action(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+  public POWBPOISummaryCRP2019Action(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, LiaisonInstitutionManager liaisonInstitutionManager,
@@ -639,7 +639,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       CTDocument1 doc = document.getDocument();
       CTBody body = doc.getBody();
 
-      poiSummary.pageLeftHeader(document, this.getText("summaries.powb2019.header"));
+      poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.header"));
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -653,19 +653,22 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       this.createPageFooter();
 
-      // First page - table of contents
-      poiSummary.textLineBreak(document, 2);
-      poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
-      poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
-      poiSummary.textLineBreak(document, 4);
+      // first page
+      poiSummary.textLineBreak(document, 11);
+      poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
+        this.getText("summaries.powb2019.mainTitle"));
+      poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
+        this.getText("summaries.powb2019.subTitle"));
+      document.createParagraph().setPageBreak(true);
 
+      // Second page - table of contents
       document.createTOC();
 
       // Toc section
       addCustomHeadingStyle(document, "heading 1", 1);
       addCustomHeadingStyle(document, "heading 2", 2);
 
-      // the body content
+      // Body content
       XWPFParagraph paragraph = document.createParagraph();
 
       CTP ctP = paragraph.getCTP();
@@ -677,14 +680,15 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       run.addBreak(BreakType.PAGE);
 
 
-      // Second page
+      // contents pages
 
       // narrative section
       paragraph = document.createParagraph();
       run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.narrativeSection"));
+      run.setText(this.getText("summaries.powb2019.mainTitle"));
+
       // run.setBold(true);
-      run.setFontSize(14);
+      run.setFontSize(16);
       run.setFontFamily("Calibri");
       run.setColor("3366CC");
       paragraph.setStyle("heading 1");
@@ -710,18 +714,36 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       /*******************/
 
       // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
+      poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.crpName"));
+      poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.leadCenter"));
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.platformName") + ": ");
+        this.getText("summaries.powb2019.flagshipLeadInst"));
+      run.addTab();
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.hostEntityName") + ": ");
+        this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+
+      run.addTab();
+      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+
+      run.addTab();
+      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+
+      run.addTab();
+      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.flagShip") + " x" + ":");
+      poiSummary.textParagraphFontCalibri(document.createParagraph(),
+        this.getText("summaries.powb2019.otherParticipans") + ": ");
+
       poiSummary.textLineBreak(document, 1);
 
       // 1. toc
       paragraph = document.createParagraph();
       run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.expectedKeyResults.toc"));
+      run.setText(this.getText("summaries.powb2019.expectedKeyResults.crptoc"));
       // run.setBold(true);
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
@@ -737,9 +759,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // 2. plans
       paragraph = document.createParagraph();
       run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.expectedKeyResults.plan"));
+      run.setText(this.getText("summaries.powb2019.expectedKeyResults.crpplan"));
       // run.setBold(true);
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
@@ -754,9 +776,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // 3. financial
       paragraph = document.createParagraph();
       run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.effectiveness.financial"));
+      run.setText(this.getText("summaries.powb2019.effectiveness.crpfinancial"));
       // run.setBold(true);
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
@@ -797,7 +819,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.tableA2.title"));
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
@@ -812,7 +834,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.tableB2.title"));
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
@@ -827,7 +849,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("summaries.powb2019.tableC2.title"));
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
@@ -842,7 +864,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       paragraph = document.createParagraph();
       run = paragraph.createRun();
       run.setText(this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
-      run.setFontSize(13);
+      run.setFontSize(14);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
       paragraph.setStyle("heading 2");
