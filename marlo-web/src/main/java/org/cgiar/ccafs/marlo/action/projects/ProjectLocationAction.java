@@ -1251,8 +1251,10 @@ public class ProjectLocationAction extends BaseAction {
     LocElementType typeLement = locElementTypeManager.getLocElementTypeById(elementTypeId);
 
     LocGeoposition geoposition = new LocGeoposition();
-    geoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
-    geoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
+    geoposition.setLatitude(
+      locElement.getLocGeoposition().getLatitude() != null ? locElement.getLocGeoposition().getLatitude() : 0.0);
+    geoposition.setLongitude(
+      locElement.getLocGeoposition().getLongitude() != null ? locElement.getLocGeoposition().getLongitude() : 0.0);
 
     locGeopositionManager.saveLocGeoposition(geoposition);
 
