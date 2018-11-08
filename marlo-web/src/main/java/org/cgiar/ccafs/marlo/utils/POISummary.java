@@ -90,6 +90,11 @@ public class POISummary {
   }
 
 
+  public void addLineSeparator(XWPFParagraph h1) {
+    XWPFRun h1Run = h1.createRun();
+    h1.setBorderBottom(Borders.SINGLE);
+  }
+
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
     if (text.contains("\n")) {
       String[] lines = text.split("\n");
@@ -320,6 +325,7 @@ public class POISummary {
     }
   }
 
+
   public void createTOC(XWPFDocument document) {
     // Create table of contents
     CTSdtBlock block = document.getDocument().getBody().addNewSdt();
@@ -336,7 +342,6 @@ public class POISummary {
       }
     }
   }
-
 
   /**
    * Footer title
@@ -394,6 +399,7 @@ public class POISummary {
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
 
+
   public void pageRightHeader(XWPFDocument document, String text) throws IOException {
     CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
     XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
@@ -405,11 +411,11 @@ public class POISummary {
     ctHeader.setStringValue(text);
     XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
     headerParagraph.setAlignment(ParagraphAlignment.RIGHT);
+
     XWPFParagraph[] parsHeader = new XWPFParagraph[1];
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
-
 
   public void tableA1AnnualReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
@@ -546,7 +552,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void tableC2PowbStyle(XWPFTable table) {
     /* Vertical merge, From format tables C */
@@ -890,6 +895,7 @@ public class POISummary {
     String a = text.charAt(i) + text.charAt(i + 2) + text.charAt(i + 3) + "";
   }
 
+
   /**
    * Head 1 Title
    * 
@@ -905,7 +911,6 @@ public class POISummary {
     h1Run.setFontFamily(FONT_TYPE);
     h1Run.setFontSize(16);
   }
-
 
   public void textHead1TitleFontCalibri(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.BOTH);
@@ -973,7 +978,7 @@ public class POISummary {
     XWPFRun h1Run = h1.createRun();
     this.addParagraphTextBreak(h1Run, text);
     h1Run.setColor("323E4F");
-    h1Run.setBold(true);
+    h1Run.setBold(false);
     h1Run.setFontFamily("Calibri");
     h1Run.setFontSize(26);
   }
