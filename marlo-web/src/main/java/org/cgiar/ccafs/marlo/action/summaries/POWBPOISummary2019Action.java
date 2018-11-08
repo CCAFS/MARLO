@@ -655,7 +655,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       // First page - table of contents
       poiSummary.textLineBreak(document, 2);
-      poiSummary.textHeadPrincipalTitle(document.createParagraph(), this.getText("summaries.powb2019.mainTitle"));
+      poiSummary.textHeadPrincipalTitle(document.createParagraph(),
+        this.getText("summaries.powb2019.mainTitlePlatform"));
       poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
       poiSummary.textLineBreak(document, 4);
 
@@ -750,7 +751,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       this.addExpectedKeyResults();
       poiSummary.textLineBreak(document, 1);
 
-
       // 3. financial
       paragraph = document.createParagraph();
       run = paragraph.createRun();
@@ -765,7 +765,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
       // this.getText("summaries.powb2019.effectiveness.financial"));
       this.addFinancialPlan();
-
 
       /* Create a landscape text Section */
       XWPFParagraph para = document.createParagraph();
@@ -787,7 +786,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       run.setText("TABLES");
       run.setFontSize(13);
       run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
+      run.setColor("2E75B5");
       paragraph.setStyle("heading 1");
       /*******************/
 
@@ -841,7 +840,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // Table 3
       paragraph = document.createParagraph();
       run = paragraph.createRun();
-      run.setText(this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+      run
+        .setText(this.getText("financialPlan2019.table3.title", new String[] {String.valueOf(this.getSelectedYear())}));
       run.setFontSize(13);
       run.setFontFamily("Calibri");
       run.setColor("5B9BD5");
