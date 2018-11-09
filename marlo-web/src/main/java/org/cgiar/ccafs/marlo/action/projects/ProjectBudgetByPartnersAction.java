@@ -641,11 +641,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         project.setBudgets(project.getProjectBudgets().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null
             && (c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 3
               || c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 5))
           .collect(Collectors.toList()));
-
-
       }
 
       // Pre-load Project Co-Funded Lists.
