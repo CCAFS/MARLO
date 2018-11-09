@@ -97,7 +97,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="col-md-1 text-center"> FP </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${tableName}.fp" /]  </th>
           [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
       </thead>
@@ -122,7 +122,7 @@
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="${columns?size + 1}"><i>No flagships loaded...</i></td>
+            <td class="text-center" colspan="${columns?size + 1}"><i>No entries loaded...</i></td>
           </tr>
         [/#if]
       </tbody>
@@ -136,15 +136,15 @@
     <table id="table2A-POWB2019" class="table table-bordered">
       <thead>
         <tr>
-          [#if PMU || includeAllColumns]<th rowspan="2" > FP </th>[/#if]
+          [#if PMU || includeAllColumns]<th rowspan="2" > [@s.text name="powbSynthesis.expectedProgress.narrativeFlagshipsTable.fp" /] </th>[/#if]
           [#if includeAllColumns]<th rowspan="2" > Mapped to Sub-IDO </th>[/#if]
           [#if includeAllColumns]<th rowspan="2" > 2022 FP outcomes </th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
           [#if includeAllColumns]<th rowspan="2" > Indicate of the following </th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
           <th rowspan="1" colspan="4" class="text-center"> CGIAR Cross-Cutting Markers </th> 
-          <th rowspan="2" class="text-center" > Assessment of risk (L/M/H) </th>
-          [#if includeAllColumns]<th rowspan="2" class="text-center"> Main risk for (M/H) </th>[/#if]
+          [#if entityCRP]<th rowspan="2" class="text-center" > Assessment of risk (L/M/H) </th>[/#if]
+          [#if includeAllColumns && entityCRP]<th rowspan="2" class="text-center"> Main risk for (M/H) </th>[/#if]
           [#if flagship && !includeAllColumns] <th rowspan="2" class="text-center"> Include in POWB</th>[/#if]
         </tr>
         <tr>
@@ -194,9 +194,11 @@
                 [#-- Climate Change --]
                 <td class="text-center"> [#if (m.climateFocusLevel?has_content)!false] <p class="dacMarker level-${m.climateFocusLevel.id}" title="${m.climateFocusLevel.powbName}">${m.climateFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Assessment Risk --]
-                <td class="center">[#if (m.powbIndAssesmentRisk?has_content)!false]${m.powbIndAssesmentRisk.name}[#else] [@utilities.prefilledTag /] [/#if]</td>
+                [#if entityCRP]
+                  <td class="center">[#if (m.powbIndAssesmentRisk?has_content)!false]${m.powbIndAssesmentRisk.name}[#else] [@utilities.prefilledTag /] [/#if]</td>
+                [/#if]
                 [#-- For medium/high please select the main risk from the list --]
-                [#if includeAllColumns]
+                [#if includeAllColumns && entityCRP]
                   <td>
                     [#if (m.powbIndMilestoneRisk?has_content)!false]
                       ${m.powbIndMilestoneRisk.name}

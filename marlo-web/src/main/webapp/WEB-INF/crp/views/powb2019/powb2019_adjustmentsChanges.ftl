@@ -74,7 +74,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="col-md-1 text-center"> FP </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${tableName}.fp" /] </th>
           [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
       </thead>
