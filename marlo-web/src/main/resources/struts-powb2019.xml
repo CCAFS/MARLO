@@ -58,7 +58,7 @@
     </action>
  
     <!--  3.1  Planned Budget  -->
-    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.FinancialPlanAction">
+    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedBudgetAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedBudget.ftl</result>
       <result name="success" type="redirectAction">

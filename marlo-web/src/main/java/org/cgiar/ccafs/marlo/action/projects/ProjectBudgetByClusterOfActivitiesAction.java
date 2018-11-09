@@ -558,7 +558,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project, true);
+      validator.validate(this, project, true, true);
     }
   }
 

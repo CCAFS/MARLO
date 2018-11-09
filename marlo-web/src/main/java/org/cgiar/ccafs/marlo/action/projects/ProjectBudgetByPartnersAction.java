@@ -830,7 +830,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     projectBudgetManager.saveProjectBudget(projectBudgetDB);
 
-    this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID());
+    this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID(), false);
   }
 
 
