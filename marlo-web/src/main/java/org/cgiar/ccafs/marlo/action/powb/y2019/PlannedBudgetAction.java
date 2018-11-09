@@ -589,8 +589,6 @@ public class PlannedBudgetAction extends BaseAction {
         this.createEmptyFinancialPlan();
         powbSynthesis.setPowbFinancialPlannedBudgetList(powbSynthesis.getPowbFinancialPlannedBudget().stream()
           .filter(fp -> fp.isActive()).collect(Collectors.toList()));
-        powbSynthesis.setPowbFinancialExpendituresList(powbSynthesis.getPowbFinancialExpenditures().stream()
-          .filter(fe -> fe.isActive()).collect(Collectors.toList()));
       }
     }
 
