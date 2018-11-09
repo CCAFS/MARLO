@@ -50,7 +50,7 @@
           
           [#if PMU]
           <div class="form-group">
-            [@tableFlagshipSynthesis tableName="fpsChangesTable" list=tocList columns=["programChanges"] /]
+            [@tableFlagshipSynthesis tableName="fpsChangesTable" list=tocList columns=["programChange"] /]
           </div>
           [/#if]
           

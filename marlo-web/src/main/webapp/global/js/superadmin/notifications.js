@@ -14,13 +14,32 @@ function attachEvents() {
         diffTime: $('input.systemReset-diffTime').val() || 120,
     }
     // globalChannel.trigger("client-system-reset", pushData);
-
     $.ajax({
         url: baseURL + '/sendNotification.do',
         data: pushData,
         success: resetSuccess
     });
     $('#systemReset').find('textarea, input').val('');
+
+    var slackMessage = {
+        "text": "MARLO Restart Message",
+        "attachments": [
+          {
+              "color": "#f1c40f",
+              "author_name": $('#userInfo.name').text(),
+              "text": pushData.message,
+              "fields": [
+                {
+                    "title": "Time",
+                    "value": pushData.diffTime,
+                    "short": true
+                }
+              ],
+              "footer": window.location.href,
+          }
+        ]
+    };
+    postMessageToSlack(JSON.stringify(slackMessage));
 
   });
 

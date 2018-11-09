@@ -88,6 +88,7 @@
             The new partner request was sent succesfully. <br />
             You will receive a confirmation message as soon as it has been processed.
           </p>
+          
           <br />
           <br />
           [#-- Buttons --]

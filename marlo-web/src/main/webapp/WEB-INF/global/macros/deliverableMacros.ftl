@@ -127,7 +127,7 @@
       "display": displayDeliverableRule(deliverable, deliverableDataLicense),
       "options": [
         {"name": "CC_LICENSES"},
-        {"name": "CC_PUBLIC"}
+        {"name": "CC_PUBLIC"},
         {"name": "OPEN_DATA"}
       ]
     },
@@ -135,7 +135,7 @@
       "display": "block",
       "options": [
         {"name": "CC_BY"},
-        {"name": "CC_BY_SA"}
+        {"name": "CC_BY_SA"},
         {"name": "CC_BY_ND"},
         {"name": "CC_BY_NC"},
         {"name": "CC_BY_NC_SA"},
