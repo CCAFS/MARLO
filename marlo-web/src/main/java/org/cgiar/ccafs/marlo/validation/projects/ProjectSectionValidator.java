@@ -702,14 +702,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   }
 
 
-  public void validateProjectBudgetsCoAs(BaseAction action, Long projectID) {
+  public void validateProjectBudgetsCoAs(BaseAction action, Long projectID, boolean sMessage) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     project.setBudgetsCluserActvities(project.getProjectBudgetsCluserActvities().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
     if (!(project.getProjectBudgetsCluserActvities().isEmpty()
       || project.getProjectBudgetsCluserActvities().size() == 1)) {
-      projectBudgetsCoAValidator.validate(action, project, false);
+      projectBudgetsCoAValidator.validate(action, project, false, sMessage);
     }
 
   }
