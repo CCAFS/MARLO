@@ -28,15 +28,15 @@
 		<property name="w3Bilateral" type="java.lang.Double">
 			<column name="w3_bilateral" precision="22" scale="0" />
 		</property>
-
       <property name="centerFunds" type="java.lang.Double">
       <column name="center_founds" precision="22" scale="0" />
     </property>
     <property name="carry" type="java.lang.Double">
       <column name="carry" precision="22" scale="0" />
     </property>
-    
-    
+    <property name="title" type="string">
+      <column name="title" sql-type="TEXT" not-null="true" />
+    </property>    
 		<property name="comments" type="string">
 			<column name="comments" sql-type="TEXT" not-null="true" />
 		</property>

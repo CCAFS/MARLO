@@ -14,8 +14,10 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
 
   private static final long serialVersionUID = -8817130891128431256L;
 
+
   @Expose
   private PowbSynthesis powbSynthesis;
+
 
   @Expose
   private PowbExpenditureAreas powbExpenditureArea;
@@ -32,13 +34,16 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
   @Expose
   private Double centerFunds;
 
-
   @Expose
   private Double carry;
 
-
   @Expose
   private String comments;
+
+
+  @Expose
+  private String title;
+
 
   private boolean editBudgets = true;
 
@@ -53,11 +58,9 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
     return centerFunds;
   }
 
-
   public String getComments() {
     return comments;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -71,14 +74,19 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
     return sb.toString();
   }
 
+
   public PowbExpenditureAreas getPowbExpenditureArea() {
     return powbExpenditureArea;
   }
+
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
+  public String getTitle() {
+    return title;
+  }
 
   public Double getTotalPlannedBudget() {
     Double w1w2T;
@@ -101,14 +109,15 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
     return w1w2;
   }
 
+
   public Double getW3Bilateral() {
     return w3Bilateral;
   }
 
-
   public boolean isEditBudgets() {
     return editBudgets;
   }
+
 
   public void setCarry(Double carry) {
     this.carry = carry;
@@ -118,10 +127,10 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
     this.centerFunds = centerFunds;
   }
 
-
   public void setComments(String comments) {
     this.comments = comments;
   }
+
 
   public void setEditBudgets(boolean editBudgets) {
     this.editBudgets = editBudgets;
@@ -135,9 +144,13 @@ public class PowbFinancialPlannedBudget extends MarloAuditableEntity implements 
     this.powbExpenditureArea = powbExpenditureArea;
   }
 
-
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
+  }
+
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 
