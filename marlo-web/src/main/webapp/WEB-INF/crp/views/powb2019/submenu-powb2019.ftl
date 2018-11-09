@@ -26,6 +26,6 @@
   [#if PMU]
     [#return maxLimit]
   [#else]
-    [#return (maxLimit/(liaisonInstitutions?size-1))*2]
+    [#return ((maxLimit/(liaisonInstitutions?size-1))*2)?round]
   [/#if]
 [/#function]
