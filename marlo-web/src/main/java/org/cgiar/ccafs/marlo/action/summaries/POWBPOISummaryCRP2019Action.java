@@ -724,21 +724,19 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
         this.getText("summaries.powb2019.flagshipLeadInst"));
       run.addTab();
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+        "  " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
 
-      run.addTab();
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+        "  " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
 
-      run.addTab();
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+        "  " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
 
-      run.addTab();
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.flagShip") + " x" + ":");
+        "  " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+
       poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.otherParticipans") + ": ");
+        "  " + this.getText("summaries.powb2019.otherParticipans") + ": ");
 
       poiSummary.textLineBreak(document, 1);
 
