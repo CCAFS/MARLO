@@ -264,3 +264,8 @@ p.dacMarker.level-3 {
   color: #ceb286;
   padding: 0;
 }
+
+
+.modal-dialog.modal-lg.modal-wide {
+  width: 90%;
+}
