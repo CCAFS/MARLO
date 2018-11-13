@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -52,13 +53,15 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public EditInnovationInterceptor(ProjectInnovationManager projectInnovationManager, ProjectManager projectManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, LiaisonUserManager liaisonUserManager) {
     this.projectInnovationManager = projectInnovationManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @Override
@@ -86,6 +89,7 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
     boolean canSwitchProject = false;
     baseAction.setSession(session);
     String projectParameter = parameters.get(APConstants.INNOVATION_REQUEST_ID).getMultipleValues()[0];
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
     innovationId = Long.parseLong(projectParameter);
 
@@ -135,9 +139,11 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
         hasPermissionToEdit = false;
       }
 
+
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }
+
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

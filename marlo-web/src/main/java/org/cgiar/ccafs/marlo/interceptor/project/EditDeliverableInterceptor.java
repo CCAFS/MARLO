@@ -20,14 +20,19 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -63,15 +68,18 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private final GlobalUnitManager crpManager;
   private GlobalUnit loggedCrp;
   private GlobalUnitProjectManager globalUnitProjectManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
-    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager,
+    LiaisonUserManager liaisonUserManager) {
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.projectManager = projectManager;
     this.deliverableManager = deliverableManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   public Boolean canEditDeliverable(Deliverable deliverable, Phase phase) {
@@ -133,6 +141,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
     loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -213,8 +222,26 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
               baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
       }
 
-      if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
-        canSwitchProject = true;
+      LiaisonUser lUser = liaisonUserManager.getLiaisonUserByUserId(user.getId(), loggedCrp.getId());
+      if (contactPointEditProject && lUser != null) {
+        LiaisonInstitution liaisonInstitution = lUser.getLiaisonInstitution();
+        ProjectPartner projectPartner = project.getLeader();
+
+        Institution institutionProject = projectPartner.getInstitution();
+
+        Institution institutionCp = liaisonInstitution.getInstitution();
+
+        if (institutionCp.getId().equals(institutionProject.getId())) {
+          canSwitchProject = true;
+        } else {
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+            canSwitchProject = true;
+          }
+        }
+      } else {
+        if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+          canSwitchProject = true;
+        }
       }
 
       if (baseAction
