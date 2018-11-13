@@ -106,14 +106,25 @@ public class FundingSourceListAction extends BaseAction {
 
     Phase phase = this.getActualPhase();
     boolean hasNext = true;
+    while (hasNext) {
 
 
-    FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
-    fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
-    fundingSourceInfo.setPhase(phase);
-    fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
-    fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
-    fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+      FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+      fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
+      fundingSourceInfo.setPhase(phase);
+      fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+      fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
+      fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+
+
+      if (phase.getNext() != null) {
+        phase = phase.getNext();
+      } else {
+        hasNext = false;
+      }
+
+
+    }
 
 
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
@@ -140,7 +151,6 @@ public class FundingSourceListAction extends BaseAction {
 
 
     }
-
 
     // this.clearPermissionsCache();
     // HJ : add the permission String
