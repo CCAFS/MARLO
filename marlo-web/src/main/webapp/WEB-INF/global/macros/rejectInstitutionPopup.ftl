@@ -22,7 +22,7 @@
           <li><b>Already exists: </b><i>"InstitutionRequested"</i> already exists in MARLO as <i>"MARLO Institution"</i></li>
           <li><b>Already exists as PPA: </b><i>"InstitutionRequested"</i> is available in MARLO as Managing/PPA Partner. Please contact your PMU or <i>"ManagementLiaison Role"</i> in order to add it to the list of project partners</li>
           <li><b>Not legal: </b>This is a program/project, not an institution. We suggest to use <i>"MARLOInstitution"</i> instead.</li>
-          <li><b>Sub-department: </b>The <i>"InstitutionRequested"</i> is a part of the <i>"MARLOInstitution"</i>. Therefore, we kindly suggest you to include <i>"MARLOInstitution"</i> as sub-departmnet of <i>"MARLOInstitution"</i>.</li>
+          <li><b>Sub-department: </b>The <i>"InstitutionRequested"</i> is a part of the <i>"MARLOInstitution"</i>. Therefore, we kindly suggest you to include <i>"MARLOInstitution"</i> as sub-department of <i>"MARLOInstitution"</i>.</li>
           <li><b>Person - Not institution: </b><i>"PersonRequested"</i> is a person, not an institution. We suggest you to include this person under the institution that hired him.</li>
         </ul> 
       </div>
