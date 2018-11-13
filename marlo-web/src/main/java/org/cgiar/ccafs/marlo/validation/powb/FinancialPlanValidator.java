@@ -76,10 +76,10 @@ public class FinancialPlanValidator extends BaseValidator {
         i++;
       }
       i = 0;
-      for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
-        this.validateFinancialExpenditure(powbFinancialExpenditure, action, i);
-        i++;
-      }
+      // for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
+      // this.validateFinancialExpenditure(powbFinancialExpenditure, action, i);
+      // i++;
+      // }
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
