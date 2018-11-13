@@ -19,12 +19,17 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
@@ -62,14 +67,16 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private final ProjectManager projectManager;
   private final PhaseManager phaseManager;
   private final GlobalUnitProjectManager globalUnitProjectManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public EditProjectInterceptor(ProjectManager projectManager, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitProjectManager globalUnitProjectManager, LiaisonUserManager liaisonUserManager) {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @Override
@@ -104,6 +111,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean editParameter = false;
     boolean canSwitchProject = false;
     boolean isAdmin = false;
+
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
 
     // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
@@ -158,9 +167,28 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           }
 
 
-          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
-            canSwitchProject = true;
+          LiaisonUser lUser = liaisonUserManager.getLiaisonUserByUserId(user.getId(), loggedCrp.getId());
+          if (contactPointEditProject && lUser != null) {
+            LiaisonInstitution liaisonInstitution = lUser.getLiaisonInstitution();
+            ProjectPartner projectPartner = project.getLeader();
+
+            Institution institutionProject = projectPartner.getInstitution();
+
+            Institution institutionCp = liaisonInstitution.getInstitution();
+
+            if (institutionCp.getId().equals(institutionProject.getId())) {
+              canSwitchProject = true;
+            } else {
+              if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+                canSwitchProject = true;
+              }
+            }
+          } else {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+              canSwitchProject = true;
+            }
           }
+
 
           if (baseAction.isSubmit(projectId) && !baseAction.getActualPhase().getUpkeep()) {
             canEdit = false;
