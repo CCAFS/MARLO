@@ -136,7 +136,7 @@ public class FundingSourceListAction extends BaseAction {
 
           FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
           fundingSourceInstitution.setFundingSource(fundingSource);
-          fundingSourceInstitution.setPhase(phase);
+          fundingSourceInstitution.setPhase(this.getActualPhase());
           fundingSourceInstitution.setInstitution(institution);
           fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
 
