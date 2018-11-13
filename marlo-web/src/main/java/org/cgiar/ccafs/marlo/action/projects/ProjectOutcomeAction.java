@@ -551,6 +551,8 @@ public class ProjectOutcomeAction extends BaseAction {
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcomeDB, projectOutcome);
       }
+
+      this.saveProjectOutcome();
       // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
@@ -856,7 +858,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   private ProjectOutcome saveProjectOutcome() {
 
-    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
     if (this.isPlanningActive()) {
 
