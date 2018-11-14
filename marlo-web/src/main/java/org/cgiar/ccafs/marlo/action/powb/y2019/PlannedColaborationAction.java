@@ -56,7 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.PowbCollaborationValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.PlannedCollaborationValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -108,7 +108,7 @@ public class PlannedColaborationAction extends BaseAction {
   private FundingSourceManager fundingSourceManager;
 
   private PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager;
-  private PowbCollaborationValidator validator;
+  private PlannedCollaborationValidator validator;
   private List<LocElement> locElements;
 
   private List<LiaisonInstitution> regions;
@@ -136,7 +136,7 @@ public class PlannedColaborationAction extends BaseAction {
   public PlannedColaborationAction(APConfig config, GlobalUnitManager crpManager,
     PowbSynthesisManager powbSynthesisManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    PowbCollaborationManager powbCollaborationManager, PowbCollaborationValidator validator,
+    PowbCollaborationManager powbCollaborationManager, PlannedCollaborationValidator validator,
     GlobalUnitProjectManager globalUnitProjectManager,
     PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager, LocElementManager locElementManager,
     PowbCollaborationRegionManager powbCollaborationRegionManager, FundingSourceManager fundingSourceManager,

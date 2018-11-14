@@ -37,7 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ProgramChangeValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.ProgramChangeValidator;
 
 import java.io.BufferedReader;
 import java.io.File;

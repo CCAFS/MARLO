@@ -62,7 +62,7 @@
           <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title" /]</h4>
           <div class="form-group">
             <div class="expenditures-list">
-              [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) ]
+              [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![] ) ]
               [#list expenditureAreas  as area]
                 [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
                 [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]

@@ -50,7 +50,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.EvidencesValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.PlannedStudiesValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -109,7 +109,7 @@ public class PlannedStudiesAction extends BaseAction {
   private PowbEvidenceManager powbEvidenceManager;
 
 
-  private EvidencesValidator validator;
+  private PlannedStudiesValidator validator;
 
   private ProjectFocusManager projectFocusManager;
 
@@ -155,7 +155,7 @@ public class PlannedStudiesAction extends BaseAction {
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
     PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
     LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager,
-    EvidencesValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
+    PlannedStudiesValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager) {
     super(config);
     this.crpManager = crpManager;
@@ -303,14 +303,17 @@ public class PlannedStudiesAction extends BaseAction {
     flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-          && ps.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
-          && ps.getProject() != null
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-            .collect(Collectors.toList()).size() > 0)
-        .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies =
+        new ArrayList<>(
+          projectExpectedStudyManager.findAll().stream()
+            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+              && ps.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
+              && ps.getProject() != null
+              && ps.getProject().getGlobalUnitProjects().stream()
+                .filter(
+                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+                .collect(Collectors.toList()).size() > 0)
+            .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();

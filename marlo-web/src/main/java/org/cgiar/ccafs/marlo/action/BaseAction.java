@@ -4402,10 +4402,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCompletePowbSynthesis2019(long powbSynthesisID) {
 
     int secctions = 0;
-
-
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-
 
     if (powbSynthesis.getSectionStatuses() != null) {
       List<SectionStatus> sections = new ArrayList<>(powbSynthesis.getSectionStatuses());
@@ -4413,7 +4410,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
           switch (PowbSynthesis2019SectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-            case TOC_ADJUSTMENTS:
+            case TOC:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
                 return false;
@@ -4425,25 +4422,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 return false;
               }
               break;
-            case CRP_PROGRESS:
+            case PROGRESS_OUTCOMES:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
                 return false;
               }
               break;
-            case EVIDENCES:
+            case PLANNED_STUDIES:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
                 return false;
               }
               break;
-            case FINANCIAL_PLAN:
+            case PLANNED_COLLABORATIONS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case PLANNED_BUDGET:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
                 return false;
               }
               break;
           }
+
         }
       }
     } else {

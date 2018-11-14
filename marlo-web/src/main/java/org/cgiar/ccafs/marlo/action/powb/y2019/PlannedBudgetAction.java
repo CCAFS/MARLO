@@ -43,7 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.FinancialPlanValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.PlannedBudgetValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -90,13 +90,13 @@ public class PlannedBudgetAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
-  private FinancialPlanValidator validator;
+  private PlannedBudgetValidator validator;
 
 
   @Inject
   public PlannedBudgetAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
-    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager, FinancialPlanValidator validator,
+    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager, PlannedBudgetValidator validator,
     PowbFinancialPlanManager powbFinancialPlanManager, PowbFinancialExpenditureManager powbFinancialExpenditureManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager) {
@@ -185,6 +185,16 @@ public class PlannedBudgetAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<PowbExpenditureAreas> getOtherPlannedBudgets() {
+    List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
+      .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
+    if (plannedBudgetAreasList != null) {
+      return plannedBudgetAreasList;
+    } else {
+      return new ArrayList<>();
+    }
   }
 
   // Method to download link file
