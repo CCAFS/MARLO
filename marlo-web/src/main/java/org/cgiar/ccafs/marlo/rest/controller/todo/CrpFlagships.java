@@ -50,10 +50,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@ApiIgnore
 @RestController
 @Api(description = "Service pertaining to CRP Flagship programs", tags = "Flagships")
 public class CrpFlagships {

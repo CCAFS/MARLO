@@ -37,7 +37,7 @@
 [/#if]
 
 [#-- Impact Pathway Menu--]
-<nav id="secondaryMenu" class="">
+<nav id="secondaryMenu" class="hidden-print">
   <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
   <div class="menuList">
   [#if centerGlobalUnit]
@@ -148,61 +148,58 @@
 
 
 [#if centerGlobalUnit]
-
-[#-- Impact Pathway PDF --]
-<div class="text-center">
-  <br />
-  <a class="btn btn-default" href="${baseUrl}/summaries/impactPathwaySubmissions.do?crpProgramID=${crpProgramID}" target="_BLANK" style="text-align:center;">
-    <p class="title ">Download Impact Pathway</p>
-    <img src="${baseUrl}/global/images/download-summary.png" width="40" height="50" title="Download" />
-  </a>
-</div>
-
-
+  [#-- Impact Pathway PDF --]
+  <div class="text-center hidden-print">
+    <br />
+    <a class="btn btn-default" href="${baseUrl}/summaries/impactPathwaySubmissions.do?crpProgramID=${crpProgramID}" target="_BLANK" style="text-align:center;">
+      <p class="title ">Download Impact Pathway</p>
+      <img src="${baseUrl}/global/images/download-summary.png" width="40" height="50" title="Download" />
+    </a>
+  </div>
 [#else]
-[#-- Mini-graph --]
-<div id="graphicWrapper" style="">
-  <p class="text-center"><b>Impact Pathway Graph</b></p>
-  <div id="mini-graphic">
-    <div id="overlay" ><button class="btn btn-primary btn-xs"><strong>Show graph</strong></button></div>
-  </div>
-  <div class="clearfix"></div>
-</div>
-
-[#-- PopUp Graph --]
-<div id="impactGraphic-content"  style="display:none;" >
-  
-  <div id="loader" style="display:none;" ></div>
-  
-  [#-- Information panel --]
-  <div id="infoRelations" class="panel panel-default">
-    <div class="panel-heading"><strong>Relations</strong></div>
-    <div id="infoContent" class="panel-body">
-     <ul></ul>
+  [#-- Mini-graph --]
+  <div id="graphicWrapper" class="hidden-print" style="">
+    <p class="text-center"><b>Impact Pathway Graph</b></p>
+    <div id="mini-graphic">
+      <div id="overlay" ><button class="btn btn-primary btn-xs"><strong>Show graph</strong></button></div>
     </div>
+    <div class="clearfix"></div>
   </div>
   
-  [#-- Controls --]
-  <div id="controls" class="">
-    <span id="zoomIn" class="glyphicon glyphicon-zoom-in tool"></span>
-    <span id="zoomOut" class="glyphicon glyphicon-zoom-out tool "></span>
-    <span id="panRight" class="glyphicon glyphicon-arrow-right tool "></span>
-    <span id="panDown" class="glyphicon glyphicon-arrow-down tool "></span>
-    <span id="panLeft" class="glyphicon glyphicon-arrow-left tool "></span>
-    <span id="panUp" class="glyphicon glyphicon-arrow-up tool "></span>
-    <span id="resize" class="glyphicon glyphicon-resize-full  tool"></span>
+  [#-- PopUp Graph --]
+  <div id="impactGraphic-content"  style="display:none;" >
+    
+    <div id="loader" style="display:none;" ></div>
+    
+    [#-- Information panel --]
+    <div id="infoRelations" class="panel panel-default">
+      <div class="panel-heading"><strong>Relations</strong></div>
+      <div id="infoContent" class="panel-body">
+       <ul></ul>
+      </div>
+    </div>
+    
+    [#-- Controls --]
+    <div id="controls" class="">
+      <span id="zoomIn" class="glyphicon glyphicon-zoom-in tool"></span>
+      <span id="zoomOut" class="glyphicon glyphicon-zoom-out tool "></span>
+      <span id="panRight" class="glyphicon glyphicon-arrow-right tool "></span>
+      <span id="panDown" class="glyphicon glyphicon-arrow-down tool "></span>
+      <span id="panLeft" class="glyphicon glyphicon-arrow-left tool "></span>
+      <span id="panUp" class="glyphicon glyphicon-arrow-up tool "></span>
+      <span id="resize" class="glyphicon glyphicon-resize-full  tool"></span>
+    </div>
+    
+    [#-- Change to full or current graph --]
+    <div id="changeGraph" style="display:none;">
+    <span class="btn btn-primary btn-md currentGraph">Show full graph</span>
+    </div>
+    
+    [#-- Download button--]
+    <a class="download" href=""><span title="download" id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
+    
+    <div id="impactGraphic"></div>
   </div>
-  
-  [#-- Change to full or current graph --]
-  <div id="changeGraph" style="display:none;">
-  <span class="btn btn-primary btn-md currentGraph">Show full graph</span>
-  </div>
-  
-  [#-- Download button--]
-  <a class="download" href=""><span title="download" id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
-  
-  <div id="impactGraphic"></div>
-</div>
 [/#if]  
 
 

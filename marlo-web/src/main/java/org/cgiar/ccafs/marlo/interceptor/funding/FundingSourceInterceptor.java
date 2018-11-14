@@ -98,6 +98,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
     if (fundingSource != null) {
       String params[] = {crp.getAcronym(), fundingSource.getId() + ""};
+
+
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {

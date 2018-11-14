@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,51 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class LocElementDTO {
+
+
+  @ApiModelProperty(notes = "The Generated SRF IDO ID")
+  private Long id;
+
+
+  @ApiModelProperty(notes = "The Generated SRF IDO ID")
+  private String isoAlpha2;
+
+
+  @ApiModelProperty(notes = "The Generated SRF IDO ID")
+  private String name;
+
+
+  public Long getId() {
+    return id;
+  }
+
+
+  public String getIsoAlpha2() {
+    return isoAlpha2;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setIsoAlpha2(String isoAlpha2) {
+    this.isoAlpha2 = isoAlpha2;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
 
 }

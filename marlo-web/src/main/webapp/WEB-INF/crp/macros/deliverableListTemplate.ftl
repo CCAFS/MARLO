@@ -110,7 +110,7 @@
             [#if isDeliverableComplete]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
-              <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
+              <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"></span> 
             [/#if]
             [#-- Remove icon --]
             [#if isDeliverableNew]
@@ -234,7 +234,7 @@
             [#if isDeliverableComplete]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
-              <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
+              <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"></span> 
             [/#if]
           </td>
           [#-- Deliverable Responsible Partner --]
@@ -327,6 +327,8 @@
                 [/#if]
               [/#if]
             [/#list]
+          [#else]
+            <strong>${(dp.projectPartner.composedName)!}</strong>
           [/#if]
           </div>
         </div>

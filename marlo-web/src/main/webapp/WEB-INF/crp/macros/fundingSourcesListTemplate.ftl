@@ -24,8 +24,10 @@
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
+      
         [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, "fundingSource", project.id))!false /]
-        [#assign isCompleted = project.hasRequiredFields!false /]
+       
+        [#assign isCompleted = !(action.hasFundingSourcesMissingFields(project.id)) /]
         
         <tr>
         [#-- ID --]
@@ -53,7 +55,7 @@
           [#-- Project Budget Type --]
           <td class=""> 
             [#--  ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>--]
-            ${(project.fundingSourceInfo.budgetTypeName)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>
+            ${(project.fundingSourceInfo.budgetType.name)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project.id))!0)?number?string(",##0.00")}</span></small></p>
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]          
@@ -78,7 +80,7 @@
             [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
                 [#if institutionLead_index!=0]<hr />[/#if]
-                ${(institutionLead.acronym)!institutionLead.name}
+                ${(institutionLead.institution.acronym)!institutionLead.institution.name}
               [/#list]
             [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
@@ -103,13 +105,13 @@
             
           </td>
           [#-- Direct Donor --]
-          <td class="" title="${(project.fundingSourceInfo.directDonorName)!}">
-            ${(project.fundingSourceInfo.directDonorAcronym)!'<p style="opacity:0.5">Not defined</p>'}
+          <td class="" title="${(project.fundingSourceInfo.directDonor.composedName)!}">
+            ${(project.fundingSourceInfo.directDonor.acronymName)!'<p style="opacity:0.5">Not defined</p>'}
           </td>
           
           [#-- Original Donor --]
-          <td class="" title="${(project.fundingSourceInfo.originalDonorName)!}"> 
-            ${(project.fundingSourceInfo.originalDonorAcronym)!'<p style="opacity:0.5">Not defined</p>'}
+          <td class="" title="${(project.fundingSourceInfo.originalDonor.composedName)!}"> 
+            ${(project.fundingSourceInfo.originalDonor.acronymName)!'<p style="opacity:0.5">Not defined</p>'}
           </td>
           
           [#-- Field Check --]
@@ -211,7 +213,7 @@
                 [#if institutionLead_index!=0]
                   <hr />
                 [/#if]
-                  <span class="name col-md-11">${(institutionLead.acronym)!institutionLead.name}</span>
+                  <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
                   <div class="clearfix"></div>
               [/#list]
               [#else]
@@ -225,12 +227,12 @@
           
           [#-- Direct Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.directDonor.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.directDonor.acronymName)!'Not defined'}
           </td>
           
           [#-- Original Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.originalDonor.acronymName)!'Not defined'}
           </td>
         </tr>  
       [/#list]

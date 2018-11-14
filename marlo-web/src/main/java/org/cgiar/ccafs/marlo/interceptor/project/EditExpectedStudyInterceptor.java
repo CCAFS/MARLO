@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -52,13 +53,15 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public EditExpectedStudyInterceptor(ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectManager projectManager, GlobalUnitManager crpManager) {
+    ProjectManager projectManager, GlobalUnitManager crpManager, LiaisonUserManager liaisonUserManager) {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @Override
@@ -86,6 +89,7 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
     boolean canSwitchProject = false;
     baseAction.setSession(session);
     String projectParameter = parameters.get(APConstants.EXPECTED_REQUEST_ID).getMultipleValues()[0];
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
     expectedId = Long.parseLong(projectParameter);
 
@@ -186,9 +190,12 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
       if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
         hasPermissionToEdit = false;
       }
+
+
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }
+
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

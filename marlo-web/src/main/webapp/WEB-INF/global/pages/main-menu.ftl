@@ -24,10 +24,9 @@
     ]
   },
   [#-- SYNTHESIS PLANNING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb',       'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb${powb2019?string("2019", "")}',   'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit && !upKeepActive, 'active': !powb2019 || !config.production,    
     'subItems' : [
-      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !powb2019, 'active':  action.canAcessPOWB() },
-      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb2019',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && powb2019, 'active': !config.production <!--action.canAcessPOWB()--> }
+      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb${powb2019?string("2019", "")}',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged, 'active': !powb2019 || !config.production}
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]

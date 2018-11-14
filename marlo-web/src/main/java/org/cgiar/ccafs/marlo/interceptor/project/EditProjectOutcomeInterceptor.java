@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -64,15 +65,18 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   private final GlobalUnitManager crpManager;
   private GlobalUnit loggedCrp;
   private GlobalUnitProjectManager globalUnitProjectManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public EditProjectOutcomeInterceptor(ProjectOutcomeManager projectOutcomeManager, ProjectManager projectManager,
-    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    PhaseManager phaseManager, GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager,
+    LiaisonUserManager liaisonUserManager) {
     this.projectOutcomeManager = projectOutcomeManager;
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.crpManager = crpManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @Override
@@ -105,6 +109,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
     // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID))[0];
     String projectParameter = parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID).getMultipleValues()[0];
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
     projectOutcomeId = Long.parseLong(projectParameter);
 
@@ -201,6 +206,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }
+
 
       if (phase.getProjectPhases().stream()
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == project.getProject().getId())

@@ -1,7 +1,7 @@
 [#ftl]  
 [#if phases??]
   [#if phases?size > 1]
-    <div class="container"> 
+    <div class="container hidden-print"> 
       <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/timeline-phases.css" />
         
         [#-- Timeline Scroll --]

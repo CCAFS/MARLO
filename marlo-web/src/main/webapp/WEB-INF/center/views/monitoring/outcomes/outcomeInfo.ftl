@@ -55,10 +55,10 @@
         </div>
         <div class="col-md-12">
           <label for="">Target Unit:  </label>
-          <p>${(outcome.targetUnit.name)!"Not Applicable"}</p>
-          <input type="hidden" class="outcomeTargetUnit" name="outcome.targetUnit.name" value="${(outcome.targetUnit.name)!"Not Applicable"}" />
+          <p>${(outcome.srfTargetUnit.name)!"Not Applicable"}</p>
+          <input type="hidden" class="outcomeTargetUnit" name="outcome.srfTargetUnit.name" value="${(outcome.srfTargetUnit.name)!"Not Applicable"}" />
         </div>
-        [#if outcome.targetUnit?has_content]
+        [#if outcome.srfTargetUnit?has_content]
         <div class="col-md-12">
           <label for="">Expected for ${(outcome.targetYear)!"null"}:  </label>
           <p>${(outcome.value)!"Not Applicable"}</p>
@@ -203,10 +203,10 @@
     <div id="collapse-${(milestone.id)!}" class="panel-collapse collapse"> 
     <div class="row form-group target-block">   
       <div class="col-md-3 ">
-        [@customForm.input name="${milestoneCustomName}.researchMilestone.targetUnit.name" i18nkey="Target Unit" className="milestone-targetYear" required=false editable=false /]
+        [@customForm.input name="${milestoneCustomName}.researchMilestone.srfTargetUnit.name" i18nkey="Target Unit" className="milestone-targetYear" required=false editable=false /]
       </div> 
       <div class="col-md-3 col-md-offset-3">
-      [#if ((milestone.researchMilestone??) && !(milestone.researchMilestone.targetUnit.id == -1))!false]
+      [#if ((milestone.researchMilestone??) && !(milestone.researchMilestone.srfTargetUnit.id == -1))!false]
         [@customForm.input name="${milestoneCustomName}.researchMilestone.value" i18nkey="Expected Value"  className="milestone-targetYear" required=false editable=false /]
       [/#if]
       </div>
@@ -218,7 +218,7 @@
         [@customForm.input name="${milestoneCustomName}.researchMilestone.targetYear" i18nkey="Expected completion year" className="milestone-targetYear" required=false editable=false /]
       </div>
       <div class="col-md-3 col-md-offset-3">
-      [#if ((milestone.researchMilestone??)&&!(milestone.researchMilestone.targetUnit.id==-1))!false]
+      [#if ((milestone.researchMilestone??)&&!(milestone.researchMilestone.srfTargetUnit.id==-1))!false]
         [@customForm.input name="${milestoneCustomName}.achievedValue" i18nkey="Achieved value" className="achieved"  required=false editable=editable /]
       [/#if]
       </div>

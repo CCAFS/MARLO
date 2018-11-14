@@ -110,6 +110,8 @@ public final class APConstants {
   public static final String CRP_IP_OUTCOME_INDICATOR = "crp_ip_outcome_indicator";
   public static final String CRP_BASELINE_INDICATORS = "crp_baseline_indicators";
   public static final String CRP_HAS_RESEARCH_HUMAN = "crp_has_research_human";
+  public static final String CRP_CONTACT_POINT_EDIT_PROJECT = "crp_contact_point_edit_project";
+
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
@@ -200,6 +202,8 @@ public final class APConstants {
   public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
   public static final int PHASE_ONE_YEAR = 2016;
   public static final String REPORT_SYNTHESIS_ID = "synthesisID";
+  // POWB 2019 program Change section
+  public static final String POWB_PROGRAM_CHANGE_MODULE = "crp_powb_program_change";
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";

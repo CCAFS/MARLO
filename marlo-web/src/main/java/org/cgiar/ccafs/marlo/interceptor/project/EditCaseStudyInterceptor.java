@@ -20,11 +20,16 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -57,14 +62,18 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private final LiaisonUserManager liaisonUserManager;
+  private GlobalUnit loggedCrp;
 
   @Inject
   public EditCaseStudyInterceptor(CaseStudyManager caseStudyManager, ProjectManager projectManager,
-    GlobalUnitManager crpManager, CaseStudyProjectManager caseStudyProjectManager) {
+    GlobalUnitManager crpManager, CaseStudyProjectManager caseStudyProjectManager,
+    LiaisonUserManager liaisonUserManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.caseStudyManager = caseStudyManager;
     this.caseStudyProjectManager = caseStudyProjectManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @Override
@@ -93,11 +102,15 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
     boolean editParameter = false;
     boolean canSwitchProject = false;
     baseAction.setSession(session);
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     // String projectParameter = ((String[]) parameters.get(APConstants.CASE_STUDY_REQUEST_ID))[0];
     String projectParameter = parameters.get(APConstants.CASE_STUDY_REQUEST_ID).getMultipleValues()[0];
     caseStudyId = Long.parseLong(projectParameter);
     CaseStudy caseStudy = caseStudyManager.getCaseStudyById(caseStudyId);
     String projectIDParameter;
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
     try {
       // projectIDParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
@@ -154,8 +167,26 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CASE_STUDY_EDIT_PERMISSION, params));
       }
 
-      if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
-        canSwitchProject = true;
+      LiaisonUser lUser = liaisonUserManager.getLiaisonUserByUserId(user.getId(), loggedCrp.getId());
+      if (contactPointEditProject && lUser != null) {
+        LiaisonInstitution liaisonInstitution = lUser.getLiaisonInstitution();
+        ProjectPartner projectPartner = project.getLeader();
+
+        Institution institutionProject = projectPartner.getInstitution();
+
+        Institution institutionCp = liaisonInstitution.getInstitution();
+
+        if (institutionCp.getId().equals(institutionProject.getId())) {
+          canSwitchProject = true;
+        } else {
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+            canSwitchProject = true;
+          }
+        }
+      } else {
+        if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+          canSwitchProject = true;
+        }
       }
 
       List<CaseStudyProject> caseStudyProjects =
