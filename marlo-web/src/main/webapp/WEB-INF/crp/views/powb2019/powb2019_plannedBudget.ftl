@@ -182,6 +182,7 @@
             <td class="text-center">
               [#if isLiaison || isAreaPMU]
                 [@projectBudgetsByFlagshipMacro element=(area.crpProgram)!area totalValue=element.w1w2 type="W1W2" popupEnabled=true isAreaPMU=isAreaPMU/]
+                <input type="hidden" name="${customName}.w1w2" value="${(element.w1w2)!'0'}" class="currencyInput type-w1w2 category-${index}"/>
               [#else]
                 [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true editable=editable && PMU /]
               [/#if]
@@ -190,6 +191,7 @@
             <td class="text-center">
               [#if isLiaison || isAreaPMU]
                 [@projectBudgetsByFlagshipMacro element=(area.crpProgram)!area totalValue=element.w3Bilateral type="W3BILATERAL" popupEnabled=true isAreaPMU=isAreaPMU/]
+                <input type="hidden" name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0'}" class="currencyInput type-w3Bilateral category-${index}"/>
               [#else]
                 [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3Bilateral category-${index}" required=true editable=editable && PMU /]
               [/#if]
@@ -198,6 +200,7 @@
             <td class="text-center">
               [#if isLiaison || isAreaPMU]
                 [@projectBudgetsByFlagshipMacro element=(area.crpProgram)!area totalValue=element.centerFunds type="CENTERFUNDS" popupEnabled=true isAreaPMU=isAreaPMU/]
+                <input type="hidden" name="${customName}.centerFunds" value="${(element.centerFunds)!'0'}" class="currencyInput type-centerFunds category-${index}"/>
               [#else]
                 [@customForm.input name="${customName}.centerFunds" value="${(element.centerFunds)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-centerFunds category-${index}" required=true editable=editable && PMU /]
               [/#if]
