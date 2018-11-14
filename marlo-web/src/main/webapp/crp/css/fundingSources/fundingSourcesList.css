@@ -29,3 +29,13 @@
 td.institutionLead hr {
   margin: 0.4em;
 }
+
+.institutionLead{
+  padding: 2px 3px !important;
+}
+
+.institutions-list{
+  max-height: 140px;
+  overflow: auto;
+  align-items: center;
+}
