@@ -523,15 +523,11 @@ public class PlannedColaborationAction extends BaseAction {
 
                 if (locElement.getFundingSources().contains(fs) && !liasionsFundings.contains(fs)) {
                   liasionsFundings.add(fs);
-
                 }
-
               }
 
             }
           }
-
-
         }
       }
       locElement.getProjects().clear();
@@ -608,8 +604,8 @@ public class PlannedColaborationAction extends BaseAction {
     }
 
 
-    List<FundingSourceLocation> locationsFunding = locElement.getFundingSourceLocations()
-      .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+    List<FundingSourceLocation> locationsFunding = locElement
+      .getFundingSourceLocations().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
         && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
       .collect(Collectors.toList());
     locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));

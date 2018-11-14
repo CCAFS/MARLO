@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -25,13 +26,16 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
@@ -40,17 +44,18 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
 import org.cgiar.ccafs.marlo.utils.ReadWordFile;
-import org.cgiar.ccafs.marlo.utils.richTextPOI.HTMLtoWord;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -74,6 +79,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -151,6 +157,17 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     return bd.doubleValue();
   }
 
+  private LiaisonInstitution liaisonInstitution;
+  private GlobalUnitManager crpManager;
+  private List<LiaisonInstitution> liaisonInstitutions;
+  private CrpProgramManager crpProgramManager;
+  private List<PowbTocListDTO> tocList;
+  private GlobalUnit loggedCrp;
+  private Long powbSynthesisID;
+  private PowbSynthesis powbSynthesis;
+  private UserManager userManager;
+  private Long liaisonInstitutionID;
+
   // Managers
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
@@ -184,7 +201,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ProjectManager projectManager) {
+    PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ProjectManager projectManager,
+    UserManager userManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -195,38 +213,30 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     this.powbSynthesisManager = powbSynthesisManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.crpManager = crpManager;
+    this.userManager = userManager;
     this.powbCrpStaffingCategoriesManager = powbCrpStaffingCategoriesManager;
   }
 
   private void addAdjustmentDescription() {
-    if (powbSynthesisPMU != null) {
-      String adjustmentsDescription = "";
+    String adjustmentsDescription = "";
+    adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
+    if (powbSynthesis != null) {
+      if (powbSynthesis.getPowbToc().getTocOverall() != null) {
+        adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
+      }
 
-      adjustmentsDescription =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vestibulum purus tortor, nec interdum libero eleifend eget. Sed dolor neque, tincidunt viverra enim ut, gravida maximus metus. Phasellus dictum vitae enim vel vehicula. Phasellus mattis sapien id convallis placerat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris egestas leo eu congue rhoncus. Nullam at sagittis turpis. Sed pretium pharetra velit ac venenatis. Maecenas rutrum ex et ultrices rutrum.\r\n"
-          + "\r\n"
-          + "Etiam lacus quam, finibus non risus sed, auctor malesuada elit. Proin malesuada, turpis non tempor dapibus, neque sapien accumsan sapien, sed maximus eros ipsum non ipsum. Vestibulum egestas quam vitae neque gravida, in laoreet arcu eleifend. Morbi in risus eu ligula tristique sodales. Morbi ac ultricies enim, ac tincidunt dolor. Etiam euismod hendrerit arcu ut rhoncus. Maecenas vehicula tempus justo, sed dignissim nisl hendrerit at. Duis volutpat sed nisl sit amet finibus.\r\n"
-          + "\r\n"
-          + "Sed rutrum libero sed eros mattis, bibendum pulvinar risus molestie. Nunc sapien mauris, eleifend vitae volutpat in, lobortis in arcu. Maecenas egestas erat sed pellentesque suscipit. Praesent et dolor in ipsum ultrices dignissim non sed sem. Mauris aliquet erat in lectus fringilla, at elementum mauris consequat. Etiam sit amet efficitur mi. In sit amet orci eu est feugiat accumsan. Maecenas maximus urna nec libero ornare, iaculis vehicula urna faucibus. Fusce volutpat tempus metus vel varius. Nunc sollicitudin blandit tempus. Aliquam interdum in nibh at sollicitudin. Integer sit amet viverra massa. Nulla viverra ante at accumsan rutrum. Vivamus sit amet arcu non sem fringilla hendrerit a a lorem. Maecenas at metus volutpat, aliquet quam sed, pharetra tellus. Nunc et venenatis nunc. Proin at scelerisque tortor. Maecenas eget eros eget ante.";
-      /*
-       * if (powbSynthesisPMU.getPowbToc() != null) {
-       * adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
-       * && !powbSynthesisPMU.getPowbToc().getTocOverall().trim().isEmpty()
-       * ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
-       * }
-       */
       // poiSummary.convertHTMLTags(document, adjustmentsDescription);
-      HTMLtoWord htmltoWord = new HTMLtoWord();
-
+      // HTMLtoWord htmltoWord = new HTMLtoWord();
 
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
-      if (powbSynthesisPMU.getPowbToc() != null && powbSynthesisPMU.getPowbToc().getFile() != null) {
+      if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
-          this.getPowbPath(powbSynthesisPMU.getLiaisonInstitution(),
+          this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
             this.getLoggedCrp().getAcronym() + "_"
               + PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().toString())
-            + powbSynthesisPMU.getPowbToc().getFile().getFileName().replaceAll(" ", "%20"),
-          "URL: " + powbSynthesisPMU.getPowbToc().getFile().getFileName(), document.createParagraph());
+            + powbSynthesis.getPowbToc().getFile().getFileName().replaceAll(" ", "%20"),
+          "URL: " + powbSynthesis.getPowbToc().getFile().getFileName(), document.createParagraph());
       }
     }
   }
@@ -234,50 +244,24 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private void addExpectedKeyResults() {
     String expectedKeyResults = "";
 
-    expectedKeyResults =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus massa augue, consectetur sed lorem et, consectetur scelerisque tortor. Pellentesque quis luctus lorem. Cras non cursus sapien, ut posuere sapien. Maecenas non risus sem. Nulla neque justo, sagittis in neque in, dictum dignissim arcu. In non eleifend ex. Fusce semper vestibulum ex ac scelerisque. Ut dignissim urna finibus lacus porttitor, at sollicitudin diam laoreet. Nulla dapibus ultricies lectus at luctus. Donec eget justo at lorem interdum gravida eu et purus. Etiam vel turpis ultrices nisi varius venenatis. Donec vestibulum id enim sit amet molestie. Ut pharetra, neque nec aliquet rutrum, massa est commodo tellus, rhoncus fermentum purus lacus et nisl. Ut nec felis lobortis, sagittis lacus non, tristique arcu.\r\n"
-        + "\r\n"
-        + "Pellentesque auctor urna ac tincidunt maximus. Proin fermentum ultrices eros, a porttitor risus dignissim sit amet. Ut aliquet velit vel velit tempus lobortis. Quisque viverra aliquet fermentum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam elementum dapibus rutrum. Cras mattis vitae urna eget interdum. Sed iaculis lorem eget dapibus pretium. Proin diam mauris, sodales ut sagittis ut, commodo non mi. Sed congue lacus at dolor consequat, id consectetur nulla egestas.\r\n"
-        + "\r\n"
-        + "Sed posuere dui non dolor rhoncus, rutrum fermentum risus euismod. Phasellus massa orci, tristique quis sem vel, ultricies eleifend sem. Vivamus hendrerit magna eu justo elementum, a efficitur nisi suscipit. Aenean at aliquam nisi. Integer blandit semper enim ut posuere. Integer finibus erat vel nisl ullamcorper, ut consectetur dui tincidunt. Praesent consequat orci in fermentum sollicitudin. Vivamus vestibulum tellus vitae libero vestibulum, ut imperdiet ligula aliquet. Sed bibendum dolor sit amet metus fermentum mollis. Quisque cursus est risus, sed dapibus lectus congue ut.\r\n"
-        + "\r\n"
-        + "Duis varius erat at sem porttitor, sed tristique purus convallis. In dapibus elementum facilisis. Nunc fringilla risus lacus, nec pellentesque quam sodales eget. Sed efficitur condimentum dolor, sed malesuada leo pulvinar tincidunt. Vestibulum faucibus metus a arcu malesuada suscipit.";
-    // poiSummary.convertHTMLTags(document, expectedKeyResults);
-    poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
-
+    if (powbSynthesis != null) {
+      if (powbSynthesis.getPowbToc().getTocOverall() != null) {
+        expectedKeyResults = powbSynthesis.getExpectedProgressNarrative();
+      }
+      // poiSummary.convertHTMLTags(document, expectedKeyResults);
+      poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
+    }
   }
 
   private void addFinancialPlan() {
     String financialPlanDescription = "";
-
-    financialPlanDescription =
-      "<b>Lorem ipsum dolor sit amet</b>, consectetur adipiscing elit. Pellentesque volutpat <i>convallis nunc, ut faucibus</i> ex luctus a. Suspendisse ultricies tortor et velit pretium interdum. Nulla non maximus risus, quis dictum elit. Proin eleifend urna id augue eleifend efficitur. Donec non varius dui, id pretium sapien. Phasellus luctus tortor vitae erat posuere, at mollis erat dapibus. Mauris vitae euismod ligula, et lacinia lacus.\r\n"
-        + "\r\n"
-        + "Donec nunc purus, sollicitudin non convallis non, imperdiet non massa. Nam bibendum risus diam, id suscipit magna pretium at. Nulla at dolor eleifend, mattis enim et, luctus lorem. Maecenas laoreet arcu a ligula ultrices, ut rhoncus sapien tincidunt. Etiam egestas mauris sit amet orci accumsan gravida. Etiam consectetur arcu sit amet elementum ullamcorper. In rhoncus mauris augue, eget accumsan felis egestas quis. Maecenas dictum dapibus tellus, vitae placerat metus venenatis et. Sed et nulla ultrices, lobortis diam sed, mattis lorem. Vivamus vitae ullamcorper dolor, vel commodo diam. Nulla auctor diam at justo scelerisque pretium.\r\n"
-        + "\r\n"
-        + "Suspendisse at nibh nec <b>ipsum interdum auctor. Duis tempor suscipit </b>nisl vel faucibus. Nulla ullamcorper tortor mi, sed iaculis ante suscipit eget. Phasellus rhoncus, lacus vel interdum laoreet, augue nisi facilisis dolor, eu rhoncus leo metus scelerisque dui. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin tincidunt, metus nec maximus sagittis, purus sem blandit sem, eget scelerisque ex quam non est. Nullam ornare tincidunt urna, ut aliquet purus mattis vel. In hac habitasse platea dictumst.\r\n"
-        + "\r\n"
-        + "Duis odio orci, auctor eu ultrices in, elementum ut arcu. In sapien nisi, tincidunt <i>id tristique non, molestie eu </i>lectus. Aenean vel dolor massa. Aliquam vitae sodales risus. Duis elit purus, ultricies quis nisl ut, efficitur congue orci. Praesent sit amet nibh vitae dolor auctor luctus sit amet tincidunt ligula. Vivamus laoreet orci ante, in tempus ante tempor sit amet.\r\n"
-        + "\r\n"
-        + "Vivamus auctor posuere euismod. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer feugiat purus in ultrices tristique. Nunc pharetra varius erat eu dignissim. Morbi mollis et sapien facilisis imperdiet. Morbi a ligula eu urna tempor vestibulum. Pellentesque vitae vestibulum lacus, id placerat sapien. In hac habitasse platea dictumst.\r\n"
-        + "\r\n"
-        + "Sed in elit sed justo consequat convallis et in est. Sed ante turpis, pellentesque et nunc vel, faucibus viverra libero. Sed egestas, ante vitae ornare egestas, turpis est eleifend lacus, nec fermentum leo est in lectus. Fusce vehicula lacus metus, ac feugiat diam pellentesque dictum. Phasellus ut nibh sed sapien varius ultrices. Maecenas luctus vehicula turpis. Morbi maximus neque sed lacinia gravida. Mauris ac pharetra mi. Aenean gravida rutrum nulla a rutrum. Maecenas quam diam, interdum vel ultrices eget, convallis vitae arcu. Maecenas ac elit urna. Curabitur eget ultricies neque. In sit amet cursus lectus.\r\n"
-        + "\r\n"
-        + "Mauris vulputate velit at dictum aliquam. Nulla sed velit condimentum nisi rutrum vehicula. Donec nec est eu risus egestas suscipit. Phasellus vitae nisi id nisl tincidunt efficitur. Ut at mauris vitae tortor tempor dignissim ac sit amet leo. Aliquam ornare vestibulum eros, ac porta mi. Nulla euismod erat non ipsum tempor ornare. Curabitur hendrerit finibus tellus a accumsan. Praesent volutpat. \r\n <a href=\"https://www.w3schools.com\">Visit W3Schools</a> ";
-
-    /*
-     * if (powbSynthesisPMU != null) {
-     * if (powbSynthesisPMU.getFinancialPlan() != null) {
-     * financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
-     * && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
-     * ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "";
-     * }
-     * }
-     */
-
-    poiSummary.convertHTMLTags(document, financialPlanDescription);
-    // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
-
+    if (powbSynthesis != null) {
+      if (powbSynthesis.getPowbToc().getTocOverall() != null) {
+        financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
+      }
+      // poiSummary.convertHTMLTags(document, financialPlanDescription);
+      poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+    }
   }
 
   public void createPageFooter() {
@@ -834,7 +818,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
       // this.getText("summaries.powb2019.tableC2.title"));
-      this.createTableC2();
+      // this.createTableC2();
       document.createParagraph().setPageBreak(true); // Fast Page Break
 
       // Table 3
@@ -876,6 +860,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
+  }
+
+  public Long firstFlagship() {
+    List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+    long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
+    return liaisonInstitutionId;
   }
 
   @Override
@@ -1024,6 +1018,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     return inputStream;
   }
 
+
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
       .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
@@ -1062,7 +1057,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
     return new PowbExpectedCrpProgress();
   }
-
 
   public PowbFinancialPlannedBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID, Boolean isLiaison) {
     if (isLiaison) {
@@ -1139,6 +1133,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitution, actionName).replace('\\', '/');
   }
 
+
   // Method to get the download folder
   private String getPowbSourceFolder(LiaisonInstitution liaisonInstitution, String actionName) {
     return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
@@ -1148,12 +1143,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
 
   public boolean isPMU(LiaisonInstitution institution) {
-    if (institution.getAcronym().equals("PMU")) {
-      return true;
+    boolean isFP = false;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
+        isFP = true;
+      }
     }
-    return false;
+    return isFP;
   }
-
 
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
     List<ProjectFocus> projects =
@@ -1308,17 +1305,99 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
   @Override
   public void prepare() {
+    // Get current CRP
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     this.setGeneralParameters();
     if (this.getSelectedPhase() == null) {
       this.setSelectedPhase(this.getActualPhase());
     }
+
     powbSynthesisList =
       this.getSelectedPhase().getPowbSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
+
+    powbSynthesis = powbSynthesisList.get(0);
     pmuInstitution = this.getPMUInstitution();
-    List<PowbSynthesis> powbSynthesisPMUList = powbSynthesisList.stream()
-      .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(pmuInstitution)).collect(Collectors.toList());
-    if (powbSynthesisPMUList != null && !powbSynthesisPMUList.isEmpty()) {
-      powbSynthesisPMU = powbSynthesisPMUList.get(0);
+
+    try {
+      liaisonInstitutionID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
+    } catch (NumberFormatException e) {
+      User user = userManager.getUser(this.getCurrentUser().getId());
+      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
+            && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+            && lu.getLiaisonInstitution().getInstitution() == null)
+          .collect(Collectors.toList()));
+        if (!liaisonUsers.isEmpty()) {
+          boolean isLeader = false;
+          for (LiaisonUser liaisonUser : liaisonUsers) {
+            LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+            if (institution.isActive()) {
+              if (institution.getCrpProgram() != null) {
+                if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                  liaisonInstitutionID = institution.getId();
+                  isLeader = true;
+                  break;
+                }
+              } else {
+                if (institution.getAcronym().equals("PMU")) {
+                  liaisonInstitutionID = institution.getId();
+                  isLeader = true;
+                  break;
+                }
+              }
+            }
+          }
+          if (!isLeader) {
+            liaisonInstitutionID = this.firstFlagship();
+          }
+        } else {
+          liaisonInstitutionID = this.firstFlagship();
+        }
+      } else {
+        liaisonInstitutionID = this.firstFlagship();
+      }
+    }
+
+    // Get the list of liaison institutions Flagships and PMU.
+    liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    // Setup the PUM ToC Table
+    if (this.isPMU()) {
+      this.tocList(this.getActualPhase().getId());
+    }
+    // ADD PMU as liasion Institutio too
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
+
+
+    try {
+      powbSynthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
+      powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
+      if (!powbSynthesis.getPhase().equals(this.getActualPhase())) {
+        powbSynthesis = powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+        if (powbSynthesis == null) {
+          powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+        }
+        powbSynthesisID = powbSynthesis.getId();
+      }
+    } catch (Exception e) {
+
+      powbSynthesis = powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+      if (powbSynthesis == null) {
+        powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+      }
+      powbSynthesisID = powbSynthesis.getId();
+
     }
 
     // Calculate time to generate report
@@ -1486,6 +1565,24 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       tableC.setPercentageCapDevNotScored(dCapDevNa);
     }
 
+  }
+
+  public void tocList(long phaseID) {
+    tocList = new ArrayList<>();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbTocListDTO powbTocList = new PowbTocListDTO();
+      powbTocList.setLiaisonInstitution(liaisonInstitution);
+      powbTocList.setOverall("");
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbToc() != null) {
+          if (powbSynthesis.getPowbToc().getTocOverall() != null) {
+            powbTocList.setOverall(powbSynthesis.getPowbToc().getTocOverall());
+          }
+        }
+      }
+      tocList.add(powbTocList);
+    }
   }
 
 }
