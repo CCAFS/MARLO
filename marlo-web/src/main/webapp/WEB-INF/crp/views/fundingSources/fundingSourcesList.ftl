@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin"] /]
 [#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
