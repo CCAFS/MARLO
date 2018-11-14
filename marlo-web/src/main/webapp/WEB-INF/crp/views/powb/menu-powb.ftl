@@ -27,9 +27,16 @@
 ]/]
 
 
-[#assign submission = (action.isPowbSynthesisSubmitted(powbSynthesisID))!false /]
-[#assign canSubmit = (action.hasPersmissionSubmitPowb(powbSynthesisID))!false /]
-[#assign completed = (action.isCompletePowbSynthesis(powbSynthesisID))!false /]
+[#attempt]
+  [#assign submission = (action.isPowbSynthesisSubmitted(powbSynthesisID))!false /]
+  [#assign canSubmit = (action.hasPersmissionSubmitPowb(powbSynthesisID))!false /]
+  [#assign completed = (action.isCompletePowbSynthesis(powbSynthesisID))!false /]
+[#recover]
+  [#assign submission = false /]
+  [#assign canSubmit = false /]
+  [#assign completed = false /]
+[/#attempt]
+
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]
