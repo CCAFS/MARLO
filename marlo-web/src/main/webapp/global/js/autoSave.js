@@ -175,6 +175,13 @@ function validateThisSection() {
     validateService = "/validatePowbSynthesisSection.do";
   }
 
+  // Validate POWB Synthesis section
+  if(isPOWB2019Section()) {
+    sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
+    sectionData.powbSynthesisID = $('input[name="powbSynthesisID"]').val() || $('#powbSynthesisID').text();
+    validateService = "/validatePowbSynthesisSection2019.do";
+  }
+
   // Validate Annual Report Synthesis section
   if(isAnnualReportSection()) {
     sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();

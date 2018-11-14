@@ -62,7 +62,7 @@
           <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title" /]</h4>
           <div class="form-group">
             <div class="expenditures-list">
-              [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![] ) ]
+              [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) + ((otherPlannedBudgets)![]) ]
               [#list expenditureAreas  as area]
                 [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
                 [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
@@ -159,7 +159,7 @@
       <hr />
     [#else]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="${customLabel}.areaTitle" help="${customLabel}.areaTitle.help" helpIcon=false className="" required=true editable=editable && PMU /]
+        [@customForm.input name="${customName}.title" value="${(area.title)!}" i18nkey="${customLabel}.areaTitle" help="${customLabel}.areaTitle.help" helpIcon=false className="" required=true editable=editable && PMU /]
       </div>
     [/#if]
     
