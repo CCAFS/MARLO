@@ -243,24 +243,13 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           // Validate if Scope is Regional and review if The innovation has a region
           if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
             .getId().equals(action.getReportingIndGeographicScopeRegional())) {
-            // Validate Region
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-              .getRepIndRegion() != null) {
-              if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
-                .getId() == null
-                || projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getRepIndRegion()
-                  .getId() == -1) {
-                action.addMessage(action.getText("Region"));
-                action.addMissingField("study.region");
-                action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            } else {
+            if (projectExpectedStudy.getStudyRegions() == null) {
               action.addMessage(action.getText("Region"));
               action.addMissingField("study.region");
               action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.repIndRegion.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+
           }
         }
       } else {

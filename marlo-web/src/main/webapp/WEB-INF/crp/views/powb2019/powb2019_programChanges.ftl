@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "powbSynthesis.programChanges" /]
+[#assign customName= "powbSynthesis.powbProgramChange" /]
 [#assign customLabel= "powbSynthesis.${currentStage}" /]
 
 [#-- Helptext --]
@@ -45,12 +45,12 @@
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
             [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-            [@customForm.textArea name="${customName}.programChanges" i18nkey="${customLabel}.programChanges" help="${customLabel}.programChanges.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
+            [@customForm.textArea name="${customName}.programChange" i18nkey="${customLabel}.programChanges" help="${customLabel}.programChanges.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
           </div>
           
           [#if PMU]
           <div class="form-group">
-            [@tableFlagshipSynthesis tableName="fpsChangesTable" list=tocList columns=["programChanges"] /]
+            [@tableFlagshipSynthesis tableName="fpsChangesTable" list=tocList columns=["programChange"] /]
           </div>
           [/#if]
           

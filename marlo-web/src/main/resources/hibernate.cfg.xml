@@ -319,5 +319,6 @@
     <mapping resource="xmls/ProjectExpectedStudyRegions.hbm.xml"/> 
     <mapping resource="xmls/DeliverableGeographicRegions.hbm.xml"/>
     <mapping resource="xmls/PowbCollaborationGlobalUnitPmus.hbm.xml"/>
+    <mapping resource="xmls/PowbProgramChanges.hbm.xml"/>    
 	</session-factory>
 </hibernate-configuration>

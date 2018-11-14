@@ -32,7 +32,7 @@
               <td> 
                 ${st.name} 
                 [#if ((st.description?has_content)!false) && (st.description != st.name)]<br /> (<i><small>${st.description}</small></i>)[/#if]
-                [#if st.fair]<span class="label label-info pull-right">FAIR</span>[/#if]
+                [#if mt.fair || st.fair]<span class="label label-info pull-right">FAIR</span>[/#if]
               </td>
             </tr>
           [/#list]

@@ -1,0 +1,1 @@
+Delete from role_permissions where permission_id = 429 AND role_id in (select r.id from roles r where r.acronym = 'CP');

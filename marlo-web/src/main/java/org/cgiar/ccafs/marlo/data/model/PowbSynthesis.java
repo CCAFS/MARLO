@@ -19,6 +19,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
 
   private static final long serialVersionUID = 3684598637198995229L;
 
+
   @Expose
   private Phase phase;
 
@@ -29,10 +30,12 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   @Expose
   private PowbToc powbToc;
 
+  @Expose
+  private PowbProgramChange powbProgramChange;
+
 
   @Expose
   private PowbFlagshipPlans powbFlagshipPlans;
-
 
   @Expose
   private PowbEvidence powbEvidence;
@@ -41,15 +44,11 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   @Expose
   private PowbCrossCuttingDimension powbCrossCuttingDimension;
 
-
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-
 
   private Set<PowbExpectedCrpProgress> powbExpectedCrpProgresses = new HashSet<PowbExpectedCrpProgress>(0);
 
-
   private List<PowbExpectedCrpProgress> expectedCrpProgresses;
-
 
   @Expose
   private PowbMonitoringEvaluationLearning powbMonitoringEvaluationLearning;
@@ -82,6 +81,13 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   private PowbCollaboration collaboration;
 
 
+  @Expose
+  private String expectedProgressNarrative;
+
+
+  private List<CrpMilestone> milestones;
+
+
   private Set<PowbFinancialExpenditure> powbFinancialExpenditures = new HashSet<PowbFinancialExpenditure>(0);
 
 
@@ -90,7 +96,9 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
 
   private Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget = new HashSet<PowbFinancialPlannedBudget>(0);
 
+
   private Set<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits = new HashSet<PowbCollaborationGlobalUnit>(0);
+
 
   private List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList;
 
@@ -98,7 +106,9 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
 
 
   private Set<Submission> submissions = new HashSet<Submission>(0);
+
   private Set<PowbCollaborationRegion> powbCollaborationRegions = new HashSet<PowbCollaborationRegion>(0);
+
 
   private List<PowbCollaborationRegion> regions;
 
@@ -107,7 +117,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
 
 
   private String flagshipAssets;
-
 
   public PowbSynthesis() {
   }
@@ -138,6 +147,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return collaboration;
   }
 
+
   public PowbCrpStaffing getCrpStaffing() {
     return crpStaffing;
   }
@@ -145,6 +155,11 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public List<PowbExpectedCrpProgress> getExpectedCrpProgresses() {
     return expectedCrpProgresses;
   }
+
+  public String getExpectedProgressNarrative() {
+    return expectedProgressNarrative;
+  }
+
 
   public PowbFinancialPlan getFinancialPlan() {
     return financialPlan;
@@ -171,10 +186,13 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
+  public List<CrpMilestone> getMilestones() {
+    return milestones;
+  }
+
   public Phase getPhase() {
     return phase;
   }
-
 
   public Set<PowbCollaborationGlobalUnit> getPowbCollaborationGlobalUnits() {
     return powbCollaborationGlobalUnits;
@@ -190,16 +208,13 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return powbCollaborationRegions;
   }
 
-
   public PowbCrossCuttingDimension getPowbCrossCuttingDimension() {
     return powbCrossCuttingDimension;
   }
 
-
   public PowbEvidence getPowbEvidence() {
     return powbEvidence;
   }
-
 
   public Set<PowbExpectedCrpProgress> getPowbExpectedCrpProgresses() {
     return powbExpectedCrpProgresses;
@@ -225,21 +240,31 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return powbFinancialPlannedBudgetList;
   }
 
+
   public PowbFlagshipPlans getPowbFlagshipPlans() {
     return powbFlagshipPlans;
   }
+
 
   public PowbManagementGovernance getPowbManagementGovernance() {
     return powbManagementGovernance;
   }
 
+
   public PowbManagementRisk getPowbManagementRisk() {
     return powbManagementRisk;
   }
 
+
   public PowbMonitoringEvaluationLearning getPowbMonitoringEvaluationLearning() {
     return powbMonitoringEvaluationLearning;
   }
+
+
+  public PowbProgramChange getPowbProgramChange() {
+    return powbProgramChange;
+  }
+
 
   public Set<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategory() {
     return powbSynthesisCrpStaffingCategory;
@@ -249,7 +274,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public List<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategoryList() {
     return powbSynthesisCrpStaffingCategoryList;
   }
-
 
   public PowbToc getPowbToc() {
     return powbToc;
@@ -262,6 +286,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
+
 
   public Set<Submission> getSubmissions() {
     return submissions;
@@ -288,10 +313,14 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     this.expectedCrpProgresses = expectedCrpProgresses;
   }
 
+
+  public void setExpectedProgressNarrative(String expectedProgressNarrative) {
+    this.expectedProgressNarrative = expectedProgressNarrative;
+  }
+
   public void setFinancialPlan(PowbFinancialPlan financialPlan) {
     this.financialPlan = financialPlan;
   }
-
 
   public void setFlagshipAssets(String flagshipAssets) {
     this.flagshipAssets = flagshipAssets;
@@ -305,6 +334,11 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
+  public void setMilestones(List<CrpMilestone> milestones) {
+    this.milestones = milestones;
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -313,19 +347,19 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     this.powbCollaborationGlobalUnits = powbCollaborationGlobalUnits;
   }
 
-
   public void setPowbCollaborationGlobalUnitsList(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnitsList) {
     this.powbCollaborationGlobalUnitsList = powbCollaborationGlobalUnitsList;
   }
-
 
   public void setPowbCollaborationRegions(Set<PowbCollaborationRegion> powbCollaborationRegions) {
     this.powbCollaborationRegions = powbCollaborationRegions;
   }
 
+
   public void setPowbCrossCuttingDimension(PowbCrossCuttingDimension powbCrossCuttingDimension) {
     this.powbCrossCuttingDimension = powbCrossCuttingDimension;
   }
+
 
   public void setPowbEvidence(PowbEvidence powbEvidence) {
     this.powbEvidence = powbEvidence;
@@ -335,19 +369,19 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     this.powbExpectedCrpProgresses = powbExpectedCrpProgresses;
   }
 
-
   public void setPowbFinancialExpenditures(Set<PowbFinancialExpenditure> powbFinancialExpenditures) {
     this.powbFinancialExpenditures = powbFinancialExpenditures;
   }
-
 
   public void setPowbFinancialExpendituresList(List<PowbFinancialExpenditure> powbFinancialExpendituresList) {
     this.powbFinancialExpendituresList = powbFinancialExpendituresList;
   }
 
+
   public void setPowbFinancialPlannedBudget(Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget) {
     this.powbFinancialPlannedBudget = powbFinancialPlannedBudget;
   }
+
 
   public void setPowbFinancialPlannedBudgetList(List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList) {
     this.powbFinancialPlannedBudgetList = powbFinancialPlannedBudgetList;
@@ -365,9 +399,12 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     this.powbManagementRisk = powbManagementRisk;
   }
 
-
   public void setPowbMonitoringEvaluationLearning(PowbMonitoringEvaluationLearning powbMonitoringEvaluationLearning) {
     this.powbMonitoringEvaluationLearning = powbMonitoringEvaluationLearning;
+  }
+
+  public void setPowbProgramChange(PowbProgramChange powbProgramChange) {
+    this.powbProgramChange = powbProgramChange;
   }
 
 

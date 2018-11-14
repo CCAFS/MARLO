@@ -54,6 +54,14 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     return projectBudgetDAO.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing, idPhase);
   }
 
+  /**
+   * Clone budget from budget to new projectBudgetAdd
+   * 
+   * @param projectBudgetAdd
+   * @param budget
+   * @param phase
+   */
+
   public void cloneBudget(ProjectBudget projectBudgetAdd, ProjectBudget budget, Phase phase) {
     projectBudgetAdd.setPhase(phase);
     projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
@@ -66,12 +74,41 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     projectBudgetAdd.setYear(budget.getYear());
   }
 
+  /**
+   * Clone budget from budget to new projectBudgetAdd with no budget and year of the phase
+   * 
+   * @param projectBudgetAdd
+   * @param budget
+   * @param phase
+   */
+  public void cloneBudgetInBlank(ProjectBudget projectBudgetAdd, ProjectBudget budget, Phase phase) {
+    projectBudgetAdd.setPhase(phase);
+    projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
+    projectBudgetAdd.setAmount(0.0);
+    projectBudgetAdd.setBudgetType(budget.getBudgetType());
+    projectBudgetAdd.setFundingSource(budget.getFundingSource());
+    projectBudgetAdd.setGenderPercentage(0.0);
+    projectBudgetAdd.setGenderValue(0.0);
+    projectBudgetAdd.setInstitution(budget.getInstitution());
+    projectBudgetAdd.setYear(budget.getYear() + 1);
+  }
+
   @Override
   public ProjectBudget copyProjectBudget(ProjectBudget projectBudget, Phase phase) {
-    ProjectBudget budgetAdd = new ProjectBudget();
-    this.cloneBudget(budgetAdd, projectBudget, phase);
-    budgetAdd = projectBudgetDAO.save(budgetAdd);
-    return budgetAdd;
+    // Check if budget doesn't exists yet
+    List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectBudget.getProject().getId().longValue()
+        && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
+        && c.getYear() == projectBudget.getYear() && c.getPhase() != null
+        && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
+      .collect(Collectors.toList());
+    if (budgets.isEmpty()) {
+      ProjectBudget budgetAdd = new ProjectBudget();
+      this.cloneBudget(budgetAdd, projectBudget, phase);
+      budgetAdd = projectBudgetDAO.save(budgetAdd);
+      return budgetAdd;
+    }
+    return null;
   }
 
   public void deletBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
@@ -80,7 +117,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
-        && c.getYear() == projectBudget.getYear() && c.getPhase() != null
+        && c.getYear() >= projectBudget.getYear() && c.getPhase() != null
         && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
       .collect(Collectors.toList());
     for (ProjectBudget projectBudgetDB : budgets) {
@@ -90,7 +127,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
     if (phase.getNext() != null) {
       this.deletBudgetPhase(phase.getNext(), projecID, projectBudget);
-
     }
   }
 
@@ -144,6 +180,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     return projectBudgetDAO.find(projectBudgetID);
   }
 
+
   @Override
   public double getReaminingAmount(long fundingSourceID, int year, double budget, long idPhase) {
     String amount = projectBudgetDAO.amountByFundingSource(fundingSourceID, year, idPhase);
@@ -154,7 +191,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     return 0;
   }
 
-
   @Override
   public double getTotalBudget(long projetId, long phaseID, int type, int year) {
     return projectBudgetDAO.getTotalBudget(projetId, phaseID, type, year);
@@ -163,6 +199,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   public void saveBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
 
+    // Save budget of current year
     List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
@@ -179,9 +216,19 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
       projectBudgetDAO.save(budgetAdd);
     }
 
-    if (phase.getNext() != null)
-
-    {
+    // Save budgets of current_year+1 with budget 0
+    List<ProjectBudget> budgetsNextYear = phase.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
+        && c.getYear() == projectBudget.getYear() + 1 && c.getPhase() != null
+        && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
+      .collect(Collectors.toList());
+    if (budgetsNextYear.isEmpty()) {
+      ProjectBudget budgetAdd = new ProjectBudget();
+      this.cloneBudgetInBlank(budgetAdd, projectBudget, phase);
+      projectBudgetDAO.save(budgetAdd);
+    }
+    if (phase.getNext() != null) {
       this.saveBudgetPhase(phase.getNext(), projecID, projectBudget);
     }
 

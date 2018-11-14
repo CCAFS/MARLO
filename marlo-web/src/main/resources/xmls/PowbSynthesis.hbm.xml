@@ -9,6 +9,9 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+		<property name="expectedProgressNarrative" type="string">
+      <column name="expected_progress_narrative" sql-type="TEXT" />
+    </property>
 		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
 			fetch="select">
 			<column name="id_phase" />
@@ -40,6 +43,8 @@
 		</set>
 		<one-to-one name="powbToc" class="org.cgiar.ccafs.marlo.data.model.PowbToc"
 			cascade="save-update"></one-to-one>
+			<one-to-one name="powbProgramChange" class="org.cgiar.ccafs.marlo.data.model.PowbProgramChange"
+      cascade="save-update"></one-to-one>			
 		<one-to-one name="powbFlagshipPlans"
 			class="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans" cascade="save-update"></one-to-one>
 		<one-to-one name="powbEvidence"

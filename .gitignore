@@ -14,3 +14,4 @@ bin
 *.MF
 configuration/test/marlo.properties
 configuration/dev/marlo.properties
+marlo-web/src/main/resources/swagger/dist/swagger-ui-setup.js

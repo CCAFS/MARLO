@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -67,6 +68,9 @@ public interface FundingSourceManager {
    * @return a FundingSource object.
    */
   public FundingSource getFundingSourceById(long fundingSourceID);
+
+  public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypes(GlobalUnit globalUnit, Phase phase,
+    Set<Integer> statusTypes);
 
   public List<FundingSourceSummary> getOngoingFundingSourceSummaries(GlobalUnit globalUnit, Phase phase);
 

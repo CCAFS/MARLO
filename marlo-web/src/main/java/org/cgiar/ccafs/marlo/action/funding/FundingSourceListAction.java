@@ -17,7 +17,6 @@
 package org.cgiar.ccafs.marlo.action.funding;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSummary;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
@@ -26,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -37,16 +35,20 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.authz.AuthorizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,7 @@ public class FundingSourceListAction extends BaseAction {
 
   private GlobalUnit loggedCrp;
 
-  private List<FundingSourceSummary> myProjects;
+  private List<FundingSource> myProjects;
 
   private FundingSourceManager fundingSourceManager;
 
@@ -69,32 +71,23 @@ public class FundingSourceListAction extends BaseAction {
   private FundingSourceInfoManager fundingSourceInfoManager;
 
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
-
   private GlobalUnitManager crpManager;
-
-
-  private RoleManager roleManager;
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
-  private List<FundingSourceSummary> closedProjects;
+  private List<FundingSource> closedProjects;
   private long fundingSourceID;
-
-
   private long fundingSourceInfoID;
-
-
   private String justification;
 
 
   @Inject
-  public FundingSourceListAction(APConfig config, RoleManager roleManager, FundingSourceManager fundingSourceManager,
+  public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
     InstitutionManager institutionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     FundingSourceInfoManager fundingSourceInfoManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
-    this.roleManager = roleManager;
     this.liaisonUserManager = liaisonUserManager;
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.institutionManager = institutionManager;
@@ -124,31 +117,6 @@ public class FundingSourceListAction extends BaseAction {
       fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
 
-      LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-      if (user != null) {
-        LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-        try {
-          if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-
-            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-            fundingSourceInstitution.setFundingSource(fundingSource);
-            fundingSourceInstitution.setPhase(phase);
-            fundingSourceInstitution.setInstitution(institution);
-            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-
-          }
-        } catch (Exception e) {
-          logger.error("unable to save FundingSourceInstitution", e);
-          /**
-           * Original code swallows the exception and didn't even log it. Now we at least log it,
-           * but we need to revisit to see if we should continue processing or re-throw the exception.
-           */
-        }
-
-
-      }
       if (phase.getNext() != null) {
         phase = phase.getNext();
       } else {
@@ -158,7 +126,41 @@ public class FundingSourceListAction extends BaseAction {
 
     }
 
-    this.clearPermissionsCache();
+
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+    if (user != null) {
+      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+      try {
+        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+
+          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+          fundingSourceInstitution.setFundingSource(fundingSource);
+          fundingSourceInstitution.setPhase(this.getActualPhase());
+          fundingSourceInstitution.setInstitution(institution);
+          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+
+        }
+      } catch (Exception e) {
+        logger.error("unable to save FundingSourceInstitution", e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
+      }
+
+
+    }
+
+    // this.clearPermissionsCache();
+    // HJ : add the permission String
+    AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+      .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+
+
+    String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
+    info.getStringPermissions().add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
+
     if (fundingSourceID > 0) {
       return SUCCESS;
     }
@@ -203,7 +205,8 @@ public class FundingSourceListAction extends BaseAction {
     return SUCCESS;
   }
 
-  public List<FundingSourceSummary> getClosedProjects() {
+
+  public List<FundingSource> getClosedProjects() {
     return closedProjects;
   }
 
@@ -267,36 +270,9 @@ public class FundingSourceListAction extends BaseAction {
     return justification;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
-  }
-
-  public List<FundingSourceSummary> getMyProjects() {
-    return myProjects;
-  }
-
-  @Override
-  public void prepare() throws Exception {
-
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-
-    // if (fundingSourceManager.findAll() != null) {
-
-    Role role = roleManager.getRoleById(Long.parseLong(this.getSession().get(APConstants.CRP_PMU_ROLE).toString()));
-    boolean isPMU = !role.getUserRoles().stream()
-      .filter(c -> c.getUser().getId().longValue() == this.getCurrentUser().getId().longValue())
-      .collect(Collectors.toList()).isEmpty();
-    if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin() || isPMU) {
-      // TODO confirm with the MARLO team in Cali, that nonPmu users can also view the list of fundingSources.
-      this.myProjects = fundingSourceManager.getOngoingFundingSourceSummaries(loggedCrp, this.getActualPhase());
-    } else {
-      this.myProjects = fundingSourceManager.getOngoingFundingSourceSummaries(loggedCrp, this.getActualPhase());
-    }
-
-    this.closedProjects = fundingSourceManager.getClosedFundingSourceSummaries(loggedCrp, this.getActualPhase());
-
-
   }
 
   // public void getBudgetAmount(long fundingsourceID){
@@ -310,7 +286,63 @@ public class FundingSourceListAction extends BaseAction {
   //
   // }
 
-  public void setClosedProjects(List<FundingSourceSummary> closedProjects) {
+
+  public List<FundingSource> getMyProjects() {
+    return myProjects;
+  }
+
+
+  @Override
+  public void prepare() throws Exception {
+
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
+    Set<Integer> statusTypes = new HashSet<>();
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Pipeline.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Informally.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Complete.getStatusId()));
+    statusTypes.add(Integer.parseInt(FundingStatusEnum.Cancelled.getStatusId()));
+
+    List<FundingSource> allFundingSources =
+      fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(loggedCrp, this.getActualPhase(), statusTypes);
+
+    this.myProjects = new ArrayList<>();
+    this.closedProjects = new ArrayList<>();
+
+    if (allFundingSources != null && allFundingSources.size() > 0) {
+
+      for (FundingSource fundingSource : allFundingSources) {
+
+        fundingSource.getFundingSourceInfo(this.getActualPhase());
+        fundingSource.setInstitutions(fundingSource.getFundingSourceInstitutions().stream()
+          .filter(fsi -> fsi.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        if (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+          .parseInt(FundingStatusEnum.Ongoing.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Extended.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Informally.getStatusId())) {
+          myProjects.add(fundingSource);
+        }
+
+        if (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+          .parseInt(FundingStatusEnum.Cancelled.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Complete.getStatusId())) {
+          closedProjects.add(fundingSource);
+        }
+      }
+    }
+
+  }
+
+
+  public void setClosedProjects(List<FundingSource> closedProjects) {
     this.closedProjects = closedProjects;
   }
 
@@ -319,18 +351,19 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceID = projectID;
   }
 
-
   @Override
   public void setJustification(String justification) {
     this.justification = justification;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setMyProjects(List<FundingSourceSummary> myProjects) {
+  public void setMyProjects(List<FundingSource> myProjects) {
     this.myProjects = myProjects;
   }
+
 
 }

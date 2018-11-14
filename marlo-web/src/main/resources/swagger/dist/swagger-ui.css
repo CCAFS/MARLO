@@ -8863,7 +8863,7 @@
 .swagger-ui .download-contents {
   position: absolute;
   bottom: 10px;
-  right: 10px;
+  right: 20px;
   cursor: pointer;
   background: #0000008f;
   text-align: center;
@@ -9249,7 +9249,7 @@ keyframes blinker { 50%{
 @media ( max-width :768px) {
   .swagger-ui input[type=email], .swagger-ui input[type=file], .swagger-ui input[type=password], .swagger-ui input[type=search],
     .swagger-ui input[type=text], .swagger-ui textarea {
-    max-width: 175px
+    max-width: 175px;
   }
 }
 
@@ -9258,95 +9258,23 @@ keyframes blinker { 50%{
   -webkit-animation: shake .4s 1;
   animation: shake .4s 1;
   border-color: #f93e3e;
-  background: #feebeb
+  background: #feebeb;
 }
 
-@
--webkit-keyframes shake { 10%,90%{
-  -webkit-transform: translate3d(-1px, 0, 0);
-  transform: translate3d(-1px, 0, 0)
+@-webkit-keyframes shake { 
+  10%, 90%{-webkit-transform: translate3d(-1px, 0, 0) transform: translate3d(-1px, 0, 0); }
+  20%, 80%{-webkit-transform: translate3d(2px, 0,0) transform: translate3d(2px, 0,0);}
+  30%, 50%, 70%{-webkit-transform: translate3d(-4px, 0,0)transform: translate3d(-4px, 0,0); }
+  40%, 60%{-webkit-transform: translate3d(4px, 0,0) transform: translate3d(4px, 0,0);}
 }
 
-20%,80%{
--webkit-transform
-:translate3d
-(2px
-,
-0,0);
-transform
-:translate3d
-(2px
-,
-0,0)
-}
-30%,50%,70%{
--webkit-transform
-:translate3d
-(-4px
-,
-0,0);
-transform
-:translate3d
-(-4px
-,
-0,0)
-}
-40%,60%{
--webkit-transform
-:translate3d
-(4px
-,
-0,0);
-transform
-:translate3d
-(4px
-,
-0,0)
-}
-}
-@
-keyframes shake { 10%,90%{
-  -webkit-transform: translate3d(-1px, 0, 0);
-  transform: translate3d(-1px, 0, 0)
+@keyframes shake { 
+  10%, 90%{-webkit-transform: translate3d(-1px, 0, 0) transform: translate3d(-1px, 0, 0);}
+  20%, 80%{-webkit-transform: translate3d(2px, 0,0) transform: translate3d(2px, 0,0);}
+  30%, 50%, 70%{-webkit-transform: translate3d(-4px, 0,0) transform: translate3d(-4px, 0,0);}
+  40%, 60%{-webkit-transform: translate3d(4px, 0,0) transform: translate3d(4px, 0,0);}
 }
 
-20%,80%{
--webkit-transform
-:translate3d
-(2px
-,
-0,0);
-transform
-:translate3d
-(2px
-,
-0,0)
-}
-30%,50%,70%{
--webkit-transform
-:translate3d
-(-4px
-,
-0,0);
-transform
-:translate3d
-(-4px
-,
-0,0)
-}
-40%,60%{
--webkit-transform
-:translate3d
-(4px
-,
-0,0);
-transform
-:translate3d
-(4px
-,
-0,0)
-}
-}
 .swagger-ui textarea {
   font-size: 12px;
   width: 100%;

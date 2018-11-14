@@ -48,6 +48,8 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
     return new Docket(DocumentationType.SWAGGER_2).select()
       .apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest")).paths(PathSelectors.any()).build()
       .apiInfo(this.apiInfo());
+
+
   }
 
 

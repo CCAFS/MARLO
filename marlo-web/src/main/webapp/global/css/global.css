@@ -2146,8 +2146,13 @@ h3.contentSubTitle {
   font-family: 'Open Sans', sans-serif;
   border-bottom: 1px solid #95a5ce;
   color: #95a5ce;
-  padding-bottom: 3px;
+  padding-bottom: 2px;
   line-height: 20px;
+}
+
+.text-gray {
+  border-bottom: 1px solid #95a5a6;
+  color: #95a5a6;
 }
 
 .simpleTitle {

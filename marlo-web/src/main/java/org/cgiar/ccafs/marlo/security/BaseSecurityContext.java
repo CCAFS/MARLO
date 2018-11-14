@@ -43,6 +43,8 @@ public class BaseSecurityContext {
    * @return an APCustomRealm object.
    */
   public Realm getRealm() {
+
+
     Collection<Realm> realms = ((RealmSecurityManager) SecurityUtils.getSecurityManager()).getRealms();
     if (realms.size() > 0) {
       return realms.iterator().next();

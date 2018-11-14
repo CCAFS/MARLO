@@ -18,16 +18,14 @@
     cursor: pointer;
 }
 
-.locations span {
-}
-
 .locations {
     border: 1px solid #d1d1d1;
     /* background-color: #f4f4f4; */
-    margin-bottom: 6px;
-    border-radius: 4px;
-    height: 26px;
+    margin-bottom: 4px;
+    border-radius: 3px;
     line-height: 26px;
+    min-height: 43px;
+    position: relative;
 }
 
 .checkBox {
@@ -56,13 +54,8 @@
 }
 
 .locationLevel-optionContent {
-    /* border-top: none; */
     margin-top: 0;
-    /* border: 1px solid #D1D1D1; */
-    /* padding: 9px 22px 9px 22px; */
-    /* border-radius: 4px; */
     position: relative;
-    /* min-height: 100px; */
 }
 
 .collapsible {
@@ -74,19 +67,23 @@
 .selectWrapper {
     overflow-x: hidden;
     overflow-y: auto;
-    /* max-height: 300px; */
 }
 
 #map {
+    width: 370px;
+    height: 330px;
     padding: 0;
-    height: 113%;
     border: 2px solid #aaa;
 }
 
+#map.all-locations {
+    width: 688px;
+    height: 460px;
+}
+
 .map {
-    height: 500px;
-    margin-bottom: 10%;
-    margin-top: 15px;
+    /* margin-bottom: 30px;
+    margin-top: 15px; */
 }
 
 .selectLocationLevel {
@@ -104,19 +101,16 @@
 
 .latitudeWrapper {
     width: 24%;
-    float: left;
     margin-left: 1%;
 }
 
 .longitudeWrapper {
     width: 24%;
-    float: left;
     margin-left: 1%;
 }
 
 .nameWrapper {
     width: 50%;
-    float: left;
 }
 
 .nameMap {
@@ -127,15 +121,12 @@
 span.lPos {
     color: darkgray;
     font-size: 0.8em;
+    line-height: 2px;
 }
 
-.locations.selected {
-    background-color: #ccc;
-    border: 1px dashed #777;
-}
-
-.locationName {
+.locations .locationName {
     cursor: pointer;
+    line-height: 20px;   
 }
 
 .selectWrapper-horizontal {
@@ -155,13 +146,6 @@ span.lPos {
     margin-right: 20px;
 }
 
-span.select2.select2-container.select2-container--default {
-}
-
-.onoffswitch {
-    /* margin-bottom: 20px; */
-}
-
 .view {
     margin: auto 15px 10px 0px;
     border-radius: 6px;
@@ -175,7 +159,7 @@ span.select2.select2-container.select2-container--default {
 }
 
 div#selectsContent {
-    margin-bottom: 25px;
+    margin-bottom: 12px;
 }
 
 .locationLevel-optionSelect {
@@ -243,8 +227,34 @@ span.allCountriesQuestion {
     display: inline-block;
 }
 
+.locLevelSelect-container{
+    margin-bottom: 15px;
+}
+
+.centerMarker{
+    position:absolute;
+    /*url of the marker*/
+    background:url('../../../global/images/green-map-marker.png') no-repeat;
+    /* background:url('../../../global/images/pointer-hand.png') no-repeat; */
+    /*center the marker*/
+    top:50%;
+    left:50%;
+    z-index:1;
+    /*fix offset when needed (GREEN MARKER)*/
+    margin-left:-17px;
+    margin-top:-35px;
+    /*fix offset when needed (POINTER HAND)*/
+    /* margin-left:-14px;
+    margin-top:-5px; */
+    /*size of the image*/
+    height:35px;
+    width:35px;
+
+    cursor:pointer;
+}
+
 .selectLocations {
-    max-width: 450px;
+    /* max-width: 450px; */
 }
 
 li.select2-search.select2-search--inline{
@@ -292,16 +302,17 @@ li.select2-search.select2-search--inline{
   cursor:pointer;
 }
 
+input[type="checkbox"]{
+    transform: scale(1.2);
+}
+
 .fundingContent{
-  border:1px dashed #ccc; 
-  margin:-7px 0 10px 0;
+  border:1px dashed #ccc;
+  margin: -5px 0 10px 0;
   min-height:90px;
   max-height:90px;
   overflow: auto;
 }
-}
-
-.nameWrapper-locLevel {}
 
 .nameWrapper-locLevel {
     width: 40%;
@@ -332,13 +343,265 @@ li.select2-search.select2-search--inline{
     border-radius: 3px;
     border: 1px solid #668fda;
     font-size: 12px;
-    margin-top:8px;
+    margin-bottom: 8px;
+}
+
+.addLoc-locLevel.loc-button{
+    margin-bottom: 25px;
 }
 
 .addLoc-locLevel b{
   font-family: Roboto,Arial,sans-sefif;
 }
 
-.addloc {
-  background-color: #fdf0ec;
+/* Locations Table*/
+
+#locations-list-title{
+    margin-top: 24px;
+}
+
+table td {
+  list-style: none;
+  padding: 9px;
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 0.95em;
+}
+
+th {
+  background: #f5f5f5;
+  color: #a9a8a8;
+  padding: 9px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+td {
+  padding: 3px 10px;
+  vertical-align: middle !important;
+}
+
+table {
+  border: 1px solid #e6e6e6;
+  font-size: 0.95em;
+}
+
+/** MARLO Responsibe Tables */
+.table-responsive table {
+  min-width: 1500px;
+  margin-bottom: 0;
+}
+
+.table-responsive {
+  border: 1px solid #ddd;
+  max-height: 500px;
+}
+
+.table > thead > tr > th {
+  vertical-align:middle;
+}
+
+form .form-group.margin-panel {
+  margin-bottom: 40px;
+}
+
+td {
+  border: 1px solid rgb(224, 224, 224);
+}
+tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+/* Adding a new location Pop up*/
+
+.addLocationModal .modal-content, .allLocationsModal .modal-content {
+    padding: 20px;
+    min-height: 415px;
+    width: 1000px;
+}
+
+.allLocationsModal .modal-content {
+    padding: 20px;
+    min-height: 560px;
+}
+
+.modal-content .locationForm-container h3.title{
+    display: inline-block;
+}
+
+.modal-content .locationForm-container h3.title, .allLocations-container h3.title{
+    margin: 0;
+}
+
+.inputFormCoordinates-container{
+    margin-top: 5px;
+    display: flex;
+}
+
+/* Search Box */
+
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#pac-input {
+    display: none;
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 145px;
+    left: 113px !important;
+}
+
+.allLocationsModal #pac-input {
+    width: 225px;
+}
+
+#pac-input:focus {
+    border-color: #4d90fe;
+}
+
+.pac-container {
+    font-family: Roboto;
+    z-index: 1100;
+}
+
+#type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+}
+
+#type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+}
+#target {
+    width: 345px;   
+}
+
+/* End Search Box*/
+
+#alert-succesfully-added{
+    position: absolute;
+    width: 94%;
+    text-align: center;
+}
+
+.addLocationButton-container{
+    margin-bottom: 46px;
+}
+
+.icon-left-position {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-color: #0b7ba6;
+    border-radius: 5px;
+    text-align: center;
+    margin-right: 10px;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+}
+
+.icon-left-position span {
+    font-size: 15px;
+    color: #fff;
+    line-height: 15px;
+    vertical-align: middle;
+    margin-right: 1px;
+}
+
+.text-left-position {
+    color: #0b7ba6;
+    cursor: pointer;
+    font-size: 12px;
+    float: right;
+    margin-top: 13px;
+}
+
+/* All locations modal */
+
+.list-container{
+    padding-left: 0;
+    overflow-y: auto;
+    height: 460px;
+}
+
+.list-container ul{
+    list-style-type: none;
+    padding-left: 20px;
+    font-size: 1.2em;
+}
+
+.list-container ul{
+    list-style-type: none;
+    padding-left: 20px;
+    font-size: 1.25em;
+}
+
+.list-container ul li{
+    color: #333;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 75%;
+}
+
+.list-container ul li:hover{
+    background-color: #f5f5f5;
+}
+
+.list-container ul li:hover span:not(.coordinates){
+    color: #d82d00;
+}
+
+.list-container ul li span{
+    color: #56707a;
+}
+
+.list-container ul li.selected span:not(.coordinates){
+    color: #d82d00;
+}
+
+.list-container ul li span.coordinates{
+    padding-left: 14px;
+    font-size: 75%;
+}
+
+span.select2-selection.select2-selection--multiple{
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+hr.suggestedLocations-separator{
+    margin-bottom: 5px;
+}
+
+.removeIcon.removeDisabled{
+    opacity: 0.4;
+}
+
+div.suggestedLocations-separator{
+    margin: -5px 50px 10px -26px;
+}
+
+.suggestedLocations-label{
+    margin-left: 16px;
+    background-color: #afafaf;
+    color: #ffffff;
+    text-align: center;
+    padding: 0 13px;
+    border-bottom-right-radius: 4px;
 }

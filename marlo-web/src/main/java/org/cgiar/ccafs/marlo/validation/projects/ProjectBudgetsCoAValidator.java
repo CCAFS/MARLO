@@ -53,6 +53,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
   private BudgetTypeManager budgetTypeManager;
   private ProjectManager projectManager;
+  private boolean sMessage;
 
 
   // GlobalUnit Manager
@@ -70,8 +71,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   public double calculateGender(Long type, int year, long projectID) {
     double gender = 0;
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD
-      .getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
+      .stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
       .collect(Collectors.toList());
 
@@ -96,8 +97,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
   public boolean hasBudgets(Long type, int year, long projectID) {
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD
-      .getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
+      .stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
       .collect(Collectors.toList());
     Double totalAmount = 0.0;
@@ -128,7 +129,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   }
 
 
-  public void validate(BaseAction action, Project project, boolean saving) {
+  public void validate(BaseAction action, Project project, boolean saving, boolean sMessage) {
+    this.sMessage = sMessage;
     action.setInvalidFields(new HashMap<>());
     if (project != null) {
       if (!saving) {
@@ -177,15 +179,21 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
           }
 
         } else {
-          action.addMessage(action.getText("project.budgets"));
+          if (sMessage) {
+            action.addMessage(action.getText("project.budgets"));
+          }
         }
       }
 
       if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
+        if (sMessage) {
+          action.addActionError(action.getText("saving.fields.required"));
+        }
       } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+        if (sMessage) {
+          action.addActionMessage(
+            " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+        }
       }
 
 
@@ -222,11 +230,15 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     if (amount > 0) {
       if (amount != 100) {
         action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
-        action.addMessage(action.getText("project.budget.coa.amount", params));
+        if (sMessage) {
+          action.addMessage(action.getText("project.budget.coa.amount", params));
+        }
       }
     } else {
       action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
-      action.addMessage(action.getText("project.budget.coa.amount", params));
+      if (sMessage) {
+        action.addMessage(action.getText("project.budget.coa.amount", params));
+      }
     }
 
     boolean genderSpecifity = action.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
@@ -234,13 +246,16 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     if (genderSpecifity) {
       if (gender > 0) {
         if (gender != 100) {
-
           action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
-          action.addMessage(action.getText("project.budget.coa.gender", params));
+          if (sMessage) {
+            action.addMessage(action.getText("project.budget.coa.gender", params));
+          }
         }
       } else {
         action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
-        action.addMessage(action.getText("project.budget.coa.gender", params));
+        if (sMessage) {
+          action.addMessage(action.getText("project.budget.coa.gender", params));
+        }
       }
     }
 

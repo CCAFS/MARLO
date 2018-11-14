@@ -19,7 +19,7 @@
     </action>
     
     <!--  2.1  Expected Progress Towards Outcomes  -->
-    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
+    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.y2019.ExpectedCRPProgress2019Action">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb2019/powb2019_expectedProgress.ftl</result>
       <result name="success" type="redirectAction">
@@ -58,7 +58,7 @@
     </action>
  
     <!--  3.1  Planned Budget  -->
-    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.FinancialPlanAction">
+    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.y2019.PlannedBudgetAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb2019/powb2019_plannedBudget.ftl</result>
       <result name="success" type="redirectAction">
@@ -71,7 +71,7 @@
     </action>
     
     <!--  4.1 Program Changes -->
-    <action name="{crp}/programChanges" class="org.cgiar.ccafs.marlo.action.powb.y2019.ToCAdjustments2019Action">
+    <action name="{crp}/programChanges" class="org.cgiar.ccafs.marlo.action.powb.y2019.ProgramChangesAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb2019/powb2019_programChanges.ftl</result>
       <result name="success" type="redirectAction">

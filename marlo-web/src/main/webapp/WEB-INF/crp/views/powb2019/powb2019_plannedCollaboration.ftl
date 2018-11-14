@@ -141,7 +141,7 @@
     <thead>
       <tr>
         <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
-        <th> CRP or non-CGIAR collaborator </th>
+        <th> [@s.text name="collaborationIntegration.tableFlagshipsOverall.collaborator" /] </th>
         <th> Description of collaboration and value added </th>
         <th> [@s.text name="evidenceRelevant.tablePlannedStudies.include" /] </th>
       </tr>

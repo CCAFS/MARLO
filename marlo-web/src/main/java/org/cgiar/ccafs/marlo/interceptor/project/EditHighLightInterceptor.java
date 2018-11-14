@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -54,13 +55,15 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public EditHighLightInterceptor(ProjectHighligthManager deliverableManager, ProjectManager projectManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, LiaisonUserManager liaisonUserManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectHighligthManager = deliverableManager;
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @Override
@@ -91,6 +94,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
     baseAction.setSession(session);
     // String projectParameter = ((String[]) parameters.get(APConstants.HIGHLIGHT_REQUEST_ID))[0];
     String projectParameter = parameters.get(APConstants.HIGHLIGHT_REQUEST_ID).getMultipleValues()[0];
+    boolean contactPointEditProject = baseAction.hasSpecificities(APConstants.CRP_CONTACT_POINT_EDIT_PROJECT);
 
     highLightId = Long.parseLong(projectParameter);
 
@@ -140,6 +144,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true : baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params));
       }
+
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;

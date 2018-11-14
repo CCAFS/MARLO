@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "powbSynthesis.expectedProgress" /]
+[#assign customName= "powbSynthesis" /]
 [#assign customLabel= "powbSynthesis.${currentStage}" /]
 
 
@@ -46,9 +46,8 @@
             [#-- Provide a short narrative of expected highlights of the CRP/PTF in the coming year --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(2000)}" editable=editable allowTextEditor=true   /]
+              [@customForm.textArea name="${customName}.expectedProgressNarrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(2000)}" editable=editable allowTextEditor=true   /]            
             </div>
-            
             [#if PMU]
             <div class="form-group">
               [@tableFlagshipSynthesis tableName="narrativeFlagshipsTable" list=tocList columns=["narrative"] /]
@@ -98,7 +97,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="col-md-1 text-center"> FP </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${tableName}.fp" /]  </th>
           [#list columns as column]<th> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
       </thead>
@@ -123,7 +122,7 @@
           [/#list]
         [#else]
           <tr>
-            <td class="text-center" colspan="${columns?size + 1}"><i>No flagships loaded...</i></td>
+            <td class="text-center" colspan="${columns?size + 1}"><i>No entries loaded...</i></td>
           </tr>
         [/#if]
       </tbody>
@@ -132,19 +131,20 @@
 [/#macro]
 
 [#macro tableA2Milestones  list=[] allowPopups=false id="" includeAllColumns=true  ]
+  [#local milestoneIndex = 0 ]
   <div class="">[#-- <div class="table-responsive"> --]
     <table id="table2A-POWB2019" class="table table-bordered">
       <thead>
         <tr>
-          [#if PMU || includeAllColumns]<th rowspan="2" > FP </th>[/#if]
+          [#if PMU || includeAllColumns]<th rowspan="2" > [@s.text name="powbSynthesis.expectedProgress.narrativeFlagshipsTable.fp" /] </th>[/#if]
           [#if includeAllColumns]<th rowspan="2" > Mapped to Sub-IDO </th>[/#if]
           [#if includeAllColumns]<th rowspan="2" > 2022 FP outcomes </th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
           [#if includeAllColumns]<th rowspan="2" > Indicate of the following </th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
           <th rowspan="1" colspan="4" class="text-center"> CGIAR Cross-Cutting Markers </th> 
-          <th rowspan="2" class="text-center" > Assessment of risk (L/M/H) </th>
-          [#if includeAllColumns]<th rowspan="2" class="text-center"> Main risk for (M/H) </th>[/#if]
+          [#if entityCRP]<th rowspan="2" class="text-center" > Assessment of risk (L/M/H) </th>[/#if]
+          [#if includeAllColumns && entityCRP]<th rowspan="2" class="text-center"> Main risk for (M/H) </th>[/#if]
           [#if flagship && !includeAllColumns] <th rowspan="2" class="text-center"> Include in POWB</th>[/#if]
         </tr>
         <tr>
@@ -186,17 +186,19 @@
                 [#-- Means Verification --]
                 <td class="">[#if (m.powbMilestoneVerification?has_content)!false]${m.powbMilestoneVerification}[#else] [@utils.prefilledTag /] [/#if]</td>
                 [#-- Gender --]
-                <td class="text-center"> [#if (m.genderFocusLevel?has_content)!false] <p class="dacMarker level-${m.genderFocusLevel.id}" title="${m.genderFocusLevel.name}">${m.genderFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.genderFocusLevel?has_content)!false] <p class="dacMarker level-${m.genderFocusLevel.id}" title="${m.genderFocusLevel.powbName}">${m.genderFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Youth --]
-                <td class="text-center"> [#if (m.youthFocusLevel?has_content)!false] <p class="dacMarker level-${m.youthFocusLevel.id}" title="${m.youthFocusLevel.name}">${m.youthFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.youthFocusLevel?has_content)!false] <p class="dacMarker level-${m.youthFocusLevel.id}" title="${m.youthFocusLevel.powbName}">${m.youthFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- CapDev --]
-                <td class="text-center"> [#if (m.capdevFocusLevel?has_content)!false] <p class="dacMarker level-${m.capdevFocusLevel.id}" title="${m.capdevFocusLevel.name}">${m.capdevFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.capdevFocusLevel?has_content)!false] <p class="dacMarker level-${m.capdevFocusLevel.id}" title="${m.capdevFocusLevel.powbName}">${m.capdevFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Climate Change --]
-                <td class="text-center"> [#if (m.climateFocusLevel?has_content)!false] <p class="dacMarker level-${m.climateFocusLevel.id}" title="${m.climateFocusLevel.name}">${m.climateFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
+                <td class="text-center"> [#if (m.climateFocusLevel?has_content)!false] <p class="dacMarker level-${m.climateFocusLevel.id}" title="${m.climateFocusLevel.powbName}">${m.climateFocusLevel.acronym}</p> [#else][@utils.prefilledTag /][/#if] </td>
                 [#-- Assessment Risk --]
-                <td class="center">[#if (m.powbIndAssesmentRisk?has_content)!false]${m.powbIndAssesmentRisk.name}[#else] [@utilities.prefilledTag /] [/#if]</td>
+                [#if entityCRP]
+                  <td class="center">[#if (m.powbIndAssesmentRisk?has_content)!false]${m.powbIndAssesmentRisk.name}[#else] [@utilities.prefilledTag /] [/#if]</td>
+                [/#if]
                 [#-- For medium/high please select the main risk from the list --]
-                [#if includeAllColumns]
+                [#if includeAllColumns && entityCRP]
                   <td>
                     [#if (m.powbIndMilestoneRisk?has_content)!false]
                       ${m.powbIndMilestoneRisk.name}
@@ -208,8 +210,12 @@
                 [/#if]
                 [#-- Include in POWB --]
                 [#if flagship && !includeAllColumns]
-                  [#local isMilestoneChecked = ((!powbSynthesis.expectedProgress.milestonesIds?seq_contains(m.id))!true) /]
-                  <td class="text-center"> [@customForm.checkmark id="milestoneCheck-${(m.id)!''}" name="${customName}.milestonesValue" value="${(m.id)!''}" checked=isMilestoneChecked editable=editable centered=true/] </td> 
+                  <td class="text-center">
+                    [#local milestoneName = "powbSynthesis.milestones[${milestoneIndex}]" ]
+                    <input type="hidden" name="${milestoneName}.id" value="${m.id}"/>
+                    [@customForm.checkmark id="m-${(m.id)!''}" name="${milestoneName}.isPowb" checked=(m.isPowb)!false editable=editable centered=true/] 
+                    [#local milestoneIndex = milestoneIndex + 1 ]
+                  </td>
                 [/#if]
               </tr>
             [/#list]

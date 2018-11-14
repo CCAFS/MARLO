@@ -107,15 +107,17 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   private String powbMilestoneVerification;
 
 
+  // POWB 2019 Synthesis Fields
+  private Boolean isPowb;
+
+
   /** **/
 
 
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
 
-
   public CrpMilestone() {
   }
-
 
   public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, Integer year,
     BigDecimal value) {
@@ -149,9 +151,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return true;
   }
 
+
   public RepIndGenderYouthFocusLevel getCapdevFocusLevel() {
     return capdevFocusLevel;
   }
+
 
   public RepIndGenderYouthFocusLevel getClimateFocusLevel() {
     return climateFocusLevel;
@@ -177,6 +181,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return index;
   }
 
+  public Boolean getIsPowb() {
+    return isPowb;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -200,10 +208,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return powbMilestoneOtherRisk;
   }
 
-
   public String getPowbMilestoneVerification() {
     return powbMilestoneVerification;
   }
+
 
   public Set<ProjectMilestone> getProjectMilestones() {
     return projectMilestones;
@@ -214,10 +222,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return this.srfTargetUnit;
   }
 
-
   public String getTitle() {
     return this.title;
   }
+
 
   public BigDecimal getValue() {
     return this.value;
@@ -251,7 +259,6 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.composeID = composeID;
   }
 
-
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
   }
@@ -264,6 +271,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
 
   public void setIndex(Long index) {
     this.index = index;
+  }
+
+
+  public void setIsPowb(Boolean isPowb) {
+    this.isPowb = isPowb;
   }
 
 
