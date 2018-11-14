@@ -38,7 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.ToC2019Validator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -85,7 +85,7 @@ public class ToCAdjustments2019Action extends BaseAction {
 
   private FileDBManager fileDBManager;
 
-  private ToCAdjustmentsValidator validator;
+  private ToC2019Validator validator;
 
 
   private PowbTocManager powbTocManager;
@@ -111,7 +111,7 @@ public class ToCAdjustments2019Action extends BaseAction {
   public ToCAdjustments2019Action(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator, PowbTocManager powbTocManager) {
+    ToC2019Validator validator, PowbTocManager powbTocManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -359,19 +359,6 @@ public class ToCAdjustments2019Action extends BaseAction {
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
       }
-    }
-
-    // Check if the pow toc has file
-    if (this.isPMU()) {
-      if (powbSynthesis.getPowbToc().getFile() != null) {
-        if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-          powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-        } else {
-          powbSynthesis.getPowbToc().setFile(null);
-        }
-      }
-    } else {
-      powbSynthesis.getPowbToc().setFile(null);
     }
 
     // Get the list of liaison institutions Flagships and PMU.
