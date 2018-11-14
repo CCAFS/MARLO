@@ -293,6 +293,11 @@ function isPOWBSection() {
   return url.includes("/powb/");
 }
 
+function isPOWB2019Section() {
+  var url = window.location.href;
+  return url.includes("/powb2019/");
+}
+
 function isAnnualReportSection() {
   var url = window.location.href;
   return url.includes("/annualReport/");

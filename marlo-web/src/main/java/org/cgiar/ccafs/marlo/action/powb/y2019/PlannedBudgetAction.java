@@ -187,11 +187,11 @@ public class PlannedBudgetAction extends BaseAction {
     return loggedCrp;
   }
 
-  public List<PowbExpenditureAreas> getOtherPlannedBudgets() {
-    List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
-      .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
-    if (plannedBudgetAreasList != null) {
-      return plannedBudgetAreasList;
+  public List<PowbFinancialPlannedBudget> getOtherPlannedBudgets() {
+    List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
+      .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+    if (powbFinancialPlannedBudgets != null) {
+      return powbFinancialPlannedBudgets;
     } else {
       return new ArrayList<>();
     }
@@ -310,7 +310,9 @@ public class PlannedBudgetAction extends BaseAction {
 
         }
       } else {
-        return null;
+        PowbFinancialPlannedBudget financialPlannedBudget =
+          powbFinancialPlannedBudgetManager.getPowbFinancialPlannedBudgetById(plannedBudgetRelationID);
+        return financialPlannedBudget;
       }
     }
   }
@@ -662,20 +664,20 @@ public class PlannedBudgetAction extends BaseAction {
           }
         }
       }
-
-      // FinancialPlan:
-      this.saveUpdateFinancialPlan();
-      // Financial Expenditures
-      if (powbSynthesis.getPowbFinancialExpendituresList() != null
-        && !powbSynthesis.getPowbFinancialExpendituresList().isEmpty()) {
-        for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
-          if (powbFinancialExpenditure.getId() == null) {
-            this.saveNewFinancialExpenditure(powbFinancialExpenditure);
-          } else {
-            this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
-          }
-        }
-      }
+      //
+      // // FinancialPlan:
+      // this.saveUpdateFinancialPlan();
+      // // Financial Expenditures
+      // if (powbSynthesis.getPowbFinancialExpendituresList() != null
+      // && !powbSynthesis.getPowbFinancialExpendituresList().isEmpty()) {
+      // for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
+      // if (powbFinancialExpenditure.getId() == null) {
+      // this.saveNewFinancialExpenditure(powbFinancialExpenditure);
+      // } else {
+      // this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
+      // }
+      // }
+      // }
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -726,6 +728,7 @@ public class PlannedBudgetAction extends BaseAction {
     newPowbFinancialPlannedBudget.setPowbSynthesis(powbSynthesis);
     newPowbFinancialPlannedBudget.setPowbExpenditureArea(powbFinancialPlannedBudget.getPowbExpenditureArea());
     newPowbFinancialPlannedBudget.setLiaisonInstitution(powbFinancialPlannedBudget.getLiaisonInstitution());
+    newPowbFinancialPlannedBudget.setTitle(powbFinancialPlannedBudget.getTitle());
     if (powbFinancialPlannedBudget.getW1w2() != null) {
       newPowbFinancialPlannedBudget.setW1w2(powbFinancialPlannedBudget.getW1w2());
     } else {
@@ -799,6 +802,7 @@ public class PlannedBudgetAction extends BaseAction {
     } else {
       powbFinancialPlannedBudgetDB.setCarry(0.0);
     }
+    powbFinancialPlannedBudgetDB.setTitle(powbFinancialPlannedBudget.getTitle());
     powbFinancialPlannedBudgetDB.setComments(powbFinancialPlannedBudget.getComments());
     powbFinancialPlannedBudgetDB =
       powbFinancialPlannedBudgetManager.savePowbFinancialPlannedBudget(powbFinancialPlannedBudgetDB);
