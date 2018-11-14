@@ -76,12 +76,16 @@
           </td>
           --]
           [#-- Center Lead --]
+          
           <td class="institutionLead"> 
             [#if project.institutions?has_content]
-              [#list project.institutions as institutionLead]
-                [#if institutionLead_index!=0]<hr />[/#if]
-                ${(institutionLead.institution.acronym)!institutionLead.institution.name}
-              [/#list]
+              <div class="institutions-list mCustomScrollbar" data-mcs-theme="dark">
+                [#list project.institutions as institutionLead]
+                  [#if institutionLead_index!=0]<hr />
+                  [/#if]
+                  ${(institutionLead.institution.acronym)!institutionLead.institution.name}                  
+                [/#list]
+              </div>
             [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]

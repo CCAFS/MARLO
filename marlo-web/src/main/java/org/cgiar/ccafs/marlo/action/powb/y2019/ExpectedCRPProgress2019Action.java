@@ -45,7 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ExpectedCRPProgressValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.ProgressOutcomesValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -97,7 +97,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   private FileDBManager fileDBManager;
 
-  private ExpectedCRPProgressValidator validator;
+  private ProgressOutcomesValidator validator;
 
   // Variables
   private String transaction;
@@ -129,7 +129,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
   public ExpectedCRPProgress2019Action(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ExpectedCRPProgressValidator validator, CrpMilestoneManager crpMilestoneManager,
+    ProgressOutcomesValidator validator, CrpMilestoneManager crpMilestoneManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager) {
     super(config);
     this.crpManager = crpManager;

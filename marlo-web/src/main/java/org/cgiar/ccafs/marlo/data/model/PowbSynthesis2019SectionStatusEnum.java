@@ -21,8 +21,8 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum PowbSynthesis2019SectionStatusEnum {
 
-  TOC_ADJUSTMENTS("adjustmentsChanges"), PROGRAM_CHANGES("programChanges"), CRP_PROGRESS("expectedProgress"),
-  EVIDENCES("evidenceRelevant"), FINANCIAL_PLAN("financialPlan");
+  TOC("adjustmentsChanges"), PROGRAM_CHANGES("programChanges"), PROGRESS_OUTCOMES("progressOutcomes"),
+  PLANNED_STUDIES("plannedStudies"), PLANNED_COLLABORATIONS("plannedCollaborations"), PLANNED_BUDGET("plannedBudget");
 
   public static PowbSynthesis2019SectionStatusEnum value(String status) {
     PowbSynthesis2019SectionStatusEnum[] lst = PowbSynthesis2019SectionStatusEnum.values();

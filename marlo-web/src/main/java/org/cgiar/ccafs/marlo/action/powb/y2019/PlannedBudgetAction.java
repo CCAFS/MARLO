@@ -43,7 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.FinancialPlanValidator;
+import org.cgiar.ccafs.marlo.validation.powb.y2019.PlannedBudgetValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -90,13 +90,13 @@ public class PlannedBudgetAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
-  private FinancialPlanValidator validator;
+  private PlannedBudgetValidator validator;
 
 
   @Inject
   public PlannedBudgetAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
-    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager, FinancialPlanValidator validator,
+    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager, PlannedBudgetValidator validator,
     PowbFinancialPlanManager powbFinancialPlanManager, PowbFinancialExpenditureManager powbFinancialExpenditureManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager) {
@@ -185,6 +185,16 @@ public class PlannedBudgetAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<PowbFinancialPlannedBudget> getOtherPlannedBudgets() {
+    List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
+      .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+    if (powbFinancialPlannedBudgets != null) {
+      return powbFinancialPlannedBudgets;
+    } else {
+      return new ArrayList<>();
+    }
   }
 
   // Method to download link file
@@ -300,7 +310,9 @@ public class PlannedBudgetAction extends BaseAction {
 
         }
       } else {
-        return null;
+        PowbFinancialPlannedBudget financialPlannedBudget =
+          powbFinancialPlannedBudgetManager.getPowbFinancialPlannedBudgetById(plannedBudgetRelationID);
+        return financialPlannedBudget;
       }
     }
   }
@@ -652,20 +664,20 @@ public class PlannedBudgetAction extends BaseAction {
           }
         }
       }
-
-      // FinancialPlan:
-      this.saveUpdateFinancialPlan();
-      // Financial Expenditures
-      if (powbSynthesis.getPowbFinancialExpendituresList() != null
-        && !powbSynthesis.getPowbFinancialExpendituresList().isEmpty()) {
-        for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
-          if (powbFinancialExpenditure.getId() == null) {
-            this.saveNewFinancialExpenditure(powbFinancialExpenditure);
-          } else {
-            this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
-          }
-        }
-      }
+      //
+      // // FinancialPlan:
+      // this.saveUpdateFinancialPlan();
+      // // Financial Expenditures
+      // if (powbSynthesis.getPowbFinancialExpendituresList() != null
+      // && !powbSynthesis.getPowbFinancialExpendituresList().isEmpty()) {
+      // for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
+      // if (powbFinancialExpenditure.getId() == null) {
+      // this.saveNewFinancialExpenditure(powbFinancialExpenditure);
+      // } else {
+      // this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
+      // }
+      // }
+      // }
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -716,6 +728,7 @@ public class PlannedBudgetAction extends BaseAction {
     newPowbFinancialPlannedBudget.setPowbSynthesis(powbSynthesis);
     newPowbFinancialPlannedBudget.setPowbExpenditureArea(powbFinancialPlannedBudget.getPowbExpenditureArea());
     newPowbFinancialPlannedBudget.setLiaisonInstitution(powbFinancialPlannedBudget.getLiaisonInstitution());
+    newPowbFinancialPlannedBudget.setTitle(powbFinancialPlannedBudget.getTitle());
     if (powbFinancialPlannedBudget.getW1w2() != null) {
       newPowbFinancialPlannedBudget.setW1w2(powbFinancialPlannedBudget.getW1w2());
     } else {
@@ -789,6 +802,7 @@ public class PlannedBudgetAction extends BaseAction {
     } else {
       powbFinancialPlannedBudgetDB.setCarry(0.0);
     }
+    powbFinancialPlannedBudgetDB.setTitle(powbFinancialPlannedBudget.getTitle());
     powbFinancialPlannedBudgetDB.setComments(powbFinancialPlannedBudget.getComments());
     powbFinancialPlannedBudgetDB =
       powbFinancialPlannedBudgetManager.savePowbFinancialPlannedBudget(powbFinancialPlannedBudgetDB);

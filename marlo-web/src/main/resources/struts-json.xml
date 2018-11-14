@@ -668,6 +668,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="validatePowbSynthesisSection2019"
+      class="org.cgiar.ccafs.marlo.action.json.powb.ValidateSectionStatusPowbSynthesis2019Action">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 
 

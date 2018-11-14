@@ -8,7 +8,7 @@
   },
   { 'title': '2.  Expected Key Results',  'show': true,
     'items': [
-    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'expectedProgress',       'active': true, 'development': true },
+    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'progressOutcomes',       'active': true, 'development': true },
     { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true },
     { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true, 'development': true }
     ]
@@ -142,6 +142,6 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/powb/powbSubmit.js?20180307", "${baseUrl}/global/js/autoSave.js", "${baseUrl}/global/js/fieldsValidation.js" ]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/powb2019/powb2019Submit.js", "${baseUrl}/global/js/autoSave.js", "${baseUrl}/global/js/fieldsValidation.js" ]
 /]
 
