@@ -138,7 +138,7 @@
   [#local customName = "powbSynthesis.powbFinancialPlannedBudgetList[${index}]"]
   [#local areaType = (area.class.name?split('.')[area.class.name?split('.')?size-1])!]
   [#local isCustomExpenditure =  !(((area.name?has_content)!false) || ((area.expenditureArea?has_content)!false))]
-  [#local isAreaPMU = (area.id == 2)!false ]
+  [#local isAreaPMU = ((area.id == 2)!false) && (area.class.name?contains("PowbExpenditureAreas"))]
   <div id="expenditureBlock-${isTemplate?string('template', index)}" class="expenditureBlock simpleBox form-group" style="display:${isTemplate?string('none','block')}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     [#if !isCustomExpenditure ]
@@ -150,12 +150,6 @@
     
     [#-- Title --]
     [#if !isCustomExpenditure ]
-      [#if isLiaison || isAreaPMU]
-      <div class="pull-right">
-         
-      </div>
-      [/#if]
-      
       [#if isLiaison]<span class="programTag" style="border-color:${(area.crpProgram.color)!'#fff'};margin-right: 1em;  margin-top: 6px;" >${area.crpProgram.acronym}</span></td>[/#if]      
       <h4 class="subTitle headTitle"> ${(area.name)!(area.expenditureArea)!'null'} </h4>
       
