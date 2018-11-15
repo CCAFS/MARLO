@@ -354,18 +354,18 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           break;
         default:
           bold = false;
-          /*
-           * c1 = "Taken from proposal";
-           * c2 = "Taken from proposal";
-           * c3 = "Taken from proposal";
-           * c4 = "Taken from proposal";
-           * c5 = "Taken from proposal";
-           * c6 = "Taken from proposal";
-           * c7 = "";
-           * c8 = "";
-           * c9 = "";
-           * c10 = "";
-           */
+
+          c1 = " ";
+          c2 = " ";
+          c3 = " ";
+          c4 = " ";
+          c5 = " ";
+          c6 = " ";
+          c7 = " ";
+          c8 = " ";
+          c9 = " ";
+          c10 = " ";
+
       }
       POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
         new POIField(c3, ParagraphAlignment.LEFT), new POIField(c4, ParagraphAlignment.LEFT, bold, blackColor),
@@ -395,8 +395,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
-        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+        crpProgramOutcome.setMilestones(crpProgramOutcome
+          .getCrpMilestones().stream().filter(c -> c.isActive()
+            && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb() != null && c.getIsPowb())
           .collect(Collectors.toList()));
 
         crpProgramOutcome.setSubIdos(
@@ -410,13 +411,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       for (CrpMilestone milestones : crpProgram.getMilestones()) {
         String powbMilestoneVerification = "", focusLevel = "", youthFocusLevel = "", capdevFocusLevel = "",
-          climateFocusLevel = " ";
+          climateFocusLevel = " ", mappedSubIDO = "", fpOutcomes = "";
         try {
           powbMilestoneVerification = milestones.getPowbMilestoneVerification();
-          focusLevel = milestones.getCapdevFocusLevel().getDefinition();
-          youthFocusLevel = milestones.getYouthFocusLevel().getDefinition();
-          capdevFocusLevel = milestones.getCapdevFocusLevel().getDefinition();
-          climateFocusLevel = milestones.getClimateFocusLevel().getDefinition();
+          focusLevel = milestones.getCapdevFocusLevel().getPowbName();
+          youthFocusLevel = milestones.getYouthFocusLevel().getPowbName();
+          climateFocusLevel = milestones.getClimateFocusLevel().getPowbName();
+          fpOutcomes = milestones.getCrpProgramOutcome().getDescription();
+          // mappedSubIDO = milestones.ge;
         } catch (Exception e) {
           if (powbMilestoneVerification == null) {
             powbMilestoneVerification = "";
@@ -436,7 +438,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         }
 
         POIField[] sData = {new POIField("", ParagraphAlignment.LEFT), new POIField("", ParagraphAlignment.LEFT),
-          new POIField("", ParagraphAlignment.LEFT),
+          new POIField(fpOutcomes, ParagraphAlignment.LEFT),
           new POIField(milestones.getYear() + " - " + milestones.getTitle(), ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(c5, ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
           new POIField(focusLevel, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
@@ -467,26 +469,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     List<POIField> data;
 
     this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
-    /*
-     * for (int i = 1; i <= 2; i++) {
-     * String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "";
-     * if (i == 1) {
-     * c4 = "Evaluation by Funder X";
-     * c5 = "Sub Saharan Africa";
-     * c6 = "Funder X";
-     * } else if (i == 2) {
-     * c4 = "Workshop to reflect on our Theory of Change for the Platform";
-     * c5 = "Global";
-     * c6 = "Platform management";
-     * }
-     * POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
-     * new POIField(c3, ParagraphAlignment.LEFT), new POIField(c4, ParagraphAlignment.LEFT),
-     * new POIField(c5, ParagraphAlignment.LEFT), new POIField(c6, ParagraphAlignment.LEFT)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * }
-     */
-
 
     if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
 
