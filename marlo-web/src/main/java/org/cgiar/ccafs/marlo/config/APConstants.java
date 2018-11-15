@@ -627,7 +627,9 @@ public final class APConstants {
 
   public static final long REPORTING_INDICATOR_TYPE_ACTIVITY_ACADEMIC_DEGREE = 1;
 
+  public static final long GLOBAL_UNIT_CRP = 1;
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
+  public static final long GLOBAL_UNIT_PLATFORM = 3;
   public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
 
   // Rep_ind constants
