@@ -59,6 +59,7 @@
           <hr />
           
           [#-- Table 3: Planned Budget --]
+          [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
           <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title${PMU?string('','FP')}" /]</h4>
           <div class="form-group">
             <div class="expenditures-list">

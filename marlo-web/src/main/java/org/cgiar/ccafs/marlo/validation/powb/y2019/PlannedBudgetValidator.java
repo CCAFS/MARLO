@@ -137,11 +137,14 @@ public class PlannedBudgetValidator extends BaseValidator {
 
 
       int i = 0;
-      for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : powbSynthesis.getPowbFinancialPlannedBudgetList()) {
-        this.validateFinancialPlannedBudget(powbFinancialPlannedBudget, action, i);
-        i++;
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : powbSynthesis
+          .getPowbFinancialPlannedBudgetList()) {
+          this.validateFinancialPlannedBudget(powbFinancialPlannedBudget, action, i);
+          i++;
+        }
+        i = 0;
       }
-      i = 0;
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -172,6 +175,7 @@ public class PlannedBudgetValidator extends BaseValidator {
 
   private void validateFinancialPlannedBudget(PowbFinancialPlannedBudget powbFinancialPlannedBudget, BaseAction action,
     int i) {
+
     if (powbFinancialPlannedBudget.getW1w2() != null && powbFinancialPlannedBudget.getW1w2() < 0) {
       action.addMissingField(action.getText("financialPlan.tableE.w1w2"));
       action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].w1w2",
