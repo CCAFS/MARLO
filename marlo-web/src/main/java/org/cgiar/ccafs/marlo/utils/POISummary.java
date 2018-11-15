@@ -722,21 +722,21 @@ public class POISummary {
       }
     }
 
-
-    for (int x = 0; x < table.getNumberOfRows(); x++) {
-      if (x > 1) {
-        XWPFTableRow rowCom = table.getRow(x);
-        XWPFTableCell cell = rowCom.getCell(6);
-        if (cell.getCTTc() == null) {
-          ((CTTc) cell).addNewTcPr();
-        }
-        if (cell.getCTTc().getTcPr() == null) {
-          cell.getCTTc().addNewTcPr();
-        }
-        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
-      }
-    }
-
+    /*
+     * for (int x = 0; x < table.getNumberOfRows(); x++) {
+     * if (x > 1) {
+     * XWPFTableRow rowCom = table.getRow(x);
+     * XWPFTableCell cell = rowCom.getCell(6);
+     * if (cell.getCTTc() == null) {
+     * ((CTTc) cell).addNewTcPr();
+     * }
+     * if (cell.getCTTc().getTcPr() == null) {
+     * cell.getCTTc().addNewTcPr();
+     * }
+     * cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+     * }
+     * }
+     */
   }
 
   public void tableEStyle(XWPFTable table) {
