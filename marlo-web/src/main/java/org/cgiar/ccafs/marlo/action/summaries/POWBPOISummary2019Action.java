@@ -321,7 +321,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     data = new ArrayList<>();
-    String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "", c7 = "", c8 = "", c9 = "", c10 = "";
+    String c1 = " ", c2 = " ", c3 = " ", c4 = " ", c5 = "", c6 = " ", c7 = " ", c8 = " ", c9 = " ", c10 = " ";
 
 
     for (int i = 1; i <= 3; i++) {
@@ -341,12 +341,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           break;
         case 2:
           bold = false;
-          c1 = "";
-          c2 = "";
-          c3 = "";
-          c4 = "";
-          c5 = "";
-          c6 = "";
+          c1 = " ";
+          c2 = " ";
+          c3 = " ";
+          c4 = " ";
+          c5 = " ";
+          c6 = " ";
           c7 = "for gender";
           c8 = "for youth";
           c9 = "for CapDev";
@@ -410,38 +410,60 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       this.loadFlagShipBudgetInfo(crpProgram);
 
       for (CrpMilestone milestones : crpProgram.getMilestones()) {
-        String powbMilestoneVerification = "", focusLevel = "", youthFocusLevel = "", capdevFocusLevel = "",
-          climateFocusLevel = " ", mappedSubIDO = "", fpOutcomes = "";
+        String powbMilestoneVerification = " ", focusLevel = " ", youthFocusLevel = " ", capdevFocusLevel = " ",
+          climateFocusLevel = " ", fpOutcomes = " ", mappedSubIDO = " ", fp = " ", indicateFollowing = " ",
+          gender = " ";
+
         try {
           powbMilestoneVerification = milestones.getPowbMilestoneVerification();
           focusLevel = milestones.getCapdevFocusLevel().getPowbName();
           youthFocusLevel = milestones.getYouthFocusLevel().getPowbName();
           climateFocusLevel = milestones.getClimateFocusLevel().getPowbName();
           fpOutcomes = milestones.getCrpProgramOutcome().getDescription();
-          // mappedSubIDO = milestones.ge;
+          fp = " ";
+          mappedSubIDO = " ";
+          indicateFollowing = " ";
+          gender = milestones.getGenderFocusLevel().getPowbName();
+
         } catch (Exception e) {
           if (powbMilestoneVerification == null) {
-            powbMilestoneVerification = "";
+            powbMilestoneVerification = " ";
           }
           if (focusLevel == null) {
-            focusLevel = "";
+            focusLevel = " ";
           }
           if (youthFocusLevel == null) {
-            youthFocusLevel = "";
+            youthFocusLevel = " ";
           }
           if (capdevFocusLevel == null) {
-            capdevFocusLevel = "";
+            capdevFocusLevel = " ";
           }
           if (climateFocusLevel == null) {
-            climateFocusLevel = "";
+            climateFocusLevel = " ";
+          }
+          if (fpOutcomes == null) {
+            fpOutcomes = " ";
+          }
+          if (mappedSubIDO == null) {
+            mappedSubIDO = " ";
+          }
+          if (fp == null) {
+            fp = " ";
+          }
+          if (indicateFollowing == null) {
+            indicateFollowing = " ";
+          }
+
+          if (gender == null) {
+            gender = " ";
           }
         }
 
-        POIField[] sData = {new POIField("", ParagraphAlignment.LEFT), new POIField("", ParagraphAlignment.LEFT),
+        POIField[] sData = {new POIField(" ", ParagraphAlignment.LEFT), new POIField(" ", ParagraphAlignment.LEFT),
           new POIField(fpOutcomes, ParagraphAlignment.LEFT),
           new POIField(milestones.getYear() + " - " + milestones.getTitle(), ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(c5, ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
-          new POIField(focusLevel, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
+          new POIField(" ", ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
+          new POIField(gender, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
           new POIField(capdevFocusLevel, ParagraphAlignment.LEFT),
           new POIField(climateFocusLevel, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
@@ -572,8 +594,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       new POIField(this.getText("financialPlan2019.tableE.w1w2"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.w3bilateral"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.centerFunds"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER)};
+      new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.LEFT, bold, blackColor)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
@@ -613,7 +634,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           case 4:
             category = "Platform Management & Support Cost";
             break;
-
         }
 
         if (powbSynthesisPMU != null) {
@@ -734,248 +754,535 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   @Override
   public String execute() throws Exception {
 
-    if (this.getSelectedPhase() == null) {
-      return NOT_FOUND;
-    }
+    // if its platform
+    if (this.getCurrentGlobalUnit().getId() == (APConstants.GLOBAL_UNIT_PLATFORM)) {
 
-    try {
-      /* Create a portrait text Section */
-      CTDocument1 doc = document.getDocument();
-      CTBody body = doc.getBody();
 
-      poiSummary.pageLeftHeader(document, this.getText("summaries.powb2019.header"));
-
-      // Get datetime
-      ZonedDateTime timezone = ZonedDateTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-      String zone = timezone.getOffset() + "";
-      if (zone.equals("Z")) {
-        zone = "+0";
+      if (this.getSelectedPhase() == null) {
+        return NOT_FOUND;
       }
-      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
-      // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
 
-      this.createPageFooter();
+      try {
+        /* Create a portrait text Section */
+        CTDocument1 doc = document.getDocument();
+        CTBody body = doc.getBody();
 
-      // First page - table of contents
-      poiSummary.textLineBreak(document, 2);
-      poiSummary.textHeadPrincipalTitle(document.createParagraph(),
-        this.getText("summaries.powb2019.mainTitlePlatform"));
-      poiSummary.textParagraphItalicLightBlue(document.createParagraph(), this.getText("summaries.powb2019.subTitle"));
-      poiSummary.textLineBreak(document, 4);
+        poiSummary.pageLeftHeader(document, this.getText("summaries.powb2019.header"));
 
-      document.createTOC();
+        // Get datetime
+        ZonedDateTime timezone = ZonedDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+        String zone = timezone.getOffset() + "";
+        if (zone.equals("Z")) {
+          zone = "+0";
+        }
+        String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+        // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
 
-      // Toc section
-      addCustomHeadingStyle(document, "heading 1", 1);
-      addCustomHeadingStyle(document, "heading 2", 2);
+        this.createPageFooter();
 
-      // the body content
-      XWPFParagraph paragraph = document.createParagraph();
+        // First page - table of contents
+        poiSummary.textLineBreak(document, 2);
+        poiSummary.textHeadPrincipalTitle(document.createParagraph(),
+          this.getText("summaries.powb2019.mainTitlePlatform"));
+        poiSummary.textParagraphItalicLightBlue(document.createParagraph(),
+          this.getText("summaries.powb2019.subTitle"));
+        poiSummary.textLineBreak(document, 4);
 
-      CTP ctP = paragraph.getCTP();
-      CTSimpleField toc = ctP.addNewFldSimple();
-      toc.setInstr("TOC \\h");
-      toc.setDirty(STOnOff.TRUE);
+        document.createTOC();
 
-      XWPFRun run = paragraph.createRun();
-      run.addBreak(BreakType.PAGE);
+        // Toc section
+        addCustomHeadingStyle(document, "heading 1", 1);
+        addCustomHeadingStyle(document, "heading 2", 2);
 
-      // Second page
-      // narrative section
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.narrativeSection"));
-      // run.setBold(true);
-      run.setFontSize(14);
-      run.setFontFamily("Calibri");
-      run.setColor("3366CC");
-      paragraph.setStyle("heading 1");
-      /*****************************/
+        // the body content
+        XWPFParagraph paragraph = document.createParagraph();
 
-      // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
-      // this.getText("summaries.powb2019.narrativeSection"));
-      poiSummary.textLineBreak(document, 1);
-      String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
-        ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
+        CTP ctP = paragraph.getCTP();
+        CTSimpleField toc = ctP.addNewFldSimple();
+        toc.setInstr("TOC \\h");
+        toc.setDirty(STOnOff.TRUE);
 
+        XWPFRun run = paragraph.createRun();
+        run.addBreak(BreakType.PAGE);
 
-      // cover page
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.cover"));
-      // run.setBold(true);
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // Second page
+        // narrative section
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.narrativeSection"));
+        // run.setBold(true);
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("3366CC");
+        paragraph.setStyle("heading 1");
+        /*****************************/
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
-      poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.platformName") + ": ");
-      poiSummary.textParagraphFontCalibri(document.createParagraph(),
-        this.getText("summaries.powb2019.hostEntityName") + ": ");
-      poiSummary.textLineBreak(document, 1);
-
-      // 1. toc
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.expectedKeyResults.toc"));
-      // run.setBold(true);
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
+        // this.getText("summaries.powb2019.narrativeSection"));
+        poiSummary.textLineBreak(document, 1);
+        String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
+          ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("summaries.powb2019.expectedKeyResults.toc"));
-      this.addAdjustmentDescription();
-      poiSummary.textLineBreak(document, 1);
+        // cover page
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.cover"));
+        // run.setBold(true);
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          this.getText("summaries.powb2019.platformName") + ": ");
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          this.getText("summaries.powb2019.hostEntityName") + ": ");
+        poiSummary.textLineBreak(document, 1);
+
+        // 1. toc
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.expectedKeyResults.toc"));
+        // run.setBold(true);
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
 
-      // 2. plans
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.expectedKeyResults.plan"));
-      // run.setBold(true);
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.expectedKeyResults.toc"));
+        this.addAdjustmentDescription();
+        poiSummary.textLineBreak(document, 1);
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("summaries.powb2019.expectedKeyResults.plan"));
-      this.addExpectedKeyResults();
-      poiSummary.textLineBreak(document, 1);
 
-      // 3. financial
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.effectiveness.financial"));
-      // run.setBold(true);
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // 2. plans
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.expectedKeyResults.plan"));
+        // run.setBold(true);
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("summaries.powb2019.effectiveness.financial"));
-      this.addFinancialPlan();
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.expectedKeyResults.plan"));
+        this.addExpectedKeyResults();
+        poiSummary.textLineBreak(document, 1);
 
-      /* Create a landscape text Section */
-      XWPFParagraph para = document.createParagraph();
-      CTSectPr sectionTable = body.getSectPr();
-      CTPageSz pageSizeTable = sectionTable.addNewPgSz();
-      CTP ctpTable = para.getCTP();
-      CTPPr brTable = ctpTable.addNewPPr();
-      brTable.setSectPr(sectionTable);
-      /* standard Letter page size */
-      pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
-      pageSizeTable.setW(BigInteger.valueOf(842 * 20));
-      pageSizeTable.setH(BigInteger.valueOf(595 * 20));
+        // 3. financial
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.effectiveness.financial"));
+        // run.setBold(true);
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
-      this.loadTablePMU();
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.effectiveness.financial"));
+        this.addFinancialPlan();
 
-      // Tables
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText("TABLES");
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("2E75B5");
-      paragraph.setStyle("heading 1");
-      /*******************/
+        /* Create a landscape text Section */
+        XWPFParagraph para = document.createParagraph();
+        CTSectPr sectionTable = body.getSectPr();
+        CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+        CTP ctpTable = para.getCTP();
+        CTPPr brTable = ctpTable.addNewPPr();
+        brTable.setSectPr(sectionTable);
+        /* standard Letter page size */
+        pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
+        pageSizeTable.setW(BigInteger.valueOf(842 * 20));
+        pageSizeTable.setH(BigInteger.valueOf(595 * 20));
 
-      // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
+        this.loadTablePMU();
 
-      // Table 2a
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.tableA2.title"));
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // Tables
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText("TABLES");
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("2E75B5");
+        paragraph.setStyle("heading 1");
+        /*******************/
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("summaries.powb2019.tableA2.title"));
-      this.createTableA2();
-      document.createParagraph().setPageBreak(true);
+        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
 
-      // Table 2b
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.tableB2.title"));
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // Table 2a
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.tableA2.title"));
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("summaries.powb2019.tableB2.title"));
-      this.createTableB2();
-      document.createParagraph().setPageBreak(true);
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.tableA2.title"));
+        this.createTableA2();
+        document.createParagraph().setPageBreak(true);
 
-      // Table 2c
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run.setText(this.getText("summaries.powb2019.tableC2.title"));
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // Table 2b
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.tableB2.title"));
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("summaries.powb2019.tableC2.title"));
-      this.createTableC2();
-      document.createParagraph().setPageBreak(true); // Fast Page Break
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.tableB2.title"));
+        this.createTableB2();
+        document.createParagraph().setPageBreak(true);
 
-      // Table 3
-      paragraph = document.createParagraph();
-      run = paragraph.createRun();
-      run
-        .setText(this.getText("financialPlan2019.table3.title", new String[] {String.valueOf(this.getSelectedYear())}));
-      run.setFontSize(13);
-      run.setFontFamily("Calibri");
-      run.setColor("5B9BD5");
-      paragraph.setStyle("heading 2");
-      /*******************/
+        // Table 2c
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.tableC2.title"));
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
-      // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-      // this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
-      this.createTableE();
-      poiSummary.textLineBreak(document, 1);
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.tableC2.title"));
+        this.createTableC2();
+        document.createParagraph().setPageBreak(true); // Fast Page Break
 
-      ByteArrayOutputStream os = new ByteArrayOutputStream();
-      document.write(os);
-      bytesDOC = os.toByteArray();
-      os.close();
-      document.close();
+        // Table 3
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(
+          this.getText("financialPlan2019.table3.title", new String[] {String.valueOf(this.getSelectedYear())}));
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("5B9BD5");
+        paragraph.setStyle("heading 2");
+        /*******************/
 
-      /*
-       * Read generate docx and convert the html code in text into new docx document
-       */
-      ReadWordFile readWordFile = new ReadWordFile();
-      readWordFile.startReadDocument();
-    } catch (Exception e) {
-      LOG.error("Error generating POWB Summary " + e.getMessage());
-      throw e;
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+        this.createTableE();
+        poiSummary.textLineBreak(document, 1);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        document.write(os);
+        bytesDOC = os.toByteArray();
+        os.close();
+        document.close();
+
+        /*
+         * Read generate docx and convert the html code in text into new docx document
+         */
+        ReadWordFile readWordFile = new ReadWordFile();
+        readWordFile.startReadDocument();
+      } catch (Exception e) {
+        LOG.error("Error generating POWB Summary " + e.getMessage());
+        throw e;
+      }
+
+      // Calculate time of generation
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
+      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+        + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+        + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+      return SUCCESS;
     }
 
-    // Calculate time of generation
-    long stopTime = System.currentTimeMillis();
-    stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+
+    // if its CRP
+    else if (this.getCurrentGlobalUnit().equals(APConstants.GLOBAL_UNIT_CRP)) {
+
+
+      if (this.getSelectedPhase() == null) {
+        return NOT_FOUND;
+      }
+
+      try {
+        /* Create a portrait text Section */
+        CTDocument1 doc = document.getDocument();
+        CTBody body = doc.getBody();
+
+        poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.headerCRP"));
+
+        // Get datetime
+        ZonedDateTime timezone = ZonedDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+        String zone = timezone.getOffset() + "";
+        if (zone.equals("Z")) {
+          zone = "+0";
+        }
+        String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+        // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
+
+        this.createPageFooter();
+
+        // first page
+        poiSummary.textLineBreak(document, 10);
+        poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
+          this.getText("summaries.powb2019.mainTitle"));
+        poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
+          this.getText("summaries.powb2019.subTitle"));
+        poiSummary.textLineBreak(document, 11);
+        poiSummary.addLineSeparator(document.createParagraph());
+        document.createParagraph().setPageBreak(true);
+
+
+        // Second page - table of contents
+        document.createTOC();
+
+        // Toc section
+        addCustomHeadingStyle(document, "heading 1", 1);
+        addCustomHeadingStyle(document, "heading 2", 2);
+
+        // Body content
+        XWPFParagraph paragraph = document.createParagraph();
+
+        CTP ctP = paragraph.getCTP();
+        CTSimpleField toc = ctP.addNewFldSimple();
+        toc.setInstr("TOC \\h");
+        toc.setDirty(STOnOff.TRUE);
+
+        XWPFRun run = paragraph.createRun();
+        run.addBreak(BreakType.PAGE);
+
+
+        // contents pages
+
+        // narrative section
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setBold(true);
+        run.setText(this.getText("summaries.powb2019.mainTitle"));
+
+        // run.setBold(true);
+        run.setFontSize(16);
+        run.setFontFamily("Calibri");
+        run.setColor("4472C4");
+        paragraph.setStyle("heading 1");
+        /*****************************/
+
+
+        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
+        // this.getText("summaries.powb2019.narrativeSection"));
+        poiSummary.textLineBreak(document, 1);
+        String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
+          ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
+
+
+        // cover page
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.cover"));
+        run.setBold(true);
+        run.setFontSize(13);
+        run.setFontFamily("Calibri");
+        run.setColor("4472C4");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
+        poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.crpName"));
+        poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.leadCenter"));
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          this.getText("summaries.powb2019.flagshipLeadInst"));
+        run.addTab();
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          "  " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          "  " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          "  " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          "  " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          "  " + this.getText("summaries.powb2019.otherParticipans") + ": ");
+
+        poiSummary.textLineBreak(document, 1);
+
+        // 1. toc
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.expectedKeyResults.crptoc"));
+        run.setBold(true);
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("4472C4");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.expectedKeyResults.toc"));
+        this.addAdjustmentDescription();
+        poiSummary.textLineBreak(document, 1);
+
+
+        // 2. plans
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.expectedKeyResults.crpplan"));
+        run.setBold(true);
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("4472C4");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.expectedKeyResults.plan"));
+        this.addExpectedKeyResults();
+        poiSummary.textLineBreak(document, 1);
+
+
+        // 3. financial
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.effectiveness.crpfinancial"));
+        run.setBold(true);
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("4472C4");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.effectiveness.financial"));
+        this.addFinancialPlan();
+
+
+        /* Create a landscape text Section */
+        XWPFParagraph para = document.createParagraph();
+        CTSectPr sectionTable = body.getSectPr();
+        CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+        CTP ctpTable = para.getCTP();
+        CTPPr brTable = ctpTable.addNewPPr();
+        brTable.setSectPr(sectionTable);
+        /* standard Letter page size */
+        pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
+        pageSizeTable.setW(BigInteger.valueOf(842 * 20));
+        pageSizeTable.setH(BigInteger.valueOf(595 * 20));
+
+        this.loadTablePMU();
+
+        // Tables
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText("TABLES");
+        run.setBold(true);
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("4472C4");
+        paragraph.setStyle("heading 1");
+        poiSummary.textLineBreak(document, 1);
+        /*******************/
+
+        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
+
+        // Table 2a
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setBold(true);
+        run.setText(this.getText("summaries.powb2019.tableA2.title"));
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("2E75D5");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.tableA2.title"));
+        this.createTableA2();
+        document.createParagraph().setPageBreak(true);
+
+        // Table 2b
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.tableB2.title"));
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("2E75D5");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.tableB2.title"));
+        this.createTableB2();
+        document.createParagraph().setPageBreak(true);
+
+        // Table 2c
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("summaries.powb2019.tableC2.title"));
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("2E75D5");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("summaries.powb2019.tableC2.title"));
+        this.createTableC2();
+        document.createParagraph().setPageBreak(true); // Fast Page Break
+
+        // Table 3
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setText(this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+        run.setFontSize(14);
+        run.setFontFamily("Calibri");
+        run.setColor("2E75D5");
+        paragraph.setStyle("heading 2");
+        /*******************/
+
+        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
+        // this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
+        this.createTableE();
+        poiSummary.textLineBreak(document, 1);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        document.write(os);
+        bytesDOC = os.toByteArray();
+        os.close();
+        document.close();
+
+        /*
+         * Read generate docx and convert the html code in text into new docx document
+         */
+        ReadWordFile readWordFile = new ReadWordFile();
+        readWordFile.startReadDocument();
+      } catch (Exception e) {
+        LOG.error("Error generating POWB Summary " + e.getMessage());
+        throw e;
+      }
+
+      // Calculate time of generation
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
+      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+        + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+        + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+      return SUCCESS;
+    }
     return SUCCESS;
   }
 
