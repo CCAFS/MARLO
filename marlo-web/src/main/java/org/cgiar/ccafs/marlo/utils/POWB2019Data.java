@@ -236,6 +236,8 @@ public class POWB2019Data<T> {
 
 
   /**
+   * Table 2B
+   * 
    * @param phase
    * @param loggedCrp
    * @param year
