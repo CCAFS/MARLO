@@ -63,7 +63,7 @@ public class ToC2019Validator extends BaseValidator {
 
     int iFlagShips = this.getFlagshipNnumbers(crpID);
 
-    int maxNumber = MathUtils.round(((maxlimit / (iFlagShips - 1) * 2)));
+    int maxNumber = MathUtils.round(((maxlimit / (iFlagShips) * 2)));
 
     return maxNumber;
 
@@ -141,13 +141,14 @@ public class ToC2019Validator extends BaseValidator {
   public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
     if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
-        && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 500)) {
+        && this.wordCount(this.removeHtmlTags(powbSynthesis.getPowbToc().getTocOverall())) <= 500)) {
         action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
         action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall()) && this
-        .wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= (this.flagshipLimitWords(action.getCrpID(), 500)))) {
+      if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
+        && this.wordCount(this.removeHtmlTags(powbSynthesis.getPowbToc().getTocOverall())) <= (this
+          .flagshipLimitWords(action.getCrpID(), 500)))) {
         action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
         action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
       }
