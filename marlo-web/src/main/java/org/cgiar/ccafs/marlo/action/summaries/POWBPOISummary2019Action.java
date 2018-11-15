@@ -60,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
+import org.cgiar.ccafs.marlo.utils.POWB2019Data;
 import org.cgiar.ccafs.marlo.utils.ReadWordFile;
 
 import java.io.ByteArrayInputStream;
@@ -173,6 +174,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private PowbSynthesis powbSynthesis;
   private UserManager userManager;
   private Long liaisonInstitutionID;
+  private POWB2019Data<POWBPOISummary2019Action> powb2019Data;
 
 
   // Managers
@@ -210,7 +212,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, LiaisonInstitutionManager liaisonInstitutionManager,
     PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ProjectManager projectManager,
-    UserManager userManager) {
+    UserManager userManager, POWB2019Data<POWBPOISummary2019Action> powb2019Data) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -224,20 +226,22 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     this.crpManager = crpManager;
     this.userManager = userManager;
     this.powbCrpStaffingCategoriesManager = powbCrpStaffingCategoriesManager;
+    this.powb2019Data = powb2019Data;
   }
 
   private void addAdjustmentDescription() {
     String adjustmentsDescription = "";
-    adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
-    if (powbSynthesis != null) {
+
+    if (powbSynthesis != null && powbSynthesis.getPowbToc() != null) {
       if (powbSynthesis.getPowbToc().getTocOverall() != null) {
         adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
+        poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
       }
 
       // poiSummary.convertHTMLTags(document, adjustmentsDescription);
       // HTMLtoWord htmltoWord = new HTMLtoWord();
 
-      poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
+
       if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
           this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
@@ -492,7 +496,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
 
-    if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
+    if (powbSynthesis.getPowbEvidence() != null && powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
 
       for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : powbSynthesis.getPowbEvidence().getPlannedStudies()) {
         String studyInfo = " ", geographicScope = " ", commissionStudy = " ";
