@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
@@ -71,9 +72,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class PlannedBudgetAction extends BaseAction {
 
+
   private static final long serialVersionUID = 8792953923111769705L;
+
+
   // Managers
   private GlobalUnitManager crpManager;
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private PowbSynthesisManager powbSynthesisManager;
   private CrpProgramManager crpProgramManager;
@@ -92,7 +97,7 @@ public class PlannedBudgetAction extends BaseAction {
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
   private PlannedBudgetValidator validator;
-
+  private List<PowbTocListDTO> tocList;
 
   @Inject
   public PlannedBudgetAction(APConfig config, GlobalUnitManager crpManager,
@@ -118,6 +123,7 @@ public class PlannedBudgetAction extends BaseAction {
   public String cancel() {
     return SUCCESS;
   }
+
 
   private void createEmptyFinancialPlan() {
     if (powbSynthesis.getFinancialPlan() == null) {
@@ -170,10 +176,10 @@ public class PlannedBudgetAction extends BaseAction {
     }
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -183,10 +189,10 @@ public class PlannedBudgetAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<PowbFinancialPlannedBudget> getOtherPlannedBudgets() {
     List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
@@ -202,6 +208,7 @@ public class PlannedBudgetAction extends BaseAction {
   public String getPath(Long liaisonInstitutionID) {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitutionID).replace('\\', '/');
   }
+
 
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
@@ -326,7 +333,6 @@ public class PlannedBudgetAction extends BaseAction {
       .concat(File.separator);
   }
 
-
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -334,6 +340,11 @@ public class PlannedBudgetAction extends BaseAction {
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
   }
+
+  public List<PowbTocListDTO> getTocList() {
+    return tocList;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -437,7 +448,6 @@ public class PlannedBudgetAction extends BaseAction {
     }
   }
 
-
   public void loadPMU(PowbExpenditureAreas liaisonInstitution) {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
@@ -494,7 +504,6 @@ public class PlannedBudgetAction extends BaseAction {
 
     }
   }
-
 
   public List<Project> loadPMUProjects() {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -570,6 +579,7 @@ public class PlannedBudgetAction extends BaseAction {
 
   }
 
+
   @Override
   public String next() {
     String result = this.save();
@@ -579,6 +589,7 @@ public class PlannedBudgetAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -605,9 +616,15 @@ public class PlannedBudgetAction extends BaseAction {
       }
     }
 
-
+    Phase phase = this.getActualPhase();
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = this.getFlagships();
+
+    // Setup the PUM ToC Table
+    if (this.isPMU()) {
+      this.tocList(phase.getId());
+    }
+
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList()));
@@ -829,19 +846,19 @@ public class PlannedBudgetAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setPowbExpenditureAreas(List<PowbExpenditureAreas> powbExpenditureAreas) {
     this.powbExpenditureAreas = powbExpenditureAreas;
   }
 
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
+
 
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
@@ -891,9 +908,31 @@ public class PlannedBudgetAction extends BaseAction {
     powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
   }
 
+  public void setTocList(List<PowbTocListDTO> tocList) {
+    this.tocList = tocList;
+  }
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+
+  public void tocList(long phaseID) {
+    tocList = new ArrayList<>();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbTocListDTO powbTocList = new PowbTocListDTO();
+      powbTocList.setLiaisonInstitution(liaisonInstitution);
+      powbTocList.setOverall("");
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
+          if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
+            powbTocList.setOverall(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
+          }
+        }
+      }
+      tocList.add(powbTocList);
+    }
   }
 
   @Override
