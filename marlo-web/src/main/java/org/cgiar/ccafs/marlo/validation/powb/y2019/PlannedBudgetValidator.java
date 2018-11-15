@@ -120,14 +120,14 @@ public class PlannedBudgetValidator extends BaseValidator {
 
       if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
         if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()))
-          && this.wordCount(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()) <= 500) {
+          && this.wordCount(this.removeHtmlTags(powbSynthesis.getFinancialPlan().getFinancialPlanIssues())) <= 500) {
           action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
           action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } else {
         if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()))
-          && this.wordCount(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()) <= (this
+          && this.wordCount(this.removeHtmlTags(powbSynthesis.getFinancialPlan().getFinancialPlanIssues())) <= (this
             .flagshipLimitWords(action.getCrpID(), 500))) {
           action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
           action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
