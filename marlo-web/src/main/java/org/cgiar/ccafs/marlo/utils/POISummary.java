@@ -1192,7 +1192,6 @@ public class POISummary {
             }
           }
 
-
           // highlight and bold first and SecondColumn for table D1
           if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
             dataRow.getCell(record).setColor("DEEAF6");
