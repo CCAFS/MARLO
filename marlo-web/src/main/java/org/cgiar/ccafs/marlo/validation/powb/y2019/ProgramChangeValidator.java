@@ -141,14 +141,15 @@ public class ProgramChangeValidator extends BaseValidator {
   public void validateProgram(BaseAction action, PowbSynthesis powbSynthesis) {
     if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       if (!(this.isValidString(powbSynthesis.getPowbProgramChange().getProgramChange())
-        && this.wordCount(powbSynthesis.getPowbProgramChange().getProgramChange()) <= 500)) {
+        && this.wordCount(this.removeHtmlTags(powbSynthesis.getPowbProgramChange().getProgramChange())) <= 500)) {
         action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
         action.getInvalidFields().put("input-powbSynthesis.powbProgramChange.programChange",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      if (!(this.isValidString(powbSynthesis.getPowbProgramChange().getProgramChange())) && this.wordCount(
-        powbSynthesis.getPowbProgramChange().getProgramChange()) <= (this.flagshipLimitWords(action.getCrpID(), 500))) {
+      if (!(this.isValidString(powbSynthesis.getPowbProgramChange().getProgramChange()))
+        && this.wordCount(this.removeHtmlTags(powbSynthesis.getPowbProgramChange().getProgramChange())) <= (this
+          .flagshipLimitWords(action.getCrpID(), 500))) {
         action.addMessage(action.getText("liaisonInstitution.powb.programChanges"));
         action.getInvalidFields().put("input-powbSynthesis.powbProgramChange.programChange",
           InvalidFieldsMessages.EMPTYFIELD);
