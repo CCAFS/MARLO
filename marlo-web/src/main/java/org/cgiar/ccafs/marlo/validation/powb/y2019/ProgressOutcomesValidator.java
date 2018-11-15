@@ -163,14 +163,15 @@ public class ProgressOutcomesValidator extends BaseValidator {
   public void validateProgress(BaseAction action, PowbSynthesis powbSynthesis) {
     if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       if (!(this.isValidString(powbSynthesis.getExpectedProgressNarrative()))
-        && this.wordCount(powbSynthesis.getExpectedProgressNarrative()) <= 2000) {
+        && this.wordCount(this.removeHtmlTags(powbSynthesis.getExpectedProgressNarrative())) <= 2000) {
         action.addMessage(action.getText("Expected Progress Narrative"));
         action.getInvalidFields().put("input-powbSynthesis.expectedProgressNarrative",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      if (!(this.isValidString(powbSynthesis.getExpectedProgressNarrative())) && this.wordCount(
-        powbSynthesis.getExpectedProgressNarrative()) <= (this.flagshipLimitWords(action.getCrpID(), 2000))) {
+      if (!(this.isValidString(powbSynthesis.getExpectedProgressNarrative()))
+        && this.wordCount(this.removeHtmlTags(powbSynthesis.getExpectedProgressNarrative())) <= (this
+          .flagshipLimitWords(action.getCrpID(), 2000))) {
         action.addMessage(action.getText("Expected Progress Narrative"));
         action.getInvalidFields().put("input-powbSynthesis.expectedProgressNarrative",
           InvalidFieldsMessages.EMPTYFIELD);
