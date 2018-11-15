@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "powbSynthesis.plannedBudget" /]
+[#assign customName= "powbSynthesis.financialPlan" /]
 [#assign customLabel= "powbSynthesis.${currentStage}" /]
 
 
@@ -46,7 +46,7 @@
             [#-- Provide a short narrative of expected highlights of the CRP/PTF in the coming year --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
+              [@customForm.textArea name="${customName}.financialPlanIssues" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
             </div>
             
             [#if PMU]

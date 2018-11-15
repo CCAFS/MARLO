@@ -20,7 +20,14 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
 
   @Expose
   private GlobalUnit globalUnit;
+
+
+  @Expose
+  private Institution institution;
+
+
   private PowbSynthesis powbSynthesis;
+
   @Expose
   private String flagship;
   @Expose
@@ -55,7 +62,6 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     return brief;
   }
 
-
   public String getCollaborationType() {
     return collaborationType;
   }
@@ -87,9 +93,13 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     return flagship;
   }
 
-
   public GlobalUnit getGlobalUnit() {
     return globalUnit;
+  }
+
+
+  public Institution getInstitution() {
+    return institution;
   }
 
 
@@ -100,10 +110,10 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     return sb.toString();
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
-
 
   @Override
   public int hashCode() {
@@ -113,22 +123,27 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     return result;
   }
 
+
   public void setBrief(String brief) {
     this.brief = brief;
   }
-
 
   public void setCollaborationType(String collaborationType) {
     this.collaborationType = collaborationType;
   }
 
+
   public void setFlagship(String flagship) {
     this.flagship = flagship;
   }
 
-
   public void setGlobalUnit(GlobalUnit globalUnit) {
     this.globalUnit = globalUnit;
+  }
+
+
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
 
