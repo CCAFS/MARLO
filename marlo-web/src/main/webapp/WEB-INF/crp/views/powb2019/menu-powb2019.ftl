@@ -8,19 +8,19 @@
   },
   { 'title': '2.  Expected Key Results',  'show': true,
     'items': [
-    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'progressOutcomes',       'active': true, 'development': true },
-    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true },
-    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true, 'development': true }
+    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'progressOutcomes',       'active': true },
+    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true }
+    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true }
     ]
   },
   { 'title': '3.  Financial Plan',        'show': true,
     'items': [
-    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true, 'development': true }
+    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true }
     ]
   },
   { 'title': '4. CCAFS Specific',        'show':  action.hasSpecificities(action.powbProgramChangeModule()),
     'items': [
-    { 'slug': 'programChanges',          'name': 'powb.menu.programChanges',          'action': 'programChanges',       'active': true, 'development': true }
+    { 'slug': 'programChanges',          'name': 'powb.menu.programChanges',          'action': 'programChanges',       'active': true }
     ]
   }
 ]/]
@@ -92,16 +92,16 @@
     </p>
 [/#if]
 
-[#-- Check button 
+[#-- Check button --] 
 [#if canEdit && !completed && !submission]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${liaisonInstitutionID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
 [/#if]
---] 
+
 
  
-[#-- Submit button
+[#-- Submit button --]
 [#if canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
   <a id="submitProject-${powbSynthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitPowb"][@s.param name='powbSynthesisID']${powbSynthesisID}[/@s.param][/@s.url]" >
@@ -110,7 +110,7 @@
 [#else]
   <div></div>
 [/#if]
- --]
+
 
 [#-- Unsubmit button --]
 [#if (canUnSubmit && submission) && !crpClosed && !reportingActive]

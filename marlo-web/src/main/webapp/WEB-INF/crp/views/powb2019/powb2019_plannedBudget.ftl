@@ -66,7 +66,7 @@
               [#list expenditureAreas  as area]
                 [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
                 [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
-                [#if PMU || ((element.crpProgram.id == liaisonInstitutionID)!false)]
+                [#if PMU || ((element.liaisonInstitution.id == liaisonInstitutionID)!false)]
                   [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
                 [/#if]
               [/#list]
@@ -216,9 +216,11 @@
       </table>
     </div>
     [#-- Comments --]
+    [#if PMU]
     <div class="form-group">
       [@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="${customLabel}.table3PlannedBudget.comments" fieldEmptyText="global.prefilledByPmu" className="" editable=editable && PMU/]
     </div>
+    [/#if]
   </div>
 [/#macro]
 
