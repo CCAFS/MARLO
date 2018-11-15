@@ -147,6 +147,12 @@ function getInputElement(fieldName,message) {
     $(elementQuery).attr("title", "");
   }
 
+  // Find trumbowyg
+  var $trumbowygBox = $(elementQuery).parents('.trumbowyg-box');
+  if($trumbowygBox) {
+    $trumbowygBox.addClass('fieldError');
+  }
+
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 
