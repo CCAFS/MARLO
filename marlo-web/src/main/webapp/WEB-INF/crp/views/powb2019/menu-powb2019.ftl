@@ -119,17 +119,17 @@
 [/#if]
 
 
-[#-- Generate RTF 
-[#if true]
+[#-- Generate RTF --]
+[#if config.debug]
 <br />
 <div class="text-center">
-  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/POWBSummary"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
+  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/POWBSummaryPLT2019"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
    <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
   </a>
 </div>
 [/#if]
---]
+
 [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
   <div class="dialog-content"> 
