@@ -321,7 +321,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     data = new ArrayList<>();
-    String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "", c7 = "", c8 = "", c9 = "", c10 = "";
+    String c1 = " ", c2 = " ", c3 = " ", c4 = " ", c5 = "", c6 = " ", c7 = " ", c8 = " ", c9 = " ", c10 = " ";
 
 
     for (int i = 1; i <= 3; i++) {
@@ -341,12 +341,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           break;
         case 2:
           bold = false;
-          c1 = "";
-          c2 = "";
-          c3 = "";
-          c4 = "";
-          c5 = "";
-          c6 = "";
+          c1 = " ";
+          c2 = " ";
+          c3 = " ";
+          c4 = " ";
+          c5 = " ";
+          c6 = " ";
           c7 = "for gender";
           c8 = "for youth";
           c9 = "for CapDev";
@@ -410,38 +410,60 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       this.loadFlagShipBudgetInfo(crpProgram);
 
       for (CrpMilestone milestones : crpProgram.getMilestones()) {
-        String powbMilestoneVerification = "", focusLevel = "", youthFocusLevel = "", capdevFocusLevel = "",
-          climateFocusLevel = " ", mappedSubIDO = "", fpOutcomes = "";
+        String powbMilestoneVerification = " ", focusLevel = " ", youthFocusLevel = " ", capdevFocusLevel = " ",
+          climateFocusLevel = " ", fpOutcomes = " ", mappedSubIDO = " ", fp = " ", indicateFollowing = " ",
+          gender = " ";
+
         try {
           powbMilestoneVerification = milestones.getPowbMilestoneVerification();
           focusLevel = milestones.getCapdevFocusLevel().getPowbName();
           youthFocusLevel = milestones.getYouthFocusLevel().getPowbName();
           climateFocusLevel = milestones.getClimateFocusLevel().getPowbName();
           fpOutcomes = milestones.getCrpProgramOutcome().getDescription();
-          // mappedSubIDO = milestones.ge;
+          fp = " ";
+          mappedSubIDO = " ";
+          indicateFollowing = " ";
+          gender = milestones.getGenderFocusLevel().getPowbName();
+
         } catch (Exception e) {
           if (powbMilestoneVerification == null) {
-            powbMilestoneVerification = "";
+            powbMilestoneVerification = " ";
           }
           if (focusLevel == null) {
-            focusLevel = "";
+            focusLevel = " ";
           }
           if (youthFocusLevel == null) {
-            youthFocusLevel = "";
+            youthFocusLevel = " ";
           }
           if (capdevFocusLevel == null) {
-            capdevFocusLevel = "";
+            capdevFocusLevel = " ";
           }
           if (climateFocusLevel == null) {
-            climateFocusLevel = "";
+            climateFocusLevel = " ";
+          }
+          if (fpOutcomes == null) {
+            fpOutcomes = " ";
+          }
+          if (mappedSubIDO == null) {
+            mappedSubIDO = " ";
+          }
+          if (fp == null) {
+            fp = " ";
+          }
+          if (indicateFollowing == null) {
+            indicateFollowing = " ";
+          }
+
+          if (gender == null) {
+            gender = " ";
           }
         }
 
-        POIField[] sData = {new POIField("", ParagraphAlignment.LEFT), new POIField("", ParagraphAlignment.LEFT),
+        POIField[] sData = {new POIField(" ", ParagraphAlignment.LEFT), new POIField(" ", ParagraphAlignment.LEFT),
           new POIField(fpOutcomes, ParagraphAlignment.LEFT),
           new POIField(milestones.getYear() + " - " + milestones.getTitle(), ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(c5, ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
-          new POIField(focusLevel, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
+          new POIField(" ", ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
+          new POIField(gender, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
           new POIField(capdevFocusLevel, ParagraphAlignment.LEFT),
           new POIField(climateFocusLevel, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
@@ -573,7 +595,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       new POIField(this.getText("financialPlan2019.tableE.w3bilateral"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.centerFunds"), ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER)};
+      new POIField("", ParagraphAlignment.CENTER)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
@@ -613,7 +635,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           case 4:
             category = "Platform Management & Support Cost";
             break;
-
         }
 
         if (powbSynthesisPMU != null) {
