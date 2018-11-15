@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
@@ -119,7 +120,7 @@ public class PlannedBudgetAction extends BaseAction {
   }
 
   private void createEmptyFinancialPlan() {
-    if (powbSynthesis.getFinancialPlan() == null && this.isPMU()) {
+    if (powbSynthesis.getFinancialPlan() == null) {
       PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
       newPowbFinancialPlan.setFinancialPlanIssues("");
       newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
@@ -615,13 +616,6 @@ public class PlannedBudgetAction extends BaseAction {
     powbExpenditureAreas =
       powbExpenditureAreasManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-
-    if (this.isFlagship()) {
-      PowbSynthesis powbSynthesisDB =
-        powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
-      powbSynthesisID = powbSynthesisDB.getId();
-    }
-
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_FINANCIAL_PLAN_BASE_PERMISSION, params));
@@ -629,9 +623,6 @@ public class PlannedBudgetAction extends BaseAction {
     if (this.isHttpPost()) {
       if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null) {
         powbSynthesis.getPowbFinancialPlannedBudgetList().clear();
-      }
-      if (powbSynthesis.getPowbFinancialExpendituresList() != null) {
-        powbSynthesis.getPowbFinancialExpendituresList().clear();
       }
     }
   }
@@ -652,21 +643,23 @@ public class PlannedBudgetAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-      // Planned Budget
-      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
-        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
-        for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
-          .getPowbFinancialPlannedBudgetList()) {
-          if (PowbFinancialPlannedBudget.getId() == null) {
-            this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
-          } else {
-            this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
+      if (this.isPMU()) {
+        // Planned Budget
+        if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
+          && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
+          for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
+            .getPowbFinancialPlannedBudgetList()) {
+            if (PowbFinancialPlannedBudget.getId() == null) {
+              this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
+            } else {
+              this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
+            }
           }
         }
       }
-      //
-      // // FinancialPlan:
-      // this.saveUpdateFinancialPlan();
+
+      // FinancialPlan:
+      this.saveUpdateFinancialPlan();
       // // Financial Expenditures
       // if (powbSynthesis.getPowbFinancialExpendituresList() != null
       // && !powbSynthesis.getPowbFinancialExpendituresList().isEmpty()) {
@@ -681,7 +674,6 @@ public class PlannedBudgetAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-      relationsName.add(APConstants.SYNTHESIS_FINANCIAL_EXPENDITURE_RELATION);
       relationsName.add(APConstants.SYNTHESIS_FINANCIAL_PLANNED_BUDGET_RELATION);
       /**
        * The following is required because we need to update something on the @PowbSynthesis if we want a row created in
@@ -870,19 +862,25 @@ public class PlannedBudgetAction extends BaseAction {
   }
 
   private void setPowbSynthesisIdParameter() {
-    List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
-      .collect(Collectors.toList());
-    if (pmuList != null && !pmuList.isEmpty()) {
-      Long liaisonInstitutionID = pmuList.get(0).getId();
-      PowbSynthesis powbSynthesis =
-        powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
-      if (powbSynthesis != null) {
-        powbSynthesisID = powbSynthesis.getId();
-      } else {
-        powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+    Phase phase = this.getActualPhase();
+    try {
+      powbSynthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
+      powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
+      if (!powbSynthesis.getPhase().equals(phase)) {
+        powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        if (powbSynthesis == null) {
+          powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+        }
         powbSynthesisID = powbSynthesis.getId();
       }
+    } catch (Exception e) {
+
+      powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+      if (powbSynthesis == null) {
+        powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+      }
+      powbSynthesisID = powbSynthesis.getId();
     }
   }
 

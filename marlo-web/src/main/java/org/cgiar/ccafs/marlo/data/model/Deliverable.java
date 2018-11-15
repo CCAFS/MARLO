@@ -273,9 +273,9 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     if (this.getDeliverableInfo() != null) {
       return this.getDeliverableInfo();
     } else {
-      List<DeliverableInfo> infos = this.getDeliverableInfos().stream().filter(
-        c -> c.getPhase() != null && c.getPhase().getId() != null && c.getPhase().getId().longValue() == phase.getId())
-        .collect(Collectors.toList());
+      List<DeliverableInfo> infos =
+        this.getDeliverableInfos().stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
+          && c.getPhase().getId().longValue() == phase.getId() && c.isActive()).collect(Collectors.toList());
       if (!infos.isEmpty()) {
         this.setDeliverableInfo(infos.get(0));
         return this.getDeliverableInfo();

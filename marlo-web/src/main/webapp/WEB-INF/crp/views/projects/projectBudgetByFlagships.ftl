@@ -82,10 +82,12 @@
                       [#-- Budget Type--]
                       [#if action.hasBudgets(budgetType.id, year)]
                         <td class="">
+                          [#-- 
                           <h5 class="subTitle"> 
                             ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /> <br /> 
                             <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${((action.getTotalAmount(budgetType.id, year))!0)?number?string(",##0.00")}</span></small>
                           </h5>
+                          --]
                         </td>
                       [/#if]
                     [/#list]

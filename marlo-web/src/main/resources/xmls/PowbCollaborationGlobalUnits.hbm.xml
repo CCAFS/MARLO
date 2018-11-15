@@ -11,6 +11,9 @@
         <many-to-one name="globalUnit" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
             <column name="global_unit_id" />
         </many-to-one>
+        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" />
+        </many-to-one>
         <many-to-one name="powbSynthesis" class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
             <column name="powb_synthesis" />
         </many-to-one>
