@@ -83,6 +83,16 @@
       </result>
     </action>
     
+    <action name="{crp}/submitPowb"
+      class="org.cgiar.ccafs.marlo.action.powb.PowbSynthesisSubmitAction">
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/adjustmentsChanges</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+    
     
   </package>
 </struts>

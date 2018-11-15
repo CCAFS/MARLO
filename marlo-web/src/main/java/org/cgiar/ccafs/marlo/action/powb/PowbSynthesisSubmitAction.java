@@ -90,7 +90,15 @@ public class PowbSynthesisSubmitAction extends BaseAction {
     this.setPhaseID(powbSynthesis.getPhase().getId());
     if (powbSynthesis != null) {
       if (this.hasPermission("canSubmmit")) {
-        if (this.isCompletePowbSynthesis(powbSynthesisID)) {
+
+        boolean isCompletePOWB = false;
+        if (this.isPowb2019()) {
+          isCompletePOWB = this.isCompletePowbSynthesis2019(powbSynthesisID);
+        } else {
+          isCompletePOWB = this.isCompletePowbSynthesis(powbSynthesisID);
+        }
+
+        if (isCompletePOWB) {
           List<Submission> submissions = powbSynthesis.getSubmissions().stream()
             .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
               && c.getYear().intValue() == this.getActualPhase().getYear()
