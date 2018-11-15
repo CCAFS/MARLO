@@ -501,8 +501,9 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
-        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb())
+        crpProgramOutcome.setMilestones(crpProgramOutcome
+          .getCrpMilestones().stream().filter(c -> c.isActive()
+            && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb() != null && c.getIsPowb())
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
