@@ -364,7 +364,7 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     data = new ArrayList<>();
-    String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "", c7 = "", c8 = "", c9 = "", c10 = "";
+    String c1 = " ", c2 = " ", c3 = " ", c4 = " ", c5 = "", c6 = " ", c7 = " ", c8 = " ", c9 = " ", c10 = " ";
 
 
     for (int i = 1; i <= 3; i++) {
@@ -384,12 +384,12 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
           break;
         case 2:
           bold = false;
-          c1 = "";
-          c2 = "";
-          c3 = "";
-          c4 = "";
-          c5 = "";
-          c6 = "";
+          c1 = " ";
+          c2 = " ";
+          c3 = " ";
+          c4 = " ";
+          c5 = " ";
+          c6 = " ";
           c7 = "for gender";
           c8 = "for youth";
           c9 = "for CapDev";
@@ -397,18 +397,18 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
           break;
         default:
           bold = false;
-          /*
-           * c1 = "Taken from proposal";
-           * c2 = "Taken from proposal";
-           * c3 = "Taken from proposal";
-           * c4 = "Taken from proposal";
-           * c5 = "Taken from proposal";
-           * c6 = "Taken from proposal";
-           * c7 = "";
-           * c8 = "";
-           * c9 = "";
-           * c10 = "";
-           */
+
+          c1 = " ";
+          c2 = " ";
+          c3 = " ";
+          c4 = " ";
+          c5 = " ";
+          c6 = " ";
+          c7 = " ";
+          c8 = " ";
+          c9 = " ";
+          c10 = " ";
+
       }
       POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
         new POIField(c3, ParagraphAlignment.LEFT), new POIField(c4, ParagraphAlignment.LEFT, bold, blackColor),
@@ -438,8 +438,9 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
       List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
-        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+        crpProgramOutcome.setMilestones(crpProgramOutcome
+          .getCrpMilestones().stream().filter(c -> c.isActive()
+            && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb() != null && c.getIsPowb())
           .collect(Collectors.toList()));
 
         crpProgramOutcome.setSubIdos(
@@ -452,37 +453,60 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
       this.loadFlagShipBudgetInfo(crpProgram);
 
       for (CrpMilestone milestones : crpProgram.getMilestones()) {
-        String powbMilestoneVerification = "", focusLevel = "", youthFocusLevel = "", capdevFocusLevel = "",
-          climateFocusLevel = " ";
+        String powbMilestoneVerification = " ", focusLevel = " ", youthFocusLevel = " ", capdevFocusLevel = " ",
+          climateFocusLevel = " ", fpOutcomes = " ", mappedSubIDO = " ", fp = " ", indicateFollowing = " ",
+          gender = " ";
+
         try {
           powbMilestoneVerification = milestones.getPowbMilestoneVerification();
-          focusLevel = milestones.getCapdevFocusLevel().getDefinition();
-          youthFocusLevel = milestones.getYouthFocusLevel().getDefinition();
-          capdevFocusLevel = milestones.getCapdevFocusLevel().getDefinition();
-          climateFocusLevel = milestones.getClimateFocusLevel().getDefinition();
+          focusLevel = milestones.getCapdevFocusLevel().getPowbName();
+          youthFocusLevel = milestones.getYouthFocusLevel().getPowbName();
+          climateFocusLevel = milestones.getClimateFocusLevel().getPowbName();
+          fpOutcomes = milestones.getCrpProgramOutcome().getDescription();
+          fp = " ";
+          mappedSubIDO = " ";
+          indicateFollowing = " ";
+          gender = milestones.getGenderFocusLevel().getPowbName();
+
         } catch (Exception e) {
           if (powbMilestoneVerification == null) {
-            powbMilestoneVerification = "";
+            powbMilestoneVerification = " ";
           }
           if (focusLevel == null) {
-            focusLevel = "";
+            focusLevel = " ";
           }
           if (youthFocusLevel == null) {
-            youthFocusLevel = "";
+            youthFocusLevel = " ";
           }
           if (capdevFocusLevel == null) {
-            capdevFocusLevel = "";
+            capdevFocusLevel = " ";
           }
           if (climateFocusLevel == null) {
-            climateFocusLevel = "";
+            climateFocusLevel = " ";
+          }
+          if (fpOutcomes == null) {
+            fpOutcomes = " ";
+          }
+          if (mappedSubIDO == null) {
+            mappedSubIDO = " ";
+          }
+          if (fp == null) {
+            fp = " ";
+          }
+          if (indicateFollowing == null) {
+            indicateFollowing = " ";
+          }
+
+          if (gender == null) {
+            gender = " ";
           }
         }
 
-        POIField[] sData = {new POIField("", ParagraphAlignment.LEFT), new POIField("", ParagraphAlignment.LEFT),
-          new POIField("", ParagraphAlignment.LEFT),
+        POIField[] sData = {new POIField(" ", ParagraphAlignment.LEFT), new POIField(" ", ParagraphAlignment.LEFT),
+          new POIField(fpOutcomes, ParagraphAlignment.LEFT),
           new POIField(milestones.getYear() + " - " + milestones.getTitle(), ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(c5, ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
-          new POIField(focusLevel, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
+          new POIField(" ", ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
+          new POIField(gender, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
           new POIField(capdevFocusLevel, ParagraphAlignment.LEFT),
           new POIField(climateFocusLevel, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
@@ -510,25 +534,6 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
     List<POIField> data;
 
     this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
-    /*
-     * for (int i = 1; i <= 2; i++) {
-     * String c1 = "", c2 = "", c3 = "", c4 = "", c5 = "", c6 = "";
-     * if (i == 1) {
-     * c4 = "Evaluation by Funder X";
-     * c5 = "Sub Saharan Africa";
-     * c6 = "Funder X";
-     * } else if (i == 2) {
-     * c4 = "Workshop to reflect on our Theory of Change for the Platform";
-     * c5 = "Global";
-     * c6 = "Platform management";
-     * }
-     * POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
-     * new POIField(c3, ParagraphAlignment.LEFT), new POIField(c4, ParagraphAlignment.LEFT),
-     * new POIField(c5, ParagraphAlignment.LEFT), new POIField(c6, ParagraphAlignment.LEFT)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * }
-     */
 
     if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
 
@@ -792,6 +797,7 @@ public class POWBPOISummaryCRP2019Action extends BaseSummariesAction implements 
 
   @Override
   public String execute() throws Exception {
+
 
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;

@@ -24,8 +24,12 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnitPmu;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
+import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -63,7 +67,7 @@ public class POWB2019Data<T> {
   }
 
   /**
-   * Expected CRP progress Table 1
+   * Expected CRP progress Table Flagships
    * 
    * @param phase
    * @param flagships
@@ -270,7 +274,80 @@ public class POWB2019Data<T> {
   }
 
   /**
-   * TOC table 1
+   * Table 2C Collaborations
+   * 
+   * @return
+   */
+  public List<PowbCollaborationGlobalUnit> getTable2C(Phase phase, GlobalUnit loggedCrp,
+    PowbSynthesis powbSynthesisPMU) {
+    List<PowbCollaborationGlobalUnit> globalUnitCollaborations = new ArrayList<>();
+
+    List<CrpProgram> crpPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    for (CrpProgram crpProgram : crpPrograms) {
+      List<LiaisonInstitution> liaisonInstitutions =
+        crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (!liaisonInstitutions.isEmpty()) {
+        PowbSynthesis powbSynthesisProgram =
+          powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutions.get(0).getId());
+        if (powbSynthesisProgram != null) {
+          powbSynthesisProgram.setPowbCollaborationGlobalUnitsList(powbSynthesisProgram
+            .getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          crpProgram.setCollaboration(powbSynthesisProgram.getCollaboration());
+          crpProgram.setSynthesis(powbSynthesisProgram);
+
+          globalUnitCollaborations.addAll(powbSynthesisProgram.getPowbCollaborationGlobalUnitsList());
+        }
+      }
+      if (crpProgram.getSynthesis() == null) {
+        crpProgram.setSynthesis(new PowbSynthesis());
+      }
+      if (crpProgram.getCollaboration() == null) {
+        crpProgram.setCollaboration(new PowbCollaboration());
+      }
+
+    }
+
+
+    List<PowbCollaborationGlobalUnit> removeList = new ArrayList<>();
+
+
+    List<PowbCollaborationGlobalUnitPmu> collaborationsPMU = new ArrayList(powbSynthesisPMU.getCollaboration()
+      .getPowbCollaborationGlobalUnitPmu().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+
+    for (PowbCollaborationGlobalUnitPmu powbCollaborationGlobalUnitPmu : collaborationsPMU) {
+      removeList.add(powbCollaborationGlobalUnitPmu.getPowbCollaborationGlobalUnit());
+    }
+
+
+    for (PowbCollaborationGlobalUnitPmu i : collaborationsPMU) {
+      globalUnitCollaborations.remove(i);
+    }
+
+
+    return globalUnitCollaborations;
+  }
+
+  /**
+   * Table 3 Planned Budget
+   * 
+   * @param powbSynthesisPMU
+   * @return
+   */
+  public List<PowbFinancialPlannedBudget> getTable3(PowbSynthesis powbSynthesisPMU) {
+
+    List<PowbFinancialPlannedBudget> plannedBudget = new ArrayList<>(powbSynthesisPMU.getPowbFinancialPlannedBudget()
+      .stream().filter(fp -> fp.isActive()).collect(Collectors.toList()));
+
+    return plannedBudget;
+
+  }
+
+  /**
+   * TOC table Flagships
    * 
    * @param phase
    * @param flagships
