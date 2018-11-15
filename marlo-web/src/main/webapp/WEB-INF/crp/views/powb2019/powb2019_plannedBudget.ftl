@@ -59,14 +59,16 @@
           <hr />
           
           [#-- Table 3: Planned Budget --]
-          <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title" /]</h4>
+          <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title${PMU?string('','FP')}" /]</h4>
           <div class="form-group">
             <div class="expenditures-list">
               [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) + ((otherPlannedBudgets)![]) ]
               [#list expenditureAreas  as area]
                 [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
                 [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
-                [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
+                [#if PMU || ((element.crpProgram.id == liaisonInstitutionID)!false)]
+                  [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
+                [/#if]
               [/#list]
             </div>
             [#-- Add other main program planned budget outside FPs  --]
