@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.powb.y2019;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -41,16 +42,18 @@ public class PlannedCollaborationValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final LiaisonInstitutionManager liaisonInstitutionManager;
+  private final InstitutionManager institutionManager;
 
   private final PowbSynthesisManager powbSynthesisManager;
 
 
   public PlannedCollaborationValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, InstitutionManager institutionManager) {
     super();
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
@@ -118,32 +121,43 @@ public class PlannedCollaborationValidator extends BaseValidator {
             .setGlobalUnit(crpManager.getGlobalUnitById(powbCollaborationGlobalUnit.getGlobalUnit().getId()));
         } else {
           powbCollaborationGlobalUnit.setGlobalUnit(null);
-
-        }
-        if (!(this.isValidString(powbCollaborationGlobalUnit.getFlagship()))) {
-          action.addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].flagship"));
-          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].flagship",
-            InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (!(this.isValidString(powbCollaborationGlobalUnit.getCollaborationType()))) {
-          action.addMissingField(
-            action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].collaborationType"));
-          action.getInvalidFields().put(
-            "input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].collaborationType",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (powbCollaborationGlobalUnit.getGlobalUnit() != null
+          && powbCollaborationGlobalUnit.getGlobalUnit().getId() > 0) {
+          powbCollaborationGlobalUnit
+            .setGlobalUnit(crpManager.getGlobalUnitById(powbCollaborationGlobalUnit.getGlobalUnit().getId()));
+        } else {
+          powbCollaborationGlobalUnit.setGlobalUnit(null);
         }
+
+        if (powbCollaborationGlobalUnit.getInstitution() != null
+          && powbCollaborationGlobalUnit.getInstitution().getId() > 0) {
+          powbCollaborationGlobalUnit.setInstitution(
+            institutionManager.getInstitutionById(powbCollaborationGlobalUnit.getInstitution().getId()));
+        } else {
+          powbCollaborationGlobalUnit.setInstitution(null);
+        }
+
         if (!(this.isValidString(powbCollaborationGlobalUnit.getBrief()))) {
           action.addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].brief"));
           action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].brief",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (powbCollaborationGlobalUnit.getGlobalUnit() == null) {
+
+        if (powbCollaborationGlobalUnit.getGlobalUnit() == null
+          || powbCollaborationGlobalUnit.getInstitution() == null) {
+          action
+            .addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
+          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+
           action
             .addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
           action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+
 
         i++;
 

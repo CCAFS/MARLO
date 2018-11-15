@@ -51,7 +51,7 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
-            [#assign submitStatus = (action.getPowbSynthesisSectionStatus(item.action, powbSynthesisID))!false /]
+            [#assign submitStatus = (action.getPowbSynthesisSectionStatus2019(item.action, powbSynthesisID))!false /]
             [#assign hasDraft = (action.getAutoSaveFilePath(powbSynthesis.class.simpleName, item.action, powbSynthesis.id))!false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="${hasDraft?string('draft', '')}  [#if item.slug == currentStage]currentSection[/#if] [#if item.active]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">

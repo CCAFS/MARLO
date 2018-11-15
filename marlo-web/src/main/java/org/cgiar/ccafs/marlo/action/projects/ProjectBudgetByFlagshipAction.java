@@ -315,7 +315,17 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
       .collect(Collectors.toList());
 
-    return budgets.size() > 0;
+    boolean haveBudget = false;
+    if (budgets != null) {
+
+      for (ProjectBudget projectBudget : budgets) {
+        if (projectBudget.getAmount() > 0) {
+          haveBudget = true;
+        }
+      }
+    }
+
+    return haveBudget;
   }
 
   @Override

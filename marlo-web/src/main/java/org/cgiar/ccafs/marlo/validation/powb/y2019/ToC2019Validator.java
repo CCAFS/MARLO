@@ -22,14 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
+
+import com.google.zxing.common.detector.MathUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -46,6 +52,23 @@ public class ToC2019Validator extends BaseValidator {
     this.powbSynthesisManager = powbSynthesisManager;
   }
 
+  /**
+   * POWB 2019 calculate Word limits to Flagships
+   * 
+   * @param crpID
+   * @param maxlimit
+   * @return
+   */
+  public int flagshipLimitWords(long crpID, int maxlimit) {
+
+    int iFlagShips = this.getFlagshipNnumbers(crpID);
+
+    int maxNumber = MathUtils.round(((maxlimit / (iFlagShips - 1) * 2)));
+
+    return maxNumber;
+
+  }
+
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = powbSynthesis.getClass().getSimpleName();
@@ -54,6 +77,23 @@ public class ToC2019Validator extends BaseValidator {
       + "_" + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  /**
+   * Get the # of Flagships in this CRP
+   * 
+   * @param crpID
+   * @return
+   */
+  public int getFlagshipNnumbers(long crpID) {
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+    // Get the list of liaison institutions Flagships and PMU.
+    List<LiaisonInstitution> liaisonInstitutions = crp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+    return liaisonInstitutions.size();
   }
 
   public LiaisonInstitution getLiaisonInstitution(BaseAction action, long powbSynthesisID) {
@@ -99,10 +139,20 @@ public class ToC2019Validator extends BaseValidator {
   }
 
   public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall()))) {
-      action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
-      action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
+    if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+      if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
+        && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 500)) {
+        action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
+        action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall()) && this
+        .wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= (this.flagshipLimitWords(action.getCrpID(), 500)))) {
+        action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
+        action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
+
   }
 
 }
