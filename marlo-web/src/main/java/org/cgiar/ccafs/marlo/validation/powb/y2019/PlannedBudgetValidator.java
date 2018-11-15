@@ -18,18 +18,25 @@ package org.cgiar.ccafs.marlo.validation.powb.y2019;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
+
+import com.google.zxing.common.detector.MathUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -44,6 +51,23 @@ public class PlannedBudgetValidator extends BaseValidator {
     this.crpManager = crpManager;
   }
 
+  /**
+   * POWB 2019 calculate Word limits to Flagships
+   * 
+   * @param crpID
+   * @param maxlimit
+   * @return
+   */
+  public int flagshipLimitWords(long crpID, int maxlimit) {
+
+    int iFlagShips = this.getFlagshipNnumbers(crpID);
+
+    int maxNumber = MathUtils.round(((maxlimit / (iFlagShips - 1) * 2)));
+
+    return maxNumber;
+
+  }
+
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = powbSynthesis.getClass().getSimpleName();
@@ -54,6 +78,33 @@ public class PlannedBudgetValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  /**
+   * Get the # of Flagships in this CRP
+   * 
+   * @param crpID
+   * @return
+   */
+  public int getFlagshipNnumbers(long crpID) {
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+    // Get the list of liaison institutions Flagships and PMU.
+    List<LiaisonInstitution> liaisonInstitutions = crp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+    return liaisonInstitutions.size();
+  }
+
+  public boolean isPMU(LiaisonInstitution liaisonInstitution) {
+    boolean isFP = false;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
+        isFP = true;
+      }
+    }
+    return isFP;
+  }
+
   public void validate(BaseAction action, PowbSynthesis powbSynthesis, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
@@ -62,11 +113,26 @@ public class PlannedBudgetValidator extends BaseValidator {
         action.addMissingField("draft");
       }
     }
+
+
     if (powbSynthesis != null) {
-      if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()))) {
-        action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
-        action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
-          InvalidFieldsMessages.EMPTYFIELD);
+
+
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()))
+          && this.wordCount(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()) <= 500) {
+          action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
+          action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+        if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()))
+          && this.wordCount(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()) <= (this
+            .flagshipLimitWords(action.getCrpID(), 500))) {
+          action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
+          action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
 

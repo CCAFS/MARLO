@@ -32,6 +32,7 @@ import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,6 +108,16 @@ public class BaseValidator {
     UrlValidator urlValidator = new UrlValidator();
     boolean bReturn = urlValidator.isValid(url);
     return bReturn;
+  }
+
+  /**
+   * Remove HTML tags
+   * 
+   * @param html
+   * @return
+   */
+  public String removeHtmlTags(String html) {
+    return Jsoup.parse(html).text();
   }
 
   /**

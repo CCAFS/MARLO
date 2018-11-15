@@ -122,7 +122,7 @@
       </div>
       [#-- Institution --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.institution.id" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutionsList"  required=true  className="institutionsSelect" editable=isEditable/]
+        [@customForm.select name="${customName}.institution.id" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
       </div>
     </div>
     

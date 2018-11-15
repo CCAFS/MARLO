@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
@@ -83,12 +84,13 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
   // Managers
   private GlobalUnitManager crpManager;
 
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
 
   private PowbSynthesisManager powbSynthesisManager;
 
   private AuditLogManager auditLogManager;
-
 
   private UserManager userManager;
 
@@ -99,9 +101,11 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
   private ProgressOutcomesValidator validator;
 
+
+  private List<PowbTocListDTO> tocList;
+
   // Variables
   private String transaction;
-
   private PowbSynthesis powbSynthesis;
 
   private Long liaisonInstitutionID;
@@ -109,13 +113,12 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
 
   private Long powbSynthesisID;
+
   private GlobalUnit loggedCrp;
 
-
   private List<LiaisonInstitution> liaisonInstitutions;
-
-
   private List<CrpProgramOutcome> outcomes;
+
 
   private CrpMilestoneManager crpMilestoneManager;
 
@@ -198,6 +201,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -205,7 +209,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public List<ProjectMilestone> getContributions(long milestoneID) {
     List<ProjectMilestone> milestones = new ArrayList<>();
@@ -246,6 +249,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return flagships;
   }
 
+
   public int getIndex(Long crpMilestoneID) {
     if (powbSynthesis.getExpectedCrpProgresses() != null) {
       int i = 0;
@@ -276,15 +280,14 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return liaisonInstitution;
   }
 
-
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -295,11 +298,11 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return outcomes;
   }
 
-
   // Method to download link file
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
   }
+
 
   public PowbExpectedCrpProgress getPMUPowbExpectedCrpProgress() {
     if (powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
@@ -309,6 +312,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
     return powbSynthesis.getExpectedCrpProgresses().get(0);
   }
+
 
   public PowbExpectedCrpProgress getPowbExpectedCrpProgress(Long crpMilestoneID) {
     return powbSynthesis.getExpectedCrpProgresses().get(this.getIndex(crpMilestoneID));
@@ -341,6 +345,10 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     return powbSynthesisID;
   }
 
+  public List<PowbTocListDTO> getTocList() {
+    return tocList;
+  }
+
   public String getTransaction() {
     return transaction;
   }
@@ -358,7 +366,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
     return isFP;
   }
-
 
   @Override
   public boolean isPMU() {
@@ -438,6 +445,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
   }
 
+
   /**
    * Table only for the specific Flagship
    */
@@ -477,7 +485,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
   }
 
-
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -495,7 +502,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb())
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -509,6 +516,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
     }
   }
+
 
   @Override
   public String next() {
@@ -525,6 +533,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Phase phase = this.getActualPhase();
 
     try {
       liaisonInstitutionID =
@@ -596,7 +605,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
           powbSynthesisID = powbSynthesis.getId();
         }
       } catch (Exception e) {
-        Phase phase = this.getActualPhase();
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
           powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
@@ -644,9 +652,19 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
           .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
-      outcome.setMilestones(outcome.getCrpMilestones().stream()
-        .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
-        .collect(Collectors.toList()));
+      List<CrpMilestone> milestones = new ArrayList<>();
+      if (!this.isPMU()) {
+        milestones = new ArrayList<>(outcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+      } else {
+        milestones = new ArrayList<>(outcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb())
+          .collect(Collectors.toList()));
+      }
+
+      outcome.setMilestones(milestones);
+
       if (!outcome.getMilestones().isEmpty()) {
         outcomesSet.add(outcome);
       }
@@ -660,6 +678,11 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
+
+    if (this.isPMU()) {
+      this.tocList(phase.getId());
+    }
+
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") & c.isActive())
       .collect(Collectors.toList()));
@@ -683,7 +706,6 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -743,6 +765,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
   }
 
+
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
@@ -755,19 +778,19 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
   }
+
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
@@ -777,9 +800,33 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     this.powbSynthesisID = powbSynthesisID;
   }
 
+  public void setTocList(List<PowbTocListDTO> tocList) {
+    this.tocList = tocList;
+  }
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
+  /*
+   * Expected Changes POWB 2019 (POWB2019)
+   */
+  public void tocList(long phaseID) {
+    tocList = new ArrayList<>();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbTocListDTO powbTocList = new PowbTocListDTO();
+      powbTocList.setLiaisonInstitution(liaisonInstitution);
+      powbTocList.setOverall("");
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getExpectedProgressNarrative() != null) {
+          powbTocList.setOverall(powbSynthesis.getExpectedProgressNarrative());
+        }
+      }
+      tocList.add(powbTocList);
+    }
+  }
+
 
   @Override
   public void validate() {
