@@ -259,6 +259,11 @@ p.dacMarker.level-3 {
   color: #fff;
 }
 
+p.dacMarker.level-4 {
+  font-size: 0.85em;
+}
+
+
 .amountType {
   font-weight: bold;
   color: #ceb286;

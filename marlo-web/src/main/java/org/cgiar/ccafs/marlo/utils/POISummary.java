@@ -52,8 +52,6 @@ public class POISummary {
 
   // LOG
   private static final Logger LOG = LoggerFactory.getLogger(POISummary.class);
-
-
   private final static String FONT_TYPE = "Calibri Light";
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
@@ -76,6 +74,7 @@ public class POISummary {
     expressionsList.add("<strike>");
     expressionsList.add("<s>");
     expressionsList.add("<del>");
+    expressionsList.add("<p>");
     expressionsList.add("<a");
 
     expressionsListClose.add("</b>");
@@ -86,9 +85,15 @@ public class POISummary {
     expressionsListClose.add("</strike>");
     expressionsListClose.add("</s>");
     expressionsListClose.add("</del>");
+    expressionsListClose.add("</p>");
     expressionsListClose.add("</a>");
   }
 
+
+  public void addLineSeparator(XWPFParagraph h1) {
+    XWPFRun h1Run = h1.createRun();
+    h1.setBorderBottom(Borders.SINGLE);
+  }
 
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
     if (text.contains("\n")) {
@@ -107,56 +112,78 @@ public class POISummary {
   public void convertHTMLTags(XWPFDocument document, String text) {
     this.addExpressionsToList();
     boolean isLink = false;
+    String url = "";
     int posInit = 0;
     int posFinal = 0;
+    int postLastLink = 0;
     String expressionListActual = "", textIndicatorLink = "";
 
+    /*
+     * runs through expressions list and checks if it is included in the text,
+     * if it occurs, the text is scanned and the position of the label is detected
+     */
     for (int i = 0; i < expressionsList.size(); i++) {
       expressionListActual = expressionsList.get(i);
 
       if (text.contains(expressionListActual)) {
-        for (int j = 0; j < text.length(); j++) {
-          if ((text.charAt(j) == expressionListActual.charAt(1))
-            && text.charAt(j + 1) == expressionListActual.charAt(2)) {
 
-            if (text.charAt(j + 3) == 'h' && text.charAt(4) == 'r') {
-              posInit = j + expressionListActual.length() + 9;
+        for (int j = 0; j < text.length(); j++) {
+          /*
+           * Getting open tags
+           */
+          if ((text.charAt(j) == expressionListActual.charAt(0))
+            && text.charAt(j + 1) == expressionListActual.charAt(1)) {
+            posInit = j;
+
+            startsPosList.add(posInit);
+            tagsAddList.add(expressionsList.get(i));
+
+            /*
+             * Detect start of a href tags
+             */
+            if (text.charAt(j + 3) == 'h' && text.charAt(j) == 'r') {
+
               isLink = true;
-            } else {
-              posInit = j + expressionListActual.length();
+
+              /*
+               * search for the close url part
+               */
+              int k = j;
+              do {
+                if (text.charAt(k) == '>') {
+                  postLastLink = k + 1;
+                }
+                k++;
+              } while (postLastLink == 0);
             }
           }
         }
 
-        // posInit = text.indexOf(expressionsList.get(i));
+        /*
+         * Getting close tags
+         */
 
-        if (posInit >= 0) {
-          boolean foundLastLinkPos = false;
-          int postLasLink = 0;
-          for (int j = posInit; j < text.length(); j++) {
+        for (int k = 0; k < text.length(); k++) {
 
-            if (isLink) {
-              if (text.charAt(j) == '>') {
-                foundLastLinkPos = true;
-              }
-            } else {
-              if (text.charAt(j) == expressionsListClose.get(i).charAt(1)
-                && text.charAt(j + 1) == expressionsListClose.get(i).charAt(2)) {
-                posFinal = j;
-                textIndicatorLink = text.substring(postLasLink, posFinal);
-              }
+          // If detect close tag
+          if (text.charAt(k) == expressionsListClose.get(i).charAt(0)
+            && text.charAt(k + 1) == expressionsListClose.get(i).charAt(1)
+            && text.charAt(k + 2) == expressionsListClose.get(i).charAt(2)) {
+            posFinal = k - expressionsListClose.get(i).length();
+            finalPosList.add(posFinal);
+
+            if (isLink == true && expressionListActual.contains("<a")) {
+              textIndicatorLink = text.substring(postLastLink, posFinal);
+              System.out.println("postLastLink " + postLastLink + " pos final " + posFinal);
+
+              // The url substring should start after identifying the href tag and finish before closing the quotation
+              // marks
+              url = text.substring(posInit + 4, postLastLink - 2);
             }
-            // posFinal = text.indexOf(expressionsListClose.get(i));
           }
-          // posFinal = text.indexOf(expressionsListClose.get(i));
-          startsPosList.add(posInit);
-          finalPosList.add(posFinal);
-          tagsAddList.add(expressionsList.get(i));
         }
       }
     }
-
-    /******/
 
     String expression = "";
     int startPosition = 0;
@@ -172,20 +199,13 @@ public class POISummary {
 
       if (startsPosList.contains(i)) {
         for (j = 0; j < startsPosList.size(); j++) {
-          System.out.println("print " + startsPosList.get(j));
           if (startsPosList.get(j) == i) {
-
             finalPosition = finalPosList.get(j);
             expression = tagsAddList.get(j);
           }
         }
 
-        /*
-         * Create paragraph with last text before the start of html tag
-         */
-
         if (i > 0) {
-          // if (text.charAt(startPosition - 1) != '>') {
           stringTemp = text.substring(startPosition, i);
           paragraph = document.createParagraph();
           paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -198,14 +218,12 @@ public class POISummary {
           paragraphRun.setBold(false);
           paragraphRun.setUnderline(UnderlinePatterns.NONE);
           paragraphRun.setItalic(false);
-          // }
         }
         startPosition = i + expression.length();
+
         /*
-         * Create paragraph with last after the start of html tag until the clos of this thag
+         * Create paragraph with last position after the start of html tag until the close of this
          */
-        System.out.println("startPosition " + startPosition + " finalposition " + finalPosition + " text "
-          + text.length() + " text " + text + " expression:" + expression);
         if (finalPosition + expression.length() <= text.length()) {
           stringTemp = text.substring(startPosition, finalPosition + expression.length());
         } else {
@@ -213,15 +231,23 @@ public class POISummary {
         }
 
         paragraph = document.createParagraph();
-        paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
-        this.addParagraphTextBreak(paragraphRun, stringTemp);
 
-        paragraphRun.setColor(TEXT_FONT_COLOR);
-        paragraphRun.setFontFamily(FONT_TYPE);
-        paragraphRun.setFontSize(11);
+        if (isLink == false) {
+          paragraph.setAlignment(ParagraphAlignment.BOTH);
 
+          this.addParagraphTextBreak(paragraphRun, stringTemp);
+
+          paragraphRun.setColor(TEXT_FONT_COLOR);
+          paragraphRun.setFontFamily(FONT_TYPE);
+          paragraphRun.setFontSize(11);
+        }
+
+        // Apply the style to the paragraph depending on the identified expression
         switch (expression) {
+          /*
+           * Open tags detection
+           */
           case "<b>":
             paragraphRun.setBold(true);
             break;
@@ -240,8 +266,15 @@ public class POISummary {
             break;
           case "<del>":
             break;
-          case "<a>":
+          case "<p>":
             break;
+          case "<a":
+            System.out.println("url " + url);
+            this.textHyperlink(url, text, paragraph);
+            break;
+          /*
+           * Close tags detection
+           */
           case "</b>":
             paragraphRun.setBold(false);
             break;
@@ -260,19 +293,19 @@ public class POISummary {
             break;
           case "</del>":
             break;
+          case "</p>":
+            break;
           case "</a>":
             break;
           default:
             paragraphRun.setBold(false);
             paragraphRun.setUnderline(UnderlinePatterns.NONE);
             paragraphRun.setItalic(false);
-
         }
-        startPosition = finalPosition + expression.length() + 1;
+        startPosition = finalPosition + expression.length() + 4;
         expression = "";
         i = finalPosition;
       }
-
     }
 
     if (finalPosition < text.length()) {
@@ -290,9 +323,8 @@ public class POISummary {
       paragraphRun.setUnderline(UnderlinePatterns.NONE);
       paragraphRun.setItalic(false);
     }
-
-
   }
+
 
   public void createTOC(XWPFDocument document) {
     // Create table of contents
@@ -309,11 +341,6 @@ public class POISummary {
         }
       }
     }
-  }
-
-  public void getHTMLTags(String text) {
-
-
   }
 
   /**
@@ -372,6 +399,23 @@ public class POISummary {
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
 
+
+  public void pageRightHeader(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpHeader = CTP.Factory.newInstance();
+    CTR ctrHeader = ctpHeader.addNewR();
+    CTText ctHeader = ctrHeader.addNewT();
+    CTR ctr = CTR.Factory.newInstance();
+    ctr.addNewRPr().addNewU().setVal(STUnderline.SINGLE);
+    ctHeader.setStringValue(text);
+    XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+    headerParagraph.setAlignment(ParagraphAlignment.RIGHT);
+
+    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+    parsHeader[0] = headerParagraph;
+    policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
 
   public void tableA1AnnualReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
@@ -508,7 +552,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void tableC2PowbStyle(XWPFTable table) {
     /* Vertical merge, From format tables C */
@@ -679,21 +722,21 @@ public class POISummary {
       }
     }
 
-
-    for (int x = 0; x < table.getNumberOfRows(); x++) {
-      if (x > 1) {
-        XWPFTableRow rowCom = table.getRow(x);
-        XWPFTableCell cell = rowCom.getCell(6);
-        if (cell.getCTTc() == null) {
-          ((CTTc) cell).addNewTcPr();
-        }
-        if (cell.getCTTc().getTcPr() == null) {
-          cell.getCTTc().addNewTcPr();
-        }
-        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
-      }
-    }
-
+    /*
+     * for (int x = 0; x < table.getNumberOfRows(); x++) {
+     * if (x > 1) {
+     * XWPFTableRow rowCom = table.getRow(x);
+     * XWPFTableCell cell = rowCom.getCell(6);
+     * if (cell.getCTTc() == null) {
+     * ((CTTc) cell).addNewTcPr();
+     * }
+     * if (cell.getCTTc().getTcPr() == null) {
+     * cell.getCTTc().addNewTcPr();
+     * }
+     * cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+     * }
+     * }
+     */
   }
 
   public void tableEStyle(XWPFTable table) {
@@ -852,6 +895,7 @@ public class POISummary {
     String a = text.charAt(i) + text.charAt(i + 2) + text.charAt(i + 3) + "";
   }
 
+
   /**
    * Head 1 Title
    * 
@@ -867,7 +911,6 @@ public class POISummary {
     h1Run.setFontFamily(FONT_TYPE);
     h1Run.setFontSize(16);
   }
-
 
   public void textHead1TitleFontCalibri(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.BOTH);
@@ -928,6 +971,16 @@ public class POISummary {
     h1Run.setFontFamily("Calibri");
     h1Run.setFontSize(26);
     h1.setBorderBottom(Borders.SINGLE);
+  }
+
+  public void textHeadPrincipalTitlefirtsPageCRP(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.CENTER);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor("323E4F");
+    h1Run.setBold(false);
+    h1Run.setFontFamily("Calibri");
+    h1Run.setFontSize(26);
   }
 
   public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
