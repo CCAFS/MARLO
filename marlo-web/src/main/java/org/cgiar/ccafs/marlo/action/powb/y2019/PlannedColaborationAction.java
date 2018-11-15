@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationGlobalUnitManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -93,44 +95,49 @@ public class PlannedColaborationAction extends BaseAction {
 
 
   private PowbSynthesisManager powbSynthesisManager;
+
   private AuditLogManager auditLogManager;
+
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
-
   private PowbCollaborationManager powbCollaborationManager;
-
-
   private PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager;
 
   private PowbCollaborationRegionManager powbCollaborationRegionManager;
-  private LocElementManager locElementManager;
-  private FundingSourceManager fundingSourceManager;
 
+
+  private LocElementManager locElementManager;
+
+  private FundingSourceManager fundingSourceManager;
   private PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager;
   private PlannedCollaborationValidator validator;
-  private List<LocElement> locElements;
 
+  private List<LocElement> locElements;
   private List<LiaisonInstitution> regions;
   private List<CrpProgram> crpPrograms;
+
   // Variables
   private String transaction;
-
   private PowbSynthesis powbSynthesis;
-
   private Long liaisonInstitutionID;
 
   private Long powbSynthesisID;
 
   private PowbSynthesis powbSynthesisBD;
+
   private GlobalUnit loggedCrp;
+
   private List<LiaisonInstitution> liaisonInstitutions;
-
-
   private LiaisonInstitution liaisonInstitution;
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
+
+
   private List<GlobalUnit> globalUnits;
+  private List<Institution> institutions;
   private List<PowbCollaborationGlobalUnit> globalUnitCollaborations;
+  private InstitutionManager institutionManager;
 
   @Inject
   public PlannedColaborationAction(APConfig config, GlobalUnitManager crpManager,
@@ -140,7 +147,8 @@ public class PlannedColaborationAction extends BaseAction {
     GlobalUnitProjectManager globalUnitProjectManager,
     PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager, LocElementManager locElementManager,
     PowbCollaborationRegionManager powbCollaborationRegionManager, FundingSourceManager fundingSourceManager,
-    PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager) {
+    PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager,
+    InstitutionManager institutionManager) {
     super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -156,6 +164,7 @@ public class PlannedColaborationAction extends BaseAction {
     this.powbCollaborationRegionManager = powbCollaborationRegionManager;
     this.fundingSourceManager = fundingSourceManager;
     this.powbCollaborationGlobalUnitPmuManager = powbCollaborationGlobalUnitPmuManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override
@@ -176,7 +185,6 @@ public class PlannedColaborationAction extends BaseAction {
     messages = this.getActionMessages();
     return SUCCESS;
   }
-
 
   public boolean canEditRegion(long regionId) {
     String permission = this.generatePermission(Permission.POWB_SYNTHESIS_RPL_EFFORT, this.getCrpSession(),
@@ -295,25 +303,24 @@ public class PlannedColaborationAction extends BaseAction {
     return crpPrograms;
   }
 
-
   public PowbCollaborationRegion getElemnentRegion(long regionId) {
     int index = this.getIndexRegion(regionId);
     return powbSynthesis.getRegions().get(index);
   }
 
+
   public List<PowbMonitoringEvaluationLearningExercise> getFlagshipExercises() {
     return flagshipExercises;
   }
+
 
   public List<PowbCollaborationGlobalUnit> getGlobalUnitCollaborations() {
     return globalUnitCollaborations;
   }
 
-
   public List<GlobalUnit> getGlobalUnits() {
     return globalUnits;
   }
-
 
   public int getIndexRegion(long regionId) {
     if (powbSynthesis.getRegions() == null) {
@@ -335,6 +342,12 @@ public class PlannedColaborationAction extends BaseAction {
     return this.getIndexRegion(regionId);
   }
 
+
+  public List<Institution> getInstitutions() {
+    return institutions;
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -342,7 +355,6 @@ public class PlannedColaborationAction extends BaseAction {
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -352,6 +364,7 @@ public class PlannedColaborationAction extends BaseAction {
   public List<LocElement> getLocElements() {
     return locElements;
   }
+
 
   public List<LocElement> getLocElementsByPMU() {
     List<LocElement> locElements = new ArrayList<>();
@@ -382,7 +395,6 @@ public class PlannedColaborationAction extends BaseAction {
     return powbSynthesisID;
   }
 
-
   public List<LiaisonInstitution> getRegions() {
     return regions;
   }
@@ -410,6 +422,15 @@ public class PlannedColaborationAction extends BaseAction {
 
         }
 
+        if (powbCollaborationGlobalUnit.getInstitution() != null
+          && powbCollaborationGlobalUnit.getInstitution().getId() > 0) {
+          powbCollaborationGlobalUnit.setInstitution(
+            institutionManager.getInstitutionById(powbCollaborationGlobalUnit.getInstitution().getId()));
+        } else {
+          powbCollaborationGlobalUnit.setInstitution(null);
+
+        }
+
 
         if (powbCollaborationGlobalUnit.getId() == null) {
 
@@ -424,6 +445,7 @@ public class PlannedColaborationAction extends BaseAction {
         }
         powbCollaborationGlobalUnitNew.setFlagship(powbCollaborationGlobalUnit.getFlagship());
         powbCollaborationGlobalUnitNew.setGlobalUnit(powbCollaborationGlobalUnit.getGlobalUnit());
+        powbCollaborationGlobalUnitNew.setInstitution(powbCollaborationGlobalUnit.getInstitution());
         powbCollaborationGlobalUnitNew.setCollaborationType(powbCollaborationGlobalUnit.getCollaborationType());
         powbCollaborationGlobalUnitNew.setBrief(powbCollaborationGlobalUnit.getBrief());
 
@@ -437,6 +459,7 @@ public class PlannedColaborationAction extends BaseAction {
     }
 
   }
+
 
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
@@ -500,7 +523,6 @@ public class PlannedColaborationAction extends BaseAction {
     return locElementsToRet;
   }
 
-
   public void loadLocationsProjectRelated(List<LocElement> locElements, List<Project> projects) {
     for (LocElement locElement : locElementManager.findAll().stream()
       .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList())) {
@@ -544,6 +566,7 @@ public class PlannedColaborationAction extends BaseAction {
 
     }
   }
+
 
   public void loadLocElementsRelations(LocElement locElement) {
 
@@ -668,7 +691,6 @@ public class PlannedColaborationAction extends BaseAction {
 
   }
 
-
   public List<Project> loadProjectsPMU() {
     List<Project> projectsToRet = new ArrayList<>();
     GlobalUnit globalUnit = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -718,6 +740,7 @@ public class PlannedColaborationAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -959,6 +982,9 @@ public class PlannedColaborationAction extends BaseAction {
       }
     });
 
+    institutions = new ArrayList<>();
+    institutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -987,7 +1013,6 @@ public class PlannedColaborationAction extends BaseAction {
     }
   }
 
-
   public List<Project> projectsbyProgram(CrpProgram crpProgram) {
     List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
       .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
@@ -1013,6 +1038,7 @@ public class PlannedColaborationAction extends BaseAction {
     return projectsToRet;
 
   }
+
 
   public void regionsNewData() {
 
@@ -1089,7 +1115,7 @@ public class PlannedColaborationAction extends BaseAction {
       }
       this.globaUnitsPreviousData(powbSynthesis.getPowbCollaborationGlobalUnitsList());
       this.globalUnitNewData();
-      this.regionsNewData();
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.SYNTHESIS_GLOBAL_UNTIS_RELATION);
       relationsName.add(APConstants.SYNTHESIS_REGIONS_RELATION);
@@ -1138,7 +1164,6 @@ public class PlannedColaborationAction extends BaseAction {
     this.flagshipExercises = flagshipExercises;
   }
 
-
   public void setGlobalUnitCollaborations(List<PowbCollaborationGlobalUnit> globalUnitCollaborations) {
     this.globalUnitCollaborations = globalUnitCollaborations;
   }
@@ -1146,6 +1171,11 @@ public class PlannedColaborationAction extends BaseAction {
 
   public void setGlobalUnits(List<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
+  }
+
+
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {

@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "powbSynthesis.plannedBudget" /]
+[#assign customName= "powbSynthesis.financialPlan" /]
 [#assign customLabel= "powbSynthesis.${currentStage}" /]
 
 
@@ -46,7 +46,7 @@
             [#-- Provide a short narrative of expected highlights of the CRP/PTF in the coming year --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
+              [@customForm.textArea name="${customName}.financialPlanIssues" i18nkey="${customLabel}.narrative" help="${customLabel}.narrative.help" helpIcon=false required=true className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
             </div>
             
             [#if PMU]
@@ -59,14 +59,16 @@
           <hr />
           
           [#-- Table 3: Planned Budget --]
-          <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title" /]</h4>
+          <h4 class="sectionSubTitle">[@s.text name="${customLabel}.table3PlannedBudget.title${PMU?string('','FP')}" /]</h4>
           <div class="form-group">
             <div class="expenditures-list">
               [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) + ((otherPlannedBudgets)![]) ]
               [#list expenditureAreas  as area]
                 [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
                 [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
-                [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
+                [#if PMU || ((element.crpProgram.id == liaisonInstitutionID)!false)]
+                  [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
+                [/#if]
               [/#list]
             </div>
             [#-- Add other main program planned budget outside FPs  --]
