@@ -38,7 +38,6 @@
 [/#attempt]
 
 [#assign canUnSubmit = false /]
-
 [#assign sectionsForChecking = [] /]
 [#assign currentMenuItem = {} /]
 
