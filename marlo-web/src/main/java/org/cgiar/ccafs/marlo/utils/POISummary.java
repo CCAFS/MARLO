@@ -1082,7 +1082,7 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "DEEAF6";
           // Condition for table 2a
         } else if (tableType.equals("tableA2Powb")) {
-          TABLE_HEADER_FONT_COLOR = "FFFFFF";
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
         } else {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
