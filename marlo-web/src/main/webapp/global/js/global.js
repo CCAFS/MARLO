@@ -321,7 +321,7 @@ $(document).ready(function() {
     $('.allowTextEditor').trumbowyg({
         btns: [
             [
-                'strong', 'em', 'del'
+                'strong', 'em'
             ], [
               'link'
             ], [
