@@ -176,7 +176,8 @@ $(document).ready(function() {
 
   // Animate help text
   function showHelpText() {
-    $('.helpMessage').addClass('animated flipInX');
+    // $('.helpMessage').addClass('animated flipInX');
+    $('.helpMessage').show();
   }
 
   function showNotificationMessages() {
