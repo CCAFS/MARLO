@@ -1084,7 +1084,7 @@ public class POISummary {
         } else if (tableType.equals("tableA2Powb")) {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         } else {
-          TABLE_HEADER_FONT_COLOR = "FFF2CC";
+          TABLE_HEADER_FONT_COLOR = "FFFFFF";
         }
 
         if (headerIndex == 0) {
@@ -1148,9 +1148,9 @@ public class POISummary {
       if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
         TABLE_HEADER_FONT_COLOR = "DEEAF6";
       } else if (tableType.equals("tableA2Powb")) {
-        TABLE_HEADER_FONT_COLOR = "FFFFFF";
-      } else {
         TABLE_HEADER_FONT_COLOR = "FFF2CC";
+      } else {
+        TABLE_HEADER_FONT_COLOR = "FFFFFF";
       }
 
       XWPFTableRow dataRow = table.createRow();
