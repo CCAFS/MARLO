@@ -22,7 +22,7 @@
   var editable = ${editable?string};
   var canEdit = ${canEdit?string};
   var draft = ${draft?string};
-  var autoSaveActive = ${(((currentUser.autoSave)!false) && editable)?string};
+  var autoSaveActive =  ${(((autoSaveActive)!true) && ((currentUser.autoSave)!false) && editable)?string};
   var currentCrpID=${(crpID)!'-1'};
   var currentCrpSession='${(crpSession)!'-1'}';
   var currentCycleYear = ${(currentCycleYear)!1999};

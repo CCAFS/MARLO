@@ -5,7 +5,7 @@ function initDashboard() {
 
   // Set timeline dates completion
   // setCompletionDates();
-  timeline();
+  // timeline();
   $('#newProject').on('click', function(e) {
     $('#decisionTree .addProjectButtons').show(0, function() {
       $(this).addClass('animated flipInX');
