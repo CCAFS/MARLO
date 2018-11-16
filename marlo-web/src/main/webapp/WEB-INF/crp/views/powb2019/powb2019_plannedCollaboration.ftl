@@ -167,13 +167,14 @@
           <tr>
             <td><span class="programTag" style="border-color:${(coll.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}" title="${coll.powbSynthesis.liaisonInstitution.crpProgram.composedName}">${coll.powbSynthesis.liaisonInstitution.crpProgram.acronym}</span></td>
             <td class="col-md-3">
+              <ul>
               [#if coll.globalUnit??]
-              <strong>${(coll.globalUnit.acronym)!}</strong><br />
-              <i>${(coll.globalUnit.globalUnitType.name)!}</i>
+                <li>${(coll.globalUnit.composedName)!}</li>
               [/#if]
               [#if coll.institution??]
-                ${coll.institution.composedName}
+                <li>${coll.institution.composedName}</li>
               [/#if]
+              </ul>
             </td>
             <td class="col-md-8">
               ${(coll.brief?replace('\n', '<br>'))!} 
