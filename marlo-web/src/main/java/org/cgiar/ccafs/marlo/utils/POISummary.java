@@ -1082,7 +1082,7 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "DEEAF6";
           // Condition for table 2a
         } else if (tableType.equals("tableA2Powb")) {
-          TABLE_HEADER_FONT_COLOR = "FFFFFF";
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
         } else {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         }
@@ -1148,7 +1148,7 @@ public class POISummary {
       if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
         TABLE_HEADER_FONT_COLOR = "DEEAF6";
       } else if (tableType.equals("tableA2Powb")) {
-        TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        TABLE_HEADER_FONT_COLOR = "FFFFFF";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFF2CC";
       }
@@ -1287,7 +1287,7 @@ public class POISummary {
       // powb 2019 template tables
       case "tableA2Powb":
         count = 0;
-        this.tableAStyle(table);
+        this.tableA2PowbStyle(table);
         break;
       case "tableB2Powb":
         count = 0;
