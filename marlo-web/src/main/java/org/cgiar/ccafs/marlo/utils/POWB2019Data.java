@@ -98,22 +98,18 @@ public class POWB2019Data<T> {
    * @param liaisonPMU
    * @return
    */
-  public List<PowbEvidencePlannedStudyDTO> getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID,
-    Phase phase, GlobalUnit loggedCrp, LiaisonInstitution liaisonPMU) {
+  public List<PowbEvidencePlannedStudyDTO> getFpPlannedList(List<LiaisonInstitution> lInstitutions, Phase phase,
+    GlobalUnit loggedCrp, LiaisonInstitution liaisonPMU, int year) {
     List<PowbEvidencePlannedStudyDTO> flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies =
-        new ArrayList<>(
-          projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
-              && ps.getProjectExpectedStudyInfo(phase).getYear() == 2019 // TODO year Burn
-              && ps.getProject() != null
-              && ps.getProject().getGlobalUnitProjects().stream()
-                .filter(
-                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).size() > 0)
-            .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
+          && ps.getProjectExpectedStudyInfo(phase).getYear() == year && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
@@ -124,8 +120,9 @@ public class POWB2019Data<T> {
           dto.setLiaisonInstitutions(new ArrayList<>());
           dto.getLiaisonInstitutions().add(liaisonPMU);
         } else {
-          List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          List<ProjectFocus> projectFocuses =
+            new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+              .filter(pf -> pf.isActive() && pf.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -141,7 +138,7 @@ public class POWB2019Data<T> {
 
       List<PowbEvidencePlannedStudy> evidencePlannedStudies = new ArrayList<>();
       for (LiaisonInstitution liaisonInstitution : lInstitutions) {
-        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
         if (powbSynthesis != null) {
           if (powbSynthesis.getPowbEvidence() != null) {
             if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
@@ -162,17 +159,19 @@ public class POWB2019Data<T> {
 
         List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-          if (powbSynthesis != null) {
-            if (powbSynthesis.getPowbEvidence() != null) {
+          if (liaisonInstitution != null) {
+            PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+            if (powbSynthesis != null) {
+              if (powbSynthesis.getPowbEvidence() != null) {
 
-              PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
-              evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
-              evidencePlannedStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
-              evidencePlannedStudyNew.setPowbEvidence(powbSynthesis.getPowbEvidence());
+                PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+                evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+                evidencePlannedStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
+                evidencePlannedStudyNew.setPowbEvidence(powbSynthesis.getPowbEvidence());
 
-              if (evidencePlannedStudies.contains(evidencePlannedStudyNew)) {
-                removeLiaison.add(liaisonInstitution);
+                if (evidencePlannedStudies.contains(evidencePlannedStudyNew)) {
+                  removeLiaison.add(liaisonInstitution);
+                }
               }
             }
           }
@@ -258,7 +257,7 @@ public class POWB2019Data<T> {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     List<PowbEvidencePlannedStudyDTO> flagshipPlannedList =
-      this.getFpPlannedList(liaisonInstitutions, phase.getId(), phase, loggedCrp, liaisonPMU);
+      this.getFpPlannedList(liaisonInstitutions, phase, loggedCrp, liaisonPMU, year);
 
     for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList) {
 
