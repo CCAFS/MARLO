@@ -24,9 +24,9 @@
     ]
   },
   [#-- SYNTHESIS PLANNING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb${powb2019?string("2019", "")}',   'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit && !upKeepActive, 'active': !powb2019 || !config.production,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/powb${powb2019?string("2019", "")}',   'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,  
     'subItems' : [
-      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb${powb2019?string("2019", "")}',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged, 'active': !powb2019 || !config.production}
+      { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb${powb2019?string("2019", "")}',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged, 'active': true }
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
