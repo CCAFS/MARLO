@@ -41,9 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnitPmu;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
@@ -923,41 +921,38 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     List<POIField> data;
 
-    if (powbSynthesis.getCollaboration() == null) {
-      PowbCollaboration powbCollaboration = new PowbCollaboration();
-      // create one to one relation
-      powbSynthesis.setCollaboration(powbCollaboration);
-      powbCollaboration.setPowbSynthesis(powbSynthesis);
-    }
-    powbSynthesis.setPowbCollaborationGlobalUnitsList(
-      powbSynthesis.getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    List<PowbCollaborationGlobalUnit> collaborationGlobalUnits =
+      this.powb2019Data.getTable2C(this.getSelectedPhase(), loggedCrp, powbSynthesisPMU);
 
-    if (powbSynthesis.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null
-      && !powbSynthesis.getCollaboration().getPowbCollaborationGlobalUnitPmu().isEmpty()) {
-      for (PowbCollaborationGlobalUnitPmu plannedStudy : powbSynthesis.getCollaboration()
-        .getPowbCollaborationGlobalUnitPmu().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-        powbSynthesis.getCollaboration().getCollaborations().add(plannedStudy.getPowbCollaborationGlobalUnit());
-      }
-    }
+    if (collaborationGlobalUnits != null && !collaborationGlobalUnits.isEmpty()) {
+      for (PowbCollaborationGlobalUnit collaborationGlobalUnit : collaborationGlobalUnits) {
+        String globalUnitNonCgiar = " ", brief = " ";
 
-    for (PowbCollaborationGlobalUnit powbCollaborationglobalUnit : powbSynthesis.getPowbCollaborationGlobalUnits()) {
-      String globalUnit = " ", brief = " ";
-      try {
-        globalUnit = powbCollaborationglobalUnit.getGlobalUnit().getName();
-        brief = powbCollaborationglobalUnit.getBrief();
-      } catch (Exception e) {
-        if (globalUnit == null) {
-          globalUnit = " ";
+        Set<String> globalUnitNonCgiarSet = new HashSet<>();
+
+        if (collaborationGlobalUnit.getGlobalUnit() != null) {
+          globalUnitNonCgiarSet.add(collaborationGlobalUnit.getGlobalUnit().getAcronym());
         }
-        if (brief == null) {
-          brief = " ";
-        }
-      }
 
-      POIField[] sData = {new POIField(globalUnit, ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(brief, ParagraphAlignment.LEFT, bold, blackColor)};
-      data = Arrays.asList(sData);
-      datas.add(data);
+        if (collaborationGlobalUnit.getInstitution() != null) {
+          globalUnitNonCgiarSet.add(collaborationGlobalUnit.getInstitution().getComposedName());
+        }
+
+        if (globalUnitNonCgiarSet != null && !globalUnitNonCgiarSet.isEmpty()) {
+          globalUnitNonCgiar = String.join(",", globalUnitNonCgiarSet);
+        }
+
+        if (collaborationGlobalUnit.getBrief() != null) {
+          brief = collaborationGlobalUnit.getBrief();
+        } else {
+          brief = "";
+        }
+
+        POIField[] sData = {new POIField(globalUnitNonCgiar, ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(brief, ParagraphAlignment.LEFT, bold, blackColor)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
     }
 
     poiSummary.textTable(document, headers, datas, false, "tableC2Powb");
