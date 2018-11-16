@@ -481,83 +481,70 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     List<List<POIField>> headers = new ArrayList<>();
     Boolean bold = false;
     String blackColor = "000000";
+    if (this.isEntityPlatform()) {
+      POIField[] sHeader = {new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor)};
 
-    POIField[] sHeader = {new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("Milestone", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("Milestone", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("Means of verification ", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("CGIAR Cross-Cutting Markers for the milestone", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("CGIAR Cross-Cutting Markers for the milestone", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("CGIAR Cross-Cutting Markers for the milestone", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("CGIAR Cross-Cutting Markers for the milestone", ParagraphAlignment.LEFT, bold, blackColor)};
+      POIField[] sHeader2 = {new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.subtitle1"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.subtitle2"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.subtitle3"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.subtitle4"), ParagraphAlignment.LEFT, bold, blackColor)};
 
-    POIField[] sHeader2 = {new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("for gender"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("for youth"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("for CapDev"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("for CC"), ParagraphAlignment.LEFT, bold, blackColor)};
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+    }
 
-    List<POIField> header = Arrays.asList(sHeader);
-    List<POIField> header2 = Arrays.asList(sHeader2);
-    headers.add(header);
-    headers.add(header2);
+    if (this.isEntityCRP()) {
+      POIField[] sHeader = {new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title5"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.powb2019.tablea1.title6"), ParagraphAlignment.LEFT, bold, blackColor)};
 
+      POIField[] sHeader2 = {new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("for gender"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("for youth"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("for CapDev"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("for CC"), ParagraphAlignment.LEFT, bold, blackColor)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+    }
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     data = new ArrayList<>();
-    String c1 = " ", c2 = " ", c3 = " ", c4 = " ", c5 = "", c6 = " ", c7 = " ", c8 = " ", c9 = " ", c10 = " ";
-
-    /*
-     * for (int i = 1; i <= 1; i++) {
-     * switch (i) {
-     * case 1:
-     * bold = true;
-     * c1 = "Module";
-     * c2 = "Module";
-     * c3 = "Module ";
-     * c4 = "Milestone";
-     * c5 = "Milestone";
-     * c6 = "Means of verification ";
-     * c7 = "CGIAR Cross-Cutting Markers for the milestone";
-     * c8 = "CGIAR Cross-Cutting Markers for the milestone";
-     * c9 = "CGIAR Cross-Cutting Markers for the milestone";
-     * c10 = "CGIAR Cross-Cutting Markers for the milestone";
-     * break;
-     * case 2:
-     * bold = false;
-     * c1 = " ";
-     * c2 = " ";
-     * c3 = " ";
-     * c4 = " ";
-     * c5 = " ";
-     * c6 = " ";
-     * c7 = "for gender";
-     * c8 = "for youth";
-     * c9 = "for CapDev";
-     * c10 = "for CC";
-     * break;
-     * default:
-     * bold = false;
-     * }
-     * POIField[] sData = {new POIField(c1, ParagraphAlignment.LEFT), new POIField(c2, ParagraphAlignment.LEFT),
-     * new POIField(c3, ParagraphAlignment.LEFT), new POIField(c4, ParagraphAlignment.LEFT, bold, blackColor),
-     * new POIField(c5, ParagraphAlignment.LEFT), new POIField(c6, ParagraphAlignment.LEFT),
-     * new POIField(c7, ParagraphAlignment.LEFT), new POIField(c8, ParagraphAlignment.LEFT),
-     * new POIField(c9, ParagraphAlignment.LEFT), new POIField(c10, ParagraphAlignment.LEFT)};
-     * data = Arrays.asList(sData);
-     * datas.add(data);
-     * }
-     */
-    /*
-     * fill table a2
-     **/
 
     String fp, subIDO, outcomes, milestone, powbIndFollowingMilestone, powbMilestoneVerification, gender, youth, capdev,
       climate, assesmentRisk, milestoneRisk;
