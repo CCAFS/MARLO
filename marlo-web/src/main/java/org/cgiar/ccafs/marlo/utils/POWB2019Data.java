@@ -262,6 +262,7 @@ public class POWB2019Data<T> {
     List<PowbEvidencePlannedStudyDTO> flagshipPlannedList =
       this.getFpPlannedList(liaisonInstitutions, phase, loggedCrp, liaisonPMU, year);
 
+
     for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList) {
 
       ProjectExpectedStudy expectedStudy = powbEvidencePlannedStudyDTO.getProjectExpectedStudy();
@@ -270,6 +271,24 @@ public class POWB2019Data<T> {
       popUpProjects.add(expectedStudy);
 
     }
+
+    PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonPMU.getId());
+
+    List<ProjectExpectedStudy> removeStudies = new ArrayList<>();
+
+    if (powbSynthesis.getPowbEvidence() != null) {
+      if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null
+        && !powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies().isEmpty()) {
+
+
+        for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
+          .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          removeStudies.add(plannedStudy.getProjectExpectedStudy());
+        }
+      }
+    }
+
+    popUpProjects.removeAll(removeStudies);
 
     return popUpProjects;
 
@@ -316,18 +335,16 @@ public class POWB2019Data<T> {
 
     List<PowbCollaborationGlobalUnit> removeList = new ArrayList<>();
 
+    if (powbSynthesisPMU.getCollaboration() != null) {
+      if (powbSynthesisPMU.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null) {
 
-    List<PowbCollaborationGlobalUnitPmu> collaborationsPMU = new ArrayList(powbSynthesisPMU.getCollaboration()
-      .getPowbCollaborationGlobalUnitPmu().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-
-    for (PowbCollaborationGlobalUnitPmu powbCollaborationGlobalUnitPmu : collaborationsPMU) {
-      removeList.add(powbCollaborationGlobalUnitPmu.getPowbCollaborationGlobalUnit());
+        for (PowbCollaborationGlobalUnitPmu powbCollaborationGlobalUnitPmu : powbSynthesisPMU.getCollaboration()
+          .getPowbCollaborationGlobalUnitPmu().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          removeList.add(powbCollaborationGlobalUnitPmu.getPowbCollaborationGlobalUnit());
+        }
+      }
     }
-
-
-    for (PowbCollaborationGlobalUnitPmu i : collaborationsPMU) {
-      globalUnitCollaborations.remove(i);
-    }
+    globalUnitCollaborations.removeAll(removeList);
 
 
     return globalUnitCollaborations;
