@@ -305,19 +305,21 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private void createTableA2() {
 
     List<List<POIField>> headers = new ArrayList<>();
-    Boolean bold = false;
+
     String blackColor = "000000";
     if (this.isEntityPlatform()) {
-      POIField[] sHeader = {new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor)};
+      Boolean bold = false;
+      POIField[] sHeader =
+        {new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, true, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title5"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title6"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title7"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title8"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title9"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title10"), ParagraphAlignment.LEFT, bold, blackColor)};
 
       POIField[] sHeader2 = {new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
@@ -337,22 +339,22 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
 
     if (this.isEntityCRP()) {
-      POIField[] sHeader = {new POIField("Module", ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title5"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("summaries.powb2019.tablea1.title6"), ParagraphAlignment.LEFT, bold, blackColor)};
+      Boolean bold = true;
+      POIField[] sHeader =
+        {new POIField(this.getText("summaries.powb2019.tablea1.title1"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title2"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title3"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title4"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title5"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title6"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title7"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title8"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title9"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title11"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title12"), ParagraphAlignment.LEFT, bold, blackColor)};
 
+      bold = false;
       POIField[] sHeader2 = {new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
@@ -361,7 +363,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         new POIField(this.getText("for gender"), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText("for youth"), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText("for CapDev"), ParagraphAlignment.LEFT, bold, blackColor),
-        new POIField(this.getText("for CC"), ParagraphAlignment.LEFT, bold, blackColor)};
+        new POIField(this.getText("for CC"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor)};
 
       List<POIField> header = Arrays.asList(sHeader);
       List<POIField> header2 = Arrays.asList(sHeader2);
@@ -483,7 +487,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
               POIField[] sData = {new POIField(fp, ParagraphAlignment.LEFT),
                 new POIField(subIDO, ParagraphAlignment.LEFT), new POIField(outcomes, ParagraphAlignment.LEFT),
-                new POIField(milestone, ParagraphAlignment.LEFT, bold, blackColor),
+                new POIField(milestone, ParagraphAlignment.LEFT, false, blackColor),
                 new POIField(powbIndFollowingMilestone, ParagraphAlignment.LEFT),
                 new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
                 new POIField(gender, ParagraphAlignment.LEFT), new POIField(youth, ParagraphAlignment.LEFT),
@@ -495,13 +499,13 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             }
 
             if (this.isEntityPlatform()) {
-              POIField[] sData = {new POIField(fp, ParagraphAlignment.LEFT),
-                new POIField(subIDO, ParagraphAlignment.LEFT), new POIField(outcomes, ParagraphAlignment.LEFT),
-                new POIField(milestone, ParagraphAlignment.LEFT, bold, blackColor),
-                new POIField(powbIndFollowingMilestone, ParagraphAlignment.LEFT),
-                new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
-                new POIField(gender, ParagraphAlignment.LEFT), new POIField(youth, ParagraphAlignment.LEFT),
-                new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climate, ParagraphAlignment.LEFT)};
+              POIField[] sData =
+                {new POIField(fp, ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
+                  new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+                  new POIField(powbIndFollowingMilestone, ParagraphAlignment.LEFT),
+                  new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
+                  new POIField(gender, ParagraphAlignment.LEFT), new POIField(youth, ParagraphAlignment.LEFT),
+                  new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climate, ParagraphAlignment.LEFT)};
               data = Arrays.asList(sData);
               datas.add(data);
             }
@@ -509,7 +513,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         }
       }
     }
-
     poiSummary.textTable(document, headers, datas, false, "tableA2Powb");
   }
 
