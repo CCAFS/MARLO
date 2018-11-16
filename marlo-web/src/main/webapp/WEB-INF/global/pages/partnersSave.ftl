@@ -69,6 +69,7 @@
         [#if fundingSourceID??]<input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>[/#if]
         [#if expectedID??]<input type="hidden" name="expectedID" value="${expectedID}"/>[/#if]
         [#if capdevID??]<input type="hidden" name="capdevID" value="${capdevID}"/>[/#if]
+        [#if powbSynthesisID??]<input type="hidden" name="powbSynthesisID" value="${(powbSynthesisID)!}"/>[/#if]
         <input type="hidden" name="context" value="${(context)!}" />
         <input type="hidden" name="phaseID" value="${actualPhase.id}"/>
         <div class="clearfix"></div>
