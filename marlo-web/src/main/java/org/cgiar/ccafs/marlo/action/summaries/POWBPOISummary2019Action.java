@@ -596,6 +596,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           new POIField(this.getText("summaries.powb2019.tablea1.title7"), ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(this.getText("summaries.powb2019.tablea1.title8"), ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(this.getText("summaries.powb2019.tablea1.title9"), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField(this.getText("summaries.powb2019.tablea1.title10"), ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(this.getText("summaries.powb2019.tablea1.title11"), ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(this.getText("summaries.powb2019.tablea1.title12"), ParagraphAlignment.LEFT, bold, blackColor)};
 
@@ -1552,9 +1553,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin()
-              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -2103,8 +2103,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d
