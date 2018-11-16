@@ -30,9 +30,12 @@ $(document).ready(function() {
   });
 
   // Add Select2
-  $('form select').select2({
+  $('form select.globalUnitSelect').select2({
       width: '100%',
       templateResult: formatSelect2Result
+  });
+  $('form select.institutionsSelect').select2({
+    width: '100%'
   });
 
   attachEvents();
@@ -58,9 +61,12 @@ function addProgramCollaboration() {
   $list.append($item);
 
   // Add select
-  $item.find('select').select2({
+  $item.find('select.globalUnitSelect').select2({
       width: '100%',
       templateResult: formatSelect2Result
+  });
+  $item.find('select.institutionsSelect').select2({
+    width: '100%'
   });
 
   // Add auto complete
