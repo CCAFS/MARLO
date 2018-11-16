@@ -398,6 +398,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         datas.add(data);
       }
     }
+
     // Expenditure areas
     List<PowbExpenditureAreas> powbExpenditureAreas = this.getPlannedBudgetAreas();
 
@@ -444,6 +445,74 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
                 : powbFinancialPlannedBudget.getComments();
           }
         }
+
+
+        totalCarry += carry;
+        totalw1w2 += w1w2;
+        totalw3Bilateral += w3Bilateral;
+        totalCenter += center;
+        grandTotal += total;
+        count++;
+        POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT),
+          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.LEFT),
+          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.LEFT),
+          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.LEFT),
+          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.LEFT),
+          new POIField(comments, ParagraphAlignment.LEFT)};
+
+        data = Arrays.asList(sData);
+        datas.add(data);
+
+      }
+    }
+
+    // New planned Budgets
+    List<PowbFinancialPlannedBudget> financialPlannedBudgets = this.getOtherPlannedBudgets();
+
+    if (financialPlannedBudgets != null && !financialPlannedBudgets.isEmpty()) {
+      System.out.println("plannedBudget");
+      for (PowbFinancialPlannedBudget plannedBudget : financialPlannedBudgets) {
+        Double carry = 0.0, w1w2 = 0.0, w3Bilateral = 0.0, center = 0.0, total = 0.0;
+        String category = "", comments = "";
+
+        switch (count) {
+          case 0:
+            category = "Module 1";
+            break;
+          case 1:
+            category = "Module 2";
+            break;
+          case 2:
+            category = "";
+            break;
+          case 3:
+            category = "any other main program planned budget outside the modules (if relevant)";
+            break;
+          case 4:
+            category = "Platform Management & Support Cost";
+            break;
+
+        }
+
+        if (powbSynthesisPMU != null) {
+
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget =
+            this.getPowbFinancialPlanBudget(plannedBudget.getId(), false);
+          if (powbFinancialPlannedBudget != null) {
+            w1w2 = powbFinancialPlannedBudget.getW1w2() != null ? powbFinancialPlannedBudget.getW1w2() : 0.0;
+            carry = powbFinancialPlannedBudget.getCarry() != null ? powbFinancialPlannedBudget.getCarry() : 0.0;
+            w3Bilateral =
+              powbFinancialPlannedBudget.getW3Bilateral() != null ? powbFinancialPlannedBudget.getW3Bilateral() : 0.0;
+            center =
+              powbFinancialPlannedBudget.getCenterFunds() != null ? powbFinancialPlannedBudget.getCenterFunds() : 0.0;
+            total = powbFinancialPlannedBudget.getTotalPlannedBudget() != null
+              ? powbFinancialPlannedBudget.getTotalPlannedBudget() : 0.0;
+            comments = powbFinancialPlannedBudget.getComments() == null
+              || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
+                : powbFinancialPlannedBudget.getComments();
+          }
+        }
+
 
         totalCarry += carry;
         totalw1w2 += w1w2;
@@ -1481,6 +1550,20 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   }
 
 
+  /**
+   * POWB 2019 New Planned Budgets
+   */
+  public List<PowbFinancialPlannedBudget> getOtherPlannedBudgets() {
+    List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
+      .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+    if (powbFinancialPlannedBudgets != null) {
+      return powbFinancialPlannedBudgets;
+    } else {
+      return new ArrayList<>();
+    }
+  }
+
+
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
       .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
@@ -1506,7 +1589,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
     return null;
   }
-
 
   public PowbExpectedCrpProgress getPowbExpectedCrpProgressProgram(Long crpMilestoneID, Long crpProgramID) {
     List<PowbExpectedCrpProgress> powbExpectedCrpProgresses =
@@ -1606,6 +1688,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
   }
 
+
   // Method to download link file
   public String getPowbPath(LiaisonInstitution liaisonInstitution, String actionName) {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitution, actionName).replace('\\', '/');
@@ -1618,7 +1701,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(actionName.replace("/", "_"))
       .concat(File.separator);
   }
-
 
   public boolean isPMU(LiaisonInstitution institution) {
     boolean isFP = false;
