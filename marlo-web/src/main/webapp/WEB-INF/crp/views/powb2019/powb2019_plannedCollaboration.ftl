@@ -63,12 +63,25 @@
                 [#list powbSynthesis.powbCollaborationGlobalUnitsList as collaboration]
                   [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  isEditable=editable/]
                 [/#list]
+              [#else]
+                [#if !editable] <i>No Collaborations added</i> [/#if]
                [/#if]
               </div>
               [#if canEdit && editable]
               <div class="text-right">
                 <div class="addProgramCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaborationOrNonCgiar"/]</div>
               </div> 
+              [/#if]
+              
+              [#-- Request institution adition --]
+              [#if editable]
+              <br />
+              <p id="addPartnerText" class="helpMessage">
+                [@s.text name="global.addInstitutionMessage" /]
+                <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave' ][@s.param name='powbSynthesisID']${(powbSynthesis.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                  [@s.text name="projectPartners.addPartnerMessage.second" /]
+                </a>
+              </p> 
               [/#if]
               
               [#-- Hidden: Global Unit list for Select2 widget --]
@@ -153,9 +166,14 @@
           [#assign collaborations = collaborations + [coll] ]
           <tr>
             <td><span class="programTag" style="border-color:${(coll.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}" title="${coll.powbSynthesis.liaisonInstitution.crpProgram.composedName}">${coll.powbSynthesis.liaisonInstitution.crpProgram.acronym}</span></td>
-            <td class="col-md-3"> 
+            <td class="col-md-3">
+              [#if coll.globalUnit??]
               <strong>${(coll.globalUnit.acronym)!}</strong><br />
               <i>${(coll.globalUnit.globalUnitType.name)!}</i>
+              [/#if]
+              [#if coll.institution??]
+                ${coll.institution.composedName}
+              [/#if]
             </td>
             <td class="col-md-8">
               ${(coll.brief?replace('\n', '<br>'))!} 

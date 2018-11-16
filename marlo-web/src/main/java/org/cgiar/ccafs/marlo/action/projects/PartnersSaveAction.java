@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -84,6 +86,7 @@ public class PartnersSaveAction extends BaseAction {
   private PartnerRequestManager partnerRequestManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ICapacityDevelopmentService capacityDevelopmentManager;
+  private PowbSynthesisManager powbSynthesisManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private final SendMailS sendMail;
@@ -98,6 +101,7 @@ public class PartnersSaveAction extends BaseAction {
   private String context;
   private int projectID;
   private int fundingSourceID;
+  private int powbSynthesisID;
   private int expectedID;
   private int activityID;
   private int capdevID;
@@ -108,7 +112,7 @@ public class PartnersSaveAction extends BaseAction {
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ProjectManager projectManager,
     PartnerRequestManager partnerRequestManager, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, SendMailS sendMail, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ICapacityDevelopmentService capacityDevelopmentManager) {
+    ICapacityDevelopmentService capacityDevelopmentManager, PowbSynthesisManager powbSynthesisManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -120,8 +124,8 @@ public class PartnersSaveAction extends BaseAction {
     this.sendMail = sendMail;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.capacityDevelopmentManager = capacityDevelopmentManager;
+    this.powbSynthesisManager = powbSynthesisManager;
   }
-
 
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -131,7 +135,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
-
 
   public void addFunginMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -143,6 +146,19 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
+
+  public void addPowbSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
+    PartnerRequest partnerRequestModifications) {
+    System.out.println(powbSynthesisID);
+    PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    String sourceMessage = "" + context + " PowbSynthesis: (" + powbSynthesisID + ") - "
+      + powbSynthesis.getLiaisonInstitution().getComposedName();
+    message.append(sourceMessage);
+    partnerRequest.setRequestSource(sourceMessage);
+    partnerRequestModifications.setRequestSource(sourceMessage);
+  }
+
+
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     ProjectInfo projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
@@ -151,7 +167,6 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
-
 
   public void addStudyMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
@@ -163,6 +178,7 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setRequestSource(sourceMessage);
   }
 
+
   public int getActivityID() {
     return activityID;
   }
@@ -171,7 +187,6 @@ public class PartnersSaveAction extends BaseAction {
     return activityPartner;
   }
 
-
   public int getCapdevID() {
     return capdevID;
   }
@@ -179,6 +194,7 @@ public class PartnersSaveAction extends BaseAction {
   public String getContext() {
     return context;
   }
+
 
   public List<LocElement> getCountriesList() {
     return countriesList;
@@ -204,15 +220,18 @@ public class PartnersSaveAction extends BaseAction {
     return locationId;
   }
 
+  public int getPowbSynthesisID() {
+    return powbSynthesisID;
+  }
 
   public int getProjectID() {
     return projectID;
   }
 
+
   public boolean isMessageSent() {
     return messageSent;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -235,7 +254,7 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), fundingSourceID);
     }
 
-    // Take the fundingSource id only the first time the page loads
+    // Take the Expected Study id only the first time the page loads
     if (this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID) != null
       && Integer.parseInt(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID)) != 0) {
       expectedID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID)));
@@ -251,6 +270,16 @@ public class PartnersSaveAction extends BaseAction {
       pageRequestName = "capdev";
       LOG.info("The user {} load the request partner section related to the Capdev {}.",
         this.getCurrentUser().getEmail(), capdevID);
+    }
+
+    // Take the POWB Synthesis id only the first time the page loads
+    if (this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID) != null
+      && Integer.parseInt(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)) != 0) {
+      powbSynthesisID =
+        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
+      pageRequestName = "powbSynthesis";
+      LOG.info("The user {} load the request partner section related to the powbSynthesis {}.",
+        this.getCurrentUser().getEmail(), powbSynthesisID);
     }
 
     this.countriesList = locationManager.findAll().stream()
@@ -269,6 +298,7 @@ public class PartnersSaveAction extends BaseAction {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
   }
+
 
   @Override
   public String save() {
@@ -369,6 +399,10 @@ public class PartnersSaveAction extends BaseAction {
         this.addCapDevMessage(message, partnerRequest, partnerRequestModifications);
         break;
 
+      case "powbSynthesis":
+        this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
+        break;
+
     }
 
     partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -409,10 +443,10 @@ public class PartnersSaveAction extends BaseAction {
     this.activityID = activityID;
   }
 
-
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
   }
+
 
   public void setCapdevID(int capdevID) {
     this.capdevID = capdevID;
@@ -434,13 +468,17 @@ public class PartnersSaveAction extends BaseAction {
     this.institutions = institutions;
   }
 
-
   public void setLocationId(long locationId) {
     this.locationId = locationId;
   }
 
+
   public void setMessageSent(boolean messageSent) {
     this.messageSent = messageSent;
+  }
+
+  public void setPowbSynthesisID(int powbSynthesisID) {
+    this.powbSynthesisID = powbSynthesisID;
   }
 
 
