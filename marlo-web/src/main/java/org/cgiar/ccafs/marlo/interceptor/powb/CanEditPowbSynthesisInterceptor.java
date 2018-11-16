@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -161,6 +162,11 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
             canEdit = true;
           }
         }
+      }
+
+      List<Submission> submissions = baseAction.getPowbSynthesisSubmissions(powbSynthesis.getId());
+      if (submissions != null && !submissions.isEmpty()) {
+        canEdit = false;
       }
 
 

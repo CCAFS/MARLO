@@ -83,14 +83,6 @@ public class PowbSynthesisSection2019Validator<T extends BaseAction> extends Bas
 
   public void validateCrpProgress(BaseAction action, PowbSynthesis powbSynthesis) {
 
-
-    powbSynthesis.setExpectedCrpProgresses(
-      powbSynthesis.getPowbExpectedCrpProgresses().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-    if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-      powbSynthesis.getExpectedCrpProgresses()
-        .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
-    }
-
     progressOutcomesValidator.validate(action, powbSynthesis, false);
 
   }
