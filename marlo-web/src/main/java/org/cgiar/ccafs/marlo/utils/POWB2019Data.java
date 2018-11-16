@@ -103,13 +103,16 @@ public class POWB2019Data<T> {
     List<PowbEvidencePlannedStudyDTO> flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
-          && ps.getProjectExpectedStudyInfo(phase).getYear() == year && ps.getProject() != null
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-            .collect(Collectors.toList()).size() > 0)
-        .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies =
+        new ArrayList<>(
+          projectExpectedStudyManager.findAll().stream()
+            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
+              && ps.getProjectExpectedStudyInfo(phase).getYear() == year && ps.getProject() != null
+              && ps.getProject().getGlobalUnitProjects().stream()
+                .filter(
+                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+                .collect(Collectors.toList()).size() > 0)
+            .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
@@ -338,10 +341,40 @@ public class POWB2019Data<T> {
    */
   public List<PowbFinancialPlannedBudget> getTable3(PowbSynthesis powbSynthesisPMU) {
 
+    List<PowbFinancialPlannedBudget> plannedBudgetOder = new ArrayList<>();
     List<PowbFinancialPlannedBudget> plannedBudget = new ArrayList<>(powbSynthesisPMU.getPowbFinancialPlannedBudget()
       .stream().filter(fp -> fp.isActive()).collect(Collectors.toList()));
 
-    return plannedBudget;
+    List<PowbFinancialPlannedBudget> plannedBudgetFlagship = new ArrayList<>();
+    for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
+      if (powbFinancialPlannedBudget.getLiaisonInstitution() != null) {
+        plannedBudgetFlagship.add(powbFinancialPlannedBudget);
+      }
+    }
+
+    plannedBudgetOder.addAll(plannedBudgetFlagship.stream()
+      .sorted((g1, g2) -> g1.getLiaisonInstitution().getAcronym().compareTo(g2.getLiaisonInstitution().getAcronym()))
+      .collect(Collectors.toList()));
+
+    List<PowbFinancialPlannedBudget> plannedBudgetExp = new ArrayList<>();
+    for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
+      if (powbFinancialPlannedBudget.getPowbExpenditureArea() != null) {
+        plannedBudgetExp.add(powbFinancialPlannedBudget);
+      }
+    }
+
+    plannedBudgetOder.addAll(plannedBudgetExp);
+
+    List<PowbFinancialPlannedBudget> plannedBudgetTitle = new ArrayList<>();
+    for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
+      if (powbFinancialPlannedBudget.getTitle() != null) {
+        plannedBudgetTitle.add(powbFinancialPlannedBudget);
+      }
+    }
+
+    plannedBudgetOder.addAll(plannedBudgetTitle);
+
+    return plannedBudgetOder;
 
   }
 
