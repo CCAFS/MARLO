@@ -1243,7 +1243,7 @@ public class POISummary {
 
       // Annual report tables
       case "tableAAnnualReport":
-        this.tableBAnnualReportStyle(table);
+        this.tableEPowbStyle(table);
         break;
       case "tableA1AnnualReport":
         this.tableA1AnnualReportStyle(table);
@@ -1305,7 +1305,7 @@ public class POISummary {
     if (tableType.contains("AnnualReport")) {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
     } else if (tableType.contains("Powb")) {
-      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13410));
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13510));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
