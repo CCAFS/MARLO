@@ -388,7 +388,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String fp, subIDO, outcomes, milestone, powbIndFollowingMilestone, powbMilestoneVerification, gender, youth, capdev,
       climate, assesmentRisk, milestoneRisk;
 
-    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getActualPhase());
+    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getSelectedPhase());
 
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
@@ -807,9 +807,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   @Override
   public String execute() throws Exception {
 
-    // if its platform
-    if (this.getCurrentGlobalUnit().getId() == (APConstants.GLOBAL_UNIT_PLATFORM)) {
-
+    if (this.isEntityPlatform()) {
 
       if (this.getSelectedPhase() == null) {
         return NOT_FOUND;
@@ -1055,12 +1053,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
         + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
       return SUCCESS;
-    }
-
-
-    // if its CRP
-    else if (this.getCurrentGlobalUnit().equals(APConstants.GLOBAL_UNIT_CRP)) {
-
+    } else if (this.isEntityCRP()) {
 
       if (this.getSelectedPhase() == null) {
         return NOT_FOUND;
