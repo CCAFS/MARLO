@@ -115,7 +115,7 @@ public class POISummary {
     String url = "";
     int posInit = 0;
     int posFinal = 0;
-    int postLastLink = 0;
+    int posLastLink = -1;
     String expressionListActual = "", textIndicatorLink = "";
 
     /*
@@ -150,10 +150,10 @@ public class POISummary {
               int k = j;
               do {
                 if (text.charAt(k) == '>') {
-                  postLastLink = k;
+                  posLastLink = k;
                 }
                 k++;
-              } while (postLastLink == 0);
+              } while (posLastLink == 0);
             }
           }
         }
@@ -172,14 +172,16 @@ public class POISummary {
             finalPosList.add(posFinal);
 
             if (isLink == true && expressionListActual.contains("<a")) {
-              textIndicatorLink = text.substring(postLastLink, posFinal);
-              System.out.println("postLastLink " + postLastLink + " pos final " + posFinal);
+              textIndicatorLink = text.substring(posLastLink, posFinal);
 
               // The url substring should start after identifying the href tag and finish before closing the quotation
               // marks
-              url = text.substring(posInit + 4, postLastLink - 2);
+              url = text.substring(posInit + 4, posLastLink - 2);
+              System.out.println(url);
             }
           }
+          isLink = false;
+          posLastLink = -1;
         }
       }
     }
@@ -440,7 +442,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 6; y++) {
+        for (int y = 0; y < 10; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -1080,7 +1082,7 @@ public class POISummary {
         if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
           TABLE_HEADER_FONT_COLOR = "DEEAF6";
           // Condition for table 2a
-        } else if (tableType.equals("tableA2Powb")) {
+        } else if (tableType.contains("Powb")) {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
         } else {
           TABLE_HEADER_FONT_COLOR = "FFFFFF";
@@ -1180,13 +1182,11 @@ public class POISummary {
           }
 
           if (tableType.equals("tableA2Powb")) {
-            if (count >= 1) {
-              dataRow.getCell(record).setColor("FFF2CC");
+
+            if (record <= 6 && count > 0) {
+              // dataRow.getCell(record).setColor("D9EAD3");
             }
             if (count >= 7) {
-              dataRow.getCell(record).setColor("D9EAD3");
-            }
-            if (count >= 14) {
               dataRow.getCell(record).setColor("FFFFFF");
             }
           }
@@ -1286,7 +1286,7 @@ public class POISummary {
       // powb 2019 template tables
       case "tableA2Powb":
         count = 0;
-        this.tableA2PowbStyle(table);
+        this.tableEPowbStyle(table);
         break;
       case "tableB2Powb":
         count = 0;
@@ -1304,7 +1304,7 @@ public class POISummary {
     if (tableType.contains("AnnualReport")) {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
     } else if (tableType.contains("Powb")) {
-      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13520));
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13700));
     } else {
       table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
     }
