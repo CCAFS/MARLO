@@ -117,8 +117,13 @@ public class BaseValidator {
    * @return
    */
   public String removeHtmlTags(String html) {
-    String noTags = Jsoup.parse(html).text();
-    return noTags;
+    if (html != null) {
+      String noTags = Jsoup.parse(html).text();
+      return noTags;
+    } else {
+      return "";
+    }
+
   }
 
   /**
