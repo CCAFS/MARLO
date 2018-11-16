@@ -56,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -778,6 +779,108 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     List<POIField> data;
 
+    List<ProjectExpectedStudy> projectExpectedStudies = powb2019Data.getTable2B(this.getSelectedPhase(), this.loggedCrp,
+      this.getSelectedPhase().getYear(), this.getPMUInstitution());
+
+
+    if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
+      String globalUnit = this.loggedCrp.getAcronym();
+      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
+
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
+          String fps = "", status = "", title = "", geographicScope = "", commissioningStudy = "";
+
+          List<ProjectFocus> flagships = projectExpectedStudy.getProject().getProjectFocuses().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.getCrpProgram().getCrp().getId().equals(this.loggedCrp.getId()))
+            .collect(Collectors.toList());
+
+          if (flagships != null && flagships.size() > 0) {
+            Set<String> flagshipSet = new HashSet<>();
+            for (ProjectFocus flagship : flagships) {
+              flagshipSet.add(flagship.getCrpProgram().getAcronym());
+            }
+            fps = String.join(",", flagshipSet);
+          } else {
+            fps = "";
+          }
+
+          if (projectExpectedStudy.getProjectExpectedStudyInfo().getStatusName() != null) {
+            status = projectExpectedStudy.getProjectExpectedStudyInfo().getStatusName();
+          } else {
+            status = "";
+          }
+
+          if (projectExpectedStudy.getProjectExpectedStudyInfo().getTitle() != null) {
+            title = projectExpectedStudy.getProjectExpectedStudyInfo().getTitle();
+          } else {
+            title = "";
+          }
+
+          // Geographic Scope
+          if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
+            geographicScope = projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getName();
+            // Regional
+            if (projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+
+              List<ProjectExpectedStudyCountry> studyRegions =
+                projectExpectedStudy.getProjectExpectedStudyCountries().stream()
+                  .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+                    && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
+                    && c.getLocElement().getLocElementType().getId() == 1)
+                  .collect(Collectors.toList());
+              if (studyRegions != null && studyRegions.size() > 0) {
+                Set<String> countriesSet = new HashSet<>();
+                for (ProjectExpectedStudyCountry studyCountry : studyRegions) {
+                  countriesSet.add(studyCountry.getLocElement().getName());
+                }
+                geographicScope = String.join(",", countriesSet);
+              }
+
+            }
+            // Country
+            if (!projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeGlobal())
+              && !projectExpectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()
+                .equals(this.getReportingIndGeographicScopeRegional())) {
+              List<ProjectExpectedStudyCountry> studyCountries =
+                projectExpectedStudy.getProjectExpectedStudyCountries().stream()
+                  .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+                    && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
+                    && c.getLocElement().getLocElementType().getId() == 2)
+                  .collect(Collectors.toList());
+              if (studyCountries != null && studyCountries.size() > 0) {
+                Set<String> countriesSet = new HashSet<>();
+                for (ProjectExpectedStudyCountry studyCountry : studyCountries) {
+                  countriesSet.add(studyCountry.getLocElement().getName());
+                }
+                geographicScope = String.join(",", countriesSet);
+              }
+            }
+          } else {
+            geographicScope = "";
+          }
+
+          if (projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy() != null) {
+            commissioningStudy = projectExpectedStudy.getProjectExpectedStudyInfo().getCommissioningStudy();
+          } else {
+            commissioningStudy = "";
+          }
+
+          POIField[] sData = {new POIField(globalUnit, ParagraphAlignment.LEFT),
+            new POIField(fps, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.LEFT),
+            new POIField(title, ParagraphAlignment.LEFT), new POIField(geographicScope, ParagraphAlignment.LEFT),
+            new POIField(commissioningStudy, ParagraphAlignment.LEFT)};
+          data = Arrays.asList(sData);
+
+          datas.add(data);
+        }
+      }
+    }
+
+
     this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
 
     if (powbSynthesis.getPowbEvidence() != null && powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
@@ -801,13 +904,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             commissionStudy = " ";
           }
         }
-        POIField[] sData = {new POIField(" ", ParagraphAlignment.LEFT), new POIField(" ", ParagraphAlignment.LEFT),
-          new POIField(" ", ParagraphAlignment.LEFT), new POIField(studyInfo, ParagraphAlignment.LEFT),
-          new POIField(geographicScope, ParagraphAlignment.LEFT),
-          new POIField(commissionStudy, ParagraphAlignment.LEFT)};
-        data = Arrays.asList(sData);
 
-        datas.add(data);
       }
     }
     poiSummary.textTable(document, headers, datas, false, "tableBPowb");
