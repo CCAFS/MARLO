@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
@@ -136,8 +135,8 @@ public class PlannedBudgetValidator extends BaseValidator {
       }
 
 
-      int i = 0;
       if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        int i = 0;
         for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : powbSynthesis
           .getPowbFinancialPlannedBudgetList()) {
           this.validateFinancialPlannedBudget(powbFinancialPlannedBudget, action, i);
@@ -159,19 +158,6 @@ public class PlannedBudgetValidator extends BaseValidator {
 
   }
 
-  private void validateFinancialExpenditure(PowbFinancialExpenditure powbFinancialExpenditure, BaseAction action,
-    int i) {
-    if (powbFinancialExpenditure.getW1w2Percentage() != null && powbFinancialExpenditure.getW1w2Percentage() < 0) {
-      action.addMissingField(action.getText("financialPlan.tableF.estimatedPercentage"));
-      action.getInvalidFields().put("input-powbSynthesis.powbFinancialExpendituresList[" + i + "].w1w2Percentage",
-        InvalidFieldsMessages.INVALID_NUMBER);
-    }
-    if (!(this.isValidString(powbFinancialExpenditure.getComments()))) {
-      action.addMessage(action.getText("financialPlan.tableF.comments"));
-      action.getInvalidFields().put("input-powbSynthesis.powbFinancialExpendituresList[" + i + "].comments",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-  }
 
   private void validateFinancialPlannedBudget(PowbFinancialPlannedBudget powbFinancialPlannedBudget, BaseAction action,
     int i) {
