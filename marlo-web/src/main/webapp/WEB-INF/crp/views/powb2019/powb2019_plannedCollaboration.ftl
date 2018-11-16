@@ -114,14 +114,14 @@
 
     <div class="form-group row"> 
       [#-- CRP/Platform --] 
-      <div class="col-md-5">
+      <div class="col-md-4">
         [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
       </div>
       <div class="col-md-1 text-center">
         <i>- Or -</i>
       </div>
       [#-- Institution --]
-      <div class="col-md-6">
+      <div class="col-md-7">
         [@customForm.select name="${customName}.institution.id" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
       </div>
     </div>
