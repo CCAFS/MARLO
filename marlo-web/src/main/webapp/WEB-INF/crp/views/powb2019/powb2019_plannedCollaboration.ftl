@@ -8,8 +8,6 @@
 [#assign currentStage = "plannedCollaborations" /]
 
 
-[#assign concurrenceEnabled = false /]
-
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb", "action":"${crpSession}/adjustmentsChanges"},
