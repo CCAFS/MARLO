@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -384,96 +385,144 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
      * fill table a2
      **/
 
-    flagships = loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList());
-    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    String fp, subIDO, outcomes, milestone, powbIndFollowingMilestone, powbMilestoneVerification, gender, youth, capdev,
+      climate, assesmentRisk, milestoneRisk;
 
-    for (CrpProgram crpProgram : flagships) {
-      crpProgram.setMilestones(new ArrayList<>());
-      crpProgram.setW1(new Double(0));
-      crpProgram.setW3(new Double(0));
+    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getActualPhase());
 
-      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
-      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+    if (flagships != null && !flagships.isEmpty()) {
+      flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
 
-        crpProgramOutcome.setMilestones(crpProgramOutcome
-          .getCrpMilestones().stream().filter(c -> c.isActive()
-            && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb() != null && c.getIsPowb())
-          .collect(Collectors.toList()));
+      for (CrpProgram flagship : flagships) {
+        int outcome_index = 0;
+        for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+          subIDO = "";
+          int milestone_index = 0;
+          for (CrpMilestone crpMilestone : outcome.getMilestones()) {
+            Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
+            Boolean isOutcomeRow = (milestone_index == 0);
 
-        crpProgramOutcome.setSubIdos(
-          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        if (!crpProgram.getMilestones().isEmpty()) {
+            if (isFlagshipRow) {
+              fp = flagship.getAcronym();
+            } else {
+              fp = " ";
+            }
+
+            for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+              if (subIdo.getSrfSubIdo() != null) {
+                if (subIDO.isEmpty()) {
+                  if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+                    subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
+                  } else {
+                    subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
+                  }
+                } else {
+                  if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+                    subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
+                  } else {
+                    subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
+                  }
+                }
+              }
+            }
+
+            if (isOutcomeRow) {
+              outcomes = outcome.getComposedName();
+            } else {
+              outcomes = " ";
+            }
+
+            milestone = crpMilestone.getComposedName();
+
+            if (crpMilestone.getPowbIndFollowingMilestone() != null
+              && crpMilestone.getPowbIndFollowingMilestone().getName() != null
+              && !crpMilestone.getPowbIndFollowingMilestone().getName().isEmpty()) {
+              powbIndFollowingMilestone = crpMilestone.getPowbIndFollowingMilestone().getName();
+            } else {
+              powbIndFollowingMilestone = "";
+            }
+
+            if (crpMilestone.getPowbMilestoneVerification() != null
+              && !crpMilestone.getPowbMilestoneVerification().isEmpty()) {
+              powbMilestoneVerification = crpMilestone.getPowbMilestoneVerification();
+            } else {
+              powbMilestoneVerification = "";
+            }
+
+            if (crpMilestone.getGenderFocusLevel() != null && crpMilestone.getGenderFocusLevel().getAcronym() != null
+              && !crpMilestone.getGenderFocusLevel().getAcronym().isEmpty()) {
+              gender = crpMilestone.getGenderFocusLevel().getAcronym();
+            } else {
+              gender = "";
+            }
+
+            if (crpMilestone.getYouthFocusLevel() != null && crpMilestone.getYouthFocusLevel().getAcronym() != null
+              && !crpMilestone.getYouthFocusLevel().getAcronym().isEmpty()) {
+              youth = crpMilestone.getYouthFocusLevel().getAcronym();
+            } else {
+              youth = "";
+            }
+
+            if (crpMilestone.getCapdevFocusLevel() != null && crpMilestone.getCapdevFocusLevel().getAcronym() != null
+              && !crpMilestone.getCapdevFocusLevel().getAcronym().isEmpty()) {
+              capdev = crpMilestone.getCapdevFocusLevel().getAcronym();
+            } else {
+              capdev = "";
+            }
+
+            if (crpMilestone.getClimateFocusLevel() != null && crpMilestone.getClimateFocusLevel().getAcronym() != null
+              && !crpMilestone.getClimateFocusLevel().getAcronym().isEmpty()) {
+              climate = crpMilestone.getClimateFocusLevel().getAcronym();
+            } else {
+              climate = "";
+            }
+
+            if (this.isEntityCRP()) {
+
+              if (crpMilestone.getPowbIndAssesmentRisk() != null
+                && !crpMilestone.getPowbIndAssesmentRisk().getName().isEmpty()) {
+                assesmentRisk = crpMilestone.getPowbIndAssesmentRisk().getName();
+              } else {
+                assesmentRisk = "";
+              }
+
+              if (crpMilestone.getPowbIndMilestoneRisk() != null
+                && crpMilestone.getPowbIndMilestoneRisk().getName() != null
+                && !crpMilestone.getPowbIndMilestoneRisk().getName().isEmpty()) {
+                milestoneRisk = crpMilestone.getPowbIndMilestoneRisk().getName();
+              } else {
+                milestoneRisk = "";
+              }
+
+              POIField[] sData = {new POIField(fp, ParagraphAlignment.LEFT),
+                new POIField(subIDO, ParagraphAlignment.LEFT), new POIField(outcomes, ParagraphAlignment.LEFT),
+                new POIField(milestone, ParagraphAlignment.LEFT, bold, blackColor),
+                new POIField(powbIndFollowingMilestone, ParagraphAlignment.LEFT),
+                new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
+                new POIField(gender, ParagraphAlignment.LEFT), new POIField(youth, ParagraphAlignment.LEFT),
+                new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climate, ParagraphAlignment.LEFT),
+                new POIField(assesmentRisk, ParagraphAlignment.LEFT),
+                new POIField(milestoneRisk, ParagraphAlignment.LEFT)};
+              data = Arrays.asList(sData);
+              datas.add(data);
+            }
+
+            if (this.isEntityPlatform()) {
+              POIField[] sData = {new POIField(fp, ParagraphAlignment.LEFT),
+                new POIField(subIDO, ParagraphAlignment.LEFT), new POIField(outcomes, ParagraphAlignment.LEFT),
+                new POIField(milestone, ParagraphAlignment.LEFT, bold, blackColor),
+                new POIField(powbIndFollowingMilestone, ParagraphAlignment.LEFT),
+                new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
+                new POIField(gender, ParagraphAlignment.LEFT), new POIField(youth, ParagraphAlignment.LEFT),
+                new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climate, ParagraphAlignment.LEFT)};
+              data = Arrays.asList(sData);
+              datas.add(data);
+            }
+          }
         }
-      }
-      crpProgram.setOutcomes(validOutcomes);
-      this.loadFlagShipBudgetInfo(crpProgram);
-
-      for (CrpMilestone milestones : crpProgram.getMilestones()) {
-        String powbMilestoneVerification = " ", focusLevel = " ", youthFocusLevel = " ", capdevFocusLevel = " ",
-          climateFocusLevel = " ", fpOutcomes = " ", mappedSubIDO = " ", fp = " ", indicateFollowing = " ",
-          gender = " ";
-
-        try {
-          powbMilestoneVerification = milestones.getPowbMilestoneVerification();
-          focusLevel = milestones.getCapdevFocusLevel().getPowbName();
-          youthFocusLevel = milestones.getYouthFocusLevel().getPowbName();
-          climateFocusLevel = milestones.getClimateFocusLevel().getPowbName();
-          fpOutcomes = milestones.getCrpProgramOutcome().getDescription();
-          fp = " ";
-          mappedSubIDO = " ";
-          indicateFollowing = " ";
-          gender = milestones.getGenderFocusLevel().getPowbName();
-
-        } catch (Exception e) {
-          if (powbMilestoneVerification == null) {
-            powbMilestoneVerification = " ";
-          }
-          if (focusLevel == null) {
-            focusLevel = " ";
-          }
-          if (youthFocusLevel == null) {
-            youthFocusLevel = " ";
-          }
-          if (capdevFocusLevel == null) {
-            capdevFocusLevel = " ";
-          }
-          if (climateFocusLevel == null) {
-            climateFocusLevel = " ";
-          }
-          if (fpOutcomes == null) {
-            fpOutcomes = " ";
-          }
-          if (mappedSubIDO == null) {
-            mappedSubIDO = " ";
-          }
-          if (fp == null) {
-            fp = " ";
-          }
-          if (indicateFollowing == null) {
-            indicateFollowing = " ";
-          }
-
-          if (gender == null) {
-            gender = " ";
-          }
-        }
-
-        POIField[] sData = {new POIField(" ", ParagraphAlignment.LEFT), new POIField(" ", ParagraphAlignment.LEFT),
-          new POIField(fpOutcomes, ParagraphAlignment.LEFT),
-          new POIField(milestones.getYear() + " - " + milestones.getTitle(), ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(" ", ParagraphAlignment.LEFT), new POIField(powbMilestoneVerification, ParagraphAlignment.LEFT),
-          new POIField(gender, ParagraphAlignment.LEFT), new POIField(youthFocusLevel, ParagraphAlignment.LEFT),
-          new POIField(capdevFocusLevel, ParagraphAlignment.LEFT),
-          new POIField(climateFocusLevel, ParagraphAlignment.LEFT)};
-        data = Arrays.asList(sData);
-        datas.add(data);
       }
     }
+
     poiSummary.textTable(document, headers, datas, false, "tableA2Powb");
   }
 
