@@ -1,5 +1,8 @@
 $(document).ready(function() {
 
+  // Activate Popup
+  popups();
+
   var $partnershipsTable = $('table.partnershipsTable_');
 
   var table = $partnershipsTable.DataTable({
