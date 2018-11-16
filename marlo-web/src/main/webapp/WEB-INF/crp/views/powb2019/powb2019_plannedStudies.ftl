@@ -6,6 +6,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "plannedStudies" /]
+[#assign autoSaveActive = false /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
