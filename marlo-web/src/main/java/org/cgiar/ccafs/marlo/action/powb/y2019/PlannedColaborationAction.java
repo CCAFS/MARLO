@@ -627,8 +627,8 @@ public class PlannedColaborationAction extends BaseAction {
     }
 
 
-    List<FundingSourceLocation> locationsFunding = locElement
-      .getFundingSourceLocations().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+    List<FundingSourceLocation> locationsFunding = locElement.getFundingSourceLocations()
+      .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
         && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
       .collect(Collectors.toList());
     locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));
@@ -958,7 +958,8 @@ public class PlannedColaborationAction extends BaseAction {
     }
     globalUnits = new ArrayList<>();
     List<GlobalUnit> globalUnitsList = crpManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList());
+      .filter(c -> c.isActive() && (c.getGlobalUnitType().getId() != 2 || c.getGlobalUnitType().getId() != 4))
+      .collect(Collectors.toList());
 
     for (GlobalUnit globalUnit : globalUnitsList) {
       if (!globalUnit.getId().equals(loggedCrp.getId())) {
