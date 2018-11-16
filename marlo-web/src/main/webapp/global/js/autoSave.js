@@ -108,6 +108,8 @@ function errorNotification(msj) {
 }
 
 function changeDetected(e) {
+
+  console.log("changeDetected");
   // Hide concurrence message
   $('#concurrenceMessage').fadeOut();
 
