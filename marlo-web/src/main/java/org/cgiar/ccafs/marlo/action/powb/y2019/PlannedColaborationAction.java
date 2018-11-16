@@ -875,17 +875,6 @@ public class PlannedColaborationAction extends BaseAction {
           }
         }
 
-        // if (powbSynthesis.getRegions() != null) {
-        // for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
-        // if (powbCollaborationRegion.getLiaisonInstitution() != null
-        // && powbCollaborationRegion.getLiaisonInstitution().getId() != -1) {
-        // powbCollaborationRegion.setLiaisonInstitution(liaisonInstitutionManager
-        // .getLiaisonInstitutionById(powbCollaborationRegion.getLiaisonInstitution().getId()));
-        // }
-        // }
-        // powbSynthesis.getRegions().sort(
-        // (p1, p2) -> p1.getLiaisonInstitution().getAcronym().compareTo(p2.getLiaisonInstitution().getAcronym()));
-        // }
         this.setDraft(true);
         reader.close();
       } else {
@@ -1101,11 +1090,6 @@ public class PlannedColaborationAction extends BaseAction {
       if (this.isPMU()) {
         this.collaborationsNewData(powCollabrotionDB);
       }
-
-      powCollabrotionDB.setCotributionsPlatafforms(powbSynthesis.getCollaboration().getCotributionsPlatafforms());
-      powCollabrotionDB.setCrossCrp(powbSynthesis.getCollaboration().getCrossCrp());
-      powCollabrotionDB.setEffostornCountry(powbSynthesis.getCollaboration().getEffostornCountry());
-      powCollabrotionDB.setKeyExternalPartners(powbSynthesis.getCollaboration().getKeyExternalPartners());
 
       powCollabrotionDB = powbCollaborationManager.savePowbCollaboration(powCollabrotionDB);
       if (powbSynthesis.getPowbCollaborationGlobalUnitsList() == null) {
