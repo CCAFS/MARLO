@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -195,7 +194,7 @@ public class ValidateSectionStatusPowbSynthesis2019Action extends BaseAction {
     powbSynthesisID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.POWB_SYNTHESIS_ID).getMultipleValues()[0]));
     // Validate if the section exists.
-    validSection = PowbSynthesisSectionStatusEnum.value(sectionName) != null;
+    validSection = PowbSynthesis2019SectionStatusEnum.value(sectionName) != null;
 
     existPowbSynthesis = powbSynthesisManager.existPowbSynthesis(powbSynthesisID);
 
