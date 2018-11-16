@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnitPmu;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
@@ -125,6 +126,16 @@ public class PowbSynthesisSection2019Validator<T extends BaseAction> extends Bas
       powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList()));
 
+      // POWB 2019 Select Collaborations
+      powbSynthesis.getCollaboration().setCollaborations(new ArrayList<>());
+      if (powbSynthesis.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null
+        && !powbSynthesis.getCollaboration().getPowbCollaborationGlobalUnitPmu().isEmpty()) {
+        for (PowbCollaborationGlobalUnitPmu plannedStudy : powbSynthesis.getCollaboration()
+          .getPowbCollaborationGlobalUnitPmu().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          powbSynthesis.getCollaboration().getCollaborations().add(plannedStudy.getPowbCollaborationGlobalUnit());
+        }
+      }
+
       plannedCollaborationValidator.validate(action, powbSynthesis, false);
 
       // save the changes
@@ -132,6 +143,16 @@ public class PowbSynthesisSection2019Validator<T extends BaseAction> extends Bas
     } else {
       powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      // POWB 2019 Select Collaborations
+      powbSynthesis.getCollaboration().setCollaborations(new ArrayList<>());
+      if (powbSynthesis.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null
+        && !powbSynthesis.getCollaboration().getPowbCollaborationGlobalUnitPmu().isEmpty()) {
+        for (PowbCollaborationGlobalUnitPmu plannedStudy : powbSynthesis.getCollaboration()
+          .getPowbCollaborationGlobalUnitPmu().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          powbSynthesis.getCollaboration().getCollaborations().add(plannedStudy.getPowbCollaborationGlobalUnit());
+        }
+      }
 
       plannedCollaborationValidator.validate(action, powbSynthesis, false);
     }
