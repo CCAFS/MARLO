@@ -248,7 +248,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       // poiSummary.convertHTMLTags(document, adjustmentsDescription);
       // HTMLtoWord htmltoWord = new HTMLtoWord();
 
-
       if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
           this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
@@ -278,8 +277,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       if (powbSynthesis.getPowbToc().getTocOverall() != null) {
         financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
       }
-      // poiSummary.convertHTMLTags(document, financialPlanDescription);
-      poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+      poiSummary.convertHTMLTags(document, financialPlanDescription);
+      // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
     }
   }
 
@@ -389,8 +388,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       }
     }
 
+    String totaltext = "";
+    if (this.isEntityCRP()) {
+      totaltext = "CRP Total";
+    } else if (this.isEntityPlatform()) {
+      totaltext = "Platform Total";
+    }
 
-    POIField[] sData = {new POIField("Platform Total", ParagraphAlignment.LEFT, bold, blackColor),
+    POIField[] sData = {new POIField(totaltext, ParagraphAlignment.LEFT, bold, blackColor),
       new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalw3Bilateral, 2)), ParagraphAlignment.CENTER, bold, blackColor),
       new POIField(currencyFormat.format(round(totalCenter, 2)), ParagraphAlignment.CENTER, bold, blackColor),
@@ -615,6 +620,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         }
       }
     }
+
     poiSummary.textTable(document, headers, datas, false, "tableA2Powb");
   }
 
@@ -622,6 +628,13 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     Boolean bold = false;
     String blackColor = "000000";
     List<List<POIField>> headers = new ArrayList<>();
+
+    if (this.isEntityCRP()) {
+      bold = true;
+    } else if (this.isEntityPlatform()) {
+      bold = false;
+    }
+
     POIField[] sHeader =
       {new POIField(this.getText("planned2019.tableB2.title1"), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText("planned2019.tableB2.title2"), ParagraphAlignment.LEFT, bold, blackColor),
@@ -725,6 +738,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             commissioningStudy = "";
           }
 
+          bold = false;
           POIField[] sData = {new POIField(globalUnit, ParagraphAlignment.LEFT),
             new POIField(fps, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.LEFT),
             new POIField(title, ParagraphAlignment.LEFT), new POIField(geographicScope, ParagraphAlignment.LEFT),
@@ -770,6 +784,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     Boolean bold = false;
     String blackColor = "000000";
     List<List<POIField>> headers = new ArrayList<>();
+
+
+    if (this.isEntityCRP()) {
+      bold = true;
+    } else if (this.isEntityPlatform()) {
+      bold = false;
+    }
+
     POIField[] sHeader =
       {new POIField(this.getText("planned2019.tablec2.title1"), ParagraphAlignment.LEFT, bold, blackColor),
         new POIField(this.getText("planned2019.tablec2.title2"), ParagraphAlignment.LEFT, bold, blackColor)};
@@ -805,7 +827,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         } else {
           brief = "";
         }
-
+        bold = false;
         POIField[] sData = {new POIField(globalUnitNonCgiar, ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(brief, ParagraphAlignment.LEFT, bold, blackColor)};
         data = Arrays.asList(sData);
