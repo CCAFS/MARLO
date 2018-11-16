@@ -115,13 +115,6 @@ public class PlannedCollaborationValidator extends BaseValidator {
       int i = 0;
       for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbSynthesis
         .getPowbCollaborationGlobalUnitsList()) {
-        if (powbCollaborationGlobalUnit.getGlobalUnit() != null
-          && powbCollaborationGlobalUnit.getGlobalUnit().getId() > 0) {
-          powbCollaborationGlobalUnit
-            .setGlobalUnit(crpManager.getGlobalUnitById(powbCollaborationGlobalUnit.getGlobalUnit().getId()));
-        } else {
-          powbCollaborationGlobalUnit.setGlobalUnit(null);
-        }
 
         if (powbCollaborationGlobalUnit.getGlobalUnit() != null
           && powbCollaborationGlobalUnit.getGlobalUnit().getId() > 0) {
@@ -146,7 +139,7 @@ public class PlannedCollaborationValidator extends BaseValidator {
         }
 
         if (powbCollaborationGlobalUnit.getGlobalUnit() == null
-          || powbCollaborationGlobalUnit.getInstitution() == null) {
+          && powbCollaborationGlobalUnit.getInstitution() == null) {
           action
             .addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
           action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
