@@ -66,6 +66,9 @@
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
+        [#if false]
+          <th>FPs</th>
+        [/#if]
         <th id="tb-status">[@s.text name="evidenceRelevant.table.status" /]</th>
         <th id="tb-plannedStudy" class="text-left">[@s.text name="evidenceRelevant.table.plannedStudy" /]</th>
         <th id="tb-geographicScope" >[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
@@ -81,49 +84,54 @@
           [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${(study.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(study.id)!''}[/@s.param][@s.param name='projectID']${(study.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#local wordCutterMaxPos=180]
-        <tr>
-          [#-- Status --]
-          <td>
-            [#if study.projectExpectedStudyInfo.status?has_content]
-              <nobr>${(study.projectExpectedStudyInfo.statusName)!''}</nobr>
-            [#else]
-              <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          <tr>
+            [#if false]
+            <td>
+              AQUI FPs
+            </td>
             [/#if]
-          </td>
-          [#-- Planned topic of study --]
-          <td>
-            [#-- Study title --]
-            <a href="${tsURL}" target="_blank"> 
-              [#if study.projectExpectedStudyInfo.title?has_content]
-                  [#if ((study.projectExpectedStudyInfo.title)?has_content)!false] ${study.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
+            [#-- Status --]
+            <td>
+              [#if study.projectExpectedStudyInfo.status?has_content]
+                <nobr>${(study.projectExpectedStudyInfo.statusName)!''}</nobr>
               [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
-            </a>
-            [#-- Project title --]
-            [#if (study.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(study.project.id)!})</i> [/#if]
-          </td>
-          [#-- Geographic scope --]
-          <td class="text-center">
-          [#if study.projectExpectedStudyInfo.repIndGeographicScope?has_content]
-            <nobr>${study.projectExpectedStudyInfo.repIndGeographicScope.name}</nobr>
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-          [#--  Who is commissioning this study --]
-          <td class="comments">
-            [#if study.projectExpectedStudyInfo.commissioningStudy?has_content]
-              ${(study.projectExpectedStudyInfo.commissioningStudy)!''}
+            </td>
+            [#-- Planned topic of study --]
+            <td>
+              [#-- Study title --]
+              <a href="${tsURL}" target="_blank"> 
+                [#if study.projectExpectedStudyInfo.title?has_content]
+                    [#if ((study.projectExpectedStudyInfo.title)?has_content)!false] ${study.projectExpectedStudyInfo.title}[#else]Untitled[/#if]
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </a>
+              [#-- Project title --]
+              [#if (study.project.id??)!false] <br /><i style="opacity:0.5">(From Project P${(study.project.id)!})</i> [/#if]
+            </td>
+            [#-- Geographic scope --]
+            <td class="text-center">
+            [#if study.projectExpectedStudyInfo.repIndGeographicScope?has_content]
+              <nobr>${study.projectExpectedStudyInfo.repIndGeographicScope.name}</nobr>
             [#else]
               <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
             [/#if]
-          </td>
-          [#-- Include --]
-          <td class="plannedStudiesCheckbox text-center">
-            [@customForm.checkmark id="expecteStudy-${(study.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(study.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(study.id))!true) editable=editable centered=true/]
-          </td>
-        </tr>
+            </td>
+            [#--  Who is commissioning this study --]
+            <td class="comments">
+              [#if study.projectExpectedStudyInfo.commissioningStudy?has_content]
+                ${(study.projectExpectedStudyInfo.commissioningStudy)!''}
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+            </td>
+            [#-- Include --]
+            <td class="plannedStudiesCheckbox text-center">
+              [@customForm.checkmark id="expecteStudy-${(study.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(study.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(study.id))!true) editable=editable centered=true/]
+            </td>
+          </tr>
         [/#if]
       [/#list]
     [#else]
