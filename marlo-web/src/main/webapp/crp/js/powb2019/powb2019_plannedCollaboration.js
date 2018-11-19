@@ -117,7 +117,7 @@ function updateIndexes() {
 }
 
 function formatSelect2Result(item) {
-  if(item.loading) {
+  if(item.loading || (item.text == "-1")) {
     return item.text;
   }
   var $item = $('#globalUnit-' + item.id).clone();
