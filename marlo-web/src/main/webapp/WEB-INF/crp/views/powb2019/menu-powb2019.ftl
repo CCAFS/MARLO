@@ -37,6 +37,15 @@
   [#assign completed = false /]
 [/#attempt]
 
+[#if config.debug]
+<ul>
+  <li>submission ${submission?string}</li>
+  <li>canSubmit ${canSubmit?string}</li>
+  <li>completed ${completed?string}</li>
+</ul>
+[/#if]
+
+
 [#assign canUnSubmit = false /]
 [#assign sectionsForChecking = [] /]
 [#assign currentMenuItem = {} /]
