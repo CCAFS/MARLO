@@ -150,7 +150,7 @@
     <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
   [/#if]
   
-  [#assign enableUnsubmitButton = (project.projectInfo.phase.crp.acronym != "CCAFS") ]
+  [#assign enableUnsubmitButton = true ]
   [#-- Submit button --]
   [#if enableUnsubmitButton && canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]
