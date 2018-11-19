@@ -122,19 +122,29 @@
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
-
-    <div class="form-group row"> 
-      [#-- CRP/Platform --] 
-      <div class="col-md-4">
-        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
-      </div>
-      <div class="col-md-1 text-center">
-        <i>- Or -</i>
-      </div>
-      [#-- Institution --]
-      <div class="col-md-7">
-        [@customForm.select name="${customName}.institution.id" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
-      </div>
+    [#-- Type of Collaborator --]
+    [#local collaboratorTypes = [
+      { "name": "CRP/PTF", "value": "1"},
+      { "name": "Non-CGIAR", "value": "2"}
+    ] 
+    /]
+    <div class="form-group">
+      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /]:[@customForm.req required=editable  /]</label><br />
+      [#list collaboratorTypes as cType]
+        [@customForm.radioFlat id="${customName}-cType-${cType_index}" name="${customName}.collaboratorType" label="${cType.name}" value="${cType.value}" checked=((element.collaboratorType.value == "${cType.value}")!false) editable=editable cssClass="cTypeRadio" cssClassLabel=""/]
+      [/#list]
+      
+      [#local isCollaboratorTypeSelected = (element.collaboratorType??)!false]
+      [#if !editable && !isCollaboratorTypeSelected][@s.text name="form.values.fieldEmpty"/][/#if]
+    </div>
+    
+    [#-- CRP/Platform --] 
+    <div class="form-group collaboratorType collaboratorType-1" style="display:${((element.collaboratorType.value == "1")!false)?string("block", "none")}"> 
+      [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
+    </div>
+    [#-- Institution --]
+    <div class="form-group collaboratorType collaboratorType-2" style="display:${((element.collaboratorType.value == "2")!false)?string("block", "none")}">
+      [@customForm.select name="${customName}.institution.id" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
     </div>
     
     [#-- Brief Description --] 

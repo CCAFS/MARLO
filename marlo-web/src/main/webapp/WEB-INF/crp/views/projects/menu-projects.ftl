@@ -159,7 +159,6 @@
     </a>
   [/#if]
   
-  
   [#-- Unsubmit button --]
   [#if enableUnsubmitButton && (canUnSubmit && submission) && canEditPhase && !crpClosed ]
     <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
