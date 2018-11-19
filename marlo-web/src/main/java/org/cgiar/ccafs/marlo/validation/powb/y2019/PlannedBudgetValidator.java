@@ -173,9 +173,9 @@ public class PlannedBudgetValidator extends BaseValidator {
         InvalidFieldsMessages.INVALID_NUMBER);
     }
     if (!(this.isValidString(powbFinancialPlannedBudget.getComments()))) {
-      action.addMessage(action.getText("financialPlan.tableE.comments"));
-      action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].comments",
-        InvalidFieldsMessages.EMPTYFIELD);
+      // action.addMessage(action.getText("financialPlan.tableE.comments"));
+      // action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].comments",
+      // InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
