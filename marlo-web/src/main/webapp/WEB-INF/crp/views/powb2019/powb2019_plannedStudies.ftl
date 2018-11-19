@@ -66,7 +66,7 @@
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
-        [#if false]
+        [#if PMU]
           <th>FPs</th>
         [/#if]
         <th id="tb-status">[@s.text name="evidenceRelevant.table.status" /]</th>
@@ -85,9 +85,13 @@
           [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${(study.id)!''}[/@s.param][@s.param name='projectID']${(study.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#local wordCutterMaxPos=180]
           <tr>
-            [#if false]
+            [#if PMU]
             <td>
-              AQUI FPs
+              [#if study.selectedFlahsgips?has_content]
+                [#list study.selectedFlahsgips as flagship]
+                  ${flagship.acronym}
+                [/#list]                
+              [/#if]
             </td>
             [/#if]
             [#-- Status --]
