@@ -3,45 +3,54 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Feb 26, 2018 2:20:26 PM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit" table="powb_collaboration_global_units"  optimistic-lock="none">
-        <id name="id" type="java.lang.Long">
-            <column name="id" />
-            <generator class="identity" />
-        </id>
-        <many-to-one name="globalUnit" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
-            <column name="global_unit_id" />
-        </many-to-one>
-        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-            <column name="institution_id" />
-        </many-to-one>
-        <many-to-one name="powbSynthesis" class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
-            <column name="powb_synthesis" />
-        </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
-            <column name="created_by">
-                <comment>foreign key to the table users</comment>
-            </column>
-        </many-to-one>
-        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" />
-        </many-to-one>
-        <property name="flagship" type="string">
-            <column name="flagship" sql-type="TEXT" />
-        </property>
-        <property name="collaborationType" type="string">
-            <column name="collaboration_type" length="100" />
-        </property>
-        <property name="brief" type="string">
-            <column name="brief"  sql-type="TEXT" />
-        </property>
-        <property name="active" type="boolean">
-            <column name="is_active" not-null="true" />
-        </property>
-        <property name="activeSince" type="timestamp" update="false">
-            <column name="active_since" length="19" not-null="true" />
-        </property>
-        <property name="modificationJustification" type="string">
-            <column name="modification_justification" sql-type="TEXT"  />
-        </property>
-    </class>
+	<class name="org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit"
+		table="powb_collaboration_global_units" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		  <many-to-one name="powbSynthesis"
+      class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
+      <column name="powb_synthesis" />
+    </many-to-one>
+    <property name="collaboratorType" type="java.lang.Long">
+      <column name="collaborator_type" />
+    </property>
+		<many-to-one name="globalUnit"
+			class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+			<column name="global_unit_id" />
+		</many-to-one>
+		<many-to-one name="institution"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="institution_id" />
+		</many-to-one>	
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by">
+				<comment>foreign key to the table users</comment>
+			</column>
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="flagship" type="string">
+			<column name="flagship" sql-type="TEXT" />
+		</property>
+		<property name="collaborationType" type="string">
+			<column name="collaboration_type" length="100" />
+		</property>
+		<property name="brief" type="string">
+			<column name="brief" sql-type="TEXT" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT" />
+		</property>
+	</class>
 </hibernate-mapping>

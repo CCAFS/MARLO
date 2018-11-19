@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaboratorTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis2019SectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -138,19 +139,40 @@ public class PlannedCollaborationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (powbCollaborationGlobalUnit.getGlobalUnit() == null
-          && powbCollaborationGlobalUnit.getInstitution() == null) {
-          action
-            .addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
-          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
-            InvalidFieldsMessages.EMPTYFIELD);
+        // validate collaborator
+        if (powbCollaborationGlobalUnit.getCollaboratorType() != null) {
 
-          action
-            .addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
-          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
+          if (powbCollaborationGlobalUnit.getCollaboratorType()
+            .equals(Long.parseLong(PowbCollaboratorTypeEnum.CRPPlatform.getId()))) {
+
+            if (powbCollaborationGlobalUnit.getGlobalUnit() == null
+              || powbCollaborationGlobalUnit.getGlobalUnit().getId() <= 0) {
+              action.addMissingField(
+                action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
+              action.getInvalidFields().put(
+                "input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          } else {
+
+            if (powbCollaborationGlobalUnit.getInstitution() == null
+              || powbCollaborationGlobalUnit.getInstitution().getId() <= 0) {
+              action.addMissingField(
+                action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].institution.id"));
+              action.getInvalidFields().put(
+                "input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].institution.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+          }
+
+        } else {
+          action.addMissingField(
+            action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].collaboratorType"));
+          action.getInvalidFields().put(
+            "input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].collaboratorType",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-
 
         i++;
 
