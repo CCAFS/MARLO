@@ -239,22 +239,19 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     if (powbSynthesis != null && powbSynthesis.getPowbToc() != null) {
       if (powbSynthesis.getPowbToc().getTocOverall() != null) {
         adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
-        // adjustmentsDescription = "<a href=\"https://html.com/attributes/a-href/\">Learn about the a href
-        // attribute</a>";
-        poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
-        // poiSummary.convertHTMLTags(document, adjustmentsDescription);
-      }
 
-      // poiSummary.convertHTMLTags(document, adjustmentsDescription);
-      // HTMLtoWord htmltoWord = new HTMLtoWord();
+        poiSummary.convertHTMLTags(document, adjustmentsDescription);
+        // HTMLtoWord htmltoWord = new HTMLtoWord();
 
-      if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
-        poiSummary.textHyperlink(
-          this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
-            this.getLoggedCrp().getAcronym() + "_"
-              + PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().toString())
-            + powbSynthesis.getPowbToc().getFile().getFileName().replaceAll(" ", "%20"),
-          "URL: " + powbSynthesis.getPowbToc().getFile().getFileName(), document.createParagraph());
+        // poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
+        if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
+          poiSummary.textHyperlink(
+            this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
+              this.getLoggedCrp().getAcronym() + "_"
+                + PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().toString())
+              + powbSynthesis.getPowbToc().getFile().getFileName().replaceAll(" ", "%20"),
+            "URL: " + powbSynthesis.getPowbToc().getFile().getFileName(), document.createParagraph());
+        }
       }
     }
   }
@@ -263,22 +260,26 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String expectedKeyResults = "";
 
     if (powbSynthesis != null) {
-      if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-        expectedKeyResults = powbSynthesis.getExpectedProgressNarrative();
+      if (powbSynthesis.getPowbToc() != null) {
+        if (powbSynthesis.getExpectedProgressNarrative() != null) {
+          expectedKeyResults = powbSynthesis.getExpectedProgressNarrative();
+          poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
+        }
       }
       // poiSummary.convertHTMLTags(document, expectedKeyResults);
-      poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
     }
   }
 
   private void addFinancialPlan() {
     String financialPlanDescription = "";
     if (powbSynthesis != null) {
-      if (powbSynthesis.getPowbToc().getTocOverall() != null) {
+      if (powbSynthesis.getFinancialPlan() != null
+        && powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
         financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
+        poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
       }
-      poiSummary.convertHTMLTags(document, financialPlanDescription);
-      // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+      // poiSummary.convertHTMLTags(document, financialPlanDescription);
+
     }
   }
 
@@ -306,29 +307,53 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
   }
 
-
   private void createTable3() {
     Boolean bold = false;
     String blackColor = "000000";
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
-      new POIField(
-        this.getText("financialPlan2019.tableE.plannedBudget", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.LEFT, bold, blackColor)};
 
-    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(this.getText("financialPlan2019.tableE.w1w2"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("financialPlan2019.tableE.w3bilateral"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("financialPlan2019.tableE.centerFunds"), ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.LEFT, bold, blackColor)};
+    if (this.isEntityPlatform()) {
 
-    List<POIField> header = Arrays.asList(sHeader);
-    List<POIField> header2 = Arrays.asList(sHeader2);
-    headers.add(header);
-    headers.add(header2);
+      POIField[] sHeader =
+        {new POIField("", ParagraphAlignment.CENTER),
+          new POIField(this.getText("financialPlan2019.tableE.plannedBudget",
+            new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT, bold, blackColor),
+          new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+          new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+          new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.LEFT, bold, blackColor)};
+
+      POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.w1w2"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.w3bilateral"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.centerFunds"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.LEFT, bold, blackColor)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+
+    } else if (this.isEntityCRP()) {
+
+      POIField[] sHeader =
+        {new POIField("", ParagraphAlignment.CENTER),
+          new POIField(this.getText("financialPlan2019.tableE.plannedBudget",
+            new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT, true, blackColor),
+          new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+          new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+          new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.CENTER, true, blackColor)};
+
+      POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.w1w2"), ParagraphAlignment.CENTER, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.w3bilateral"), ParagraphAlignment.CENTER, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.centerFunds"), ParagraphAlignment.CENTER, bold, blackColor),
+        new POIField(this.getText("financialPlan2019.tableE.total"), ParagraphAlignment.CENTER, bold, blackColor)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+    }
 
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
@@ -376,15 +401,30 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         totalCenter += center;
         grandTotal += total;
         count++;
-        POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT),
-          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
-          new POIField(comments, ParagraphAlignment.CENTER)};
 
-        data = Arrays.asList(sData);
-        datas.add(data);
+        if (this.isEntityPlatform()) {
+          POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT),
+            new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
+            new POIField(comments, ParagraphAlignment.CENTER)};
+
+          data = Arrays.asList(sData);
+          datas.add(data);
+
+        } else if (this.isEntityCRP()) {
+
+          POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT, true, blackColor),
+            new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
+            new POIField(comments, ParagraphAlignment.CENTER)};
+
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
       }
     }
 
@@ -405,7 +445,15 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     data = Arrays.asList(sData);
     datas.add(data);
 
-    poiSummary.textTable(document, headers, datas, false, "tableEPowb");
+
+    String text = "";
+    if (this.isEntityPlatform()) {
+      text = "tableEPowbPLT";
+    } else if (this.isEntityCRP()) {
+      text = "tableEPowbCRP";
+    }
+
+    poiSummary.textTable(document, headers, datas, false, text);
   }
 
   private void createTableA2() {
@@ -621,7 +669,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       }
     }
 
-    poiSummary.textTable(document, headers, datas, false, "tableA2Powb");
+    String text = "";
+    if (this.isEntityPlatform()) {
+      text = "tableA2PowbPLT";
+    } else if (this.isEntityCRP()) {
+      text = "tableA2PowbCRP";
+    }
+
+    poiSummary.textTable(document, headers, datas, false, text);
   }
 
   private void createTableB2() {
@@ -777,7 +832,15 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
       }
     }
-    poiSummary.textTable(document, headers, datas, false, "tableBPowb");
+
+    String text = "";
+    if (this.isEntityPlatform()) {
+      text = "tableBPowbPLT";
+    } else if (this.isEntityCRP()) {
+      text = "tableBPowbCRP";
+    }
+
+    poiSummary.textTable(document, headers, datas, false, text);
   }
 
   private void createTableC2() {
@@ -835,7 +898,15 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       }
     }
 
-    poiSummary.textTable(document, headers, datas, false, "tableC2Powb");
+    String text = "";
+    if (this.isEntityPlatform()) {
+      text = "tableC2PowbPLT";
+    } else if (this.isEntityCRP()) {
+      text = "tableC2PowbCRP";
+    }
+
+
+    poiSummary.textTable(document, headers, datas, false, text);
   }
 
 
@@ -902,7 +973,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("3366CC");
         paragraph.setStyle("heading 1");
-        /*****************************/
 
         // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
         // this.getText("summaries.powb2019.narrativeSection"));
@@ -920,7 +990,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
@@ -933,13 +1002,11 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setText(this.getText("summaries.powb2019.expectedKeyResults.toc"));
-        // run.setBold(true);
+        run.setBold(true);
         run.setFontSize(13);
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
-
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         // this.getText("summaries.powb2019.expectedKeyResults.toc"));
@@ -951,12 +1018,11 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setText(this.getText("summaries.powb2019.expectedKeyResults.plan"));
-        // run.setBold(true);
+        run.setBold(true);
         run.setFontSize(13);
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         // this.getText("summaries.powb2019.expectedKeyResults.plan"));
@@ -967,12 +1033,11 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setText(this.getText("summaries.powb2019.effectiveness.financial"));
-        // run.setBold(true);
+        run.setBold(true);
         run.setFontSize(13);
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         // this.getText("summaries.powb2019.effectiveness.financial"));
@@ -985,6 +1050,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         CTP ctpTable = para.getCTP();
         CTPPr brTable = ctpTable.addNewPPr();
         brTable.setSectPr(sectionTable);
+
         /* standard Letter page size */
         pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
         pageSizeTable.setW(BigInteger.valueOf(842 * 20));
@@ -1000,19 +1066,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("2E75B5");
         paragraph.setStyle("heading 1");
-        /*******************/
-
-        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
 
         // Table 2a
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("summaries.powb2019.tableA2.title"));
         run.setFontSize(13);
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         // this.getText("summaries.powb2019.tableA2.title"));
@@ -1022,12 +1085,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // Table 2b
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("summaries.powb2019.tableB2.title"));
         run.setFontSize(13);
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         // this.getText("summaries.powb2019.tableB2.title"));
@@ -1037,12 +1100,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // Table 2c
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("summaries.powb2019.tableC2.title"));
         run.setFontSize(13);
         run.setFontFamily("Calibri");
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
         // this.getText("summaries.powb2019.tableC2.title"));
@@ -1052,6 +1115,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // Table 3
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("financialPlan2019.table3.title"));
         run.setFontSize(13);
         run.setFontFamily("Calibri");
@@ -1167,32 +1231,30 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run = paragraph.createRun();
         run.setText(this.getText("summaries.powb2019.cover"));
         run.setBold(true);
-        run.setFontSize(13);
+        run.setFontSize(16);
         run.setFontFamily("Calibri");
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
         poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.crpName"));
         poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.leadCenter"));
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           this.getText("summaries.powb2019.flagshipLeadInst"));
         run.addTab();
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "  " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+          "     " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "  " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+          "     " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "  " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+          "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "  " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+          "    " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "  " + this.getText("summaries.powb2019.otherParticipans") + ": ");
+          "     " + this.getText("summaries.powb2019.otherParticipans") + ": ");
 
         poiSummary.textLineBreak(document, 1);
 
@@ -1205,11 +1267,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.expectedKeyResults.toc"));
         this.addAdjustmentDescription();
         poiSummary.textLineBreak(document, 1);
 
@@ -1223,10 +1281,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.expectedKeyResults.plan"));
         this.addExpectedKeyResults();
         poiSummary.textLineBreak(document, 1);
 
@@ -1240,10 +1295,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.effectiveness.financial"));
         this.addFinancialPlan();
 
 
@@ -1284,52 +1336,45 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setFontFamily("Calibri");
         run.setColor("2E75D5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableA2.title"));
         this.createTableA2();
         document.createParagraph().setPageBreak(true);
 
         // Table 2b
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("summaries.powb2019.tableB2.title"));
         run.setFontSize(14);
         run.setFontFamily("Calibri");
         run.setColor("2E75D5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableB2.title"));
         this.createTableB2();
         document.createParagraph().setPageBreak(true);
 
         // Table 2c
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("summaries.powb2019.tableC2.title"));
         run.setFontSize(14);
         run.setFontFamily("Calibri");
         run.setColor("2E75D5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableC2.title"));
         this.createTableC2();
         document.createParagraph().setPageBreak(true); // Fast Page Break
 
         // Table 3
         paragraph = document.createParagraph();
         run = paragraph.createRun();
+        run.setBold(true);
         run.setText(this.getText("financialPlan2019.table3.title"));
         run.setFontSize(14);
         run.setFontFamily("Calibri");
         run.setColor("2E75D5");
         paragraph.setStyle("heading 2");
-        /*******************/
 
         this.createTable3();
         poiSummary.textLineBreak(document, 1);
