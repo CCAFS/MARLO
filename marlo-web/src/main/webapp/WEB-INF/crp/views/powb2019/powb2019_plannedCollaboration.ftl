@@ -129,7 +129,7 @@
     ] 
     /]
     <div class="form-group">
-      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /]:[@customForm.req required=editable  /]</label><br />
+      <label>[@s.text name="powbSynthesis.programCollaboration.collaboratorType" /]:[@customForm.req required=editable  /]</label><br />
       [#list collaboratorTypes as cType]
         [@customForm.radioFlat id="${customName}-cType-${cType_index}" name="${customName}.collaboratorType" label="${cType.name}" value="${cType.value}" checked=((element.collaboratorType.value == "${cType.value}")!false) editable=editable cssClass="cTypeRadio" cssClassLabel=""/]
       [/#list]
