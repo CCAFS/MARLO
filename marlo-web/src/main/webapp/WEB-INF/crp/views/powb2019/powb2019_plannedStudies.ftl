@@ -67,7 +67,7 @@
     <thead>
       <tr class="subHeader">
         [#if PMU]
-          <th>FPs</th>
+          <th>[@s.text name="evidenceRelevant.table.fp" /]</th>
         [/#if]
         <th id="tb-status">[@s.text name="evidenceRelevant.table.status" /]</th>
         <th id="tb-plannedStudy" class="text-left">[@s.text name="evidenceRelevant.table.plannedStudy" /]</th>
@@ -87,11 +87,9 @@
           <tr>
             [#if PMU]
             <td>
-              [#if study.selectedFlahsgips?has_content]
-                [#list study.selectedFlahsgips as flagship]
-                  ${flagship.acronym}
-                [/#list]                
-              [/#if]
+              [#list (study.selectedFlahsgips)![] as liason]
+                <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+              [/#list]
             </td>
             [/#if]
             [#-- Status --]
