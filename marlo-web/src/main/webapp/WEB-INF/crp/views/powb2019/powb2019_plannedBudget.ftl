@@ -213,7 +213,7 @@
     [#-- Comments --]
     [#if PMU]
     <div class="form-group">
-      [@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="${customLabel}.table3PlannedBudget.comments" fieldEmptyText="global.prefilledByPmu" className="" required=true editable=editable && PMU/]
+      [@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="${customLabel}.table3PlannedBudget.comments" fieldEmptyText="global.prefilledByPmu" className="" required=false editable=editable && PMU/]
     </div>
     [/#if]
   </div>
