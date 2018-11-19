@@ -52,7 +52,7 @@ public class POISummary {
 
   // LOG
   private static final Logger LOG = LoggerFactory.getLogger(POISummary.class);
-  private final static String FONT_TYPE = "Calibri Light";
+  private static String FONT_TYPE = "Calibri Light";
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
   private static Integer TABLE_TEXT_FONT_SIZE = 10;
@@ -140,9 +140,11 @@ public class POISummary {
             /*
              * Detect start of a href tags
              */
+
             if (text.charAt(j + 3) == 'h' && text.charAt(j) == 'r') {
               posInit = j;
               isLink = true;
+              // System.out.println("detect html tag init: " + posInit);
 
               /*
                * search for the close url part
@@ -151,6 +153,7 @@ public class POISummary {
               do {
                 if (text.charAt(k) == '>') {
                   posLastLink = k;
+                  // System.out.println("closepart " + posLastLink);
                 }
                 k++;
               } while (posLastLink == 0);
@@ -172,12 +175,14 @@ public class POISummary {
             finalPosList.add(posFinal);
 
             if (isLink == true && expressionListActual.contains("<a")) {
+              System.out.println("List close " + posFinal);
               textIndicatorLink = text.substring(posLastLink, posFinal);
 
               // The url substring should start after identifying the href tag and finish before closing the quotation
               // marks
+
               url = text.substring(posInit + 4, posLastLink - 2);
-              System.out.println(url);
+              System.out.println("url " + url);
             }
           }
           isLink = false;
@@ -270,7 +275,6 @@ public class POISummary {
           case "<p>":
             break;
           case "<a":
-            System.out.println("url " + url);
             this.textHyperlink(url, text, paragraph);
             break;
           /*
@@ -1060,9 +1064,35 @@ public class POISummary {
     Boolean highlightFirstColumn, String tableType) {
     if (tableType.contains("Powb")) {
       TABLE_TEXT_FONT_SIZE = 11;
+      FONT_TYPE = "Calibri";
     } else {
       TABLE_TEXT_FONT_SIZE = 10;
     }
+
+    if (tableType.equals("tableC2PowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableC2PowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableEPowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableEPowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableA2PowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableA2PowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableBPowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableBPowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
 
     XWPFTable table = document.createTable();
     int record = 0;
@@ -1284,19 +1314,35 @@ public class POISummary {
         break;
 
       // powb 2019 template tables
-      case "tableA2Powb":
+      case "tableA2PowbPLT":
         count = 0;
         this.tableEPowbStyle(table);
         break;
-      case "tableB2Powb":
+      case "tableA2PowbCRP":
+        count = 0;
+        this.tableEPowbStyle(table);
+        break;
+      case "tableBPowbPLT":
         count = 0;
         // this.tableB2PowbStyle(table);
         break;
-      case "tableC2Powb":
+      case "tableBPowbCRP":
+        count = 0;
+        // this.tableB2PowbStyle(table);
+        break;
+      case "tableC2PowbPLT":
         count = 0;
         // this.tableC2PowbStyle(table);
         break;
-      case "tableEPowb":
+      case "tableC2PowbCRP":
+        count = 0;
+        // this.tableC2PowbStyle(table);
+        break;
+      case "tableEPowbPLT":
+        count = 0;
+        this.tableEPowbStyle(table);
+        break;
+      case "tableEPowbCRP":
         count = 0;
         this.tableEPowbStyle(table);
         break;
