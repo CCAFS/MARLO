@@ -664,6 +664,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
 
+      if (myProjects != null && !myProjects.isEmpty()) {
+        myProjects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      }
+
       crps = crpManager.findAll().stream()
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
         .collect(Collectors.toList());

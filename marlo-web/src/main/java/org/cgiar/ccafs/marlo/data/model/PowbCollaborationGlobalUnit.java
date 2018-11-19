@@ -18,25 +18,25 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
   private static final long serialVersionUID = 371262147439030983L;
 
 
+  private PowbSynthesis powbSynthesis;
   @Expose
   private GlobalUnit globalUnit;
-
-
   @Expose
   private Institution institution;
-
-
-  private PowbSynthesis powbSynthesis;
-
   @Expose
   private String flagship;
   @Expose
   private String collaborationType;
   @Expose
   private String brief;
+  @Expose
+  private Long collaboratorType;
+  private String collaboratorTypeName;
+
 
   public PowbCollaborationGlobalUnit() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -62,9 +62,11 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     return brief;
   }
 
+
   public String getCollaborationType() {
     return collaborationType;
   }
+
 
   public String getCollaborationTypeName() {
     if (collaborationType == null) {
@@ -89,6 +91,21 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
   }
 
 
+  public Long getCollaboratorType() {
+    return collaboratorType;
+  }
+
+
+  public String getCollaboratorTypeName() {
+    if (collaboratorTypeName != null) {
+      return collaboratorTypeName;
+    }
+    if (collaboratorType != null) {
+      return PowbCollaboratorTypeEnum.getValue(collaboratorType.intValue()).getName();
+    }
+    return "";
+  }
+
   public String getFlagship() {
     return flagship;
   }
@@ -102,7 +119,6 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     return institution;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -114,6 +130,7 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   @Override
   public int hashCode() {
@@ -128,8 +145,19 @@ public class PowbCollaborationGlobalUnit extends MarloAuditableEntity implements
     this.brief = brief;
   }
 
+
   public void setCollaborationType(String collaborationType) {
     this.collaborationType = collaborationType;
+  }
+
+
+  public void setCollaboratorType(Long collaboratorType) {
+    this.collaboratorType = collaboratorType;
+  }
+
+
+  public void setCollaboratorTypeName(String collaboratorTypeName) {
+    this.collaboratorTypeName = collaboratorTypeName;
   }
 
 
