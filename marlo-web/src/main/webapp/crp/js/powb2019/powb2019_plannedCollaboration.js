@@ -56,6 +56,15 @@ function attachEvents() {
   // Remove a program collaboration
   $('.removeProgramCollaboration').on('click', removeProgramCollaboration);
 
+  $('.cTypeRadio').on('change', selectCollaborationType);
+
+}
+
+function selectCollaborationType() {
+  var optionSelected = this.value;
+  var $parent = $(this).parents('.flagshipCollaboration');
+  $parent.find('.collaboratorType').hide();
+  $parent.find('.collaboratorType-' + optionSelected).slideDown();
 }
 
 function addProgramCollaboration() {
