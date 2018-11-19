@@ -170,14 +170,10 @@
           <tr>
             <td><span class="programTag" style="border-color:${(coll.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}" title="${coll.powbSynthesis.liaisonInstitution.crpProgram.composedName}">${coll.powbSynthesis.liaisonInstitution.crpProgram.acronym}</span></td>
             <td class="col-md-3">
-              <ul>
-              [#if coll.globalUnit??]
-                <li>${(coll.globalUnit.composedName)!}</li>
-              [/#if]
-              [#if coll.institution??]
-                <li>${coll.institution.composedName}</li>
-              [/#if]
-              </ul>
+              [#-- CGIAR Entity --]
+              [#if coll.globalUnit??]${(coll.globalUnit.composedName)!} <br /> <i>(${(coll.globalUnit.globalUnitType.name)!})</i>[/#if]
+              [#-- Non-CGIAR Institution --]
+              [#if coll.institution??]${coll.institution.composedName} <br /> <i>(${coll.institution.institutionType.name})</i> [/#if]
             </td>
             <td class="col-md-8">
               ${(coll.brief?replace('\n', '<br>'))!} 
