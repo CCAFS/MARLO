@@ -115,7 +115,8 @@ public class POISummary {
     String url = "";
     int posInit = 0;
     int posFinal = 0;
-    int posLastLink = -1;
+    int posLastLink = 0;
+    String startText = text;
     String expressionListActual = "", textIndicatorLink = "";
 
     /*
@@ -134,17 +135,17 @@ public class POISummary {
           if ((text.charAt(j) == expressionListActual.charAt(0))
             && text.charAt(j + 1) == expressionListActual.charAt(1)) {
 
-            startsPosList.add(posInit);
+            startsPosList.add(j);
             tagsAddList.add(expressionsList.get(i));
 
             /*
              * Detect start of a href tags
              */
 
-            if (text.charAt(j + 3) == 'h' && text.charAt(j) == 'r') {
+            if (text.charAt(j + 3) == 'h' && text.charAt(j + 4) == 'r') {
+              posLastLink = 0;
               posInit = j;
               isLink = true;
-              // System.out.println("detect html tag init: " + posInit);
 
               /*
                * search for the close url part
@@ -153,7 +154,7 @@ public class POISummary {
               do {
                 if (text.charAt(k) == '>') {
                   posLastLink = k;
-                  // System.out.println("closepart " + posLastLink);
+                  System.out.println("closepart " + posLastLink);
                 }
                 k++;
               } while (posLastLink == 0);
@@ -175,18 +176,16 @@ public class POISummary {
             finalPosList.add(posFinal);
 
             if (isLink == true && expressionListActual.contains("<a")) {
-              System.out.println("List close " + posFinal);
-              textIndicatorLink = text.substring(posLastLink, posFinal);
+              System.out.println("List close " + posFinal + " poslastLink before " + posLastLink);
+              textIndicatorLink = text.substring(posLastLink + 1, posFinal + 4);
 
               // The url substring should start after identifying the href tag and finish before closing the quotation
               // marks
 
-              url = text.substring(posInit + 4, posLastLink - 2);
-              System.out.println("url " + url);
+              url = text.substring(posInit + 9, posLastLink - 2);
+              isLink = false;
             }
           }
-          isLink = false;
-          posLastLink = -1;
         }
       }
     }
@@ -194,6 +193,7 @@ public class POISummary {
     String expression = "";
     int startPosition = 0;
     int finalPosition = 0;
+    int textLength = 0;
     int i = 0;
     int j = 0;
 
@@ -216,6 +216,7 @@ public class POISummary {
           paragraph = document.createParagraph();
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           paragraphRun = paragraph.createRun();
+          startText = this.replaceHTMLTags(stringTemp + " ");
           this.addParagraphTextBreak(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -235,13 +236,15 @@ public class POISummary {
         } else {
           stringTemp = text;
         }
-
-        paragraph = document.createParagraph();
+        textLength = startText.length();
+        text = this.replaceHTMLTags(text);
+        // paragraph = document.createParagraph();
         paragraphRun = paragraph.createRun();
 
-        if (isLink == false) {
+        if (expressionListActual.contains("<a") == false) {
           paragraph.setAlignment(ParagraphAlignment.BOTH);
-
+          startText = this.replaceHTMLTags(startText);
+          startText = this.replaceHTMLTags(stringTemp + " ");
           this.addParagraphTextBreak(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -275,8 +278,9 @@ public class POISummary {
           case "<p>":
             break;
           case "<a":
-            this.textHyperlink(url, text, paragraph);
+            this.textHyperlink(url, textIndicatorLink, paragraph);
             break;
+
           /*
            * Close tags detection
            */
@@ -307,19 +311,21 @@ public class POISummary {
             paragraphRun.setUnderline(UnderlinePatterns.NONE);
             paragraphRun.setItalic(false);
         }
-        startPosition = finalPosition + expression.length() + 4;
+        startPosition = finalPosition + expression.length() + 1;
         expression = "";
         i = finalPosition;
       }
     }
 
-    if (finalPosition < text.length()) {
-      System.out.println("last  text length " + text.length() + " finalpos " + finalPosition);
-      stringTemp = text.substring(finalPosition, text.length());
-      paragraph = document.createParagraph();
-      paragraph.setAlignment(ParagraphAlignment.BOTH);
+    if (finalPosition + expression.length() < textLength) {
+      boolean addSpace = false;
+      int length = startText.length();
+
+      startText = startText.substring(finalPosition + expression.length() + 4, length);
+      startText = this.replaceHTMLTags(" " + startText);
+
       paragraphRun = paragraph.createRun();
-      this.addParagraphTextBreak(paragraphRun, stringTemp);
+      this.addParagraphTextBreak(paragraphRun, startText);
 
       paragraphRun.setColor(TEXT_FONT_COLOR);
       paragraphRun.setFontFamily(FONT_TYPE);
@@ -329,7 +335,6 @@ public class POISummary {
       paragraphRun.setItalic(false);
     }
   }
-
 
   public void createTOC(XWPFDocument document) {
     // Create table of contents
@@ -347,6 +352,7 @@ public class POISummary {
       }
     }
   }
+
 
   /**
    * Footer title
@@ -404,7 +410,6 @@ public class POISummary {
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
 
-
   public void pageRightHeader(XWPFDocument document, String text) throws IOException {
     CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
     XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
@@ -420,6 +425,15 @@ public class POISummary {
     XWPFParagraph[] parsHeader = new XWPFParagraph[1];
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
+
+
+  public String replaceHTMLTags(String html) {
+
+    html = html.replaceAll("\\<.*?>", "");
+    html = html.replaceAll("&nbsp;", "");
+    html = html.replaceAll("&amp;", "");
+    return html;
   }
 
   public void tableA1AnnualReportStyle(XWPFTable table) {

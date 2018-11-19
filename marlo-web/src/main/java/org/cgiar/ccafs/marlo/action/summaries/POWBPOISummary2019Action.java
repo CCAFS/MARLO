@@ -1323,8 +1323,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 1");
         poiSummary.textLineBreak(document, 1);
-        /*******************/
-
         // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
 
         // Table 2a
