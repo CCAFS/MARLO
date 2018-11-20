@@ -93,11 +93,17 @@ public class ProjectBudgetsValidator extends BaseValidator {
         }
       }
       action.getFieldErrors().clear();
+
+      int totalPartnerBudgetsCurrentYear = 0;
       if (project.getBudgets() != null && project.getBudgets().size() > 0) {
         long total = 0;
         int i = 0;
         for (ProjectBudget projectBudget : project.getBudgets()) {
+
           if (projectBudget != null) {
+            if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+              totalPartnerBudgetsCurrentYear++;
+            }
             if (projectBudget.getAmount() != null) {
               if (projectBudget.getYear() == action.getCurrentCycleYear()) {
                 FundingSource fundingSource =
@@ -121,22 +127,33 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
                 }
 
+                total = total + projectBudget.getAmount().longValue();
               }
-              total = total + projectBudget.getAmount().longValue();
             }
 
           }
           i++;
         }
-        if (total < 0) {
-          action.addMessage(action.getText("projectBudgets.amount"));
+        if (total <= 0) {
           i = 0;
           for (ProjectBudget projectBudget : project.getBudgets()) {
-            action.getInvalidFields().put("input-project.budgets[" + i + "].amount", InvalidFieldsMessages.EMPTYFIELD);
+            if (projectBudget != null) {
+              if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+                action.addMessage(action.getText("projectBudgets.amount"));
+                action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
             i++;
           }
         }
       } else {
+        action.addMessage(action.getText("projectBudgets"));
+        action.getInvalidFields().put("list-project.budgets",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
+      }
+
+      if (totalPartnerBudgetsCurrentYear <= 0) {
         action.addMessage(action.getText("projectBudgets"));
         action.getInvalidFields().put("list-project.budgets",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
