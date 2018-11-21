@@ -64,6 +64,8 @@ public class POISummary {
   List<Integer> startsPosList = new ArrayList<Integer>();
   List<Integer> finalPosList = new ArrayList<Integer>();
   List<String> tagsAddList = new ArrayList<String>();
+  List<String> urlList = new ArrayList<String>();
+  List<String> referenceList = new ArrayList<String>();
 
   private void addExpressionsToList() {
     expressionsList.add("<b>");
@@ -110,13 +112,14 @@ public class POISummary {
   }
 
   public void convertHTMLTags(XWPFDocument document, String text) {
+    text = text.replace("<p>", "");
+    System.out.println("original " + text);
+    int textLength = 0;
     this.addExpressionsToList();
-    boolean isLink = false;
     String url = "";
-    int posInit = 0;
-    int posFinal = 0;
-    int posLastLink = 0;
+    int posFinal = 0, hrefTagsCount = 0;
     String startText = text;
+    textLength = startText.length();
     String expressionListActual = "", textIndicatorLink = "";
 
     /*
@@ -139,67 +142,41 @@ public class POISummary {
             tagsAddList.add(expressionsList.get(i));
 
             /*
-             * Detect start of a href tags
+             * Getting close tag
              */
-
-            if (text.charAt(j + 3) == 'h' && text.charAt(j + 4) == 'r') {
-              posLastLink = 0;
-              posInit = j;
-              isLink = true;
-
-              /*
-               * search for the close url part
-               */
-              int k = j;
-              do {
-                if (text.charAt(k) == '>') {
-                  posLastLink = k;
-                  System.out.println("closepart " + posLastLink);
-                }
-                k++;
-              } while (posLastLink == 0);
-            }
-          }
-        }
-
-        /*
-         * Getting close tags
-         */
-
-        for (int k = 0; k < text.length(); k++) {
-
-          // If detect close tag
-          if (text.charAt(k) == expressionsListClose.get(i).charAt(0)
-            && text.charAt(k + 1) == expressionsListClose.get(i).charAt(1)
-            && text.charAt(k + 2) == expressionsListClose.get(i).charAt(2)) {
-            posFinal = k - expressionsListClose.get(i).length();
+            posFinal = text.indexOf(expressionsListClose.get(i), j);
             finalPosList.add(posFinal);
 
-            if (isLink == true && expressionListActual.contains("<a")) {
-              System.out.println("List close " + posFinal + " poslastLink before " + posLastLink);
-              textIndicatorLink = text.substring(posLastLink + 1, posFinal + 4);
+            /*
+             * Detect start of a href tags
+             */
+            if (expressionListActual.equals("<a")) {
 
-              // The url substring should start after identifying the href tag and finish before closing the quotation
-              // marks
+              hrefTagsCount++;
+              textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
+              url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 2);
 
-              url = text.substring(posInit + 9, posLastLink - 2);
-              isLink = false;
+              urlList.add(url);
+              referenceList.add(textIndicatorLink);
             }
           }
         }
+
       }
     }
 
     String expression = "";
     int startPosition = 0;
     int finalPosition = 0;
-    int textLength = 0;
     int i = 0;
     int j = 0;
 
     String stringTemp = "";
     XWPFRun paragraphRun;
     XWPFParagraph paragraph = null;
+    String url1 = "";
+    String textIndicatorLink1 = "";
+    int k = 0;
 
     for (i = 0; i < text.length(); i++) {
 
@@ -208,15 +185,32 @@ public class POISummary {
           if (startsPosList.get(j) == i) {
             finalPosition = finalPosList.get(j);
             expression = tagsAddList.get(j);
+
+            if (expression.equals("<a")) {
+              url1 = urlList.get(k);
+              textIndicatorLink1 = referenceList.get(k);
+              if (k <= hrefTagsCount) {
+                k++;
+              }
+            }
           }
         }
 
         if (i > 0) {
           stringTemp = text.substring(startPosition, i);
-          paragraph = document.createParagraph();
+
+          try {
+            paragraphRun = paragraph.createRun();
+          } catch (Exception e) {
+            paragraph = document.createParagraph();
+            paragraphRun = paragraph.createRun();
+          }
+
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           paragraphRun = paragraph.createRun();
-          startText = this.replaceHTMLTags(stringTemp + " ");
+          stringTemp = stringTemp.replaceAll("&nbsp;", " ");
+          stringTemp = stringTemp.replaceAll(">", "");
+          System.out.println("stringtemp 1 " + stringTemp);
           this.addParagraphTextBreak(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -226,7 +220,7 @@ public class POISummary {
           paragraphRun.setUnderline(UnderlinePatterns.NONE);
           paragraphRun.setItalic(false);
         }
-        startPosition = i + expression.length();
+        startPosition = i + expression.length() + 1;
 
         /*
          * Create paragraph with last position after the start of html tag until the close of this
@@ -236,15 +230,19 @@ public class POISummary {
         } else {
           stringTemp = text;
         }
-        textLength = startText.length();
-        text = this.replaceHTMLTags(text);
-        // paragraph = document.createParagraph();
-        paragraphRun = paragraph.createRun();
+
+        try {
+          paragraphRun = paragraph.createRun();
+        } catch (Exception e) {
+          paragraph = document.createParagraph();
+          paragraphRun = paragraph.createRun();
+        }
 
         if (expressionListActual.contains("<a") == false) {
           paragraph.setAlignment(ParagraphAlignment.BOTH);
-          startText = this.replaceHTMLTags(startText);
-          startText = this.replaceHTMLTags(stringTemp + " ");
+          stringTemp = this.replaceHTMLTags(stringTemp);
+          System.out.println("stringtemp 2 " + stringTemp);
+
           this.addParagraphTextBreak(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -278,7 +276,7 @@ public class POISummary {
           case "<p>":
             break;
           case "<a":
-            this.textHyperlink(url, textIndicatorLink, paragraph);
+            this.textHyperlink(url1, textIndicatorLink1, paragraph);
             break;
 
           /*
@@ -316,15 +314,22 @@ public class POISummary {
         i = finalPosition;
       }
     }
-
-    if (finalPosition + expression.length() < textLength) {
-      boolean addSpace = false;
+    System.out.println("finalPosition " + finalPosition + "textLength " + textLength);
+    if (finalPosition < textLength) {
       int length = startText.length();
 
-      startText = startText.substring(finalPosition + expression.length() + 4, length);
-      startText = this.replaceHTMLTags(" " + startText);
+      startText = startText.substring(finalPosition + expression.length(), length);
 
-      paragraphRun = paragraph.createRun();
+      try {
+        paragraphRun = paragraph.createRun();
+      } catch (Exception e) {
+        paragraph = document.createParagraph();
+        paragraphRun = paragraph.createRun();
+      }
+      System.out.println(" star " + startText);
+
+      startText = this.replaceHTMLTags(" " + startText);
+      System.out.println(" star " + startText);
       this.addParagraphTextBreak(paragraphRun, startText);
 
       paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -429,10 +434,13 @@ public class POISummary {
 
 
   public String replaceHTMLTags(String html) {
-
-    html = html.replaceAll("\\<.*?>", "");
-    html = html.replaceAll("&nbsp;", "");
-    html = html.replaceAll("&amp;", "");
+    try {
+      html = html.replaceAll("\\<.*?>", "");
+      html = html.replaceAll("&nbsp;", "");
+      html = html.replaceAll("&amp;", "");
+    } catch (Exception e) {
+      throw e;
+    }
     return html;
   }
 
@@ -707,10 +715,10 @@ public class POISummary {
       }
     }
 
-    for (int x = 0; x < 2; x++) {
+    for (int x = 0; x < 3; x++) {
       if (x >= 0) {
         XWPFTableRow row1 = table.getRow(x);
-        for (int y = 0; y < 7; y++) {
+        for (int y = 0; y < 6; y++) {
           XWPFTableCell cell = row1.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -720,7 +728,7 @@ public class POISummary {
           if (cell.getCTTc().getTcPr() == null) {
             cell.getCTTc().addNewTcPr();
           }
-          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+          if (x == 2 && !(cell.getText().trim().length() > 0)) {
             break;
           }
           if (cell.getText().trim().length() > 0) {
@@ -907,11 +915,6 @@ public class POISummary {
 
       }
     }
-  }
-
-  public void text(String text) {
-    int i = 0;
-    String a = text.charAt(i) + text.charAt(i + 2) + text.charAt(i + 3) + "";
   }
 
 
@@ -1132,6 +1135,7 @@ public class POISummary {
           TABLE_HEADER_FONT_COLOR = "FFFFFF";
         }
 
+
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
@@ -1193,9 +1197,13 @@ public class POISummary {
       if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
         TABLE_HEADER_FONT_COLOR = "DEEAF6";
       } else if (tableType.equals("tableA2Powb")) {
-        TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        TABLE_HEADER_FONT_COLOR = "D9EAD3";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFFFFF";
+      }
+
+      if (tableType.equals("tableA2Powb")) {
+        TABLE_HEADER_FONT_COLOR = "D9EAD3";
       }
 
       XWPFTableRow dataRow = table.createRow();
@@ -1225,11 +1233,12 @@ public class POISummary {
             TABLE_HEADER_FONT_COLOR = "FFF2CC";
           }
 
-          if (tableType.equals("tableA2Powb")) {
+          if (tableType.contains("tableA2Powb")) {
 
-            if (record <= 6 && count > 0) {
-              // dataRow.getCell(record).setColor("D9EAD3");
-            }
+
+            // count > 0;
+            dataRow.getCell(record).setColor("D9EAD3");
+
             if (count >= 7) {
               dataRow.getCell(record).setColor("FFFFFF");
             }

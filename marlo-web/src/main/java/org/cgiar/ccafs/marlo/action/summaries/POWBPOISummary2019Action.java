@@ -239,9 +239,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     if (powbSynthesis != null && powbSynthesis.getPowbToc() != null) {
       if (powbSynthesis.getPowbToc().getTocOverall() != null) {
         adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
-
+        // poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
         poiSummary.convertHTMLTags(document, adjustmentsDescription);
-        // HTMLtoWord htmltoWord = new HTMLtoWord();
+
 
         // poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
         if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
@@ -263,10 +263,10 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       if (powbSynthesis.getPowbToc() != null) {
         if (powbSynthesis.getExpectedProgressNarrative() != null) {
           expectedKeyResults = powbSynthesis.getExpectedProgressNarrative();
-          poiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
+          // oiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
+          poiSummary.convertHTMLTags(document, expectedKeyResults);
         }
       }
-      // poiSummary.convertHTMLTags(document, expectedKeyResults);
     }
   }
 
@@ -340,7 +340,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           new POIField(this.getText("financialPlan2019.tableE.plannedBudget",
             new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT, true, blackColor),
           new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-          new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+          new POIField("", ParagraphAlignment.CENTER),
           new POIField(this.getText("financialPlan2019.tableE.comments"), ParagraphAlignment.CENTER, true, blackColor)};
 
       POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, bold, blackColor),
@@ -1251,7 +1251,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "    " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+          "     " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           "     " + this.getText("summaries.powb2019.otherParticipans") + ": ");
