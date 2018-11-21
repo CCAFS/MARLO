@@ -61,11 +61,7 @@ public class POISummary {
 
   List<String> expressionsList = new ArrayList<String>();
   List<String> expressionsListClose = new ArrayList<String>();
-  List<Integer> startsPosList = new ArrayList<Integer>();
-  List<Integer> finalPosList = new ArrayList<Integer>();
-  List<String> tagsAddList = new ArrayList<String>();
-  List<String> urlList = new ArrayList<String>();
-  List<String> referenceList = new ArrayList<String>();
+
 
   private void addExpressionsToList() {
     expressionsList.add("<b>");
@@ -111,7 +107,14 @@ public class POISummary {
   }
 
   public void convertHTMLTags(XWPFDocument document, String text) {
+    List<Integer> startsPosList = new ArrayList<Integer>();
+    List<Integer> finalPosList = new ArrayList<Integer>();
+    List<String> tagsAddList = new ArrayList<String>();
+    List<String> urlList = new ArrayList<String>();
+    List<String> referenceList = new ArrayList<String>();
+
     text = text.replace("<p>", "");
+    text = text.replace("</p>", "");
     int textLength = 0;
     this.addExpressionsToList();
     String url = "";
@@ -489,6 +492,78 @@ public class POISummary {
             vmerge1.setVal(STMerge.CONTINUE);
             cell.getCTTc().getTcPr().setVMerge(vmerge1);
           }
+        }
+
+      }
+    }
+  }
+
+  public void tableAPowbStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables E */
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+    /* Vertical merge, From format tables E */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    String temp = "", temp2 = "";
+    for (int y = 0; y < numberOfCell - 1; y++) {
+      XWPFTableCell cell = row.getCell(y);
+      if (cell.getCTTc() == null) {
+        ((CTTc) cell).addNewTcPr();
+      }
+      if (cell.getCTTc().getTcPr() == null) {
+        cell.getCTTc().addNewTcPr();
+      }
+
+      if (cell.getCTTc().getTcPr() == null) {
+        if (y > 0 && y < numberOfCell) {
+          if (cell.getText().trim().length() > 0 || !cell.getText().trim().equals(temp)) {
+            hMerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setHMerge(hMerge);
+          } else {
+            hMerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setHMerge(hMerge1);
+          }
+        }
+      }
+      temp = cell.getText().trim();
+    }
+
+    for (int x = 0; x < 3; x++) {
+      if (x >= 0) {
+        XWPFTableRow row1 = table.getRow(x);
+        for (int y = 0; y < 6; y++) {
+          XWPFTableCell cell = row1.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 2 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0 || !cell.getText().trim().equals(temp2)) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+          temp2 = cell.getText().trim();
         }
 
       }
