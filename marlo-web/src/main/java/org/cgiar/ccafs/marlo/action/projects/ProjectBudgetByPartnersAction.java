@@ -699,20 +699,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
 
-    if (this.isHttpPost())
-
-    {
+    if (this.isHttpPost()) {
       if (project.getPartners() != null) {
         project.getPartners().clear();
       }
-
 
       if (project.getBudgets() != null) {
         project.getBudgets().clear();
 
       }
-
-
     }
 
   }

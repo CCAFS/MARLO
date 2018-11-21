@@ -28,6 +28,7 @@
   [#if libraryName="components-font-awesome" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/components-font-awesome/css/fontawesome-all.css" />[/#if]
   [#if libraryName="trumbowyg" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/trumbowyg/dist/ui/trumbowyg.min.css" />[/#if]
   [#if libraryName="malihu-custom-scrollbar-plugin" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css" />[/#if]
+  [#if libraryName="cookieconsent" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/cookieconsent/build/cookieconsent.min.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -73,5 +74,6 @@
   [#if libraryName="trumbowyg"]<script src="${baseUrl}/global/bower_components/trumbowyg/dist/trumbowyg.min.js"></script>[/#if]
   [#if libraryName="jquery-mousewheel"]<script src="${baseUrl}/global/bower_components/jquery-mousewheel/jquery.mousewheel.js"></script>[/#if]
   [#if libraryName="malihu-custom-scrollbar-plugin"]<script src="${baseUrl}/global/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>[/#if]
+  [#if libraryName="cookieconsent"]<script src="${baseUrl}/global/bower_components/cookieconsent/build/cookieconsent.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
