@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -72,11 +73,11 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public boolean hasBudgets(Long type, int year, long projectID) {
+  public boolean hasBudgets(Long type, int year, long projectID, Phase actualPhase) {
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
+    List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getYear() == year && c.getBudgetType().getId().longValue() == type.longValue()
+        && (c.getAmount() != null && c.getAmount() >= 0) && c.getPhase() != null && c.getPhase().equals(actualPhase))
       .collect(Collectors.toList());
 
     return budgets.size() > 0;
@@ -113,34 +114,43 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
       }
       Project projectDB = projectManager.getProjectById(project.getId());
       List<ProjectFocus> projectFocuses = new ArrayList<>(projectDB.getProjectFocuses().stream()
-        .filter(
-          pf -> pf.isActive() && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            & pf.getCrpProgram().getResearchArea() == null)
+        .filter(pf -> pf.isActive()
+          && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            & pf.getCrpProgram().getResearchArea() == null
+          && pf.getPhase() != null && pf.getPhase().equals(action.getActualPhase()))
         .collect(Collectors.toList()));
       if (!projectFocuses.isEmpty()) {
         if (CollectionUtils.isNotEmpty(project.getBudgetsFlagship())) {
-          if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsFlagship> w1w2List = project.getBudgetsFlagship().stream().filter(c -> c != null
-              && (c.getBudgetType().getId().longValue() == 1) && (c.getYear() == action.getCurrentCycleYear()))
+          if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+            List<ProjectBudgetsFlagship> w1w2List = project.getBudgetsFlagship().stream()
+              .filter(c -> c != null && (c.getBudgetType().getId().longValue() == 1)
+                && (c.getYear() == action.getCurrentCycleYear())
+                && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
               .collect(Collectors.toList());
             this.validateBudgets(action, w1w2List, new Long(1));
           }
-          if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsFlagship> w3List = project.getBudgetsFlagship().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear())
-              .collect(Collectors.toList());
+          if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+            List<ProjectBudgetsFlagship> w3List =
+              project.getBudgetsFlagship().stream()
+                .filter(c -> c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear()
+                  && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
+                .collect(Collectors.toList());
             this.validateBudgets(action, w3List, new Long(2));
           }
-          if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsFlagship> bilateralList = project.getBudgetsFlagship().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear())
-              .collect(Collectors.toList());
+          if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+            List<ProjectBudgetsFlagship> bilateralList =
+              project.getBudgetsFlagship().stream()
+                .filter(c -> c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear()
+                  && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
+                .collect(Collectors.toList());
             this.validateBudgets(action, bilateralList, new Long(3));
           }
-          if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsFlagship> centerFundsList = project.getBudgetsFlagship().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear())
-              .collect(Collectors.toList());
+          if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+            List<ProjectBudgetsFlagship> centerFundsList =
+              project.getBudgetsFlagship().stream()
+                .filter(c -> c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear()
+                  && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
+                .collect(Collectors.toList());
             this.validateBudgets(action, centerFundsList, new Long(4));
           }
 
