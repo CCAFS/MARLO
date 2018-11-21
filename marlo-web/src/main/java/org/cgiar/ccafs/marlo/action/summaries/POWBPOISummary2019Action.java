@@ -276,10 +276,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       if (powbSynthesis.getFinancialPlan() != null
         && powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
         financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
-        poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+        // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+        poiSummary.convertHTMLTags(document, financialPlanDescription);
       }
-      // poiSummary.convertHTMLTags(document, financialPlanDescription);
-
     }
   }
 

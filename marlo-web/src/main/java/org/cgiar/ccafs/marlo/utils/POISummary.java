@@ -91,7 +91,6 @@ public class POISummary {
     expressionsListClose.add("</a>");
   }
 
-
   public void addLineSeparator(XWPFParagraph h1) {
     XWPFRun h1Run = h1.createRun();
     h1.setBorderBottom(Borders.SINGLE);
@@ -113,7 +112,6 @@ public class POISummary {
 
   public void convertHTMLTags(XWPFDocument document, String text) {
     text = text.replace("<p>", "");
-    System.out.println("original " + text);
     int textLength = 0;
     this.addExpressionsToList();
     String url = "";
@@ -161,7 +159,6 @@ public class POISummary {
             }
           }
         }
-
       }
     }
 
@@ -210,7 +207,6 @@ public class POISummary {
           paragraphRun = paragraph.createRun();
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = stringTemp.replaceAll(">", "");
-          System.out.println("stringtemp 1 " + stringTemp);
           this.addParagraphTextBreak(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -241,7 +237,6 @@ public class POISummary {
         if (expressionListActual.contains("<a") == false) {
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           stringTemp = this.replaceHTMLTags(stringTemp);
-          System.out.println("stringtemp 2 " + stringTemp);
 
           this.addParagraphTextBreak(paragraphRun, stringTemp);
 
@@ -250,7 +245,9 @@ public class POISummary {
           paragraphRun.setFontSize(11);
         }
 
-        // Apply the style to the paragraph depending on the identified expression
+        /*
+         * Apply the style to the paragraph depending on the identified expression
+         */
         switch (expression) {
           /*
            * Open tags detection
@@ -314,7 +311,7 @@ public class POISummary {
         i = finalPosition;
       }
     }
-    System.out.println("finalPosition " + finalPosition + "textLength " + textLength);
+
     if (finalPosition < textLength) {
       int length = startText.length();
 
@@ -326,10 +323,8 @@ public class POISummary {
         paragraph = document.createParagraph();
         paragraphRun = paragraph.createRun();
       }
-      System.out.println(" star " + startText);
 
       startText = this.replaceHTMLTags(" " + startText);
-      System.out.println(" star " + startText);
       this.addParagraphTextBreak(paragraphRun, startText);
 
       paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -1110,7 +1105,6 @@ public class POISummary {
       TABLE_TEXT_FONT_SIZE = 10;
     }
 
-
     XWPFTable table = document.createTable();
     int record = 0;
     int headerIndex = 0;
@@ -1123,6 +1117,7 @@ public class POISummary {
       } else {
         tableRowHeader = table.createRow();
       }
+
       for (POIField poiParameter : poiParameters) {
 
         // Condition for table b cell color in fields 5 and 6 in annual report
@@ -1134,7 +1129,6 @@ public class POISummary {
         } else {
           TABLE_HEADER_FONT_COLOR = "FFFFFF";
         }
-
 
         if (headerIndex == 0) {
           if (record == 0) {
@@ -1196,14 +1190,10 @@ public class POISummary {
       // Condition for table b cell color in fields 5 and 6
       if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
         TABLE_HEADER_FONT_COLOR = "DEEAF6";
-      } else if (tableType.equals("tableA2Powb")) {
+      } else if (tableType.contains("tableA2Powb")) {
         TABLE_HEADER_FONT_COLOR = "D9EAD3";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFFFFF";
-      }
-
-      if (tableType.equals("tableA2Powb")) {
-        TABLE_HEADER_FONT_COLOR = "D9EAD3";
       }
 
       XWPFTableRow dataRow = table.createRow();
@@ -1233,17 +1223,6 @@ public class POISummary {
             TABLE_HEADER_FONT_COLOR = "FFF2CC";
           }
 
-          if (tableType.contains("tableA2Powb")) {
-
-
-            // count > 0;
-            dataRow.getCell(record).setColor("D9EAD3");
-
-            if (count >= 7) {
-              dataRow.getCell(record).setColor("FFFFFF");
-            }
-          }
-
           // highlight and bold first and SecondColumn for table D1
           if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
             dataRow.getCell(record).setColor("DEEAF6");
@@ -1251,6 +1230,9 @@ public class POISummary {
           } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
             dataRow.getCell(record).setColor("E2EFD9");
             paragraphRun.setBold(true);
+
+          } else if (tableType.contains("tableA2Powb") && record < 6) {
+            dataRow.getCell(record).setColor("D9EAD3");
 
           } else {
             if (highlightFirstColumn && record == 0) {
@@ -1268,12 +1250,9 @@ public class POISummary {
               }
             }
           }
-
-
         }
         record++;
       }
-
     }
 
     switch (tableType) {
