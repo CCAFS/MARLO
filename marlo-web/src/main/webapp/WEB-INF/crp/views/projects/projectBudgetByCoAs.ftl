@@ -176,6 +176,7 @@
                   <input type="hidden" name="${customName}.crpClusterOfActivity.id" value="${(element.id)!}"/>
                   <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
                   <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
+                  <input type="hidden" name="${customName}.phase.id" value="${(budgetObject.phase.id)!}"/>
                   [#if editable && isYearEditable(selectedYear)]
                     [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.id}" required=true  /]
                   [#else]

@@ -321,13 +321,9 @@ $(document).ready(function() {
   if($.fn.trumbowyg) {
     $('.allowTextEditor').trumbowyg({
         btns: [
-            [
-                'strong', 'em'
-            ], [
-              'link'
-            ], [
-              'removeformat'
-            ],
+          [
+            'link'
+          ]
         ],
         autogrow: true,
         minimalLinks: true,
