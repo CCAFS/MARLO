@@ -75,7 +75,7 @@ public class ThreadSendMail extends Thread {
           e.printStackTrace();
           emailLog.setTried(i);
           emailLog.setSucces(false);
-          emailLog.setError(e.getCause().getMessage());
+          emailLog.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
           sessionFactory.getCurrentSession().beginTransaction();
           emailLogManager.saveEmailLog(emailLog);
           sessionFactory.getCurrentSession().getTransaction().commit();
