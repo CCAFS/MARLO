@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
@@ -71,8 +72,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   public double calculateGender(Long type, int year, long projectID) {
     double gender = 0;
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
+    List<ProjectBudget> budgets = projectBD
+      .getProjectBudgets().stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
       .collect(Collectors.toList());
 
@@ -95,11 +96,11 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public boolean hasBudgets(Long type, int year, long projectID) {
+  public boolean hasBudgets(Long type, int year, long projectID, Phase actualPhase) {
     Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
-      .stream().filter(c -> c.isActive() && c.getYear() == year
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
+    List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getYear() == year && c.getBudgetType().getId().longValue() == type.longValue()
+        && (c.getAmount() != null && c.getAmount() >= 0) && c.getPhase() != null && c.getPhase().equals(actualPhase))
       .collect(Collectors.toList());
     Double totalAmount = 0.0;
     for (ProjectBudget projectBudget : budgets) {
@@ -141,38 +142,43 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         }
       }
       Project projectDB = projectManager.getProjectById(project.getId());
-      List<ProjectClusterActivity> activities =
-        projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      List<ProjectClusterActivity> activities = projectDB.getProjectClusterActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+        .collect(Collectors.toList());
       if (!activities.isEmpty()) {
         if (CollectionUtils.isNotEmpty(project.getBudgetsCluserActvities())) {
-          if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
+          if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
             List<ProjectBudgetsCluserActvity> w1w2List = project.getBudgetsCluserActvities().stream()
               .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
-                && (c.getBudgetType().getId().longValue() == 1) && (c.getYear() == action.getCurrentCycleYear()))
+                && (c.getBudgetType().getId().longValue() == 1l) && (c.getYear() == action.getCurrentCycleYear())
+                && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
               .collect(Collectors.toList());
             this.validateBudgets(action, w1w2List, new Long(1),
               this.calculateGender(new Long(1), action.getCurrentCycleYear(), project.getId()));
           }
-          if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId())) {
+          if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
             List<ProjectBudgetsCluserActvity> w3List = project.getBudgetsCluserActvities().stream()
               .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
-                && c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear())
+                && c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear()
+                && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
               .collect(Collectors.toList());
             this.validateBudgets(action, w3List, new Long(2),
               this.calculateGender(new Long(2), action.getCurrentCycleYear(), project.getId()));
           }
-          if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId())) {
+          if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
             List<ProjectBudgetsCluserActvity> bilateralList = project.getBudgetsCluserActvities().stream()
               .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
-                && c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear())
+                && c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear()
+                && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
               .collect(Collectors.toList());
             this.validateBudgets(action, bilateralList, new Long(3),
               this.calculateGender(new Long(3), action.getCurrentCycleYear(), project.getId()));
           }
-          if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId())) {
+          if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
             List<ProjectBudgetsCluserActvity> centerFundsList = project.getBudgetsCluserActvities().stream()
               .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
-                && c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear())
+                && c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear()
+                && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
               .collect(Collectors.toList());
             this.validateBudgets(action, centerFundsList, new Long(4),
               this.calculateGender(new Long(4), action.getCurrentCycleYear(), project.getId()));

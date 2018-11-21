@@ -177,6 +177,7 @@
                   <input type="hidden" name="${customName}.crpProgram.id" value="${(element.id)!}"/>
                   <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
                   <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
+                  <input type="hidden" name="${customName}.phase.id" value="${(budgetObject.phase.id)!}"/>
                   [#assign budgetTypePermission= BudgetTypePermission(budgetType.name) /]
                   [#if editable && isYearEditable(selectedYear) && action.hasPermission(budgetTypePermission)]
                     [@customForm.input name="${customName}.amount" value="${((budgetObject.amount)!0)}" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.id}" required=true /]
