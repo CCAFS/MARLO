@@ -56,42 +56,9 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
       
-      window.addEventListener("load", function(){
-     
-      var p;
-      cookieconsent.initialise({
-        type: 'opt-out',
-        palette: {
-          "popup": { "background": "#f9fbfc", "text": "#3f5259" },
-          "button": { "background": "#1983ab", "text": "#ffffff" },
-        },
-        "content": {
-          "message": "MARLO uses cookies to ensure you get the best experience on our website.",
-          "href": "https://marlo.cgiar.org/legalInformation.do#privacyNotice"
-        },
-        onInitialise: function (status) {
-          if (status != 'allow') {
-            window['ga-disable-UA-86349544-1'] = true; //Disable Google Analytics. 
-          }
-        },
-        onStatusChange: function(status, chosenBefore) {
-          if (status != 'allow') {
-            window['ga-disable-UA-86349544-1'] = true; //Disable Google Analytics.
-          }
-        },
-      }, function (popup) {
-        p = popup;
-      }, function (err) {
-        console.error(err);
-      });
-      document.getElementById('btn-revokeChoice').onclick = function (e) {
-        p.revokeChoice();
-      };
       ga('create', 'UA-86349544-1', 'cgiar.org');
       ga('set', 'userId', '${(currentUser.composedID)!"Unknown"}' ); // Set the user ID using signed-in user_id.
       ga('send', 'pageview');
-      
-      });
       
       
     </script>
