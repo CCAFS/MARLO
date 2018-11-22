@@ -494,6 +494,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nDeliverableInstitution", this.getText("deliverable.institution"));
     masterReport.getParameterValues().put("i8nDeliverablePartner", this.getText("project.deliverable.partner"));
     masterReport.getParameterValues().put("i8nDeliverableType", this.getText("deliverable.type"));
+    masterReport.getParameterValues().put("i8nDeliverableNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     /*
      * Activities
      */
@@ -2512,9 +2513,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
-        "key_output", "leader", "institution", "funding_sources", "cross_cutting"},
+        "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year", "isExtended"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
@@ -2542,10 +2543,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String delivStatus =
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getSelectedPhase());
         String delivYear = null;
+        String delivNewYear = null;
         String keyOutput = "";
         String leader = null;
         String institution = null;
         String fundingSources = "";
+        Boolean isExtended = false;
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
@@ -2560,6 +2563,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getYear() != 0) {
           delivYear = "" + deliverable.getDeliverableInfo(this.getSelectedPhase()).getYear();
         }
+        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+          delivNewYear = "" + deliverable.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear();
+          isExtended = true;
+        }
+
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput() != null) {
           keyOutput += "● ";
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getCrpClusterOfActivity()
@@ -2670,9 +2679,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (keyOutput.isEmpty()) {
           keyOutput = null;
         }
+
+
         model.addRow(new Object[] {deliverable.getId(),
           deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), delivType, delivSubType, delivStatus,
-          delivYear, keyOutput, leader, institution, fundingSources, crossCutting});
+          delivYear, keyOutput, leader, institution, fundingSources, crossCutting, delivNewYear, isExtended});
       }
     }
     return model;
