@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -134,17 +135,19 @@ public class ProjectBudgetsValidator extends BaseValidator {
           }
           i++;
         }
-        if (total <= 0) {
-          i = 0;
-          for (ProjectBudget projectBudget : project.getBudgets()) {
-            if (projectBudget != null) {
-              if (projectBudget.getYear() == action.getCurrentCycleYear()) {
-                action.addMessage(action.getText("projectBudgets.amount"));
-                action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
-                  InvalidFieldsMessages.EMPTYFIELD);
+        if (!action.hasSpecificities(APConstants.CRP_PROJECT_BUDGET_ZERO)) {
+          if (total <= 0) {
+            i = 0;
+            for (ProjectBudget projectBudget : project.getBudgets()) {
+              if (projectBudget != null) {
+                if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+                  action.addMessage(action.getText("projectBudgets.amount"));
+                  action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
               }
+              i++;
             }
-            i++;
           }
         }
       } else {
