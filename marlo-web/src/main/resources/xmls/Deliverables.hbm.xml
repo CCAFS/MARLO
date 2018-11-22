@@ -191,6 +191,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion" />
 		</set>
+		<set name="deliverableLocations" table="deliverable_locations"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableLocation" />
+		</set>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" />

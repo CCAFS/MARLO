@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -112,6 +113,9 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
+
+      project.getBudgetsFlagship().removeIf(Objects::isNull);
+
       Project projectDB = projectManager.getProjectById(project.getId());
       List<ProjectFocus> projectFocuses = new ArrayList<>(projectDB.getProjectFocuses().stream()
         .filter(pf -> pf.isActive()

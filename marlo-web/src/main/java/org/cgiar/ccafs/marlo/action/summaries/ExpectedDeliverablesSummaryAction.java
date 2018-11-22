@@ -29,7 +29,9 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -177,6 +179,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
     masterReport.getParameterValues().put("i8nManagingResponsible", this.getText("deliverable.project.managing"));
     masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
+    masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("deliverable.countries"));
+    masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
+
+
     return masterReport;
   }
 
@@ -281,11 +288,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
         "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap",
-        "deliverableDescription"},
+        "deliverableDescription", "geographicScope", "region", "country"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -938,10 +945,62 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (fsWindows.isEmpty()) {
           fsWindows = null;
         }
+
+
+        /*
+         * Geographic Scope
+         */
+        String geographicScope = "", region = "", country = "";
+
+        // Geographic Scope
+        if (deliverableInfo.getGeographicScope() != null) {
+          geographicScope = deliverableInfo.getGeographicScope().getName();
+          // Regional
+          if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+
+            List<DeliverableGeographicRegion> deliverableRegions =
+              deliverable.getDeliverableGeographicRegions().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            if (deliverableRegions != null && deliverableRegions.size() > 0) {
+              Set<String> regionsSet = new HashSet<>();
+              for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
+                regionsSet.add(deliverableRegion.getLocElement().getName());
+              }
+              region = String.join(", ", regionsSet);
+            }
+
+          }
+          // Country
+          if (!deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
+            && !deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+
+            List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            if (deliverableCountries != null && deliverableCountries.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (DeliverableLocation deliverableCountry : deliverableCountries) {
+                countriesSet.add(deliverableCountry.getLocElement().getName());
+              }
+              country = String.join(", ", countriesSet);
+            }
+          }
+        }
+        if (geographicScope.isEmpty()) {
+          geographicScope = null;
+        }
+        if (region.isEmpty()) {
+          region = null;
+        }
+        if (country.isEmpty()) {
+          country = null;
+        }
+
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaRespondible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
-          phaseID, finishedFS, gender, youth, cap, deliverableDescription});
+          phaseID, finishedFS, gender, youth, cap, deliverableDescription, geographicScope, region, country});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
