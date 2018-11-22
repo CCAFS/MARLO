@@ -221,7 +221,8 @@ function findSameness() {
     $.ajax({
         url: baseURL + '/searchInstitutionsName.do',
         data: {
-          institutionName: institutionName
+          institutionName: institutionName,
+          requestID:  $(e).find('[name="requestID"]').val()
         },
         beforeSend: function() {
           $(e).find('.loading').fadeIn();
