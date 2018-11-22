@@ -176,8 +176,14 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
         Institution institutionCp = liaisonInstitution.getInstitution();
 
-        if (institutionCp.getId().equals(institutionProject.getId())) {
-          canSwitchProject = true;
+        if (institutionCp != null) {
+          if (institutionCp.getId().equals(institutionProject.getId())) {
+            canSwitchProject = true;
+          } else {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+              canSwitchProject = true;
+            }
+          }
         } else {
           if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
             canSwitchProject = true;
@@ -189,12 +195,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
         }
       }
 
-      List<CaseStudyProject> caseStudyProjects =
-        new ArrayList<>(
-          caseStudy
-            .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
-              && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isActive())
-            .collect(Collectors.toList()));
+      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
+        .filter(
+          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isActive())
+        .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;
