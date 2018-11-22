@@ -38,6 +38,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -141,6 +142,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
+      project.getBudgetsCluserActvities().removeIf(Objects::isNull);
       Project projectDB = projectManager.getProjectById(project.getId());
       List<ProjectClusterActivity> activities = projectDB.getProjectClusterActivities().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))

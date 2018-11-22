@@ -133,7 +133,7 @@ function init() {
       width: '100%'
   });
 
-  changeDonorByFundingType($fundingType.val(), $(".donor:eq(0)"))
+  changeDonorByFundingType($fundingType.val(), $(".donor:eq(0)"));
 
   // Check Funding type
   onChangeFundingType($fundingType.val());
