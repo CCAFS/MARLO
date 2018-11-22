@@ -66,7 +66,7 @@
               [#assign expenditureAreas = ((flagships)![]) + ((plannedBudgetAreas)![]) + ((otherPlannedBudgets)![]) ]
               [#list expenditureAreas  as area]
                 [#assign isLiaison = (area.class.name?contains("LiaisonInstitution"))!false]
-                [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison))! /]
+                [#assign element = (action.getPowbFinancialPlanBudget(area.id, isLiaison, area_index))! /]
                 [#if PMU || ((element.liaisonInstitution.id == liaisonInstitutionID)!false)]
                   [@powbExpenditureArea area=area element=element index=area_index isLiaison=isLiaison /]
                 [/#if]

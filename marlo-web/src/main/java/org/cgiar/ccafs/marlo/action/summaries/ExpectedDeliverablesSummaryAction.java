@@ -386,12 +386,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
                 individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
                 ppaRespondible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                  + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
+                  + responsibleppp.getProjectPartner().getInstitution().getAcronym() + ",</span>";
                 responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym();
               } else {
                 individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
                 ppaRespondible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                  + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
+                  + responsibleppp.getProjectPartner().getInstitution().getName() + ",</span>";
                 responsibleName = responsibleppp.getProjectPartner().getInstitution().getName();
               }
             }

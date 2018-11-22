@@ -213,7 +213,7 @@ public class PlannedColaborationAction extends BaseAction {
 
       for (PowbCollaborationGlobalUnitPmu powbStudy : powbCollaborationDB.getPowbCollaborationGlobalUnitPmu().stream()
         .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
-        if (!selectedPs.contains(powbStudy.getPowbCollaboration().getId())) {
+        if (!selectedPs.contains(powbStudy.getPowbCollaborationGlobalUnit().getId())) {
           powbCollaborationGlobalUnitPmuManager.deletePowbCollaborationGlobalUnitPmu(powbStudy.getId());
         }
       }

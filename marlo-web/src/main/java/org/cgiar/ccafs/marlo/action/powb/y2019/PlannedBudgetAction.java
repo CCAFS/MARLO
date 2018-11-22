@@ -195,8 +195,20 @@ public class PlannedBudgetAction extends BaseAction {
 
 
   public List<PowbFinancialPlannedBudget> getOtherPlannedBudgets() {
-    List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
-      .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+    List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = new ArrayList<>();
+    if (this.isDraft()) {
+      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
+        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
+
+        powbFinancialPlannedBudgets = powbSynthesis.getPowbFinancialPlannedBudgetList().stream()
+          .filter(p -> p.getPowbExpenditureArea() == null && p.getLiaisonInstitution() == null)
+          .collect(Collectors.toList());
+      }
+    } else {
+      powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
+        .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+    }
+
     if (powbFinancialPlannedBudgets != null) {
       return powbFinancialPlannedBudgets;
     } else {
@@ -239,7 +251,8 @@ public class PlannedBudgetAction extends BaseAction {
     }
   }
 
-  public PowbFinancialPlannedBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID, Boolean isLiaison) {
+  public PowbFinancialPlannedBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID, Boolean isLiaison,
+    int index) {
     if (isLiaison) {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(plannedBudgetRelationID);
@@ -283,44 +296,52 @@ public class PlannedBudgetAction extends BaseAction {
         return null;
       }
     } else {
-      PowbExpenditureAreas powbExpenditureArea =
-        powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
+      if (plannedBudgetRelationID == null) {
 
-      if (powbExpenditureArea != null) {
-        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
-          powbSynthesis.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
-            && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
-        if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
-          PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
-          if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
-            this.loadPMU(powbExpenditureArea);
-            powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
-            powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
-            powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
+        PowbFinancialPlannedBudget powbFinancialPlannedBudget =
+          powbSynthesis.getPowbFinancialPlannedBudgetList().get(index);
 
-            powbFinancialPlannedBudget.setEditBudgets(false);
-          }
-          return powbFinancialPlannedBudget;
-        } else {
-
-          PowbFinancialPlannedBudget powbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
-          powbFinancialPlannedBudget.setPowbExpenditureArea(powbExpenditureArea);
-          if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
-            this.loadPMU(powbExpenditureArea);
-            powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
-            powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
-            powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
-
-            powbFinancialPlannedBudget.setEditBudgets(false);
-          }
-          return powbFinancialPlannedBudget;
-
-
-        }
+        return powbFinancialPlannedBudget;
       } else {
-        PowbFinancialPlannedBudget financialPlannedBudget =
-          powbFinancialPlannedBudgetManager.getPowbFinancialPlannedBudgetById(plannedBudgetRelationID);
-        return financialPlannedBudget;
+        PowbExpenditureAreas powbExpenditureArea =
+          powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
+
+        if (powbExpenditureArea != null) {
+          List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
+            powbSynthesis.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
+              && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
+          if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
+            PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
+            if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
+              this.loadPMU(powbExpenditureArea);
+              powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
+              powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
+              powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
+
+              powbFinancialPlannedBudget.setEditBudgets(false);
+            }
+            return powbFinancialPlannedBudget;
+          } else {
+
+            PowbFinancialPlannedBudget powbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
+            powbFinancialPlannedBudget.setPowbExpenditureArea(powbExpenditureArea);
+            if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
+              this.loadPMU(powbExpenditureArea);
+              powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
+              powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
+              powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
+
+              powbFinancialPlannedBudget.setEditBudgets(false);
+            }
+            return powbFinancialPlannedBudget;
+
+
+          }
+        } else {
+          PowbFinancialPlannedBudget financialPlannedBudget =
+            powbFinancialPlannedBudgetManager.getPowbFinancialPlannedBudgetById(plannedBudgetRelationID);
+          return financialPlannedBudget;
+        }
       }
     }
   }
