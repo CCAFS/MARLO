@@ -117,6 +117,7 @@ public class RequestCountryOfficeAction extends BaseAction {
         partnerRequest.setLocElement(locElementManager.getLocElementByISOCode((string)));
         partnerRequest.setOffice(true);
         partnerRequest.setCrp(loggedCrp);
+        partnerRequest.setPhase(this.getActualPhase());
         partnerRequestManager.savePartnerRequest(partnerRequest);
       }
       String institutionName = institutionManager.getInstitutionById(institutionID).getName();

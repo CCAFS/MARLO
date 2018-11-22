@@ -78,8 +78,13 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private Date rejectedDate;
 
+  @Expose
+  private Phase phase;
+
+
   public PartnerRequest() {
   }
+
 
   public Boolean getAcepted() {
     return acepted;
@@ -97,11 +102,9 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
     return this.locElement.getName();
   }
 
-
   public String getCountryISO() {
     return this.locElement.getIsoAlpha2();
   }
-
 
   public GlobalUnit getCrp() {
     return crp;
@@ -146,9 +149,15 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   public User getRejectedBy() {
     return rejectedBy;
   }
+
 
   public Date getRejectedDate() {
     return rejectedDate;
@@ -162,10 +171,10 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
     return requestSource;
   }
 
-
   public String getWebPage() {
     return webPage;
   }
+
 
   public boolean isOffice() {
     return office;
@@ -213,6 +222,10 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
 
   public void setPartnerRequest(PartnerRequest partnerRequest) {
     this.partnerRequest = partnerRequest;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setRejectedBy(User rejectedBy) {
