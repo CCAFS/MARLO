@@ -232,7 +232,7 @@ function findSameness() {
             $(e).find('.sameness').show();
 
             $.each(data.institutions, function(i,partner) {
-              var ppaText = partner.isPPA? '<span class="label label-warning">PPA</span>':'';
+              var ppaText = partner.isPPA? '<small><span class="label label-warning">PPA</span></small>':'';
               var $li = $('<li title="' + partner.composedName + '">' + partner.composedName + ' '+ ppaText + '</li>');
               $(e).find('.sameness ul').append($li);
               // Text Difference
