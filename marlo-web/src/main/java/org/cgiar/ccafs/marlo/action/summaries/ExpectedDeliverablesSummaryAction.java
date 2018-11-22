@@ -955,9 +955,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         // Geographic Scope
         if (deliverableInfo.getGeographicScope() != null) {
           geographicScope = deliverableInfo.getGeographicScope().getName();
+          if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())) {
+            region = "&lt;Not Applicable&gt;";
+            country = "&lt;Not Applicable&gt;";
+          }
           // Regional
           if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-
+            country = "&lt;Not Applicable&gt;";
             List<DeliverableGeographicRegion> deliverableRegions =
               deliverable.getDeliverableGeographicRegions().stream()
                 .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
@@ -974,7 +978,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           // Country
           if (!deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
             && !deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-
+            region = "&lt;Not Applicable&gt;";
             List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
               .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList());
