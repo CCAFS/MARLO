@@ -343,7 +343,8 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequestModifications.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
     partnerRequest.setOffice(false);
     partnerRequestModifications.setOffice(false);
-
+    partnerRequest.setPhase(this.getActualPhase());
+    partnerRequestModifications.setPhase(this.getActualPhase());
 
     if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
       partnerRequest.setWebPage(partnerWebPage);

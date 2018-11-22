@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SimilarStringUtils;
 
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -49,16 +52,20 @@ public class SearchInstitutionsNameAction extends BaseAction {
 
   // Managers
   private InstitutionManager institutionManager;
+  private PartnerRequestManager partnerRequestManager;
 
   // Parameters
   private String name;
   private List<Map<String, Object>> institutions;
+  private String requestID;
 
 
   @Inject
-  public SearchInstitutionsNameAction(APConfig config, InstitutionManager institutionManager) {
+  public SearchInstitutionsNameAction(APConfig config, InstitutionManager institutionManager,
+    PartnerRequestManager partnerRequestManager) {
     super(config);
     this.institutionManager = institutionManager;
+    this.partnerRequestManager = partnerRequestManager;
   }
 
   @Override
@@ -71,6 +78,11 @@ public class SearchInstitutionsNameAction extends BaseAction {
     return institutions;
   }
 
+  public String getRequestID() {
+    return requestID;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     // Map<String, Object> parameters = this.getParameters();
@@ -78,9 +90,11 @@ public class SearchInstitutionsNameAction extends BaseAction {
 
     Map<String, Parameter> parameters = this.getParameters();
     name = StringUtils.trim(parameters.get(APConstants.INSTITUTION_NAME).getMultipleValues()[0]);
+    requestID = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
 
 
   }
+
 
   /**
    * Search an institution in the database
@@ -102,8 +116,12 @@ public class SearchInstitutionsNameAction extends BaseAction {
       institutionMap.put("name", institution.getName());
       institutionMap.put("type", institution.getInstitutionType().getName());
 
+      PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
+      if (partnerRequest.getPhase() != null) {
+        boolean isPPA = institution.isPPA(partnerRequest.getCrp().getId(), partnerRequest.getPhase());
+        institutionMap.put("isPPA", isPPA);
+      }
 
-      institutionMap.put("isPPA", institution.isPPA(this.getCrpID(), this.getActualPhase()));
       this.institutions.add(institutionMap);
     }
 
