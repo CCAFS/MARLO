@@ -25,10 +25,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -203,8 +207,33 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       }
 
 
-      if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
-        canSwitchProject = true;
+      Project lProject = project.getProject();
+      LiaisonUser lUser = liaisonUserManager.getLiaisonUserByUserId(user.getId(), loggedCrp.getId());
+      if (contactPointEditProject && lUser != null) {
+        LiaisonInstitution liaisonInstitution = lUser.getLiaisonInstitution();
+        ProjectPartner projectPartner = lProject.getLeader();
+
+        Institution institutionProject = projectPartner.getInstitution();
+
+        Institution institutionCp = liaisonInstitution.getInstitution();
+
+        if (institutionCp != null) {
+          if (institutionCp.getId().equals(institutionProject.getId())) {
+            canSwitchProject = true;
+          } else {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+              canSwitchProject = true;
+            }
+          }
+        } else {
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+            canSwitchProject = true;
+          }
+        }
+      } else {
+        if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+          canSwitchProject = true;
+        }
       }
 
 
