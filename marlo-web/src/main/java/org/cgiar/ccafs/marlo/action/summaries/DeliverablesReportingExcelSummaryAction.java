@@ -31,7 +31,9 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -58,6 +60,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -165,7 +168,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nMetadataDescription", this.getText("metadata.description.readText"));
     masterReport.getParameterValues().put("i8nMetadataDate", this.getText("metadata.date"));
     masterReport.getParameterValues().put("i8nLanguage", this.getText("metadata.language"));
-    masterReport.getParameterValues().put("i8nCountry", this.getText("metadata.country"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("metadata.countries"));
     masterReport.getParameterValues().put("i8nKeywords", this.getText("metadata.keywords.help"));
     masterReport.getParameterValues().put("i8nCitation", this.getText("metadata.citation.readText"));
     masterReport.getParameterValues().put("i8nHandle", this.getText("metadata.handle"));
@@ -204,6 +207,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nKeyOutput",
       this.getText("project.deliverable.generalInformation.keyOutput"));
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
+    masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
+    masterReport.getParameterValues().put("i8nDeliverableCountry", this.getText("deliverable.countries"));
+    masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
 
     /*
      * Reporting
@@ -344,14 +350,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
-        "phaseID", "gender", "youth", "cap"},
+        "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Long.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
@@ -1243,6 +1250,64 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
+        /*
+         * Geographic Scope
+         */
+        String geographicScope = "", region = "", country = "";
+
+        // Geographic Scope
+        if (deliverable.getDeliverableInfo().getGeographicScope() != null) {
+          geographicScope = deliverable.getDeliverableInfo().getGeographicScope().getName();
+          if (deliverable.getDeliverableInfo().getGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeGlobal())) {
+            region = "<Not Applicable>";
+            country = "<Not Applicable>";
+          }
+          // Regional
+          if (deliverable.getDeliverableInfo().getGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeRegional())) {
+            country = "<Not Applicable>";
+            List<DeliverableGeographicRegion> deliverableRegions =
+              deliverable.getDeliverableGeographicRegions().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            if (deliverableRegions != null && deliverableRegions.size() > 0) {
+              Set<String> regionsSet = new HashSet<>();
+              for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
+                regionsSet.add(deliverableRegion.getLocElement().getName());
+              }
+              region = String.join(", ", regionsSet);
+            }
+
+          }
+          // Country
+          if (!deliverable.getDeliverableInfo().getGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeGlobal())
+            && !deliverable.getDeliverableInfo().getGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+            region = "<Not Applicable>";
+            List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            if (deliverableCountries != null && deliverableCountries.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (DeliverableLocation deliverableCountry : deliverableCountries) {
+                countriesSet.add(deliverableCountry.getLocElement().getName());
+              }
+              country = String.join(", ", countriesSet);
+            }
+          }
+        }
+        if (geographicScope.isEmpty()) {
+          geographicScope = null;
+        }
+        if (region.isEmpty()) {
+          region = null;
+        }
+        if (country.isEmpty()) {
+          country = null;
+        }
+
         model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,
           keyOutput, outcomes, leader, fundingSources, delivNewYear, delivNewYearJustification,
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
@@ -1250,7 +1315,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary, tools, F, A, I, R,
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
-          phaseID, gender, youth, cap});
+          phaseID, gender, youth, cap, geographicScope, region, country});
       }
     }
     return model;
@@ -1263,13 +1328,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes"},
+        "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes",
+        "geographicScope", "region", "country"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, Long.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -1921,12 +1987,71 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         if (outcomes.isEmpty()) {
           outcomes = null;
         }
+
+        /*
+         * Geographic Scope
+         */
+        String geographicScope = "", region = "", country = "";
+
+        // Geographic Scope
+        if (deliverable.getDeliverableInfo().getGeographicScope() != null) {
+          geographicScope = deliverable.getDeliverableInfo().getGeographicScope().getName();
+          if (deliverable.getDeliverableInfo().getGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeGlobal())) {
+            region = "<Not Applicable>";
+            country = "<Not Applicable>";
+          }
+          // Regional
+          if (deliverable.getDeliverableInfo().getGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeRegional())) {
+            country = "<Not Applicable>";
+            List<DeliverableGeographicRegion> deliverableRegions =
+              deliverable.getDeliverableGeographicRegions().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+            if (deliverableRegions != null && deliverableRegions.size() > 0) {
+              Set<String> regionsSet = new HashSet<>();
+              for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
+                regionsSet.add(deliverableRegion.getLocElement().getName());
+              }
+              region = String.join(", ", regionsSet);
+            }
+
+          }
+          // Country
+          if (!deliverable.getDeliverableInfo().getGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeGlobal())
+            && !deliverable.getDeliverableInfo().getGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+            region = "<Not Applicable>";
+            List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            if (deliverableCountries != null && deliverableCountries.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (DeliverableLocation deliverableCountry : deliverableCountries) {
+                countriesSet.add(deliverableCountry.getLocElement().getName());
+              }
+              country = String.join(", ", countriesSet);
+            }
+          }
+        }
+        if (geographicScope.isEmpty()) {
+          geographicScope = null;
+        }
+        if (region.isEmpty()) {
+          region = null;
+        }
+        if (country.isEmpty()) {
+          country = null;
+        }
+
         model.addRow(new Object[] {publicationId, title, publicationSubType, delivYear, leader,
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
           HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
           issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID,
-          gender, youth, cap, keyOutput, outcomes});
+          gender, youth, cap, keyOutput, outcomes, geographicScope, region, country});
       }
     }
     return model;
