@@ -530,7 +530,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     data = new ArrayList<>();
 
     String fp, subIDO, outcomes, milestone, powbIndFollowingMilestone, powbMilestoneVerification, gender, youth, capdev,
-      climate, assesmentRisk, milestoneRisk;
+      climate, assesmentRisk, milestoneRisk, lastFP = "", lastSubIdo = "";
 
     flagships = this.powb2019Data.getTable2A(loggedCrp, this.getSelectedPhase());
 
@@ -546,10 +546,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
             Boolean isOutcomeRow = (milestone_index == 0);
 
+
             if (isFlagshipRow) {
               fp = flagship.getAcronym();
             } else {
-              fp = " ";
+              fp = "";
+            }
+            if (fp.equals(lastFP)) {
+              fp = "";
+            } else {
+              lastFP = fp;
             }
 
             for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
@@ -569,11 +575,16 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
                 }
               }
             }
+            if (subIDO.equals(lastSubIdo)) {
+              subIDO = "";
+            } else {
+              lastSubIdo = subIDO;
+            }
 
             if (isOutcomeRow) {
               outcomes = outcome.getComposedName();
             } else {
-              outcomes = " ";
+              outcomes = "";
             }
 
             milestone = crpMilestone.getComposedName();
