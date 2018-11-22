@@ -231,8 +231,14 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
         Institution institutionCp = liaisonInstitution.getInstitution();
 
-        if (institutionCp.getId().equals(institutionProject.getId())) {
-          canSwitchProject = true;
+        if (institutionCp != null) {
+          if (institutionCp.getId().equals(institutionProject.getId())) {
+            canSwitchProject = true;
+          } else {
+            if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+              canSwitchProject = true;
+            }
+          }
         } else {
           if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
             canSwitchProject = true;
