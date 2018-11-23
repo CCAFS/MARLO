@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -54,6 +55,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.authz.AuthorizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,7 +197,9 @@ public class ProjectListAction extends BaseAction {
         LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liId);
         if (this.createProject(APConstants.PROJECT_CORE, liaisonUser, liaisonInstitution, false)) {
 
-          this.clearPermissionsCache();
+          AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+            .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+          // this.clearPermissionsCache();
           return SUCCESS;
         }
         return INPUT;
@@ -221,7 +225,20 @@ public class ProjectListAction extends BaseAction {
     projectInfo.setLiaisonInstitution(liaisonInstitution);
     projectInfo.setScale(0);
     projectInfo.setCofinancing(false);
-    projectInfo.setProjectEditLeader(false);
+    // CIAT (Center) Project Creation
+    if (this.isCenterGlobalUnit()) {
+      projectInfo.setProjectEditLeader(true);
+
+      // Create Center Partner
+      ProjectPartner projectPartner = new ProjectPartner();
+      projectPartner.setProject(project);
+      projectPartner.setInstitution(loggedCrp.getInstitution());
+      projectPartner.setPhase(this.getActualPhase());
+      projectPartnerManager.saveProjectPartner(projectPartner);
+
+    } else {
+      projectInfo.setProjectEditLeader(false);
+    }
     projectInfo.setPresetDate(new Date());
     projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
     projectInfo.setAdministrative(new Boolean(admin));
@@ -614,7 +631,29 @@ public class ProjectListAction extends BaseAction {
     if (this.isCenterGlobalUnit()) {
       this.leadCenterProjects();
       this.loadFlagshipgsAndRegionsCurrentPhase(centerProjects);
-      myProjects.addAll(centerProjects);
+
+      LiaisonUser liaisonUser =
+        liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+
+      if (liaisonUser != null) {
+        for (Project project : centerProjects) {
+          ProjectInfo info = project.getProjecInfoPhase(this.getActualPhase());
+          if (info.getLiaisonInstitutionCenter() != null) {
+            if (liaisonUser.getLiaisonInstitution().getId().equals(info.getLiaisonInstitutionCenter().getId())) {
+              myProjects.add(project);
+            } else {
+              allProjects.add(project);
+            }
+          } else {
+            allProjects.add(project);
+          }
+
+        }
+      } else {
+        allProjects.addAll(centerProjects);
+      }
+
+      // myProjects.addAll(centerProjects);
     }
 
 
