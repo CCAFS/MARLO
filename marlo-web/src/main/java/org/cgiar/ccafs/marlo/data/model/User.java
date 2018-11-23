@@ -144,6 +144,13 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.getLastName() + ", " + this.getFirstName() + " <" + this.getEmail() + ">";
   }
 
+  public String getComposedNameWithoutEmail() {
+    if (this.getId() == null || this.getId() == -1) {
+      return "";
+    }
+    return this.getLastName() + ", " + this.getFirstName();
+  }
+
   public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
     return crpClusterActivityLeaders;
   }
