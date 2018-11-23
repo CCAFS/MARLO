@@ -386,27 +386,25 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
                 individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
                 ppaRespondible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                  + responsibleppp.getProjectPartner().getInstitution().getAcronym() + ",</span>";
+                  + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
                 responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym();
               } else {
                 individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
                 ppaRespondible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                  + responsibleppp.getProjectPartner().getInstitution().getName() + ",</span>";
+                  + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
                 responsibleName = responsibleppp.getProjectPartner().getInstitution().getName();
               }
             }
           }
           if (responsibleppp.getUser() != null) {
-            individual += responsibleppp.getUser().getComposedName();
+            individual += responsibleppp.getUser().getComposedNameWithoutEmail();
           }
 
           if (responsible.getPartnerDivision() != null && responsible.getPartnerDivision().getAcronym() != null
             && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
-            individual += " (" + responsible.getPartnerDivision().getAcronym() + ")";
+            individual += " (" + responsible.getPartnerDivision().getAcronym() + ") ";// All individual resposible
           }
-          individual = individual.replace(" <", "<");
-          individual = individual.replace("> ", ">");
-          individual = individual.replace("  ", "");
+
           individual += "</span>";
         }
       }
@@ -422,6 +420,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
 
       if (othersPartnerships != null) {
+        individual += ", ";
         for (DeliverablePartnership deliverablePartnership : othersPartnerships) {
           if (deliverablePartnership.getProjectPartner() != null) {
             institutionsResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution());
@@ -429,14 +428,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverablePartnership.getProjectPartnerPerson() != null) {
             if (individual.isEmpty()) {
               individual += "<span style='font-family: Segoe UI;font-size: 10'>";
-            } else {
-              individual = individual.substring(0, individual.length() - 1);
-              individual = individual + ",";
-              individual = individual.replace("  ", "");
-              individual = individual.replace(" <", "<");
-              individual = individual.replace("> ", ">");
-              individual = individual.replace(" ,", ",");
-              individual += ", <span style='font-family: Segoe UI;font-size: 10'>";
             }
 
             ProjectPartnerPerson responsibleppp = deliverablePartnership.getProjectPartnerPerson();
@@ -1000,6 +991,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (country.isEmpty()) {
           country = null;
         }
+
 
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
