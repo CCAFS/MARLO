@@ -1,0 +1,1 @@
+Delete from custom_parameters where global_unit_id = 26;
