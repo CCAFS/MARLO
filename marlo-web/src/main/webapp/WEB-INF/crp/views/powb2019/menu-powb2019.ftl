@@ -129,12 +129,12 @@
 
 
 [#-- Generate RTF --]
-[#if !config.production]
+[#if true]
 <br />
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/POWBSummaryPLT2019"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
+   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <small>(Beta version)</small>
   </a>
 </div>
 [/#if]
