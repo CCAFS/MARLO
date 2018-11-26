@@ -717,13 +717,20 @@ public class ProjectDescriptionAction extends BaseAction {
     allOwners = new ArrayList<LiaisonUser>();
     // load the liason users for the crp
     allOwners.addAll(loggedCrp.getLiasonUsers());
-
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
+    if (this.isCenterGlobalUnit()) {
+      liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram() != null
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    } else {
+      liaisonInstitutions
+        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      liaisonInstitutions.addAll(
+        liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+    }
     // load the liasons intitutions for the crp
-    liaisonInstitutions
-      .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-    liaisonInstitutions.addAll(
-      liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+
 
     // load the flaghsips an regions
     programFlagships = new ArrayList<>();

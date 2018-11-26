@@ -397,8 +397,10 @@ public class ProjectCenterMappingAction extends BaseAction {
 
       liaisonInstitutions = new ArrayList<LiaisonInstitution>();
       // load the liasons intitutions for the crp
-      liaisonInstitutions
-        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram() != null
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
       // load the flaghsips an regions
       programFlagships = new ArrayList<>();
       regionFlagships = new ArrayList<>();
