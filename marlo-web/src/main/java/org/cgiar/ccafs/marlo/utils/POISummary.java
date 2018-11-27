@@ -228,9 +228,11 @@ public class POISummary {
           stringTemp = text.substring(startPosition, i);
 
           try {
+            paragraph.setAlignment(ParagraphAlignment.BOTH);
             paragraphRun = paragraph.createRun();
           } catch (Exception e) {
             paragraph = document.createParagraph();
+            paragraph.setAlignment(ParagraphAlignment.BOTH);
             paragraphRun = paragraph.createRun();
           }
 
@@ -239,7 +241,6 @@ public class POISummary {
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = stringTemp.replaceAll(">", "");
           this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
-
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
@@ -260,9 +261,11 @@ public class POISummary {
         }
 
         try {
+          paragraph.setAlignment(ParagraphAlignment.BOTH);
           paragraphRun = paragraph.createRun();
         } catch (Exception e) {
           paragraph = document.createParagraph();
+          paragraph.setAlignment(ParagraphAlignment.BOTH);
           paragraphRun = paragraph.createRun();
         }
 
@@ -350,9 +353,11 @@ public class POISummary {
       startText = startText.substring(finalPosition + expression.length(), length);
 
       try {
+        paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
       } catch (Exception e) {
         paragraph = document.createParagraph();
+        paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
       }
 
