@@ -769,7 +769,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
                 for (ProjectExpectedStudyCountry studyCountry : studyRegions) {
                   countriesSet.add(studyCountry.getLocElement().getName());
                 }
-                geographicScope = String.join(",", countriesSet);
+                geographicScope = geographicScope + "," + countriesSet;
               }
 
             }
@@ -789,7 +789,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
                 for (ProjectExpectedStudyCountry studyCountry : studyCountries) {
                   countriesSet.add(studyCountry.getLocElement().getName());
                 }
-                geographicScope = String.join(",", countriesSet);
+                geographicScope = geographicScope + "," + countriesSet;
               }
             }
           } else {
