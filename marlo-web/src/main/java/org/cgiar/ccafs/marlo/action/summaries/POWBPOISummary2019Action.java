@@ -237,11 +237,9 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     if (powbSynthesis != null && powbSynthesis.getPowbToc() != null) {
       if (powbSynthesis.getPowbToc().getTocOverall() != null) {
         adjustmentsDescription = powbSynthesis.getPowbToc().getTocOverall();
-        // poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
         poiSummary.convertHTMLTags(document, adjustmentsDescription);
 
 
-        // poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
         if (powbSynthesis.getPowbToc() != null && powbSynthesis.getPowbToc().getFile() != null) {
           poiSummary.textHyperlink(
             this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
@@ -261,7 +259,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       if (powbSynthesis.getPowbToc() != null) {
         if (powbSynthesis.getExpectedProgressNarrative() != null) {
           expectedKeyResults = powbSynthesis.getExpectedProgressNarrative();
-          // oiSummary.textParagraph(document.createParagraph(), expectedKeyResults);
           poiSummary.convertHTMLTags(document, expectedKeyResults);
         }
       }
@@ -274,7 +271,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       if (powbSynthesis.getFinancialPlan() != null
         && powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
         financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
-        // poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
         poiSummary.convertHTMLTags(document, financialPlanDescription);
       }
     }
@@ -1101,8 +1097,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableB2.title"));
         this.createTableB2();
         document.createParagraph().setPageBreak(true);
 
@@ -1227,9 +1221,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         paragraph.setStyle("heading 1");
         /*****************************/
 
-
-        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(),
-        // this.getText("summaries.powb2019.narrativeSection"));
         poiSummary.textLineBreak(document, 1);
         String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
