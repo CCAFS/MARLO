@@ -5630,12 +5630,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  public boolean isReportingActiveMenu() {
-
-
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
-
-  }
 
   public boolean isReportingActiveParam() {
 
