@@ -106,6 +106,20 @@ public class POISummary {
     }
   }
 
+  private void addParagraphTextBreakPOW2019(XWPFRun paragraphRun, String text) {
+    if (text.contains("\n")) {
+      String[] lines = text.split("\n");
+      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+      for (int i = 1; i < lines.length; i++) {
+        // add break and insert new text
+        paragraphRun.addCarriageReturn();
+        paragraphRun.setText(lines[i]);
+      }
+    } else {
+      paragraphRun.setText(text, 0);
+    }
+  }
+
   public void convertHTMLTags(XWPFDocument document, String text) {
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
@@ -114,7 +128,12 @@ public class POISummary {
     List<String> referenceList = new ArrayList<String>();
 
     text = text.replace("<p>", "");
-    text = text.replace("</p>", "");
+
+    /*
+     * recognize the tag as a line break
+     */
+    text = text.replace("</p>", "\n");
+
     int textLength = 0;
     this.addExpressionsToList();
     String url = "";
@@ -155,12 +174,13 @@ public class POISummary {
 
               hrefTagsCount++;
               textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
-              url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 2);
+              url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
 
-              if (!url.contains("www.")) {
-                url = "www." + url;
-              }
-
+              /*
+               * if (!url.contains("www.")) {
+               * url = "www." + url;
+               * }
+               */
               if (!url.contains("http://") && !url.contains("https://")) {
                 url = "http://" + url;
               }
@@ -218,7 +238,8 @@ public class POISummary {
           paragraphRun = paragraph.createRun();
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = stringTemp.replaceAll(">", "");
-          this.addParagraphTextBreak(paragraphRun, stringTemp);
+          this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
+
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
@@ -249,7 +270,7 @@ public class POISummary {
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           stringTemp = this.replaceHTMLTags(stringTemp);
 
-          this.addParagraphTextBreak(paragraphRun, stringTemp);
+          this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
@@ -335,8 +356,13 @@ public class POISummary {
         paragraphRun = paragraph.createRun();
       }
 
-      startText = this.replaceHTMLTags(" " + startText);
-      this.addParagraphTextBreak(paragraphRun, startText);
+      if (startText != null && !startText.isEmpty() && startText != "" && finalPosition != 0) {
+        startText = this.replaceHTMLTags(" " + startText);
+      } else {
+        startText = this.replaceHTMLTags("" + startText);
+      }
+
+      this.addParagraphTextBreakPOW2019(paragraphRun, startText);
 
       paragraphRun.setColor(TEXT_FONT_COLOR);
       paragraphRun.setFontFamily(FONT_TYPE);
@@ -444,6 +470,8 @@ public class POISummary {
       html = html.replaceAll("\\<.*?>", "");
       html = html.replaceAll("&nbsp;", "");
       html = html.replaceAll("&amp;", "");
+      html = html.replaceAll("&gt;", "");
+      html = html.replaceAll("&lt;", "");
     } catch (Exception e) {
       throw e;
     }
