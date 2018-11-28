@@ -182,6 +182,13 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
 
   @Override
+  public List<ProjectBudget> getProjectBudgetByPhaseAndYear(long institutionID, int year, long budgetTypeId,
+    long projectId, long fundingSourceId, long idPhase) {
+    return projectBudgetDAO.getProjectBudgetByPhaseAndYear(institutionID, year, budgetTypeId, projectId,
+      fundingSourceId, idPhase);
+  }
+
+  @Override
   public double getReaminingAmount(long fundingSourceID, int year, double budget, long idPhase) {
     String amount = projectBudgetDAO.amountByFundingSource(fundingSourceID, year, idPhase);
     if (amount != null) {
@@ -256,4 +263,5 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     // }
     return resultBudget;
   }
+
 }
