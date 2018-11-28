@@ -39,7 +39,7 @@
 			</result>
 		</action>
 
-	
+	 <!-- 
 		<action name="testCIATOCS" class="org.cgiar.ccafs.marlo.action.TestCIATOCSAction">
 			<result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
 			<result name="input" type="httpheader">
@@ -47,7 +47,7 @@
 				<param name="errorMessage">Not Found</param>
 			</result>
 		</action>
-		
+		 -->
 		<action name="mapGeo" class="org.cgiar.ccafs.marlo.action.MapGeolocation">
       <result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
     </action>
