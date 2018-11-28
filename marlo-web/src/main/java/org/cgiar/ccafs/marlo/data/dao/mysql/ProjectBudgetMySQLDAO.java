@@ -181,6 +181,27 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   }
 
   @Override
+  public List<ProjectBudget> getProjectBudgetByPhaseAndYear(long institutionID, int year, long budgetTypeId,
+    long projectId, long fundingSourceId, long idPhase) {
+    String query = "select id from project_budgets pb where pb.institution_id= " + institutionID + " and pb.year= "
+      + year + " and pb.budget_type= " + budgetTypeId + " and pb.project_id= " + projectId + " and pb.is_active=1 "
+      + "and pb.funding_source_id= " + fundingSourceId + " and pb.id_phase=" + idPhase;
+
+    List<Map<String, Object>> pbList = super.findCustomQuery(query.toString());
+
+    List<ProjectBudget> projectBudgetList = new ArrayList<>();
+
+    if (pbList != null) {
+      for (Map<String, Object> map : pbList) {
+        ProjectBudget projectBudget = this.find(Long.parseLong(map.get("id").toString()));
+        projectBudgetList.add(projectBudget);
+      }
+      return projectBudgetList;
+    }
+    return null;
+  }
+
+  @Override
   public double getTotalBudget(long projetId, long phaseID, int type, int year) {
     String query =
       "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId + " and pb.id_phase="

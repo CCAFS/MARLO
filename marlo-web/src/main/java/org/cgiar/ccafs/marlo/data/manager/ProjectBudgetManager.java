@@ -90,6 +90,20 @@ public interface ProjectBudgetManager {
   public ProjectBudget getProjectBudgetById(long projectBudgetID);
 
   /**
+   * gets a list of ProjectBudget of a specific parameters
+   * 
+   * @param institutionID
+   * @param year
+   * @param budgetTypeId
+   * @param projectId
+   * @param fundingSourceId
+   * @param idPhase
+   * @return a list from ProjectBudget null if no exist records
+   */
+  public List<ProjectBudget> getProjectBudgetByPhaseAndYear(long institutionID, int year, long budgetTypeId,
+    long projectId, long fundingSourceId, long idPhase);
+
+  /**
    * Gets the remaining budget amount for a specific funding source and year
    * 
    * @param fundingSourceID - Funding Source ID
