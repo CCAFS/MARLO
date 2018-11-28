@@ -692,7 +692,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
       capdevTypes = new ArrayList<>(capdevTypeService.findAll().stream()
-        .filter(le -> le.getCategory().equals("" + capdev.getCategory())).collect(Collectors.toList()));
+        .filter(le -> le.getCategory().equals("" + capdev.getCategory()) && le.isActive())
+        .collect(Collectors.toList()));
       Collections.sort(capdevTypes, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
 
