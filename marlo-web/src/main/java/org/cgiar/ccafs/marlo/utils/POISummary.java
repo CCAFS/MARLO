@@ -240,6 +240,7 @@ public class POISummary {
           paragraphRun = paragraph.createRun();
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = stringTemp.replaceAll(">", "");
+          stringTemp = this.replaceHTMLTags(stringTemp);
           this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -367,6 +368,7 @@ public class POISummary {
         startText = this.replaceHTMLTags("" + startText);
       }
 
+      startText = this.replaceHTMLTags(startText);
       this.addParagraphTextBreakPOW2019(paragraphRun, startText);
 
       paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -477,6 +479,9 @@ public class POISummary {
       html = html.replaceAll("&amp;", "");
       html = html.replaceAll("&gt;", "");
       html = html.replaceAll("&lt;", "");
+      html = html.replaceAll("<span style=\"font-size: 1em;\"", "");
+      html = html.replaceAll("</span", "");
+      html = html.replaceAll("<br", "");
     } catch (Exception e) {
       throw e;
     }

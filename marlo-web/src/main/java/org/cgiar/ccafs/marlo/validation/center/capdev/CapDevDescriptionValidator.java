@@ -64,7 +64,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
       if (capdev.getCapdevTargetGroupList() == null) {
         baseAction.addMessage(baseAction.getText("capdev.action.targetgroup"));
         baseAction.getInvalidFields().put("list-capdev.targetgroup",
-          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Type of Participants"}));
       }
     } else {
       if (!this.isValidString(capdev.getTargetGroupSuggested())) {
@@ -77,7 +77,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
       if (capdev.getCapdevTargetGroupList().isEmpty()) {
         baseAction.addMessage(baseAction.getText("capdev.action.targetgroup"));
         baseAction.getInvalidFields().put("list-capdev.targetgroup",
-          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Type of Participants"}));
       }
     }
 
