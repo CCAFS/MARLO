@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * DeliverablesReplicationAction:
+ * ProjectBudgetByPartnersReplicationAction:
  * 
  * @author Andrés Valencia - CIAT/CCAFS
  */
@@ -114,15 +114,32 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
   }
 
   /**
-   * TODO: Create method to know if the project budget exists in the next phase or if budget is 0
+   * Validate if the project budget exists in the next phase and next year with budget > 0
    * 
    * @param projectBudget
    * @param phase
    * @return True is the projectBudget exist in the next phase with budget > 0
-   *         (Parameters to define boolean value are FS, institution, Year and Phase)
+   *         (Parameters to define boolean value are FS,Type, Institution, Year, Phase and Project)
    */
-  public boolean hasProjectBudgetNextPhase(ProjectBudget projectBudget, Phase phase) {
-    return false;
+  public boolean hasProjectBudgetNextPhase(ProjectBudget projectBudget) {
+    Phase nextPhase = projectBudget.getPhase().getNext();
+    int nextYear = projectBudget.getYear() + 1;
+
+    List<ProjectBudget> projectBudgetsNextPhase = projectBudgetManager.getProjectBudgetByPhaseAndYear(
+      projectBudget.getInstitution().getId(), nextYear, projectBudget.getBudgetType().getId(),
+      projectBudget.getProject().getId(), projectBudget.getFundingSource().getId(), nextPhase.getId());
+
+    if (projectBudgetsNextPhase != null && projectBudgetsNextPhase.size() > 0) {
+      if (projectBudgetsNextPhase.size() > 1) {
+        logger.warn(
+          "There are " + projectBudgetsNextPhase.size() + " project budgets for phase: " + nextPhase.getComposedName()
+            + " year " + nextYear + " institution " + projectBudget.getInstitution().getAcronymName() + "type "
+            + projectBudget.getBudgetType().getName() + " project " + projectBudget.getProject().getId());
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
@@ -142,7 +159,7 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
           logger.debug("Replicating project: " + id);
           project = projectManager.getProjectById(new Long(id.trim()));
 
-          if (project.getProjecInfoPhase(phase) != null) {
+          if (project.getProjecInfoPhase(phase) != null && phase.getNext() != null) {
 
             // Load relations for auditlog
             List<String> relationsName = new ArrayList<>();
@@ -152,8 +169,7 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
             for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList())) {
               if (projectBudget != null) {
-                if (projectBudget.getYear() == phase.getYear()
-                  && this.hasProjectBudgetNextPhase(projectBudget, phase)) {
+                if (projectBudget.getYear() == phase.getYear() && !this.hasProjectBudgetNextPhase(projectBudget)) {
                   projectBudgetManager.saveProjectBudget(projectBudget);
                   this.projectSectionValidator.validateProjectBudgetsCoAs(this, project.getId(), false);
                 }
@@ -178,7 +194,7 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
         }
         logger.debug("Finished replication succesfully");
       } else {
-        logger.debug("No deliverable selected");
+        logger.debug("No project selected");
       }
       return SUCCESS;
     } else {
