@@ -71,10 +71,12 @@
       </div>
       
       [#-- Regions and countries lists  --]
+      [#if ((capdev.category == 2)!false)]
       <h4 class="headTitle newCapdevField">Reach</h4>
       <div class="borderBox">
         [@reachLocation /]
       </div>
+      [/#if]
       
       [#-- Buttons --]
       [#include "/WEB-INF/center/views/capDev/buttons-capdev.ftl" /]

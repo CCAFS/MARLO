@@ -99,6 +99,7 @@
         </div>
 
         [#-- Targeted public--]
+        [#if ((capdev.category == 2)!false)]
         <label class="grupsParticipantsForm">[@s.text name="capdev.targetgroup"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.targetgroup">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
@@ -138,8 +139,9 @@
             </div>
           [/#if]
         </div>
-
+        [/#if]
         [#-- Partners --]
+        [#if ((capdev.category == 2)!false)]
         <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text]:[@customForm.req required=editable /]</label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
           <div class="form-group borderContainer grupsParticipantsForm listSelectBlock" >
@@ -180,7 +182,7 @@
           </p> 
           [/#if]
         </div>
-
+        [/#if]
         [#-- Outputs --]
         <label>[@s.text name="capdev.form.objectives"][/@s.text] </label>
         <div class="simpleBox" listname="capdev.outputs">
