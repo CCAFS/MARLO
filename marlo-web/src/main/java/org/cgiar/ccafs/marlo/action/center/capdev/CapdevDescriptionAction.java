@@ -337,7 +337,7 @@ public class CapdevDescriptionAction extends BaseAction {
     Collections.sort(disciplines, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     // Target groups List
-    targetGroups = targetGroupService.findAll();
+    targetGroups = targetGroupService.findAll().stream().filter(tg -> tg.isActive()).collect(Collectors.toList());;
     Collections.sort(targetGroups, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
     capdevdisciplines = new ArrayList<>();
