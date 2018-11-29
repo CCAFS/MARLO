@@ -199,7 +199,12 @@ public class ProjectListAction extends BaseAction {
 
           AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
             .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
-          // this.clearPermissionsCache();
+
+
+          String params[] = {loggedCrp.getAcronym(), projectID + "", ""};
+          info.getStringPermissions().add(this.generatePermission(Permission.PROJECT_ALL_EDITION, params));
+
+
           return SUCCESS;
         }
         return INPUT;
@@ -235,6 +240,8 @@ public class ProjectListAction extends BaseAction {
       projectPartner.setInstitution(loggedCrp.getInstitution());
       projectPartner.setPhase(this.getActualPhase());
       projectPartnerManager.saveProjectPartner(projectPartner);
+
+      projectInfo.setLiaisonUser(null);
 
     } else {
       projectInfo.setProjectEditLeader(false);
@@ -361,6 +368,8 @@ public class ProjectListAction extends BaseAction {
         projectPartner.setInstitution(loggedCrp.getInstitution());
         projectPartner.setPhase(this.getActualPhase());
         projectPartnerManager.saveProjectPartner(projectPartner);
+
+        projectInfo.setLiaisonUser(null);
 
       } else {
         projectInfo.setProjectEditLeader(false);

@@ -48,6 +48,7 @@ public class Permission {
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:locations";
   public static final String PROJECT_DELETE_BASE_PERMISSION = "crp:{0}:project:{1}:deleteProject";
   public static final String PROJECT_CCFASOUTCOME_BASE_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes";
+  public static final String PROJECT_ALL_EDITION = "crp:{0}:project:{1}:*";
   public static final String SYNTHESIS_BY_MOG_BASE_PERMISSION = "crp:{0}:synthesisProgram:{1}";
   public static final String SYNTHESIS_BY_MOG_PERMISSION = "crp:{0}:synthesisProgram:{1}:*";
   public static final String POWB_SYNTHESIS_CAN_VIEW = "crp:{0}:powbSynthesis:manage:canAcess";
