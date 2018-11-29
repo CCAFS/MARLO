@@ -837,6 +837,31 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCtFirstName(capdev.getCtFirstName());
       capdevDB.setCtLastName(capdev.getCtLastName());
       capdevDB.setCtEmail(capdev.getCtEmail());
+
+      if (capdev.getEstimate() == null) {
+        capdevDB.setEstimate(false);
+      } else {
+        capdevDB.setEstimate(capdev.getEstimate());
+      }
+
+      if (capdev.getEstimateMen() == null) {
+        capdevDB.setEstimateMen(false);
+      } else {
+        capdevDB.setEstimateMen(capdev.getEstimateMen());
+      }
+
+      if (capdev.getEstimateWomen() == null) {
+        capdevDB.setEstimateWomen(false);
+      } else {
+        capdevDB.setEstimateWomen(capdev.getEstimateWomen());
+      }
+
+      if (capdev.getEstimateOthers() == null) {
+        capdevDB.setEstimateOthers(false);
+      } else {
+        capdevDB.setEstimateOthers(capdev.getEstimateOthers());
+      }
+
       if (uploadFile != null) {
         if (uploadFileContentType.equals("application/vnd.ms-excel")
           || uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")

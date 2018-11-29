@@ -44,6 +44,18 @@
 		<property name="otherFunding" type="string">
       <column name="other_funding" length="500" />
     </property>
+    <property name="estimate" type="java.lang.Boolean">
+    <column name="is_estimate_participants_num" />
+    </property>
+     <property name="estimateMen" type="java.lang.Boolean">
+    <column name="is_estimate_men_num" />
+    </property>
+     <property name="estimateWomen" type="java.lang.Boolean">
+    <column name="is_estimate_women_num" />
+    </property>
+     <property name="estimateOthers" type="java.lang.Boolean">
+    <column name="is_estimate_others_num" />
+    </property>
 		<property name="category" type="int">
 			<column name="category" />
 		</property>
