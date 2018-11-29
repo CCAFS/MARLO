@@ -16,7 +16,9 @@
 package org.cgiar.ccafs.marlo.rest.controller.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.CrossCuttingMarkersItem;
+import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.InnovationTypesItem;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InnovationTypesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -45,10 +47,13 @@ public class PowbARLists {
 
   private static final Logger LOG = LoggerFactory.getLogger(PowbARLists.class);
   private CrossCuttingMarkersItem<PowbARLists> crossCuttingMarkersItem;
+  private InnovationTypesItem<PowbARLists> innovationTypesItem;
 
   @Inject
-  public PowbARLists(CrossCuttingMarkersItem<PowbARLists> crossCuttingMarkersItem) {
+  public PowbARLists(CrossCuttingMarkersItem<PowbARLists> crossCuttingMarkersItem,
+    InnovationTypesItem<PowbARLists> innovationTypesItem) {
     this.crossCuttingMarkersItem = crossCuttingMarkersItem;
+    this.innovationTypesItem = innovationTypesItem;
   }
 
   /**
@@ -67,6 +72,21 @@ public class PowbARLists {
   }
 
   /**
+   * Get All the Innovation Types items
+   * 
+   * @return a List of InnovationTypesDTO with all Innovation Types Items.
+   */
+  @ApiOperation(value = "View all The Innovation Types", response = InnovationTypesDTO.class,
+    responseContainer = "List", position = 1)
+  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/innovationTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InnovationTypesDTO> getAllInnovationTypes() {
+    LOG.debug("REST request to get Innovation Types");
+    return innovationTypesItem.getAllInnovationTypes();
+  }
+
+
+  /**
    * Find a Cross Cutting Marker requesting a MARLO id
    * 
    * @param id
@@ -80,5 +100,22 @@ public class PowbARLists {
     LOG.debug("REST request to get Cross Cutting Marker : {}", id);
     return crossCuttingMarkersItem.findCrossCuttingMarkerById(id);
   }
+
+
+  /**
+   * Find a Innovation Type requesting a MARLO id
+   * 
+   * @param id
+   * @return a InnovationTypesDTO with the Innovation Type data.
+   */
+  @ApiOperation(value = "Search a Innovation Type with a MARLO ID", response = SrfIdoDTO.class)
+  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/innovationType/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InnovationTypesDTO> getInnovationTypeById(@PathVariable Long id) {
+    LOG.debug("REST request to get Innovation Type : {}", id);
+    return innovationTypesItem.findInnovationTypeById(id);
+  }
+
 
 }
