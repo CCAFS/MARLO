@@ -1,6 +1,16 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+
 [#assign reportingActiveMenu = (reportingActive)!false ]
+
+[#attempt]
+  [#assign canAcessPublications = (action.canAcessPublications())!false ]
+  [#assign canAcessCrp = (action.canAcessCrp())!false ]
+[#recover]
+  [#assign canAcessPublications = false ]
+  [#assign canAcessCrp = false ]
+[/#attempt]
+
 [#assign mainMenu= [
   [#-- HOME - Not Logged --]
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': 'login',                            'visible': !logged, 'active': true },
@@ -19,7 +29,7 @@
   [#-- ADDITIONAL REPORTING - CRP --]
   { 'slug': 'additionalReporting', 'name': 'menu.additionalReporting',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',  'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,  'help': true,  
     'subItems' : [
-      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  action.canAcessPublications() },
+      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  canAcessPublications },
       { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studiesList',  'visible': logged, 'active':  true }
     ]
   },
@@ -32,7 +42,7 @@
   [#-- SYNTHESIS REPORTING - CRP --]
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
-      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': action.canAcessCrp()},
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': canAcessCrp },
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false }
     ]
   },
