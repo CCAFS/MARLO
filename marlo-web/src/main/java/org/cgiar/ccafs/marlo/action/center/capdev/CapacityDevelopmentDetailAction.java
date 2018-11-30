@@ -838,6 +838,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevDB.setCtLastName(capdev.getCtLastName());
       capdevDB.setCtEmail(capdev.getCtEmail());
 
+      if (capdev.getFocused() == null) {
+        capdevDB.setFocused(false);
+      } else {
+        capdevDB.setFocused(capdev.getFocused());
+      }
+
       if (capdev.getEstimate() == null) {
         capdevDB.setEstimate(false);
       } else {

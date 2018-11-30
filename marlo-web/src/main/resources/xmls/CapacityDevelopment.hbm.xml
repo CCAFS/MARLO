@@ -107,6 +107,9 @@
 		<property name="numOther" type="java.lang.Integer">
 			<column name="num_other" />
 		</property>
+		<property name="focused" type="java.lang.Boolean">
+      <column name="is_focused" />
+    </property>
 		<property name="otherDiscipline" type="string">
 			<column name="other_discipline" length="2"/>
 		</property>
