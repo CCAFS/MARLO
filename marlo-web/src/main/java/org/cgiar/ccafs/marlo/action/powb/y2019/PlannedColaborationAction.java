@@ -938,7 +938,7 @@ public class PlannedColaborationAction extends BaseAction {
     }
     globalUnits = new ArrayList<>();
     List<GlobalUnit> globalUnitsList = crpManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2 && c.getGlobalUnitType().getId() != 4)
+      .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2 && c.getGlobalUnitType().getId() != 3)
       .collect(Collectors.toList());
 
     for (GlobalUnit globalUnit : globalUnitsList) {
