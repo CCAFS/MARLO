@@ -75,6 +75,9 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   private Boolean global;
 
   @Expose
+  private Boolean focused;
+
+  @Expose
   private Boolean regional;
 
   @Expose
@@ -199,7 +202,6 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return capDevRegions;
   }
 
-
   public Set<CapdevSupportingDocs> getCapdevSupportingDocs() {
     return capdevSupportingDocs;
   }
@@ -220,11 +222,9 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return this.category;
   }
 
-
   public GlobalUnit getCrp() {
     return crp;
   }
-
 
   public String getCtEmail() {
     return this.ctEmail;
@@ -245,6 +245,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return deliverables;
   }
 
+
   public String getDisciplineSuggested() {
     return disciplineSuggested;
   }
@@ -257,6 +258,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
   public String getDurationUnit() {
     return durationUnit;
   }
+
 
   public Date getEndDate() {
     return this.endDate;
@@ -284,9 +286,12 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return estimateOthers;
   }
 
-
   public Boolean getEstimateWomen() {
     return estimateWomen;
+  }
+
+  public Boolean getFocused() {
+    return focused;
   }
 
 
@@ -312,6 +317,7 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return numOther;
   }
 
+
   public Integer getNumParticipants() {
     return this.numParticipants;
   }
@@ -332,7 +338,6 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return otherPartner;
   }
 
-
   public String getOtherTargetGroup() {
     return otherTargetGroup;
   }
@@ -342,10 +347,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return participant;
   }
 
+
   public String getPartnerSuggested() {
     return partnerSuggested;
   }
-
 
   public CenterProject getProject() {
     return this.project;
@@ -356,10 +361,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     return regional;
   }
 
+
   public CenterArea getResearchArea() {
     return this.researchArea;
   }
-
 
   public CrpProgram getResearchProgram() {
     return researchProgram;
@@ -466,10 +471,10 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
     this.capdevSupportingDocs = capdevSupportingDocs;
   }
 
+
   public void setCapdevTargetgroup(Set<CapdevTargetgroup> capdevTargetgroup) {
     this.capdevTargetgroup = capdevTargetgroup;
   }
-
 
   public void setCapdevTargetGroupList(List<CapdevTargetgroup> capdevTargetGroupList) {
     this.capdevTargetGroupList = capdevTargetGroupList;
@@ -548,6 +553,11 @@ public class CapacityDevelopment extends MarloAuditableEntity implements java.io
 
   public void setEstimateWomen(Boolean estimateWomen) {
     this.estimateWomen = estimateWomen;
+  }
+
+
+  public void setFocused(Boolean focused) {
+    this.focused = focused;
   }
 
 

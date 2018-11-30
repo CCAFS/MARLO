@@ -174,6 +174,13 @@
   
   <hr />
   
+ [#-- Is Focused --]
+ [#if ((capdev.category == 2)!false)]
+   <div class="group individual">
+     <label>Is focused <input type="checkbox" name="capdev.focused" value="true" [#if (capdev.focused)!false ]checked="checked"[/#if]></label>
+   </div>
+ [/#if]
+  
  [#-- Research program --]
   <div class="form-group row">   
     <div class="col-md-6 researchProgram ">
