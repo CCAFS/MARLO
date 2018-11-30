@@ -1,0 +1,1 @@
+UPDATE global_units set is_active = 1 where global_unit_type_id =4;
