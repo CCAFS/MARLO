@@ -20,7 +20,17 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum PowbCollaboratorTypeEnum {
 
-  CRPPlatform("1", "CRP/Platform"), NonCgiar("2", "Non-CGIAR Collaborator");
+  CRPPlatform("1", "CGIAR internal"), NonCgiar("2", "Non-CGIAR Collaborator");
+
+  private String name;
+
+  private String id;
+
+  private PowbCollaboratorTypeEnum(String id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
 
   /**
    * Look for the PowbCollaboratorTypeEnum with id
@@ -36,16 +46,6 @@ public enum PowbCollaboratorTypeEnum {
       }
     }
     return null;
-  }
-
-  private String name;
-
-  private String id;
-
-
-  private PowbCollaboratorTypeEnum(String id, String name) {
-    this.id = id;
-    this.name = name;
   }
 
 
