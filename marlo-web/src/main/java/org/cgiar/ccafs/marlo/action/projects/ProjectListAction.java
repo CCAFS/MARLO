@@ -489,22 +489,16 @@ public class ProjectListAction extends BaseAction {
 
     for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
 
-      try {
-        Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
+      Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
 
-        System.out.println("*** PC-ID " + project.getId());
 
-        GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+      GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
 
-        System.out.println("*** P-ID " + globalUnitProjectOrigin.getProject().getId());
-        System.out.println("*** GU-ID " + globalUnitProjectOrigin.getGlobalUnit().getId());
-
+      if (globalUnitProjectOrigin != null) {
         Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
           this.getActualPhase().getUpkeep(), globalUnitProjectOrigin.getGlobalUnit().getId());
 
-
         project.getProjecInfoPhase(phase);
-        //
         if (project.getProjectInfo() != null) {
           if (project.getProjectInfo().getProjectEditLeader()) {
             ProjectInfo info = project.getProjectInfo();
@@ -517,10 +511,7 @@ public class ProjectListAction extends BaseAction {
             }
           }
         }
-      } catch (Exception e) {
-        // TODO: handle exception
       }
-
     }
   }
 
