@@ -2,7 +2,7 @@
 [#assign title = "MARLO Bulk Replication" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloBulk.js" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloBulk.js?20181203" ] /]
 [#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "bulkReplication" /]
@@ -29,7 +29,7 @@
       <div class="col-md-9">
         [@s.form id="bulkReplicationForm" action=actionName enctype="multipart/form-data" ]
         
-        <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /] - ${actionName}</h4>
+        <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /] </h4>
         <div class="borderBox">
           <div class="loading" style="display:none"></div>
           <div class="row grayBox">
