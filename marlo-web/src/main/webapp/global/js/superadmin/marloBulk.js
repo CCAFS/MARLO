@@ -49,6 +49,11 @@ function updateEntity() {
   var entityAction = $(this).find(":selected").classParam('action');
   $('th.entityName').text(entityName);
   $("#bulkReplicationForm").attr("action", "./" + entityAction + ".do");
+
+  $globalUnitSelect.val(-1);
+  $phasesSelect.empty();
+  $deliverablesList.empty();
+  $('.count').text(0);
 }
 
 function updatePhases() {
