@@ -62,6 +62,8 @@ public class DeliverableByPhaseAction extends BaseAction {
               Map<String, Object> deliverableMap = new HashMap<String, Object>();
               deliverableMap.put("id", deliverable.getId());
               deliverableMap.put("title", deliverable.getDeliverableInfo().getTitle());
+              deliverableMap.put("composedName",
+                "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo().getTitle());
               deliverableMap.put("project", deliverable.getProject().getId());
               this.deliverablesbyPhase.add(deliverableMap);
             }

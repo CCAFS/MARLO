@@ -27,12 +27,23 @@
         [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data" ]
+        [@s.form id="bulkReplicationForm" action=actionName enctype="multipart/form-data" ]
         
-        <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /]</h4>
+        <h4 class="sectionTitle">[@s.text name="marloBulkReplication.title" /] - ${actionName}</h4>
         <div class="borderBox">
           <div class="loading" style="display:none"></div>
           <div class="row grayBox">
+            [#--  Entity  --]
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="entityID">Entity:</label>
+                <select name="selectedEntityID" id="entityID" class="form-control">
+                  <option value="getDeliverablesByPhase" class="action-deliverablesReplication" [#if actionName == "deliverablesReplication"]selected[/#if]>[@s.text name="marloBulkReplication.deliverablesReplication" /]</option>
+                  <option value="getProjectsByPhase" class="action-projectsReplication" [#if actionName == "projectsReplication"]selected[/#if]>[@s.text name="marloBulkReplication.projectsReplication" /]</option>
+                </select>
+              </div>
+            </div>
+            [#-- Global Unit --]
             <div class="col-md-4">
               <div class="form-group">
                 <label for="globalUnitID">Global Unit:</label>
@@ -42,6 +53,7 @@
                 </select>
               </div>
             </div>
+            [#-- PHASE --]
             <div class="col-md-4">
               <div class="form-group">
                 <label for="phaseID">Phase:</label>
@@ -73,7 +85,7 @@
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th>Deliverables</th>
+                    <th class="entityName">[@s.text name="marloBulkReplication.${actionName}" /]</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -104,8 +116,8 @@
 
 [#-- Check Template --]
 <table class="check-template" style="display:none">
-  <tr>
-    <td>[@customForm.checkmark id="" label="{{ labelText}}" name="deliverablesbyPhaseList" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
+  <tr display="font-size: 0.9em;">
+    <td>[@customForm.checkmark id="" label="{{ labelText }}" name="deliverablesbyPhaseList" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
   </tr>
 </table>
 
