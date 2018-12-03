@@ -1,9 +1,9 @@
 $(document).ready(
     function() {
 
-      var $deliverableList = $('table.outcomeList');
+      var $outcomesList = $('table.outcomeList');
       showHelpText();
-      var table = $deliverableList.DataTable({
+      var table = $outcomesList.DataTable({
           "bPaginate": true, // This option enable the table pagination
           "bLengthChange": true, // This option disables the select table size option
           "bFilter": true, // This option enable the search
@@ -51,9 +51,9 @@ $(document).ready(
 
       addJustificationPopUp();
       // Event to open dialog to remove deliverable
-      $deliverableList.on('draw.dt', function() {
+      $outcomesList.on('draw.dt', function() {
         $("a.removeOutcome").on("click", removeOutcome);
-      });
+      }).trigger('draw.dt');
 
     });
 
@@ -89,8 +89,9 @@ function addJustificationPopUp() {
 
 function removeOutcome(e) {
   e.preventDefault();
+  console.log('removeOutcome');
   $dialogContent.find("#justification").val('').removeClass('fieldError');
-  // Getting deliverable ID and setting input hidden to remove that deliverable
+  // Getting outcome ID and setting input hidden to remove that outcome
   $dialogContent.find('input[name$=outcomeID]').val($(e.target).parent().attr('id').split('-')[1]);
   dialog.dialog("open");
 }
