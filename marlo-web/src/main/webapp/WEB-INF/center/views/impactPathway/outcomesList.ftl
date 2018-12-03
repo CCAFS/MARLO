@@ -5,12 +5,11 @@
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/impactPathway/centerOutcomeList.js?20180305"
+  "${baseUrlMedia}/js/impactPathway/centerOutcomeList.js?20181203"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/impactPathway/outcomeList.css"
+  "${baseUrl}/global/css/customDataTable.css"
   ]
 /]
 [#assign currentSection = "impactPathway" /]
