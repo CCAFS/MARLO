@@ -23,12 +23,12 @@
           [#-- Outcome statement --]
           <td class="left"> 
             [#if outcome.description?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outcomeID']${outcome.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${outcome.description}">
-                [#if outcome.description?length < 120] ${outcome.description}</a> [#else] [@utilities.wordCutter string=outcome.description maxPos=120 /]...</a> [/#if]
+              <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outcomeID']${outcome.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${outcome.description}">
+              [#if outcome.description?length < 120] ${outcome.description}</a> [#else] [@utilities.wordCutter string=outcome.description maxPos=120 /]...</a> [/#if]
             [#else]
-                <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outcomeID']${outcome.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
-                  [@s.text name="programImpact.outcomeList.title.none" /]
-                </a>
+              <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outcomeID']${outcome.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
+                [@s.text name="programImpact.outcomeList.title.none" /]
+              </a>
             [/#if]
           </td>
           [#-- Outcome Year --]
@@ -44,7 +44,7 @@
                 <span class="icon-20 icon-uncheck" title=""></span> 
               [/#if]
             [#else]
-                <span class="icon-20 icon-uncheck" title=""></span>
+              <span class="icon-20 icon-uncheck" title=""></span>
             [/#if]
           </td>
           [#-- Delete Outcome--]
