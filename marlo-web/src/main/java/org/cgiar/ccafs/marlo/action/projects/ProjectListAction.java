@@ -489,28 +489,38 @@ public class ProjectListAction extends BaseAction {
 
     for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
 
-      Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
+      try {
+        Project project = projectManager.getProjectById(globalUnitProject.getProject().getId());
 
-      GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+        System.out.println("*** PC-ID " + project.getId());
 
-      Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
-        this.getActualPhase().getUpkeep(), globalUnitProjectOrigin.getGlobalUnit().getId());
+        GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+
+        System.out.println("*** P-ID " + globalUnitProjectOrigin.getProject().getId());
+        System.out.println("*** GU-ID " + globalUnitProjectOrigin.getGlobalUnit().getId());
+
+        Phase phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
+          this.getActualPhase().getUpkeep(), globalUnitProjectOrigin.getGlobalUnit().getId());
 
 
-      project.getProjecInfoPhase(phase);
+        project.getProjecInfoPhase(phase);
 
-      if (project.getProjectInfo() != null) {
-        if (project.getProjectInfo().getProjectEditLeader()) {
-          ProjectInfo info = project.getProjectInfo();
-          if ((info.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-            || info.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))) {
-            if (this.isSubmit(project.getId())) {
-              project.setCurrentPhase(phase);
-              centerProjects.add(project);
+        if (project.getProjectInfo() != null) {
+          if (project.getProjectInfo().getProjectEditLeader()) {
+            ProjectInfo info = project.getProjectInfo();
+            if ((info.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+              || info.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))) {
+              if (this.isSubmit(project.getId())) {
+                project.setCurrentPhase(phase);
+                centerProjects.add(project);
+              }
             }
           }
         }
+      } catch (Exception e) {
+        // TODO: handle exception
       }
+
     }
   }
 

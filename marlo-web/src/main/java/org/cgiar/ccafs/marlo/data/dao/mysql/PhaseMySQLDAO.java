@@ -73,6 +73,7 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
   public Phase findCycle(String cylce, int year, boolean upkeep, long crpId) {
     String query = "from " + Phase.class.getName() + " where description='" + cylce + "' and year=" + year
       + " and upkeep=" + upkeep + " and global_unit_id=" + crpId;
+    System.out.println("********* QUERY " + query);
     List<Phase> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
