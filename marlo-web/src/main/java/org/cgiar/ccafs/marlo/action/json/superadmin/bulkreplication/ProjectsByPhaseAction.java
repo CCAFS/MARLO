@@ -63,6 +63,7 @@ public class ProjectsByPhaseAction extends BaseAction {
               Map<String, Object> projectMap = new HashMap<String, Object>();
               projectMap.put("id", projectInfo.getProject().getId());
               projectMap.put("title", projectInfo.getTitle());
+              projectMap.put("composedName", "P" + projectInfo.getProject().getId() + ": " + projectInfo.getTitle());
               this.projectsbyPhase.add(projectMap);
             }
           } catch (Exception e) {

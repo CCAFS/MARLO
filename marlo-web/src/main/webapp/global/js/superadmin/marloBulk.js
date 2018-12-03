@@ -2,6 +2,7 @@ var $globalUnitSelect, $phasesSelect, $deliverablesList;
 $(document).ready(init);
 
 function init() {
+  $entitySelect = $('#entityID');
   $globalUnitSelect = $('#globalUnitID');
   $phasesSelect = $('#phaseID');
   $deliverablesList = $('#deliverables-checkbox table tbody');
@@ -10,6 +11,7 @@ function init() {
 }
 
 function attachEvents() {
+  $entitySelect.on('change', updateEntity);
   $globalUnitSelect.on('change', updatePhases);
   $phasesSelect.on('change', updateDeliverables);
 
@@ -40,6 +42,13 @@ function attachEvents() {
     }
     updateCheckedCount();
   });
+}
+
+function updateEntity() {
+  var entityName = $(this).find(":selected").text();
+  var entityAction = $(this).find(":selected").classParam('action');
+  $('th.entityName').text(entityName);
+  $("#bulkReplicationForm").attr("action", "./" + entityAction + ".do");
 }
 
 function updatePhases() {
@@ -80,7 +89,7 @@ function updateDeliverables() {
   }
 
   $.ajax({
-      url: baseURL + "/getDeliverablesByPhase.do",
+      url: baseURL + "/" + $('select#entityID').val() + ".do",
       data: {
         selectedPhaseID: phaseID
       },
@@ -90,13 +99,15 @@ function updateDeliverables() {
 
       },
       success: function(data) {
-        $.each(data.deliverablesbyPhase, function(i,e) {
+        var dataArray = (data.deliverablesbyPhase) || (data.projectsbyPhase);
+
+        $.each(dataArray, function(i,e) {
           var $checkmarkRow = $('.check-template tr').clone(true).removeAttr('id');
           $checkmarkRow.attr('id', e.id);
           $checkmarkRow.find('input').addClass('deliverableCheckAdded');
           $checkmarkRow.find('input').val(e.id);
           $checkmarkRow.find('.id').text(e.id);
-          $checkmarkRow.find('.labelText').text('D' + e.id + ': ' + e.title + '');
+          $checkmarkRow.find('.labelText').text(e.composedName);
 
           // console.log($checkmarkRow);
           $deliverablesList.append($checkmarkRow);
