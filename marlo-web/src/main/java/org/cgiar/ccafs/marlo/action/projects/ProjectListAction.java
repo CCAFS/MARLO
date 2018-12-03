@@ -504,7 +504,7 @@ public class ProjectListAction extends BaseAction {
 
 
         project.getProjecInfoPhase(phase);
-
+        //
         if (project.getProjectInfo() != null) {
           if (project.getProjectInfo().getProjectEditLeader()) {
             ProjectInfo info = project.getProjectInfo();
