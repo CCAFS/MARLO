@@ -74,11 +74,11 @@
 
 		<action name="{center}/deleteOutcome" method="delete"
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
-			<interceptor-ref name="centerOutcomeStack" />
+			<interceptor-ref name="centerOutputStack" />
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/outcomesList</param>
 				<param name="programID">${programID}</param>
-				<param name="topicID">${"topicID"}</param>
+				<!--  <param name="topicID">${"topicID"}</param>-->
 			</result>
 		</action>
 
