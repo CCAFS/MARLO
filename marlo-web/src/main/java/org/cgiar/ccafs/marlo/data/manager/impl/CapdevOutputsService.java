@@ -48,6 +48,7 @@ public class CapdevOutputsService implements ICapdevOutputsService {
   public void deleteCapdevOutputs(long capdevOutputsId) {
 
     capdevOutputsDAO.deleteCapdevOutputs(capdevOutputsId);
+
   }
 
   @Override

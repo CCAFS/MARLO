@@ -536,12 +536,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       for (CrpProgram flagship : flagships) {
         int outcome_index = 0;
         for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-          subIDO = " ";
+          subIDO = "";
           int milestone_index = 0;
           for (CrpMilestone crpMilestone : outcome.getMilestones()) {
             Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
             Boolean isOutcomeRow = (milestone_index == 0);
-
+            subIDO = "";
 
             if (isFlagshipRow) {
               fp = flagship.getAcronym();
@@ -873,6 +873,18 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       this.powb2019Data.getTable2C(this.getSelectedPhase(), loggedCrp, powbSynthesis);
 
     if (collaborationGlobalUnits != null && !collaborationGlobalUnits.isEmpty()) {
+      // collaborationGlobalUnits.sort(Comparator.comparing(PowbCollaborationGlobalUnit::getBrief));
+
+      try {
+        collaborationGlobalUnits
+          .sort((p1, p2) -> p1.getInstitution().getComposedName().compareTo(p2.getInstitution().getComposedName()));
+      } catch (Exception e) {
+
+      }
+      /*
+       * collaborationGlobalUnits
+       * .sort((p1, p2) -> p1.getGlobalUnit().getAcronym().compareTo(p2.getGlobalUnit().getAcronym()));
+       */
       for (PowbCollaborationGlobalUnit collaborationGlobalUnit : collaborationGlobalUnits) {
         String globalUnitNonCgiar = " ", brief = " ";
 
