@@ -125,7 +125,7 @@
   </div>
 </section>
 
-[@customForm.confirmJustificationOutcome action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
+[@customForm.confirmJustificationOutcome action="deleteCenterOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 

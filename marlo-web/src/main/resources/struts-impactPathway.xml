@@ -32,7 +32,27 @@
 				<param name="crpProgramID">${crpProgramID}</param>
 			</result>
 		</action>
-
+		
+		<action name="{center}/deleteOutcome" method="delete"
+      class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
+      <interceptor-ref name="centerOutcomeStack" /> 
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/outcomesList</param>
+        <param name="programID">${programID}</param>
+        <param name="topicID">${"topicID"}</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/deleteOutcome" method="delete"
+      class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
+      <interceptor-ref name="centerOutcomeStack" /> 
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/outputsList</param>
+        <param name="crpProgramID">${crpProgramID}</param>
+      </result>
+    </action>
+    
+		
 		<action name="{crp}/clusterActivities"
 			class="org.cgiar.ccafs.marlo.action.impactpathway.ClusterActivitiesAction">
 			<interceptor-ref name="impactPathwayStack" />
@@ -142,9 +162,8 @@
 			class="org.cgiar.ccafs.marlo.action.center.impactpathway.OutcomesListAction">
 			<interceptor-ref name="centerOutcomeStack" />
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/centerOutcome</param>
+				<param name="actionName">${crpSession}/centerOutcomesList</param>
 				<param name="crpProgramID">${crpProgramID}</param>
-				<param name="topicID">${"topicID"}</param>
 			</result>
 		</action>
 
