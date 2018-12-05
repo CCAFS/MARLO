@@ -18,17 +18,21 @@ package org.cgiar.ccafs.marlo.rest.controller.todo;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.InstitutionTypeMapper;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -64,6 +68,10 @@ public class Institutions {
 
   private final InstitutionManager institutionManager;
 
+  private final InstitutionTypeManager institutionTypeManager;
+
+  private final InstitutionTypeMapper institutionTypeMapper;
+
   private final InstitutionMapper institutionMapper;
 
   private final InstitutionLocationManager institutionLocationManager;
@@ -80,7 +88,8 @@ public class Institutions {
   public Institutions(InstitutionManager institutionManager, UserManager userManager,
     InstitutionMapper institutionMapper, InstitutionLocationManager institutionLocationManager,
     PartnerRequestManager partnerRequestManager, GlobalUnitManager globalUnitManager,
-    LocElementManager locElementManager) {
+    LocElementManager locElementManager, InstitutionTypeManager institutionTypeManager,
+    InstitutionTypeMapper institutionTypeMapper) {
     this.institutionManager = institutionManager;
     this.institutionMapper = institutionMapper;
     this.institutionLocationManager = institutionLocationManager;
@@ -88,6 +97,8 @@ public class Institutions {
     this.globalUnitManager = globalUnitManager;
     this.locElementManager = locElementManager;
     this.userManager = userManager;
+    this.institutionTypeManager = institutionTypeManager;
+    this.institutionTypeMapper = institutionTypeMapper;
   }
 
   @ApiIgnore
@@ -164,6 +175,19 @@ public class Institutions {
     return institutionDTOs;
   }
 
+  @ApiOperation(value = "View a List of Institution Types", response = InstitutionTypeDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutionTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
+    LOG.debug("REST request to get Institution Types");
+    List<InstitutionType> institutions = institutionTypeManager.findAll();
+    List<InstitutionTypeDTO> institutionDTOs =
+      institutions.stream().map(institution -> institutionTypeMapper.institutionTypeToInstitutionTypeDTO(institution))
+        .collect(Collectors.toList());
+    return institutionDTOs;
+  }
+
   private User getCurrentUser() {
     Subject subject = SecurityUtils.getSubject();
     Long principal = (Long) subject.getPrincipal();
@@ -178,6 +202,17 @@ public class Institutions {
     LOG.debug("REST request to get Institution : {}", id);
     Institution institution = institutionManager.getInstitutionById(id);
     return Optional.ofNullable(institution).map(institutionMapper::institutionToInstitutionDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  @ApiOperation(value = "Search an Institution Type with an ID", response = InstitutionDTO.class)
+  @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutionType/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionTypeDTO> getInstitutionType(@PathVariable Long id) {
+    LOG.debug("REST request to get Institution : {}", id);
+    InstitutionType institution = institutionTypeManager.getInstitutionTypeById(id);
+    return Optional.ofNullable(institution).map(institutionTypeMapper::institutionTypeToInstitutionTypeDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
