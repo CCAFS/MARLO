@@ -174,7 +174,7 @@ function filterResearchProgram(researchAreaID,researchProgramSelected) {
         }
     })
   } else {
-    $('.capdevResearchProgram').attr('disabled', 'disabled');
+    // $('.capdevResearchProgram').attr('disabled', 'disabled');
     $('.capdevResearchProgram').empty();
     $('.capdevResearchProgram').append('<option value= -1>Select option... </option>');
 

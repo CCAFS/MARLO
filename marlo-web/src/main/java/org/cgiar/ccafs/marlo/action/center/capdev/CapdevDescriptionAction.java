@@ -420,7 +420,6 @@ public class CapdevDescriptionAction extends BaseAction {
           }
         }
 
-
         this.setDraft(true);
 
       } else {
@@ -450,8 +449,6 @@ public class CapdevDescriptionAction extends BaseAction {
           capdev.setCapdevOutputsList(capdevOuputs);
         }
       }
-
-
     }
 
     capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
@@ -470,10 +467,7 @@ public class CapdevDescriptionAction extends BaseAction {
       capdev.setCapdevOutputs(null);
       capdev.setCapdevOutputsList(null);
     }
-
-
   }
-
 
   @Override
   public String save() {

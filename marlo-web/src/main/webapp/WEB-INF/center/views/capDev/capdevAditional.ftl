@@ -133,9 +133,11 @@
               </div>
             </div>
             <div class="grupsParticipantsForm">
-              <label>Other <input type="checkbox" name="capdev.otherTargetGroup" class="otherTargetcheck"   [#if (capdev.otherTargetGroup)??]
-              [#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if] [#if !editable] disabled="true"[/#if]> </label>
-              <div class="suggestTagetGroup" style="display: none;">[@customForm.textArea name="capdev.targetGroupSuggested" i18nkey="Suggest target group"  className="textarea"  /]</div>
+              <label>Other
+              <input type="checkbox" name="capdev.otherTargetGroup" class="otherTargetcheck"    [#if (capdev.otherTargetGroup)??]
+              [#if (capdev.otherTargetGroup) == "1"] checked="checked" [/#if] value="${(capdev.otherTargetGroup)!}"[/#if] [#if !editable] disabled="true"[/#if]> 
+              </label>
+              <div class="suggestTagetGroup" style="display: none;">[@customForm.textArea name="capdev.targetGroupSuggested" i18nkey="Suggest target group"  className="textarea" required=true /]</div>
             </div>
           [/#if]
         </div>
