@@ -612,11 +612,11 @@ public class POISummary {
   }
 
   public void tableAPowbStyle(XWPFTable table) {
-    /* Horizontal merge, From format tables E */
+    /* Horizontal merge, From format tables A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
     CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
 
-    /* Vertical merge, From format tables E */
+    /* Vertical merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
 
@@ -645,7 +645,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x >= 0) {
         XWPFTableRow row1 = table.getRow(x);
-        for (int y = 0; y < 6; y++) {
+        for (int y = 0; y <= 6; y++) {
           XWPFTableCell cell = row1.getCell(y);
 
           if (cell.getCTTc() == null) {
