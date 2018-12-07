@@ -468,7 +468,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
           new POIField("", ParagraphAlignment.LEFT, bold, blackColor)};
 
-      POIField[] sHeader2 = {new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+      POIField[] sHeader2 = {new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
         new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
         new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
         new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
@@ -590,42 +590,42 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
               && !crpMilestone.getPowbIndFollowingMilestone().getName().isEmpty()) {
               powbIndFollowingMilestone = crpMilestone.getPowbIndFollowingMilestone().getName();
             } else {
-              powbIndFollowingMilestone = " ";
+              powbIndFollowingMilestone = "";
             }
 
             if (crpMilestone.getPowbMilestoneVerification() != null
               && !crpMilestone.getPowbMilestoneVerification().isEmpty()) {
               powbMilestoneVerification = crpMilestone.getPowbMilestoneVerification();
             } else {
-              powbMilestoneVerification = " ";
+              powbMilestoneVerification = "";
             }
 
             if (crpMilestone.getGenderFocusLevel() != null && crpMilestone.getGenderFocusLevel().getAcronym() != null
               && !crpMilestone.getGenderFocusLevel().getAcronym().isEmpty()) {
               gender = crpMilestone.getGenderFocusLevel().getAcronym();
             } else {
-              gender = "  ";
+              gender = "";
             }
 
             if (crpMilestone.getYouthFocusLevel() != null && crpMilestone.getYouthFocusLevel().getAcronym() != null
               && !crpMilestone.getYouthFocusLevel().getAcronym().isEmpty()) {
               youth = crpMilestone.getYouthFocusLevel().getAcronym();
             } else {
-              youth = " ";
+              youth = "";
             }
 
             if (crpMilestone.getCapdevFocusLevel() != null && crpMilestone.getCapdevFocusLevel().getAcronym() != null
               && !crpMilestone.getCapdevFocusLevel().getAcronym().isEmpty()) {
               capdev = crpMilestone.getCapdevFocusLevel().getAcronym();
             } else {
-              capdev = "  ";
+              capdev = "";
             }
 
             if (crpMilestone.getClimateFocusLevel() != null && crpMilestone.getClimateFocusLevel().getAcronym() != null
               && !crpMilestone.getClimateFocusLevel().getAcronym().isEmpty()) {
               climate = crpMilestone.getClimateFocusLevel().getAcronym();
             } else {
-              climate = " ";
+              climate = "";
             }
 
             if (this.isEntityCRP()) {
@@ -634,7 +634,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
                 && !crpMilestone.getPowbIndAssesmentRisk().getName().isEmpty()) {
                 assesmentRisk = crpMilestone.getPowbIndAssesmentRisk().getName();
               } else {
-                assesmentRisk = " ";
+                assesmentRisk = "";
               }
 
               if (crpMilestone.getPowbIndMilestoneRisk() != null
@@ -642,7 +642,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
                 && !crpMilestone.getPowbIndMilestoneRisk().getName().isEmpty()) {
                 milestoneRisk = crpMilestone.getPowbIndMilestoneRisk().getName();
               } else {
-                milestoneRisk = " ";
+                milestoneRisk = "";
               }
 
               POIField[] sData = {new POIField(fp, ParagraphAlignment.CENTER),
