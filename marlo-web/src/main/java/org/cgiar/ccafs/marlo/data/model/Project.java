@@ -818,21 +818,23 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
 
   public ProjectInfo getProjecInfoPhase(Phase phase) {
-    if (this.getProjectInfo() != null) {
-      return this.getProjectInfo();
-    } else {
-      List<ProjectInfo> infos =
-        projectInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
-          && c.getPhase().getId().longValue() == phase.getId()).collect(Collectors.toList());
-      if (!infos.isEmpty()) {
-        this.setProjectInfo(infos.get(0));
+    try {
+      if (this.getProjectInfo() != null) {
         return this.getProjectInfo();
       } else {
-        return null;
+        List<ProjectInfo> infos =
+          projectInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
+            && c.getPhase().getId().longValue() == phase.getId()).collect(Collectors.toList());
+        if (!infos.isEmpty()) {
+          this.setProjectInfo(infos.get(0));
+          return this.getProjectInfo();
+        } else {
+          return null;
+        }
       }
+    } catch (Exception e) {
+      return null;
     }
-
-
   }
 
 
