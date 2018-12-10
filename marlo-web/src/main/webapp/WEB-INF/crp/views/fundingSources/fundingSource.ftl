@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20181210",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js",
   "${baseUrl}/global/js/autoSave.js" 
   ]
@@ -30,9 +30,9 @@
   [#assign fundingSourceYears = startYear .. endYear/]
 [/#if]
 
-[#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
+[#assign hasW1W2Permission = (action.w1Permission())!false /]
+[#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!hasW1W2Permission /]
 [#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
-
    
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
@@ -269,8 +269,6 @@
             [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
-              [#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
-              [#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
               <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
                 <div class="checkbox dottedBox">
                   <label for="w1w2-tag-input">
@@ -319,7 +317,7 @@
             <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
               [#if editable]
-                [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
+                [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=(isW1W2 && (!centerGlobalUnit)) editable=editable /]
               [#else]
                 <p class="input">${(fundingSource.fundingSourceInfo.directDonor.composedName)!}</p>
                 <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
