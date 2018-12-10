@@ -1295,4 +1295,9 @@ public class FundingSourceAction extends BaseAction {
 
     }
   }
+
+  public boolean w1Permission() {
+    return this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
+  }
 }
