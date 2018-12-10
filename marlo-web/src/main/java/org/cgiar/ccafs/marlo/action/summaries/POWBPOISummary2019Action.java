@@ -675,11 +675,18 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
 
     String text = "";
+
     if (this.isEntityPlatform()) {
       text = "tableA2PowbPLT";
-    } else if (this.isEntityCRP()) {
+    }
+    if (this.isEntityCRP()) {
       text = "tableA2PowbCRP";
     }
+
+    if (text == null || text.isEmpty()) {
+      text = "tableA2PowbCRP";
+    }
+
 
     poiSummary.textTable(document, headers, datas, false, text);
   }
@@ -1094,8 +1101,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableA2.title"));
         this.createTableA2();
         document.createParagraph().setPageBreak(true);
 
@@ -1335,7 +1340,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 1");
         poiSummary.textLineBreak(document, 1);
-        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
 
         // Table 2a
         paragraph = document.createParagraph();
