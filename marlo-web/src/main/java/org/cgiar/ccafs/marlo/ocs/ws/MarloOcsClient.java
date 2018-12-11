@@ -53,7 +53,7 @@ public class MarloOcsClient {
     ExecutorService executor = Executors.newFixedThreadPool(MYTHREADS);
     // Run the services on parallel
     for (int i = 1; i <= 4; i++) {
-      Runnable worker = new WsThread(apConfig, i, agreementID, agreementOCS);
+      Runnable worker = new WsThread(apConfig, i, agreementID.toUpperCase(), agreementOCS);
       executor.execute(worker);
     }
     executor.shutdownNow();
