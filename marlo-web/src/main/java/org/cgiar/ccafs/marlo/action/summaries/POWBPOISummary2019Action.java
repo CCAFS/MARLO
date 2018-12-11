@@ -1283,7 +1283,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
 
-
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           this.getText("summaries.powb2019.crpName") + ": " + this.getLoggedCrp().getAcronym());
 
@@ -1302,17 +1301,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
               "     " + this.getText("summaries.powb2019.flagShip") + " " + i + 1 + ":" + flagships.get(i).getName());
           }
         }
-
-        /*
-         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
-         * "     " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
-         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
-         * "     " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
-         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
-         * "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
-         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
-         * "     " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
-         */
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           "     " + this.getText("summaries.powb2019.otherParticipans") + ": " + ppaPartners);

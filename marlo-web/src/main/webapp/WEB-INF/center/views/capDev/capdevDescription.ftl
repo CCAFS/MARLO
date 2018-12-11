@@ -11,7 +11,7 @@
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/syncParticipants.js",
-  "${baseUrlMedia}/js/capDev/capdevDescription.js",
+  "${baseUrlMedia}/js/capDev/capdevDescription.js?20181211",
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrl}/global/js/autoSave.js"
   ] 
