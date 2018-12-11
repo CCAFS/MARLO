@@ -534,7 +534,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String fp, subIDO, outcomes, milestone, powbIndFollowingMilestone, powbMilestoneVerification, gender, youth, capdev,
       climate, assesmentRisk, milestoneRisk, lastFP = "", lastSubIdo = "";
 
-    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getSelectedPhase());
 
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
@@ -943,6 +942,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   @Override
   public String execute() throws Exception {
 
+    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getSelectedPhase());
     if (this.isEntityPlatform()) {
 
       if (this.getSelectedPhase() == null) {
@@ -1010,7 +1010,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
-
         // cover page
         paragraph = document.createParagraph();
         run = paragraph.createRun();
@@ -1042,7 +1041,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // this.getText("summaries.powb2019.expectedKeyResults.toc"));
         this.addAdjustmentDescription();
         poiSummary.textLineBreak(document, 1);
-
 
         // 2. plans
         paragraph = document.createParagraph();
@@ -1236,7 +1234,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         poiSummary.addLineSeparator(document.createParagraph());
         document.createParagraph().setPageBreak(true);
 
-
         // Second page - table of contents
         document.createTOC();
 
@@ -1286,28 +1283,42 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
 
+
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           this.getText("summaries.powb2019.crpName") + ": " + this.getLoggedCrp().getAcronym());
-        poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.leadCenter"));
+
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          this.getText("summaries.powb2019.flagshipLeadInst"));
+          this.getText("summaries.powb2019.leadCenter") + ": " + loggedCrp.getInstitution().getAcronym());
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          this.getText("summaries.powb2019.flagshipLeadInst") + ":");
         run.addTab();
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
 
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+        if (flagships != null && !flagships.isEmpty()) {
+          for (int i = 0; i < flagships.size(); i++) {
+            flagships.get(i);
 
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+            poiSummary.textParagraphFontCalibri(document.createParagraph(),
+              "     " + this.getText("summaries.powb2019.flagShip") + " " + i + 1 + ":" + flagships.get(i).getName());
+          }
+        }
 
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+        /*
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+         */
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           "     " + this.getText("summaries.powb2019.otherParticipans") + ": " + ppaPartners);
 
         poiSummary.textLineBreak(document, 1);
+
 
         // 1. toc
         paragraph = document.createParagraph();
