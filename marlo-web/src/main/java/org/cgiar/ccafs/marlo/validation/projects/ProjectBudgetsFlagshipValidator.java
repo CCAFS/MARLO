@@ -78,7 +78,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     Project projectBD = projectManager.getProjectById(projectID);
     List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getYear() == year && c.getBudgetType().getId().longValue() == type.longValue()
-        && (c.getAmount() != null && c.getAmount() >= 0) && c.getPhase() != null && c.getPhase().equals(actualPhase))
+        && (c.getAmount() != null && c.getAmount() > 0) && c.getPhase() != null && c.getPhase().equals(actualPhase))
       .collect(Collectors.toList());
 
     return budgets.size() > 0;
