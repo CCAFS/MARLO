@@ -172,13 +172,19 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
             LiaisonInstitution liaisonInstitution = lUser.getLiaisonInstitution();
             ProjectPartner projectPartner = project.getLeader();
 
-            Institution institutionProject = projectPartner.getInstitution();
+            if (projectPartner != null) {
+              Institution institutionProject = projectPartner.getInstitution();
 
-            Institution institutionCp = liaisonInstitution.getInstitution();
+              Institution institutionCp = liaisonInstitution.getInstitution();
 
-            if (institutionCp != null) {
-              if (institutionCp.getId().equals(institutionProject.getId())) {
-                canSwitchProject = true;
+              if (institutionCp != null) {
+                if (institutionCp.getId().equals(institutionProject.getId())) {
+                  canSwitchProject = true;
+                } else {
+                  if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+                    canSwitchProject = true;
+                  }
+                }
               } else {
                 if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
                   canSwitchProject = true;
@@ -189,6 +195,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
                 canSwitchProject = true;
               }
             }
+
+
           } else {
             if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
               canSwitchProject = true;
