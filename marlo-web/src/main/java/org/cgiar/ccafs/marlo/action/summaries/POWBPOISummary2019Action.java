@@ -1184,30 +1184,28 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       /*
        * Get ppa partners list
        */
-
       List<CrpPpaPartner> ppaPartnerReview = new ArrayList<>(crpPpaPartnerManager.findAll().stream()
         .filter(ppa -> ppa.isActive() && ppa.getCrp().getId() == loggedCrp.getId()
           && ppa.getPhase().equals(this.getActualPhase()))
+        .distinct()
         .sorted((ppa1, ppa2) -> ppa1.getInstitution().getAcronym().compareTo(ppa2.getInstitution().getAcronym()))
-        .distinct().collect(Collectors.toList()));
+        .collect(Collectors.toList()));
       if (ppaPartnerReview != null) {
 
         for (CrpPpaPartner partner : ppaPartnerReview.stream()
           .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
-          /*
-           * if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
-           * crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
-           * this.disableCrpPpaPartnerContactPoints(partner);
-           * }
-           */
         }
       }
 
       try {
         ppaPartners = "";
         for (int i = 0; i < ppaPartnerReview.size(); i++) {
-          ppaPartners += ppaPartnerReview.get(i).getInstitution().getAcronym() + "," + ppaPartners;
+          ppaPartners += ppaPartnerReview.get(i).getInstitution().getAcronym();
+          if (i < ppaPartnerReview.size() - 1) {
+            ppaPartners += ", ";
+          }
+
         }
 
         /* Create a portrait text Section */
