@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -184,6 +186,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager;
   private PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
+
   // Parameters
   private POISummary poiSummary;
   private List<PowbSynthesis> powbSynthesisList;
@@ -212,7 +216,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, LiaisonInstitutionManager liaisonInstitutionManager,
     PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager, ProjectManager projectManager,
-    UserManager userManager, POWB2019Data<POWBPOISummary2019Action> powb2019Data,
+    CrpPpaPartnerManager crpPpaPartnerManager, UserManager userManager,
+    POWB2019Data<POWBPOISummary2019Action> powb2019Data,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
@@ -229,6 +234,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     this.powbCrpStaffingCategoriesManager = powbCrpStaffingCategoriesManager;
     this.powb2019Data = powb2019Data;
     this.powbFinancialPlannedBudgetManager = powbFinancialPlannedBudgetManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
   }
 
   private void addAdjustmentDescription() {
@@ -528,7 +534,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     String fp, subIDO, outcomes, milestone, powbIndFollowingMilestone, powbMilestoneVerification, gender, youth, capdev,
       climate, assesmentRisk, milestoneRisk, lastFP = "", lastSubIdo = "";
 
-    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getSelectedPhase());
 
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
@@ -675,11 +680,18 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
     }
 
     String text = "";
+
     if (this.isEntityPlatform()) {
       text = "tableA2PowbPLT";
-    } else if (this.isEntityCRP()) {
+    }
+    if (this.isEntityCRP()) {
       text = "tableA2PowbCRP";
     }
+
+    if (text == null || text.isEmpty()) {
+      text = "tableA2PowbCRP";
+    }
+
 
     poiSummary.textTable(document, headers, datas, false, text);
   }
@@ -930,6 +942,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
   @Override
   public String execute() throws Exception {
 
+    flagships = this.powb2019Data.getTable2A(loggedCrp, this.getSelectedPhase());
     if (this.isEntityPlatform()) {
 
       if (this.getSelectedPhase() == null) {
@@ -997,7 +1010,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
-
         // cover page
         paragraph = document.createParagraph();
         run = paragraph.createRun();
@@ -1010,7 +1022,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
         // poiSummary.textHead1TitleLightBlue(document.createParagraph(), this.getText("summaries.powb2019.cover"));
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          this.getText("summaries.powb2019.platformName") + ": ");
+          this.getText("summaries.powb2019.platformName") + ": " + this.getLoggedCrp().getAcronym());
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           this.getText("summaries.powb2019.hostEntityName") + ": ");
         poiSummary.textLineBreak(document, 1);
@@ -1029,7 +1041,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         // this.getText("summaries.powb2019.expectedKeyResults.toc"));
         this.addAdjustmentDescription();
         poiSummary.textLineBreak(document, 1);
-
 
         // 2. plans
         paragraph = document.createParagraph();
@@ -1094,8 +1105,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("5B9BD5");
         paragraph.setStyle("heading 2");
 
-        // poiSummary.textHead1TitleLightBlue(document.createParagraph(),
-        // this.getText("summaries.powb2019.tableA2.title"));
         this.createTableA2();
         document.createParagraph().setPageBreak(true);
 
@@ -1165,11 +1174,38 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       return SUCCESS;
     } else if (this.isEntityCRP()) {
 
+      String ppaPartners = "";
       if (this.getSelectedPhase() == null) {
         return NOT_FOUND;
       }
 
+      /*
+       * Get ppa partners list
+       */
+      List<CrpPpaPartner> ppaPartnerReview = new ArrayList<>(crpPpaPartnerManager.findAll().stream()
+        .filter(ppa -> ppa.isActive() && ppa.getCrp().getId() == loggedCrp.getId()
+          && ppa.getPhase().equals(this.getActualPhase()))
+        .distinct()
+        .sorted((ppa1, ppa2) -> ppa1.getInstitution().getAcronym().compareTo(ppa2.getInstitution().getAcronym()))
+        .collect(Collectors.toList()));
+      if (ppaPartnerReview != null) {
+
+        for (CrpPpaPartner partner : ppaPartnerReview.stream()
+          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
+        }
+      }
+
       try {
+        ppaPartners = "";
+        for (int i = 0; i < ppaPartnerReview.size(); i++) {
+          ppaPartners += ppaPartnerReview.get(i).getInstitution().getAcronym();
+          if (i < ppaPartnerReview.size() - 1) {
+            ppaPartners += ", ";
+          }
+
+        }
+
         /* Create a portrait text Section */
         CTDocument1 doc = document.getDocument();
         CTBody body = doc.getBody();
@@ -1197,7 +1233,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         poiSummary.textLineBreak(document, 11);
         poiSummary.addLineSeparator(document.createParagraph());
         document.createParagraph().setPageBreak(true);
-
 
         // Second page - table of contents
         document.createTOC();
@@ -1248,27 +1283,42 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 2");
 
-        poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.crpName"));
-        poiSummary.textParagraphFontCalibri(document.createParagraph(), this.getText("summaries.powb2019.leadCenter"));
+
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          this.getText("summaries.powb2019.flagshipLeadInst"));
+          this.getText("summaries.powb2019.crpName") + ": " + this.getLoggedCrp().getAcronym());
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          this.getText("summaries.powb2019.leadCenter") + ": " + loggedCrp.getInstitution().getAcronym());
+
+        poiSummary.textParagraphFontCalibri(document.createParagraph(),
+          this.getText("summaries.powb2019.flagshipLeadInst") + ":");
         run.addTab();
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+
+        if (flagships != null && !flagships.isEmpty()) {
+          for (int i = 0; i < flagships.size(); i++) {
+            flagships.get(i);
+
+            poiSummary.textParagraphFontCalibri(document.createParagraph(),
+              "     " + this.getText("summaries.powb2019.flagShip") + " " + i + 1 + ":" + flagships.get(i).getName());
+          }
+        }
+
+        /*
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " 1" + ":");
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
+         * poiSummary.textParagraphFontCalibri(document.createParagraph(),
+         * "     " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
+         */
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " 2" + ":");
-
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " 3" + ":");
-
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.flagShip") + " x" + ":");
-
-        poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          "     " + this.getText("summaries.powb2019.otherParticipans") + ": ");
+          "     " + this.getText("summaries.powb2019.otherParticipans") + ": " + ppaPartners);
 
         poiSummary.textLineBreak(document, 1);
+
 
         // 1. toc
         paragraph = document.createParagraph();
@@ -1335,7 +1385,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         run.setColor("4472C4");
         paragraph.setStyle("heading 1");
         poiSummary.textLineBreak(document, 1);
-        // poiSummary.textHead1TitleFontCalibri(document.createParagraph(), this.getText("TABLES"));
 
         // Table 2a
         paragraph = document.createParagraph();

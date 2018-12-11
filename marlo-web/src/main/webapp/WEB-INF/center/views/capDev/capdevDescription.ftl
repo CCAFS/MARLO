@@ -177,10 +177,14 @@
  [#-- Is Focused --]
  [#if ((capdev.category == 2)!false)]
    <div class="group individual">
-     <label>Is focused [@customForm.req required=true /]
-     <input type="checkbox" required="true" name="capdev.focused" value="true" [#if (capdev.focused)!false ]checked="checked"[/#if]></label>
+     <label> [@s.text name="capdev.category" /] [@customForm.req required=true /]</div><div>
+        [@customForm.radioFlat id="isFocused-1" name="capdev.focused" label="CapDev focused" value="true" checked=((capdev.focused == true)!false) editable=editable cssClass="cTypeRadio" cssClassLabel=""/]
+        
+        [@customForm.radioFlat id="isFocused-2" name="capdev.focused" label="Activity with some CapDev Objectives" value="false" checked=((capdev.focused == false)!false) editable=editable cssClass="cTypeRadio" cssClassLabel=""/]
+
    </div>
  [/#if]
+ <hr />
   
  [#-- Research program --]
   <div class="form-group row">   

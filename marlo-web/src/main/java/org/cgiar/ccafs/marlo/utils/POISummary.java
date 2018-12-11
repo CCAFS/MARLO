@@ -512,7 +512,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 10; y++) {
+        for (int y = 0; y < 11; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -623,7 +623,7 @@ public class POISummary {
 
     XWPFTableRow row = table.getRow(0);
     int numberOfCell = row.getTableCells().size();
-    for (int y = 0; y < numberOfCell - 1; y++) {
+    for (int y = 0; y < numberOfCell; y++) {
       XWPFTableCell cell = row.getCell(y);
       if (cell.getCTTc() == null) {
         ((CTTc) cell).addNewTcPr();
