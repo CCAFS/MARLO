@@ -858,7 +858,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
       fundingSourceInfoDB.setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
 
-      fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
+      fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode().toUpperCase());
       fundingSourceInfoDB.setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
       fundingSourceInfoDB.setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
       fundingSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
