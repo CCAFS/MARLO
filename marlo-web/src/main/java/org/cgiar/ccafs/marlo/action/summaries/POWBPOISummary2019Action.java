@@ -1298,7 +1298,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
             flagships.get(i);
 
             poiSummary.textParagraphFontCalibri(document.createParagraph(),
-              "     " + this.getText("summaries.powb2019.flagShip") + " " + i + 1 + ":" + flagships.get(i).getName());
+              "     " + this.getText("summaries.powb2019.flagShip") + " " + i + ":" + flagships.get(i).getName());
           }
         }
 
