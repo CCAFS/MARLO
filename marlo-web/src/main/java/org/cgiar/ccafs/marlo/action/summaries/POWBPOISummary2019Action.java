@@ -1182,14 +1182,27 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       /*
        * Get ppa partners list
        */
-      List<CrpPpaPartner> ppaPartnerReview = new ArrayList<>(crpPpaPartnerManager.findAll().stream()
-        .filter(ppa -> ppa.isActive() && ppa.getCrp().getId() == loggedCrp.getId()
-          && ppa.getPhase().equals(this.getActualPhase()))
-        .distinct()
-        .sorted((ppa1, ppa2) -> ppa1.getInstitution().getAcronym().compareTo(ppa2.getInstitution().getAcronym()))
-        .collect(Collectors.toList()));
-      if (ppaPartnerReview != null) {
+      List<CrpPpaPartner> ppaPartnerReview = new ArrayList<>();
+      ppaPartnerReview = crpPpaPartnerManager.findAll();
 
+
+      if (ppaPartnerReview != null && !ppaPartnerReview.isEmpty()) {
+        ppaPartnerReview =
+          ppaPartnerReview.stream().filter(ppa -> ppa.isActive() && ppa.getCrp().getId() == loggedCrp.getId()
+            && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      }
+
+      try {
+        // Sort institutions ppaPartners list by acronym
+        ppaPartnerReview = ppaPartnerReview.stream()
+          .sorted(
+            (ppa1, ppa2) -> ppa1.getInstitution().getAcronymName().compareTo(ppa2.getInstitution().getAcronymName()))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        LOG.error("Failed to sort ppaPartners institutions by acronyms: " + e.getMessage());
+      }
+
+      if (ppaPartnerReview != null) {
         for (CrpPpaPartner partner : ppaPartnerReview.stream()
           .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
@@ -1199,7 +1212,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       try {
         ppaPartners = "";
         for (int i = 0; i < ppaPartnerReview.size(); i++) {
-          ppaPartners += ppaPartnerReview.get(i).getInstitution().getAcronym();
+          ppaPartners += ppaPartnerReview.get(i).getInstitution().getAcronymName();
           if (i < ppaPartnerReview.size() - 1) {
             ppaPartners += ", ";
           }
@@ -1210,7 +1223,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         CTDocument1 doc = document.getDocument();
         CTBody body = doc.getBody();
 
-        poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.headerCRP"));
+        poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.hppaderCRP"));
 
         // Get datetime
         ZonedDateTime timezone = ZonedDateTime.now();
@@ -1272,7 +1285,6 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
-
         // cover page
         paragraph = document.createParagraph();
         run = paragraph.createRun();
@@ -1287,7 +1299,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
           this.getText("summaries.powb2019.crpName") + ": " + this.getLoggedCrp().getAcronym());
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
-          this.getText("summaries.powb2019.leadCenter") + ": " + loggedCrp.getInstitution().getAcronym());
+          this.getText("summaries.powb2019.leadCenter") + ": " + loggedCrp.getInstitution().getAcronymName());
 
         poiSummary.textParagraphFontCalibri(document.createParagraph(),
           this.getText("summaries.powb2019.flagshipLeadInst") + ":");
