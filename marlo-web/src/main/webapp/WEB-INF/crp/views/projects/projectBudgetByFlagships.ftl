@@ -74,13 +74,13 @@
                 [#-- Budgest cannot be editable message --]
                 [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
                   
-                [#if action.hasBudgets(1,year) || action.hasBudgets(2,year) || action.hasBudgets(3,year) || action.hasBudgets(4,year) || action.hasBudgets(5,year)]
+                [#if action.hasBudgets(1,year, projectID) || action.hasBudgets(2,year, projectID) || action.hasBudgets(3,year, projectID) || action.hasBudgets(4,year, projectID) || action.hasBudgets(5,year, projectID)]
                   [#-- Total year budget type --]
                   <table class="text-center">
                     <tr>
                     [#list budgetTypesList as budgetType]
                       [#-- Budget Type--]
-                      [#if action.hasBudgets(budgetType.id, year)]
+                      [#if action.hasBudgets(budgetType.id, year,projectID)]
                         <td class="">
                           [#-- 
                           <h5 class="subTitle"> 
@@ -156,7 +156,7 @@
             <th class="amountType"> </th>
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
-              [#if action.hasBudgets(budgetType.id, selectedYear)]
+              [#if action.hasBudgets(budgetType.id, selectedYear,projectID)]
               <th class="text-center">${budgetType.name}[@customForm.req /]</th>
               [/#if]
             [/#list]
@@ -168,7 +168,7 @@
             <td class="amountType"> % of total:</td>
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
-              [#if action.hasBudgets(budgetType.id, selectedYear)]
+              [#if action.hasBudgets(budgetType.id, selectedYear,projectID)]
                 <td class="budgetColumn">
                   [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
                   [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
