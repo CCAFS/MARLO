@@ -126,14 +126,14 @@
           [#if canEdit]
             [#-- Fields check --]
             <td class=""> 
-             [#if (action.getStudyStatus(element.id)??)!false]
+              [#if (action.getStudyStatus(element.id)??)!false]
                 [#if !((action.getStudyStatus(element.id)).missingFields)?has_content]
                   <span class="icon-20 icon-check" title="Complete"></span>
                 [#else]
                   <span class="icon-20 icon-uncheck" title=""></span> 
                 [/#if]
               [#else]
-                  <span class="icon-20 icon-uncheck" title=""></span>
+                <span class="icon-20 icon-uncheck" title=""></span>
               [/#if]
             </td>
             [#-- Delete --]
